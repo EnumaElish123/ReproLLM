@@ -71,7 +71,10 @@ def _clean_proxy_env() -> Iterator[None]:
 
 @pytest.fixture(autouse=True, scope="session")
 def fail_unmocked_http() -> Iterator[None]:
-    with respx.mock(assert_all_mocked=True):
+    # Bare ``respx.mock`` activates the *global* router so tests can register
+    # routes with the module-level API (``respx.get(...)``); its default
+    # ``assert_all_mocked`` makes any unmocked request fail the suite (T-04).
+    with respx.mock:
         yield
 
 
