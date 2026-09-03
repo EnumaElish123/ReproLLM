@@ -1,0 +1,74 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.10"
+          - os: ubuntu-latest
+            python: "3.11"
+          - os: ubuntu-latest
+            python: "3.12"
+            schema-check: true
+          - os: macos-latest
+            python: "3.12"
+          - os: windows-latest
+            python: "3.12"
+            pytest-marker-filter: not linux_only
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format check
+        run: uv run ruff format --check .
+
+      - name: Type check
+        run: uv run mypy src/
+
+      - name: Test
+        run: >
+          uv run pytest -q --cov=reprollm --cov-report=xml
+          ${{ matrix.pytest-marker-filter && format('-m "{0}"', matrix.pytest-marker-filter) || '' }}
+
+      - name: Schema freshness
+        if: matrix.schema-check
+        run: |
+          uv run reprollm schema export --out /tmp/schemas
+          diff -r schemas /tmp/schemas
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}-py${{ matrix.python }}
+          path: coverage.xml
+          if-no-files-found: ignore
