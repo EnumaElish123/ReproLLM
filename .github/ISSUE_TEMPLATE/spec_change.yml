@@ -1,0 +1,47 @@
+name: Specification change
+description: Propose a change to the normative Beta specification (docs/plan/01) or a frozen decision (docs/plan/00).
+labels: ["spec"]
+body:
+  - type: dropdown
+    id: document
+    attributes:
+      label: Which document?
+      options:
+        - docs/plan/01_specification.md (CLI contract, schemas, rules, redaction, diff)
+        - docs/plan/00_architecture_and_decisions.md (frozen decisions D-nn)
+    validations:
+      required: true
+  - type: input
+    id: section
+    attributes:
+      label: Section / decision ID
+      description: e.g. "§4.3 resolution rules" or "D-21"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text / behavior
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed change
+      description: Exact replacement text or new field/behavior. Include schemas and exported JSON Schema impact.
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why the spec is wrong or incomplete. Dogfooding evidence welcome.
+    validations:
+      required: true
+  - type: checkboxes
+    id: compat
+    attributes:
+      label: Compatibility
+      options:
+        - label: I checked whether this is a breaking schema change (requires migration note + version bump policy D-39)
+          required: true

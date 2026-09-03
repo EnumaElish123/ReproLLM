@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a new capability that does not change the specification.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: The reproducibility pain you hit, with a concrete example.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should ReproLLM do instead? Which command, manifest field, or rule output changes?
+    validations:
+      required: true
+  - type: checkboxes
+    id: non-goals
+    attributes:
+      label: Scope check
+      options:
+        - label: This does not require violating a frozen decision in docs/plan/00 (D-01 … D-42)
+          required: true
+        - label: This does not put an LLM in the audit path (only `discover` may call a model)
+          required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

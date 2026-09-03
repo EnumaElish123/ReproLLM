@@ -1,0 +1,66 @@
+name: New audit rule proposal
+description: Propose a new deterministic rule for the catalog (spec §12).
+labels: ["rule", "enhancement"]
+body:
+  - type: input
+    id: rule-id
+    attributes:
+      label: Proposed rule ID
+      description: "`<category>.<snake_name>` per D-08, e.g. `model.revision_pinned`"
+      placeholder: "model.revision_pinned"
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - code
+        - env
+        - exec
+        - model
+        - dataset
+        - gen
+        - prompt
+        - eval
+        - judge
+        - train
+        - privacy
+        - consistency
+        - project
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Default severity (D-09)
+      options:
+        - CRITICAL — identity of the experiment becomes ambiguous
+        - WARNING — reproduction is materially harder but identity is determinable
+        - INFO — advisory
+    validations:
+      required: true
+  - type: textarea
+    id: fail-condition
+    attributes:
+      label: FAIL condition
+      description: Precisely when does the rule fail? Which inputs does it read (manifest field paths, lock fields, run observations)?
+    validations:
+      required: true
+  - type: textarea
+    id: fix-hint
+    attributes:
+      label: fix_hint text
+      description: One imperative sentence naming the field path or file to change.
+    validations:
+      required: true
+  - type: input
+    id: profile
+    attributes:
+      label: Which profile(s) should select it?
+      description: "core / inference / evaluation / llm_judge / finetuning / safety / privacy"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Real-world evidence
+      description: A paper, repo, or incident where the missing information broke reproducibility.
