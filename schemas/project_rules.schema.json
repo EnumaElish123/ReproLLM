@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "IgnoredCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "ignored_at": {
+          "format": "date-time",
+          "title": "Ignored At",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "ignored_at"
+      ],
+      "title": "IgnoredCandidate",
+      "type": "object"
+    },
+    "ProjectRule": {
+      "additionalProperties": false,
+      "description": "One accepted rule; FAIL when ``field`` is absent/null in the manifest.",
+      "properties": {
+        "accepted_at": {
+          "format": "date-time",
+          "title": "Accepted At",
+          "type": "string"
+        },
+        "bindings": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectRuleBindings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "candidate_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate Id"
+        },
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^project\\.[a-z][a-z0-9_]{0,47}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "CRITICAL",
+            "WARNING",
+            "INFO"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "manual",
+            "discover"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "field",
+        "severity",
+        "reason",
+        "source",
+        "accepted_at"
+      ],
+      "title": "ProjectRule",
+      "type": "object"
+    },
+    "ProjectRuleBindings": {
+      "additionalProperties": false,
+      "properties": {
+        "cli": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cli"
+        },
+        "config": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Config"
+        },
+        "env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Env"
+        }
+      },
+      "title": "ProjectRuleBindings",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/project_rules.schema.json",
+  "additionalProperties": false,
+  "description": "``.reprollm/project-rules.yaml``.",
+  "properties": {
+    "ignored_candidates": {
+      "items": {
+        "$ref": "#/$defs/IgnoredCandidate"
+      },
+      "title": "Ignored Candidates",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/ProjectRule"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "title": "ProjectRules",
+  "type": "object"
+}

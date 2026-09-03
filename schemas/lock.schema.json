@@ -1,0 +1,1402 @@
+{
+  "$defs": {
+    "AdapterLock": {
+      "additionalProperties": false,
+      "properties": {
+        "config_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "revision"
+      ],
+      "title": "AdapterLock",
+      "type": "object"
+    },
+    "AttackSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        },
+        "query_budget": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Query Budget"
+        }
+      },
+      "title": "AttackSpec",
+      "type": "object"
+    },
+    "ChatTemplateLock": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "status": {
+          "enum": [
+            "present",
+            "absent",
+            "custom_file"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "status"
+      ],
+      "title": "ChatTemplateLock",
+      "type": "object"
+    },
+    "Confidence": {
+      "enum": [
+        "exact",
+        "declared",
+        "unresolved"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "ContentFingerprint": {
+      "additionalProperties": false,
+      "description": "D-22: dataset content fingerprints are not computed in Beta.",
+      "properties": {
+        "status": {
+          "const": "not_computed",
+          "default": "not_computed",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "title": "ContentFingerprint",
+      "type": "object"
+    },
+    "DatasetFileLock": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "DatasetFileLock",
+      "type": "object"
+    },
+    "DatasetLock": {
+      "additionalProperties": false,
+      "properties": {
+        "content_fingerprint": {
+          "$ref": "#/$defs/ContentFingerprint"
+        },
+        "files": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/DatasetFileLock"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Files"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "revision": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "split": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Split"
+        },
+        "subset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subset"
+        }
+      },
+      "required": [
+        "provider",
+        "id",
+        "revision"
+      ],
+      "title": "DatasetLock",
+      "type": "object"
+    },
+    "DeepSpeedSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "title": "Config",
+          "type": "string"
+        }
+      },
+      "required": [
+        "config"
+      ],
+      "title": "DeepSpeedSpec",
+      "type": "object"
+    },
+    "EnvironmentLock": {
+      "additionalProperties": false,
+      "description": "Expected environment at lock time (spec \u00a74.2).",
+      "properties": {
+        "gpu": {
+          "$ref": "#/$defs/GpuEnvLock"
+        },
+        "packages": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Packages",
+          "type": "object"
+        },
+        "platform": {
+          "enum": [
+            "linux",
+            "darwin",
+            "windows"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        }
+      },
+      "required": [
+        "python",
+        "platform",
+        "gpu"
+      ],
+      "title": "EnvironmentLock",
+      "type": "object"
+    },
+    "EvaluationLock": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aggregation"
+        },
+        "definitions": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Definitions"
+        },
+        "judge": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Judge"
+        },
+        "metrics": {
+          "items": {
+            "$ref": "#/$defs/MetricLock"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "query_budget": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Query Budget"
+        },
+        "repetitions": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetitions"
+        },
+        "thresholds": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thresholds"
+        }
+      },
+      "title": "EvaluationLock",
+      "type": "object"
+    },
+    "FileEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "FileEntry",
+      "type": "object"
+    },
+    "Generation": {
+      "additionalProperties": false,
+      "description": "Generation parameters. V-08 ranges are enforced when values are present.",
+      "properties": {
+        "do_sample": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Do Sample"
+        },
+        "max_tokens": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tokens"
+        },
+        "n": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N"
+        },
+        "repetition_penalty": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Repetition Penalty"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        },
+        "stop": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stop"
+        },
+        "temperature": {
+          "anyOf": [
+            {
+              "maximum": 2,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature"
+        },
+        "top_k": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top K"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        }
+      },
+      "title": "Generation",
+      "type": "object"
+    },
+    "GpuEnvLock": {
+      "additionalProperties": false,
+      "properties": {
+        "cuda_driver_max": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cuda Driver Max"
+        },
+        "driver": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Driver"
+        },
+        "source": {
+          "enum": [
+            "nvidia_smi",
+            "unavailable"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "GpuEnvLock",
+      "type": "object"
+    },
+    "InferenceLock": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "title": "Backend",
+          "type": "string"
+        },
+        "dtype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dtype"
+        },
+        "gpu_memory_utilization": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gpu Memory Utilization"
+        },
+        "kv_cache_dtype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kv Cache Dtype"
+        },
+        "max_model_len": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Model Len"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "offline",
+                "serving"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mode"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        },
+        "quantization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantization"
+        },
+        "tensor_parallel_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tensor Parallel Size"
+        },
+        "version": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "backend",
+        "version"
+      ],
+      "title": "InferenceLock",
+      "type": "object"
+    },
+    "LocalModelLock": {
+      "additionalProperties": false,
+      "properties": {
+        "config_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "weights": {
+          "$ref": "#/$defs/WeightsLock"
+        }
+      },
+      "required": [
+        "path",
+        "weights"
+      ],
+      "title": "LocalModelLock",
+      "type": "object"
+    },
+    "MechanismSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "MechanismSpec",
+      "type": "object"
+    },
+    "MetricLock": {
+      "additionalProperties": false,
+      "properties": {
+        "implementation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Implementation"
+        },
+        "implementation_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Implementation Sha256"
+        },
+        "implementation_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "MetricLock",
+      "type": "object"
+    },
+    "ModelLock": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AdapterLock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "chat_template": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ChatTemplateLock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "config_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "dtype": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dtype"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "local": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalModelLock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "pinnability": {
+          "enum": [
+            "exact",
+            "snapshot_alias",
+            "unpinnable"
+          ],
+          "title": "Pinnability",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "quantization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantization"
+        },
+        "revision": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "tokenizer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TokenizerLock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "trust_remote_code": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trust Remote Code"
+        }
+      },
+      "required": [
+        "provider",
+        "id",
+        "pinnability",
+        "revision"
+      ],
+      "title": "ModelLock",
+      "type": "object"
+    },
+    "Privacy": {
+      "additionalProperties": false,
+      "properties": {
+        "attack": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AttackSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mechanism": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MechanismSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metrics": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metrics"
+        },
+        "threat_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Threat Model"
+        }
+      },
+      "title": "Privacy",
+      "type": "object"
+    },
+    "PromptLock": {
+      "additionalProperties": false,
+      "description": "Either a hashed prompt file or a hash of inline text (discriminated by field).",
+      "properties": {
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "size_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size Bytes"
+        },
+        "text_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text Sha256"
+        }
+      },
+      "title": "PromptLock",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "A resolved value: where it came from and how certain it is (spec \u00a74.1).",
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/Confidence"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "resolved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resolved At"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "source",
+        "confidence"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ResolutionMode": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "online",
+            "offline"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "ResolutionMode",
+      "type": "object"
+    },
+    "TokenizerLock": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "revision"
+      ],
+      "title": "TokenizerLock",
+      "type": "object"
+    },
+    "Training": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Batch Size"
+        },
+        "deepspeed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeepSpeedSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "epochs": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Epochs"
+        },
+        "gradient_accumulation": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gradient Accumulation"
+        },
+        "learning_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Learning Rate"
+        },
+        "max_steps": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Steps"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "enum": [
+                "full",
+                "lora",
+                "qlora",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method"
+        },
+        "optimizer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Optimizer"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        },
+        "precision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision"
+        },
+        "scheduler": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scheduler"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        }
+      },
+      "title": "Training",
+      "type": "object"
+    },
+    "WeightsLock": {
+      "additionalProperties": false,
+      "properties": {
+        "hashed": {
+          "title": "Hashed",
+          "type": "boolean"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "total_size_bytes": {
+          "title": "Total Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "hashed",
+        "total_size_bytes"
+      ],
+      "title": "WeightsLock",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/lock.schema.json",
+  "additionalProperties": false,
+  "description": "``reprollm.lock`` (spec \u00a74.2).",
+  "properties": {
+    "datasets": {
+      "additionalProperties": {
+        "$ref": "#/$defs/DatasetLock"
+      },
+      "title": "Datasets",
+      "type": "object"
+    },
+    "environment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EnvironmentLock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "evaluation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvaluationLock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/FileEntry"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "generation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Generation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "inference": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InferenceLock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "manifest_sha256": {
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "models": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ModelLock"
+      },
+      "title": "Models",
+      "type": "object"
+    },
+    "privacy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Privacy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "project_rules_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Rules Sha256"
+    },
+    "prompts": {
+      "additionalProperties": {
+        "$ref": "#/$defs/PromptLock"
+      },
+      "title": "Prompts",
+      "type": "object"
+    },
+    "reprollm_version": {
+      "title": "Reprollm Version",
+      "type": "string"
+    },
+    "resolution": {
+      "$ref": "#/$defs/ResolutionMode"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "training": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Training"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "reprollm_version",
+    "generated_at",
+    "manifest_sha256",
+    "resolution"
+  ],
+  "title": "Lock",
+  "type": "object"
+}

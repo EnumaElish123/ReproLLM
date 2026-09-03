@@ -1,0 +1,675 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "CodeInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Branch"
+        },
+        "commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commit"
+        },
+        "dirty": {
+          "default": false,
+          "title": "Dirty",
+          "type": "boolean"
+        },
+        "modified_count": {
+          "default": 0,
+          "title": "Modified Count",
+          "type": "integer"
+        },
+        "patch_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch File"
+        },
+        "patch_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch Sha256"
+        },
+        "remote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Remote"
+        },
+        "untracked_count": {
+          "default": 0,
+          "title": "Untracked Count",
+          "type": "integer"
+        }
+      },
+      "title": "CodeInfo",
+      "type": "object"
+    },
+    "CommandInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Argv",
+          "type": "array"
+        },
+        "cwd": {
+          "title": "Cwd",
+          "type": "string"
+        },
+        "redactions": {
+          "default": 0,
+          "title": "Redactions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "argv",
+        "cwd"
+      ],
+      "title": "CommandInfo",
+      "type": "object"
+    },
+    "DocumentRef": {
+      "additionalProperties": false,
+      "description": "Reference + snapshot of a persisted document at run time.",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "snapshot": {
+          "title": "Snapshot",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "snapshot"
+      ],
+      "title": "DocumentRef",
+      "type": "object"
+    },
+    "GpuInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "title": "Index",
+          "type": "integer"
+        },
+        "memory_mib": {
+          "title": "Memory Mib",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "uuid_sha256": {
+          "title": "Uuid Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "name",
+        "memory_mib",
+        "uuid_sha256"
+      ],
+      "title": "GpuInfo",
+      "type": "object"
+    },
+    "HardwareInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu_count": {
+          "title": "Cpu Count",
+          "type": "integer"
+        },
+        "cuda_driver_max": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cuda Driver Max"
+        },
+        "driver": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Driver"
+        },
+        "gpus": {
+          "items": {
+            "$ref": "#/$defs/GpuInfo"
+          },
+          "title": "Gpus",
+          "type": "array"
+        },
+        "source": {
+          "default": "unavailable",
+          "enum": [
+            "nvidia_smi",
+            "unavailable"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cpu_count"
+      ],
+      "title": "HardwareInfo",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/ObservationSource"
+        },
+        "value": {
+          "title": "Value"
+        }
+      },
+      "required": [
+        "value",
+        "source"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "ObservationSource": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "type": {
+          "enum": [
+            "cli",
+            "config",
+            "env"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "key"
+      ],
+      "title": "ObservationSource",
+      "type": "object"
+    },
+    "RunEnvironment": {
+      "additionalProperties": false,
+      "properties": {
+        "env": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/SecretPresent"
+              }
+            ]
+          },
+          "title": "Env",
+          "type": "object"
+        },
+        "env_capture": {
+          "default": "allowlist",
+          "enum": [
+            "allowlist",
+            "all"
+          ],
+          "title": "Env Capture",
+          "type": "string"
+        },
+        "hostname_sha256": {
+          "title": "Hostname Sha256",
+          "type": "string"
+        },
+        "os": {
+          "title": "Os",
+          "type": "string"
+        },
+        "packages": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Packages",
+          "type": "object"
+        },
+        "platform": {
+          "enum": [
+            "linux",
+            "darwin",
+            "windows"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        }
+      },
+      "required": [
+        "os",
+        "platform",
+        "python",
+        "hostname_sha256"
+      ],
+      "title": "RunEnvironment",
+      "type": "object"
+    },
+    "RunFileOrigin": {
+      "enum": [
+        "argv",
+        "declared",
+        "binding"
+      ],
+      "title": "RunFileOrigin",
+      "type": "string"
+    },
+    "RunFileRef": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/RunFileOrigin"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "redacted": {
+          "default": false,
+          "title": "Redacted",
+          "type": "boolean"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes",
+        "origin"
+      ],
+      "title": "RunFileRef",
+      "type": "object"
+    },
+    "RunStatus": {
+      "enum": [
+        "running",
+        "completed",
+        "failed",
+        "interrupted"
+      ],
+      "title": "RunStatus",
+      "type": "string"
+    },
+    "SchedulerInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "lsf": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lsf"
+        },
+        "pbs": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pbs"
+        },
+        "slurm": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Slurm"
+        }
+      },
+      "title": "SchedulerInfo",
+      "type": "object"
+    },
+    "SecretPresent": {
+      "additionalProperties": false,
+      "description": "Recorded instead of a secret environment variable's value (D-20).",
+      "properties": {
+        "present": {
+          "default": true,
+          "title": "Present",
+          "type": "boolean"
+        }
+      },
+      "title": "SecretPresent",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/run_record.schema.json",
+  "additionalProperties": false,
+  "description": "``.reprollm/runs/<run_id>/run.json`` (spec \u00a75).",
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/ArtifactRef"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "bindings_observed": {
+      "additionalProperties": {
+        "items": {
+          "$ref": "#/$defs/Observation"
+        },
+        "type": "array"
+      },
+      "title": "Bindings Observed",
+      "type": "object"
+    },
+    "code": {
+      "$ref": "#/$defs/CodeInfo"
+    },
+    "command": {
+      "$ref": "#/$defs/CommandInfo"
+    },
+    "duration_seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration Seconds"
+    },
+    "ended_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended At"
+    },
+    "environment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunEnvironment"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exit Code"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/RunFileRef"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "hardware": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HardwareInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "lock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DocumentRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "manifest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DocumentRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Name"
+    },
+    "reprollm_version": {
+      "title": "Reprollm Version",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "scheduler": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SchedulerInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "status": {
+      "$ref": "#/$defs/RunStatus"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "reprollm_version",
+    "run_id",
+    "status",
+    "command"
+  ],
+  "title": "RunRecord",
+  "type": "object"
+}

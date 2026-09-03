@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "DetectSignals": {
+      "additionalProperties": false,
+      "description": "Deterministic detection signals (spec \u00a713); all lists default to empty.",
+      "properties": {
+        "dependencies": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "imports": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Imports",
+          "type": "array"
+        },
+        "keywords": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Keywords",
+          "type": "array"
+        }
+      },
+      "title": "DetectSignals",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/profile.schema.json",
+  "additionalProperties": false,
+  "description": "A profile: rules + required fields + overrides for an experiment type (D-06).\n\nMerge semantics when ``extends`` is resolved (spec \u00a76): ``rules`` and\n``required_fields`` union; ``severity_overrides`` / ``drift_overrides`` child wins;\n``detect`` unions. ``core`` is implicit and MUST NOT be listed in\n``experiment.profiles``.",
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "detect": {
+      "$ref": "#/$defs/DetectSignals"
+    },
+    "drift_overrides": {
+      "additionalProperties": {
+        "enum": [
+          "HIGH",
+          "MEDIUM_HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ],
+        "type": "string"
+      },
+      "title": "Drift Overrides",
+      "type": "object"
+    },
+    "extends": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Extends",
+      "type": "array"
+    },
+    "name": {
+      "pattern": "^[a-z][a-z0-9_]{0,31}$",
+      "title": "Name",
+      "type": "string"
+    },
+    "required_fields": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Fields",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "severity_overrides": {
+      "additionalProperties": {
+        "enum": [
+          "CRITICAL",
+          "WARNING",
+          "INFO",
+          "PASS"
+        ],
+        "type": "string"
+      },
+      "title": "Severity Overrides",
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "description"
+  ],
+  "title": "Profile",
+  "type": "object"
+}

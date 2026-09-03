@@ -1,0 +1,379 @@
+{
+  "$defs": {
+    "DetectedProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "profile": {
+          "title": "Profile",
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile",
+        "confidence"
+      ],
+      "title": "DetectedProfile",
+      "type": "object"
+    },
+    "DocumentsSection": {
+      "additionalProperties": false,
+      "properties": {
+        "lock": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lock"
+        },
+        "manifest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Manifest"
+        },
+        "runs": {
+          "default": 0,
+          "title": "Runs",
+          "type": "integer"
+        }
+      },
+      "title": "DocumentsSection",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "default": null,
+          "title": "Expected"
+        },
+        "field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "kind": {
+          "$ref": "#/$defs/EvidenceKind"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceKind": {
+      "enum": [
+        "field",
+        "file",
+        "git",
+        "env",
+        "lock",
+        "run",
+        "detection",
+        "http"
+      ],
+      "title": "EvidenceKind",
+      "type": "string"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Aliases",
+          "type": "array"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "fix_hint": {
+          "title": "Fix Hint",
+          "type": "string"
+        },
+        "level": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Level",
+          "type": "integer"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "profile_origin": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Profile Origin",
+          "type": "array"
+        },
+        "rule_id": {
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "severity_origin": {
+          "default": "default",
+          "title": "Severity Origin",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/FindingStatus"
+        },
+        "suppressed_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suppressed Reason"
+        }
+      },
+      "required": [
+        "rule_id",
+        "category",
+        "severity",
+        "status",
+        "level",
+        "message",
+        "fix_hint"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FindingStatus": {
+      "enum": [
+        "fail",
+        "pass",
+        "suppressed",
+        "skipped"
+      ],
+      "title": "FindingStatus",
+      "type": "string"
+    },
+    "ProfilesSection": {
+      "additionalProperties": false,
+      "properties": {
+        "declared": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Declared",
+          "type": "array"
+        },
+        "detected": {
+          "items": {
+            "$ref": "#/$defs/DetectedProfile"
+          },
+          "title": "Detected",
+          "type": "array"
+        },
+        "resolved": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Resolved",
+          "type": "array"
+        }
+      },
+      "title": "ProfilesSection",
+      "type": "object"
+    },
+    "Severity": {
+      "description": "Audit severities, ordered CRITICAL > WARNING > INFO > PASS (D-09).",
+      "enum": [
+        "CRITICAL",
+        "WARNING",
+        "INFO",
+        "PASS"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Summary": {
+      "additionalProperties": false,
+      "properties": {
+        "critical": {
+          "default": 0,
+          "title": "Critical",
+          "type": "integer"
+        },
+        "info": {
+          "default": 0,
+          "title": "Info",
+          "type": "integer"
+        },
+        "pass": {
+          "default": 0,
+          "title": "Pass",
+          "type": "integer"
+        },
+        "skipped": {
+          "default": 0,
+          "title": "Skipped",
+          "type": "integer"
+        },
+        "suppressed": {
+          "default": 0,
+          "title": "Suppressed",
+          "type": "integer"
+        },
+        "warning": {
+          "default": 0,
+          "title": "Warning",
+          "type": "integer"
+        }
+      },
+      "title": "Summary",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/audit_report.schema.json",
+  "additionalProperties": false,
+  "description": "The ``audit --format json`` document (spec \u00a710).",
+  "properties": {
+    "documents": {
+      "$ref": "#/$defs/DocumentsSection"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "level": {
+      "maximum": 2,
+      "minimum": 0,
+      "title": "Level",
+      "type": "integer"
+    },
+    "profiles": {
+      "$ref": "#/$defs/ProfilesSection"
+    },
+    "reprollm_version": {
+      "title": "Reprollm Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "summary": {
+      "$ref": "#/$defs/Summary"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    }
+  },
+  "required": [
+    "reprollm_version",
+    "generated_at",
+    "target",
+    "level",
+    "profiles",
+    "documents",
+    "summary"
+  ],
+  "title": "AuditReport",
+  "type": "object"
+}

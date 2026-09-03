@@ -3,12 +3,15 @@
 import typer
 
 from reprollm import __version__
+from reprollm.cli import schema
 
 app = typer.Typer(
     name="reprollm",
     help="Make LLM experiments reproducible.",
     no_args_is_help=True,
 )
+
+app.add_typer(schema.app, name="schema")
 
 
 def _version_callback(value: bool | None) -> None:
