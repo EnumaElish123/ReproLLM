@@ -101,7 +101,9 @@ class DocumentsSection(BaseModel):
 
 
 class Summary(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    """``pass`` is a Python keyword; the field is ``pass_`` with a ``pass`` alias."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     critical: int = 0
     warning: int = 0

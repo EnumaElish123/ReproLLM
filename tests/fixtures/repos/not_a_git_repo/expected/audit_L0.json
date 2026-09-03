@@ -1,0 +1,65 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": null,
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "git rev-parse --is-inside-work-tree failed",
+          "path": ".",
+          "value": null
+        }
+      ],
+      "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+      "level": 0,
+      "message": ". is not inside a git work tree",
+      "profile_origin": [],
+      "rule_id": "code.git_repo",
+      "severity": "CRITICAL",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+      "level": 0,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.git_commit",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    }
+  ],
+  "level": 0,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "schema_version": 1,
+  "summary": {
+    "critical": 1,
+    "info": 0,
+    "pass": 0,
+    "skipped": 1,
+    "suppressed": 0,
+    "warning": 0
+  },
+  "target": "."
+}

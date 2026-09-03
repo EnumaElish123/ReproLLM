@@ -1,6 +1,6 @@
 """Finding / Severity / AuditReport schema tests (spec §9, §10)."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 import pytest
 from pydantic import ValidationError
@@ -89,7 +89,7 @@ def test_finding_level_bounds() -> None:
 def test_audit_report_summary_uses_pass_alias() -> None:
     report = AuditReport(
         reprollm_version="0.0.1.dev0",
-        generated_at=datetime(2026, 9, 3, tzinfo=UTC),
+        generated_at=datetime(2026, 9, 3, tzinfo=timezone.utc),
         target=".",
         level=1,
         profiles=ProfilesSection(declared=[], resolved=["core"]),

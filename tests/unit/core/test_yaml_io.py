@@ -85,7 +85,7 @@ def test_load_manifest_valid(tmp_path: Path) -> None:
 
 
 def test_load_yaml_datetimes_as_iso_z(tmp_path: Path) -> None:
-    from datetime import UTC, datetime
+    from datetime import datetime, timezone
 
     from reprollm.schemas.project_rules import ProjectRules
 
@@ -98,4 +98,4 @@ def test_load_yaml_datetimes_as_iso_z(tmp_path: Path) -> None:
     )
     text = dump_yaml(doc)
     assert "ignored_at: '2026-09-03T09:00:00Z'" in text or "2026-09-03T09:00:00Z" in text
-    assert doc.ignored_candidates[0].ignored_at == datetime(2026, 9, 3, 9, 0, tzinfo=UTC)
+    assert doc.ignored_candidates[0].ignored_at == datetime(2026, 9, 3, 9, 0, tzinfo=timezone.utc)

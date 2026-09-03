@@ -3,7 +3,7 @@
 import typer
 
 from reprollm import __version__
-from reprollm.cli import schema
+from reprollm.cli import audit, schema
 
 app = typer.Typer(
     name="reprollm",
@@ -12,6 +12,7 @@ app = typer.Typer(
 )
 
 app.add_typer(schema.app, name="schema")
+app.command()(audit.audit)
 
 
 def _version_callback(value: bool | None) -> None:
