@@ -1,5 +1,9 @@
 # ReproLLM
 
+[![CI](https://github.com/EnumaElish123/ReproLLM/actions/workflows/ci.yml/badge.svg)](https://github.com/EnumaElish123/ReproLLM/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/reprollm)](https://pypi.org/project/reprollm/)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 > Make LLM experiments reproducible.
 
 **Status: pre-alpha (0.0.x). Not yet usable. First usable release: 0.1.0.**
@@ -46,6 +50,9 @@ The architecture and the full Beta specification are frozen in the repository:
   product definition, boundaries, and the decision register (D-01 … D-42)
 - [`docs/plan/01_specification.md`](docs/plan/01_specification.md) — CLI contract, schemas,
   rule catalog, redaction policy, diff semantics
+
+- [`docs/index.md`](docs/index.md) — documentation index
+- [`docs/adoption.md`](docs/adoption.md) — monthly adoption metrics (updated from week 1)
 
 Milestones: M1 foundation → M2 audit core + `init` → M3 rules + profiles → M4 `lock` →
 M5 `run` + redaction → M6 `diff` → M7 `export`/`discover` → M8 Beta (`0.5.0`).
