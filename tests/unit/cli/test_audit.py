@@ -103,4 +103,4 @@ def test_audit_text_fail_result_line(monkeypatch, tmp_path: Path) -> None:
     repo = materialize_repo("not_a_git_repo", tmp_path)
     monkeypatch.chdir(repo)
     result = runner.invoke(app, ["audit", ".", "--no-color"])
-    assert "Result: FAIL (1 critical)" in result.output
+    assert "Result: FAIL (1 critical, 1 warning)" in result.output

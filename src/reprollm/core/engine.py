@@ -137,7 +137,7 @@ def run_audit(
         declared = list(manifest.experiment.profiles) if manifest is not None else []
     else:
         declared = list(profile_names)
-    resolved = loader.resolve(declared)
+    resolved = loader.resolve(declared, root)
 
     ctx = AuditContext(
         root,

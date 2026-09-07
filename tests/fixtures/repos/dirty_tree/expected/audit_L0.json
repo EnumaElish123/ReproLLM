@@ -8,6 +8,140 @@
     {
       "aliases": [],
       "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "configs/run.yaml modified vs HEAD",
+          "path": "configs/run.yaml",
+          "value": null
+        }
+      ],
+      "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+      "level": 0,
+      "message": "working tree has 1 modified/staged tracked file(s): configs/run.yaml",
+      "profile_origin": [],
+      "rule_id": "code.clean_tree",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "scratch.txt untracked",
+          "path": "scratch.txt",
+          "value": null
+        }
+      ],
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+      "level": 0,
+      "message": "1 untracked non-ignored file(s): scratch.txt",
+      "profile_origin": [],
+      "rule_id": "code.no_untracked",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "no requires-python / .python-version / conda python= found",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "level": 0,
+      "message": "no Python version requirement is declared",
+      "profile_origin": [],
+      "rule_id": "env.python_version_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "git remote get-url origin failed",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Run `git remote add origin <url>` so the experiment's code source is recorded.",
+      "level": 0,
+      "message": "no 'origin' remote is configured",
+      "profile_origin": [],
+      "rule_id": "code.remote_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git submodule update --init --recursive`.",
+      "level": 0,
+      "message": "no .gitmodules",
+      "profile_origin": [],
+      "rule_id": "code.submodules_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "reprollm.yaml absent",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Run `reprollm init` to create reprollm.yaml and .reprollm/.",
+      "level": 0,
+      "message": "no reprollm.yaml or .reprollm/ found; run `reprollm init` to scaffold one",
+      "profile_origin": [],
+      "rule_id": "env.reprollm_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
       "evidence": [],
       "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
       "level": 0,
@@ -32,6 +166,62 @@
       "severity_origin": "default",
       "status": "pass",
       "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+      "level": 0,
+      "message": "A dependency manifest declares the Python environment.",
+      "profile_origin": [],
+      "rule_id": "env.dependency_manifest_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+      "level": 0,
+      "message": "Every LLM-critical dependency in use is pinned to an exact version.",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+      "level": 0,
+      "message": "A lockfile (or fully pinned requirements) records exact versions.",
+      "profile_origin": [],
+      "rule_id": "env.lockfile_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+      "level": 0,
+      "message": "Secret-bearing files are not present or are gitignored.",
+      "profile_origin": [],
+      "rule_id": "env.secret_files_ignored",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
     }
   ],
   "level": 0,
@@ -45,11 +235,11 @@
   "schema_version": 1,
   "summary": {
     "critical": 0,
-    "info": 0,
-    "pass": 2,
-    "skipped": 0,
+    "info": 2,
+    "pass": 6,
+    "skipped": 1,
     "suppressed": 0,
-    "warning": 0
+    "warning": 3
   },
   "target": "."
 }

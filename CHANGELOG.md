@@ -7,6 +7,34 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Full `RepoScanner`: gitignore-aware listing with built-in ignores, cached
+  reads, python/readme/config/directory helpers, and scan caps (M2-T01).
+- `code.clean_tree`, `code.no_untracked`, `code.submodules_initialized`,
+  `code.remote_recorded` rules (M2-T02).
+- Dependency-declaration parsing (requirements incl. `-r` recursion,
+  pyproject PEP 621 + Poetry, environment.yml incl. embedded pip lists,
+  Pipfile), lockfile detection, and the six `env.*` rules
+  (`dependency_manifest_present`, `lockfile_present`,
+  `llm_critical_deps_pinned`, `python_version_declared`,
+  `secret_files_ignored`, `reprollm_initialized`) (M2-T03).
+- Python AST scanning (imports, HF repo-id constants, `trust_remote_code`,
+  Trainer imports) and the forbidden-file matcher of the redaction policy
+  (§16.4) (M2-T03).
+- Deterministic profile detection per spec §13 with report-only rag/agent;
+  detected profiles now appear in audit reports at every level (M2-T04).
+- Profile loader with inheritance closure, cycle detection, and user
+  overrides at `.reprollm/profiles/`; all seven built-in profiles shipped;
+  `reprollm profiles list|show` commands (M2-T05).
+- `reprollm` entry point maps `UserError` to exit code 2 (D-11).
+
+### Changed
+
+- Level 0 audits now run the full twelve-rule core profile; all six golden
+  fixture snapshots updated accordingly (reviewed against the sprint
+  acceptance list).
+
 ## [0.0.1] - 2026-09-13
 
 ### Added

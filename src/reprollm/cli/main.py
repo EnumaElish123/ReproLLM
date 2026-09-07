@@ -3,7 +3,8 @@
 import typer
 
 from reprollm import __version__
-from reprollm.cli import audit, doctor, schema
+from reprollm.cli import audit, doctor, profiles, schema
+from reprollm.core.errors import ReproLLMError, UserError
 
 app = typer.Typer(
     name="reprollm",
@@ -12,8 +13,23 @@ app = typer.Typer(
 )
 
 app.add_typer(schema.app, name="schema")
+app.add_typer(profiles.app, name="profiles")
 app.command()(audit.audit)
 app.command()(doctor.doctor)
+
+
+def cli() -> None:
+    """Console-script entry point: maps ReproLLMError to its exit code (D-11)."""
+    try:
+        app()
+    except typer.Exit:
+        raise
+    except UserError as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise SystemExit(exc.exit_code) from None
+    except ReproLLMError as exc:  # internal errors: message only; traceback with -v
+        typer.echo(f"internal error: {exc}", err=True)
+        raise SystemExit(exc.exit_code) from None
 
 
 def _version_callback(value: bool | None) -> None:

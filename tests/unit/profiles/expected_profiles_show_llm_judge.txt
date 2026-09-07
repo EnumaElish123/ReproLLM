@@ -1,0 +1,34 @@
+profile: llm_judge
+source:  built-in
+description: LLM-as-a-judge evaluation (judge model, prompt, and parameters).
+extends: evaluation
+chain:  llm_judge → evaluation → inference → core
+
+rules (12):
+  code.clean_tree
+  code.git_commit
+  code.git_repo
+  code.no_untracked
+  code.remote_recorded
+  code.submodules_initialized
+  env.dependency_manifest_present
+  env.llm_critical_deps_pinned
+  env.lockfile_present
+  env.python_version_declared
+  env.reprollm_initialized
+  env.secret_files_ignored
+
+required fields:
+  project.name
+  models.primary.id
+  inference.backend
+  generation.temperature
+  generation.max_tokens
+  datasets.eval.id
+  evaluation.metrics
+  models.judge.id
+  prompts.judge.path
+  evaluation.judge.params.temperature
+
+severity overrides:
+  exec.seed_declared: CRITICAL

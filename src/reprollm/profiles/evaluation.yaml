@@ -1,0 +1,16 @@
+# rules are completed in M3
+schema_version: 1
+name: evaluation
+description: Benchmark and evaluation experiments (datasets and metrics).
+extends: [inference]
+rules: []
+required_fields:
+  - datasets.eval.id
+  - evaluation.metrics
+severity_overrides:
+  exec.seed_declared: CRITICAL
+detect:
+  imports: [lm_eval, lighteval, inspect_ai, evaluate]
+  dependencies: [lm_eval, lighteval, inspect_ai, evaluate]
+  keywords: [mmlu, gsm8k, benchmark, accuracy]
+  files: []

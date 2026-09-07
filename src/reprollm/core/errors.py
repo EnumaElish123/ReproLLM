@@ -7,7 +7,9 @@ file or field path at fault and say how to fix it. Anything else is an internal 
 
 
 class ReproLLMError(Exception):
-    """Base class for all ReproLLM errors."""
+    """Base class for all ReproLLM errors; defaults to the internal exit code."""
+
+    exit_code = 3
 
 
 class UserError(ReproLLMError):

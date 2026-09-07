@@ -1,36 +1,5 @@
 {
   "$defs": {
-    "DetectedProfile": {
-      "additionalProperties": false,
-      "properties": {
-        "confidence": {
-          "enum": [
-            "high",
-            "medium",
-            "low"
-          ],
-          "title": "Confidence",
-          "type": "string"
-        },
-        "evidence": {
-          "items": {
-            "$ref": "#/$defs/Evidence"
-          },
-          "title": "Evidence",
-          "type": "array"
-        },
-        "profile": {
-          "title": "Profile",
-          "type": "string"
-        }
-      },
-      "required": [
-        "profile",
-        "confidence"
-      ],
-      "title": "DetectedProfile",
-      "type": "object"
-    },
     "DocumentsSection": {
       "additionalProperties": false,
       "properties": {
@@ -242,6 +211,43 @@
       "title": "FindingStatus",
       "type": "string"
     },
+    "ProfileDetection": {
+      "additionalProperties": false,
+      "description": "One detected profile; ``shipped=False`` marks report-only profiles\n(rag/agent per spec \u00a713) that cannot be declared in the Beta.",
+      "properties": {
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "profile": {
+          "title": "Profile",
+          "type": "string"
+        },
+        "shipped": {
+          "default": true,
+          "title": "Shipped",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "profile",
+        "confidence"
+      ],
+      "title": "ProfileDetection",
+      "type": "object"
+    },
     "ProfilesSection": {
       "additionalProperties": false,
       "properties": {
@@ -254,7 +260,7 @@
         },
         "detected": {
           "items": {
-            "$ref": "#/$defs/DetectedProfile"
+            "$ref": "#/$defs/ProfileDetection"
           },
           "title": "Detected",
           "type": "array"
