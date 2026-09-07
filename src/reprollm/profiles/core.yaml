@@ -1,12 +1,22 @@
 # The implicit baseline profile; always included and never listed in
 # experiment.profiles (spec §6). Rules are completed sprint by sprint:
-# M2 adds the remaining code.*/env.* rules, M3/M4 the L1/L2 catalog.
+# M2-T06 adds exec.*, M3 adds the L1 catalog, M4 the L2 rules.
 schema_version: 1
 name: core
 description: Baseline rules applied to every repository.
 rules:
   - code.git_repo
   - code.git_commit
+  - code.clean_tree
+  - code.no_untracked
+  - code.submodules_initialized
+  - code.remote_recorded
+  - env.dependency_manifest_present
+  - env.lockfile_present
+  - env.llm_critical_deps_pinned
+  - env.python_version_declared
+  - env.secret_files_ignored
+  - env.reprollm_initialized
 required_fields:
   - project.name
   - models.primary.id

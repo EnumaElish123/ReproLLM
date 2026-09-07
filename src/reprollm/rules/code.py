@@ -79,8 +79,7 @@ class GitCommitRule(Rule):
 def _path_evidence(paths: list[str], note_template: str) -> list[Evidence]:
     """Evidence for the first 10 paths plus a count summary."""
     evidence = [
-        Evidence(kind="git", path=path, note=note_template.format(path=path))
-        for path in paths[:10]
+        Evidence(kind="git", path=path, note=note_template.format(path=path)) for path in paths[:10]
     ]
     if len(paths) > 10:
         evidence.append(Evidence(kind="git", note=f"…and {len(paths) - 10} more"))
@@ -176,8 +175,7 @@ class SubmodulesInitializedRule(Rule):
             self.finding(
                 ctx,
                 message=(
-                    f"{len(uninitialized)} submodule(s) not initialized: "
-                    f"{', '.join(uninitialized)}"
+                    f"{len(uninitialized)} submodule(s) not initialized: {', '.join(uninitialized)}"
                 ),
                 evidence=[
                     Evidence(kind="git", path=path, note="git submodule status prefix '-'")

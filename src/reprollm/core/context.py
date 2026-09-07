@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from reprollm.core.deps import Declarations, scan_dependencies
 from reprollm.core.git import GitInfo, inspect_git
+from reprollm.core.pyscan import PyScanResult, scan_python
 from reprollm.core.scanner import RepoScanner
 from reprollm.schemas.config import Config
 from reprollm.schemas.finding import DetectionResult
@@ -48,6 +50,8 @@ class AuditContext:
         self.env: object | None = None  # EnvInfo (Level 0 env rules, M2)
         self._git: GitInfo | None = None
         self._fs: RepoScanner | None = None
+        self._deps: Declarations | None = None
+        self._pyscan: PyScanResult | None = None
         self._detection: DetectionResult | None = None
 
     @property
@@ -61,6 +65,20 @@ class AuditContext:
         if self._fs is None:
             self._fs = RepoScanner(self.root, self.git)
         return self._fs
+
+    @property
+    def deps(self) -> Declarations:
+        """Parsed dependency declarations and lockfiles (M2-T03)."""
+        if self._deps is None:
+            self._deps = scan_dependencies(self.fs)
+        return self._deps
+
+    @property
+    def pyscan(self) -> PyScanResult:
+        """AST scan of Python sources (imports, HF ids, trust_remote_code)."""
+        if self._pyscan is None:
+            self._pyscan = scan_python(self.fs)
+        return self._pyscan
 
     @property
     def detection(self) -> DetectionResult:

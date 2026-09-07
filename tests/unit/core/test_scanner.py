@@ -4,7 +4,6 @@ from pathlib import Path
 
 from reprollm.core.git import inspect_git
 from reprollm.core.scanner import MAX_FILE_BYTES, RepoScanner
-
 from tests.conftest import materialize_repo, run_git
 
 

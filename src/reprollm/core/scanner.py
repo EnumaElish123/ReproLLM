@@ -81,9 +81,7 @@ class RepoScanner:
     def files(self) -> list[str]:
         """Relative POSIX paths of repository files, sorted (cached)."""
         if self._files is None:
-            candidates = (
-                git_mod.ls_files(self.root) if self.git.is_repo else self._walk()
-            )
+            candidates = git_mod.ls_files(self.root) if self.git.is_repo else self._walk()
             self._files = sorted(
                 path
                 for path in candidates
@@ -184,9 +182,7 @@ class RepoScanner:
         found: list[str] = []
         for dirpath, dirnames, filenames in os.walk(self.root):
             dirnames[:] = sorted(
-                name
-                for name in dirnames
-                if not self._skip_dir(Path(dirpath) / name, name)
+                name for name in dirnames if not self._skip_dir(Path(dirpath) / name, name)
             )
             for name in filenames:
                 rel = (Path(dirpath) / name).relative_to(self.root).as_posix()

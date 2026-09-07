@@ -50,6 +50,7 @@ class Rule:
         message: str,
         evidence: list[Evidence] | None = None,
         severity: Severity | None = None,
+        fix_hint: str | None = None,
     ) -> Finding:
         """Build a FAIL finding for this rule at the context's audit level."""
         level = ctx.level
@@ -62,7 +63,7 @@ class Rule:
             level=level,
             message=message,
             evidence=evidence or [],
-            fix_hint=self.fix_hint,
+            fix_hint=fix_hint or self.fix_hint,
         )
 
 

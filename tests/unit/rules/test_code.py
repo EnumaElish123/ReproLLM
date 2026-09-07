@@ -13,7 +13,6 @@ from reprollm.rules.code import (
     SubmodulesInitializedRule,
 )
 from reprollm.schemas.finding import FindingStatus, Severity
-
 from tests.conftest import CmdStub, commit_all, make_git_repo, materialize_repo, run_git
 
 
