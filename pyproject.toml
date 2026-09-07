@@ -88,6 +88,12 @@ python_version = "3.10"
 files = ["src"]
 plugins = ["pydantic.mypy"]
 
+# tomli is only installed on Python 3.10 (stdlib tomllib on 3.11+); the
+# import-not-found / unused-ignore dance is environment-dependent.
+[[tool.mypy.overrides]]
+module = "tomli"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
