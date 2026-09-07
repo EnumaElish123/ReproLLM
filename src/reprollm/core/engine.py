@@ -22,7 +22,6 @@ from reprollm.schemas.config import Config
 from reprollm.schemas.finding import (
     SEVERITY_RANK,
     AuditReport,
-    DetectedProfile,
     DocumentsSection,
     Finding,
     FindingStatus,
@@ -183,9 +182,9 @@ def run_audit(
         runs=count_runs(paths),
     )
 
-    # Deterministic profile detection lands in M2-T04; until then Level 0
-    # reports an empty detection list (spec §11 step 3).
-    detected_profiles: list[DetectedProfile] = []
+    # Deterministic detection runs at every level; at Level 0 it is the main
+    # signal (§11 step 3), at Level 1+ it feeds exec.profile_detection_mismatch.
+    detected_profiles = list(ctx.detection.profiles)
 
     return AuditReport(
         reprollm_version=__version__,

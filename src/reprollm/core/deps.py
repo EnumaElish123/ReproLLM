@@ -11,19 +11,14 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
 
 import yaml
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
+from reprollm.core._toml import tomllib
 from reprollm.core.scanner import RepoScanner
 
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).

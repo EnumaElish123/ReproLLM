@@ -2,21 +2,16 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
+from reprollm.core._toml import tomllib
 from reprollm.core.context import AuditContext
-from reprollm.core.deps import canonical_dep_name
+from reprollm.core.deps import DependencyDeclaration, canonical_dep_name
 from reprollm.core.envinfo import LLM_CRITICAL_PACKAGES, installed_versions
 from reprollm.core.pyscan import ImportInfo
 from reprollm.core.redaction import is_forbidden_file
 from reprollm.core.registry import Rule, register_rule
 from reprollm.schemas.finding import Evidence, Finding, Severity
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
 
 #: LLM-critical names in canonical (comparison) space.
 _CRITICAL_CANON = {canonical_dep_name(name) for name in LLM_CRITICAL_PACKAGES}
@@ -152,7 +147,7 @@ class LlmCriticalDepsPinnedRule(Rule):
     @staticmethod
     def _evidence(
         canonical: str,
-        declarations: list,
+        declarations: list[DependencyDeclaration],
         imports: list[ImportInfo],
     ) -> list[Evidence]:
         matching = [d for d in declarations if d.name == canonical]

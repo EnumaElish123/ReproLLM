@@ -76,12 +76,16 @@ class Finding(BaseModel):
     suppressed_reason: str | None = None
 
 
-class DetectedProfile(BaseModel):
+class ProfileDetection(BaseModel):
+    """One detected profile; ``shipped=False`` marks report-only profiles
+    (rag/agent per spec §13) that cannot be declared in the Beta."""
+
     model_config = ConfigDict(extra="forbid")
 
     profile: str
     confidence: Literal["high", "medium", "low"]
     evidence: list[Evidence] = Field(default_factory=list)
+    shipped: bool = True
 
 
 class ProfilesSection(BaseModel):
@@ -89,7 +93,7 @@ class ProfilesSection(BaseModel):
 
     declared: list[str] = Field(default_factory=list)
     resolved: list[str] = Field(default_factory=list)
-    detected: list[DetectedProfile] = Field(default_factory=list)
+    detected: list[ProfileDetection] = Field(default_factory=list)
 
 
 class DocumentsSection(BaseModel):
@@ -149,14 +153,6 @@ class DetectionHints(BaseModel):
     adapter: bool = False
     trust_remote_code: bool = False
     hf_ids: list[HfIdHint] = Field(default_factory=list)
-
-
-class ProfileDetection(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    profile: str
-    confidence: Literal["high", "medium", "low"]
-    evidence: list[Evidence] = Field(default_factory=list)
 
 
 class DetectionResult(BaseModel):

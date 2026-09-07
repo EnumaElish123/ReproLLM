@@ -83,9 +83,9 @@ class AuditContext:
     @property
     def detection(self) -> DetectionResult:
         if self._detection is None:
-            # Deterministic profile detection arrives in M2-T04; until then the
-            # engine reports an empty detection result (spec §11 step 3).
-            self._detection = DetectionResult()
+            from reprollm.profiles.detect import run_detection
+
+            self._detection = run_detection(self.fs, self.pyscan, self.deps)
         return self._detection
 
     @property
