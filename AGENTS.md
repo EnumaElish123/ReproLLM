@@ -10,11 +10,13 @@ Principle: **LLM discovers. Rules decide. Runtime verifies.**
 
 ## 2. Read before you write
 
+**Every development session starts from the plan documents — no session invents its own scope.**
+
 1. `docs/plan/00_architecture_and_decisions.md` — frozen decisions (`D-nn`). Never violate one; if a task seems to require it, stop and report.
 2. `docs/plan/01_specification.md` — normative CLI contract, schemas, rule catalog, redaction policy, diff semantics, test requirements. Field names and behaviors come from here, not from memory.
-3. The sprint document you were assigned (`docs/plan/M<N>_*.md`) — your task list, acceptance criteria, and this sprint's forbidden zone.
+3. The current sprint document (`docs/plan/M<N>_*.md`) — the task list (T-numbers), each task's acceptance criteria, and this sprint's forbidden zone (禁区). Tasks come from this document, in order; acceptance criteria are turned into tests *before* implementation; the forbidden zone is binding.
 
-If the task description and the specification disagree, the specification wins; say so in the PR.
+If the task description and the specification disagree, the specification wins; say so in the session report or PR.
 
 ## 3. Non-negotiables
 
@@ -93,12 +95,14 @@ Then: add it to the right profile YAML(s) per spec §6.1; add a PASS and a FAIL 
 
 ## 7. Task workflow
 
-1. One task = one issue = one branch `m<N>/t<NN>-<slug>` = one PR. Keep PRs under ~400 changed lines where possible; split otherwise.
-2. Start by reading the acceptance criteria and writing the tests they imply. Then implement. Then run the full quality gate (`pytest`, `ruff`, `mypy`, schema freshness).
-3. Commit with Conventional Commits: `feat(rules): add model.revision_pinned`, `fix(redaction): handle jwt with padding`, `test(fixtures): add dirty_tree repo`, `docs: …`, `chore: …`.
-4. PR description must include: the spec sections implemented (e.g. "spec §12.4, §6.1"), a test summary, whether fixtures/snapshots changed and why, and a CHANGELOG entry under `Unreleased`.
-5. Do not open PRs that mix unrelated tasks, reformat unrelated files, or bump dependencies without being asked.
-6. If you discover the spec is wrong or incomplete, open an issue labeled `spec` with a concrete proposal and stop that part of the work; implement the rest.
+Every development session follows the plan documents in `docs/plan/`:
+
+1. **Scope comes from the current sprint doc** (`docs/plan/M<N>_*.md`): implement its tasks (T-numbers) in order, honoring each task's acceptance criteria and the sprint's forbidden zone (§2). A session never invents, reorders into unrelated territory, or "improves" beyond the sprint list; anything found along the way that belongs to a later sprint goes to a backlog note, not into the diff.
+2. **Sessions per sprint**: by maintainer decision a sprint is delivered in two sessions (typically first half / second half of the task list); both follow this protocol, and the second session starts from the first session's report.
+3. **Per task**: write the tests implied by the acceptance criteria first, then implement, then run the full quality gate (`pytest`, `ruff`, `mypy`, schema freshness). One task = one commit with Conventional Commits (`feat(rules): add model.revision_pinned`, `fix(redaction): handle jwt with padding`, `test(fixtures): add dirty_tree repo`, `docs: …`, `chore: …`). The commit message cites the spec sections implemented, notes fixture/snapshot changes and why, and references the sprint task (e.g. "M2-T03").
+4. **Before pushing**: quality gate green **and** the §10 dogfooding run done; then push directly to `main` (the branch/issue/PR flow applies only when the maintainer explicitly asks for a reviewed change). Session reports list: tasks completed with commit hashes, dogfooding delta versus the last baseline, deviations from the sprint doc and why.
+5. Do not mix unrelated tasks in one commit, reformat unrelated files, or bump dependencies without being asked.
+6. If the spec is wrong or incomplete, open an issue labeled `spec` with a concrete proposal and stop that part of the work; implement the rest. If a sprint task seems to require violating a frozen decision (`D-nn`) or the sprint's forbidden zone, stop and report — never proceed silently.
 
 ## 8. Style
 
@@ -111,7 +115,7 @@ Then: add it to the right profile YAML(s) per spec §6.1; add a PASS and a FAIL 
 
 ## 9. What "done" means
 
-A task is done when: tests for its acceptance criteria exist and pass; quality gate is green locally and in CI; fixture snapshots were updated deliberately; the CHANGELOG has an entry; the PR references its issue and spec sections; and — where the sprint doc requires it — the command has been run against one of the golden fixtures with the expected result pasted into the PR.
+A task is done when: tests for its acceptance criteria (from the sprint doc) exist and pass; quality gate is green locally and in CI; fixture snapshots were updated deliberately (with the diff reviewed, not blind-regenerated); the CHANGELOG has an entry; the commit references its sprint task and spec sections; and — where the sprint doc requires it — the command has been run against one of the golden fixtures with the expected result pasted into the session report. A *session* is done when its tasks are done, the §10 dogfooding run is recorded, and `main` is pushed with CI green.
 
 ## 10. Standing dogfooding target (real-world verification)
 
