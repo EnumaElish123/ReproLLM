@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 import re
+import warnings
 from dataclasses import dataclass, field
 
 from reprollm.core.scanner import RepoScanner
@@ -53,7 +54,11 @@ def scan_python(scanner: RepoScanner) -> PyScanResult:
             result.warnings.append(f"{path}: unreadable or over the size cap; skipped")
             continue
         try:
-            tree = ast.parse(text, filename=path)
+            # Target-repo code may emit SyntaxWarnings (e.g. invalid escapes);
+            # they belong in our warnings list, not on the user's stdout.
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = ast.parse(text, filename=path)
         except SyntaxError as exc:
             result.warnings.append(f"{path}:{exc.lineno or 0}: syntax error; skipped")
             continue

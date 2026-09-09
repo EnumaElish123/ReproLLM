@@ -117,7 +117,6 @@ def render_audit_text(
             profile_list = ",".join(entry.profile for entry in detected)
             lines.append("")
             lines.append(
-                f"Detected profiles: {names} — run: "
-                f"reprollm init --profiles {profile_list}"
+                f"Detected profiles: {names} — run: reprollm init --profiles {profile_list}"
             )
     return "\n".join(lines) + "\n"

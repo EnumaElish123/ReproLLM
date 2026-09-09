@@ -110,3 +110,13 @@ def test_exempt_and_benign_files() -> None:
 def test_case_insensitive_match() -> None:
     assert is_forbidden_file("SERVER.PEM")
     assert is_forbidden_file(".ENV")
+
+
+def test_syntax_warnings_from_target_code_are_suppressed(tmp_path, capsys) -> None:
+    repo = tmp_path / "warny"
+    repo.mkdir()
+    (repo / "legacy.py").write_text("pattern = '\\%s'\n")  # invalid escape
+    result = _scan(repo)
+    assert result.imports == []  # parsed fine, nothing imported
+    captured = capsys.readouterr()
+    assert "SyntaxWarning" not in captured.out + captured.err

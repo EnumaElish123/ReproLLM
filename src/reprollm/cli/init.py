@@ -328,6 +328,8 @@ def init(
 ) -> None:
     """Create reprollm.yaml and .reprollm/ from detected experiment signals."""
     root = path.resolve()
+    if not root.is_dir():
+        raise UserError(f"{path} is not an existing directory")
     manifest_path = root / MANIFEST
     if manifest_path.exists() and not force:
         raise UserError(
