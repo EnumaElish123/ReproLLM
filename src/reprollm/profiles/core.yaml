@@ -1,6 +1,6 @@
 # The implicit baseline profile; always included and never listed in
 # experiment.profiles (spec §6). Rules are completed sprint by sprint:
-# M2-T06 adds exec.*, M3 adds the L1 catalog, M4 the L2 rules.
+# M3 adds the L1 catalog, M4 the L2 rules.
 schema_version: 1
 name: core
 description: Baseline rules applied to every repository.
@@ -17,6 +17,10 @@ rules:
   - env.python_version_declared
   - env.secret_files_ignored
   - env.reprollm_initialized
+  - exec.command_declared
+  - exec.seed_declared
+  - exec.run_recorded
+  - exec.profile_detection_mismatch
 required_fields:
   - project.name
   - models.primary.id

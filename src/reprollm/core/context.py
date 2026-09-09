@@ -48,6 +48,9 @@ class AuditContext:
         self.project_rules = project_rules
         self.state: object | None = None  # ExperimentState (M6)
         self.env: object | None = None  # EnvInfo (Level 0 env rules, M2)
+        #: Profiles the user declared (manifest or --profiles); set by the engine
+        #: before rules run; feeds exec.profile_detection_mismatch.
+        self.declared_profiles: list[str] = []
         self._git: GitInfo | None = None
         self._fs: RepoScanner | None = None
         self._deps: Declarations | None = None

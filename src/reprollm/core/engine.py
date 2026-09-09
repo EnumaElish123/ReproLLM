@@ -148,6 +148,7 @@ def run_audit(
         runs=[],  # run record loading arrives in M5
         config=config,
     )
+    ctx.declared_profiles = declared
 
     findings: list[Finding] = []
     for rule_id in resolved.rules:
