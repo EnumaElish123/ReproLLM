@@ -112,3 +112,30 @@ Then: add it to the right profile YAML(s) per spec §6.1; add a PASS and a FAIL 
 ## 9. What "done" means
 
 A task is done when: tests for its acceptance criteria exist and pass; quality gate is green locally and in CI; fixture snapshots were updated deliberately; the CHANGELOG has an entry; the PR references its issue and spec sections; and — where the sprint doc requires it — the command has been run against one of the golden fixtures with the expected result pasted into the PR.
+
+## 10. Standing dogfooding target (real-world verification)
+
+Golden fixtures are not enough: **every development session must also run the
+newly built commands against a real open-source repository** before pushing.
+
+- **Target**: [`EleutherAI/lm-evaluation-harness`](https://github.com/EleutherAI/lm-evaluation-harness) —
+  an LLM evaluation framework that exercises nearly all detection signals
+  (evaluation/inference/finetuning high, openai+anthropic provider hints,
+  hundreds of `from_pretrained` calls, realistic unpinned-dependency findings).
+  It is also the M11 integration target, so early exposure is a bonus.
+- **Location**: `../dogfooding/lm-evaluation-harness` relative to this repo
+  (sibling directory; never committed here). Clone with
+  `git clone --depth 1 git@github.com:EleutherAI/lm-evaluation-harness.git`.
+- **Pinned commit**: `b954108c` (2026-09-09). Dogfooding results are only
+  comparable at a pinned commit; when refreshing the target, record the new
+  commit here and re-baseline the expected output in the session report.
+- **Per session**: after the quality gate is green, run the commands this
+  session touched (e.g. `uv run reprollm audit ../dogfooding/lm-evaluation-harness --format json`),
+  and include a results summary in the session report. Diffs versus the last
+  session's baseline must be explained (new rule ⇒ new findings; regression ⇒
+  fix before pushing).
+- Baseline at the pinned commit (audit Level 0, M2 session 1): 13 unpinned
+  LLM-critical deps + lockfile missing (WARNING), `env.python_version_declared`
+  PASS, detected: evaluation/inference/finetuning (high), llm_judge (low),
+  rag/agent (low, report-only). Note: ~28 s runtime on its 816 Python files
+  (scan truncated at 500) — tracked for the M8 performance pass.
