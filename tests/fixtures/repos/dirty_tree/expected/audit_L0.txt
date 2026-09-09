@@ -1,0 +1,24 @@
+ReproLLM audit · level 0 · profiles: core
+
+WARNING (3)
+  ! code.clean_tree      working tree has 1 modified/staged tracked file(s): configs/run.yaml
+      configs/run.yaml (configs/run.yaml modified vs HEAD)
+      fix: Commit or stash your changes: `git add -A && git commit` or `git stash`.
+  ! code.no_untracked      1 untracked non-ignored file(s): scratch.txt
+      scratch.txt (scratch.txt untracked)
+      fix: Commit them, delete them, or add them to .gitignore.
+  ! env.python_version_declared      no Python version requirement is declared
+      no requires-python / .python-version / conda python= found
+      fix: Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.
+
+INFO (3)
+  i code.remote_recorded      no 'origin' remote is configured
+      git remote get-url origin failed
+      fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
+  - code.submodules_initialized      skipped: no .gitmodules
+  i env.reprollm_initialized      no reprollm.yaml or .reprollm/ found; run `reprollm init` to scaffold one
+      reprollm.yaml absent
+      fix: Run `reprollm init` to create reprollm.yaml and .reprollm/.
+
+6 passed · 0 suppressed · 1 skipped
+Result: FAIL (3 warning)

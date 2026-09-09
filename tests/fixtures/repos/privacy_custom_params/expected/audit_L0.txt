@@ -1,0 +1,27 @@
+ReproLLM audit · level 0 · profiles: core
+
+CRITICAL (1)
+  X env.secret_files_ignored      1 secret-bearing file(s) tracked or not gitignored: .env
+      .env (matches a forbidden file pattern (§16.4))
+      fix: Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).
+
+WARNING (1)
+  ! env.lockfile_present      no lockfile found and not every declared dependency is pinned with an exact version
+      no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements
+      fix: Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.
+
+INFO (3)
+  i code.remote_recorded      no 'origin' remote is configured
+      git remote get-url origin failed
+      fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
+  - code.submodules_initialized      skipped: no .gitmodules
+  i env.reprollm_initialized      no reprollm.yaml or .reprollm/ found; run `reprollm init` to scaffold one (detected experiment profiles: privacy (medium), safety (medium) — start with `reprollm init --profiles privacy,safety`)
+      reprollm.yaml absent
+      privacy: medium confidence
+      safety: medium confidence
+      fix: Run `reprollm init` to create reprollm.yaml and .reprollm/.
+
+7 passed · 0 suppressed · 1 skipped
+Result: FAIL (1 critical, 1 warning)
+
+Detected profiles: privacy (medium), safety (medium) — run: reprollm init --profiles privacy,safety

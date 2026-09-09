@@ -5,22 +5,24 @@ WARNING (3)
       requirements.txt (declared as >=0.10)
       fix: Pin vllm exactly, e.g. `vllm==<version>`.
   ! env.lockfile_present      no lockfile found and not every declared dependency is pinned with an exact version
-      no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements)
+      no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements
       fix: Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.
   ! env.python_version_declared      no Python version requirement is declared
-      no requires-python / .python-version / conda python= found)
+      no requires-python / .python-version / conda python= found
       fix: Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.
 
 INFO (3)
   i code.remote_recorded      no 'origin' remote is configured
-      git remote get-url origin failed)
+      git remote get-url origin failed
       fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
   - code.submodules_initialized      skipped: no .gitmodules
   i env.reprollm_initialized      no reprollm.yaml or .reprollm/ found; run `reprollm init` to scaffold one (detected experiment profiles: evaluation (medium), inference (high) — start with `reprollm init --profiles evaluation,inference`)
-      reprollm.yaml absent)
-      evaluation: medium confidence)
-      inference: high confidence)
+      reprollm.yaml absent
+      evaluation: medium confidence
+      inference: high confidence
       fix: Run `reprollm init` to create reprollm.yaml and .reprollm/.
 
 6 passed · 0 suppressed · 1 skipped
 Result: FAIL (3 warning)
+
+Detected profiles: evaluation (medium), inference (high) — run: reprollm init --profiles evaluation,inference

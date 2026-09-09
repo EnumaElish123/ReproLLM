@@ -80,8 +80,12 @@ def test_audit_output_writes_file(monkeypatch, tmp_path: Path) -> None:
     assert "Wrote audit report" in result.output
 
 
+#: All six fixtures have --no-color text snapshots.
+TEXT_SNAPSHOT_FIXTURES = L0_SNAPSHOT_FIXTURES
+
+
 def test_audit_text_snapshot_no_color(monkeypatch, tmp_path: Path) -> None:
-    for name in ("not_a_git_repo", "hf_vllm_eval"):
+    for name in TEXT_SNAPSHOT_FIXTURES:
         repo = materialize_repo(name, tmp_path / name)
         monkeypatch.chdir(repo)
         result = runner.invoke(app, ["audit", ".", "--no-color", "--show-skipped"])

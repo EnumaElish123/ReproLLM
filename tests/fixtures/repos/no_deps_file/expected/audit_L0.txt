@@ -1,0 +1,25 @@
+ReproLLM audit · level 0 · profiles: core
+
+CRITICAL (1)
+  X env.dependency_manifest_present      no dependency manifest found (expected pyproject.toml, requirements*.txt, environment.yml, uv.lock, poetry.lock, or Pipfile)
+      none of the manifest names exist
+      fix: Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.
+
+WARNING (1)
+  ! env.python_version_declared      no Python version requirement is declared
+      no requires-python / .python-version / conda python= found
+      fix: Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.
+
+INFO (5)
+  i code.remote_recorded      no 'origin' remote is configured
+      git remote get-url origin failed
+      fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
+  - code.submodules_initialized      skipped: no .gitmodules
+  - env.llm_critical_deps_pinned      skipped: no LLM-critical package is declared or imported
+  - env.lockfile_present      skipped: no dependency manifest
+  i env.reprollm_initialized      no reprollm.yaml or .reprollm/ found; run `reprollm init` to scaffold one
+      reprollm.yaml absent
+      fix: Run `reprollm init` to create reprollm.yaml and .reprollm/.
+
+5 passed · 0 suppressed · 3 skipped
+Result: FAIL (1 critical, 1 warning)

@@ -80,11 +80,11 @@ def render_audit_text(
             lines.append(f"  {symbol} {finding.rule_id}      {finding.message}")
             for item in finding.evidence:
                 location = item.field or item.path or ""
-                note = f" ({item.note})" if item.note else ""
-                if location:
+                note = item.note or ""
+                if location and note:
+                    lines.append(f"      {location} ({note})")
+                elif location or note:
                     lines.append(f"      {location}{note}")
-                elif note:
-                    lines.append(f"      {note.lstrip(' ()')}")
             lines.append(f"      fix: {finding.fix_hint}")
         lines.append("")
 
@@ -105,4 +105,19 @@ def render_audit_text(
         lines.append(f"Result: FAIL ({summary.warning} warning)")
     else:
         lines.append("Result: PASS")
+
+    if report.level == 0:
+        detected = [
+            entry
+            for entry in report.profiles.detected
+            if entry.shipped and entry.confidence in ("high", "medium")
+        ]
+        if detected:
+            names = ", ".join(f"{entry.profile} ({entry.confidence})" for entry in detected)
+            profile_list = ",".join(entry.profile for entry in detected)
+            lines.append("")
+            lines.append(
+                f"Detected profiles: {names} — run: "
+                f"reprollm init --profiles {profile_list}"
+            )
     return "\n".join(lines) + "\n"
