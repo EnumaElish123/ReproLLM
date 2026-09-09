@@ -4,6 +4,7 @@ import typer
 
 from reprollm import __version__
 from reprollm.cli import audit, doctor, profiles, schema
+from reprollm.cli import init as init_cmd
 from reprollm.core.errors import ReproLLMError, UserError
 
 app = typer.Typer(
@@ -16,6 +17,7 @@ app.add_typer(schema.app, name="schema")
 app.add_typer(profiles.app, name="profiles")
 app.command()(audit.audit)
 app.command()(doctor.doctor)
+app.command(name="init")(init_cmd.init)
 
 
 def cli() -> None:
