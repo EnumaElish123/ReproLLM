@@ -208,3 +208,73 @@ def test_prose_evaluation_word_is_not_a_directory_signal(tmp_path: Path) -> None
     repo.mkdir()
     (repo / "README.md").write_text("# Tool\nThis is an evaluation of things.\n")
     assert "evaluation" not in _profiles(_detect(repo))
+
+
+# --- M2F-T10: single-source detection configuration (F-11) --------------------
+
+
+def test_detector_consumes_yaml_signals_not_tables() -> None:
+    """For every shipped profile, the loaded YAML detect block IS the input:
+    importing a profile's declared module yields that profile at high (or the
+    documented downgrade), with no parallel Python table."""
+    import tempfile
+    from pathlib import Path as P
+
+    from reprollm.core.deps import scan_dependencies
+    from reprollm.core.git import inspect_git
+    from reprollm.core.pyscan import scan_python
+    from reprollm.core.scanner import RepoScanner
+    from reprollm.profiles import loader
+    from reprollm.profiles.detect import detection_signals, run_detection
+
+    repo = P(tempfile.mkdtemp())
+    (repo / "check.py").write_text(
+        "import lm_eval\nfrom vllm import LLM\nimport accelerate\nimport peft\n"
+        "from transformers import Trainer\nimport openai\nimport datasets\n"
+    )
+    signals = detection_signals(P.cwd())
+    result = run_detection(
+        RepoScanner(repo, inspect_git(repo)),
+        scan_python(RepoScanner(repo, inspect_git(repo))),
+        scan_dependencies(RepoScanner(repo, inspect_git(repo))),
+        signals=signals,
+    )
+    profs = {e.profile: e.confidence for e in result.profiles}
+    assert profs["evaluation"] == "high"  # declared in evaluation.yaml detect.imports
+    assert profs["inference"] == "high"
+    assert profs["finetuning"] == "high"
+    assert result.hints.providers == ["openai"]  # hint, not a profile
+    assert result.hints.datasets is True
+    assert result.hints.adapter is True
+    assert "openai" not in profs  # imports that are only hints create no profile
+
+    # the YAML blocks are the source: assert the input map matches loader
+    for name in loader.builtin_profile_names():
+        assert name in signals
+    assert set(signals) >= set(loader.builtin_profile_names()) | {"rag", "agent"}
+
+
+def test_user_profile_detect_signals_work(tmp_path: Path) -> None:
+    user_dir = tmp_path / ".reprollm" / "profiles"
+    user_dir.mkdir(parents=True)
+    (user_dir / "customlab.yaml").write_text(
+        "schema_version: 1\nname: customlab\ndescription: x\nextends: []\nrules: []\n"
+        "detect:\n"
+        "  imports: [fakefw]\n"
+        "  dependencies: []\n"
+        "  keywords: [quantumwand]\n"
+        "  files: []\n"
+    )
+    from reprollm.core.deps import scan_dependencies
+    from reprollm.core.git import inspect_git
+    from reprollm.core.pyscan import scan_python
+    from reprollm.core.scanner import RepoScanner
+    from reprollm.profiles.detect import detection_signals, run_detection
+
+    repo = tmp_path
+    (repo / "m.py").write_text("import fakefw\n")
+    signals = detection_signals(repo)
+    scanner = RepoScanner(repo, inspect_git(repo))
+    result = run_detection(scanner, scan_python(scanner), scan_dependencies(scanner), signals)
+    profs = {e.profile: e.confidence for e in result.profiles}
+    assert profs.get("customlab") == "high"  # deterministic: user signal is honored

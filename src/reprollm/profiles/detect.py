@@ -21,78 +21,57 @@ from reprollm.core.deps import Declarations, canonical_dep_name
 from reprollm.core.pyscan import PyScanResult
 from reprollm.core.scanner import RepoScanner
 from reprollm.schemas.finding import DetectionResult, Evidence, ProfileDetection
+from reprollm.schemas.profile import DetectSignals
 
 #: Keyword lists per profile (§13 signal table). Order is irrelevant; hits are
 #: counted as *distinct keywords*.
-PROFILE_KEYWORDS: dict[str, list[str]] = {
-    "llm_judge": ["judge", "llm-as-a-judge", "llm_judge", "rubric", "grader"],
-    "safety": [
-        "jailbreak",
-        "attack success rate",
-        "asr",
-        "refusal",
-        "harmbench",
-        "advbench",
-        "red team",
-        "red-team",
-    ],
-    "privacy": [
-        "differential privacy",
-        "epsilon",
-        "membership inference",
-        "threat model",
-        "privacy budget",
-        "dp-sgd",
-        "dp_sgd",
-    ],
-    "finetuning": ["lora", "fine-tun", "finetun", "sft", "dpo", "rlhf"],
-    "evaluation": ["mmlu", "gsm8k", "benchmark", "accuracy"],
-    # rag/agent are reported with shipped=False (profiles not in the Beta set)
-    "rag": ["retriev", "rag", "vector store", "faiss", "chroma"],
-    "agent": ["agent", "tool call", "tool_call", "function calling"],
+#: Report-only profile descriptors (rag/agent are not shipped in the Beta).
+#: Kept in this single internal source until those profiles ship; shipped
+#: profiles' signals come from their YAML ``detect`` blocks (M2F-T10, F-11).
+_REPORT_ONLY_PROFILES: dict[str, DetectSignals] = {
+    "rag": DetectSignals(keywords=["retriev", "rag", "vector store", "faiss", "chroma"]),
+    "agent": DetectSignals(keywords=["agent", "tool call", "tool_call", "function calling"]),
 }
-
-#: Keywords that intentionally match word prefixes (fine-tuning, retrieval…),
-#: stored in normalized form (see :func:`keyword_matches`).
-_PREFIX_KEYWORDS = {"fine tun", "finetun", "retriev"}
 
 #: Profiles that are detected but not shipped in the Beta.
-_UNSHIPPED_PROFILES = {"rag", "agent"}
+_UNSHIPPED_PROFILES: set[str] = set(_REPORT_ONLY_PROFILES)
 
-#: Import module name → (profile, confidence, hint kind or None).
-_IMPORT_SIGNALS: dict[str, tuple[str, str, str | None]] = {
-    "peft": ("finetuning", "high", "adapter"),
-    "trl": ("finetuning", "high", None),
-    "deepspeed": ("finetuning", "high", None),
-    "accelerate": ("finetuning", "medium", None),
-    "vllm": ("inference", "high", "backend"),
-    "sglang": ("inference", "high", "backend"),
-    "lm_eval": ("evaluation", "high", None),
-    "lighteval": ("evaluation", "high", None),
-    "inspect_ai": ("evaluation", "high", None),
-    "evaluate": ("evaluation", "high", None),
-}
+#: Confidence rules that the profile schema cannot express (§13): imports are
+#: high except these documented downgrades.
+_IMPORT_CONFIDENCE_OVERRIDES: dict[str, str] = {"accelerate": "medium"}
 
-#: Imports recorded as hints only.
-_HINT_ONLY_IMPORTS: dict[str, str] = {
-    "openai": "openai",
-    "anthropic": "anthropic",
+#: Import module → hint recorded in DetectionHints (providers/backends/
+#: datasets/adapter). These are hints, never profile signals.
+_IMPORT_HINTS: dict[str, str] = {
+    "openai": "provider:openai",
+    "anthropic": "provider:anthropic",
     "datasets": "datasets",
+    "vllm": "backend:vllm",
+    "sglang": "backend:sglang",
+    "peft": "adapter",
 }
 
-#: Dependency names (canonical) that imply their profile at medium confidence.
-_DEPENDENCY_SIGNALS: dict[str, tuple[str, str]] = {
-    canonical_dep_name("peft"): ("finetuning", "medium"),
-    canonical_dep_name("trl"): ("finetuning", "medium"),
-    canonical_dep_name("deepspeed"): ("finetuning", "medium"),
-    canonical_dep_name("accelerate"): ("finetuning", "medium"),
-    canonical_dep_name("vllm"): ("inference", "medium"),
-    canonical_dep_name("sglang"): ("inference", "medium"),
-    canonical_dep_name("lm_eval"): ("evaluation", "medium"),
-    canonical_dep_name("lighteval"): ("evaluation", "medium"),
-    canonical_dep_name("inspect_ai"): ("evaluation", "medium"),
-    canonical_dep_name("evaluate"): ("evaluation", "medium"),
+#: Exact directory-segment signals (§13): one canonical concept per profile
+#: regardless of alias count; cannot be expressed as the schema's file globs.
+_DIRECTORY_SIGNALS: dict[str, tuple[str, ...]] = {
+    "evaluation": ("eval", "evaluation"),
 }
+
+#: Prefix keywords (normalized form) that intentionally match word stems.
+_PREFIX_KEYWORDS = {"fine tun", "finetun", "retriev"}
+
+
+def detection_signals(root: Path) -> dict[str, DetectSignals]:
+    """The single source of detection signals: shipped profile YAML ``detect``
+    blocks (user overrides honored) plus the report-only descriptors."""
+    from reprollm.profiles import loader
+
+    signals: dict[str, DetectSignals] = {}
+    for name in loader.known_profile_names(root):
+        signals[name] = loader.load_profile(root, name).detect
+    signals.update(_REPORT_ONLY_PROFILES)
+    return signals
+
 
 _CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
 _EVIDENCE_CAP = 5
@@ -123,9 +102,22 @@ def keyword_matches(keyword: str, haystack: str) -> bool:
 
 
 def run_detection(
-    scanner: RepoScanner, pyscan: PyScanResult, deps: Declarations
+    scanner: RepoScanner,
+    pyscan: PyScanResult,
+    deps: Declarations,
+    signals: dict[str, DetectSignals] | None = None,
 ) -> DetectionResult:
-    """Detect experiment profiles and hints deterministically (§13)."""
+    """Detect experiment profiles and hints deterministically (§13).
+
+    Generic signals (imports/dependencies/keywords) come from the profile
+    definitions in ``signals`` — normally :func:`detection_signals`, i.e. the
+    shipped YAML plus user overrides; only schema-inexpressible semantics
+    (confidence downgrades, Trainer AST recognition, hints, directory
+    segments, report-only metadata, canonical keyword matching) live here.
+    """
+    if signals is None:
+        signals = detection_signals(scanner.root)
+
     entries: dict[str, tuple[str, list[Evidence]]] = {}
     providers: list[str] = []
     backends: list[str] = []
@@ -133,26 +125,49 @@ def run_detection(
     adapter_hint = False
 
     modules = pyscan.module_names()
-    for module, (profile, confidence, hint) in _IMPORT_SIGNALS.items():
-        hits = [info for info in pyscan.imports if info.module.split(".", 1)[0] == module]
-        if not hits:
-            continue
-        _record(
-            entries,
-            profile,
-            confidence,
-            [
-                Evidence(
-                    kind="detection", path=hits[0].path, line=hits[0].line, note=f"import {module}"
-                )
-            ],
-        )
-        if hint == "adapter":
-            adapter_hint = True
-        elif hint == "backend" and module not in backends:
-            backends.append(module)
+    for profile, sig in sorted(signals.items()):
+        for module in sorted(sig.imports):
+            hits = [info for info in pyscan.imports if info.module.split(".", 1)[0] == module]
+            if not hits:
+                continue
+            confidence = _IMPORT_CONFIDENCE_OVERRIDES.get(module, "high")
+            _record(
+                entries,
+                profile,
+                confidence,
+                [
+                    Evidence(
+                        kind="detection",
+                        path=hits[0].path,
+                        line=hits[0].line,
+                        note=f"import {module}",
+                    )
+                ],
+            )
 
-    if pyscan.trainer_import:
+        for dep in sorted(sig.dependencies):
+            canonical = canonical_dep_name(dep)
+            matching = [d for d in deps.declarations if d.name == canonical]
+            if not matching:
+                continue
+            best = matching[0]
+            _record(
+                entries,
+                profile,
+                "medium",
+                [
+                    Evidence(
+                        kind="detection",
+                        path=best.source_file,
+                        line=best.line,
+                        note=f"dependency {best.display_name}",
+                    )
+                ],
+            )
+
+    # AST-only signal: from transformers import Trainer|Seq2SeqTrainer|
+    # TrainingArguments → finetuning high (schema cannot express symbols).
+    if pyscan.trainer_import and "finetuning" in signals:
         trainer_hits = [info for info in pyscan.imports if info.module == "transformers"]
         path = trainer_hits[0].path if trainer_hits else ""
         line = trainer_hits[0].line if trainer_hits else None
@@ -170,34 +185,24 @@ def run_detection(
             ],
         )
 
-    for module, hint_value in _HINT_ONLY_IMPORTS.items():
-        if module in modules:
-            if hint_value in {"openai", "anthropic"}:
-                if hint_value not in providers:
-                    providers.append(hint_value)
-            else:
-                datasets_hint = True
-
-    declared = {d.name for d in deps.declarations}
-    for dep_name, (profile, confidence) in _DEPENDENCY_SIGNALS.items():
-        if dep_name not in declared:
+    # Hints never create profile signals (§13).
+    for module, hint in _IMPORT_HINTS.items():
+        if module not in modules:
             continue
-        best = next(d for d in deps.declarations if d.name == dep_name)
-        _record(
-            entries,
-            profile,
-            confidence,
-            [
-                Evidence(
-                    kind="detection",
-                    path=best.source_file,
-                    line=best.line,
-                    note=f"dependency {best.display_name}",
-                )
-            ],
-        )
+        if hint.startswith("provider:"):
+            provider = hint.split(":", 1)[1]
+            if provider not in providers:
+                providers.append(provider)
+        elif hint.startswith("backend:"):
+            backend = hint.split(":", 1)[1]
+            if backend not in backends:
+                backends.append(backend)
+        elif hint == "datasets":
+            datasets_hint = True
+        elif hint == "adapter":
+            adapter_hint = True
 
-    _scan_keywords(scanner, entries)
+    _scan_keywords(scanner, entries, signals)
 
     detected = [
         ProfileDetection(
@@ -239,14 +244,11 @@ def _record(
         existing[1].extend(evidence)
 
 
-#: Exact directory-segment signals (spec §13 "dir eval/evaluation"): one
-#: canonical concept per profile regardless of how many aliases exist.
-_DIRECTORY_SIGNALS: dict[str, tuple[str, ...]] = {
-    "evaluation": ("eval", "evaluation"),
-}
-
-
-def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evidence]]]) -> None:
+def _scan_keywords(
+    scanner: RepoScanner,
+    entries: dict[str, tuple[str, list[Evidence]]],
+    signals: dict[str, DetectSignals],
+) -> None:
     """Count *canonical keyword concepts*, not alias spellings (M2F-T05, F-06).
 
     ``red team`` / ``red-team`` / ``red_team`` normalize to one concept; one
@@ -256,7 +258,8 @@ def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evid
     """
     sources = _keyword_sources(scanner)
     hits: dict[str, list[Evidence]] = {}
-    for profile, keywords in PROFILE_KEYWORDS.items():
+    for profile, sig in signals.items():
+        keywords = sig.keywords
         matched_concepts: set[str] = set()
         profile_evidence = hits.setdefault(profile, [])
 
