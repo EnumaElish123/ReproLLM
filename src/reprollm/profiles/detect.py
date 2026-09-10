@@ -239,17 +239,42 @@ def _record(
         existing[1].extend(evidence)
 
 
+#: Exact directory-segment signals (spec §13 "dir eval/evaluation"): one
+#: canonical concept per profile regardless of how many aliases exist.
+_DIRECTORY_SIGNALS: dict[str, tuple[str, ...]] = {
+    "evaluation": ("eval", "evaluation"),
+}
+
+
 def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evidence]]]) -> None:
     """Count *canonical keyword concepts*, not alias spellings (M2F-T05, F-06).
 
     ``red team`` / ``red-team`` / ``red_team`` normalize to one concept; one
     matching span therefore counts once, and medium confidence requires two
-    genuinely distinct concepts.
+    genuinely distinct concepts. Exact directory segments (§13) enter the
+    same concept counting as one additional typed concept (M2F-T06, F-07).
     """
     sources = _keyword_sources(scanner)
     hits: dict[str, list[Evidence]] = {}
     for profile, keywords in PROFILE_KEYWORDS.items():
         matched_concepts: set[str] = set()
+        profile_evidence = hits.setdefault(profile, [])
+
+        dir_aliases = _DIRECTORY_SIGNALS.get(profile, ())
+        present_dirs = [name for name in dir_aliases if name in scanner.dir_names()]
+        if present_dirs:
+            matched_concepts.add("directory:" + dir_aliases[0])
+            representative = next(
+                (p for p in scanner.files() if p.split("/", 1)[0] in dir_aliases), ""
+            )
+            profile_evidence.append(
+                Evidence(
+                    kind="detection",
+                    path=representative or None,
+                    note=f"directory '{present_dirs[0]}'",
+                )
+            )
+
         for keyword in keywords:
             concept = _normalize(keyword).strip()
             if concept in matched_concepts:
@@ -257,7 +282,7 @@ def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evid
             for source in sources:
                 if keyword_matches(keyword, source.subject):
                     matched_concepts.add(concept)
-                    hits.setdefault(profile, []).append(
+                    profile_evidence.append(
                         Evidence(
                             kind="detection",
                             path=source.path,
@@ -265,7 +290,10 @@ def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evid
                         )
                     )
                     break  # one representative location per concept
+
     for profile, evidence in hits.items():
+        if not evidence:
+            continue
         confidence = "medium" if len(evidence) >= 2 else "low"
         _record(entries, profile, confidence, evidence)
 

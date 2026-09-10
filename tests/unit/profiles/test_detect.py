@@ -156,3 +156,55 @@ def test_one_concept_yields_single_evidence_entry(tmp_path: Path) -> None:
     safety = next(e for e in result.profiles if e.profile == "safety")
     concept_notes = [e for e in safety.evidence if "keyword" in (e.note or "")]
     assert len(concept_notes) == 1
+
+
+# --- M2F-T06: exact eval/evaluation directory signal (F-07) -------------------
+
+
+def _detect_with_dir(tmp_path: Path, dir_name: str, extra_readme: str = "# Tool\n"):
+    repo = tmp_path / f"dir-{dir_name or 'none'}"
+    repo.mkdir()
+    (repo / dir_name).mkdir()
+    (repo / dir_name / "run.py").write_text("x = 1\n")
+    (repo / "README.md").write_text(extra_readme)
+    return _detect(repo)
+
+
+def test_exact_eval_directory_yields_evaluation_low(tmp_path: Path) -> None:
+    profiles = _profiles(_detect_with_dir(tmp_path, "eval"))
+    assert profiles.get("evaluation") == "low"
+
+
+def test_exact_evaluation_directory_yields_evaluation_low(tmp_path: Path) -> None:
+    profiles = _profiles(_detect_with_dir(tmp_path, "evaluation"))
+    assert profiles.get("evaluation") == "low"
+
+
+def test_both_directory_aliases_are_one_concept(tmp_path: Path) -> None:
+    repo = tmp_path / "both-dirs"
+    repo.mkdir()
+    (repo / "eval").mkdir()
+    (repo / "eval" / "a.py").write_text("x = 1\n")
+    (repo / "evaluation").mkdir()
+    (repo / "evaluation" / "b.py").write_text("x = 1\n")
+    (repo / "README.md").write_text("# Tool\n")
+    profiles = _profiles(_detect(repo))
+    assert profiles.get("evaluation") == "low"  # one concept, not two
+
+
+def test_directory_concept_plus_keyword_is_medium(tmp_path: Path) -> None:
+    profiles = _profiles(_detect_with_dir(tmp_path, "eval", "# Tool\nbenchmark results\n"))
+    assert profiles.get("evaluation") == "medium"
+
+
+def test_near_miss_directory_names_do_not_signal(tmp_path: Path) -> None:
+    for name in ("evaluations", "eval_utils", "myeval"):
+        profiles = _profiles(_detect_with_dir(tmp_path, name))
+        assert "evaluation" not in profiles, name
+
+
+def test_prose_evaluation_word_is_not_a_directory_signal(tmp_path: Path) -> None:
+    repo = tmp_path / "prose"
+    repo.mkdir()
+    (repo / "README.md").write_text("# Tool\nThis is an evaluation of things.\n")
+    assert "evaluation" not in _profiles(_detect(repo))
