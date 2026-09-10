@@ -9,7 +9,7 @@ past plans or the conflict itself; they are excluded on purpose.
 
 from pathlib import Path
 
-import tomllib
+from reprollm.core._toml import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
