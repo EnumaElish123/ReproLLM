@@ -105,3 +105,54 @@ def test_config_values_are_never_scanned(tmp_path: Path) -> None:
     result = _detect(repo)
     assert "agent" not in _profiles(result)  # value text is not a signal
     assert "evaluation" not in _profiles(result)
+
+
+# --- M2F-T05: canonical keyword concepts (F-06) ------------------------------
+
+
+def _detect_readme(tmp_path: Path, readme_text: str):
+    repo = tmp_path / "kw"
+    repo.mkdir()
+    (repo / "README.md").write_text(readme_text)
+    return _detect(repo)
+
+
+def test_single_red_team_span_is_one_concept_low(tmp_path: Path) -> None:
+    result = _detect_readme(tmp_path, "# Demo\nWe run a Red-Team exercise.\n")
+    safety = {e.profile: e.confidence for e in result.profiles}
+    assert safety.get("safety") == "low"
+
+
+def test_single_dp_sgd_span_is_privacy_low(tmp_path: Path) -> None:
+    result = _detect_readme(tmp_path, "# Demo\nTraining uses dp_sgd.\n")
+    privacy = {e.profile: e.confidence for e in result.profiles}
+    assert privacy.get("privacy") == "low"
+
+
+def test_single_tool_call_span_is_agent_low(tmp_path: Path) -> None:
+    result = _detect_readme(tmp_path, "# Demo\nSupports tool-call handlers.\n")
+    agent = {e.profile: e.confidence for e in result.profiles}
+    assert agent.get("agent") == "low"
+
+
+def test_two_distinct_concepts_reach_medium(tmp_path: Path) -> None:
+    result = _detect_readme(tmp_path, "# Demo\nWe run a Red-Team exercise and log refusal rates.\n")
+    safety = {e.profile: e.confidence for e in result.profiles}
+    assert safety.get("safety") == "medium"
+
+
+def test_repeated_concept_in_many_files_is_still_one(tmp_path: Path) -> None:
+    repo = tmp_path / "many"
+    repo.mkdir()
+    (repo / "README.md").write_text("# Demo\nred team run one\n")
+    (repo / "NOTES.md").write_text("red team run two\n")
+    (repo / "MORE.md").write_text("red team run three\n")
+    safety = {e.profile: e.confidence for e in _detect(repo).profiles}
+    assert safety.get("safety") == "low"
+
+
+def test_one_concept_yields_single_evidence_entry(tmp_path: Path) -> None:
+    result = _detect_readme(tmp_path, "# Demo\nred team and red-team spellings both live here\n")
+    safety = next(e for e in result.profiles if e.profile == "safety")
+    concept_notes = [e for e in safety.evidence if "keyword" in (e.note or "")]
+    assert len(concept_notes) == 1

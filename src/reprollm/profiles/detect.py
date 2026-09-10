@@ -240,12 +240,23 @@ def _record(
 
 
 def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evidence]]]) -> None:
+    """Count *canonical keyword concepts*, not alias spellings (M2F-T05, F-06).
+
+    ``red team`` / ``red-team`` / ``red_team`` normalize to one concept; one
+    matching span therefore counts once, and medium confidence requires two
+    genuinely distinct concepts.
+    """
     sources = _keyword_sources(scanner)
     hits: dict[str, list[Evidence]] = {}
     for profile, keywords in PROFILE_KEYWORDS.items():
+        matched_concepts: set[str] = set()
         for keyword in keywords:
+            concept = _normalize(keyword).strip()
+            if concept in matched_concepts:
+                continue  # an equivalent spelling already recorded this concept
             for source in sources:
                 if keyword_matches(keyword, source.subject):
+                    matched_concepts.add(concept)
                     hits.setdefault(profile, []).append(
                         Evidence(
                             kind="detection",
@@ -253,10 +264,9 @@ def _scan_keywords(scanner: RepoScanner, entries: dict[str, tuple[str, list[Evid
                             note=f"keyword '{keyword}' in {source.kind}",
                         )
                     )
-                    break  # one location per keyword is enough
+                    break  # one representative location per concept
     for profile, evidence in hits.items():
-        distinct = len(evidence)
-        confidence = "medium" if distinct >= 2 else "low"
+        confidence = "medium" if len(evidence) >= 2 else "low"
         _record(entries, profile, confidence, evidence)
 
 

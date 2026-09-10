@@ -221,7 +221,7 @@ def test_lockfile_counts_as_pinned(tmp_path: Path) -> None:
 def test_tool_only_pyproject_is_not_a_manifest(tmp_path: Path) -> None:
     repo = tmp_path / "ruff-only"
     repo.mkdir()
-    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    _write(repo, "pyproject.toml", "[tool.ruff]\nline-length = 100\n")
     result = _scan(repo)
     assert result.manifest_present is False
 
@@ -263,7 +263,7 @@ def test_tool_only_pyproject_rule_reports_critical(tmp_path: Path) -> None:
 
     repo = tmp_path / "rule-check"
     repo.mkdir()
-    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    _write(repo, "pyproject.toml", "[tool.ruff]\nline-length = 100\n")
     finding = DependencyManifestPresentRule().check(AuditContext(repo, level=0))[0]
     assert finding.status == FindingStatus.FAIL
 
@@ -271,7 +271,7 @@ def test_tool_only_pyproject_rule_reports_critical(tmp_path: Path) -> None:
 def test_requirements_still_qualifies_without_pyproject(tmp_path: Path) -> None:
     repo = tmp_path / "req-only"
     repo.mkdir()
-    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    _write(repo, "pyproject.toml", "[tool.ruff]\nline-length = 100\n")
     _write(repo, "requirements.txt", "torch==2.8.0\n")
     assert _scan(repo).manifest_present is True
 
@@ -279,7 +279,7 @@ def test_requirements_still_qualifies_without_pyproject(tmp_path: Path) -> None:
 # --- M2F-T04: physical pyproject evidence lines (F-05) ------------------------
 
 
-PYPROJECT_PHYSICAL = '''\
+PYPROJECT_PHYSICAL = """\
 [build-system]
 requires = ["hatchling"]
 
@@ -304,7 +304,7 @@ cpu = ["numpy==1.26.0"]
 python = "^3.10"
 torch = "2.8.0"             # 23
 transformers = {version = "^4.57"}
-'''
+"""
 
 
 def test_pyproject_physical_lines(tmp_path: Path) -> None:
@@ -362,7 +362,7 @@ def test_pipfile_physical_lines(tmp_path: Path) -> None:
     _write(
         repo,
         "Pipfile",
-        "[packages]\n" 'requests = "*"\n\n# comment\n' 'numpy = {version = "==1.26.0"}\n',
+        '[packages]\nrequests = "*"\n\n# comment\nnumpy = {version = "==1.26.0"}\n',
     )
     decls = _scan(repo).declarations
     assert _by_name(decls, "requests")[0].line == 2
