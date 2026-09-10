@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from reprollm.core import proc
+from reprollm.core.errors import UserError
 
 MANIFEST = "reprollm.yaml"
 LOCK = "reprollm.lock"
@@ -55,3 +56,24 @@ def find_root(start: Path) -> Path:
     if result.returncode == 0 and result.stdout.strip():
         return Path(result.stdout.strip())
     return start
+
+
+def display_target(requested: Path, root: Path) -> str:
+    """Persisted-safe display form of the audited path (M2F-T01, spec §0).
+
+    ``"."`` when the target is the repository root, otherwise a repository-
+    relative POSIX path. Symlinks are resolved before comparison; a target
+    outside the root is a user error — never persist an absolute path.
+    """
+    resolved = requested.resolve()
+    root = root.resolve()
+    if resolved == root:
+        return "."
+    try:
+        relative = resolved.relative_to(root)
+    except ValueError:
+        raise UserError(
+            f"target {requested} resolves outside the repository root {root}; "
+            "audit a path inside the repository"
+        ) from None
+    return relative.as_posix()

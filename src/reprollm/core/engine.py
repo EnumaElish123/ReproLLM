@@ -189,7 +189,8 @@ def run_audit(
 
     return AuditReport(
         reprollm_version=__version__,
-        generated_at=datetime.now(timezone.utc),
+        # Spec §0: timestamps are second-precision UTC with the Z suffix (M2F-T01).
+        generated_at=datetime.now(timezone.utc).replace(microsecond=0),
         target=target,
         level=effective,
         profiles=ProfilesSection(

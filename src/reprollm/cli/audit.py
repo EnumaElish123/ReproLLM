@@ -12,7 +12,7 @@ import typer
 
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
-from reprollm.core.paths import find_root
+from reprollm.core.paths import display_target, find_root
 from reprollm.reporters.json_ import audit_report_to_json
 from reprollm.reporters.text import render_audit_text
 from reprollm.schemas.finding import SEVERITY_RANK, AuditReport, FindingStatus, Severity
@@ -93,7 +93,7 @@ def audit(
         root,
         level=forced_level,
         profile_names=profile_list,
-        target=path.as_posix(),
+        target=display_target(path, root),
     )
 
     if format == OutputFormat.JSON:
