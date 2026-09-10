@@ -137,8 +137,19 @@ Each decision has an ID (`D-nn`), the decision, rationale, and consequences for 
 
 ### Product and scope
 
-**D-01 Name and identifiers.** Project *ReproLLM*; CLI `reprollm`; PyPI `reprollm`; GitHub org `reprollm`, repo `reprollm/reprollm`. Verified available 2026-09-03.
+**D-01 Name and identifiers.** Project *ReproLLM*; CLI `reprollm`; PyPI `reprollm`. Repository location **superseded by D-43** (2026-09-10). Verified available 2026-09-03.
 *Consequence:* import root `reprollm`; user directory `.reprollm/`; env var prefix `REPROLLM_`.
+
+**D-43 Canonical repository identity (supersedes the location clause of D-01).**
+The project is hosted at `github.com/EnumaElish123/ReproLLM` under the maintainer's
+account; no dedicated `reprollm` organization will be created for the Beta. Every
+normative and public file (pyproject URLs, README badges, contribution and security
+links, changelog references) uses this single canonical identity; a consistency test
+enforces it.
+*Rationale:* the organization planned in D-01 was never created; migrating before the
+first PyPI release was considered and declined by the maintainer on 2026-09-10.
+*Consequence:* a future migration requires a new decision entry, a reviewed sweep of
+all references, and re-configuration of PyPI trusted publishing in the same change.
 
 **D-02 License and visibility.** Apache-2.0. Repository public from day 1 (W1).
 *Rationale:* maintenance history is itself a deliverable; early visibility costs nothing.

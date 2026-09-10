@@ -55,7 +55,7 @@
 ### M9-T01 `reprollm/action`（L）
 
 - 新仓库 `reprollm/action`（composite action）：输入 `path`（默认 `.`）、`fail-on`（默认 `critical`）、`level`、`version`（默认 latest）、`check-lock`（默认 true）。步骤：`pip install reprollm==<version>` → `reprollm audit --format json --output reprollm-audit.json --fail-on <fail-on>` → 把 findings 写入 `$GITHUB_STEP_SUMMARY`（按严重度分组的 Markdown 表）并用 `::warning file=…::` / `::error …::` 注解到有 `path` evidence 的 finding → 可选 `reprollm lock --check` → 上传 `reprollm-audit.json` artifact。
-- 在 `reprollm/reprollm` 自身与 `examples/*` 上使用它（自举）。
+- 在 `EnumaElish123/ReproLLM` 自身与 `examples/*` 上使用它（自举；身份见 D-43）。
 - README：三行 YAML 用法 + 截图。Marketplace 发布。
 
 ### M9-T02 `--format github` 输出（S，主仓库）
