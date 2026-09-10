@@ -274,3 +274,96 @@ def test_requirements_still_qualifies_without_pyproject(tmp_path: Path) -> None:
     _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
     _write(repo, "requirements.txt", "torch==2.8.0\n")
     assert _scan(repo).manifest_present is True
+
+
+# --- M2F-T04: physical pyproject evidence lines (F-05) ------------------------
+
+
+PYPROJECT_PHYSICAL = '''\
+[build-system]
+requires = ["hatchling"]
+
+[project]
+name = "x"
+version = "0.1"
+
+# comment inside project
+dependencies = [
+    "torch>=1.8",           # 10
+    "transformers==4.57.0",
+    "datasets==3.2.0",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "accelerate>=0.26",     # 18
+]
+cpu = ["numpy==1.26.0"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "2.8.0"             # 23
+transformers = {version = "^4.57"}
+'''
+
+
+def test_pyproject_physical_lines(tmp_path: Path) -> None:
+    repo = tmp_path / "physical"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", PYPROJECT_PHYSICAL)
+    decls = _scan(repo).declarations
+
+    def line_of(name: str) -> int:
+        return _by_name(decls, name)[0].line
+
+    assert line_of("torch") == 10  # not an array index
+    assert line_of("transformers") == 11
+    assert line_of("datasets") == 12
+    assert line_of("accelerate") == 17  # optional group, physical line
+    assert line_of("numpy") == 19
+    assert line_of("python") == 22  # poetry key, not mapping index
+    assert all(d.line >= 1 for d in decls)
+
+
+def test_pyproject_repeated_names_consume_in_order(tmp_path: Path) -> None:
+    repo = tmp_path / "repeat"
+    repo.mkdir()
+    _write(
+        repo,
+        "pyproject.toml",
+        (
+            "[project]\n"
+            'dependencies = ["peft>=0.2", "torch>=1.8"]\n\n'
+            "[project.optional-dependencies]\n"
+            'extra = ["peft==0.13.0"]\n'
+        ),
+    )
+    decls = [d for d in _scan(repo).declarations if d.name == "peft"]
+    assert [d.line for d in sorted(decls, key=lambda d: d.line)] == [2, 5]
+    assert decls[0].specifier != decls[1].specifier
+
+
+def test_pyproject_no_line_zero_emitted(tmp_path: Path) -> None:
+    repo = tmp_path / "nozero"
+    repo.mkdir()
+    _write(
+        repo,
+        "pyproject.toml",
+        '[project]\nname = "x"\ndependencies = ["vllm>=0.10", "openai>=1.0"]\n',
+    )
+    decls = _scan(repo).declarations
+    assert decls and all(d.line >= 1 for d in decls)
+    assert {d.line for d in decls} == {3}  # same physical line is legitimate
+
+
+def test_pipfile_physical_lines(tmp_path: Path) -> None:
+    repo = tmp_path / "pipfile-lines"
+    repo.mkdir()
+    _write(
+        repo,
+        "Pipfile",
+        "[packages]\n" 'requests = "*"\n\n# comment\n' 'numpy = {version = "==1.26.0"}\n',
+    )
+    decls = _scan(repo).declarations
+    assert _by_name(decls, "requests")[0].line == 2
+    assert _by_name(decls, "numpy")[0].line == 5

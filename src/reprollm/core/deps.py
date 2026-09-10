@@ -159,6 +159,102 @@ def _add_requirement_line(line: str, path: str, lineno: int, result: Declaration
     )
 
 
+# --- TOML source-location index (M2F-T04, F-05) ------------------------------
+#
+# tomllib discards physical positions; PEP 621 lists would otherwise carry
+# array indexes and Poetry entries mapping-iteration indexes as "lines". The
+# index below records, per dependency-relevant section, the physical lines on
+# which each entry/key occurs, matched in source order.
+
+
+class _TomlLineIndex:
+    """Physical line locations for dependency entries inside a TOML document."""
+
+    def __init__(self, text: str) -> None:
+        # section key → {entry text → [line numbers, ascending]}
+        self._requirements: dict[str, dict[str, list[int]]] = {}
+        # section key → {key name → [line numbers, ascending]}
+        self._keys: dict[str, dict[str, list[int]]] = {}
+        self._header_lines: dict[str, int] = {}
+        self._cursor: dict[str, int] = {}  # monotonic consumption per bucket
+
+        section = ""
+        for lineno, raw in enumerate(text.splitlines(), start=1):
+            stripped = raw.strip()
+            header = stripped.startswith("[") and stripped.endswith("]")
+            if header:
+                section = self._normalize_header(stripped)
+                if section:
+                    self._header_lines.setdefault(section, lineno)
+                continue
+            if not section:
+                continue
+            if section in ("project", "project.optional-dependencies"):
+                for entry in _quoted_strings(stripped):
+                    bucket = self._requirements.setdefault(section, {})
+                    bucket.setdefault(entry, []).append(lineno)
+            elif section in ("tool.poetry.dependencies", "pipfile.packages"):
+                key = _leading_key(stripped)
+                if key is not None:
+                    bucket = self._keys.setdefault(section, {})
+                    bucket.setdefault(key, []).append(lineno)
+
+    @staticmethod
+    def _normalize_header(header: str) -> str:
+        if header in ("[project]", "[tool.poetry.dependencies]"):
+            return header[1:-1]
+        if header == "[project.optional-dependencies]":
+            return "project.optional-dependencies"
+        inner = header[1:-1]
+        if inner.startswith("project.optional-dependencies."):
+            return "project.optional-dependencies"
+        if inner in ("packages", "dev-packages"):  # Pipfile
+            return "pipfile.packages"
+        return ""
+
+    def requirement_line(self, section: str, entry: str, fallback_header: int) -> int:
+        """Next physical line containing ``entry`` in ``section`` (source order)."""
+        bucket = self._requirements.get(section, {})
+        lines = bucket.get(entry, [])
+        consumed = self._cursor.get(f"{section}:{entry}", 0)
+        self._cursor[f"{section}:{entry}"] = consumed + 1
+        if consumed < len(lines):
+            return lines[consumed]
+        return fallback_header
+
+    def key_line(self, section: str, key: str, fallback_header: int) -> int:
+        bucket = self._keys.get(section, {})
+        lines = bucket.get(key, [])
+        consumed = self._cursor.get(f"{section}:{key}", 0)
+        self._cursor[f"{section}:{key}"] = consumed + 1
+        if consumed < len(lines):
+            return lines[consumed]
+        return fallback_header
+
+    def header_line(self, section: str) -> int:
+        return self._header_lines.get(section, 1)
+
+
+_TOML_QUOTED_RE = re.compile(r'"([^"\\]+)"|\'([^\'\\]+)\'')
+
+
+def _quoted_strings(line: str) -> list[str]:
+    entries = []
+    for match in _TOML_QUOTED_RE.finditer(line):
+        entries.append(match.group(1) if match.group(1) is not None else match.group(2))
+    return entries
+
+
+_TOML_KEY_RE = re.compile(r'^(?:"([^"]+)"|\'([^\']+)\'|([A-Za-z0-9_.-]+))\s*=')
+
+
+def _leading_key(line: str) -> str | None:
+    match = _TOML_KEY_RE.match(line)
+    if match is None:
+        return None
+    return match.group(1) or match.group(2) or match.group(3)
+
+
 # --- pyproject.toml ---------------------------------------------------------
 
 
@@ -180,25 +276,34 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     if not qualified:
         return False  # tool-only pyproject (e.g. [tool.ruff]) is not a manifest
 
+    index = _TomlLineIndex(text)
+
     project = doc.get("project") or {}
     if isinstance(project, dict):
         deps = project.get("dependencies") or []
+        header = index.header_line("project")
         if isinstance(deps, list):
-            for lineno, entry in enumerate(deps, start=1):
+            for entry in deps:
                 if isinstance(entry, str):
+                    lineno = index.requirement_line("project", entry, header)
                     _add_requirement_line(entry, path, lineno, result)
         optional = project.get("optional-dependencies") or {}
+        header = index.header_line("project.optional-dependencies")
         if isinstance(optional, dict):
             for entries in optional.values():
                 if isinstance(entries, list):
                     for entry in entries:
                         if isinstance(entry, str):
-                            _add_requirement_line(entry, path, 0, result)
+                            lineno = index.requirement_line(
+                                "project.optional-dependencies", entry, header
+                            )
+                            _add_requirement_line(entry, path, lineno, result)
 
     poetry = (doc.get("tool") or {}).get("poetry") or {}
     poetry_deps = poetry.get("dependencies") or {}
     if isinstance(poetry_deps, dict):
-        for lineno, (name, value) in enumerate(poetry_deps.items(), start=1):
+        header = index.header_line("tool.poetry.dependencies")
+        for name, value in poetry_deps.items():
             version = value if isinstance(value, str) else value.get("version")
             exact = None
             specifier = None
@@ -207,6 +312,7 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
                     exact = version.strip()
                 else:
                     specifier = version.strip() or None
+            lineno = index.key_line("tool.poetry.dependencies", name, header)
             result.declarations.append(
                 DependencyDeclaration(
                     name=canonical_dep_name(name),
@@ -285,11 +391,13 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
     except tomllib.TOMLDecodeError as exc:
         result.unparsed.append(f"{path}:0: {exc}")
         return
+    index = _TomlLineIndex(text)
+    header = index.header_line("pipfile.packages")
     for section in ("packages", "dev-packages"):
         table = doc.get(section) or {}
         if not isinstance(table, dict):
             continue
-        for lineno, (name, value) in enumerate(table.items(), start=1):
+        for name, value in table.items():
             version = value if isinstance(value, str) else value.get("version")
             exact = None
             specifier = None
@@ -299,6 +407,7 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
                     exact = spec[2:]
                 else:
                     specifier = spec or None
+            lineno = index.key_line("pipfile.packages", name, header)
             result.declarations.append(
                 DependencyDeclaration(
                     canonical_dep_name(name), name, specifier, exact, path, lineno
