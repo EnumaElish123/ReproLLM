@@ -77,8 +77,13 @@ def test_env_corpus_covers_required_names() -> None:
     assert len(entries) >= 30
     assert all(isinstance(value, bool) for value in entries.values())
     required = (
-        "HF_TOKEN", "MAX_TOKENS", "TOKENIZERS_PARALLELISM", "SSH_AUTH_SOCK",
-        "KEY_FRAMES", "CUDA_VISIBLE_DEVICES", "DATABASE_URL",
+        "HF_TOKEN",
+        "MAX_TOKENS",
+        "TOKENIZERS_PARALLELISM",
+        "SSH_AUTH_SOCK",
+        "KEY_FRAMES",
+        "CUDA_VISIBLE_DEVICES",
+        "DATABASE_URL",
     )
     for name in required:
         assert name in entries, name
