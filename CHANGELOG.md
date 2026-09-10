@@ -7,6 +7,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Authoritative five-project gold-answer validation matrix (`val.md`), milestone-gated real
+  training/inference/API checks, and the M2 corrective sprint plan (M2F-T12).
+
 ## [0.1.0] - 2026-09-20
 
 First usable release: **audit Level 0/1 + `init`**.

@@ -117,29 +117,30 @@ Every development session follows the plan documents in `docs/plan/`:
 
 A task is done when: tests for its acceptance criteria (from the sprint doc) exist and pass; quality gate is green locally and in CI; fixture snapshots were updated deliberately (with the diff reviewed, not blind-regenerated); the CHANGELOG has an entry; the commit references its sprint task and spec sections; and — where the sprint doc requires it — the command has been run against one of the golden fixtures with the expected result pasted into the session report. A *session* is done when its tasks are done, the §10 dogfooding run is recorded, and `main` is pushed with CI green.
 
-## 10. Standing dogfooding target (real-world verification)
+## 10. Standing five-project validation gate
 
-Golden fixtures are not enough: **every development session must also run the
-newly built commands against a real open-source repository** before pushing.
+Golden fixtures are necessary but not sufficient. **After the quality gate, every development
+session MUST read and execute the applicable gates in [`val.md`](val.md).** That document is the
+single source of truth for the five pinned repositories, gold answers, commands, milestone resource
+gates, and baseline-update policy.
 
-- **Target**: [`EleutherAI/lm-evaluation-harness`](https://github.com/EleutherAI/lm-evaluation-harness) —
-  an LLM evaluation framework that exercises nearly all detection signals
-  (evaluation/inference/finetuning high, openai+anthropic provider hints,
-  hundreds of `from_pretrained` calls, realistic unpinned-dependency findings).
-  It is also the M11 integration target, so early exposure is a bonus.
-- **Location**: `../dogfooding/lm-evaluation-harness` relative to this repo
-  (sibling directory; never committed here). Clone with
-  `git clone --depth 1 git@github.com:EleutherAI/lm-evaluation-harness.git`.
-- **Pinned commit**: `b954108c` (2026-09-09). Dogfooding results are only
-  comparable at a pinned commit; when refreshing the target, record the new
-  commit here and re-baseline the expected output in the session report.
-- **Per session**: after the quality gate is green, run the commands this
-  session touched (e.g. `uv run reprollm audit ../dogfooding/lm-evaluation-harness --format json`),
-  and include a results summary in the session report. Diffs versus the last
-  session's baseline must be explained (new rule ⇒ new findings; regression ⇒
-  fix before pushing).
-- Baseline at the pinned commit (audit Level 0, M2 session 1): 13 unpinned
-  LLM-critical deps + lockfile missing (WARNING), `env.python_version_declared`
-  PASS, detected: evaluation/inference/finetuning (high), llm_judge (low),
-  rag/agent (low, report-only). Note: ~28 s runtime on its 816 Python files
-  (scan truncated at 500) — tracked for the M8 performance pass.
+Per session:
+
+1. Run Gate A against all five valid pinned checkouts; at minimum run Level 0 audit, plus every
+   non-resource command changed by the session.
+2. When the session completes a milestone or prepares a release, also run every Gate B scenario
+   activated for that milestone. Real network resolution starts at M4; minimal inference/training,
+   including a bounded local judge case, starts at M5; paired semantic diff starts at M6; and
+   export/discover plus paid API paths start at M7. Run the complete applicable matrix at M8 and
+   every release.
+3. Run mutating commands only in disposable clones/worktrees. Use credentials, paid APIs, restricted
+   data, and GPU resources only when they are explicitly provisioned for validation.
+4. Compare complete rule sets, profiles, hints, paths, diagnostics, and generated manifests with the
+   gold answer; summary counts alone are insufficient. Record commands, target SHAs, exit statuses,
+   elapsed times, expected/actual results, and every delta in the session report.
+
+A session is not complete if any target is missing, dirty, silently skipped, crashes, or has an
+unexplained gold delta. An unavailable GPU, credential, provider, or approved budget marks the
+affected resource gate **blocked**, never passed; complete and report every unaffected gate. Update
+a pinned commit or gold answer only in a dedicated reviewed change based on independent evidence,
+never by copying ReproLLM's current output.

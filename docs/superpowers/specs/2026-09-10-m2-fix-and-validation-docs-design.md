@@ -49,7 +49,7 @@ failures do not appear in the gold sections, preventing circular validation.
 
 ### `AGENTS.md`
 
-Section 10 becomes a short mandatory pointer to `[val.md](val.md)`. After the
+Section 10 becomes a short mandatory pointer to [`val.md`](../../../val.md). After the
 normal quality gate, every development session must run Gate A for all five fixed
 repositories and compare every result with the gold answer. Milestone completion
 and release sessions additionally run each resource gate activated in `val.md`.
