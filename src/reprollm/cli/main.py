@@ -1,4 +1,12 @@
-"""Top-level ReproLLM CLI application."""
+"""Top-level ReproLLM CLI application.
+
+Exit-code contract (D-11, M2F-T02): 0 success / below threshold, 1 findings
+or drift at/above threshold, 2 user-fixable error (one-line message), 3
+internal error (traceback only with ``-v``). No default output ever exposes a
+traceback.
+"""
+
+import traceback
 
 import typer
 
@@ -19,9 +27,13 @@ app.command()(audit.audit)
 app.command()(doctor.doctor)
 app.command(name="init")(init_cmd.init)
 
+#: Global CLI flags set by the callback before any command runs; read by the
+#: exception boundary in :func:`cli` (verbose → internal tracebacks).
+STATE = {"verbose": False, "quiet": False}
+
 
 def cli() -> None:
-    """Console-script entry point: maps ReproLLMError to its exit code (D-11)."""
+    """Console-script entry point: the single exit-code/traceback boundary."""
     try:
         app()
     except typer.Exit:
@@ -29,9 +41,16 @@ def cli() -> None:
     except UserError as exc:
         typer.echo(f"error: {exc}", err=True)
         raise SystemExit(exc.exit_code) from None
-    except ReproLLMError as exc:  # internal errors: message only; traceback with -v
+    except ReproLLMError as exc:
         typer.echo(f"internal error: {exc}", err=True)
         raise SystemExit(exc.exit_code) from None
+    except KeyboardInterrupt:  # pragma: no cover - interactive interrupt
+        raise SystemExit(130) from None
+    except Exception as exc:
+        if STATE["verbose"]:
+            typer.echo(traceback.format_exc(), err=True)
+        typer.echo(f"internal error: unexpected {type(exc).__name__}: {exc}", err=True)
+        raise SystemExit(3) from None
 
 
 def _version_callback(value: bool | None) -> None:
@@ -59,6 +78,8 @@ def main(
     model revisions, tokenizer and chat-template hashes, prompt hashes,
     generation parameters, judge configurations, and runtime truth.
     """
+    STATE["verbose"] = verbose
+    STATE["quiet"] = quiet
 
 
 if __name__ == "__main__":

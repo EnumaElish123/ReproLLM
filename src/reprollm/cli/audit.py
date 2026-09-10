@@ -100,7 +100,13 @@ def audit(
         if output is None:
             typer.echo(audit_report_to_json(report))
         else:
-            output.write_text(audit_report_to_json(report), encoding="utf-8")
+            try:
+                output.write_text(audit_report_to_json(report), encoding="utf-8")
+            except OSError as exc:
+                raise UserError(
+                    f"cannot write the audit report to {output}: "
+                    f"{exc.strerror or type(exc).__name__}"
+                ) from exc
             typer.echo(
                 f"Wrote audit report to {output} "
                 f"({report.summary.critical} critical, {report.summary.warning} warning)"
