@@ -69,27 +69,31 @@ def scan_dependencies(scanner: RepoScanner) -> Declarations:
     environment = basenames.get("environment.yml") or basenames.get("environment.yaml")
     pipfile = basenames.get("Pipfile")
 
-    result.manifest_present = bool(
-        pyproject
-        or requirements
-        or environment
-        or basenames.get("uv.lock")
-        or basenames.get("poetry.lock")
-        or pipfile
-    )
+    # A pyproject.toml is only a dependency manifest when it carries a
+    # [project] or [tool.poetry] table (spec §12.2, M2F-T03/F-04); parse it
+    # once and reuse the qualification below.
+    pyproject_qualified = False
+    if pyproject:
+        pyproject_qualified = _parse_pyproject(pyproject, scanner, result)
 
     seen_requirements: set[str] = set()
     for path in requirements:
         _parse_requirements(path, scanner, result, seen_requirements)
-
-    if pyproject:
-        _parse_pyproject(pyproject, scanner, result)
 
     if environment:
         _parse_environment(environment, scanner, result)
 
     if pipfile:
         _parse_pipfile(pipfile, scanner, result)
+
+    result.manifest_present = bool(
+        pyproject_qualified
+        or requirements
+        or environment
+        or basenames.get("uv.lock")
+        or basenames.get("poetry.lock")
+        or pipfile
+    )
 
     _collect_lockfiles(scanner, result, requirements)
     return result
@@ -158,16 +162,23 @@ def _add_requirement_line(line: str, path: str, lineno: int, result: Declaration
 # --- pyproject.toml ---------------------------------------------------------
 
 
-def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> None:
+def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> bool:
+    """Parse once; return True only when a ``[project]`` or ``[tool.poetry]``
+    table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
     text = scanner.read_text(path)
     if text is None:
         result.unparsed.append(f"{path}:0: unreadable")
-        return
+        return False
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
         result.unparsed.append(f"{path}:0: {exc}")
-        return
+        return False
+    qualified = isinstance(doc.get("project"), dict) or isinstance(
+        (doc.get("tool") or {}).get("poetry"), dict
+    )
+    if not qualified:
+        return False  # tool-only pyproject (e.g. [tool.ruff]) is not a manifest
 
     project = doc.get("project") or {}
     if isinstance(project, dict):
@@ -206,6 +217,7 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> N
                     line=lineno,
                 )
             )
+    return qualified
 
 
 # --- environment.yml --------------------------------------------------------

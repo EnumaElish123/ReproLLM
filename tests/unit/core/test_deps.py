@@ -120,7 +120,8 @@ def test_pyproject_malformed_never_crashes(tmp_path: Path) -> None:
     repo.mkdir()
     _write(repo, "pyproject.toml", "[project ] oops not toml")
     result = _scan(repo)
-    assert result.unparsed and result.manifest_present
+    # Malformed TOML is diagnosed and does not qualify as a manifest (M2F-T03).
+    assert result.unparsed and result.manifest_present is False
 
 
 # --- environment.yml ---------------------------------------------------------
@@ -212,3 +213,64 @@ def test_lockfile_counts_as_pinned(tmp_path: Path) -> None:
     _write(repo, "uv.lock", '[[package]]\nname = "vllm"\n')
     result = _scan(repo)
     assert "vllm" in result.lockfiles[0].packages
+
+
+# --- M2F-T03: pyproject manifest qualification (F-04) ------------------------
+
+
+def test_tool_only_pyproject_is_not_a_manifest(tmp_path: Path) -> None:
+    repo = tmp_path / "ruff-only"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    result = _scan(repo)
+    assert result.manifest_present is False
+
+
+def test_build_system_only_pyproject_is_not_a_manifest(tmp_path: Path) -> None:
+    repo = tmp_path / "build-only"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[build-system]\nrequires = ["hatchling"]\n')
+    assert _scan(repo).manifest_present is False
+
+
+def test_project_table_with_empty_deps_qualifies(tmp_path: Path) -> None:
+    repo = tmp_path / "pep621-empty"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[project]\nname = "x"\nversion = "0"\ndependencies = []\n')
+    assert _scan(repo).manifest_present is True
+
+
+def test_poetry_table_without_dependencies_qualifies(tmp_path: Path) -> None:
+    repo = tmp_path / "poetry-empty"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[tool.poetry]\nname = "x"\nversion = "0"\n')
+    assert _scan(repo).manifest_present is True
+
+
+def test_invalid_toml_diagnosed_and_not_a_manifest(tmp_path: Path) -> None:
+    repo = tmp_path / "bad-toml"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", "[project ] oops")
+    result = _scan(repo)
+    assert result.manifest_present is False
+    assert any(entry.startswith("pyproject.toml:") for entry in result.unparsed)
+
+
+def test_tool_only_pyproject_rule_reports_critical(tmp_path: Path) -> None:
+    from reprollm.core.context import AuditContext
+    from reprollm.rules.env import DependencyManifestPresentRule
+    from reprollm.schemas.finding import FindingStatus
+
+    repo = tmp_path / "rule-check"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    finding = DependencyManifestPresentRule().check(AuditContext(repo, level=0))[0]
+    assert finding.status == FindingStatus.FAIL
+
+
+def test_requirements_still_qualifies_without_pyproject(tmp_path: Path) -> None:
+    repo = tmp_path / "req-only"
+    repo.mkdir()
+    _write(repo, "pyproject.toml", '[tool.ruff]\nline-length = 100\n')
+    _write(repo, "requirements.txt", "torch==2.8.0\n")
+    assert _scan(repo).manifest_present is True
