@@ -7,6 +7,39 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed (M2-fix corrective sprint, 2026-09-10)
+
+- Audit JSON no longer persists the raw invocation path (absolute paths
+  leaked `/home/...`); the target is normalized to `.` or a repository-
+  relative POSIX path, and `generated_at` is second-precision UTC (F-01,
+  F-02).
+- CLI error contract enforced: output-write failures are exit 2 with an
+  actionable message; unexpected exceptions exit 3 without a traceback
+  (traceback only with `-v`) (F-03).
+- A `pyproject.toml` without `[project]`/`[tool.poetry]` no longer counts
+  as a dependency manifest (F-04).
+- Dependency evidence points at physical declaration lines instead of
+  array/mapping indexes; no more `line: 0` (F-05).
+- Separator-equivalent keyword spellings (`red team`/`red-team`,
+  `dp-sgd`/`dp_sgd`, …) count as one detection concept (F-06).
+- Exact `eval`/`evaluation` directory segments are an evaluation signal
+  (F-07).
+- Scan diagnostics (truncation, syntax errors, unparsed declarations)
+  surface on stderr under `-v`; stdout stays one JSON document (F-08).
+
+### Added
+
+- Normative secret fixture corpus (§16.5): positive/negative/env/file
+  cases for the M5 redaction classifiers (F-09).
+
+### Changed
+
+- init/doctor domain logic extracted into `core.manifest_scaffold` and
+  `core.diagnostics`; CLI commands only parse/prompt/render/exit (F-10).
+- Detection signals now come from the profile YAML definitions (user
+  overrides honored); only schema-inexpressible semantics stay in Python
+  (F-11).
+
 ### Added
 
 - Authoritative five-project gold-answer validation matrix (`val.md`), milestone-gated real
