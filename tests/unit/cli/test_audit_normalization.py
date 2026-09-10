@@ -1,8 +1,10 @@
 """M2F-T01: persisted audit metadata normalization (F-01, F-02)."""
 
 import json
+import sys
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app
@@ -46,6 +48,7 @@ def test_subdirectory_target_is_relative_to_root(monkeypatch, tmp_path: Path) ->
     assert json.loads(result.output)["target"] == "configs"
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="creating symlinks needs privileges on Windows")
 def test_symlinked_invocation_normalizes(monkeypatch, tmp_path: Path) -> None:
     repo = materialize_repo("hf_vllm_eval", tmp_path)
     link = tmp_path / "link-to-repo"
