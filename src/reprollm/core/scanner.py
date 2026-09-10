@@ -111,12 +111,12 @@ class RepoScanner:
         return self._text_cache[rel_path]
 
     def python_files(self) -> list[str]:
-        """Python sources, capped at :data:`MAX_PYTHON_FILES` (excess recorded)."""
+        """Python sources, capped at :data:`MAX_PYTHON_FILES` (excess recorded once)."""
         sources = [p for p in self.files() if p.endswith(".py")]
         if len(sources) > MAX_PYTHON_FILES:
-            self.warnings.append(
-                f"python file scan truncated to {MAX_PYTHON_FILES} of {len(sources)} files"
-            )
+            warning = f"python file scan truncated to {MAX_PYTHON_FILES} of {len(sources)} files"
+            if warning not in self.warnings:  # repeated access must not duplicate (M2F-T07)
+                self.warnings.append(warning)
             sources = sources[:MAX_PYTHON_FILES]
         return sources
 

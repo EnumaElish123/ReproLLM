@@ -122,8 +122,15 @@ def run_audit(
     level: int | None = None,
     profile_names: list[str] | None = None,
     target: str = ".",
+    diagnostics: list[str] | None = None,
 ) -> AuditReport:
-    """Execute spec §11 steps 1–8 for the repository at ``root``."""
+    """Execute spec §11 steps 1–8 for the repository at ``root``.
+
+    ``diagnostics``, when provided, receives the merged/deduplicated/sorted
+    scan warnings (truncation, syntax errors, unreadable files) gathered while
+    the rules ran (M2F-T07). They are a CLI-only channel and are never part of
+    the persisted report.
+    """
     root = root.resolve()
     paths = repo_paths(root)
 
@@ -165,6 +172,12 @@ def run_audit(
         produced = rule.check(ctx)
         findings.extend(produced if produced else [_pass_finding(rule_class, ctx)])
     # Severity overrides and suppression wiring arrive in M3.
+
+    if diagnostics is not None:
+        # Touch every lazy scan the rules may not have reached, then merge.
+        ctx.fs.files()
+        _ = (ctx.pyscan, ctx.deps)
+        diagnostics.extend(sorted({*ctx.fs.warnings, *ctx.pyscan.warnings, *ctx.deps.unparsed}))
 
     findings.sort(key=lambda f: (-SEVERITY_RANK[f.severity], _category_rank(f.category), f.rule_id))
 

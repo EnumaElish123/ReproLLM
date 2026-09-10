@@ -89,12 +89,19 @@ def audit(
 
     root = find_root(path)
     forced_level = None if level == LevelChoice.AUTO else int(level.value)
+    diagnostics: list[str] = []
     report = run_audit(
         root,
         level=forced_level,
         profile_names=profile_list,
         target=display_target(path, root),
+        diagnostics=diagnostics,
     )
+    from reprollm.cli.main import STATE
+
+    if STATE["verbose"]:
+        for entry in diagnostics:
+            typer.echo(f"scan: {entry}", err=True)
 
     if format == OutputFormat.JSON:
         if output is None:
