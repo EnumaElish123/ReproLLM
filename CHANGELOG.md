@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, second half)
 
+- Apply `audit.ignore` by canonical rule ID or alias, preserving the original
+  severity and mandatory reason in INFO findings. Honor config defaults for
+  `fail_on` and `show_passed`, with explicit CLI flags taking precedence;
+  suppressed results remain visible and do not affect exit thresholds
+  (M3-T07, spec §§1.1, 8, 11, 21).
 - Complete built-in profile rule selections and severity overrides, with
   most-derived override origins in audit findings and profile inspection.
   Add 15 explicitly skipped Level 2 placeholders and preserve project-owned

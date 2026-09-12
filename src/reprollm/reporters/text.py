@@ -35,7 +35,7 @@ _GROUP_TITLES = {
 def _visible(finding: Finding, *, show_passed: bool, show_skipped: bool) -> bool:
     if finding.status == FindingStatus.PASS:
         return show_passed
-    if finding.status in (FindingStatus.SKIPPED, FindingStatus.SUPPRESSED):
+    if finding.status == FindingStatus.SKIPPED:
         return show_skipped
     return True
 
@@ -74,7 +74,10 @@ def render_audit_text(
                 continue
             if finding.status == FindingStatus.SUPPRESSED:
                 symbol = _symbol("muted", ascii_symbols)
-                lines.append(f"  {symbol} {finding.rule_id}      suppressed: {finding.message}")
+                lines.append(
+                    f"  {symbol} {finding.rule_id}      suppressed: {finding.message} "
+                    f"(reason: {finding.suppressed_reason})"
+                )
                 continue
             symbol = _symbol(finding.severity, ascii_symbols)
             lines.append(f"  {symbol} {finding.rule_id}      {finding.message}")

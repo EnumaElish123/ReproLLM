@@ -11,8 +11,9 @@ from pathlib import Path
 
 import reprollm.rules  # noqa: F401 — imports register the rule catalog
 from reprollm import __version__
+from reprollm.core.config import load_config
 from reprollm.core.context import AuditContext
-from reprollm.core.errors import InternalError, UserError
+from reprollm.core.errors import InternalError
 from reprollm.core.hashing import sha256_file
 from reprollm.core.levels import count_runs, detect_level
 from reprollm.core.paths import repo_paths
@@ -66,20 +67,6 @@ def _category_rank(category: str) -> int:
         return len(CATEGORY_ORDER)
 
 
-def _load_config(root: Path) -> Config | None:
-    path = root / ".reprollm" / "config.yaml"
-    if not path.is_file():
-        return None
-    from pydantic import ValidationError
-
-    from reprollm.core.yaml_io import load_yaml
-
-    try:
-        return Config.model_validate(load_yaml(path))
-    except ValidationError as exc:
-        raise UserError(f"invalid config {path}:\n{exc}") from exc
-
-
 def _load_manifest(root: Path) -> Manifest | None:
     path = root / "reprollm.yaml"
     if not path.is_file():
@@ -117,6 +104,28 @@ def _pass_finding(rule: type[Rule], ctx: AuditContext) -> Finding:
     )
 
 
+def _suppress(findings: list[Finding], config: Config) -> None:
+    ignores: dict[str, str] = {}
+    for entry in config.audit.ignore:
+        rule = get_rule(entry.rule)
+        ignores.setdefault(rule.id if rule is not None else entry.rule, entry.reason)
+    for finding in findings:
+        reason = ignores.get(finding.rule_id)
+        if reason is None:
+            continue
+        finding.evidence.append(
+            Evidence(
+                kind="field",
+                path=".reprollm/config.yaml",
+                field="audit.ignore",
+                note=f"suppressed: original severity {finding.severity.value}; reason: {reason}",
+            )
+        )
+        finding.status = FindingStatus.SUPPRESSED
+        finding.severity = Severity.INFO
+        finding.suppressed_reason = reason
+
+
 def run_audit(
     root: Path,
     *,
@@ -124,6 +133,7 @@ def run_audit(
     profile_names: list[str] | None = None,
     target: str = ".",
     diagnostics: list[str] | None = None,
+    config: Config | None = None,
 ) -> AuditReport:
     """Execute spec §11 steps 1–8 for the repository at ``root``.
 
@@ -135,7 +145,7 @@ def run_audit(
     root = root.resolve()
     paths = repo_paths(root)
 
-    config = _load_config(root)
+    config = load_config(root) if config is None else config
     manifest = _load_manifest(root)
 
     detected = detect_level(paths)
@@ -185,6 +195,7 @@ def run_audit(
         if override is not None:
             finding.severity = Severity(override)
             finding.severity_origin = f"profile:{resolved.severity_origins[finding.rule_id]}"
+    _suppress(findings, config)
 
     if diagnostics is not None:
         # Touch every lazy scan the rules may not have reached, then merge.

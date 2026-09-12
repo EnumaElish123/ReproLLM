@@ -10,6 +10,7 @@ from typing import Annotated
 
 import typer
 
+from reprollm.core.config import load_config
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
 from reprollm.core.paths import display_target, find_root
@@ -67,8 +68,8 @@ def audit(
         Path | None, typer.Option("--output", help="Write the report to a file.")
     ] = None,
     fail_on: Annotated[
-        FailOn, typer.Option("--fail-on", help="Exit 1 when findings reach this severity.")
-    ] = FailOn.CRITICAL,
+        FailOn | None, typer.Option("--fail-on", help="Exit 1 when findings reach this severity.")
+    ] = None,
     level: Annotated[
         LevelChoice, typer.Option("--level", help="Force a lower audit level.")
     ] = LevelChoice.AUTO,
@@ -76,7 +77,7 @@ def audit(
         str | None,
         typer.Option("--profiles", help="Comma-separated profile names overriding the manifest."),
     ] = None,
-    show_passed: Annotated[bool, typer.Option("--show-passed")] = False,
+    show_passed: Annotated[bool | None, typer.Option("--show-passed/--no-show-passed")] = None,
     show_skipped: Annotated[bool, typer.Option("--show-skipped")] = False,
     no_color: Annotated[bool, typer.Option("--no-color", help="Plain ASCII output.")] = False,
 ) -> None:
@@ -88,6 +89,9 @@ def audit(
             raise UserError("--profiles requires at least one profile name")
 
     root = find_root(path)
+    config = load_config(root)
+    effective_fail_on = fail_on if fail_on is not None else FailOn(config.audit.fail_on)
+    effective_show_passed = show_passed if show_passed is not None else config.audit.show_passed
     forced_level = None if level == LevelChoice.AUTO else int(level.value)
     diagnostics: list[str] = []
     report = run_audit(
@@ -96,6 +100,7 @@ def audit(
         profile_names=profile_list,
         target=display_target(path, root),
         diagnostics=diagnostics,
+        config=config,
     )
     from reprollm.cli.main import STATE
 
@@ -125,11 +130,11 @@ def audit(
         typer.echo(
             render_audit_text(
                 report,
-                show_passed=show_passed,
+                show_passed=effective_show_passed,
                 show_skipped=show_skipped,
                 ascii_symbols=use_ascii,
             ),
             nl=False,
         )
 
-    raise typer.Exit(_exit_code(report, fail_on))
+    raise typer.Exit(_exit_code(report, effective_fail_on))

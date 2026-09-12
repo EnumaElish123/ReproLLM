@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from .manifest import SchemaVersion
 
@@ -18,6 +18,13 @@ class AuditIgnoreEntry(BaseModel):
 
     rule: str
     reason: str = Field(min_length=1)
+
+    @field_validator("reason")
+    @classmethod
+    def reason_must_not_be_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("reason must contain non-whitespace text")
+        return value
 
 
 class AuditConfig(BaseModel):
