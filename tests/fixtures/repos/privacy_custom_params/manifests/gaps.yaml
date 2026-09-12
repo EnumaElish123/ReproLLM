@@ -1,0 +1,62 @@
+# Expected FAIL rule IDs:
+# code.remote_recorded, env.lockfile_present, env.secret_files_ignored,
+# exec.profile_detection_mismatch, exec.run_recorded,
+# model.trust_remote_code_declared, privacy.mechanism_declared.
+schema_version: 1
+project:
+  name: privacy-custom-params-gaps
+experiment:
+  profiles: [inference, privacy, safety]
+models:
+  primary:
+    provider: huggingface
+    id: meta-llama/Llama-3.1-8B-Instruct
+    dtype: bfloat16
+    quantization: none
+datasets:
+  eval:
+    provider: huggingface
+    id: cais/mmlu
+    subset: abstract_algebra
+    split: test
+    preprocessing:
+      description: Format each evaluation question for privacy measurement.
+    sampling: {n: 100, method: first_n, seed: 7}
+prompts:
+  system:
+    path: prompts/system.txt
+    few_shot: {n: 0}
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 256
+  seed: 7
+  stop: []
+inference:
+  backend: transformers
+  dtype: bfloat16
+evaluation:
+  metrics:
+    - {name: asr, implementation: attack.py}
+    - {name: utility, implementation: method.py}
+  aggregation: mean
+  repetitions: 3
+  definitions:
+    asr: Fraction of attacks that infer membership successfully.
+  query_budget: 1000
+privacy:
+  threat_model: Honest-but-curious server observing protected hidden states.
+  mechanism:
+    name: orthogonal_noise
+    params: {}
+  metrics: [epsilon, utility]
+  attack: {method: mia, query_budget: 1000}
+execution:
+  command: python method.py
+  seed: 7
+  config_files: [configs/privacy.yaml]
+bindings:
+  privacy.mechanism.params.alpha:
+    config: configs/privacy.yaml:method.alpha
+custom:
+  privacy_method: orthogonal_noise

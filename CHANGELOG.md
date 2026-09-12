@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, second half)
 
+- Complete and intentionally incomplete Level 1 manifests for the HF/vLLM,
+  OpenAI judge, and privacy fixtures, with six reviewed JSON snapshots and
+  variant-scoped dependency/secret overlays (M3-T08, spec §§3, 6.1, 12, 22).
 - Apply `audit.ignore` by canonical rule ID or alias, preserving the original
   severity and mandatory reason in INFO findings. Honor config defaults for
   `fail_on` and `show_passed`, with explicit CLI flags taking precedence;

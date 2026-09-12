@@ -203,6 +203,9 @@ def materialize_repo(
     shutil.copytree(tree, repo)
 
     if manifest is not None:
+        overlay = source / "overlays" / manifest
+        if overlay.is_dir():
+            shutil.copytree(overlay, repo, dirs_exist_ok=True)
         manifest_src = source / "manifests" / f"{manifest}.yaml"
         shutil.copyfile(manifest_src, repo / "reprollm.yaml")
 

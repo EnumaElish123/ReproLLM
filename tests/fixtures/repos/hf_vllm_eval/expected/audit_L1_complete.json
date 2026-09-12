@@ -1,0 +1,896 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:e48ce55c71f7afa15b43eb35b6f6342cc8599b3e41d2a87c5691bb78295764c4",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "git remote get-url origin failed",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Run `git remote add origin <url>` so the experiment's code source is recorded.",
+      "level": 1,
+      "message": "no 'origin' remote is configured",
+      "profile_origin": [],
+      "rule_id": "code.remote_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git submodule update --init --recursive`.",
+      "level": 1,
+      "message": "no .gitmodules",
+      "profile_origin": [],
+      "rule_id": "code.submodules_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Run `reprollm init` to create reprollm.yaml and .reprollm/.",
+      "level": 1,
+      "message": "audit level > 0; reprollm.yaml exists",
+      "profile_origin": [],
+      "rule_id": "env.reprollm_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "run",
+          "line": null,
+          "note": "no run.json found",
+          "path": ".reprollm/runs",
+          "value": null
+        }
+      ],
+      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+      "level": 1,
+      "message": "no run records found under .reprollm/runs",
+      "profile_origin": [],
+      "rule_id": "exec.run_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.trust_remote_code: true in reprollm.yaml for the relevant model.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "model.trust_remote_code_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [],
+      "fix_hint": "Set generation.seed in reprollm.yaml when sampling is enabled.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "gen.seed_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+      "level": 1,
+      "message": "Tracked files have no uncommitted modifications.",
+      "profile_origin": [],
+      "rule_id": "code.clean_tree",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+      "level": 1,
+      "message": "HEAD points at a committed revision (no unborn branch).",
+      "profile_origin": [],
+      "rule_id": "code.git_commit",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+      "level": 1,
+      "message": "The experiment code lives in a git repository.",
+      "profile_origin": [],
+      "rule_id": "code.git_repo",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+      "level": 1,
+      "message": "No untracked, non-ignored files are left in the tree.",
+      "profile_origin": [],
+      "rule_id": "code.no_untracked",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+      "level": 1,
+      "message": "A dependency manifest declares the Python environment.",
+      "profile_origin": [],
+      "rule_id": "env.dependency_manifest_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+      "level": 1,
+      "message": "Every LLM-critical dependency in use is pinned to an exact version.",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+      "level": 1,
+      "message": "A lockfile (or fully pinned requirements) records exact versions.",
+      "profile_origin": [],
+      "rule_id": "env.lockfile_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "level": 1,
+      "message": "The required Python version is declared.",
+      "profile_origin": [],
+      "rule_id": "env.python_version_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+      "level": 1,
+      "message": "Secret-bearing files are not present or are gitignored.",
+      "profile_origin": [],
+      "rule_id": "env.secret_files_ignored",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+      "level": 1,
+      "message": "The command that reproduces the experiment is declared.",
+      "profile_origin": [],
+      "rule_id": "exec.command_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Adjust experiment.profiles in reprollm.yaml to match what the repository actually contains (see the detection evidence).",
+      "level": 1,
+      "message": "Declared profiles and detected signals agree.",
+      "profile_origin": [],
+      "rule_id": "exec.profile_detection_mismatch",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+      "level": 1,
+      "message": "A random seed is declared somewhere (execution/generation/training).",
+      "profile_origin": [],
+      "rule_id": "exec.seed_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.dtype",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.dtype in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.dtype is declared",
+      "profile_origin": [],
+      "rule_id": "model.dtype_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.id",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.id in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.id is declared",
+      "profile_origin": [],
+      "rule_id": "model.primary_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.provider",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.provider in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.provider is a known provider",
+      "profile_origin": [],
+      "rule_id": "model.provider_known",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.quantization",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.quantization in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.quantization is declared",
+      "profile_origin": [],
+      "rule_id": "model.quantization_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.eval.preprocessing",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.eval.preprocessing in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.eval.preprocessing is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.preprocessing_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.eval.sampling.seed",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.eval.sampling.seed in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.eval.sampling.seed is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.sampling_seed_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.eval.split",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.eval.split in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.eval.split is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.split_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.eval.subset",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.eval.subset in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.eval.subset is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.subset_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.dtype",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.dtype in reprollm.yaml.",
+      "level": 1,
+      "message": "inference.dtype is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.gpu_memory_utilization",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.gpu_memory_utilization in reprollm.yaml.",
+      "level": 1,
+      "message": "inference.gpu_memory_utilization is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.quantization",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.quantization in reprollm.yaml.",
+      "level": 1,
+      "message": "inference.quantization is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.tensor_parallel_size",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.tensor_parallel_size in reprollm.yaml.",
+      "level": 1,
+      "message": "inference.tensor_parallel_size is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.backend",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.backend in reprollm.yaml.",
+      "level": 1,
+      "message": "inference.backend is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [],
+      "fix_hint": "Set generation.temperature, generation.top_p and generation.max_tokens in reprollm.yaml.",
+      "level": 1,
+      "message": "Generation temperature, top_p and max_tokens are declared.",
+      "profile_origin": [],
+      "rule_id": "gen.params_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "generation.stop",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set generation.stop in reprollm.yaml.",
+      "level": 1,
+      "message": "generation.stop is declared",
+      "profile_origin": [],
+      "rule_id": "gen.stop_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "prompt",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "prompts",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set prompts in reprollm.yaml.",
+      "level": 1,
+      "message": "prompts is declared",
+      "profile_origin": [],
+      "rule_id": "prompt.declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "prompt",
+      "evidence": [],
+      "fix_hint": "Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.",
+      "level": 1,
+      "message": "Few-shot configuration is explicitly declared.",
+      "profile_origin": [],
+      "rule_id": "prompt.few_shot_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "prompt",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "prompts.system.path",
+          "kind": "field",
+          "line": null,
+          "note": "referenced file exists",
+          "path": null,
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": null,
+          "path": "prompts/system.txt",
+          "value": null
+        }
+      ],
+      "fix_hint": "Set prompts.system.path to an existing file in reprollm.yaml.",
+      "level": 1,
+      "message": "prompts.system.path: referenced file exists",
+      "profile_origin": [],
+      "rule_id": "prompt.file_exists",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "eval",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "evaluation.aggregation",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set evaluation.aggregation in reprollm.yaml.",
+      "level": 1,
+      "message": "evaluation.aggregation is declared",
+      "profile_origin": [],
+      "rule_id": "eval.aggregation_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "eval",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "evaluation.metrics.0.implementation",
+          "kind": "field",
+          "line": null,
+          "note": "referenced file exists",
+          "path": null,
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": null,
+          "path": "eval.py",
+          "value": null
+        }
+      ],
+      "fix_hint": "Set evaluation.metrics.0.implementation to an existing relative file or pkg==version in reprollm.yaml.",
+      "level": 1,
+      "message": "evaluation.metrics.0.implementation: referenced file exists",
+      "profile_origin": [],
+      "rule_id": "eval.metric_implementation_referenced",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "eval",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "evaluation.metrics",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set evaluation.metrics in reprollm.yaml.",
+      "level": 1,
+      "message": "evaluation.metrics is declared",
+      "profile_origin": [],
+      "rule_id": "eval.metrics_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "eval",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "evaluation.repetitions",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set evaluation.repetitions in reprollm.yaml.",
+      "level": 1,
+      "message": "evaluation.repetitions is declared",
+      "profile_origin": [],
+      "rule_id": "eval.repetitions_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    }
+  ],
+  "level": 1,
+  "profiles": {
+    "declared": [
+      "inference",
+      "evaluation"
+    ],
+    "detected": [
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'accuracy' in readme text",
+            "path": "README.md",
+            "value": null
+          },
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'mmlu' in readme text",
+            "path": "README.md",
+            "value": null
+          }
+        ],
+        "profile": "evaluation",
+        "shipped": true
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": 8,
+            "note": "import vllm",
+            "path": "eval.py",
+            "value": null
+          }
+        ],
+        "profile": "inference",
+        "shipped": true
+      }
+    ],
+    "resolved": [
+      "core",
+      "inference",
+      "evaluation"
+    ]
+  },
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 2,
+    "pass": 35,
+    "skipped": 4,
+    "suppressed": 0,
+    "warning": 0
+  },
+  "target": "."
+}

@@ -1,0 +1,47 @@
+# Expected FAIL rule IDs:
+# code.remote_recorded, env.llm_critical_deps_pinned, env.lockfile_present,
+# exec.profile_detection_mismatch, exec.run_recorded, judge.params_declared.
+schema_version: 1
+project:
+  name: openai-judge-eval-gaps
+experiment:
+  profiles: [evaluation, llm_judge]
+models:
+  primary: {provider: openai, id: gpt-4o-mini}
+  judge: {provider: openai, id: gpt-4o-2024-08-06}
+datasets:
+  eval:
+    provider: local
+    id: data
+    files: [data/pairs.jsonl]
+    preprocessing:
+      description: Read each JSONL pair without transformation.
+prompts:
+  judge:
+    path: prompts/judge.txt
+    few_shot: {n: 0}
+generation:
+  temperature: 0.7
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1
+  stop: []
+inference:
+  backend: openai
+evaluation:
+  metrics:
+    - {name: win_rate, implementation: judge.py}
+  aggregation: mean
+  repetitions: 3
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    repetitions: 1
+execution:
+  command: python judge.py --judge-model gpt-4o-2024-08-06 --n-trials 3 --pairs data/pairs.jsonl
+  seed: 1
+bindings:
+  models.judge.id:
+    cli: --judge-model
+  evaluation.repetitions:
+    cli: --n-trials

@@ -1,0 +1,54 @@
+schema_version: 1
+project:
+  name: hf-vllm-eval
+experiment:
+  profiles: [inference, evaluation]
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-32B
+    dtype: bfloat16
+    quantization: none
+datasets:
+  eval:
+    provider: huggingface
+    id: cais/mmlu
+    subset: abstract_algebra
+    split: test
+    preprocessing:
+      description: Read the MMLU question and compare the generated answer.
+    sampling: {n: 100, method: first_n, seed: 0}
+prompts:
+  system:
+    path: prompts/system.txt
+    few_shot: {n: 0}
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 2048
+  seed: 42
+  stop: []
+inference:
+  backend: vllm
+  dtype: bfloat16
+  tensor_parallel_size: 2
+  quantization: none
+  gpu_memory_utilization: 0.9
+evaluation:
+  metrics:
+    - {name: accuracy, implementation: eval.py}
+  aggregation: mean
+  repetitions: 1
+execution:
+  command: python eval.py --config configs/eval.yaml --temperature 0.0 --max-tokens 2048 --seed 42
+  seed: 42
+  config_files: [configs/eval.yaml]
+bindings:
+  generation.temperature:
+    cli: --temperature
+    config: configs/eval.yaml:sampling.temperature
+  generation.max_tokens:
+    cli: --max-tokens
+    config: configs/eval.yaml:sampling.max_tokens
+  models.primary.id:
+    config: configs/eval.yaml:model
