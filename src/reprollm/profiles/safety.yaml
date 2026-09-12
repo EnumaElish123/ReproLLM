@@ -3,7 +3,9 @@ schema_version: 1
 name: safety
 description: Safety and red-team evaluations (definitions and query budgets).
 extends: [evaluation]
-rules: []
+rules:
+  - eval.definitions_declared
+  - eval.query_budget_declared
 required_fields:
   - evaluation.definitions.refusal
   - evaluation.definitions.asr

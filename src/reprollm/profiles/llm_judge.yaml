@@ -3,7 +3,11 @@ schema_version: 1
 name: llm_judge
 description: LLM-as-a-judge evaluation (judge model, prompt, and parameters).
 extends: [evaluation]
-rules: []
+rules:
+  - judge.model_declared
+  - judge.prompt_declared
+  - judge.params_declared
+  - judge.repetitions_declared
 required_fields:
   - models.judge.id
   - prompts.judge.path

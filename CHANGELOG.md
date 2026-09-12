@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, first half)
 
+- Six evaluation and four judge rules for metrics and implementation references,
+  aggregation, repetitions, safety definitions/budgets, and independently declared
+  judge roles and sampling settings (M3-T04, spec §§12.8–12.9).
 - Five generation/backend rules and three prompt rules, including conditional
   sampling seeds, vLLM fields, explicit stop/few-shot declarations and prompt
   file existence without reading prompt contents (M3-T03, spec §§12.6–12.7).

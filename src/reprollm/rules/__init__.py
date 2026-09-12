@@ -8,8 +8,10 @@ from reprollm.rules import (  # noqa: F401 — registration
     code,
     dataset,
     env,
+    eval_,
     exec_,
     gen,
+    judge,
     model,
     prompt,
 )
