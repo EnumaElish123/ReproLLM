@@ -4,13 +4,18 @@ description: LLM-as-a-judge evaluation (judge model, prompt, and parameters).
 extends: evaluation
 chain:  llm_judge → evaluation → inference → core
 
-rules (21):
+rules (26):
   code.clean_tree
   code.git_commit
   code.git_repo
   code.no_untracked
   code.remote_recorded
   code.submodules_initialized
+  dataset.declared
+  dataset.preprocessing_declared
+  dataset.sampling_seed_declared
+  dataset.split_declared
+  dataset.subset_declared
   env.dependency_manifest_present
   env.llm_critical_deps_pinned
   env.lockfile_present

@@ -4,4 +4,4 @@ Importing this package registers every implemented rule; the engine imports it
 before resolving profiles.
 """
 
-from reprollm.rules import code, env, exec_, model  # noqa: F401 — @register_rule side effects
+from reprollm.rules import code, dataset, env, exec_, model  # noqa: F401 — registration

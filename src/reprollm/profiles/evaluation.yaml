@@ -3,7 +3,11 @@ schema_version: 1
 name: evaluation
 description: Benchmark and evaluation experiments (datasets and metrics).
 extends: [inference]
-rules: []
+rules:
+  - dataset.declared
+  - dataset.preprocessing_declared
+  - dataset.sampling_seed_declared
+  - dataset.subset_declared
 required_fields:
   - datasets.eval.id
   - evaluation.metrics

@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, first half)
 
+- Five Level 1 dataset rules for role declarations, Hugging Face split/subset,
+  preprocessing and sampling seeds, with zero-valued seeds preserved (M3-T02,
+  spec §12.5).
 - Six Level 1 model declaration rules, including per-role API exclusions,
   inference dtype/quantization fallback evidence, adapter detection, and explicit
   remote-code trust declarations (M3-T01, spec §12.4). The trust rule is selected
