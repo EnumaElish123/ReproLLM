@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M3, first half)
+
+- Six Level 1 model declaration rules, including per-role API exclusions,
+  inference dtype/quantization fallback evidence, adapter detection, and explicit
+  remote-code trust declarations (M3-T01, spec §12.4). The trust rule is selected
+  by core per the maintainer-approved correction to spec §6.1.
+
 ### Fixed (M2-fix corrective sprint, 2026-09-10)
 
 - Audit JSON no longer persists the raw invocation path (absolute paths

@@ -4,7 +4,7 @@ description: LLM-as-a-judge evaluation (judge model, prompt, and parameters).
 extends: evaluation
 chain:  llm_judge → evaluation → inference → core
 
-rules (16):
+rules (21):
   code.clean_tree
   code.git_commit
   code.git_repo
@@ -21,6 +21,11 @@ rules (16):
   exec.profile_detection_mismatch
   exec.run_recorded
   exec.seed_declared
+  model.dtype_declared
+  model.primary_declared
+  model.provider_known
+  model.quantization_declared
+  model.trust_remote_code_declared
 
 required fields:
   project.name
