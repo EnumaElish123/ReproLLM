@@ -60,6 +60,20 @@ state, dependency pins, secret files, detected experiment types). With a
 missing to be rebuildable). The output above is real output from an evaluation
 repository — nothing is fabricated.
 
+## What it checks
+
+ReproLLM's deterministic rules cover repository and environment state plus the
+LLM-specific declarations that commonly disappear from experiment records:
+model/provider identity, dtype and quantization, dataset split and preprocessing,
+prompt sources, generation and backend settings, evaluation metrics, judge
+configuration, training hyperparameters, and privacy assumptions. The complete
+[rule catalog](docs/rules.md) records each rule's severity, level, fix, and profile
+membership; the [profile catalog](docs/profiles.md) shows inheritance, required
+fields, severity overrides, and detection signals.
+
+Level 2 rules shown as stubs are selected by the profile system but deliberately
+skipped until lock and runtime verification arrive in later milestones.
+
 ## Commands
 
 | Command | Status | Purpose |

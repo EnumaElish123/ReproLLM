@@ -57,7 +57,7 @@ jobs:
 
       - name: Test
         run: >
-          uv run pytest -q --cov=reprollm --cov-report=xml
+          uv run pytest -q --cov=reprollm --cov-report=xml --cov-fail-under=85
           ${{ matrix.pytest-marker-filter && format('-m "{0}"', matrix.pytest-marker-filter) || '' }}
 
       - name: Schema freshness
@@ -65,6 +65,12 @@ jobs:
         run: |
           uv run reprollm schema export --out /tmp/schemas
           diff -r schemas /tmp/schemas
+
+      - name: Generated documentation freshness
+        if: matrix.schema-check
+        run: |
+          uv run python scripts/gen_rules_doc.py --check
+          uv run python scripts/gen_profiles_doc.py --check
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

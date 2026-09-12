@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, second half)
 
+- Generated rule and profile reference pages with CI freshness checks, a
+  documented Level 1 coverage overview, and an enforced 85% CI coverage floor
+  (M3-T09, spec §§6, 12, 22–23).
 - Complete and intentionally incomplete Level 1 manifests for the HF/vLLM,
   OpenAI judge, and privacy fixtures, with six reviewed JSON snapshots and
   variant-scoped dependency/secret overlays (M3-T08, spec §§3, 6.1, 12, 22).
