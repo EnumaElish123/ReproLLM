@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, first half)
 
+- Five training and four privacy rules for training hyperparameters, complete
+  LoRA adapters, threat models, nonempty mechanism parameters, privacy metrics
+  and attack budgets (M3-T05, spec §§12.10–12.11).
 - Six evaluation and four judge rules for metrics and implementation references,
   aggregation, repetitions, safety definitions/budgets, and independently declared
   judge roles and sampling settings (M3-T04, spec §§12.8–12.9).

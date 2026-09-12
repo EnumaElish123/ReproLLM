@@ -13,5 +13,7 @@ from reprollm.rules import (  # noqa: F401 — registration
     gen,
     judge,
     model,
+    privacy,
     prompt,
+    train,
 )
