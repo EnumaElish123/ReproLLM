@@ -1,4 +1,4 @@
-# rules are completed in M3
+# Presence rules and severity overrides follow spec §6.1.
 schema_version: 1
 name: finetuning
 description: Fine-tuning experiments (method, hyperparameters, adapters).
@@ -18,6 +18,8 @@ required_fields:
   - datasets.train.id
 severity_overrides:
   exec.seed_declared: CRITICAL
+  dataset.declared: CRITICAL
+drift_overrides: {}
 detect:
   imports: [peft, trl, deepspeed, accelerate]
   dependencies: [peft, trl, deepspeed, accelerate]

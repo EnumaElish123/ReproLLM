@@ -9,6 +9,7 @@ import typer
 
 from reprollm.core.errors import UserError
 from reprollm.core.paths import find_root
+from reprollm.core.registry import get_rule
 from reprollm.profiles import loader
 
 app = typer.Typer(help="Inspect experiment profiles.", no_args_is_help=True)
@@ -46,7 +47,7 @@ def show(
         raise UserError(f"unknown profile {name!r} (known profiles: {known})")
 
     chain = loader.inheritance_chain(root, name)
-    resolved = loader.resolve([name], root)
+    resolved = loader.resolve([] if name == "core" else [name], root)
     profile = loader.load_profile(root, name)
 
     typer.echo(f"profile: {name}")
@@ -57,8 +58,25 @@ def show(
     typer.echo(f"chain:  {' → '.join(reversed(chain))}")
     typer.echo("")
     typer.echo(f"rules ({len(resolved.rules)}):")
+    width = max((len(rule_id) for rule_id in resolved.rules), default=4)
+    typer.echo(f"  {'rule':<{width}}  level  default         override  effective       origin")
     for rule_id in resolved.rules:
-        typer.echo(f"  {rule_id}")
+        rule = get_rule(rule_id)
+        assert rule is not None  # resolve validates every selected rule
+        override = resolved.severity_overrides.get(rule_id)
+        origin = f"profile:{resolved.severity_origins[rule_id]}" if override else "default"
+        default = (
+            "(project rule)" if rule.severity_from_project_rule else rule.default_severity.value
+        )
+        effective = override or default
+        if rule.severity_from_project_rule:
+            effective = default
+            origin = "project_rule"
+        label = " (stub, arrives in 0.2.0)" if rule.stub else ""
+        typer.echo(
+            f"  {rule_id:<{width}}  {rule.min_level:<5}  {default:<14}  "
+            f"{override or '-':<8}  {effective:<14}  {origin}{label}"
+        )
     typer.echo("")
     typer.echo("required fields:")
     for field_path in resolved.required_fields:

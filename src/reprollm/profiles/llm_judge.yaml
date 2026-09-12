@@ -1,4 +1,4 @@
-# rules are completed in M3
+# Level 2 rules remain metadata-only stubs until M4.
 schema_version: 1
 name: llm_judge
 description: LLM-as-a-judge evaluation (judge model, prompt, and parameters).
@@ -6,12 +6,17 @@ extends: [evaluation]
 rules:
   - judge.model_declared
   - judge.prompt_declared
+  - judge.prompt_hashed
   - judge.params_declared
+  - judge.pinnability_recorded
   - judge.repetitions_declared
 required_fields:
   - models.judge.id
   - prompts.judge.path
   - evaluation.judge.params.temperature
+severity_overrides: {}
+drift_overrides:
+  "evaluation.judge.*": HIGH
 detect:
   imports: []
   dependencies: []

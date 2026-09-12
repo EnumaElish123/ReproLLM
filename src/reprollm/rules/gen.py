@@ -5,7 +5,17 @@ from __future__ import annotations
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
 from reprollm.rules._presence import PresenceRule
+from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Finding, Severity
+
+
+@register_rule
+class BackendVersionLockedRule(LevelTwoStubRule):
+    id = "gen.backend_version_locked"
+    category = "gen"
+    default_severity = Severity.WARNING
+    description = "The non-API inference backend has an exact locked version."
+    fix_hint = "Run `reprollm lock` to record inference.version in reprollm.lock."
 
 
 @register_rule

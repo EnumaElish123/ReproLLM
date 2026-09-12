@@ -1,4 +1,4 @@
-# rules are completed in M3
+# Presence rules and severity overrides follow spec §6.1.
 schema_version: 1
 name: evaluation
 description: Benchmark and evaluation experiments (datasets and metrics).
@@ -16,7 +16,13 @@ required_fields:
   - datasets.eval.id
   - evaluation.metrics
 severity_overrides:
+  dataset.declared: CRITICAL
+  dataset.revision_pinned: CRITICAL
+  dataset.sampling_seed_declared: CRITICAL
+  eval.metrics_declared: CRITICAL
   exec.seed_declared: CRITICAL
+  gen.seed_declared: CRITICAL
+drift_overrides: {}
 detect:
   imports: [lm_eval, lighteval, inspect_ai, evaluate]
   dependencies: [lm_eval, lighteval, inspect_ai, evaluate]

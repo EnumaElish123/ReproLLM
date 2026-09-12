@@ -7,9 +7,37 @@ from typing import ClassVar
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
 from reprollm.rules._presence import PresenceRule
+from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
 
 _API_PROVIDERS = frozenset({"openai", "openrouter", "anthropic"})
+
+
+@register_rule
+class RevisionPinnedRule(LevelTwoStubRule):
+    id = "model.revision_pinned"
+    category = "model"
+    default_severity = Severity.CRITICAL
+    description = "Every model has a resolved identity or an explicit API pinnability record."
+    fix_hint = "Run `reprollm lock` to resolve models.<role>.revision in reprollm.lock."
+
+
+@register_rule
+class TokenizerPinnedRule(LevelTwoStubRule):
+    id = "model.tokenizer_pinned"
+    category = "model"
+    default_severity = Severity.WARNING
+    description = "Every Hugging Face model has an exact tokenizer revision."
+    fix_hint = "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock."
+
+
+@register_rule
+class ChatTemplateHashedRule(LevelTwoStubRule):
+    id = "model.chat_template_hashed"
+    category = "model"
+    default_severity = Severity.WARNING
+    description = "Every Hugging Face or local model has a chat-template hash or recorded absence."
+    fix_hint = "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock."
 
 
 @register_rule

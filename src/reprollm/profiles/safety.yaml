@@ -1,4 +1,4 @@
-# rules are completed in M3
+# Presence rules and severity overrides follow spec §6.1.
 schema_version: 1
 name: safety
 description: Safety and red-team evaluations (definitions and query budgets).
@@ -9,6 +9,9 @@ rules:
 required_fields:
   - evaluation.definitions.refusal
   - evaluation.definitions.asr
+severity_overrides:
+  eval.definitions_declared: CRITICAL
+drift_overrides: {}
 detect:
   imports: []
   dependencies: []

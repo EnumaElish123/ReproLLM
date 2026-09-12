@@ -23,6 +23,7 @@ from reprollm.schemas.finding import (
     SEVERITY_RANK,
     AuditReport,
     DocumentsSection,
+    Evidence,
     Finding,
     FindingStatus,
     ProfilesSection,
@@ -164,6 +165,11 @@ def run_audit(
             raise InternalError(f"rule {rule_id!r} vanished from the registry")
         if rule_class.min_level > effective:
             continue  # selected but not executed at this level; emits nothing
+        if rule_class.stub:
+            finding = _skipped_finding(rule_class, ctx, "not implemented yet")
+            finding.evidence.append(Evidence(kind="lock", note="not implemented yet"))
+            findings.append(finding)
+            continue
         rule = rule_class()  # rules are stateless; instance carries no config
         if not rule.applies(ctx):
             reason = rule.skip_reason(ctx)
@@ -171,7 +177,14 @@ def run_audit(
             continue
         produced = rule.check(ctx)
         findings.extend(produced if produced else [_pass_finding(rule_class, ctx)])
-    # Severity overrides and suppression wiring arrive in M3.
+    for finding in findings:
+        # PASS and SKIPPED describe execution outcomes, not failure severity.
+        if finding.status != FindingStatus.FAIL or finding.severity_origin == "project_rule":
+            continue
+        override = resolved.severity_overrides.get(finding.rule_id)
+        if override is not None:
+            finding.severity = Severity(override)
+            finding.severity_origin = f"profile:{resolved.severity_origins[finding.rule_id]}"
 
     if diagnostics is not None:
         # Touch every lazy scan the rules may not have reached, then merge.

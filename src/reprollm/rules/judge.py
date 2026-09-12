@@ -5,8 +5,29 @@ from __future__ import annotations
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
 from reprollm.rules._presence import PresenceRule
+from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Finding, Severity
 from reprollm.schemas.manifest import JudgeSpec
+
+
+@register_rule
+class PromptHashedRule(LevelTwoStubRule):
+    id = "judge.prompt_hashed"
+    category = "judge"
+    default_severity = Severity.WARNING
+    description = "The declared judge prompt has a recorded content hash."
+    fix_hint = "Run `reprollm lock` to hash the evaluation.judge.prompt_ref role in reprollm.lock."
+
+
+@register_rule
+class PinnabilityRecordedRule(LevelTwoStubRule):
+    id = "judge.pinnability_recorded"
+    category = "judge"
+    default_severity = Severity.WARNING
+    description = "The declared judge model has an explicit pinnability record."
+    fix_hint = (
+        "Run `reprollm lock` to record pinnability for evaluation.judge.model_ref in reprollm.lock."
+    )
 
 
 def _judge(ctx: AuditContext) -> JudgeSpec | None:

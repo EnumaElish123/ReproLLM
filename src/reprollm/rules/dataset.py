@@ -7,7 +7,26 @@ from typing import ClassVar
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
 from reprollm.rules._presence import PresenceRule
+from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Finding, Severity
+
+
+@register_rule
+class RevisionPinnedRule(LevelTwoStubRule):
+    id = "dataset.revision_pinned"
+    category = "dataset"
+    default_severity = Severity.WARNING
+    description = "Every Hugging Face dataset has an exact resolved revision."
+    fix_hint = "Run `reprollm lock` to resolve datasets.<role>.revision in reprollm.lock."
+
+
+@register_rule
+class LocalFilesHashedRule(LevelTwoStubRule):
+    id = "dataset.local_files_hashed"
+    category = "dataset"
+    default_severity = Severity.CRITICAL
+    description = "Every declared local dataset file has a recorded hash."
+    fix_hint = "Run `reprollm lock` to hash datasets.<role>.files in reprollm.lock."
 
 
 @register_rule

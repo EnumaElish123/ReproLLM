@@ -6,6 +6,7 @@ before resolving profiles.
 
 from reprollm.rules import (  # noqa: F401 — registration
     code,
+    consistency,
     dataset,
     env,
     eval_,

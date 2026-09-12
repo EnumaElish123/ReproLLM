@@ -16,7 +16,7 @@ import yaml
 from pydantic import ValidationError
 
 from reprollm.core.errors import UserError
-from reprollm.core.registry import known_rule_ids
+from reprollm.core.registry import get_rule, known_rule_ids
 from reprollm.schemas.profile import AuditSeverity, DetectSignals, DriftSeverity, Profile
 
 
@@ -28,6 +28,7 @@ class ResolvedProfiles:
         names: list[str],
         rules: list[str],
         severity_overrides: dict[str, AuditSeverity],
+        severity_origins: dict[str, str],
         drift_overrides: dict[str, DriftSeverity],
         required_fields: list[str],
         detect: DetectSignals,
@@ -35,6 +36,7 @@ class ResolvedProfiles:
         self.names = names
         self.rules = rules
         self.severity_overrides = severity_overrides
+        self.severity_origins = severity_origins
         self.drift_overrides = drift_overrides
         self.required_fields = required_fields
         self.detect = detect
@@ -142,16 +144,33 @@ def resolve(names: list[str], root: Path | None = None) -> ResolvedProfiles:
 
     profiles = [load_profile(root, name) for name in ordered]
 
+    referenced = {
+        rule_id for profile in profiles for rule_id in [*profile.rules, *profile.severity_overrides]
+    }
+    unknown = sorted(referenced - known_rule_ids())
+    if unknown:
+        raise UserError(
+            f"profile references unknown rule IDs: {', '.join(unknown)}; "
+            "run `reprollm profiles list` and check the profile YAML"
+        )
+
     rules: list[str] = []
     required_fields: list[str] = []
     severity_overrides: dict[str, AuditSeverity] = {}
+    severity_origins: dict[str, str] = {}
     drift_overrides: dict[str, DriftSeverity] = {}
     detect = DetectSignals()
-    for profile in profiles:  # parents first ⇒ child wins on overrides
+    for name, profile in zip(ordered, profiles, strict=True):
         for rule_id in profile.rules:
-            if rule_id not in rules:
-                rules.append(rule_id)
-        severity_overrides.update(profile.severity_overrides)
+            rule = get_rule(rule_id)
+            assert rule is not None  # all references were validated above
+            if rule.id not in rules:
+                rules.append(rule.id)
+        for rule_id, severity in profile.severity_overrides.items():
+            rule = get_rule(rule_id)
+            assert rule is not None
+            severity_overrides[rule.id] = severity
+            severity_origins[rule.id] = name
         drift_overrides.update(profile.drift_overrides)
         for field_path in profile.required_fields:
             if field_path not in required_fields:
@@ -163,16 +182,11 @@ def resolve(names: list[str], root: Path | None = None) -> ResolvedProfiles:
         detect.keywords.extend(k for k in profile.detect.keywords if k not in detect.keywords)
         detect.files.extend(f for f in profile.detect.files if f not in detect.files)
 
-    unknown = sorted(set(rules) - known_rule_ids())
-    if unknown:
-        raise UserError(
-            f"profile references unknown rule IDs: {', '.join(unknown)}; "
-            "run `reprollm profiles list` and check the profile YAML"
-        )
     return ResolvedProfiles(
         names=ordered,
         rules=sorted(rules),
         severity_overrides=severity_overrides,
+        severity_origins=severity_origins,
         drift_overrides=drift_overrides,
         required_fields=required_fields,
         detect=detect,

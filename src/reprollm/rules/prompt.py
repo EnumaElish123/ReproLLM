@@ -5,7 +5,17 @@ from __future__ import annotations
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
 from reprollm.rules._presence import PresenceRule
+from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
+
+
+@register_rule
+class HashedRule(LevelTwoStubRule):
+    id = "prompt.hashed"
+    category = "prompt"
+    default_severity = Severity.WARNING
+    description = "Every prompt role has a recorded content hash."
+    fix_hint = "Run `reprollm lock` to hash prompts.<role> in reprollm.lock."
 
 
 @register_rule

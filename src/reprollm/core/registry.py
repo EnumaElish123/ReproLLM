@@ -32,6 +32,8 @@ class Rule:
     description: ClassVar[str]
     fix_hint: ClassVar[str]
     aliases: ClassVar[tuple[str, ...]] = ()
+    stub: ClassVar[bool] = False
+    severity_from_project_rule: ClassVar[bool] = False
 
     def applies(self, ctx: AuditContext) -> bool:
         return True

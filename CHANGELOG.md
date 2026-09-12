@@ -7,6 +7,19 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M3, second half)
+
+- Complete built-in profile rule selections and severity overrides, with
+  most-derived override origins in audit findings and profile inspection.
+  Add 15 explicitly skipped Level 2 placeholders and preserve project-owned
+  severity metadata without implementing lock or runtime checks (M3-T06,
+  spec §§6.1, 11–12, 18.2).
+
+### Fixed (M3, second half)
+
+- Allow `reprollm profiles show core` while continuing to reject explicitly
+  selecting core in a manifest or `audit --profiles` (M3-T06).
+
 ### Added (M3, first half)
 
 - Five training and four privacy rules for training hyperparameters, complete

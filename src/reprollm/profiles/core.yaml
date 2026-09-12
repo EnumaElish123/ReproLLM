@@ -1,6 +1,6 @@
 # The implicit baseline profile; always included and never listed in
-# experiment.profiles (spec §6). Rules are completed sprint by sprint:
-# M3 adds the L1 catalog, M4 the L2 rules.
+# experiment.profiles (spec §6). Level 2 entries are metadata-only stubs in M3.
+# project.* entries are generated from accepted project rules in M7 (§12.13).
 schema_version: 1
 name: core
 description: Baseline rules applied to every repository.
@@ -23,10 +23,24 @@ rules:
   - exec.profile_detection_mismatch
   - model.primary_declared
   - model.provider_known
+  - model.revision_pinned
+  - model.tokenizer_pinned
   - model.dtype_declared
   - model.trust_remote_code_declared
+  - dataset.revision_pinned
   - dataset.split_declared
+  - dataset.local_files_hashed
   - prompt.file_exists
+  - prompt.hashed
+  - gen.backend_version_locked
+  - consistency.lock_fresh
+  - consistency.file_hashes
+  - consistency.generation_params
+  - consistency.model_identity
+  - consistency.env_vs_lock
+  - consistency.custom_fields
 required_fields:
   - project.name
   - models.primary.id
+severity_overrides: {}
+drift_overrides: {}

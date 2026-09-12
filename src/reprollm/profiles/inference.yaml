@@ -1,10 +1,11 @@
-# rules are completed in M3
+# Level 2 rules remain metadata-only stubs until M4.
 schema_version: 1
 name: inference
 description: LLM inference experiments (generation parameters and backend).
 extends: [core]
 rules:
   - model.quantization_declared
+  - model.chat_template_hashed
   - gen.params_declared
   - gen.backend_declared
   - gen.backend_config_declared
@@ -16,6 +17,11 @@ required_fields:
   - inference.backend
   - generation.temperature
   - generation.max_tokens
+severity_overrides:
+  gen.params_declared: CRITICAL
+  gen.backend_declared: CRITICAL
+  model.quantization_declared: WARNING
+drift_overrides: {}
 detect:
   imports: [vllm, sglang]
   dependencies: [vllm, sglang]
