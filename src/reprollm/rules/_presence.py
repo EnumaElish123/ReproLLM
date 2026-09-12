@@ -16,6 +16,19 @@ class PresenceRule(Rule):
     def skip_reason(self, ctx: AuditContext) -> str:
         return "no manifest" if ctx.manifest is None else "no applicable declarations"
 
+    def required_fields(self, ctx: AuditContext, fields: dict[str, object]) -> list[Finding]:
+        missing = sorted(field for field, value in fields.items() if value is None)
+        if not missing:
+            return []
+        return [
+            self.finding(
+                ctx,
+                message="Missing fields: " + ", ".join(missing),
+                evidence=[Evidence(kind="field", field=field, note="absent") for field in missing],
+                fix_hint="Set " + ", ".join(missing) + " in reprollm.yaml.",
+            )
+        ]
+
     def field_result(
         self,
         ctx: AuditContext,

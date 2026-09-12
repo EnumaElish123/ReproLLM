@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M3, first half)
 
+- Five generation/backend rules and three prompt rules, including conditional
+  sampling seeds, vLLM fields, explicit stop/few-shot declarations and prompt
+  file existence without reading prompt contents (M3-T03, spec §§12.6–12.7).
 - Five Level 1 dataset rules for role declarations, Hugging Face split/subset,
   preprocessing and sampling seeds, with zero-valued seeds preserved (M3-T02,
   spec §12.5).
