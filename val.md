@@ -38,6 +38,16 @@ additional sixth target.
 | HarmBench | [centerforaisafety/HarmBench](https://github.com/centerforaisafety/HarmBench) | `8e1604d1171fe8a48d8febecd22f600e462bdcdd` | `../dogfooding/HarmBench` |
 | llm-dp-finetune | [jyhong836/llm-dp-finetune](https://github.com/jyhong836/llm-dp-finetune) | `7f8b5dff4b92aae90ceccce3ec959b48307bed9e` | `../dogfooding/llm-dp-finetune` |
 
+Sprint documents use stable aliases for the first two end-to-end dogfooding targets:
+
+- **Project A** is `lm-evaluation-harness` at the pinned commit above. It exercises the local
+  Hugging Face and vLLM evaluation path and is the target already used by M2-T10.
+- **Project B** is `FastChat` at the pinned commit above. Its MT-Bench workflow exercises an
+  OpenAI-backed LLM judge through `OPENAI_API_KEY` and a concrete `gen_judgment.py` command.
+
+These aliases always inherit the pinned commit and checkout path from this table. They do not
+refer to the similarly shaped golden fixtures under `tests/fixtures/repos/`.
+
 Clone once, then detach at the required commit. Never commit these repositories, their model
 weights, data, generated manifests, or run artifacts into ReproLLM.
 
