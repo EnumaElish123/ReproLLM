@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from rich.text import Text
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app, cli
@@ -142,8 +143,9 @@ def test_lock_without_manifest_exits_two(
 def test_lock_help_exposes_all_m4_options() -> None:
     result = runner.invoke(app, ["lock", "--help"])
     assert result.exit_code == 0
+    output = Text.from_ansi(result.output).plain
     for option in ("--offline", "--check", "--verify-api", "--hash-large-files"):
-        assert option in result.output
+        assert option in output
 
 
 def test_lock_file_is_yaml_not_json(materialize, stub_run_cmd) -> None:
