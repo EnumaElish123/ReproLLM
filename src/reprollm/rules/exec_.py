@@ -120,8 +120,9 @@ class ProfileDetectionMismatchRule(Rule):
     min_level = 1
     description = "Declared profiles and detected signals agree."
     fix_hint = (
-        "Adjust experiment.profiles in reprollm.yaml to match what the repository "
-        "actually contains (see the detection evidence)."
+        "Review experiment.profiles in reprollm.yaml against the detection evidence; "
+        "add or remove a profile only to describe the selected experiment. Capabilities "
+        "used by other repository workflows need no manifest change."
     )
 
     def applies(self, ctx: AuditContext) -> bool:
@@ -132,6 +133,7 @@ class ProfileDetectionMismatchRule(Rule):
 
     def check(self, ctx: AuditContext) -> list[Finding]:
         declared = ctx.declared_profiles
+        effective = set(ctx.resolved_profiles or declared)
         detected = {entry.profile: entry for entry in ctx.detection.profiles}
         findings: list[Finding] = []
 
@@ -159,7 +161,7 @@ class ProfileDetectionMismatchRule(Rule):
         for name, entry in sorted(detected.items()):
             if entry.confidence != "high" or not entry.shipped:
                 continue  # only high-confidence, shippable profiles are expected to be declared
-            if name in declared:
+            if name in effective:
                 continue
             findings.append(
                 self.finding(

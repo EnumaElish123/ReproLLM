@@ -7,8 +7,8 @@ It records the LLM-specific state that other tools ignore — model revisions, t
 chat-template hashes, prompt hashes, generation parameters, LLM-as-a-Judge configuration,
 and the pinnability of closed-source API models — and tells you why two runs differ.
 
-**Status: pre-alpha (0.0.x).** Audit Level 0 works (`reprollm audit`); the manifest, lock,
-run capture, diff, and export commands arrive over the coming weeks.
+**Status: alpha (0.1.1).** Audit Level 0/1, manifest scaffolding, and the seven built-in
+profiles are usable. Lock, run capture, diff, and export arrive in later milestones.
 
 ## Documentation map
 
@@ -16,6 +16,10 @@ run capture, diff, and export commands arrive over the coming weeks.
   boundaries, and the frozen decision register (D-01 … D-42)
 - [Beta specification](plan/01_specification.md) — CLI contract, schemas, rule catalog,
   redaction policy, diff semantics
+- [Manifest guide](manifest.md) — map model/data/prompt roles, execution settings, and
+  detected candidates into one concrete experiment
+- [Rule catalog](rules.md) and [profile catalog](profiles.md) — Level 1 checks,
+  inheritance, severities, and detection signals
 - [Adoption metrics](adoption.md) — updated monthly from week 1 (D-37)
 
 ## Commands (current)
@@ -24,9 +28,11 @@ run capture, diff, and export commands arrive over the coming weeks.
 |---|---|
 | `reprollm --version` | available |
 | `reprollm doctor [--json] [--check-network]` | available |
-| `reprollm audit [PATH] [--format text\|json] ...` | Level 0 (two `code.*` rules); Level 1/2 grow over M2–M6 |
+| `reprollm audit [PATH] [--format text\|json] ...` | available at Level 0/1; Level 2 rules are visible stubs |
 | `reprollm schema export [--out DIR]` | available |
-| `reprollm init` / `lock` / `run` / `diff` / `export` / `discover` | planned — see the roadmap |
+| `reprollm init` | available |
+| `reprollm profiles list/show` | available |
+| `reprollm lock` / `run` / `diff` / `export` / `discover` | planned — see the roadmap |
 
 ## Core principle
 

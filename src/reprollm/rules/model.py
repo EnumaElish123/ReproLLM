@@ -170,25 +170,28 @@ class TrustRemoteCodeDeclaredRule(PresenceRule):
     id = "model.trust_remote_code_declared"
     category = "model"
     default_severity = Severity.WARNING
-    description = "Detected remote-code trust is explicitly declared."
-    fix_hint = "Set models.<role>.trust_remote_code: true in reprollm.yaml for the relevant model."
+    description = "Detected remote-code trust behavior is explicitly declared."
+    fix_hint = (
+        "Set models.<role>.trust_remote_code to true or false in reprollm.yaml "
+        "to match the selected execution path."
+    )
 
     def applies(self, ctx: AuditContext) -> bool:
         return ctx.manifest is not None and ctx.detection.hints.trust_remote_code
 
     def check(self, ctx: AuditContext) -> list[Finding]:
         assert ctx.manifest is not None
-        if any(model.trust_remote_code is True for model in ctx.manifest.models.values()):
+        if any(model.trust_remote_code is not None for model in ctx.manifest.models.values()):
             return []
         return [
             self.finding(
                 ctx,
-                message="models has no trust_remote_code: true declaration despite detected use",
+                message="models has no explicit trust_remote_code declaration despite detected use",
                 evidence=[
                     Evidence(
                         kind="field",
                         field=f"models.{role}.trust_remote_code",
-                        note="not declared true",
+                        note="absent",
                     )
                     for role in sorted(ctx.manifest.models)
                 ]

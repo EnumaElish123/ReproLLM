@@ -207,9 +207,9 @@ def _build_sections(
                 value, path, line = primary_detection
                 node[parts[-1]] = _leaf(
                     value=value,
-                    comment=f"detected: {path}:{line}",
+                    comment=f"detected candidate; verify role: {path}:{line}",
                     todo=False,
-                    extra=[f"also detected: {p}:{ln}" for _v, p, ln in other_detections],
+                    extra=[f"also detected candidate: {p}:{ln}" for _v, p, ln in other_detections],
                 )
             else:
                 node[parts[-1]] = _leaf()

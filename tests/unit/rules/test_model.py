@@ -151,26 +151,26 @@ def test_adapter_only_required_when_detected(tmp_path: Path) -> None:
     assert not failures(rule.check(present))
 
 
-@pytest.mark.parametrize("value", [None, False])
-def test_trust_remote_code_requires_explicit_true(tmp_path: Path, value) -> None:
+def test_trust_remote_code_requires_explicit_boolean(tmp_path: Path) -> None:
     rule = TrustRemoteCodeDeclaredRule()
     assert not rule.applies(context(tmp_path))
     ctx = context(
         tmp_path,
         hints=DetectionHints(trust_remote_code=True),
-        models={"primary": {"trust_remote_code": value}},
+        models={"primary": {}},
     )
     assert rule.applies(ctx)
     result = failures(rule.check(ctx))
     assert len(result) == 1
     assert result[0].evidence[0].field == "models.primary.trust_remote_code"
     assert result[0].severity == Severity.WARNING
-    present = context(
-        tmp_path,
-        hints=DetectionHints(trust_remote_code=True),
-        models={"judge": {"trust_remote_code": True}},
-    )
-    assert not failures(rule.check(present))
+    for value in (False, True):
+        present = context(
+            tmp_path,
+            hints=DetectionHints(trust_remote_code=True),
+            models={"judge": {"trust_remote_code": value}},
+        )
+        assert not failures(rule.check(present))
 
 
 def test_model_rules_selected_by_profiles(tmp_path: Path) -> None:
@@ -193,8 +193,15 @@ def test_privacy_fixture_trust_gap_and_complete(tmp_path: Path) -> None:
         "experiment": {"profiles": ["privacy"]},
         "models": {"primary": {"provider": "huggingface", "id": "org/model"}},
     }
-    for value, expected in [(False, FindingStatus.FAIL), (True, FindingStatus.PASS)]:
-        data["models"]["primary"]["trust_remote_code"] = value
+    for value, expected in [
+        (None, FindingStatus.FAIL),
+        (False, FindingStatus.PASS),
+        (True, FindingStatus.PASS),
+    ]:
+        if value is None:
+            data["models"]["primary"].pop("trust_remote_code", None)
+        else:
+            data["models"]["primary"]["trust_remote_code"] = value
         (repo / "reprollm.yaml").write_text(dump_yaml(data), encoding="utf-8")
         report = run_audit(repo)
         result = [f for f in report.findings if f.rule_id == "model.trust_remote_code_declared"]

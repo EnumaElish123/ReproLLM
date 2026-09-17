@@ -476,7 +476,7 @@ CLI flags override config; config overrides defaults.
 
 ```json
 {
-  "schema_version": 1, "reprollm_version": "0.1.0", "generated_at": "…Z",
+  "schema_version": 1, "reprollm_version": "0.1.1", "generated_at": "…Z",
   "target": ".", "level": 1,
   "profiles": { "declared": ["inference", "evaluation"], "resolved": ["core", "inference", "evaluation"], "detected": [ { "profile": "llm_judge", "confidence": "medium", "evidence": [ { "kind": "detection", "path": "README.md", "line": 12, "note": "keyword 'judge'" } ] } ] },
   "documents": { "manifest": "sha256:… | null", "lock": "sha256:… | null", "runs": 3 },
@@ -553,7 +553,7 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 | `model.dtype_declared` | WARNING | 1 | per model, provider ∉ {openai, openrouter, anthropic} | `dtype` absent and `inference.dtype` absent |
 | `model.quantization_declared` | INFO | 1 | per model, non-API | `quantization` absent and `inference.quantization` absent |
 | `model.adapter_declared` | WARNING | 1 | detection found `peft` import or dependency | no model has `adapter` |
-| `model.trust_remote_code_declared` **P1** | WARNING | 1 | scanner finds `trust_remote_code=True` in `*.py` | no model has `trust_remote_code: true` |
+| `model.trust_remote_code_declared` **P1** | WARNING | 1 | scanner finds `trust_remote_code=True` in `*.py` | no model explicitly declares `trust_remote_code: true` or `trust_remote_code: false` |
 
 ### 12.5 `dataset.*` (M3, M4)
 

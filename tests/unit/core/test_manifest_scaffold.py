@@ -43,6 +43,8 @@ def test_render_manifest_is_stable(tmp_path: Path) -> None:
     second = render_manifest(plan, {})
     assert first == second
     assert "id: Qwen/Qwen3-32B" in first
+    assert "detected candidate; verify role:" in first
+    assert "Detected values are candidates" in first
     assert "profiles: [evaluation, inference]" in first
 
 

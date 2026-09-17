@@ -6,7 +6,7 @@
 
 > Make LLM experiments reproducible.
 
-**Status: alpha (0.1.0). Audit Level 0/1 and `init` are usable; `lock`, `run`, and
+**Status: alpha (0.1.1). Audit Level 0/1 and `init` are usable; `lock`, `run`, and
 `diff` arrive in 0.2–0.4.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
@@ -27,7 +27,7 @@ happened, independent of what was declared. An optional, opt-in LLM step only pr
 *candidates* for project-specific parameters; a candidate takes effect only after you
 explicitly accept it.
 
-## Quick start (0.1.0)
+## Quick start (0.1.1)
 
 ```console
 $ pip install reprollm
@@ -70,6 +70,10 @@ configuration, training hyperparameters, and privacy assumptions. The complete
 [rule catalog](docs/rules.md) records each rule's severity, level, fix, and profile
 membership; the [profile catalog](docs/profiles.md) shows inheritance, required
 fields, severity overrides, and detection signals.
+
+The [manifest guide](docs/manifest.md) explains model and dataset roles,
+generation versus judge settings, implementation references, execution
+bindings, and how to review repository-wide detections in multi-workflow codebases.
 
 Level 2 rules shown as stubs are selected by the profile system but deliberately
 skipped until lock and runtime verification arrive in later milestones.

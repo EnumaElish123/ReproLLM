@@ -51,6 +51,10 @@ class AuditContext:
         #: Profiles the user declared (manifest or --profiles); set by the engine
         #: before rules run; feeds exec.profile_detection_mismatch.
         self.declared_profiles: list[str] = []
+        #: Effective profile inheritance closure. Detection mismatches compare
+        #: high-confidence signals against this list so an inherited profile is
+        #: not reported as missing.
+        self.resolved_profiles: list[str] = []
         self._git: GitInfo | None = None
         self._fs: RepoScanner | None = None
         self._deps: Declarations | None = None

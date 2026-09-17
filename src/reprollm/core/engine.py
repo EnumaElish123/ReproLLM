@@ -167,6 +167,7 @@ def run_audit(
         config=config,
     )
     ctx.declared_profiles = declared
+    ctx.resolved_profiles = resolved.names
 
     findings: list[Finding] = []
     for rule_id in resolved.rules:

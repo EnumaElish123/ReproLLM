@@ -7,6 +7,26 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-17
+
+M3 completes all 38 Level 1 LLM experiment rules and finalizes the seven built-in
+profiles: `core`, `inference`, `evaluation`, `llm_judge`, `finetuning`, `privacy`,
+and `safety`.
+
+An intentionally incomplete OpenAI judge manifest now reports the missing judge
+sampling contract directly:
+
+```text
+CRITICAL (1)
+  X judge.params_declared      Missing fields: evaluation.judge.params.max_tokens, evaluation.judge.params.temperature
+      evaluation.judge.params.max_tokens (absent)
+      evaluation.judge.params.temperature (absent)
+      fix: Set evaluation.judge.params.max_tokens, evaluation.judge.params.temperature in reprollm.yaml.
+
+28 passed · 0 suppressed · 11 skipped
+Result: FAIL (1 critical, 2 warning)
+```
+
 ### Added (M3, second half)
 
 - Generated rule and profile reference pages with CI freshness checks, a
@@ -28,8 +48,22 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed (M3, second half)
 
+- Treat either explicit boolean value for `models.<role>.trust_remote_code` as
+  satisfying the repository-wide detection rule, matching the selected
+  execution path without encouraging an inaccurate `true` declaration
+  ([#1](https://github.com/EnumaElish123/ReproLLM/issues/1), M3-T10, spec §12.4).
+- Compare detected profiles with the resolved inheritance closure, so a profile
+  inherited by the selected experiment is not reported as undeclared. Clarify
+  that unrelated repository capabilities do not need to be added to the
+  manifest (M3-T10, spec §§6, 12.3).
 - Allow `reprollm profiles show core` while continuing to reject explicitly
   selecting core in a manifest or `audit --profiles` (M3-T06).
+
+### Documentation (M3-T10)
+
+- Mark statically detected model IDs as candidates whose experiment role must
+  be verified, add a practical manifest guide, and record Project A/B Level 1
+  dogfooding findings and their disposition.
 
 ### Added (M3, first half)
 
@@ -145,6 +179,7 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/EnumaElish123/ReproLLM/releases/tag/v0.0.1

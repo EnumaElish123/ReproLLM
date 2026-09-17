@@ -122,6 +122,16 @@ def test_mismatch_high_detected_undeclared(tmp_path: Path) -> None:
     assert "evaluation" not in messages
 
 
+def test_mismatch_accepts_inherited_detected_profile(tmp_path: Path) -> None:
+    repo = materialize_repo("hf_vllm_eval", tmp_path)
+    write_manifest(repo, MINIMAL_MANIFEST.replace("[inference]", "[evaluation]"))
+    report = run_audit(repo)
+    mismatch = [f for f in report.findings if f.rule_id == "exec.profile_detection_mismatch"]
+    messages = " | ".join(f.message for f in mismatch)
+    # evaluation inherits inference, so the high-confidence inference signal is covered.
+    assert "detected profile 'inference'" not in messages
+
+
 def test_level0_forced_downgrade_hides_exec(tmp_path: Path) -> None:
     repo = materialize_repo("hf_vllm_eval", tmp_path)
     write_manifest(repo, MINIMAL_MANIFEST)
