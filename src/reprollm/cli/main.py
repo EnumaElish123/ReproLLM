@@ -11,7 +11,7 @@ import traceback
 import typer
 
 from reprollm import __version__
-from reprollm.cli import audit, doctor, profiles, schema
+from reprollm.cli import audit, doctor, lock, profiles, schema
 from reprollm.cli import init as init_cmd
 from reprollm.core.errors import ReproLLMError, UserError
 
@@ -26,6 +26,7 @@ app.add_typer(profiles.app, name="profiles")
 app.command()(audit.audit)
 app.command()(doctor.doctor)
 app.command(name="init")(init_cmd.init)
+app.command(name="lock")(lock.lock)
 
 #: Global CLI flags set by the callback before any command runs; read by the
 #: exception boundary in :func:`cli` (verbose → internal tracebacks).

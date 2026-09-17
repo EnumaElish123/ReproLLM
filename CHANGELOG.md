@@ -15,6 +15,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Resolve Hugging Face, API, and local model and dataset identities; hash prompts,
   declared files, metrics, local metadata, adapters, and bounded weights; and capture
   backend and environment provenance in online and offline modes (M4-T02, spec §4).
+- Add `reprollm lock` with atomic deterministic YAML writes, offline and optional API
+  verification modes, large-weight control, provenance summaries, and a network-free
+  `--check` freshness path with exit code 1 for missing or stale locks (M4-T03, spec §§1, 4).
 
 ## [0.1.1] - 2026-09-17
 

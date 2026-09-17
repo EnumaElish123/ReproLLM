@@ -14,6 +14,7 @@ import yaml
 from pydantic import BaseModel, ValidationError
 
 from reprollm.core.errors import UserError
+from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 
 #: Very large width so PyYAML never folds long lines (reviewable diffs).
@@ -58,6 +59,23 @@ def load_manifest(path: Path) -> Manifest:
         return Manifest.model_validate(data)
     except ValidationError as exc:
         raise UserError(f"invalid manifest {path}:\n{_format_validation_error(exc)}") from exc
+
+
+def load_lock(path: Path) -> Lock:
+    """Load and validate ``reprollm.lock`` with an actionable schema diagnostic."""
+    data = load_yaml(path)
+    version = data.get("schema_version")
+    if isinstance(version, int) and version > 1:
+        raise UserError(
+            f"{path} uses newer schema_version {version}; upgrade ReproLLM before reading it"
+        )
+    try:
+        return Lock.model_validate(data)
+    except ValidationError as exc:
+        raise UserError(
+            f"invalid lock {path}; run `reprollm lock` to regenerate it:\n"
+            f"{_format_validation_error(exc)}"
+        ) from exc
 
 
 def _format_validation_error(exc: ValidationError) -> str:
