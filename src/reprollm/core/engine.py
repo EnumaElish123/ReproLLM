@@ -31,6 +31,7 @@ from reprollm.schemas.finding import (
     Severity,
     Summary,
 )
+from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 
 
@@ -74,6 +75,15 @@ def _load_manifest(root: Path) -> Manifest | None:
     from reprollm.core.yaml_io import load_manifest
 
     return load_manifest(path)
+
+
+def _load_lock(root: Path) -> Lock | None:
+    path = root / "reprollm.lock"
+    if not path.is_file():
+        return None
+    from reprollm.core.yaml_io import load_lock
+
+    return load_lock(path)
 
 
 def _skipped_finding(rule: type[Rule], ctx: AuditContext, reason: str | None) -> Finding:
@@ -147,6 +157,7 @@ def run_audit(
 
     config = load_config(root) if config is None else config
     manifest = _load_manifest(root)
+    lock = _load_lock(root)
 
     detected = detect_level(paths)
     effective = detected if level is None else min(level, detected)
@@ -162,7 +173,7 @@ def run_audit(
         level=effective,
         target=target,
         manifest=manifest,
-        lock=None,  # lock loading arrives in M4
+        lock=lock,
         runs=[],  # run record loading arrives in M5
         config=config,
     )

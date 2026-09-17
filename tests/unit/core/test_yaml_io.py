@@ -6,7 +6,7 @@ import pytest
 import yaml
 
 from reprollm.core.errors import UserError
-from reprollm.core.yaml_io import dump_yaml, load_manifest, load_yaml
+from reprollm.core.yaml_io import dump_yaml, load_lock, load_manifest, load_yaml
 from reprollm.schemas.manifest import Manifest
 
 
@@ -82,6 +82,18 @@ def test_load_manifest_valid(tmp_path: Path) -> None:
     )
     m = load_manifest(path)
     assert m.project.name == "p"
+
+
+def test_load_lock_rejects_newer_schema_with_upgrade_hint(tmp_path: Path) -> None:
+    path = _write(tmp_path / "reprollm.lock", "schema_version: 2\n")
+    with pytest.raises(UserError, match="newer schema_version 2.*upgrade ReproLLM"):
+        load_lock(path)
+
+
+def test_load_lock_invalid_has_regeneration_hint(tmp_path: Path) -> None:
+    path = _write(tmp_path / "reprollm.lock", "schema_version: 1\nmodels: []\n")
+    with pytest.raises(UserError, match=r"invalid lock.*reprollm lock"):
+        load_lock(path)
 
 
 def test_load_yaml_datetimes_as_iso_z(tmp_path: Path) -> None:

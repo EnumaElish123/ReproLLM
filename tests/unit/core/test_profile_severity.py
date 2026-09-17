@@ -1,5 +1,6 @@
 """Profile severity ownership and unfinished-rule boundaries (M3-T06)."""
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -10,10 +11,12 @@ from reprollm.core import registry
 from reprollm.core.context import AuditContext
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
+from reprollm.core.hashing import sha256_file
 from reprollm.core.yaml_io import dump_yaml
 from reprollm.profiles import loader
 from reprollm.rules.gen import ParamsDeclaredRule
 from reprollm.schemas.finding import Finding, FindingStatus, Severity
+from reprollm.schemas.lock import Lock, ResolutionMode
 
 
 def manifest(root: Path, profiles: list[str], **sections: object) -> None:
@@ -150,7 +153,13 @@ def test_stubs_never_run_or_synthesize_pass(
     monkeypatch.setattr(rule, "check", unexpected)
     manifest(tmp_path, [])
     assert not any(f.rule_id == rule.id for f in run_audit(tmp_path).findings)
-    (tmp_path / "reprollm.lock").write_text("schema_version: 1\n", encoding="utf-8")
+    lock = Lock(
+        reprollm_version="0.1.1",
+        generated_at=datetime(2026, 10, 1, tzinfo=timezone.utc),
+        manifest_sha256=sha256_file(tmp_path / "reprollm.yaml"),
+        resolution=ResolutionMode(mode="offline"),
+    )
+    (tmp_path / "reprollm.lock").write_text(dump_yaml(lock), encoding="utf-8")
     finding = next(f for f in run_audit(tmp_path).findings if f.rule_id == rule.id)
     assert finding.status == FindingStatus.SKIPPED
     assert finding.severity == Severity.INFO

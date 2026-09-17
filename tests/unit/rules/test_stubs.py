@@ -21,16 +21,14 @@ M4_RULES = {
     "judge.pinnability_recorded": Severity.WARNING,
 }
 
-CONSISTENCY_RULES = {
-    "consistency.lock_fresh": Severity.WARNING,
-    "consistency.file_hashes": Severity.CRITICAL,
+CONSISTENCY_STUB_RULES = {
     "consistency.generation_params": Severity.CRITICAL,
     "consistency.model_identity": Severity.CRITICAL,
     "consistency.env_vs_lock": Severity.WARNING,
 }
 
 
-@pytest.mark.parametrize("rule_id,severity", sorted((M4_RULES | CONSISTENCY_RULES).items()))
+@pytest.mark.parametrize("rule_id,severity", sorted((M4_RULES | CONSISTENCY_STUB_RULES).items()))
 def test_l2_stub_metadata_and_empty_check(rule_id: str, severity: Severity, tmp_path: Path) -> None:
     rule_type = get_rule(rule_id)
     assert rule_type is not None, f"unregistered M4 placeholder: {rule_id}"
@@ -49,6 +47,21 @@ def test_level_zero_and_one_rules_are_not_stubs() -> None:
         for rule_type in all_rules()
         if rule_type.min_level < 2
     )
+
+
+@pytest.mark.parametrize(
+    ("rule_id", "severity"),
+    [
+        ("consistency.lock_fresh", Severity.WARNING),
+        ("consistency.file_hashes", Severity.CRITICAL),
+    ],
+)
+def test_m4_consistency_rules_are_implemented(rule_id: str, severity: Severity) -> None:
+    rule_type = get_rule(rule_id)
+    assert rule_type is not None
+    assert rule_type.min_level == 2
+    assert rule_type.stub is False
+    assert rule_type.default_severity == severity
 
 
 def test_custom_fields_stub_preserves_project_rule_severity(tmp_path: Path) -> None:

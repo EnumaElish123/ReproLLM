@@ -18,6 +18,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add `reprollm lock` with atomic deterministic YAML writes, offline and optional API
   verification modes, large-weight control, provenance summaries, and a network-free
   `--check` freshness path with exit code 1 for missing or stale locks (M4-T03, spec §§1, 4).
+- Load and validate locks during audit, auto-detect Level 2, report manifest and accepted
+  project-rule staleness independently, and compare locked prompt/config hashes with the
+  current working tree using repository-contained paths (M4-T04, spec §§9–12.12).
 
 ## [0.1.1] - 2026-09-17
 
