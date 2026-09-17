@@ -1,0 +1,1 @@
+"""Lock resolver tests."""

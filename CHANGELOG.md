@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M4, first half)
+
+- Add a bounded Hugging Face Hub HTTP client with mirror support, environment-based
+  authentication, sanitized errors, and deterministic retry behavior, backed by a
+  hand-written offline response corpus (M4-T01, spec §4.3 and §22 T-04).
+
 ## [0.1.1] - 2026-09-17
 
 M3 completes all 38 Level 1 LLM experiment rules and finalizes the seven built-in
