@@ -144,7 +144,7 @@ def test_unknown_override_id_is_user_error(tmp_path: Path) -> None:
 def test_stubs_never_run_or_synthesize_pass(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    rule = registry.get_rule("model.revision_pinned")
+    rule = registry.get_rule("consistency.generation_params")
     assert rule is not None
 
     def unexpected(*args: object) -> list[Finding]:
@@ -172,8 +172,12 @@ def test_show_core_and_override_columns(tmp_path: Path, monkeypatch: pytest.Monk
     runner = CliRunner()
     core = runner.invoke(app, ["profiles", "show", "core"])
     assert core.exit_code == 0, core.output
-    assert "model.revision_pinned" in core.output
-    assert "(stub, arrives in 0.2.0)" in core.output
+    model_row = next(line for line in core.output.splitlines() if "model.revision_pinned" in line)
+    assert "stub" not in model_row
+    consistency_row = next(
+        line for line in core.output.splitlines() if "consistency.generation_params" in line
+    )
+    assert "(stub, arrives in 0.3.0)" in consistency_row
     custom_row = next(
         line for line in core.output.splitlines() if "consistency.custom_fields" in line
     )

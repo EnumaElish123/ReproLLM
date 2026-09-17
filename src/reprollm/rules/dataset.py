@@ -6,27 +6,89 @@ from typing import ClassVar
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._lock import LockRule, provenance_evidence
 from reprollm.rules._presence import PresenceRule
-from reprollm.rules._stubs import LevelTwoStubRule
-from reprollm.schemas.finding import Finding, Severity
+from reprollm.schemas.finding import Evidence, Finding, Severity
+from reprollm.schemas.lock import Confidence
 
 
 @register_rule
-class RevisionPinnedRule(LevelTwoStubRule):
+class RevisionPinnedRule(LockRule):
     id = "dataset.revision_pinned"
     category = "dataset"
     default_severity = Severity.WARNING
     description = "Every Hugging Face dataset has an exact resolved revision."
     fix_hint = "Run `reprollm lock` to resolve datasets.<role>.revision in reprollm.lock."
 
+    def applies(self, ctx: AuditContext) -> bool:
+        return ctx.lock is not None and any(
+            dataset.provider == "huggingface" for dataset in ctx.lock.datasets.values()
+        )
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.lock is not None
+        return [
+            self.finding(
+                ctx,
+                message=f"datasets.{role}.revision is not resolved exactly",
+                evidence=[provenance_evidence(f"datasets.{role}.revision", dataset.revision)],
+            )
+            for role, dataset in sorted(ctx.lock.datasets.items())
+            if dataset.provider == "huggingface" and dataset.revision.confidence != Confidence.EXACT
+        ]
+
 
 @register_rule
-class LocalFilesHashedRule(LevelTwoStubRule):
+class LocalFilesHashedRule(LockRule):
     id = "dataset.local_files_hashed"
     category = "dataset"
     default_severity = Severity.CRITICAL
     description = "Every declared local dataset file has a recorded hash."
     fix_hint = "Run `reprollm lock` to hash datasets.<role>.files in reprollm.lock."
+
+    def applies(self, ctx: AuditContext) -> bool:
+        return (
+            ctx.manifest is not None
+            and ctx.lock is not None
+            and any(dataset.provider == "local" for dataset in ctx.manifest.datasets.values())
+        )
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.manifest is not None and ctx.lock is not None
+        findings: list[Finding] = []
+        for role, declared in sorted(ctx.manifest.datasets.items()):
+            if declared.provider != "local":
+                continue
+            locked = ctx.lock.datasets.get(role)
+            locked_files = (
+                {entry.path: entry.sha256 for entry in (locked.files or []) if entry.sha256}
+                if locked is not None
+                else {}
+            )
+            declared_files = sorted(set(declared.files or []))
+            missing = [path for path in declared_files if path not in locked_files]
+            if locked is not None and locked.files is not None and not missing:
+                continue
+            findings.append(
+                self.finding(
+                    ctx,
+                    message=(
+                        f"datasets.{role}.files has no locked hashes"
+                        if not declared_files
+                        else f"datasets.{role}.files is missing hashes for: {', '.join(missing)}"
+                    ),
+                    evidence=[
+                        Evidence(
+                            kind="lock",
+                            field=f"datasets.{role}.files",
+                            value=sorted(locked_files),
+                            expected=declared_files,
+                            note="every declared local dataset file must have sha256",
+                        )
+                    ],
+                )
+            )
+        return findings
 
 
 @register_rule

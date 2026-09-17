@@ -4,18 +4,44 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._lock import LockRule, prompt_hash_field
 from reprollm.rules._presence import PresenceRule
-from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
 
 
 @register_rule
-class HashedRule(LevelTwoStubRule):
+class HashedRule(LockRule):
     id = "prompt.hashed"
     category = "prompt"
     default_severity = Severity.WARNING
     description = "Every prompt role has a recorded content hash."
     fix_hint = "Run `reprollm lock` to hash prompts.<role> in reprollm.lock."
+
+    def applies(self, ctx: AuditContext) -> bool:
+        return ctx.manifest is not None and ctx.lock is not None and bool(ctx.manifest.prompts)
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.manifest is not None and ctx.lock is not None
+        findings: list[Finding] = []
+        for role, prompt in sorted(ctx.manifest.prompts.items()):
+            field = prompt_hash_field(role, prompt)
+            locked = ctx.lock.prompts.get(role)
+            value = (
+                locked.sha256
+                if locked is not None and prompt.path is not None
+                else locked.text_sha256
+                if locked is not None
+                else None
+            )
+            if not value:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"{field} is missing from reprollm.lock",
+                        evidence=[Evidence(kind="lock", field=field, note="absent")],
+                    )
+                )
+        return findings
 
 
 @register_rule

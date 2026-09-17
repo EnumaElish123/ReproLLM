@@ -4,18 +4,49 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._lock import LockRule, provenance_evidence
 from reprollm.rules._presence import PresenceRule
-from reprollm.rules._stubs import LevelTwoStubRule
-from reprollm.schemas.finding import Finding, Severity
+from reprollm.schemas.finding import Evidence, Finding, Severity
+from reprollm.schemas.lock import Confidence
 
 
 @register_rule
-class BackendVersionLockedRule(LevelTwoStubRule):
+class BackendVersionLockedRule(LockRule):
     id = "gen.backend_version_locked"
     category = "gen"
     default_severity = Severity.WARNING
     description = "The non-API inference backend has an exact locked version."
     fix_hint = "Run `reprollm lock` to record inference.version in reprollm.lock."
+
+    def applies(self, ctx: AuditContext) -> bool:
+        inference = ctx.manifest.inference if ctx.manifest is not None else None
+        return (
+            ctx.lock is not None
+            and inference is not None
+            and inference.backend is not None
+            and inference.backend != "openai"
+        )
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.lock is not None
+        inference = ctx.lock.inference
+        if inference is None:
+            return [
+                self.finding(
+                    ctx,
+                    message="inference.version is missing from reprollm.lock",
+                    evidence=[Evidence(kind="lock", field="inference.version", note="absent")],
+                )
+            ]
+        if inference.version.confidence == Confidence.EXACT:
+            return []
+        return [
+            self.finding(
+                ctx,
+                message="inference.version is not resolved exactly",
+                evidence=[provenance_evidence("inference.version", inference.version)],
+            )
+        ]
 
 
 @register_rule

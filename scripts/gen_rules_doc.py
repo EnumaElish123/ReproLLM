@@ -37,7 +37,7 @@ def render_rules_doc() -> str:
     ]
     for rule in all_rules():
         profiles = ", ".join(name for name in profile_names if rule.id in selected[name]) or "—"
-        status = "stub, arrives in 0.2.0" if rule.stub else "implemented"
+        status = "stub, arrives in 0.3.0" if rule.stub else "implemented"
         default = "project rule" if rule.severity_from_project_rule else rule.default_severity.value
         lines.append(
             f"| `{rule.id}` | {rule.category} | {default} | {rule.min_level} | {status} | "

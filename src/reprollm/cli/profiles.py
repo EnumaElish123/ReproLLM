@@ -72,7 +72,7 @@ def show(
         if rule.severity_from_project_rule:
             effective = default
             origin = "project_rule"
-        label = " (stub, arrives in 0.2.0)" if rule.stub else ""
+        label = " (stub, arrives in 0.3.0)" if rule.stub else ""
         typer.echo(
             f"  {rule_id:<{width}}  {rule.min_level:<5}  {default:<14}  "
             f"{override or '-':<8}  {effective:<14}  {origin}{label}"

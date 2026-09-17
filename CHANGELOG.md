@@ -21,6 +21,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Load and validate locks during audit, auto-detect Level 2, report manifest and accepted
   project-rule staleness independently, and compare locked prompt/config hashes with the
   current working tree using repository-contained paths (M4-T04, spec §§9–12.12).
+- Enforce resolved model, tokenizer, chat-template, dataset, backend, prompt, and judge
+  lock metadata with provider-specific severities and provenance evidence; API snapshot
+  aliases remain informational while mutable API aliases warn (M4-T05, spec §§12.4–12.9).
 
 ## [0.1.1] - 2026-09-17
 

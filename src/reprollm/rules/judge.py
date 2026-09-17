@@ -4,23 +4,54 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._lock import LockRule, prompt_hash_field
 from reprollm.rules._presence import PresenceRule
-from reprollm.rules._stubs import LevelTwoStubRule
-from reprollm.schemas.finding import Finding, Severity
+from reprollm.schemas.finding import Evidence, Finding, Severity
 from reprollm.schemas.manifest import JudgeSpec
 
 
 @register_rule
-class PromptHashedRule(LevelTwoStubRule):
+class PromptHashedRule(LockRule):
     id = "judge.prompt_hashed"
     category = "judge"
     default_severity = Severity.WARNING
     description = "The declared judge prompt has a recorded content hash."
     fix_hint = "Run `reprollm lock` to hash the evaluation.judge.prompt_ref role in reprollm.lock."
 
+    def applies(self, ctx: AuditContext) -> bool:
+        if ctx.manifest is None or ctx.lock is None:
+            return False
+        judge = _judge(ctx)
+        role = judge.prompt_ref if judge is not None else "judge"
+        return role in ctx.manifest.prompts
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.manifest is not None and ctx.lock is not None
+        judge = _judge(ctx)
+        role = judge.prompt_ref if judge is not None else "judge"
+        prompt = ctx.manifest.prompts[role]
+        field = prompt_hash_field(role, prompt)
+        locked = ctx.lock.prompts.get(role)
+        value = (
+            locked.sha256
+            if locked is not None and prompt.path is not None
+            else locked.text_sha256
+            if locked is not None
+            else None
+        )
+        if value:
+            return []
+        return [
+            self.finding(
+                ctx,
+                message=f"{field} is missing from reprollm.lock",
+                evidence=[Evidence(kind="lock", field=field, note="absent")],
+            )
+        ]
+
 
 @register_rule
-class PinnabilityRecordedRule(LevelTwoStubRule):
+class PinnabilityRecordedRule(LockRule):
     id = "judge.pinnability_recorded"
     category = "judge"
     default_severity = Severity.WARNING
@@ -28,6 +59,28 @@ class PinnabilityRecordedRule(LevelTwoStubRule):
     fix_hint = (
         "Run `reprollm lock` to record pinnability for evaluation.judge.model_ref in reprollm.lock."
     )
+
+    def applies(self, ctx: AuditContext) -> bool:
+        if ctx.manifest is None or ctx.lock is None:
+            return False
+        judge = _judge(ctx)
+        role = judge.model_ref if judge is not None else "judge"
+        return role in ctx.manifest.models
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.manifest is not None and ctx.lock is not None
+        judge = _judge(ctx)
+        role = judge.model_ref if judge is not None else "judge"
+        if role in ctx.lock.models:
+            return []
+        field = f"models.{role}.pinnability"
+        return [
+            self.finding(
+                ctx,
+                message=f"{field} is missing from reprollm.lock",
+                evidence=[Evidence(kind="lock", field=field, note="absent")],
+            )
+        ]
 
 
 def _judge(ctx: AuditContext) -> JudgeSpec | None:

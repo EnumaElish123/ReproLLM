@@ -6,38 +6,182 @@ from typing import ClassVar
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._lock import LockRule, provenance_evidence
 from reprollm.rules._presence import PresenceRule
-from reprollm.rules._stubs import LevelTwoStubRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
+from reprollm.schemas.lock import Confidence
 
 _API_PROVIDERS = frozenset({"openai", "openrouter", "anthropic"})
 
 
 @register_rule
-class RevisionPinnedRule(LevelTwoStubRule):
+class RevisionPinnedRule(LockRule):
     id = "model.revision_pinned"
     category = "model"
     default_severity = Severity.CRITICAL
     description = "Every model has a resolved identity or an explicit API pinnability record."
-    fix_hint = "Run `reprollm lock` to resolve models.<role>.revision in reprollm.lock."
+    fix_hint = (
+        "Run `reprollm lock` with network access (set HF_TOKEN for gated models), "
+        "or set models.<role>.revision to a commit SHA."
+    )
+
+    def applies(self, ctx: AuditContext) -> bool:
+        return ctx.lock is not None and bool(ctx.lock.models)
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.lock is not None
+        findings: list[Finding] = []
+        for role, model in sorted(ctx.lock.models.items()):
+            if model.provider in _API_PROVIDERS:
+                if model.pinnability == "exact":
+                    continue
+                severity = (
+                    Severity.INFO if model.pinnability == "snapshot_alias" else Severity.WARNING
+                )
+                message = (
+                    f"models.{role} uses a provider snapshot alias"
+                    if model.pinnability == "snapshot_alias"
+                    else f"models.{role} cannot be pinned to an immutable provider revision"
+                )
+                evidence = provenance_evidence(
+                    f"models.{role}.pinnability",
+                    model.revision,
+                    expected="exact",
+                )
+                evidence.value = model.pinnability
+                findings.append(
+                    self.finding(ctx, message=message, evidence=[evidence], severity=severity)
+                )
+                continue
+            if model.provider == "local":
+                config = model.local.config_sha256 if model.local is not None else None
+                if config is None:
+                    findings.append(
+                        self.finding(
+                            ctx,
+                            message=f"models.{role} has no locked local configuration hash",
+                            evidence=[
+                                Evidence(
+                                    kind="lock",
+                                    field=f"models.{role}.local.config_sha256",
+                                    note=(
+                                        f"source={model.revision.source}; "
+                                        f"note={model.revision.note or 'none'}"
+                                    ),
+                                )
+                            ],
+                        )
+                    )
+                continue
+            if model.revision.confidence != Confidence.EXACT:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"models.{role}.revision is not resolved exactly",
+                        evidence=[provenance_evidence(f"models.{role}.revision", model.revision)],
+                    )
+                )
+        return findings
 
 
 @register_rule
-class TokenizerPinnedRule(LevelTwoStubRule):
+class TokenizerPinnedRule(LockRule):
     id = "model.tokenizer_pinned"
     category = "model"
     default_severity = Severity.WARNING
     description = "Every Hugging Face model has an exact tokenizer revision."
     fix_hint = "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock."
 
+    def applies(self, ctx: AuditContext) -> bool:
+        return ctx.lock is not None and any(
+            model.provider == "huggingface" for model in ctx.lock.models.values()
+        )
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.lock is not None
+        findings: list[Finding] = []
+        for role, model in sorted(ctx.lock.models.items()):
+            if model.provider != "huggingface":
+                continue
+            field = f"models.{role}.tokenizer.revision"
+            if model.tokenizer is None:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"{field} is missing from reprollm.lock",
+                        evidence=[Evidence(kind="lock", field=field, note="absent")],
+                    )
+                )
+            elif model.tokenizer.revision.confidence != Confidence.EXACT:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"{field} is not resolved exactly",
+                        evidence=[provenance_evidence(field, model.tokenizer.revision)],
+                    )
+                )
+        return findings
+
 
 @register_rule
-class ChatTemplateHashedRule(LevelTwoStubRule):
+class ChatTemplateHashedRule(LockRule):
     id = "model.chat_template_hashed"
     category = "model"
     default_severity = Severity.WARNING
     description = "Every Hugging Face or local model has a chat-template hash or recorded absence."
     fix_hint = "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock."
+
+    def applies(self, ctx: AuditContext) -> bool:
+        return ctx.lock is not None and any(
+            model.provider in {"huggingface", "local"} for model in ctx.lock.models.values()
+        )
+
+    def check(self, ctx: AuditContext) -> list[Finding]:
+        assert ctx.lock is not None
+        findings: list[Finding] = []
+        for role, model in sorted(ctx.lock.models.items()):
+            if model.provider not in {"huggingface", "local"}:
+                continue
+            field = f"models.{role}.chat_template.sha256"
+            template = model.chat_template
+            if template is None:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"models.{role}.chat_template is missing from reprollm.lock",
+                        evidence=[
+                            Evidence(
+                                kind="lock",
+                                field=f"models.{role}.chat_template",
+                                note="absent",
+                            )
+                        ],
+                    )
+                )
+            elif template.status == "absent":
+                findings.append(
+                    self.passed(
+                        ctx,
+                        message=f"models.{role} has no chat template",
+                        evidence=[
+                            Evidence(
+                                kind="lock",
+                                field=f"models.{role}.chat_template.status",
+                                value="absent",
+                                note="model has no chat template",
+                            )
+                        ],
+                    )
+                )
+            elif template.sha256.confidence != Confidence.EXACT:
+                findings.append(
+                    self.finding(
+                        ctx,
+                        message=f"{field} is not resolved exactly",
+                        evidence=[provenance_evidence(field, template.sha256)],
+                    )
+                )
+        return findings
 
 
 @register_rule

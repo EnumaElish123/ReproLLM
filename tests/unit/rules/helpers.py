@@ -5,14 +5,22 @@ from typing import Any
 
 from reprollm.core.context import AuditContext
 from reprollm.schemas.finding import DetectionHints, DetectionResult, Finding, FindingStatus
+from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 
 
-def context(root: Path, *, hints: DetectionHints | None = None, **sections: Any) -> AuditContext:
+def context(
+    root: Path,
+    *,
+    hints: DetectionHints | None = None,
+    level: int = 1,
+    lock: Lock | None = None,
+    **sections: Any,
+) -> AuditContext:
     manifest = Manifest.model_validate(
         {"project": {"name": "acceptance"}, "experiment": {"profiles": []}, **sections}
     )
-    ctx = AuditContext(root, level=1, manifest=manifest)
+    ctx = AuditContext(root, level=level, manifest=manifest, lock=lock)
     ctx._detection = DetectionResult(hints=hints or DetectionHints())
     return ctx
 
