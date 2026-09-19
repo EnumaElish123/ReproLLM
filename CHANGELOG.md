@@ -25,6 +25,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   explain missing evidence; a new post-run snapshot demonstrates a CRITICAL
   temperature conflict and `exec.run_recorded` PASS. Schemas are unchanged.
 
+### Validation (M5-T09 preparation)
+
+- Record unchanged five-project gold results, byte-identical initialization and
+  full Level 1 comparisons, and independently specified runtime conflicts/latest
+  matching runs. Real inference/training/judge gates remain blocked on provisioned
+  resources; see [the validation report](docs/dogfooding/m5-second-half.md).
+
 ### Added (M5, first half)
 
 - Expose `run`, `runs list`, and unique-prefix `runs show`, with config defaults,
