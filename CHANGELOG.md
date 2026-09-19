@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, first half)
 
+- Execute commands without a shell, write crash evidence before launch and an
+  atomic final record, forward signals, tee opt-in redacted logs, and preserve
+  child exit codes through metadata-capture failures. Persist portable paths
+  and hashed machine identity (M5-T04, spec §5.1 R-01/R-02/R-05/R-06/R-10–R-12).
 - Hash repository-contained input and output files, snapshot bounded redacted
   text, and observe declared CLI/config/environment bindings with deterministic
   normalization and complete repeated-flag history (M5-T03, spec §§5, 15–16).

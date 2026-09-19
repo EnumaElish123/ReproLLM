@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -103,6 +103,7 @@ def hash_and_snapshot(
     snapshot: bool,
     max_bytes: int,
     warnings: list[str] | None = None,
+    sanitize: Callable[[str], tuple[str, int]] = redact_text,
 ) -> list[RunFileRef]:
     """Hash original bytes; snapshot only bounded, redacted UTF-8 text (§5.1 R-03)."""
     warnings = warnings if warnings is not None else []
@@ -139,7 +140,7 @@ def hash_and_snapshot(
             except UnicodeDecodeError:
                 records.append(record)
                 continue
-            redacted, count = redact_text(text)
+            redacted, count = sanitize(text)
             destination = run_dir / "files" / digest.removeprefix("sha256:")
             if destination.is_symlink() or not destination.resolve().is_relative_to(
                 run_dir.resolve()
