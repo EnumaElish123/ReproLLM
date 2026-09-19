@@ -9,21 +9,17 @@ resource acceptance and release remain incomplete.
 
 | Task | Local result | Commit / remote status |
 |---|---|---|
-| T06: runtime consistency and audit run loading | Implemented; 990 tests pass; reviewed post-run fixture | Uncommitted on `codex/m5-second-half`; D-41 engine review still required |
-| T07: integrated leakage gate | Both environment modes pass; CI and release build steps added | Uncommitted |
-| T08: runtime documentation | Guide, README, security policy and index updated; installed-package example executes | Uncommitted |
-| T09: real resource acceptance | All unaffected Gate A checks pass; Gate B is blocked | No milestone acceptance claim |
-| T10: 0.3.0 release | Draft notes and isolated wheel/sdist preflight prepared | No version bump, tag or publication |
+| T06: runtime consistency and audit run loading | Implemented; 990 tests pass; reviewed post-run fixture | `7655e87`; D-41 engine review still required |
+| T07: integrated leakage gate | Both environment modes pass; CI and release build steps added | `c8fa81f` |
+| T08: runtime documentation | Guide, README, security policy and index updated; installed-package example executes | `07f5d21` |
+| T09: real resource acceptance | All unaffected Gate A checks pass; Gate B is blocked | `941d515` (preparation only) |
+| T10: 0.3.0 release | Draft notes and isolated wheel/sdist preflight prepared | `8062b8f` (preparation only); no version bump, tag or publication |
 
-Two automatic permission reviews for `git add` timed out. The first tool response
-allowed one retry; that retry timed out too. Neither staging operation executed,
-and the queued commit did not execute. The tool did not identify a code-safety
-problem. Explicit local staging/commit approval was requested, while all
-unaffected implementation and validation continued. No second-half changes were
-pushed and no new remote CI result is claimed.
+The maintainer explicitly approved local submission on 2026-09-19, resolving
+the previous automatic approval-review timeouts. The five task commits are on
+`codex/m5-second-half`; remote submission and CI verification are in progress.
 
-The planned per-task commit sequence is preserved in separate local delivery
-patches. The previous unrelated `.codex-pet-runs/`, `hatch-runs/` and `output/`
+The previous unrelated `.codex-pet-runs/`, `hatch-runs/` and `output/`
 directories were neither modified nor included. No schema, frozen rule ID,
 dependency version or validation pin changed.
 
@@ -218,5 +214,5 @@ and hash. The actual package version remains `0.1.1`.
 Raw evidence and delivery patches remain outside the worktree in the temporary
 `reprollm-m5-second-half` directory. The machine-readable summaries are
 `gate-a-record.json`, `gate-runtime-record.json` and
-`release-preflight/preflight-record.json`. No main push, remote CI, review,
-resource acceptance or release is being represented as complete.
+`release-preflight/preflight-record.json`. No main merge, remote CI, review, resource acceptance or release is being
+represented as complete at this submission checkpoint.

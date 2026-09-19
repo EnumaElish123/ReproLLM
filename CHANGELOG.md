@@ -37,7 +37,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Planned for `0.3.0`: the first release of the **run record schema v1 writer**
 and the documented redaction policy. [Draft notes](docs/releases/0.3.0-draft.md)
 include sanitized inspection/conflict examples and an isolated packaging preflight
-(M5-T10 preparation). Resource validation, maintainer review, commits and CI are
+(M5-T10 preparation). Task commits are prepared; resource validation, maintainer review and CI are
 still pending; no version bump, tag or publication is claimed.
 
 ### Added (M5, first half)
