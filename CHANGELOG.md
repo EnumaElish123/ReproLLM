@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M6, first half)
 
+- Ship the normative drift table and resolve ordered profile overrides, dirty-code
+  notes and package version components (M6-T02, spec §§6, 18.1–18.2). Patch drift
+  lowers severity by one level: torch MEDIUM_HIGH → MEDIUM, following the
+  specification rather than the conflicting LOW example in the sprint plan.
+
 - Project manifest, lock and run snapshots into a deterministic experiment State;
   retain every source with provenance and runtime precedence (M6-T01, spec §17).
   Three new State goldens include declared/resolved/observed values; two synthetic
