@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from reprollm.core import proc
 from reprollm.core.errors import UserError
@@ -16,6 +16,29 @@ PROJECT_RULES = ".reprollm/project-rules.yaml"
 USER_PROFILES_DIR = ".reprollm/profiles"
 RUNS_DIR = ".reprollm/runs"
 DISCOVER_DIR = ".reprollm/discover"
+
+
+def is_relative_project_path(value: str) -> bool:
+    """Check the portable persisted-path boundary without accessing the filesystem."""
+    return bool(value.strip()) and not (
+        value.startswith(("/", "\\"))
+        or "\\" in value
+        or PureWindowsPath(value).drive
+        or ".." in value.split("/")
+    )
+
+
+def resolve_project_file(root: Path, relative: str) -> Path | None:
+    """Resolve a regular file while rejecting traversal and symlink escapes."""
+    if not is_relative_project_path(relative):
+        return None
+    try:
+        resolved_root = root.resolve()
+        candidate = (resolved_root / relative).resolve()
+        candidate.relative_to(resolved_root)
+        return candidate if candidate.is_file() else None
+    except (OSError, RuntimeError, ValueError):
+        return None
 
 
 @dataclass(frozen=True)

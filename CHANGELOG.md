@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, first half)
 
+- Hash repository-contained input and output files, snapshot bounded redacted
+  text, and observe declared CLI/config/environment bindings with deterministic
+  normalization and complete repeated-flag history (M5-T03, spec §§5, 15–16).
 - Capture CPU/GPU metadata through bounded `nvidia-smi` calls, hash GPU UUIDs,
   and capture SLURM/PBS/LSF namespaces with secret names omitted and values
   redacted; malformed or unavailable GPU data is explicit (M5-T02, spec §5.1 R-07/R-08).
