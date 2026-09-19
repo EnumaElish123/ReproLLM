@@ -160,12 +160,16 @@ CHANGELOG（含「lock schema v1 首次发布」）、版本、tag。Release not
 
 - [ ] `01 §4.3` 每一行有实现与测试
 - [ ] `lock` 在线 / offline / `--check` 可用；两次 lock 字节级稳定（除时间字段）
-- [ ] 9 个 L2 规则实现，无 stub 残留（CI 增加检查：registry 中 `stub=True` 的规则数为 0）
+- [ ] 9 个 M4 锁级 L2 规则实现，这 9 条无 stub 残留；4 条依赖 run record 的 `consistency.*` 规则保留为 M5 占位。CI 断言 stub 集合恰好为 `consistency.generation_params`、`consistency.model_identity`、`consistency.env_vs_lock`、`consistency.custom_fields`；全局零 stub 检查由 M5-T06 完成。
 - [ ] `consistency.lock_fresh`、`consistency.file_hashes`（工作树）可用
 - [ ] 三个 fixture 的 `lock.yaml` + `audit_L2.json` snapshot 通过
 - [ ] A/B/C dogfooding 完成，token 不落盘经 grep 验证
 - [ ] `docs/lockfile.md` 完成
 - [ ] `v0.2.0` 发布
+
+维护者于 2026-09-19 批准上述 M4/M5 边界修正，见
+[spec issue #2](https://github.com/EnumaElish123/ReproLLM/issues/2)。
+规范 §6.1 的 core 规则集合不变；无持久化 schema 或迁移变化。
 
 ---
 

@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Clarified
+
+- Keep only the four runtime consistency placeholders through M4; require an
+  empty stub set after M5-T06, with a CI assertion for the current boundary.
+  This maintainer-approved clarification changes no schema or rule selection
+  ([#2](https://github.com/EnumaElish123/ReproLLM/issues/2), spec §§6.1, 12.12).
+
 ### Added (M4, second half)
 
 - Reuse the bounded HF client in `doctor --check-network`, including mirror,

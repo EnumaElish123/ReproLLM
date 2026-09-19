@@ -122,6 +122,7 @@
 - `consistency.env_vs_lock`：`latest_run.environment.packages` 与 `lock.environment.packages` 逐包比较；不同 → WARNING（每包一条）；仅 run 有 / 仅 lock 有 → INFO。
 - `consistency.custom_fields`：对 project rules 中带 bindings 的字段（M7 起有数据）；本周实现逻辑并用手写 project-rules 文件测试。
 - `exec.run_recorded` 现在在有 run 时 PASS。
+- 移除四条 runtime 规则的 stub 标记，并把 M4 的四项占位集合检查更新为全局 `stub=True` 规则数为 0（维护者批准的 [#2](https://github.com/EnumaElish123/ReproLLM/issues/2)）。
 
 **验收标准**：T05 的端到端场景后 `audit` → `consistency.generation_params` CRITICAL；`expected/audit_L2_after_run.json` snapshot；`env_vs_lock` 用手工构造的 lock/run 测试三种分支。
 
@@ -178,6 +179,7 @@ CHANGELOG（含「run record schema v1 首次发布」「redaction policy」）�
 - [ ] `core/redaction.py` 100 % 分支覆盖，CI 单独门槛生效
 - [ ] `run` / `runs list` / `runs show` 可用；`expected/run.json`、`expected/audit_L2_after_run.json` snapshot 通过
 - [ ] 5 条 `consistency.*` run 侧规则实现并测试
+- [ ] registry 中 `stub=True` 的规则数为 0，CI 检查通过
 - [ ] 泄漏金测试通过并接入 release workflow
 - [ ] Project A 真实 GPU 节点 run 成功，维护者 grep 确认无泄漏；Project B `OPENAI_API_KEY` 记录为 `present: true`
 - [ ] `docs/run.md` 完成

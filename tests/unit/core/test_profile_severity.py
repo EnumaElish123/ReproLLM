@@ -19,6 +19,16 @@ from reprollm.schemas.finding import Finding, FindingStatus, Severity
 from reprollm.schemas.lock import Lock, ResolutionMode
 
 
+def test_m4_leaves_only_the_four_m5_runtime_placeholders() -> None:
+    """Issue #2: M4 lock rules ship; runtime comparisons belong to M5-T06."""
+    assert {rule.id for rule in registry.all_rules() if rule.stub} == {
+        "consistency.generation_params",
+        "consistency.model_identity",
+        "consistency.env_vs_lock",
+        "consistency.custom_fields",
+    }
+
+
 def manifest(root: Path, profiles: list[str], **sections: object) -> None:
     (root / "reprollm.yaml").write_text(
         dump_yaml(
