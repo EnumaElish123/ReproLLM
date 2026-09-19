@@ -6,8 +6,8 @@
 
 > Make LLM experiments reproducible.
 
-**Status: alpha (0.1.1). Audit Level 0/1 and `init` are usable; `lock`, `run`, and
-`diff` arrive in 0.2–0.4.**
+**Status: alpha. PyPI 0.1.1 supports Audit Level 0/1 and `init`. The development
+branch adds `lock` and Level 2 audit for 0.2.0; `run` and `diff` follow in 0.3–0.4.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
 research. It records the LLM-specific state that other tools ignore — model revision,
@@ -27,10 +27,10 @@ happened, independent of what was declared. An optional, opt-in LLM step only pr
 *candidates* for project-specific parameters; a candidate takes effect only after you
 explicitly accept it.
 
-## Quick start (0.1.1)
+## Quick start (development checkout)
 
 ```console
-$ pip install reprollm
+$ pip install .             # inside a checkout of ReproLLM main
 $ cd your-llm-experiment
 $ reprollm audit .
 ReproLLM audit · level 0 · profiles: core
@@ -52,6 +52,9 @@ Next: fill the TODO fields, then run `reprollm audit .`
 
 $ $EDITOR reprollm.yaml     # fill the TODOs
 $ reprollm audit .          # now at level 1: model/dataset/generation gaps
+$ reprollm lock .           # resolve revisions and hash declared inputs
+$ reprollm audit .          # now at level 2: verify locked identities and files
+$ reprollm lock . --check   # network-free manifest/project-rule freshness check
 ```
 
 Without any configuration ReproLLM audits your repository at **Level 0** (code
@@ -59,6 +62,25 @@ state, dependency pins, secret files, detected experiment types). With a
 `reprollm.yaml` manifest it audits at **Level 1** (what your experiment is
 missing to be rebuildable). The output above is real output from an evaluation
 repository — nothing is fabricated.
+
+The lock records uncertainty explicitly. For example, the API judge in the
+FastChat dogfooding manifest has this identity (other fields omitted):
+
+```yaml
+models:
+  judge:
+    provider: openai
+    id: gpt-4o-2024-08-06
+    pinnability: snapshot_alias
+    revision:
+      value: null
+      source: provider_no_pinning
+      confidence: unresolved
+```
+
+Read the [lockfile guide](docs/lockfile.md) for provenance, offline mode,
+authentication, file changes, and the distinction between exact revisions,
+provider snapshot labels, and mutable aliases.
 
 ## What it checks
 
@@ -75,18 +97,18 @@ The [manifest guide](docs/manifest.md) explains model and dataset roles,
 generation versus judge settings, implementation references, execution
 bindings, and how to review repository-wide detections in multi-workflow codebases.
 
-Level 2 rules shown as stubs are selected by the profile system but deliberately
-skipped until lock and runtime verification arrive in later milestones.
+Level 2 verifies lock freshness and current file hashes. The four consistency
+rules that need runtime records remain explicit placeholders until M5.
 
 ## Commands
 
 | Command | Status | Purpose |
 |---|---|---|
-| `reprollm audit` | **usable** (Level 0/1) | deterministic reproducibility audit |
+| `reprollm audit` | **usable** (Level 0/1/2 on main) | deterministic reproducibility audit |
 | `reprollm init` | **usable** | create `reprollm.yaml` from detected experiment profiles |
 | `reprollm doctor` | **usable** | environment diagnostics |
 | `reprollm profiles list/show` | **usable** | inspect the seven built-in profiles |
-| `reprollm lock` | 0.2.0 | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
+| `reprollm lock` | **usable on main**, planned for 0.2.0 | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
 | `reprollm run -- CMD` | 0.3.0 | execute a command and record runtime truth |
 | `reprollm diff A B` | 0.4.0 | semantic drift between two runs or lockfiles |
 | `reprollm export` | 0.5.0 | generate a `REPRODUCIBILITY.md` for your paper artifact |

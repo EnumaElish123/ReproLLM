@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M4, second half)
 
+- Reuse the bounded HF client in `doctor --check-network`, including mirror,
+  retry, metadata-validation, and sanitized authentication failure behavior;
+  document lock provenance, pinnability, offline resolution and freshness
+  (M4-T07, spec §§1, 4, 22 T-04).
+
 - Add reviewed lock and Level 2 audit snapshots for all three complete fixtures,
   with exported-schema validation, an intentionally unavailable vLLM backend,
   API judge pinnability, and a gated-model denial (M4-T06, spec §§4, 10, 22).

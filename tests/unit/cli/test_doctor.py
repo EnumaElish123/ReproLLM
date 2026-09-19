@@ -4,14 +4,22 @@ import json
 from pathlib import Path
 
 import httpx
+import pytest
 import respx
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app
 from reprollm.core.proc import NOT_FOUND
 from tests.conftest import CmdStub
+from tests.unit.lock.conftest import hf_mock as hf_mock
 
 runner = CliRunner()
+
+
+@pytest.fixture(autouse=True)
+def isolate_hf_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    for name in ("HF_ENDPOINT", "HF_TOKEN", "HUGGING_FACE_HUB_TOKEN"):
+        monkeypatch.delenv(name, raising=False)
 
 
 def test_doctor_text_reports_checks() -> None:
@@ -53,24 +61,63 @@ def test_doctor_old_git_version_is_warning(stub_run_cmd: CmdStub) -> None:
     assert git["status"] == "warn"
 
 
-def test_doctor_check_network_ok() -> None:
-    respx.head("https://huggingface.co/api/models/gpt2").mock(return_value=httpx.Response(200))
+def test_doctor_check_network_ok(hf_mock: respx.MockRouter) -> None:
     result = runner.invoke(app, ["doctor", "--json", "--check-network"])
     assert result.exit_code == 0
     document = json.loads(result.output)
     network = next(c for c in document["checks"] if c["name"] == "network")
     assert network["status"] == "ok"
-    assert "200" in network["detail"]
+    assert "gpt2" in network["detail"]
+    request = hf_mock.calls.last.request
+    assert request.method == "GET"
+    assert str(request.url) == "https://huggingface.co/api/models/gpt2/revision/main"
 
 
-def test_doctor_check_network_failure_is_warning() -> None:
-    respx.head("https://huggingface.co/api/models/gpt2").mock(
-        side_effect=httpx.ConnectError("no route")
+def test_doctor_check_network_failure_is_warning(
+    monkeypatch: pytest.MonkeyPatch, hf_mock: respx.MockRouter
+) -> None:
+    delays = []
+    monkeypatch.setattr("reprollm.lock.hf_client.time.sleep", delays.append)
+    route = hf_mock.get("https://huggingface.co/api/models/gpt2/revision/main").mock(
+        side_effect=httpx.ConnectError("no route; hf_FAKE_PRIVATE_TOKEN")
     )
     result = runner.invoke(app, ["doctor", "--json", "--check-network"])
     assert result.exit_code == 0  # network problems are warnings, not failures
     document = json.loads(result.output)
     network = next(c for c in document["checks"] if c["name"] == "network")
+    assert network["status"] == "warn"
+    assert "network_error" in network["detail"]
+    assert route.call_count == 3
+    assert delays == [0.5, 1.5]
+    assert "hf_FAKE_PRIVATE_TOKEN" not in result.output
+
+
+def test_doctor_network_honors_endpoint_and_keeps_token_private(
+    monkeypatch: pytest.MonkeyPatch, hf_mock: respx.MockRouter
+) -> None:
+    monkeypatch.setenv("HF_ENDPOINT", "https://hf-mirror.example.com")
+    token = "hf_DOCTOR_TEST_ONLY"
+    monkeypatch.setenv("HF_TOKEN", token)
+    route = hf_mock.get("https://hf-mirror.example.com/api/models/gpt2/revision/main").mock(
+        return_value=httpx.Response(403, text=token)
+    )
+    result = runner.invoke(app, ["doctor", "--json", "--check-network"])
+    assert result.exit_code == 0, result.output
+    network = next(c for c in json.loads(result.output)["checks"] if c["name"] == "network")
+    assert network["status"] == "warn"
+    assert "hf_api_forbidden" in network["detail"]
+    assert route.call_count == 1
+    assert route.calls.last.request.headers["Authorization"] == f"Bearer {token}"
+    assert token not in result.output
+
+
+def test_doctor_invalid_hub_metadata_is_warning(hf_mock: respx.MockRouter) -> None:
+    hf_mock.get("https://huggingface.co/api/models/gpt2/revision/main").mock(
+        return_value=httpx.Response(200, json={"siblings": []})
+    )
+    result = runner.invoke(app, ["doctor", "--json", "--check-network"])
+    assert result.exit_code == 0, result.output
+    network = next(c for c in json.loads(result.output)["checks"] if c["name"] == "network")
     assert network["status"] == "warn"
 
 

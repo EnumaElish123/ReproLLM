@@ -7,8 +7,9 @@ It records the LLM-specific state that other tools ignore — model revisions, t
 chat-template hashes, prompt hashes, generation parameters, LLM-as-a-Judge configuration,
 and the pinnability of closed-source API models — and tells you why two runs differ.
 
-**Status: alpha (0.1.1).** Audit Level 0/1, manifest scaffolding, and the seven built-in
-profiles are usable. Lock, run capture, diff, and export arrive in later milestones.
+**Status: alpha.** PyPI 0.1.1 provides Audit Level 0/1, manifest scaffolding, and the
+seven built-in profiles. The development branch adds lock and Level 2 verification
+for 0.2.0. Run capture, diff, and export arrive in later milestones.
 
 ## Documentation map
 
@@ -18,6 +19,8 @@ profiles are usable. Lock, run capture, diff, and export arrive in later milesto
   redaction policy, diff semantics
 - [Manifest guide](manifest.md) — map model/data/prompt roles, execution settings, and
   detected candidates into one concrete experiment
+- [Lockfile guide](lockfile.md) — resolve identities, interpret provenance, and check
+  offline state, credentials, and file freshness
 - [Rule catalog](rules.md) and [profile catalog](profiles.md) — Level 1 checks,
   inheritance, severities, and detection signals
 - [Adoption metrics](adoption.md) — updated monthly from week 1 (D-37)
@@ -28,11 +31,12 @@ profiles are usable. Lock, run capture, diff, and export arrive in later milesto
 |---|---|
 | `reprollm --version` | available |
 | `reprollm doctor [--json] [--check-network]` | available |
-| `reprollm audit [PATH] [--format text\|json] ...` | available at Level 0/1; Level 2 rules are visible stubs |
+| `reprollm audit [PATH] [--format text\|json] ...` | available at Level 0/1/2 on main |
 | `reprollm schema export [--out DIR]` | available |
 | `reprollm init` | available |
 | `reprollm profiles list/show` | available |
-| `reprollm lock` / `run` / `diff` / `export` / `discover` | planned — see the roadmap |
+| `reprollm lock` | available on main; planned for 0.2.0 |
+| `reprollm run` / `diff` / `export` / `discover` | planned — see the roadmap |
 
 ## Core principle
 

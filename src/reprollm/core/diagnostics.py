@@ -16,10 +16,8 @@ import httpx
 
 from reprollm.core import proc
 from reprollm.core.envinfo import installed_versions, python_version
+from reprollm.lock.hf_client import HfClient, HfError
 from reprollm.schemas.config import Config
-
-#: The only network probe doctor performs, opt-in (D-03).
-NETWORK_PROBE_URL = "https://huggingface.co/api/models/gpt2"
 
 #: git versions below this are usable but unsupported (H7 recommends ≥ 2.30).
 MIN_GIT_VERSION = (2, 30, 0)
@@ -102,12 +100,11 @@ def _check_documents(root: Path) -> tuple[CheckStatus, str]:
 
 def _check_network() -> tuple[CheckStatus, str]:
     try:
-        response = httpx.head(NETWORK_PROBE_URL, timeout=10)
-    except httpx.HTTPError as exc:
-        return CheckStatus.WARN, f"{NETWORK_PROBE_URL}: {type(exc).__name__}"
-    if response.status_code < 400:
-        return CheckStatus.OK, f"{NETWORK_PROBE_URL}: HTTP {response.status_code}"
-    return CheckStatus.WARN, f"{NETWORK_PROBE_URL}: HTTP {response.status_code}"
+        with httpx.Client() as http:
+            HfClient(http, token=None).model_info("gpt2")
+    except HfError as exc:
+        return CheckStatus.WARN, f"Hugging Face gpt2: {exc.source} ({type(exc).__name__})"
+    return CheckStatus.OK, "Hugging Face gpt2: revision metadata reachable"
 
 
 def run_checks(root: Path, *, check_network: bool) -> list[dict[str, str]]:
