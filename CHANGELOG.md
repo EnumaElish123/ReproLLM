@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, first half)
 
+- Expose `run`, `runs list`, and unique-prefix `runs show`, with config defaults,
+  child argument/exit preservation, JSON inspection, and a reviewed locked-fixture
+  run snapshot showing CLI/config temperature disagreement (M5-T05, spec §§1, 5, 15).
 - Execute commands without a shell, write crash evidence before launch and an
   atomic final record, forward signals, tee opt-in redacted logs, and preserve
   child exit codes through metadata-capture failures. Persist portable paths
