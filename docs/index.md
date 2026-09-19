@@ -9,7 +9,8 @@ and the pinnability of closed-source API models — and tells you why two runs d
 
 **Status: alpha.** PyPI 0.1.1 provides Audit Level 0/1, manifest scaffolding, and the
 seven built-in profiles. The development branch adds lock and Level 2 verification
-for 0.2.0. Run capture, diff, and export arrive in later milestones.
+for 0.2.0, plus runtime capture and consistency checks for 0.3.0. Releases await
+their validation gates; diff and export arrive in later milestones.
 
 ## Documentation map
 
@@ -21,6 +22,8 @@ for 0.2.0. Run capture, diff, and export arrive in later milestones.
   detected candidates into one concrete experiment
 - [Lockfile guide](lockfile.md) — resolve identities, interpret provenance, and check
   offline state, credentials, and file freshness
+- [Runtime guide](run.md) — capture runs, declare bindings, understand redaction,
+  inspect conflicts and share selected artifacts
 - [Rule catalog](rules.md) and [profile catalog](profiles.md) — Level 1 checks,
   inheritance, severities, and detection signals
 - [Adoption metrics](adoption.md) — updated monthly from week 1 (D-37)
@@ -36,7 +39,8 @@ for 0.2.0. Run capture, diff, and export arrive in later milestones.
 | `reprollm init` | available |
 | `reprollm profiles list/show` | available |
 | `reprollm lock` | available on main; planned for 0.2.0 |
-| `reprollm run` / `diff` / `export` / `discover` | planned — see the roadmap |
+| `reprollm run` / `runs list` / `runs show` | available in development; planned for 0.3.0 |
+| `reprollm diff` / `export` / `discover` | planned — see the roadmap |
 
 ## Core principle
 

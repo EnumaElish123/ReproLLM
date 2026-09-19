@@ -19,14 +19,9 @@ from reprollm.schemas.finding import Finding, FindingStatus, Severity
 from reprollm.schemas.lock import Lock, ResolutionMode
 
 
-def test_m4_leaves_only_the_four_m5_runtime_placeholders() -> None:
-    """Issue #2: M4 lock rules ship; runtime comparisons belong to M5-T06."""
-    assert {rule.id for rule in registry.all_rules() if rule.stub} == {
-        "consistency.generation_params",
-        "consistency.model_identity",
-        "consistency.env_vs_lock",
-        "consistency.custom_fields",
-    }
+def test_m5_has_no_remaining_runtime_placeholders() -> None:
+    """Issue #2: M5-T06 closes the final four catalog placeholders."""
+    assert {rule.id for rule in registry.all_rules() if rule.stub} == set()
 
 
 def manifest(root: Path, profiles: list[str], **sections: object) -> None:
@@ -151,14 +146,14 @@ def test_unknown_override_id_is_user_error(tmp_path: Path) -> None:
         loader.resolve(["broken"], tmp_path)
 
 
-def test_stubs_never_run_or_synthesize_pass(
+def test_missing_runtime_evidence_never_runs_check_or_synthesizes_pass(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     rule = registry.get_rule("consistency.generation_params")
     assert rule is not None
 
     def unexpected(*args: object) -> list[Finding]:
-        pytest.fail("stub checks must never run")
+        pytest.fail("checks without required runtime evidence must never run")
 
     monkeypatch.setattr(rule, "check", unexpected)
     manifest(tmp_path, [])
@@ -173,7 +168,7 @@ def test_stubs_never_run_or_synthesize_pass(
     finding = next(f for f in run_audit(tmp_path).findings if f.rule_id == rule.id)
     assert finding.status == FindingStatus.SKIPPED
     assert finding.severity == Severity.INFO
-    assert any(e.note == "not implemented yet" for e in finding.evidence)
+    assert "latest-run" in finding.message and finding.evidence == []
     assert not any(f.rule_id == rule.id for f in run_audit(tmp_path, level=0).findings)
 
 
@@ -187,7 +182,7 @@ def test_show_core_and_override_columns(tmp_path: Path, monkeypatch: pytest.Monk
     consistency_row = next(
         line for line in core.output.splitlines() if "consistency.generation_params" in line
     )
-    assert "(stub, arrives in 0.3.0)" in consistency_row
+    assert "stub" not in consistency_row
     custom_row = next(
         line for line in core.output.splitlines() if "consistency.custom_fields" in line
     )
