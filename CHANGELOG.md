@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M6, first half)
+
+- Project manifest, lock and run snapshots into a deterministic experiment State;
+  retain every source with provenance and runtime precedence (M6-T01, spec §17).
+  Three new State goldens include declared/resolved/observed values; two synthetic
+  run fixtures complete projection coverage. Existing lock/run schemas and audit
+  snapshots are unchanged.
+
 ### Added (M5, second half)
 
 - Document runtime capture, structured conflicts, environment policies, raw hashes
