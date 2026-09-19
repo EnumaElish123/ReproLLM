@@ -853,6 +853,28 @@ rules:
 
 ### 18.3 Diff report JSON
 
+
+M6 implements the first diff report writer. The unreleased M1 placeholder schema
+is replaced by the complete v1 shape below; `a`, `b`, `summary` and `changes` are
+required. This does not change the manifest, lock or run-record schemas.
+
+A run directory is also accepted and resolves to its contained `run.json`.
+Lock inputs include an adjacent `reprollm.yaml` when present; run inputs use only
+their captured document snapshots. Missing or invalid referenced snapshots are
+user errors, not silently omitted evidence. Ambiguous run prefixes list candidates.
+
+Without `--min-severity`, all changes are shown; the optional `filtered_below`
+field is null. With the flag, `changes` is filtered and `filtered_below` records
+the selected threshold. `summary` and `--fail-on` always use all changes.
+Omitting `--fail-on` prints a report without a drift-triggered nonzero exit.
+Declared profiles from A then B are resolved in order using §6's existing merge
+semantics, with duplicate names removed. The current project's profile files
+supply overrides; the historical input values remain unchanged.
+
+Report values are redacted only after comparison, so distinct secret values
+remain a change even if both display the same redaction marker. References are
+relative paths or external input basenames, never absolute host paths.
+
 ```json
 {
   "schema_version": 1, "reprollm_version": "0.4.0",
