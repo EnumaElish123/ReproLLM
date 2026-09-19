@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, first half)
 
+- Capture CPU/GPU metadata through bounded `nvidia-smi` calls, hash GPU UUIDs,
+  and capture SLURM/PBS/LSF namespaces with secret names omitted and values
+  redacted; malformed or unavailable GPU data is explicit (M5-T02, spec §5.1 R-07/R-08).
 - Implement the nine ordered text-redaction classes, segment-based environment
   name checks, allowlisted environment capture, and streaming PEM suppression;
   execute the synthetic positive/negative/name corpus and enforce 100% branch
