@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+Planned for `0.2.0`: the first release of the **lock schema v1 writer**
+(`reprollm.lock`, `schema_version: 1`). Existing manifest schema v1 remains
+compatible; no schema migration is required.
+
 ### Clarified
 
 - Keep only the four runtime consistency placeholders through M4; require an
@@ -34,6 +38,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Recognize supported Apple Git version strings in `doctor` instead of reporting
   a parsing warning for their vendor suffix (M4-T08, spec §1).
+
+### Documentation (M4-T09 preparation)
+
+- Prepare [draft release notes](docs/releases/0.2.0-draft.md) with the real
+  FastChat judge lock fragment and isolated wheel/sdist packaging evidence.
+  Version bump, tag and publication await the manual Linux validation gate.
 
 ### Added (M4, first half)
 

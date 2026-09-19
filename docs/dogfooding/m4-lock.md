@@ -13,7 +13,7 @@ unavailable. M4-T09's version bump, tag and publication remain pending.
 | M4-T07: shared doctor client and lock documentation | `5b82b74` | Complete; mocked retry, mirror and authentication coverage |
 | Approved Issue #2: M4/M5 placeholder boundary | `d69139c` | Exactly four runtime consistency stubs remain for M5 |
 | M4-T08: independent metadata gold | `a9327bb` | Dedicated baseline extension; no repository pin or Level 0 expectation changed |
-| M4-T08: real-repository validation and Apple Git fix | This report's task commit | All available scenarios completed; Linux H2 blocked |
+| M4-T08: real-repository validation and Apple Git fix | `a069cf3` | All available scenarios completed; Linux H2 blocked |
 
 The Apple Git regression test first failed against the existing parser. The
 fix accepts the vendor suffix in `git version 2.50.1 (Apple Git-155)` while
@@ -200,3 +200,7 @@ The macOS runs do not satisfy Linux H2, and CI retains mocked networking under
 D-32. Complete that manual check before the M4-T09 version bump, `v0.2.0` tag
 and publication. No weights, remote dataset contents, inference, training,
 paid provider call or GPU job ran in this session.
+
+M4-T09's [release draft](../releases/0.2.0-draft.md) includes the real B judge
+fragment and successful isolated sdist/wheel packaging preflight. It does not
+mark the pending release task complete.
