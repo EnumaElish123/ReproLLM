@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, second half)
 
+- Document runtime capture, structured conflicts, environment policies, raw hashes
+  versus redacted snapshots, child-owned artifacts, SLURM placement and private
+  reporting; add run/inspection commands to the quick start (M5-T08, spec §§1, 5, 15–16).
+
 - Add a real-child, dirty-repository leakage test covering both environment modes,
   argv, forbidden files, snapshots, patches and captured logs. Run the `security`
   gate separately in CI and before building release distributions (M5-T07,
