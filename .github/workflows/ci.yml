@@ -60,6 +60,9 @@ jobs:
           uv run pytest -q --cov=reprollm --cov-report=xml --cov-fail-under=85
           ${{ matrix.pytest-marker-filter && format('-m "{0}"', matrix.pytest-marker-filter) || '' }}
 
+      - name: Redaction branch coverage
+        run: uv run coverage report --fail-under=100 --include='src/reprollm/core/redaction.py'
+
       - name: Schema freshness
         if: matrix.schema-check
         run: |

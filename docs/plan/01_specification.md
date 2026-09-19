@@ -736,12 +736,18 @@ Required negative cases: `MAX_TOKENS`, `TOKENIZERS_PARALLELISM`, `CUDA_VISIBLE_D
 | github | `\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b` |
 | aws | `\bAKIA[0-9A-Z]{16}\b` |
 | slack | `\bxox[baprs]-[A-Za-z0-9-]{10,}\b` |
-| jwt | `\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b` |
+| jwt | `\beyJ[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}(?![A-Za-z0-9_=-])` |
 | pem | `-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----` |
 | url_cred | `(?<=://)[^/\s:@]+:[^/\s@]+(?=@)` |
 | generic_kv | `(?i)\b(api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|passwd)\b\s*[:=]\s*["']?([^\s"']{8,})` (redact group 2 only) |
 
 Replacement: `<REDACTED:kind>`. Counting redactions per artifact is recorded (`command.redactions`, `files[].redacted`).
+
+The maintainer-approved M5-T01 correction accepts zero to two trailing `=`
+characters per JWT segment and includes padding in the replacement. This
+reconciles the normative expression with M5's padded-token corpus requirement;
+it changes no persisted schema or other pattern class. See approved
+[spec issue #3](https://github.com/EnumaElish123/ReproLLM/issues/3).
 
 ### 16.3 Environment capture policy
 

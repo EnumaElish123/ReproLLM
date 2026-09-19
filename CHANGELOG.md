@@ -7,6 +7,18 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M5, first half)
+
+- Implement the nine ordered text-redaction classes, segment-based environment
+  name checks, allowlisted environment capture, and streaming PEM suppression;
+  execute the synthetic positive/negative/name corpus and enforce 100% branch
+  coverage for the redaction module in CI (M5-T01, spec §16).
+- Accept complete JWT padding variants under the maintainer-approved
+  [spec correction #3](https://github.com/EnumaElish123/ReproLLM/issues/3), with
+  all 27 segment-padding combinations covered. No schema or rule ID changes.
+
+### Pending M4 release
+
 Planned for `0.2.0`: the first release of the **lock schema v1 writer**
 (`reprollm.lock`, `schema_version: 1`). Existing manifest schema v1 remains
 compatible; no schema migration is required.
