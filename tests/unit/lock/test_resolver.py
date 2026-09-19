@@ -6,10 +6,9 @@ from pathlib import Path
 
 import httpx
 import pytest
-import respx
 import yaml
 
-from reprollm.core.yaml_io import dump_yaml, load_manifest
+from reprollm.core.yaml_io import dump_yaml
 from reprollm.lock.resolver import resolve_manifest
 from reprollm.schemas.lock import Confidence, Lock, ResolutionMode
 
@@ -146,43 +145,6 @@ def test_unavailable_gpu_and_unsupported_backend_are_explicit(
     assert result.inference is not None
     assert result.inference.version.confidence == Confidence.UNRESOLVED
     assert result.environment.gpu.source == "unavailable"
-
-
-def test_hf_vllm_complete_lock_matches_reviewed_snapshot(
-    tmp_path: Path,
-    materialize,
-    hf_mock: respx.MockRouter,
-    monkeypatch: pytest.MonkeyPatch,
-    stub_run_cmd,
-) -> None:
-    del tmp_path, hf_mock
-    root = materialize("hf_vllm_eval", manifest="complete")
-    _fake_versions(
-        monkeypatch,
-        {"vllm": "0.10.0", "transformers": "4.57.0", "datasets": "3.2.0"},
-    )
-    monkeypatch.setattr("reprollm.core.envinfo.python_version", lambda: "3.11.9")
-    monkeypatch.setattr("reprollm.core.envinfo.platform_name", lambda: "linux")
-    stub_run_cmd.on("nvidia-smi", returncode=127, stderr="not found")
-    value = load_manifest(root / "reprollm.yaml")
-    with httpx.Client() as http:
-        sections = resolve_manifest(root, value, http=http, now=NOW)
-    lock = Lock(
-        reprollm_version="0.1.1",
-        generated_at=NOW,
-        manifest_sha256="sha256:manifest",
-        project_rules_sha256=None,
-        resolution=ResolutionMode(mode="online"),
-        **sections.as_lock_fields(),
-    )
-    actual = lock.model_dump(mode="json")
-    expected_path = Path(__file__).parents[2] / "fixtures/repos/hf_vllm_eval/expected/lock.yaml"
-    if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
-        expected_path.write_text(dump_yaml(lock), encoding="utf-8")
-        return
-    expected = yaml.safe_load(expected_path.read_text(encoding="utf-8"))
-
-    assert _without_volatile(actual) == _without_volatile(expected)
 
 
 def test_offline_resolution_matches_snapshot(

@@ -6,3 +6,8 @@ deliberately tracked `.env` containing an obviously fake OpenAI key — triggers
 gated `meta-llama` model exercise detection hints and 403 lock paths.
 
 All tokens in this fixture tree are fake and exist only for tests.
+
+M4 Level 2 uses the complete manifest and a mocked HTTP 403 for the primary
+model. Its revision yields CRITICAL; tokenizer and chat-template resolution
+yield WARNING. The fix hint names `HF_TOKEN`. The dataset resolves exactly and
+local hashes pass. Summary (C/W/I/P/S): `1/2/3/43/9`.

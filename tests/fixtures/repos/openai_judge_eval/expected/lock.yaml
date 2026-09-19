@@ -1,0 +1,131 @@
+schema_version: 1
+reprollm_version: 0.2.0
+generated_at: '2026-10-01T09:30:00Z'
+manifest_sha256: sha256:d9173a11b54f2002e78c1e243c63aaae2284b915c0505e1dc4fd1f219546b0ca
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  judge:
+    provider: openai
+    id: gpt-4o-2024-08-06
+    pinnability: snapshot_alias
+    revision:
+      value: null
+      source: provider_no_pinning
+      confidence: unresolved
+      resolved_at: null
+      note: null
+    observed_at: '2026-10-01T09:30:00Z'
+    tokenizer: null
+    chat_template: null
+    config_sha256: null
+    adapter: null
+    local: null
+    dtype: null
+    quantization: null
+    trust_remote_code: null
+  primary:
+    provider: openai
+    id: gpt-4o-mini
+    pinnability: unpinnable
+    revision:
+      value: null
+      source: provider_no_pinning
+      confidence: unresolved
+      resolved_at: null
+      note: null
+    observed_at: '2026-10-01T09:30:00Z'
+    tokenizer: null
+    chat_template: null
+    config_sha256: null
+    adapter: null
+    local: null
+    dtype: null
+    quantization: null
+    trust_remote_code: null
+datasets:
+  eval:
+    provider: local
+    id: data
+    revision:
+      value: null
+      source: filesystem
+      confidence: exact
+      resolved_at: '2026-10-01T09:30:00Z'
+      note: null
+    subset: null
+    split: null
+    content_fingerprint:
+      status: not_computed
+    files:
+    - path: data/pairs.jsonl
+      sha256: sha256:09b4661d8034c0d51f81ba5db9475731e58072c7c25c8b20d61a5b333553f465
+      size_bytes: 191
+prompts:
+  judge:
+    path: prompts/judge.txt
+    sha256: sha256:112ea591f5848409c3d47636d4981c7190f74d236e0928472513d74834308992
+    size_bytes: 165
+    text_sha256: null
+files: []
+generation:
+  temperature: 0.7
+  top_p: 1.0
+  top_k: null
+  max_tokens: 512
+  seed: 1
+  do_sample: null
+  stop: []
+  repetition_penalty: null
+  n: null
+inference:
+  backend: openai
+  version:
+    value: 1.99.0
+    source: importlib_metadata
+    confidence: exact
+    resolved_at: '2026-10-01T09:30:00Z'
+    note: null
+  mode: null
+  dtype: null
+  tensor_parallel_size: null
+  gpu_memory_utilization: null
+  quantization: null
+  max_model_len: null
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation:
+  metrics:
+  - name: win_rate
+    implementation: judge.py
+    implementation_sha256: sha256:2e23ca201d955de186291546630ba785b780c7c9139224263c4cd34270cba687
+    implementation_version: null
+  aggregation: mean
+  repetitions: 3
+  thresholds: null
+  definitions: null
+  query_budget: null
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params:
+      temperature: 0.0
+      top_p: null
+      max_tokens: 16
+      seed: null
+    repetitions: 1
+    parser: null
+privacy: null
+environment:
+  python: 3.11.9
+  platform: linux
+  packages:
+    datasets: 3.2.0
+    openai: 1.99.0
+    transformers: 4.57.0
+  gpu:
+    driver: null
+    cuda_driver_max: null
+    source: unavailable

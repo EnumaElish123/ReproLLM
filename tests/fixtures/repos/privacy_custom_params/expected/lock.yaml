@@ -1,0 +1,144 @@
+schema_version: 1
+reprollm_version: 0.2.0
+generated_at: '2026-10-01T09:30:00Z'
+manifest_sha256: sha256:ff235291807b9c29aaf96a89de28568bd7af898930b0a7751a3af253c6457019
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: meta-llama/Llama-3.1-8B-Instruct
+    pinnability: exact
+    revision:
+      value: null
+      source: hf_api_forbidden
+      confidence: unresolved
+      resolved_at: null
+      note: HfForbidden
+    observed_at: null
+    tokenizer:
+      id: meta-llama/Llama-3.1-8B-Instruct
+      revision:
+        value: null
+        source: hf_api_forbidden
+        confidence: unresolved
+        resolved_at: null
+        note: HfForbidden
+    chat_template:
+      sha256:
+        value: null
+        source: hf_api_forbidden
+        confidence: unresolved
+        resolved_at: null
+        note: HfForbidden
+      status: present
+    config_sha256:
+      value: null
+      source: hf_api_forbidden
+      confidence: unresolved
+      resolved_at: null
+      note: HfForbidden
+    adapter: null
+    local: null
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: true
+datasets:
+  eval:
+    provider: huggingface
+    id: cais/mmlu
+    revision:
+      value: b77a9100b00000000000000000000000000000bb
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-01T09:30:00Z'
+      note: null
+    subset: abstract_algebra
+    split: test
+    content_fingerprint:
+      status: not_computed
+    files: null
+prompts:
+  system:
+    path: prompts/system.txt
+    sha256: sha256:a712f5c1775a416e130b98558105b7bdc41a74de68588db24498910cd779bfd0
+    size_bytes: 70
+    text_sha256: null
+files:
+- path: configs/privacy.yaml
+  sha256: sha256:50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253
+  size_bytes: 148
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  top_k: null
+  max_tokens: 256
+  seed: 7
+  do_sample: null
+  stop: []
+  repetition_penalty: null
+  n: null
+inference:
+  backend: transformers
+  version:
+    value: 4.57.0
+    source: importlib_metadata
+    confidence: exact
+    resolved_at: '2026-10-01T09:30:00Z'
+    note: null
+  mode: null
+  dtype: bfloat16
+  tensor_parallel_size: null
+  gpu_memory_utilization: null
+  quantization: null
+  max_model_len: null
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation:
+  metrics:
+  - name: asr
+    implementation: attack.py
+    implementation_sha256: sha256:614947e914d8b292f28fd8731743f555057d33b92c504acc423996195efc763c
+    implementation_version: null
+  - name: utility
+    implementation: method.py
+    implementation_sha256: sha256:a2390d6d6f1bf5a111f24175fef68bbd50210a5bf373d20e895fce4043a5c9fb
+    implementation_version: null
+  aggregation: mean
+  repetitions: 3
+  thresholds: null
+  definitions:
+    asr: Fraction of attacks that infer membership successfully.
+  query_budget: 1000
+  judge: null
+privacy:
+  threat_model: Honest-but-curious server observing protected hidden states.
+  mechanism:
+    name: orthogonal_noise
+    params:
+      alpha: 0.25
+      delta: 1.5
+      safe_interval:
+      - 0.1
+      - 0.9
+      orth_loss: 0.1
+  metrics:
+  - epsilon
+  - utility
+  attack:
+    method: mia
+    params: {}
+    query_budget: 1000
+environment:
+  python: 3.11.9
+  platform: linux
+  packages:
+    datasets: 3.2.0
+    openai: 1.99.0
+    transformers: 4.57.0
+  gpu:
+    driver: null
+    cuda_driver_max: null
+    source: unavailable

@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M4, second half)
+
+- Add reviewed lock and Level 2 audit snapshots for all three complete fixtures,
+  with exported-schema validation, an intentionally unavailable vLLM backend,
+  API judge pinnability, and a gated-model denial (M4-T06, spec §§4, 10, 22).
+
 ### Added (M4, first half)
 
 - Add a bounded Hugging Face Hub HTTP client with mirror support, environment-based
