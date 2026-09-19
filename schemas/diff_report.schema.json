@@ -1,7 +1,145 @@
 {
+  "$defs": {
+    "DiffChange": {
+      "additionalProperties": false,
+      "properties": {
+        "a": {
+          "title": "A"
+        },
+        "b": {
+          "title": "B"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "HIGH",
+            "MEDIUM_HIGH",
+            "MEDIUM",
+            "LOW",
+            "NONE"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "changed",
+            "added",
+            "removed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "status",
+        "a",
+        "b",
+        "severity"
+      ],
+      "title": "DiffChange",
+      "type": "object"
+    },
+    "DiffSource": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "run",
+            "lock"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "title": "DiffSource",
+      "type": "object"
+    },
+    "DiffSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "enum": [
+              "HIGH",
+              "MEDIUM_HIGH",
+              "MEDIUM",
+              "LOW",
+              "NONE"
+            ]
+          },
+          "title": "Counts",
+          "type": "object"
+        },
+        "highest": {
+          "enum": [
+            "HIGH",
+            "MEDIUM_HIGH",
+            "MEDIUM",
+            "LOW",
+            "NONE"
+          ],
+          "title": "Highest",
+          "type": "string"
+        },
+        "same": {
+          "minimum": 0,
+          "title": "Same",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "highest",
+        "counts",
+        "same"
+      ],
+      "title": "DiffSummary",
+      "type": "object"
+    }
+  },
   "$id": "https://reprollm.dev/schemas/diff_report.schema.json",
   "additionalProperties": false,
   "properties": {
+    "a": {
+      "$ref": "#/$defs/DiffSource"
+    },
+    "b": {
+      "$ref": "#/$defs/DiffSource"
+    },
+    "changes": {
+      "items": {
+        "$ref": "#/$defs/DiffChange"
+      },
+      "title": "Changes",
+      "type": "array"
+    },
     "reprollm_version": {
       "title": "Reprollm Version",
       "type": "string"
@@ -11,10 +149,17 @@
       "default": 1,
       "title": "Schema Version",
       "type": "integer"
+    },
+    "summary": {
+      "$ref": "#/$defs/DiffSummary"
     }
   },
   "required": [
-    "reprollm_version"
+    "reprollm_version",
+    "a",
+    "b",
+    "summary",
+    "changes"
   ],
   "title": "DiffReport",
   "type": "object"
