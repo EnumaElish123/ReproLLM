@@ -45,3 +45,4 @@ class DiffReport(BaseModel):
     b: DiffSource
     summary: DiffSummary
     changes: list[DiffChange]
+    filtered_below: DriftSeverity | None = None

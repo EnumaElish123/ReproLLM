@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M6, first half)
 
+- Add `reprollm diff` for run IDs/prefixes, run files/directories and lock files,
+  with text/JSON reports, schema validation, display filtering and independent
+  exit thresholds (M6-T04, spec §§1, 6, 17–18, 23). Snapshots are contained and
+  mandatory when referenced; report values are sanitized after comparison.
+  The v1 report adds nullable `filtered_below`; summary always remains complete.
+
 - Compare effective State values with normalized equality, stable severity/section
   ordering, complete counts and source-conflict notes (M6-T03, spec §18).
   The `diff_report` v1 placeholder now requires input references, summary and

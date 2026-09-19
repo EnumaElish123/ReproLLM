@@ -73,5 +73,8 @@ def read_run(root: Path, prefix: str) -> tuple[RunRecord, str]:
     if not matches:
         raise UserError("RUN_ID not found; use `reprollm runs list`")
     if len(matches) > 1:
-        raise UserError("RUN_ID is ambiguous; supply a longer prefix from `reprollm runs list`")
+        raise UserError(
+            "RUN_ID is ambiguous; supply a longer prefix. Candidates: "
+            + ", ".join(path.name for path in matches)
+        )
     return _read(root, matches[0])
