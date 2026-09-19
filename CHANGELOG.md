@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M5, second half)
 
+- Add a real-child, dirty-repository leakage test covering both environment modes,
+  argv, forbidden files, snapshots, patches and captured logs. Run the `security`
+  gate separately in CI and before building release distributions (M5-T07,
+  spec §§5.1, 16, 22 T-06); any failure blocks publication.
+
 - Audit the latest valid run for file, generation, model, environment and accepted
   custom-field conflicts; preserve all structured evidence and project severities.
   Skip corrupt records with visible warnings and remove the final four runtime
