@@ -61,6 +61,15 @@ def test_doctor_old_git_version_is_warning(stub_run_cmd: CmdStub) -> None:
     assert git["status"] == "warn"
 
 
+def test_doctor_accepts_supported_apple_git_version(stub_run_cmd: CmdStub) -> None:
+    stub_run_cmd.on("git", stdout="git version 2.50.1 (Apple Git-155)\n")
+    stub_run_cmd.on("nvidia-smi", returncode=NOT_FOUND)
+    result = runner.invoke(app, ["doctor", "--json"])
+    assert result.exit_code == 0
+    checks = json.loads(result.output)["checks"]
+    assert next(check for check in checks if check["name"] == "git")["status"] == "ok"
+
+
 def test_doctor_check_network_ok(hf_mock: respx.MockRouter) -> None:
     result = runner.invoke(app, ["doctor", "--json", "--check-network"])
     assert result.exit_code == 0

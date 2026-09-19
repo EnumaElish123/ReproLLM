@@ -16,6 +16,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M4, second half)
 
+- Record five-project metadata validation with independently checked HF
+  revisions and file hashes, offline/online stability, and authenticated
+  gated-file denial without credential leakage; retain Linux H2 as a pending
+  manual gate (M4-T08, spec §§4, 12, 22; [validation record](docs/dogfooding/m4-lock.md)).
+
 - Reuse the bounded HF client in `doctor --check-network`, including mirror,
   retry, metadata-validation, and sanitized authentication failure behavior;
   document lock provenance, pinnability, offline resolution and freshness
@@ -24,6 +29,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add reviewed lock and Level 2 audit snapshots for all three complete fixtures,
   with exported-schema validation, an intentionally unavailable vLLM backend,
   API judge pinnability, and a gated-model denial (M4-T06, spec §§4, 10, 22).
+
+### Fixed (M4 dogfooding)
+
+- Recognize supported Apple Git version strings in `doctor` instead of reporting
+  a parsing warning for their vendor suffix (M4-T08, spec §1).
 
 ### Added (M4, first half)
 

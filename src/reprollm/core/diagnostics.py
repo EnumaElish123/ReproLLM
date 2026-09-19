@@ -43,7 +43,7 @@ def _check_git() -> tuple[CheckStatus, str]:
         return CheckStatus.MISSING, "git not found on PATH"
     version = result.stdout.strip().removeprefix("git version ")
     try:
-        parsed = tuple(int(part) for part in version.split(".")[:3])
+        parsed = tuple(int(part) for part in version.partition(" ")[0].split(".")[:3])
         if parsed < MIN_GIT_VERSION:
             return CheckStatus.WARN, f"git {version} (>= 2.30 recommended)"
     except ValueError:
