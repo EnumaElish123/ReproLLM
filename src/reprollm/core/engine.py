@@ -13,12 +13,14 @@ import reprollm.rules  # noqa: F401 — imports register the rule catalog
 from reprollm import __version__
 from reprollm.core.config import load_config
 from reprollm.core.context import AuditContext
-from reprollm.core.errors import InternalError
+from reprollm.core.errors import InternalError, UserError
 from reprollm.core.hashing import sha256_file
-from reprollm.core.levels import count_runs, detect_level
+from reprollm.core.levels import detect_level
 from reprollm.core.paths import repo_paths
+from reprollm.core.project_rules import load_project_rules
 from reprollm.core.registry import Rule, get_rule
 from reprollm.profiles import loader
+from reprollm.run.reader import list_runs
 from reprollm.schemas.config import Config
 from reprollm.schemas.finding import (
     SEVERITY_RANK,
@@ -158,8 +160,13 @@ def run_audit(
     config = load_config(root) if config is None else config
     manifest = _load_manifest(root)
     lock = _load_lock(root)
+    project_rules = load_project_rules(root)
+    try:
+        runs, run_warnings = list_runs(root)
+    except UserError as exc:
+        runs, run_warnings = [], [str(exc)]
 
-    detected = detect_level(paths)
+    detected = detect_level(paths, run_count=len(runs))
     effective = detected if level is None else min(level, detected)
 
     if profile_names is None:
@@ -174,8 +181,9 @@ def run_audit(
         target=target,
         manifest=manifest,
         lock=lock,
-        runs=[],  # run record loading arrives in M5
+        runs=runs,
         config=config,
+        project_rules=project_rules,
     )
     ctx.declared_profiles = declared
     ctx.resolved_profiles = resolved.names
@@ -213,7 +221,16 @@ def run_audit(
         # Touch every lazy scan the rules may not have reached, then merge.
         ctx.fs.files()
         _ = (ctx.pyscan, ctx.deps)
-        diagnostics.extend(sorted({*ctx.fs.warnings, *ctx.pyscan.warnings, *ctx.deps.unparsed}))
+        diagnostics.extend(
+            sorted(
+                {
+                    *ctx.fs.warnings,
+                    *ctx.pyscan.warnings,
+                    *ctx.deps.unparsed,
+                    *(f"run: {warning}" for warning in run_warnings),
+                }
+            )
+        )
 
     findings.sort(key=lambda f: (-SEVERITY_RANK[f.severity], _category_rank(f.category), f.rule_id))
 
@@ -229,7 +246,7 @@ def run_audit(
     documents = DocumentsSection(
         manifest=sha256_file(paths.manifest) if paths.manifest.is_file() else None,
         lock=sha256_file(paths.lock) if paths.lock.is_file() else None,
-        runs=count_runs(paths),
+        runs=len(runs),
     )
 
     # Deterministic detection runs at every level; at Level 0 it is the main

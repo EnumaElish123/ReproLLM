@@ -22,7 +22,12 @@ def _folders(root: Path) -> list[Path]:
         return []
     if not base.is_dir() or not base.resolve().is_relative_to(root.resolve()):
         raise UserError(".reprollm/runs must be a directory inside the repository")
-    return sorted(path for path in base.iterdir() if _RUN_ID.fullmatch(path.name) and path.is_dir())
+    try:
+        return sorted(
+            path for path in base.iterdir() if _RUN_ID.fullmatch(path.name) and path.is_dir()
+        )
+    except OSError as exc:
+        raise UserError(f"cannot list .reprollm/runs ({type(exc).__name__})") from None
 
 
 def _read(root: Path, folder: Path) -> tuple[RunRecord, str]:
@@ -42,6 +47,13 @@ def _read(root: Path, folder: Path) -> tuple[RunRecord, str]:
     return record, raw
 
 
+def run_sort_key(record: RunRecord) -> tuple[datetime, str]:
+    started = record.started_at or datetime.min.replace(tzinfo=timezone.utc)
+    if started.tzinfo is None:
+        started = started.replace(tzinfo=timezone.utc)
+    return started.astimezone(timezone.utc), record.run_id
+
+
 def list_runs(root: Path) -> tuple[list[RunRecord], list[str]]:
     records, warnings = [], []
     for folder in _folders(root):
@@ -50,14 +62,7 @@ def list_runs(root: Path) -> tuple[list[RunRecord], list[str]]:
             records.append(record)
         except UserError as exc:
             warnings.append(str(exc))
-    minimum = datetime.min.replace(tzinfo=timezone.utc)
-    records.sort(
-        key=lambda record: (
-            (record.started_at or minimum).replace(tzinfo=timezone.utc),
-            record.run_id,
-        ),
-        reverse=True,
-    )
+    records.sort(key=run_sort_key, reverse=True)
     return records, warnings
 
 

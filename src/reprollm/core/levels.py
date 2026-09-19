@@ -14,10 +14,10 @@ def count_runs(paths: RepoPaths) -> int:
     )
 
 
-def detect_level(paths: RepoPaths) -> int:
+def detect_level(paths: RepoPaths, *, run_count: int | None = None) -> int:
     """0 = no manifest, 1 = manifest, 2 = manifest + lock and/or run records."""
     if not paths.manifest.is_file():
         return 0
-    if paths.lock.is_file() or count_runs(paths) > 0:
+    if paths.lock.is_file() or (count_runs(paths) if run_count is None else run_count) > 0:
         return 2
     return 1

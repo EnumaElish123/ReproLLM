@@ -1,29 +1,47 @@
 {
   "documents": {
-    "lock": "sha256:6aef753fd2064a5561abf27e2b8e121832e4a881c0b236c16d6277569c3087e3",
-    "manifest": "sha256:ff235291807b9c29aaf96a89de28568bd7af898930b0a7751a3af253c6457019",
-    "runs": 0
+    "lock": "sha256:1e156fc1470bba56de330c003aadf1144a1c496d9226dfdf3643448a1dd5a7a6",
+    "manifest": "sha256:e48ce55c71f7afa15b43eb35b6f6342cc8599b3e41d2a87c5691bb78295764c4",
+    "runs": 1
   },
   "findings": [
     {
       "aliases": [],
-      "category": "model",
+      "category": "consistency",
       "evidence": [
         {
-          "expected": "confidence: exact",
-          "field": "models.primary.revision",
-          "kind": "lock",
+          "expected": null,
+          "field": "generation.temperature",
+          "kind": "field",
           "line": null,
-          "note": "source=hf_api_forbidden; note=HfForbidden",
-          "path": null,
-          "value": null
+          "note": null,
+          "path": "reprollm.yaml",
+          "value": 0.0
+        },
+        {
+          "expected": null,
+          "field": "generation.temperature",
+          "kind": "run",
+          "line": null,
+          "note": "cli(--temperature)",
+          "path": ".reprollm/runs/20261005T093000Z-a1b2c3/run.json",
+          "value": 1.0
+        },
+        {
+          "expected": null,
+          "field": "generation.temperature",
+          "kind": "run",
+          "line": null,
+          "note": "config(configs/eval.yaml:sampling.temperature)",
+          "path": ".reprollm/runs/20261005T093000Z-a1b2c3/run.json",
+          "value": 0.0
         }
       ],
-      "fix_hint": "Run `reprollm lock` with network access (set HF_TOKEN for gated models), or set models.<role>.revision to a commit SHA.",
+      "fix_hint": "Reconcile generation.* in reprollm.yaml with the declared runtime bindings.",
       "level": 2,
-      "message": "models.primary.revision is not resolved exactly",
+      "message": "generation.temperature: manifest 0.0 \u00b7 cli(--temperature) 1.0 \u00b7 config(configs/eval.yaml:sampling.temperature) 0.0",
       "profile_origin": [],
-      "rule_id": "model.revision_pinned",
+      "rule_id": "consistency.generation_params",
       "severity": "CRITICAL",
       "severity_origin": "default",
       "status": "fail",
@@ -31,23 +49,23 @@
     },
     {
       "aliases": [],
-      "category": "model",
+      "category": "code",
       "evidence": [
         {
-          "expected": "confidence: exact",
-          "field": "models.primary.chat_template.sha256",
-          "kind": "lock",
+          "expected": null,
+          "field": null,
+          "kind": "git",
           "line": null,
-          "note": "source=hf_api_forbidden; note=HfForbidden",
-          "path": null,
+          "note": ".reprollm/ untracked",
+          "path": ".reprollm/",
           "value": null
         }
       ],
-      "fix_hint": "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock.",
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
       "level": 2,
-      "message": "models.primary.chat_template.sha256 is not resolved exactly",
+      "message": "1 untracked non-ignored file(s): .reprollm/",
       "profile_origin": [],
-      "rule_id": "model.chat_template_hashed",
+      "rule_id": "code.no_untracked",
       "severity": "WARNING",
       "severity_origin": "default",
       "status": "fail",
@@ -55,23 +73,23 @@
     },
     {
       "aliases": [],
-      "category": "model",
+      "category": "gen",
       "evidence": [
         {
           "expected": "confidence: exact",
-          "field": "models.primary.tokenizer.revision",
+          "field": "inference.version",
           "kind": "lock",
           "line": null,
-          "note": "source=hf_api_forbidden; note=HfForbidden",
+          "note": "source=importlib_metadata; note=distribution not installed: vllm",
           "path": null,
           "value": null
         }
       ],
-      "fix_hint": "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock.",
+      "fix_hint": "Run `reprollm lock` to record inference.version in reprollm.lock.",
       "level": 2,
-      "message": "models.primary.tokenizer.revision is not resolved exactly",
+      "message": "inference.version is not resolved exactly",
       "profile_origin": [],
-      "rule_id": "model.tokenizer_pinned",
+      "rule_id": "gen.backend_version_locked",
       "severity": "WARNING",
       "severity_origin": "default",
       "status": "fail",
@@ -131,50 +149,16 @@
     },
     {
       "aliases": [],
-      "category": "exec",
-      "evidence": [
-        {
-          "expected": null,
-          "field": "experiment.profiles",
-          "kind": "field",
-          "line": null,
-          "note": "inference declared, nothing detected",
-          "path": null,
-          "value": null
-        }
-      ],
-      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
       "level": 2,
-      "message": "declared profile 'inference' has no detection evidence in this repository",
+      "message": "no applicable declarations",
       "profile_origin": [],
-      "rule_id": "exec.profile_detection_mismatch",
+      "rule_id": "model.trust_remote_code_declared",
       "severity": "INFO",
       "severity_origin": "default",
-      "status": "fail",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "exec",
-      "evidence": [
-        {
-          "expected": null,
-          "field": null,
-          "kind": "run",
-          "line": null,
-          "note": "no run.json found",
-          "path": ".reprollm/runs",
-          "value": null
-        }
-      ],
-      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
-      "level": 2,
-      "message": "no run records found under .reprollm/runs",
-      "profile_origin": [],
-      "rule_id": "exec.run_recorded",
-      "severity": "INFO",
-      "severity_origin": "default",
-      "status": "fail",
+      "status": "skipped",
       "suppressed_reason": null
     },
     {
@@ -186,20 +170,6 @@
       "message": "no applicable locked declarations",
       "profile_origin": [],
       "rule_id": "dataset.local_files_hashed",
-      "severity": "INFO",
-      "severity_origin": "default",
-      "status": "skipped",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "gen",
-      "evidence": [],
-      "fix_hint": "Set inference.dtype, inference.tensor_parallel_size, inference.quantization and inference.gpu_memory_utilization in reprollm.yaml.",
-      "level": 2,
-      "message": "no applicable declarations",
-      "profile_origin": [],
-      "rule_id": "gen.backend_config_declared",
       "severity": "INFO",
       "severity_origin": "default",
       "status": "skipped",
@@ -228,48 +198,6 @@
       "message": "accepted custom.* bindings and latest-run observations are required",
       "profile_origin": [],
       "rule_id": "consistency.custom_fields",
-      "severity": "INFO",
-      "severity_origin": "default",
-      "status": "skipped",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "consistency",
-      "evidence": [],
-      "fix_hint": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
-      "level": 2,
-      "message": "lock and latest-run environment.packages are required",
-      "profile_origin": [],
-      "rule_id": "consistency.env_vs_lock",
-      "severity": "INFO",
-      "severity_origin": "default",
-      "status": "skipped",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "consistency",
-      "evidence": [],
-      "fix_hint": "Reconcile generation.* in reprollm.yaml with the declared runtime bindings.",
-      "level": 2,
-      "message": "manifest and latest-run generation.* observations are required",
-      "profile_origin": [],
-      "rule_id": "consistency.generation_params",
-      "severity": "INFO",
-      "severity_origin": "default",
-      "status": "skipped",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "consistency",
-      "evidence": [],
-      "fix_hint": "Reconcile models.<role>.id and revision in reprollm.yaml and reprollm.lock.",
-      "level": 2,
-      "message": "model declarations and latest-run models.*.id/revision observations are required",
-      "profile_origin": [],
-      "rule_id": "consistency.model_identity",
       "severity": "INFO",
       "severity_origin": "default",
       "status": "skipped",
@@ -312,20 +240,6 @@
       "message": "The experiment code lives in a git repository.",
       "profile_origin": [],
       "rule_id": "code.git_repo",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "code",
-      "evidence": [],
-      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
-      "level": 2,
-      "message": "No untracked, non-ignored files are left in the tree.",
-      "profile_origin": [],
-      "rule_id": "code.no_untracked",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -419,11 +333,53 @@
       "aliases": [],
       "category": "exec",
       "evidence": [],
+      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "level": 2,
+      "message": "Declared profiles and detected signals agree.",
+      "profile_origin": [],
+      "rule_id": "exec.profile_detection_mismatch",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+      "level": 2,
+      "message": "At least one run record captures what actually executed.",
+      "profile_origin": [],
+      "rule_id": "exec.run_recorded",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
       "fix_hint": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
       "level": 2,
       "message": "A random seed is declared somewhere (execution/generation/training).",
       "profile_origin": [],
       "rule_id": "exec.seed_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock.",
+      "level": 2,
+      "message": "Every Hugging Face or local model has a chat-template hash or recorded absence.",
+      "profile_origin": [],
+      "rule_id": "model.chat_template_hashed",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -529,11 +485,25 @@
       "aliases": [],
       "category": "model",
       "evidence": [],
-      "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+      "fix_hint": "Run `reprollm lock` with network access (set HF_TOKEN for gated models), or set models.<role>.revision to a commit SHA.",
       "level": 2,
-      "message": "Detected remote-code trust behavior is explicitly declared.",
+      "message": "Every model has a resolved identity or an explicit API pinnability record.",
       "profile_origin": [],
-      "rule_id": "model.trust_remote_code_declared",
+      "rule_id": "model.revision_pinned",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock.",
+      "level": 2,
+      "message": "Every Hugging Face model has an exact tokenizer revision.",
+      "profile_origin": [],
+      "rule_id": "model.tokenizer_pinned",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -679,6 +649,102 @@
       "evidence": [
         {
           "expected": null,
+          "field": "inference.dtype",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.dtype in reprollm.yaml.",
+      "level": 2,
+      "message": "inference.dtype is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.gpu_memory_utilization",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.gpu_memory_utilization in reprollm.yaml.",
+      "level": 2,
+      "message": "inference.gpu_memory_utilization is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.quantization",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.quantization in reprollm.yaml.",
+      "level": 2,
+      "message": "inference.quantization is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "inference.tensor_parallel_size",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set inference.tensor_parallel_size in reprollm.yaml.",
+      "level": 2,
+      "message": "inference.tensor_parallel_size is declared",
+      "profile_origin": [],
+      "rule_id": "gen.backend_config_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "gen",
+      "evidence": [
+        {
+          "expected": null,
           "field": "inference.backend",
           "kind": "field",
           "line": null,
@@ -692,20 +758,6 @@
       "message": "inference.backend is declared",
       "profile_origin": [],
       "rule_id": "gen.backend_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "gen",
-      "evidence": [],
-      "fix_hint": "Run `reprollm lock` to record inference.version in reprollm.lock.",
-      "level": 2,
-      "message": "The non-API inference backend has an exact locked version.",
-      "profile_origin": [],
-      "rule_id": "gen.backend_version_locked",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -864,30 +916,6 @@
       "evidence": [
         {
           "expected": null,
-          "field": "evaluation.definitions",
-          "kind": "field",
-          "line": null,
-          "note": "refusal or asr declared",
-          "path": null,
-          "value": null
-        }
-      ],
-      "fix_hint": "Set evaluation.definitions.refusal or evaluation.definitions.asr in reprollm.yaml.",
-      "level": 2,
-      "message": "evaluation.definitions declares refusal or asr",
-      "profile_origin": [],
-      "rule_id": "eval.definitions_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "eval",
-      "evidence": [
-        {
-          "expected": null,
           "field": "evaluation.metrics.0.implementation",
           "kind": "field",
           "line": null,
@@ -901,46 +929,13 @@
           "kind": "file",
           "line": null,
           "note": null,
-          "path": "attack.py",
+          "path": "eval.py",
           "value": null
         }
       ],
       "fix_hint": "Set evaluation.metrics.0.implementation to an existing relative file or pkg==version in reprollm.yaml.",
       "level": 2,
       "message": "evaluation.metrics.0.implementation: referenced file exists",
-      "profile_origin": [],
-      "rule_id": "eval.metric_implementation_referenced",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "eval",
-      "evidence": [
-        {
-          "expected": null,
-          "field": "evaluation.metrics.1.implementation",
-          "kind": "field",
-          "line": null,
-          "note": "referenced file exists",
-          "path": null,
-          "value": null
-        },
-        {
-          "expected": null,
-          "field": null,
-          "kind": "file",
-          "line": null,
-          "note": null,
-          "path": "method.py",
-          "value": null
-        }
-      ],
-      "fix_hint": "Set evaluation.metrics.1.implementation to an existing relative file or pkg==version in reprollm.yaml.",
-      "level": 2,
-      "message": "evaluation.metrics.1.implementation: referenced file exists",
       "profile_origin": [],
       "rule_id": "eval.metric_implementation_referenced",
       "severity": "PASS",
@@ -978,30 +973,6 @@
       "evidence": [
         {
           "expected": null,
-          "field": "evaluation.query_budget",
-          "kind": "field",
-          "line": null,
-          "note": "declared",
-          "path": null,
-          "value": null
-        }
-      ],
-      "fix_hint": "Set evaluation.query_budget in reprollm.yaml.",
-      "level": 2,
-      "message": "evaluation.query_budget is declared",
-      "profile_origin": [],
-      "rule_id": "eval.query_budget_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "eval",
-      "evidence": [
-        {
-          "expected": null,
           "field": "evaluation.repetitions",
           "kind": "field",
           "line": null,
@@ -1022,75 +993,13 @@
     },
     {
       "aliases": [],
-      "category": "privacy",
+      "category": "consistency",
       "evidence": [],
-      "fix_hint": "Set privacy.attack.method and privacy.attack.query_budget in reprollm.yaml.",
+      "fix_hint": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
       "level": 2,
-      "message": "The declared privacy attack has a method and query budget.",
+      "message": "Runtime LLM-critical package versions agree with the lock.",
       "profile_origin": [],
-      "rule_id": "privacy.attack_config_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "privacy",
-      "evidence": [],
-      "fix_hint": "Set privacy.mechanism.name and nonempty privacy.mechanism.params in reprollm.yaml.",
-      "level": 2,
-      "message": "The privacy mechanism has a name and nonempty parameters.",
-      "profile_origin": [],
-      "rule_id": "privacy.mechanism_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "privacy",
-      "evidence": [
-        {
-          "expected": null,
-          "field": "privacy.metrics",
-          "kind": "field",
-          "line": null,
-          "note": "declared",
-          "path": null,
-          "value": null
-        }
-      ],
-      "fix_hint": "Set privacy.metrics in reprollm.yaml.",
-      "level": 2,
-      "message": "privacy.metrics is declared",
-      "profile_origin": [],
-      "rule_id": "privacy.metrics_declared",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "privacy",
-      "evidence": [
-        {
-          "expected": null,
-          "field": "privacy.threat_model",
-          "kind": "field",
-          "line": null,
-          "note": "declared",
-          "path": null,
-          "value": null
-        }
-      ],
-      "fix_hint": "Set privacy.threat_model in reprollm.yaml.",
-      "level": 2,
-      "message": "privacy.threat_model is declared",
-      "profile_origin": [],
-      "rule_id": "privacy.threat_model_declared",
+      "rule_id": "consistency.env_vs_lock",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -1123,14 +1032,27 @@
       "severity_origin": "default",
       "status": "pass",
       "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "consistency",
+      "evidence": [],
+      "fix_hint": "Reconcile models.<role>.id and revision in reprollm.yaml and reprollm.lock.",
+      "level": 2,
+      "message": "Observed model identities agree with the manifest and lock.",
+      "profile_origin": [],
+      "rule_id": "consistency.model_identity",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
     }
   ],
   "level": 2,
   "profiles": {
     "declared": [
       "inference",
-      "privacy",
-      "safety"
+      "evaluation"
     ],
     "detected": [
       {
@@ -1141,7 +1063,7 @@
             "field": null,
             "kind": "detection",
             "line": null,
-            "note": "keyword 'differential privacy' in readme text",
+            "note": "keyword 'accuracy' in readme text",
             "path": "README.md",
             "value": null
           },
@@ -1150,63 +1072,43 @@
             "field": null,
             "kind": "detection",
             "line": null,
-            "note": "keyword 'membership inference' in readme text",
-            "path": "README.md",
-            "value": null
-          },
-          {
-            "expected": null,
-            "field": null,
-            "kind": "detection",
-            "line": null,
-            "note": "keyword 'threat model' in readme text",
+            "note": "keyword 'mmlu' in readme text",
             "path": "README.md",
             "value": null
           }
         ],
-        "profile": "privacy",
+        "profile": "evaluation",
         "shipped": true
       },
       {
-        "confidence": "medium",
+        "confidence": "high",
         "evidence": [
           {
             "expected": null,
             "field": null,
             "kind": "detection",
-            "line": null,
-            "note": "keyword 'asr' in readme text",
-            "path": "README.md",
-            "value": null
-          },
-          {
-            "expected": null,
-            "field": null,
-            "kind": "detection",
-            "line": null,
-            "note": "keyword 'attack success rate' in readme text",
-            "path": "README.md",
+            "line": 8,
+            "note": "import vllm",
+            "path": "eval.py",
             "value": null
           }
         ],
-        "profile": "safety",
+        "profile": "inference",
         "shipped": true
       }
     ],
     "resolved": [
       "core",
       "inference",
-      "privacy",
-      "evaluation",
-      "safety"
+      "evaluation"
     ]
   },
   "schema_version": 1,
   "summary": {
     "critical": 1,
-    "info": 3,
-    "pass": 43,
-    "skipped": 9,
+    "info": 1,
+    "pass": 44,
+    "skipped": 6,
     "suppressed": 0,
     "warning": 2
   },

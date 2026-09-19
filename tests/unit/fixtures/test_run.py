@@ -19,6 +19,7 @@ from tests.conftest import FIXTURES_ROOT, SNAPSHOT_IGNORE, assert_json_snapshot
 from tests.unit.fixtures.test_level_two import LockedRepo
 from tests.unit.fixtures.test_level_two import locked_repo as locked_repo
 from tests.unit.lock.conftest import hf_mock as hf_mock
+from tests.unit.rules.test_runtime_consistency import NOW
 
 
 def test_locked_fixture_run_snapshot(
@@ -29,6 +30,8 @@ def test_locked_fixture_run_snapshot(
     monkeypatch.setattr(wrapper, "inspect_git", lambda root: git)
     monkeypatch.setattr(wrapper, "capture_hardware", lambda: HardwareInfo(cpu_count=2))
     monkeypatch.setattr(wrapper.getpass, "getuser", lambda: "fixture-user")
+    monkeypatch.setattr(wrapper, "_now", lambda: NOW)
+    monkeypatch.setattr(wrapper.secrets, "token_hex", lambda size: "a1b2c3")
     monkeypatch.chdir(root)
     with monkeypatch.context() as isolated:
         env = {key: value for key, value in os.environ.items() if key.upper() == "SYSTEMROOT"}
@@ -72,3 +75,20 @@ def test_locked_fixture_run_snapshot(
         "hardware",
     )
     assert_json_snapshot(actual, FIXTURES_ROOT / "repos/hf_vllm_eval/expected/run.json", ignore)
+
+    audited = CliRunner().invoke(app, ["audit", "--format", "json"])
+    assert audited.exit_code == 1, audited.output
+    report = json.loads(audited.stdout)
+    by_id = {finding["rule_id"]: finding for finding in report["findings"]}
+    assert by_id["consistency.generation_params"]["severity"] == "CRITICAL"
+    assert [e["value"] for e in by_id["consistency.generation_params"]["evidence"]] == [
+        0.0,
+        1.0,
+        0.0,
+    ]
+    for name in ("exec.run_recorded", "consistency.env_vs_lock", "consistency.model_identity"):
+        assert by_id[name]["status"] == "pass"
+    jsonschema.validate(report, json.loads((schema_dir / "audit_report.schema.json").read_text()))
+    assert_json_snapshot(
+        report, FIXTURES_ROOT / "repos/hf_vllm_eval/expected/audit_L2_after_run.json"
+    )

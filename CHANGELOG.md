@@ -7,6 +7,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M5, second half)
+
+- Audit the latest valid run for file, generation, model, environment and accepted
+  custom-field conflicts; preserve all structured evidence and project severities.
+  Skip corrupt records with visible warnings and remove the final four runtime
+  placeholders (M5-T06, spec §§5, 11, 12.12, 15). Reviewed Level 2 snapshots now
+  explain missing evidence; a new post-run snapshot demonstrates a CRITICAL
+  temperature conflict and `exec.run_recorded` PASS. Schemas are unchanged.
+
 ### Added (M5, first half)
 
 - Expose `run`, `runs list`, and unique-prefix `runs show`, with config defaults,

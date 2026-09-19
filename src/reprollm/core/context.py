@@ -8,6 +8,7 @@ from reprollm.core.deps import Declarations, scan_dependencies
 from reprollm.core.git import GitInfo, inspect_git
 from reprollm.core.pyscan import PyScanResult, scan_python
 from reprollm.core.scanner import RepoScanner
+from reprollm.run.reader import run_sort_key
 from reprollm.schemas.config import Config
 from reprollm.schemas.finding import DetectionResult
 from reprollm.schemas.lock import Lock
@@ -20,8 +21,7 @@ class AuditContext:
     """Input to every rule's ``applies``/``check``.
 
     Expensive facts (git state, file listing, detection) are computed lazily and
-    cached. Fields scheduled for later sprints default to ``None``/empty until
-    their producers land (state in M6, real detection in M2, runs in M5).
+    cached. ExperimentState remains reserved for M6.
     """
 
     def __init__(
@@ -43,7 +43,7 @@ class AuditContext:
         self.level = level
         self.manifest = manifest
         self.lock = lock
-        self.runs = runs or []
+        self.runs = sorted(runs or [], key=run_sort_key)
         self.config = config
         self.project_rules = project_rules
         self.state: object | None = None  # ExperimentState (M6)
