@@ -30,7 +30,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   retain every source with provenance and runtime precedence (M6-T01, spec §17).
   Three new State goldens include declared/resolved/observed values; two synthetic
   run fixtures complete projection coverage. Existing lock/run schemas and audit
-  snapshots are unchanged.
+  snapshots are unchanged. YAML dates in free-form fields project to stable ISO
+  strings before deterministic source ordering.
 
 ### Added (M5, second half)
 

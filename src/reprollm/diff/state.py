@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,8 @@ _SECTIONS = (
 
 
 def _plain(value: Any) -> Any:
+    if isinstance(value, date):
+        return value.isoformat()
     if isinstance(value, Provenance):
         return _plain(value.value)
     if isinstance(value, BaseModel):

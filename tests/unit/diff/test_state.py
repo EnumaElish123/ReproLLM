@@ -186,3 +186,16 @@ def test_default_fallback_and_deterministic_equal_rank_order() -> None:
     merged = State.merge(default, manifest)
     assert merged.flatten()["generation.seed"].value == 7
     assert merged.flatten()["generation.seed"].alternatives[0].value == 42
+
+
+def test_yaml_date_in_custom_data_has_json_stable_projection(tmp_path: Path) -> None:
+    path = tmp_path / "reprollm.yaml"
+    path.write_text(
+        "schema_version: 1\nproject: {name: test}\nexperiment: {profiles: []}\n"
+        "custom: {dataset_date: 2026-01-01, captured_at: 2026-01-01T12:00:00Z}\n"
+    )
+    manifest = load_manifest(path)
+    state = State.merge(manifest)
+    assert state.flatten()["custom.dataset_date"].value == "2026-01-01"
+    assert isinstance(state.flatten()["custom.captured_at"].value, str)
+    assert State.model_validate_json(state.model_dump_json()).flatten() == state.flatten()
