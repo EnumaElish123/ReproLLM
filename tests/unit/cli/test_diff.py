@@ -81,7 +81,9 @@ def test_lock_vs_lock_json_and_text_snapshot(tmp_path: Path) -> None:
     ]
     result = runner.invoke(app, ["--no-color", "diff", a, b])
     assert result.exit_code == 0, result.output
-    assert result.stdout == (Path(__file__).parent / "snapshots/diff_lock.txt").read_text()
+    assert result.stdout == (Path(__file__).parent / "snapshots/diff_lock.txt").read_text(
+        encoding="utf-8"
+    )
     assert "a" * 40 not in result.stdout and "a" * 12 in result.stdout
 
 
