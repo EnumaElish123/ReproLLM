@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added (M6, first half)
 
+- Compare effective State values with normalized equality, stable severity/section
+  ordering, complete counts and source-conflict notes (M6-T03, spec §18).
+  The `diff_report` v1 placeholder now requires input references, summary and
+  changes. No diff writer was previously released; consumers of the placeholder
+  schema must regenerate it. Lock/run schemas are unchanged.
+
 - Ship the normative drift table and resolve ordered profile overrides, dirty-code
   notes and package version components (M6-T02, spec §§6, 18.1–18.2). Patch drift
   lowers severity by one level: torch MEDIUM_HIGH → MEDIUM, following the

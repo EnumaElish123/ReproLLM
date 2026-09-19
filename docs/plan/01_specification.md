@@ -853,6 +853,11 @@ rules:
 
 ### 18.3 Diff report JSON
 
+
+M6 implements the first diff report writer. The unreleased M1 placeholder schema
+is replaced by the complete v1 shape below; `a`, `b`, `summary` and `changes` are
+required. This does not change the manifest, lock or run-record schemas.
+
 ```json
 {
   "schema_version": 1, "reprollm_version": "0.4.0",
