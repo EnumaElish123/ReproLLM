@@ -17,7 +17,11 @@ resource acceptance and release remain incomplete.
 
 The maintainer explicitly approved local submission on 2026-09-19, resolving
 the previous automatic approval-review timeouts. The five task commits are on
-`codex/m5-second-half`; remote submission and CI verification are in progress.
+`codex/m5-second-half`, pushed in [PR #5](https://github.com/EnumaElish123/ReproLLM/pull/5).
+[CI run 35441668138](https://github.com/EnumaElish123/ReproLLM/actions/runs/35441668138)
+passed all five jobs at `9436286`: Linux Python 3.10/3.11/3.12, macOS 3.12 and
+Windows 3.12. The Linux-only signal tests therefore have remote coverage.
+Explicit engine review was requested after these results; no merge is claimed.
 
 The previous unrelated `.codex-pet-runs/`, `hatch-runs/` and `output/`
 directories were neither modified nor included. No schema, frozen rule ID,
@@ -214,5 +218,6 @@ and hash. The actual package version remains `0.1.1`.
 Raw evidence and delivery patches remain outside the worktree in the temporary
 `reprollm-m5-second-half` directory. The machine-readable summaries are
 `gate-a-record.json`, `gate-runtime-record.json` and
-`release-preflight/preflight-record.json`. No main merge, remote CI, review, resource acceptance or release is being
-represented as complete at this submission checkpoint.
+`release-preflight/preflight-record.json`. Remote submission and CI are complete. Maintainer review, main merge, resource
+acceptance and release remain pending. M6 first-half development proceeds on a
+separate branch based on these submitted commits.
