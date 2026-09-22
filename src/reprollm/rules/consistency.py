@@ -6,7 +6,6 @@ import getpass
 import json
 import re
 import socket
-from pathlib import Path
 from typing import Any
 
 from reprollm.core.bindings import values_equal
@@ -17,9 +16,7 @@ from reprollm.core.registry import Rule, register_rule
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.finding import Evidence, Finding, Severity
 from reprollm.schemas.project_rules import ProjectRule
-from reprollm.schemas.run_record import Observation
-
-_DRIVE_RE = re.compile(r"^[A-Za-z]:")
+from reprollm.schemas.state import Leaf
 
 
 @register_rule
@@ -100,39 +97,29 @@ class FileHashesRule(Rule):
         return "reprollm.lock is absent"
 
     def check(self, ctx: AuditContext) -> list[Finding]:
-        lock = ctx.lock
-        if lock is None:  # pragma: no cover - guarded by applies
-            return []
-        entries: dict[str, tuple[str, str]] = {}
-        for role, prompt in sorted(lock.prompts.items()):
-            if prompt.path is not None and prompt.sha256 is not None:
-                entries.setdefault(
-                    prompt.path,
-                    (prompt.sha256, f"prompts.{role}.path"),
-                )
-        for index, entry in enumerate(lock.files):
-            entries.setdefault(entry.path, (entry.sha256, f"files[{index}].path"))
-
         findings: list[Finding] = []
-        run = ctx.latest_run
-        run_files = {} if run is None else {entry.path: entry.sha256 for entry in run.files}
-        for relative, (locked_hash, field) in sorted(entries.items()):
-            path = _safe_working_tree_file(ctx.root, relative)
-            if path is None:
+        for key, leaf in _flat(ctx).items():
+            if not (key.startswith("files.") and key.endswith(".sha256")):
+                continue
+            locked = _source(leaf, "lock")
+            tree = _source(leaf, "working_tree")
+            observed = _source(leaf, "run")
+            if locked is None or tree is None:
+                continue
+            relative = key[len("files.") : -len(".sha256")]
+            locked_hash, field = str(locked.value), locked.detail or key
+            if tree.detail == "invalid":
                 findings.append(_invalid_path_finding(self, ctx, field, locked_hash))
                 continue
-            current_hash = None
+            current_hash = tree.value
             message = f"{relative} content differs from reprollm.lock"
-            note = "working tree hash differs"
-            if not path.is_file():
+            note = tree.detail or "working tree hash differs"
+            if note == "missing":
                 message, note = f"{relative} is missing from the working tree", "missing"
-            else:
-                try:
-                    current_hash = sha256_file(path)
-                except OSError as exc:
-                    message = f"{relative} cannot be read from the working tree"
-                    note = exc.strerror or type(exc).__name__
-            run_hash = run_files.get(relative)
+            elif note.startswith("unreadable:"):
+                message = f"{relative} cannot be read from the working tree"
+                note = note.removeprefix("unreadable:")
+            run_hash = observed.value if observed is not None else None
             if current_hash == locked_hash and (run_hash is None or run_hash == locked_hash):
                 continue
             evidence = [
@@ -140,7 +127,7 @@ class FileHashesRule(Rule):
                     kind="file", path=relative, value=current_hash, expected=locked_hash, note=note
                 )
             ]
-            if relative in run_files:
+            if observed is not None:
                 # One conflict per path, retaining agreeing sources as well as differing ones.
                 message = f"{relative} hashes disagree between reprollm.lock, working tree and run"
                 evidence[0].note = "working tree hash" if current_hash is not None else note
@@ -161,24 +148,6 @@ class FileHashesRule(Rule):
                 _safe_finding(ctx, self.finding(ctx, message=message, evidence=evidence))
             )
         return findings
-
-
-def _safe_working_tree_file(root: Path, relative: str) -> Path | None:
-    if (
-        not relative
-        or relative.startswith(("/", "\\"))
-        or "\\" in relative
-        or _DRIVE_RE.match(relative)
-        or ".." in relative.split("/")
-    ):
-        return None
-    resolved_root = root.resolve()
-    resolved = (resolved_root / relative).resolve()
-    try:
-        resolved.relative_to(resolved_root)
-    except ValueError:
-        return None
-    return resolved
 
 
 def _invalid_path_finding(
@@ -206,24 +175,39 @@ def _run_path(ctx: AuditContext) -> str:
     return f".reprollm/runs/{ctx.latest_run.run_id}/run.json"
 
 
-def _manifest_value(ctx: AuditContext, field: str) -> Any:
-    value: Any = ctx.manifest.model_dump() if ctx.manifest is not None else {}
-    for part in field.split("."):
-        value = value.get(part) if isinstance(value, dict) else None
-    return value
+def _flat(ctx: AuditContext) -> dict[str, Leaf]:
+    state = ctx.state
+    return state.flatten() if state is not None else {}
 
 
-def _observations(ctx: AuditContext, pattern: str) -> dict[str, list[Observation]]:
-    run = ctx.latest_run
-    return (
-        {}
-        if run is None
-        else {
-            field: values
-            for field, values in sorted(run.bindings_observed.items())
-            if values and re.fullmatch(pattern, field)
-        }
-    )
+def _leaves(leaf: Leaf) -> list[Leaf]:
+    return [leaf, *(item for alternative in leaf.alternatives for item in _leaves(alternative))]
+
+
+def _source(leaf: Leaf | None, source: str) -> Leaf | None:
+    return next((item for item in _leaves(leaf) if item.source == source), None) if leaf else None
+
+
+def _value(leaf: Leaf | None, source: str) -> Any:
+    item = _source(leaf, source)
+    return item.value if item is not None else None
+
+
+def _observations(ctx: AuditContext, pattern: str) -> dict[str, list[Leaf]]:
+    return {
+        field: observed
+        for field, leaf in _flat(ctx).items()
+        if re.fullmatch(pattern, field)
+        and (
+            observed := [
+                item
+                for item in _leaves(leaf)
+                if item.source == "run"
+                and item.detail is not None
+                and item.detail.split(":", 1)[0] in {"cli", "config", "env"}
+            ]
+        )
+    }
 
 
 def _safe_finding(ctx: AuditContext, finding: Finding) -> Finding:
@@ -236,21 +220,20 @@ def _binding_finding(
     rule: Rule,
     ctx: AuditContext,
     field: str,
-    observations: list[Observation],
+    observations: list[Leaf],
     *,
     locked: Any = None,
     include_lock: bool = False,
 ) -> Finding:
-    declared = _manifest_value(ctx, field)
+    declared = _value(_flat(ctx).get(field), "manifest")
     evidence = [Evidence(kind="field", path="reprollm.yaml", field=field, value=declared)]
     parts = [f"{field}: manifest {json.dumps(declared, ensure_ascii=False, sort_keys=True)}"]
     if include_lock:
         evidence.append(Evidence(kind="lock", path="reprollm.lock", field=field, value=locked))
         parts.append(f"lock {json.dumps(locked, ensure_ascii=False, sort_keys=True)}")
     for observation in observations:
-        source = observation.source
-        location = f"{source.path}:" if source.path is not None else ""
-        label = f"{source.type}({location}{source.key})"
+        kind, _, location = (observation.detail or "").partition(":")
+        label = f"{kind}({location})"
         parts.append(f"{label} {json.dumps(observation.value, ensure_ascii=False, sort_keys=True)}")
         evidence.append(
             Evidence(
@@ -284,7 +267,8 @@ class GenerationParamsRule(Rule):
             _binding_finding(self, ctx, field, observations)
             for field, observations in _observations(ctx, r"generation\..+").items()
             if any(
-                not values_equal(_manifest_value(ctx, field), item.value) for item in observations
+                not values_equal(_value(_flat(ctx).get(field), "manifest"), item.value)
+                for item in observations
             )
         ]
 
@@ -310,9 +294,10 @@ class ModelIdentityRule(Rule):
         findings = []
         for field, observations in _observations(ctx, r"models\.[^.]+\.(id|revision)").items():
             _, role, name = field.split(".")
-            model = ctx.lock.models.get(role) if ctx.lock is not None else None
-            locked = (model.id if name == "id" else model.revision.value) if model else None
-            declared = _manifest_value(ctx, field)
+            flat = _flat(ctx)
+            model = _source(flat.get(f"models.{role}.id"), "lock")
+            locked = _value(flat.get(field), "lock")
+            declared = _value(flat.get(field), "manifest")
             # A resolved revision is the exact identity of the manifest's mutable reference.
             expected = [locked] if name == "revision" and locked is not None else [declared]
             if (
@@ -362,15 +347,13 @@ class EnvVsLockRule(Rule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         if not self.applies(ctx):
             return []
-        assert ctx.lock and ctx.lock.environment and ctx.latest_run and ctx.latest_run.environment
-        locked = ctx.lock.environment.packages
-        observed = ctx.latest_run.environment.packages
         findings = []
-        for name in sorted(set(LLM_CRITICAL_PACKAGES) & (locked.keys() | observed.keys())):
-            before, after = locked.get(name), observed.get(name)
+        flat = _flat(ctx)
+        for name in sorted(LLM_CRITICAL_PACKAGES):
+            field = f"environment.packages.{name}"
+            before, after = _value(flat.get(field), "lock"), _value(flat.get(field), "run")
             if before == after:
                 continue
-            field = f"environment.packages.{name}"
             presence = "only run" if before is None else "only lock" if after is None else None
             findings.append(
                 _safe_finding(
@@ -399,7 +382,7 @@ def _custom_rules(ctx: AuditContext) -> list[ProjectRule]:
             if rule.field.startswith("custom.")
             and rule.bindings is not None
             and any(rule.bindings.model_dump().values())
-            and ctx.latest_run.bindings_observed.get(rule.field)
+            and rule.field in _observations(ctx, r"custom\..+")
         ),
         key=lambda rule: rule.id,
     )
@@ -427,8 +410,11 @@ class CustomFieldsRule(Rule):
         for project_rule in _custom_rules(ctx):
             assert ctx.latest_run is not None
             field = project_rule.field
-            observations = ctx.latest_run.bindings_observed[field]
-            if all(values_equal(_manifest_value(ctx, field), item.value) for item in observations):
+            observations = _observations(ctx, r"custom\..+")[field]
+            if all(
+                values_equal(_value(_flat(ctx).get(field), "manifest"), item.value)
+                for item in observations
+            ):
                 continue
             finding = _binding_finding(self, ctx, field, observations)
             finding.severity = Severity(project_rule.severity)

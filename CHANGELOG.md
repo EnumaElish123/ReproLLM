@@ -7,6 +7,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed (M6, second half)
+
+- Migrate Level 2 generation, model identity, custom-field, environment and file
+  consistency checks to State leaves and their alternatives (M6-T05, spec §§11,
+  12.12, 17). Audit projects current declarations and working files alongside
+  runtime observations; standalone diff continues to use historical snapshots.
+  Existing audit snapshots and lock/run schemas remain unchanged.
+  Invalid lock paths, including empty paths, remain explicit consistency findings
+  instead of aborting State projection.
+
 ### Added (M6, first half)
 
 - Add `reprollm diff` for run IDs/prefixes, run files/directories and lock files,

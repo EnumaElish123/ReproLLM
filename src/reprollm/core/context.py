@@ -15,13 +15,14 @@ from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 from reprollm.schemas.project_rules import ProjectRules
 from reprollm.schemas.run_record import RunRecord
+from reprollm.schemas.state import State
 
 
 class AuditContext:
     """Input to every rule's ``applies``/``check``.
 
     Expensive facts (git state, file listing, detection) are computed lazily and
-    cached. ExperimentState remains reserved for M6.
+    cached. Level 2 projects current documents and runtime evidence into State.
     """
 
     def __init__(
@@ -46,7 +47,7 @@ class AuditContext:
         self.runs = sorted(runs or [], key=run_sort_key)
         self.config = config
         self.project_rules = project_rules
-        self.state: object | None = None  # ExperimentState (M6)
+        self._state: State | None = None
         self.env: object | None = None  # EnvInfo (Level 0 env rules, M2)
         #: Profiles the user declared (manifest or --profiles); set by the engine
         #: before rules run; feeds exec.profile_detection_mismatch.
@@ -60,6 +61,20 @@ class AuditContext:
         self._deps: Declarations | None = None
         self._pyscan: PyScanResult | None = None
         self._detection: DetectionResult | None = None
+
+    @property
+    def state(self) -> State | None:
+        if self.level < 2:
+            return None
+        if self._state is not None:
+            return self._state
+        from reprollm.core.audit_state import audit_state
+
+        return audit_state(self.root, self.manifest, self.lock, self.latest_run)
+
+    @state.setter
+    def state(self, value: State | None) -> None:
+        self._state = value
 
     @property
     def git(self) -> GitInfo:

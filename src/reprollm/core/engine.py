@@ -187,6 +187,8 @@ def run_audit(
     )
     ctx.declared_profiles = declared
     ctx.resolved_profiles = resolved.names
+    # One consistent view of current files and documents for all Level 2 rules.
+    ctx.state = ctx.state
 
     findings: list[Finding] = []
     for rule_id in resolved.rules:
