@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed (M6, second half)
 
+- Add four JSON/text diff goldens: captured prompt/temperature changes, a locked
+  model revision, identical inputs and a torch patch update (M6-T06, spec §18).
+  The capture scenario commits its changed inputs before measuring commit drift;
+  identical inputs have no changes, and torch patch drift is MEDIUM under table v1.
+
 - Migrate Level 2 generation, model identity, custom-field, environment and file
   consistency checks to State leaves and their alternatives (M6-T05, spec §§11,
   12.12, 17). Audit projects current declarations and working files alongside
