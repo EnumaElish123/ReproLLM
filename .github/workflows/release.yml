@@ -29,6 +29,9 @@ jobs:
             exit 1
           fi
 
+      - name: Security leakage gate
+        run: uv run pytest -q -m security
+
       - name: Build distributions
         run: uv build
 

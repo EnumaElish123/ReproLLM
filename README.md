@@ -7,7 +7,8 @@
 > Make LLM experiments reproducible.
 
 **Status: alpha. PyPI 0.1.1 supports Audit Level 0/1 and `init`. The development
-branch adds `lock` and Level 2 audit for 0.2.0; `run` and `diff` follow in 0.3–0.4.**
+checkout adds `lock`, runtime capture and Level 2 consistency checks. The 0.2/0.3
+releases still await validation gates; `diff` follows in 0.4.0.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
 research. It records the LLM-specific state that other tools ignore — model revision,
@@ -55,6 +56,10 @@ $ reprollm audit .          # now at level 1: model/dataset/generation gaps
 $ reprollm lock .           # resolve revisions and hash declared inputs
 $ reprollm audit .          # now at level 2: verify locked identities and files
 $ reprollm lock . --check   # network-free manifest/project-rule freshness check
+$ reprollm run -- python eval.py --temperature 0.0
+$ reprollm runs list
+$ reprollm runs show <run-id-or-unique-prefix>
+$ reprollm audit .          # compare the latest run against declarations and lock
 ```
 
 Without any configuration ReproLLM audits your repository at **Level 0** (code
@@ -97,8 +102,10 @@ The [manifest guide](docs/manifest.md) explains model and dataset roles,
 generation versus judge settings, implementation references, execution
 bindings, and how to review repository-wide detections in multi-workflow codebases.
 
-Level 2 verifies lock freshness and current file hashes. The four consistency
-rules that need runtime records remain explicit placeholders until M5.
+Level 2 verifies lock freshness and compares file hashes, observed generation
+parameters, model identities, LLM package versions and accepted custom fields
+against the latest valid run. The [runtime guide](docs/run.md) explains bindings,
+environment policies, redacted snapshots and how to share selected records.
 
 ## Commands
 
@@ -109,7 +116,8 @@ rules that need runtime records remain explicit placeholders until M5.
 | `reprollm doctor` | **usable** | environment diagnostics |
 | `reprollm profiles list/show` | **usable** | inspect the seven built-in profiles |
 | `reprollm lock` | **usable on main**, planned for 0.2.0 | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
-| `reprollm run -- CMD` | 0.3.0 | execute a command and record runtime truth |
+| `reprollm run -- CMD` | **usable in development**, planned for 0.3.0 | execute a command and record runtime truth |
+| `reprollm runs list/show` | **usable in development**, planned for 0.3.0 | inspect saved runtime evidence |
 | `reprollm diff A B` | 0.4.0 | semantic drift between two runs or lockfiles |
 | `reprollm export` | 0.5.0 | generate a `REPRODUCIBILITY.md` for your paper artifact |
 

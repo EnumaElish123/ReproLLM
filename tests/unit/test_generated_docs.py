@@ -14,7 +14,7 @@ def test_rules_document_is_fresh_and_complete() -> None:
     assert rendered.count("| `") >= 53
     assert "`model.primary_declared`" in rendered
     assert "`model.revision_pinned`" in rendered
-    assert "stub, arrives in 0.3.0" in rendered
+    assert "stub, arrives in 0.3.0" not in rendered
     assert "core, evaluation, finetuning, inference, llm_judge, privacy, safety" in rendered
 
 

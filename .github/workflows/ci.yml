@@ -63,6 +63,9 @@ jobs:
       - name: Redaction branch coverage
         run: uv run coverage report --fail-under=100 --include='src/reprollm/core/redaction.py'
 
+      - name: Security leakage gate
+        run: uv run pytest -q -m security
+
       - name: Schema freshness
         if: matrix.schema-check
         run: |

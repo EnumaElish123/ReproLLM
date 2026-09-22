@@ -7,6 +7,39 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added (M5, second half)
+
+- Document runtime capture, structured conflicts, environment policies, raw hashes
+  versus redacted snapshots, child-owned artifacts, SLURM placement and private
+  reporting; add run/inspection commands to the quick start (M5-T08, spec §§1, 5, 15–16).
+
+- Add a real-child, dirty-repository leakage test covering both environment modes,
+  argv, forbidden files, snapshots, patches and captured logs. Run the `security`
+  gate separately in CI and before building release distributions (M5-T07,
+  spec §§5.1, 16, 22 T-06); any failure blocks publication.
+
+- Audit the latest valid run for file, generation, model, environment and accepted
+  custom-field conflicts; preserve all structured evidence and project severities.
+  Skip corrupt records with visible warnings and remove the final four runtime
+  placeholders (M5-T06, spec §§5, 11, 12.12, 15). Reviewed Level 2 snapshots now
+  explain missing evidence; a new post-run snapshot demonstrates a CRITICAL
+  temperature conflict and `exec.run_recorded` PASS. Schemas are unchanged.
+
+### Validation (M5-T09 preparation)
+
+- Record unchanged five-project gold results, byte-identical initialization and
+  full Level 1 comparisons, and independently specified runtime conflicts/latest
+  matching runs. Real inference/training/judge gates remain blocked on provisioned
+  resources; see [the validation report](docs/dogfooding/m5-second-half.md).
+
+### Pending M5 release
+
+Planned for `0.3.0`: the first release of the **run record schema v1 writer**
+and the documented redaction policy. [Draft notes](docs/releases/0.3.0-draft.md)
+include sanitized inspection/conflict examples and an isolated packaging preflight
+(M5-T10 preparation). Task commits are prepared; resource validation, maintainer review and CI are
+still pending; no version bump, tag or publication is claimed.
+
 ### Added (M5, first half)
 
 - Expose `run`, `runs list`, and unique-prefix `runs show`, with config defaults,

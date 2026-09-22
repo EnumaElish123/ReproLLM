@@ -104,8 +104,10 @@ def audit(
     )
     from reprollm.cli.main import STATE
 
-    if STATE["verbose"]:
-        for entry in diagnostics:
+    for entry in diagnostics:
+        if entry.startswith("run: "):
+            typer.echo(f"warning: {entry}", err=True)
+        elif STATE["verbose"]:
             typer.echo(f"scan: {entry}", err=True)
 
     if format == OutputFormat.JSON:
