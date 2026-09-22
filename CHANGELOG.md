@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed (M6, second half)
 
+- Document diff inputs, table v1, version components, verdicts, overrides and
+  independent display/exit thresholds; add tested fixture excerpts to the README
+  (M6-T07, spec §§6, 17–18). Real paired-model acceptance and release remain pending.
+
 - Add four JSON/text diff goldens: captured prompt/temperature changes, a locked
   model revision, identical inputs and a torch patch update (M6-T06, spec §18).
   The capture scenario commits its changed inputs before measuring commit drift;
