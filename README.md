@@ -7,8 +7,8 @@
 > Make LLM experiments reproducible.
 
 **Status: alpha. PyPI 0.1.1 supports Audit Level 0/1 and `init`. The development
-checkout adds `lock`, runtime capture and Level 2 consistency checks. The 0.2/0.3
-releases still await validation gates; `diff` follows in 0.4.0.**
+checkout adds `lock`, runtime capture, Level 2 consistency checks and semantic
+`diff`. The 0.2/0.3/0.4 releases still await their validation gates.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
 research. It records the LLM-specific state that other tools ignore — model revision,
@@ -60,6 +60,7 @@ $ reprollm run -- python eval.py --temperature 0.0
 $ reprollm runs list
 $ reprollm runs show <run-id-or-unique-prefix>
 $ reprollm audit .          # compare the latest run against declarations and lock
+$ reprollm diff <run-a-id> <run-b-id> --fail-on HIGH
 ```
 
 Without any configuration ReproLLM audits your repository at **Level 0** (code
@@ -86,6 +87,27 @@ models:
 Read the [lockfile guide](docs/lockfile.md) for provenance, offline mode,
 authentication, file changes, and the distinction between exact revisions,
 provider snapshot labels, and mutable aliases.
+
+Diff identifies changes by their experiment meaning. This excerpt is from the
+tested `hf_vllm_eval` fixture, which captures a small `python -c pass` command
+before and after changing a prompt and the temperature; it is not a model run:
+
+```text
+prompts
+  prompts.system.sha256  sha256:1012fd0edf9e → sha256:f3773a23d712  [HIGH]
+  prompts.system.size_bytes  162 → 180  [MEDIUM]
+
+files
+  files.prompts/system.txt.sha256  sha256:1012fd0edf9e → sha256:f3773a23d712  [HIGH]
+
+generation
+  generation.temperature  1.0 → 0.7  [HIGH]
+    a has inconsistent sources (see audit); b has inconsistent sources (see audit)
+```
+
+The full report concludes: `Highest drift: HIGH (3 changes). These runs are not
+directly comparable.` Read the [diff guide](docs/diff.md) for input formats,
+severity policy, source conflicts, profile overrides and CI exit thresholds.
 
 ## What it checks
 
@@ -118,7 +140,7 @@ environment policies, redacted snapshots and how to share selected records.
 | `reprollm lock` | **usable on main**, planned for 0.2.0 | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
 | `reprollm run -- CMD` | **usable in development**, planned for 0.3.0 | execute a command and record runtime truth |
 | `reprollm runs list/show` | **usable in development**, planned for 0.3.0 | inspect saved runtime evidence |
-| `reprollm diff A B` | 0.4.0 | semantic drift between two runs or lockfiles |
+| `reprollm diff A B` | **usable in development**, planned for 0.4.0 | semantic drift between two runs or lockfiles |
 | `reprollm export` | 0.5.0 | generate a `REPRODUCIBILITY.md` for your paper artifact |
 
 ReproLLM is CLI-first, local-first, and collects no telemetry. The only network calls are

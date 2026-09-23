@@ -7,6 +7,29 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed (M6, second half)
+
+- Record the second-half validation evidence and prepare gated 0.4.0 release
+  notes (M6-T08 preparation). Keep the package version at 0.1.1 until real paired
+  model acceptance and the outstanding resource gates are complete.
+
+- Document diff inputs, table v1, version components, verdicts, overrides and
+  independent display/exit thresholds; add tested fixture excerpts to the README
+  (M6-T07, spec §§6, 17–18). Real paired-model acceptance and release remain pending.
+
+- Add four JSON/text diff goldens: captured prompt/temperature changes, a locked
+  model revision, identical inputs and a torch patch update (M6-T06, spec §18).
+  The capture scenario commits its changed inputs before measuring commit drift;
+  identical inputs have no changes, and torch patch drift is MEDIUM under table v1.
+
+- Migrate Level 2 generation, model identity, custom-field, environment and file
+  consistency checks to State leaves and their alternatives (M6-T05, spec §§11,
+  12.12, 17). Audit projects current declarations and working files alongside
+  runtime observations; standalone diff continues to use historical snapshots.
+  Existing audit snapshots and lock/run schemas remain unchanged.
+  Invalid lock paths, including empty paths, remain explicit consistency findings
+  instead of aborting State projection.
+
 ### Added (M6, first half)
 
 - Add `reprollm diff` for run IDs/prefixes, run files/directories and lock files,

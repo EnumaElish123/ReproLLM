@@ -74,11 +74,18 @@ def _project(value: Any, path: str, source: Any, result: dict[str, Leaf]) -> Non
 def from_flat(values: dict[str, Leaf], *, profiles: list[str] | None = None) -> State:
     tree: dict[str, Any] = {}
     for path, leaf in sorted(values.items()):
-        if path.startswith("files.") and path.endswith(".sha256"):
+        file_hash = path.startswith("files.") and path.endswith(".sha256")
+        if file_hash:
             parts = ["files", path[len("files.") : -len(".sha256")], "sha256"]
         else:
             parts = path.split(".")
-        if parts[0] not in State.model_fields or parts[0] == "profiles" or not all(parts):
+        # Lock paths are evidence, even an empty invalid path: audit must emit
+        # its path finding instead of failing before the consistency rules run.
+        if (
+            parts[0] not in State.model_fields
+            or parts[0] == "profiles"
+            or (not file_hash and not all(parts))
+        ):
             raise UserError("invalid experiment field path; inspect bindings_observed in run.json")
         branch = tree
         for part in parts[:-1]:
@@ -138,6 +145,11 @@ def _snapshots(run: RunRecord, run_dir: Path | None) -> tuple[Manifest | None, L
 
 def from_run(run: RunRecord, *, run_dir: Path | None = None) -> State:
     manifest, lock = _snapshots(run, run_dir)
+    return merge(manifest, lock, observed_state(run))
+
+
+def observed_state(run: RunRecord) -> State:
+    """Project runtime evidence; callers choose current or captured declarations."""
     values: dict[str, Leaf] = {}
     raw = run.model_dump(mode="json")
     for section in (
@@ -177,7 +189,7 @@ def from_run(run: RunRecord, *, run_dir: Path | None = None) -> State:
         if field in values:
             leaves.append(values[field])
         values[field] = _choose(leaves)
-    return merge(manifest, lock, from_flat(values))
+    return from_flat(values)
 
 
 def _rank(leaf: Leaf) -> int:
