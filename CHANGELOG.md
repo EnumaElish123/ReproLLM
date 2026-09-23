@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed (M6, second half)
 
+- Record the second-half validation evidence and prepare gated 0.4.0 release
+  notes (M6-T08 preparation). Keep the package version at 0.1.1 until real paired
+  model acceptance and the outstanding resource gates are complete.
+
 - Document diff inputs, table v1, version components, verdicts, overrides and
   independent display/exit thresholds; add tested fixture excerpts to the README
   (M6-T07, spec §§6, 17–18). Real paired-model acceptance and release remain pending.
