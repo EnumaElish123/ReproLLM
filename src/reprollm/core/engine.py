@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import reprollm.rules  # noqa: F401 — imports register the rule catalog
 from reprollm import __version__
@@ -35,6 +36,9 @@ from reprollm.schemas.finding import (
 )
 from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
+
+if TYPE_CHECKING:
+    from reprollm.rules.project import GeneratedProjectRule
 
 
 def _count(findings: list[Finding], status: FindingStatus, severity: Severity | None) -> int:
@@ -99,6 +103,37 @@ def _skipped_finding(rule: type[Rule], ctx: AuditContext, reason: str | None) ->
         message=reason or "not applicable",
         evidence=[],
         fix_hint=rule.fix_hint,
+    )
+
+
+def _skipped_finding_for(
+    rule_id: str, category: str, fix_hint: str, ctx: AuditContext, reason: str | None
+) -> Finding:
+    return Finding(
+        rule_id=rule_id,
+        aliases=[],
+        category=category,
+        severity=Severity.INFO,
+        status=FindingStatus.SKIPPED,
+        level=ctx.level,
+        message=reason or "not applicable",
+        evidence=[],
+        fix_hint=fix_hint,
+    )
+
+
+def _pass_finding_for(rule: Rule | GeneratedProjectRule, ctx: AuditContext) -> Finding:
+    return Finding(
+        rule_id=rule.id,
+        aliases=[],
+        category=rule.category,
+        severity=Severity.PASS,
+        status=FindingStatus.PASS,
+        level=ctx.level,
+        message=rule.description,
+        evidence=[],
+        fix_hint=rule.fix_hint,
+        severity_origin="project_rule" if rule.category == "project" else "default",
     )
 
 
@@ -191,7 +226,30 @@ def run_audit(
     ctx.state = ctx.state
 
     findings: list[Finding] = []
-    for rule_id in resolved.rules:
+    from reprollm.rules.project import generated_rules
+
+    generated = (
+        {rule.id: rule for rule in generated_rules(project_rules.rules)} if project_rules else {}
+    )
+    for rule_id in [*resolved.rules, *sorted(generated)]:
+        generated_rule = generated.get(rule_id)
+        if generated_rule is not None:
+            if generated_rule.min_level > effective:
+                continue
+            if not generated_rule.applies(ctx):
+                findings.append(
+                    _skipped_finding_for(
+                        generated_rule.id,
+                        generated_rule.category,
+                        generated_rule.fix_hint,
+                        ctx,
+                        generated_rule.skip_reason(ctx),
+                    )
+                )
+                continue
+            produced = generated_rule.check(ctx)
+            findings.extend(produced if produced else [_pass_finding_for(generated_rule, ctx)])
+            continue
         rule_class = get_rule(rule_id)
         if rule_class is None:  # pragma: no cover - resolve() already validated
             raise InternalError(f"rule {rule_id!r} vanished from the registry")

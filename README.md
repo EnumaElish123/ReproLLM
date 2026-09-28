@@ -141,7 +141,8 @@ environment policies, redacted snapshots and how to share selected records.
 | `reprollm run -- CMD` | **usable in development**, planned for 0.3.0 | execute a command and record runtime truth |
 | `reprollm runs list/show` | **usable in development**, planned for 0.3.0 | inspect saved runtime evidence |
 | `reprollm diff A B` | **usable in development**, planned for 0.4.0 | semantic drift between two runs or lockfiles |
-| `reprollm export` | 0.5.0 | generate a `REPRODUCIBILITY.md` for your paper artifact |
+| `reprollm export` | **usable** | generate a `REPRODUCIBILITY.md` for your paper artifact |
+| `reprollm rules add/list` | **usable** | accept repository-specific requirements |
 
 ReproLLM is CLI-first, local-first, and collects no telemetry. The only network calls are
 revision resolution against provider APIs (`lock`), an opt-in LLM endpoint
