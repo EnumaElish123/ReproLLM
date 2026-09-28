@@ -58,7 +58,23 @@ jobs:
       - name: Test
         run: >
           uv run pytest -q --cov=reprollm --cov-report=xml --cov-fail-under=85
+          --tb=short --junit-xml=pytest-report.xml
           ${{ matrix.pytest-marker-filter && format('-m "{0}"', matrix.pytest-marker-filter) || '' }}
+
+      - name: Report failing tests (annotations)
+        if: failure()
+        shell: python
+        run: |
+          import xml.etree.ElementTree as ET
+          try:
+              report = ET.parse("pytest-report.xml").getroot()
+          except OSError:
+              raise SystemExit(0)
+          for case in report.iter("testcase"):
+              for failure in list(case.iter("failure")) + list(case.iter("error")):
+                  name = f"{case.get('classname', '')}::{case.get('name', '')}"
+                  text = (failure.get("message") or "failed")[:300]
+                  print(f"::error title={name}::{name}: {text}")
 
       - name: Redaction branch coverage
         run: uv run coverage report --fail-under=100 --include='src/reprollm/core/redaction.py'
