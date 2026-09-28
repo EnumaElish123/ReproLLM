@@ -241,4 +241,22 @@ rules:
         for volatile in ("generated_at", "reprollm_version"):
             document.pop(volatile, None)
             expected.pop(volatile, None)
+        if document != expected:
+            _report_first_delta(document, expected)
         assert document == expected
+
+
+def _report_first_delta(actual: dict, expected: dict, prefix: str = "") -> None:
+    """Print the first differing leaf so CI annotations localize the gap."""
+    import sys
+
+    keys = sorted(set(actual) | set(expected))
+    for key in keys:
+        path = f"{prefix}.{key}" if prefix else key
+        a, b = actual.get(key, "<missing>"), expected.get(key, "<missing>")
+        if isinstance(a, dict) and isinstance(b, dict):
+            _report_first_delta(a, b, path)
+            continue
+        if a != b:
+            print(f"DELTA {path}: actual={str(a)[:160]} expected={str(b)[:160]}", file=sys.stderr)
+            return
