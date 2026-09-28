@@ -257,10 +257,12 @@ def _first_delta(actual: dict, expected: dict, prefix: str = "") -> str:
             continue
         if a != b:
             return f"first delta at {path}: actual={str(a)[:200]} expected={str(b)[:200]}"
-    only_actual = sorted(set(actual) - set(expected))
-    only_expected = sorted(set(expected) - set(actual))
-    none_valued = [k for k in sorted(set(actual) & set(expected)) if actual[k] is None]
+    sa = json.dumps(actual, sort_keys=True, default=str)
+    sb = json.dumps(expected, sort_keys=True, default=str)
+    fallback = min(len(sa), len(sb))
+    pairs = enumerate(zip(sa, sb, strict=False))
+    i = next((k for k, (x, y) in pairs if x != y), fallback)
     return (
-        f"differs: only_actual={only_actual} only_expected={only_expected} "
-        f"none_valued={none_valued}"
+        f"serialized diff at {i}: actual…{sa[max(0, i - 60) : i + 80]!r} "
+        f"expected…{sb[max(0, i - 60) : i + 80]!r}"
     )
