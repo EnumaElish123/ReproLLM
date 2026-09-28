@@ -259,6 +259,11 @@ def _first_delta(actual: dict, expected: dict, prefix: str = "") -> str:
             return f"first delta at {path}: actual={str(a)[:200]} expected={str(b)[:200]}"
     sa = json.dumps(actual, sort_keys=True, default=str)
     sb = json.dumps(expected, sort_keys=True, default=str)
+    if len(sa) != len(sb):
+        return (
+            f"length differs: actual={len(sa)} keys={sorted(actual)}; "
+            f"expected={len(sb)} keys={sorted(expected)}"
+        )
     fallback = min(len(sa), len(sb))
     pairs = enumerate(zip(sa, sb, strict=False))
     i = next((k for k, (x, y) in pairs if x != y), fallback)
