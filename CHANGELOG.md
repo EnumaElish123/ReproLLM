@@ -7,6 +7,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-28
+<!-- Consolidated release: the unreleased M4 (lock), M5 (run + redaction)
+     and M6 (diff) work ships as one 0.4.0 by maintainer decision; versions
+     0.2.0/0.3.0 were never tagged or published and exist only as drafts. -->
+
 ### Changed (M6, second half)
 
 - Record the second-half validation evidence and prepare gated 0.4.0 release
@@ -81,7 +86,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   matching runs. Real inference/training/judge gates remain blocked on provisioned
   resources; see [the validation report](docs/dogfooding/m5-second-half.md).
 
-### Pending M5 release
+### Release note (M5, shipped in 0.4.0)
 
 Planned for `0.3.0`: the first release of the **run record schema v1 writer**
 and the documented redaction policy. [Draft notes](docs/releases/0.3.0-draft.md)
@@ -112,7 +117,7 @@ still pending; no version bump, tag or publication is claimed.
   [spec correction #3](https://github.com/EnumaElish123/ReproLLM/issues/3), with
   all 27 segment-padding combinations covered. No schema or rule ID changes.
 
-### Pending M4 release
+### Release note (M4, shipped in 0.4.0)
 
 Planned for `0.2.0`: the first release of the **lock schema v1 writer**
 (`reprollm.lock`, `schema_version: 1`). Existing manifest schema v1 remains
@@ -342,7 +347,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...v0.4.0
 [0.1.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/EnumaElish123/ReproLLM/releases/tag/v0.0.1
