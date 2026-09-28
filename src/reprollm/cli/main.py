@@ -11,7 +11,19 @@ import traceback
 import typer
 
 from reprollm import __version__
-from reprollm.cli import audit, diff, doctor, export, lock, profiles, rules, run, runs, schema
+from reprollm.cli import (
+    audit,
+    diff,
+    discover,
+    doctor,
+    export,
+    lock,
+    profiles,
+    rules,
+    run,
+    runs,
+    schema,
+)
 from reprollm.cli import init as init_cmd
 from reprollm.core.errors import ReproLLMError, UserError
 
@@ -29,6 +41,7 @@ app.command(name="diff")(diff.diff)
 app.command(name="init")(init_cmd.init)
 app.command()(export.export)
 app.add_typer(rules.app, name="rules")
+app.command()(discover.discover)
 app.command(name="lock")(lock.lock)
 app.command(
     name="run",

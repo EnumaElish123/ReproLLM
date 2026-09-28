@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 
@@ -18,6 +18,7 @@ from reprollm.core.paths import find_root, repo_paths
 from reprollm.core.project_rules import load_project_rules
 from reprollm.core.yaml_io import dump_yaml
 from reprollm.schemas.project_rules import (
+    IgnoredCandidate,
     ProjectRule,
     ProjectRuleBindings,
     ProjectRules,
@@ -64,6 +65,7 @@ def list_rules(
     if not rules:
         typer.echo("No project rules accepted. Add one with `reprollm rules add`.")
         return
+    ignored = {entry.candidate_id for entry in (document.ignored_candidates if document else [])}
     typer.echo(f"{len(rules)} project rule(s):")
     for rule in rules:
         bindings = ""
@@ -77,6 +79,19 @@ def list_rules(
         typer.echo(
             f"  {rule.id}  {rule.severity}  {rule.field}{bindings}\n    reason: {rule.reason}"
         )
+    discover_dir = root / ".reprollm" / "discover"
+    if discover_dir.is_dir():
+        try:
+            _path, latest = _latest_discovery(root)
+        except UserError:
+            latest = None
+        if latest is not None:
+            for candidate in latest.candidates:
+                state = "ignored" if candidate.id in ignored else "pending"
+                typer.echo(
+                    f"  candidate {candidate.id}  {candidate.kind}  [{state}]  "
+                    f"{candidate.suggested_field}"
+                )
 
 
 @app.command("add")
@@ -126,3 +141,106 @@ def add(
     _write_rules(root, document)
     typer.echo(f"Added {identifier} ({severity}) for {field} → {paths.project_rules}")
     typer.echo("Run `reprollm lock` again: its project_rules_sha256 must be refreshed.")
+
+
+def _latest_discovery(root: Path) -> tuple[Path, Any]:
+    import glob
+
+    from reprollm.schemas.discover_candidates import DiscoverCandidates
+
+    runs = sorted(glob.glob(str(root / ".reprollm" / "discover" / "*.json")))
+    if not runs:
+        raise UserError(
+            "no discovery results under .reprollm/discover; run "
+            "`reprollm discover --experimental` first"
+        )
+    path = Path(runs[-1])
+    try:
+        document = DiscoverCandidates.model_validate(json.loads(path.read_text(encoding="utf-8")))
+    except Exception as exc:  # noqa: BLE001 - name the broken file
+        raise UserError(f"cannot read {path}: {exc}") from exc
+    return path, document
+
+
+@app.command("accept")
+def accept(
+    candidate_id: Annotated[str, typer.Argument(help="Candidate id, e.g. c-3f9a1b.")],
+    severity: Annotated[
+        str | None, typer.Option("--severity", help="Override the suggested severity.")
+    ] = None,
+    field: Annotated[
+        str | None, typer.Option("--field", help="Override the suggested field path.")
+    ] = None,
+) -> None:
+    """Accept a discovered candidate as a project rule (source: discover)."""
+    root = find_root(Path.cwd())
+    _path, document = _latest_discovery(root)
+    candidate = document.by_id(candidate_id)
+    if candidate is None:
+        known = ", ".join(c.id for c in document.candidates) or "none"
+        raise UserError(f"unknown candidate {candidate_id!r} (known: {known})")
+    chosen_severity = severity or candidate.suggested_severity
+    if chosen_severity not in {"CRITICAL", "WARNING", "INFO"}:
+        raise UserError(f"severity must be CRITICAL, WARNING, or INFO (got {chosen_severity!r})")
+    chosen_field = field or candidate.suggested_field
+
+    paths = repo_paths(root)
+    current = load_project_rules(root) or ProjectRules()
+    if any(rule.candidate_id == candidate_id for rule in current.rules):
+        raise UserError(f"candidate {candidate_id!r} was already accepted")
+    if any(rule.id == f"project.{candidate.name}" for rule in current.rules):
+        identifier = _unique_id(current, f"project.{candidate.name}")
+    else:
+        identifier = f"project.{candidate.name}"
+    bindings = None
+    if candidate.suggested_bindings is not None:
+        bindings = ProjectRuleBindings(
+            cli=candidate.suggested_bindings.cli,
+            config=candidate.suggested_bindings.config,
+            env=candidate.suggested_bindings.env,
+        )
+    current.rules.append(
+        ProjectRule(
+            id=identifier,
+            field=chosen_field,
+            severity=chosen_severity,
+            reason=candidate.rationale,
+            source="discover",
+            candidate_id=candidate_id,
+            accepted_at=datetime.now(timezone.utc).replace(microsecond=0),
+            bindings=bindings,
+        )
+    )
+    _write_rules(root, current)
+    typer.echo(
+        f"Accepted {candidate_id} → {identifier} ({chosen_severity}) for {chosen_field} "
+        f"→ {paths.project_rules}"
+    )
+    typer.echo("Run `reprollm lock` again: its project_rules_sha256 must be refreshed.")
+
+
+@app.command("ignore")
+def ignore(
+    candidate_id: Annotated[str, typer.Argument(help="Candidate id to ignore.")],
+    reason: Annotated[
+        str | None, typer.Option("--reason", help="Why this candidate is rejected.")
+    ] = None,
+) -> None:
+    """Record a candidate as ignored so future discoveries mark it."""
+    root = find_root(Path.cwd())
+    _path, document = _latest_discovery(root)
+    if document.by_id(candidate_id) is None:
+        known = ", ".join(c.id for c in document.candidates) or "none"
+        raise UserError(f"unknown candidate {candidate_id!r} (known: {known})")
+    current = load_project_rules(root) or ProjectRules()
+    if any(entry.candidate_id == candidate_id for entry in current.ignored_candidates):
+        raise UserError(f"candidate {candidate_id!r} is already ignored")
+    current.ignored_candidates.append(
+        IgnoredCandidate(
+            candidate_id=candidate_id,
+            ignored_at=datetime.now(timezone.utc).replace(microsecond=0),
+            reason=reason,
+        )
+    )
+    _write_rules(root, current)
+    typer.echo(f"Ignored {candidate_id} → {repo_paths(root).project_rules}")

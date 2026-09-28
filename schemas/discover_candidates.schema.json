@@ -1,7 +1,215 @@
 {
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/CandidateEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "parameter",
+            "dependency",
+            "artifact",
+            "profile"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "suggested_bindings": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CandidateSuggestedBindings"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "suggested_field": {
+          "title": "Suggested Field",
+          "type": "string"
+        },
+        "suggested_severity": {
+          "enum": [
+            "CRITICAL",
+            "WARNING",
+            "INFO"
+          ],
+          "title": "Suggested Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "suggested_field",
+        "suggested_severity",
+        "confidence",
+        "rationale"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "CandidateEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "file",
+          "enum": [
+            "file",
+            "field",
+            "config",
+            "code"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "snippet": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snippet"
+        }
+      },
+      "title": "CandidateEvidence",
+      "type": "object"
+    },
+    "CandidateSuggestedBindings": {
+      "additionalProperties": false,
+      "properties": {
+        "cli": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cli"
+        },
+        "config": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Config"
+        },
+        "env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Env"
+        }
+      },
+      "title": "CandidateSuggestedBindings",
+      "type": "object"
+    }
+  },
   "$id": "https://reprollm.dev/schemas/discover_candidates.schema.json",
   "additionalProperties": false,
+  "description": "``.reprollm/discover/<ts>.json`` (spec \u00a720.4).",
   "properties": {
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/Candidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "dropped_files": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Dropped Files",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "input_files": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Input Files",
+      "type": "array"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    },
     "reprollm_version": {
       "title": "Reprollm Version",
       "type": "string"
@@ -11,10 +219,19 @@
       "default": 1,
       "title": "Schema Version",
       "type": "integer"
+    },
+    "truncated_files": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Truncated Files",
+      "type": "array"
     }
   },
   "required": [
-    "reprollm_version"
+    "reprollm_version",
+    "generated_at",
+    "model"
   ],
   "title": "DiscoverCandidates",
   "type": "object"
