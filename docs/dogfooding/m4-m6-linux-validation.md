@@ -687,3 +687,42 @@ not include paid APIs, gated Llama-2, global environment changes or a Git push.
 
 No release, tag, merge, push or product-code fix was performed. This session is
 not a claim that the M4–M6 resource gates or releases are complete.
+
+## Full report review — FastChat and LlamaFactory — 2026-09-28
+
+This closes the "passed_automated_checks_needs_full_report_review" state of
+both queued cases against the §8.3 gold. The review is of evidence the queue
+produced on 2026-09-27; no new execution, GPU use or download occurred.
+
+**Common checks (all four runs).** Status `completed`, child exit 0, clean
+disposable commits; declared files hashed and snapshotted; bindings observed
+for every declared leaf including the intended-change scalar; artifacts hashed
+under `outputs/current/`; `run.json` free of absolute paths, usernames and
+secret values, hostname stored only as its SHA-256. Manifest and lock
+snapshots contain zero path-redaction corruption — verified line by line
+after the fidelity defect was found elsewhere (these manifests carry no
+closing-token stops, so the pre-fix code did not corrupt them).
+
+**FastChat (answer generation, no paid judge).** Runs
+`20260927T064434Z-ee237a` / `20260927T064510Z-70f2ca`, 25.7 s / 16.2 s, Vicuna
+7B via the native answer generator, question 81 one-choice/two-turns,
+temperature 0.7 / seed 0. The output preserves the native `answer_id` /
+`choices` / `model_id` / `question_id` schema with real generated turns. The
+complete non-NONE pair diff is exactly: config hash HIGH,
+`generation.max_tokens` 32 → 48 HIGH, clean commit MEDIUM — the §8.3 required
+leaf and no others. With §8.5's promotion of the DeepSeek judge pair, this
+closes FastChat's §8.3 row.
+
+**LlamaFactory (LoRA fine-tune).** Runs `20260927T050707Z-0fde1f` /
+`20260927T050751Z-a66341`, 29.3 s / 14.6 s, native LoRA CLI on Qwen3-4B,
+16 identity records, cutoff 64. `trainer_log.jsonl` records real optimizer
+steps 1–2 with finite decreasing loss (6.1662 → 4.9055) at the declared
+learning rate; adapter weights and tokenizer artifacts were produced and
+hashed. The complete non-NONE pair diff is exactly: config hash HIGH,
+`training.learning_rate` 0.0001 → 0.0002 HIGH, clean commit MEDIUM. This
+closes LlamaFactory's §8.3 row.
+
+**Disposition.** Both §8.3 rows for these repositories are complete; the
+queue's own status file remains untouched as historical automation state.
+Still open at this point: the lm-eval clean re-pair after the fidelity fix,
+HarmBench (GPU wait), M6-H2 review material, and M7.

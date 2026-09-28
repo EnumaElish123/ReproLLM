@@ -537,6 +537,17 @@ covering the exact request body, tariff calculation, no-retry timeout reservatio
 and rejection before network for unapproved output limits. Live acceptance is
 recorded separately in the session report, never inferred from these mocks.
 
+### 8.5a Completion record — FastChat and LlamaFactory (2026-09-28)
+
+The FastChat §8.3 answer-generation row and the LlamaFactory §8.3 row are
+**complete**: the queued A/B runs of 2026-09-27 passed the full report review
+against the pre-execution gold — real native execution (Vicuna 7B answers;
+Qwen3-4B LoRA with two real optimizer steps and finite decreasing loss),
+complete capture, zero snapshot corruption, and pair diffs of exactly the
+required HIGH leaf plus config hash HIGH and clean commit MEDIUM. Evidence
+under `evidence/runtime/{FastChat,LlamaFactory}/`; review recorded in the
+Linux validation report. HarmBench and the lm-eval clean re-pair remain open.
+
 ### 8.5 Baseline maintenance: promotion of supplementary scenarios (2026-09-28)
 
 Maintainer decision recorded in a dedicated reviewed change per §9. Two Gate B
