@@ -329,6 +329,209 @@ and `/api/datasets/.../revision/main` on [Hugging Face](https://huggingface.co/)
 and each model file at the recorded SHA. Model-author rejection must not be
 bypassed or reclassified as successful access.
 
+### 8.2 Linux resource follow-up (2026-09-26)
+
+The maintainer authorized public-model downloads and bounded GPU validation,
+provided existing processes are not disturbed. Large downloads belong under
+`/mnt/share_data/czy/`; permissions must be verified before downloading. Paid
+FastChat judge execution is deferred until the maintainer supplies its API
+configuration. A public-small-model DP case is authorized as **supplementary**;
+it cannot pass the original gated Llama-2 scenario.
+
+On 2026-09-27 the maintainer supplied DeepSeek credentials. Its endpoint and
+compatibility constraints are documented in
+[`deepseek-api-validation.md`](docs/dogfooding/deepseek-api-validation.md).
+A DeepSeek judge is a separate supplement, not the original GPT-4 gold. The
+maintainer subsequently approved the temporary adapter and a **CNY 3 total
+ceiling** on 2026-09-27. The activated scenario and pre-execution gold are in
+§8.4. The existing local-resource scenarios below remain independently authorized.
+
+The Linux checkout lacks the external `manifests/` and
+`m4-lock-2026-09-19/` evidence directories. The five exact §8.1 manifests cannot
+be recovered from their hashes. Do not label reconstructed manifests as those
+original inputs or replace their gold. The following new, metadata-only inputs
+exercise the same remote identities and tracked files, independently of runtime
+training scenarios; they intentionally do not fill unrelated presence fields.
+
+| Target | Supplementary metadata manifest SHA-256 |
+|---|---|
+| lm-evaluation-harness | `7a524a1dd41cdca08ca1514cbd5eb4874175bfeff73ae69e94eac2d22fc2bc4f` |
+| FastChat | `73b25168de2f52cc994f8b1535fdf04898ad8d8839e260f2f10893f38a3d9ae9` |
+| LlamaFactory | `7644338fcc0f7f184bbd031d1b89d6bccc24cacb657e254e1c324df3f13defae` |
+| HarmBench | `73164c087770e87b62aaa9b45fcb831134b47c8bf36c04716b8e1bca57847aa5` |
+| llm-dp-finetune | `4967f1ed18b8f2484f1a8de6b1252dc7049f7deb3ec2afe2a47959b9e12cea36` |
+
+For each input, run the §8.1 offline/two-online/check/audit command sequence in
+a disposable clone. Use `HF_ENDPOINT=https://hf-mirror.com` and process-local
+proxy bypass when the official endpoint is unreachable. Expected remote SHAs,
+model config/template hashes and tracked-file hashes remain the independently
+established §8.1 values; recompute local hashes directly before invoking ReproLLM.
+The mirror is an explicit transport deviation, not proof of official endpoint
+availability. Assert every resolved hash, both online locks' normalized equality,
+Level 2, freshness and file-consistency PASS. Anonymous gated-file denial must
+remain unresolved, not success. Authenticated access is not attempted without
+provisioned credentials. No exact M3-manifest replay is claimed.
+
+Runtime scenarios must additionally record their concrete bounded command,
+inputs and independent capture/diff expectations here before activation.
+Quality scores and generated language are not deterministic gold answers;
+input identity, consumed parameters, finite training loss, real optimizer steps,
+artifact integrity and specified semantic drift are the acceptance targets.
+
+Independent input review and dependency research:
+[`m4-m6-resource-compatibility.md`](docs/dogfooding/m4-m6-resource-compatibility.md).
+Observed commands, results and unresolved resource gates:
+[`m4-m6-linux-validation.md`](docs/dogfooding/m4-m6-linux-validation.md).
+
+### 8.3 Activated bounded Linux runtime inputs (2026-09-26)
+
+The following **new supplemental inputs** are independently reviewed in
+[`m5-m6-runtime-gold.md`](docs/dogfooding/m5-m6-runtime-gold.md). They do not
+replace the original pinned-repository gold, the paid judge, or gated Llama-2.
+All five manifests pass schema validation before execution. Artifact hashes and
+quality scores produced by a run are observations, never preselected gold.
+
+| Checkout | Bounded child command after `reprollm run --capture-output --` | A → B; required semantic leaf |
+|---|---|---|
+| lm-evaluation-harness | `python -m lm_eval run --config validation/eval.yaml` | 100 GSM8K test items, 5-shot, Qwen 0.5B; cap 32 → 48; `generation.max_tokens` HIGH |
+| LlamaFactory | `python validation/train_entry.py` | Native LoRA CLI, Qwen3 4B, first 16 identity records, cutoff 64, 2 updates; learning rate 0.0001 → 0.0002; `training.learning_rate` HIGH |
+| llm-dp-finetune | `python validation/train_entry.py` | Original single-GPU fastDP method, public DistilGPT2, 16 synthetic texts, 2 updates; target epsilon 8 → 4; `privacy.mechanism.params.target_epsilon` MEDIUM under current policy |
+| HarmBench | `python validation/pipeline.py` | Original DirectRequest and classifier function, one `profane_insult_generation` behavior, Vicuna 7B then 13B classifier in separate processes; cap 16 → 24; `generation.max_tokens` HIGH |
+| FastChat | `python validation/answer_entry.py` | Native answer generator, question 81, one choice/two turns, temperature 0.7/seed 0; cap 32 → 48; `generation.max_tokens` HIGH; **no paid judge** |
+
+Before each run, require GPU 0 used memory below 2 GiB, at least 70,000 MiB
+free, utilization no more than 10%, and at least 50 GiB free disk space. Do not
+use GPU 1 or terminate another process. Run GPU stages sequentially; set
+`CUDA_VISIBLE_DEVICES=0`, CPU math threads 2, external trackers disabled. The
+vLLM memory fractions are 0.12 (lm-eval), 0.28/0.45 (HarmBench target/classifier);
+PyTorch allocator caps are 0.35 (LoRA), 0.15 (DP), 0.30 (FastChat). The latter's
+native `--max-gpu-memory 20GiB` is not enforced on its single-GPU path, so it is
+not the resource guard. Remove inherited distributed-launch overrides.
+
+Use isolated `modern` and `dp` environments on the approved data volume. Install
+ReproLLM in each and use that same environment for launcher and child. The
+modern CUDA 12.9 compatibility libraries are process-local; never replace the
+system driver. Preserve metadata-only M4 results separately. Resolve model/data
+identities online before running cached local execution. All weights, caches,
+checkpoints and disposable checkouts stay on the approved data volume.
+
+Variant A manifests, SHA-256:
+
+| Checkout | Manifest SHA-256 |
+|---|---|
+| lm-evaluation-harness | `ac4bfde5a7538bfa6058746b51c3e00d25cc327b82c6311fa734f2f33da25775` |
+| LlamaFactory | `d201b66e2992e21d4e20d11181dbe9ba4911b901b8cbfbe66f59c569a7e503f3` |
+| llm-dp-finetune | `95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2` |
+| HarmBench | `a352d0fa09c1fe8bbf9194ae76d4c3aa9d59da90a927e5eee1da76d199dd72fa` |
+| FastChat | `af09864e2e27731fb52275b73c12f953b8dffd48ef7b99cb94f777e46fcf9fec` |
+
+Input driver/config hashes are recorded in the independent review and external
+evidence. Before executing a variant, resolve its lock and commit its manifest,
+lock and validation inputs in the disposable clone; ignore generated output/run
+directories. Verify clean code capture and lock freshness. Change only the
+listed experimental parameter and its binding declaration for B, then relock
+and commit. Preserve A's outputs before B can overwrite them.
+
+Harness preparation correction on 2026-09-27: remove the unsupported
+`bootstrap_iters` YAML key; the pinned native `EvaluatorConfig` then accepts
+the unchanged scenario. Corrected A config hash is
+`a7bc8316852aac0e9a4b2fb0ea67b0bf10df9b7debc000cad1b0e1a997ad5467`;
+the initial bundle/hash remains historical evidence. Read saved request
+arguments using the pinned logger's `gen_args_0.arg_0` / `arg_1` dictionaries,
+not the evaluator's pre-serialization list format. This correction changes no
+sample, model, generation setting, metric, or semantic-diff expectation.
+
+For both variants require completed real execution, matching observed bindings,
+installed-package versions, independently recomputed input/output hashes and
+sizes, no persisted machine identity or absolute paths, and the scenario-specific
+output checks in the independent review. Diff the two captured run IDs with
+`--format json --fail-on HIGH` (expected exit 1); require the exact leaf/value/
+severity above and explain all additional changes. Self-diff must have no
+changes. DP's HIGH config-file hash must not conceal its MEDIUM privacy leaf.
+
+Snapshot fidelity is a separate assertion: non-secret stop tokens (including
+`</s>`) and relative artifact globs must retain their meaning in captured
+documents and the state loaded from them. Raw-byte hashes can remain correct
+while a redacted snapshot is wrong. The 2026-09-27 lm-eval review found such a
+failure; see the [execution report](docs/dogfooding/m4-m6-linux-validation.md#new-product-defect-path-redaction-changes-non-secret-experiment-values).
+This is an open implementation finding, not permission to change the gold.
+
+The fractional DP accounting horizon is 0.125 epoch (2/16), truthfully declared
+under `training.params.num_train_epochs` with `max_steps: 2`. The normative
+`training.epochs: number` is currently implemented as an integer and rejects
+0.125; omitting that optional field is a documented workaround, not a fix or a
+passing test of fractional-epoch support. Original Llama-2/ECHR/ZeRO remains
+blocked; this public single-GPU supplement makes no production privacy claim.
+
+### 8.4 Approved DeepSeek/FastChat supplementary judge (2026-09-27)
+
+Approval: temporary transport adaptation, total ceiling **CNY 3**. Original
+FastChat source remains pinned at `587d5cfa1609a43d192cedb8441cac3c17db105d`.
+Use a separate disposable checkout, the isolated modern environment, no GPU,
+and the original `play_a_match_single` / `run_judge_single` prompt builder and
+score parser. Only the provider-name dispatch, OpenAI-compatible conversation
+template and obsolete network call are adapted in memory. This does not verify
+the old SDK call or pass the original GPT-4-snapshot scenario.
+
+Concrete child: `python validation/judge_entry.py`. Input is public MT-Bench
+question 82, first turn, with a fixed **synthetic email answer** declared in
+`validation/judge.yaml`; it is not represented as a local model's generated
+answer. Use the original `single-v1` rubric. No private project text is sent.
+Model is `deepseek-flash`, endpoint `https://api.deepseek.com`, thinking explicitly
+disabled and temperature 0. `models.judge.provider: other` plus
+`params.actual_provider: deepseek` avoids misidentifying the vendor. The key uses
+the conventional `OPENAI_API_KEY` transport variable for M5-H3 capture coverage.
+Before inference, require authenticated `/models` to list the selected model.
+
+Exactly two completion attempts at most; no implicit or explicit retries. A/B
+changes only `evaluation.judge.params.max_tokens`, **256 → 384**, plus the same
+config scalar. Inputs are limited to 4,000 UTF-8 JSON bytes and a 90-second
+wall-clock request deadline. Reserve the published entire 1 Mi-token context
+at peak uncached input cost before each request (CNY 2.0992 / 2.100224 including
+the respective output caps). Settle only from valid returned cache-hit, cache-miss
+and completion usage. A timeout retains the entire reservation, preventing a
+second request when the remainder is insufficient. Stop on any request failure.
+This deliberately conservative accounting uses the verified current
+[official CNY tariff](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/);
+report estimated token charges, not an unobserved account invoice.
+
+Independent gold before paid execution:
+
+- Exactly one real provider judgment per successful run; nonempty text, finish
+  reason `stop`, original parser yields a finite score from 1 to 10. Neither a
+  particular score nor identical output text is gold.
+- Outgoing system/user messages equal the original rubric plus the selected
+  public question and fixed answer. The provider request actually consumes the
+  cap recorded by the config binding. Retain model request/response identity,
+  usage, response ID/fingerprint when present, prompt digest and effective options.
+- ReproLLM captures the identical command, clean disposable commit, matching
+  package versions, all four bindings, declared input/output hashes and sizes,
+  and manifest/lock snapshots. `OPENAI_API_KEY` is exactly `{present: true}`;
+  the real value occurs zero times in logs, captures, outputs and evidence.
+  ReproLLM-owned captures also contain no machine identity or absolute paths.
+- Judge alias remains `unpinnable`, revision null. All six selected `judge.*`
+  rules and file/lock/model/environment consistency should pass; report every
+  unrelated upstream finding without suppression.
+- Real pair diff: exact nested cap leaf 256 → 384 is **MEDIUM** under the
+  current one-segment wildcard policy, the changed config-file hash HIGH, and
+  changed clean disposable commit MEDIUM. Explain the full remaining delta set.
+  `--fail-on HIGH` exits 1; self-diff has no changes. Do not mistake the HIGH
+  file hash for a correctly HIGH judge-parameter policy.
+
+Variant A input SHA-256 values, fixed before execution:
+
+| Input | SHA-256 |
+|---|---|
+| `reprollm.yaml` | `55de258f63c36ae5b72a4ea14f0bd8d35e8c51d29c2efcab7f0c7316020181f2` |
+| `validation/judge.yaml` | `7298a5b24f5b6537a924623c9481117ab5f0965d2d4abb247a5adb0026c8fa1c` |
+| `validation/judge_entry.py` | `35659c94714958186c5baa2a33946606055b82fac286722de8ca05c2b8990f02` |
+| `validation/judge_transport.py` | `78f12d538c7bd0b9588da4624d8af37ab0fddd162554c62c717d52bf211af232` |
+
+Network-free transport tests use only synthetic credentials and mocked HTTP,
+covering the exact request body, tariff calculation, no-retry timeout reservation,
+and rejection before network for unapproved output limits. Live acceptance is
+recorded separately in the session report, never inferred from these mocks.
+
 ## 9. Baseline maintenance
 
 - Pinned commits do not move implicitly. A refresh changes this file in a dedicated reviewed commit
