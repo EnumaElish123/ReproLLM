@@ -75,7 +75,7 @@ def resolve_manifest(
     root: Path,
     manifest: Manifest,
     *,
-    http: httpx.Client,
+    http: httpx.Client | None,  # None only in offline mode (never dereferenced)
     offline: bool = False,
     verify_api: bool = False,
     hash_large_files: bool = False,

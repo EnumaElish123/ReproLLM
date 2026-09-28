@@ -56,7 +56,10 @@ def lock(
         if offline
         else contextlib.closing(httpx.Client())
     )
-    with client_context as http:
+    with client_context as maybe_http:
+        # Offline never dereferences the client; narrow for the type checker.
+        http: httpx.Client = maybe_http  # type: ignore[assignment]
+        assert (http is not None) or offline
         document = build_lock(
             root,
             manifest,

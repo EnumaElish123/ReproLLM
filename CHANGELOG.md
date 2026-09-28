@@ -7,6 +7,43 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0a1] - 2026-09-28
+
+### Added (M7)
+
+- `reprollm export`: deterministic `REPRODUCIBILITY.md` from manifest + lock
+  + run — identity tables with revisions/pinnability/digests, code,
+  environment, hardware, execution (explicit no-run degradation), an audit
+  run embedded verbatim, known limitations, and version footer; whole
+  document passes secret redaction.
+- Project rules end-to-end: `reprollm rules add/list` write
+  `.reprollm/project-rules.yaml`; accepted declarations execute as audit
+  rules (`project.*`, severity_origin `project_rule`); their bindings join
+  run-time observations (`consistency.custom_fields` has real data; the
+  `project_rules_sha256` lock-freshness branch triggers for real).
+- Experimental `reprollm discover` (opt-in; time-boxed, delivered):
+  offline collector with redaction gating (files whose redaction triggers
+  are dropped whole), one temperature-0 JSON request to a user-configured
+  OpenAI-compatible endpoint with a confirmed file list, deterministic
+  candidate ids, evidence-path demotion, and `rules accept/ignore`/pending
+  listing. `--paper` is rejected in Beta.
+- Discover candidate schema (§20.4) completes the placeholder; schemas
+  re-exported. `docs/export.md`, `docs/project-rules.md`,
+  `docs/discover.md`, and `docs/plan/backlog.md`.
+
+### Fixed (M7 dogfooding)
+
+- `lock --offline` no longer constructs an HTTP client at all — a SOCKS
+  proxy environment used to crash offline locking at client construction.
+
+### Validation
+
+- Five-repository full flow (init → audit L1 → lock --offline → audit L2 →
+  export) completed in disposable worktrees; discover dry-runs verified.
+  Real GPU re-pairs (lm-eval clean re-run, HarmBench) remain gated on GPU
+  availability; the DeepSeek judge and DistilGPT2 DP pairs are the formal
+  standards per val.md §8.5.
+
 ### Changed (validation baseline)
 
 - val.md §8.5 (reviewed 2026-09-28): the DeepSeek judge pair and the
@@ -355,7 +392,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0a1...HEAD
+[0.5.0a1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0a1
 [0.4.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...v0.4.0
 [0.1.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.0.1...v0.1.0
