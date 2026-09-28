@@ -83,7 +83,9 @@ def resolve_manifest(
 ) -> ResolvedManifest:
     """Resolve every lockable manifest field without writing any files."""
     timestamp = now or datetime.now(timezone.utc).replace(microsecond=0)
-    client = HfClient(http, token=None)
+    # Offline never dereferences the client; narrow once for the type checker.
+    assert offline or http is not None
+    client = HfClient(http or _NULL_CLIENT(), token=None)
     models: dict[str, ModelLock] = {}
     for role, model_spec in sorted(manifest.models.items()):
         if model_spec.provider == "huggingface":
@@ -101,7 +103,7 @@ def resolve_manifest(
         else:
             models[role] = resolve_api_model(
                 model_spec,
-                http=http,
+                http=http or _NULL_CLIENT(),
                 verify_api=verify_api and not offline,
                 now=timestamp,
             )
@@ -324,3 +326,8 @@ def _safe_project_file(root: Path, relative: str) -> Path | None:
     except ValueError:
         return None
     return resolved if resolved.is_file() else None
+
+
+def _NULL_CLIENT() -> httpx.Client:
+    """Dummy client for offline narrowing; offline paths never send."""
+    return httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(500)))
