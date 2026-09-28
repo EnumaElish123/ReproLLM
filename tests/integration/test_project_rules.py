@@ -177,6 +177,7 @@ def test_rules_add_rejects_bad_input(repo: Path, monkeypatch) -> None:
     assert excinfo.value.code == 2
 
 
+@pytest.mark.linux_only
 def test_audit_l2_project_rules_snapshot(repo: Path, monkeypatch) -> None:
     import os
 
