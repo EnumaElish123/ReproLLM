@@ -15,7 +15,11 @@ from pydantic import BaseModel
 
 from reprollm.core.redaction import redact_text
 
-_ABSOLUTE_PATH = re.compile(r"""(?<![\w:/\\])(?:[A-Za-z]:[\\/]|/|\\\\)[^\s"'<>;,\)\]}]*""")
+# An absolute path starts at a segment boundary: not after a word char,
+# separator, glob star, or the "<" of a closing token (</s>, </think>).
+# Without the star/angle exclusions, "…**/*.json" loses its "/…" suffix and
+# "</s>" stop tokens become "<<REDACTED:path>>" in captured snapshots.
+_ABSOLUTE_PATH = re.compile(r"""(?<![\w:/\\*<])(?:[A-Za-z]:[\\/]|/|\\\\)[^\s"'<>;,\)\]}>]*""")
 
 
 class RunPrivacy:
