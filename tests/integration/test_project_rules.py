@@ -258,4 +258,5 @@ def _first_delta(actual: dict, expected: dict, prefix: str = "") -> str:
         if a != b:
             return f"first delta at {path}: actual={str(a)[:200]} expected={str(b)[:200]}"
     top = [k for k in sorted(set(actual) | set(expected)) if actual.get(k) != expected.get(k)]
-    return f"documents differ at top-level keys {top}; actual_profiles={str(actual.get('profiles'))[:150]}"
+    profiles = str(actual.get("profiles"))[:150]
+    return f"documents differ at top-level keys {top}; actual_profiles={profiles}"
