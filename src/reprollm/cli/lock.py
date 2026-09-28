@@ -47,7 +47,16 @@ def lock(
         typer.echo("reprollm.lock is up to date")
         return
 
-    with httpx.Client() as http:
+    import contextlib
+
+    # --offline never speaks to the network, so no client (and no proxy
+    # environment interpretation) is constructed at all.
+    client_context = (
+        contextlib.nullcontext(None)
+        if offline
+        else contextlib.closing(httpx.Client())
+    )
+    with client_context as http:
         document = build_lock(
             root,
             manifest,
