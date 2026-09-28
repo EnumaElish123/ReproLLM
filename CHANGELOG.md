@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed (validation baseline)
+
+- val.md §8.5 (reviewed 2026-09-28): the DeepSeek judge pair and the
+  DistilGPT2 privacy fine-tune are promoted from supplements to the formal
+  Gate B M5 standards for the FastChat-judge and llm-dp scenarios; the
+  credential-gated GPT-4 and Llama-2 originals are retired with their
+  residual differences recorded. No pinned commit or other gold changed.
+
 ## [0.4.0] - 2026-09-28
 <!-- Consolidated release: the unreleased M4 (lock), M5 (run + redaction)
      and M6 (diff) work ships as one 0.4.0 by maintainer decision; versions

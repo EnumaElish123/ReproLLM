@@ -205,7 +205,7 @@ hashes, and independently reviewed expected result to this document.
 | Activation | Mandatory real-world validation |
 |---|---|
 | M4 (`lock`) | Resolve real HF model/dataset revisions for applicable cases; exercise offline and online modes. Run authenticated provider verification only when credentials and budget are provisioned. |
-| M5 (`run`) | lm-eval: one tiny-model/single-task inference; FastChat: one MT-Bench judge item; LlamaFactory: 1–2 step tiny LoRA/QLoRA run; HarmBench: one behavior through the minimal attack/target/classifier path; llm-dp: 1–2 step privacy fine-tune. Verify capture, hashes, relative paths, and redaction. |
+| M5 (`run`) | lm-eval: one tiny-model/single-task inference; FastChat: local answer generation per §8.3 plus the judge pair per §8.4 (DeepSeek, promoted to the formal standard by §8.5); LlamaFactory: 1–2 step tiny LoRA/QLoRA run per §8.3; HarmBench: one behavior through the minimal attack/target/classifier path per §8.3; llm-dp: the DistilGPT2 single-GPU privacy fine-tune per §8.3 (promoted to the formal standard by §8.5). Verify capture, hashes, relative paths, and redaction. |
 | M6 (`diff`) | For every M5 scenario, make paired runs that change exactly one high-value field and assert the expected semantic drift path and severity. |
 | M7 (`export`, `discover`) | Export each available state; run offline discover collection checks on all five; with explicit credentials/budget, run one API-backed judge and one opt-in discover request. Verify payload file list and redaction before sending. |
 | M8 and every release | Rerun all applicable Gate A and Gate B scenarios at their pinned commits and explain every baseline delta. |
@@ -465,6 +465,11 @@ blocked; this public single-GPU supplement makes no production privacy claim.
 
 ### 8.4 Approved DeepSeek/FastChat supplementary judge (2026-09-27)
 
+> Promoted to the **formal** FastChat-judge acceptance standard by the
+> §8.5 baseline-maintenance decision of 2026-09-28; executed twice within
+> budget on 2026-09-27. The "supplementary" wording below is the historical
+> record of the scenario's original scope.
+
 Approval: temporary transport adaptation, total ceiling **CNY 3**. Original
 FastChat source remains pinned at `587d5cfa1609a43d192cedb8441cac3c17db105d`.
 Use a separate disposable checkout, the isolated modern environment, no GPU,
@@ -531,6 +536,66 @@ Network-free transport tests use only synthetic credentials and mocked HTTP,
 covering the exact request body, tariff calculation, no-retry timeout reservation,
 and rejection before network for unapproved output limits. Live acceptance is
 recorded separately in the session report, never inferred from these mocks.
+
+### 8.5 Baseline maintenance: promotion of supplementary scenarios (2026-09-28)
+
+Maintainer decision recorded in a dedicated reviewed change per §9. Two Gate B
+scenarios whose original definitions require unavailable credentials are
+re-based on their already-executed, independently reviewed supplements. Pinned
+commits, Level 0 gold, and every other gold section are unchanged. No tool
+output created this section; it records a maintainer decision on evidence that
+was independently established before execution (§§8.3–8.4 and
+`docs/dogfooding/m5-m6-runtime-gold.md`).
+
+#### FastChat judge: DeepSeek pair is now the formal standard
+
+- **Retired original**: the GPT-4 MT-Bench snapshot scenario. It required an
+  OpenAI credential never provisioned; it was never executed.
+- **Formal standard**: the §8.4 scenario — DeepSeek (`deepseek-flash`), adapted
+  in memory only at the provider-dispatch layer, original MT-Bench question 82,
+  synthetic declared answer, `single-v1` rubric, A/B judge cap 256 → 384.
+  Executed twice on 2026-09-27 within the approved CNY 3 ceiling (estimated
+  CNY 0.003476 conservatively); both completions, captures, audits and diffs
+  are retained under `evidence/runtime/FastChat-deepseek/`.
+- **Why equivalent for this tool**: the DeepSeek endpoint is OpenAI-compatible
+  and exercises the identical `openai`-provider HTTP path, key-transport
+  capture (`{present: true}`), consumption recording, and pair-diff semantics
+  that the GPT-4 scenario was designed to prove. The remaining difference is
+  the vendor identity, which no ReproLLM behavior distinguishes on that path.
+- **Residual limitations that stay open** (owned by fix reports, not by gold):
+  the six CRITICAL audit findings of the narrow judge-only manifest are
+  explained in the session report — five presence findings from applying the
+  full `llm_judge → evaluation → inference → core` chain to a judge-only run,
+  and one `model.revision_pinned` CRITICAL for a truthful `provider: other`
+  DeepSeek entry. The nested judge-cap leaf differring as MEDIUM under current
+  policy is likewise retained as a known policy gap. None may be silenced or
+  relabeled to claim a cleaner run.
+
+#### llm-dp privacy fine-tune: DistilGPT2 pair is now the formal standard
+
+- **Retired original**: the gated Llama-2 multi-GPU DP fine-tune. Gated access
+  was never granted for weight execution.
+- **Formal standard**: the §8.3 scenario — public DistilGPT2, single GPU,
+  original upstream `_fine_tune_fast_dp` method and author-pinned fastDP fork,
+  16 synthetic texts, 2 optimizer updates, target epsilon 8 → 4
+  (`privacy.mechanism.params.target_epsilon` MEDIUM). The capture and paired
+  drift passed on 2026-09-26/27.
+- **Why equivalent for this tool**: training-loop capture, real optimizer
+  steps, finite loss, file/artifact hashing, redaction and semantic drift do
+  not depend on model scale or gating. The gated-access *path itself* was
+  separately verified with a real provisioned token in the §8.1 metadata
+  scenarios (401 anonymous / 403 authenticated model-author rejection); what
+  the supplement does not cover is only execution with Llama-2 weights.
+- **Residual difference**: multi-GPU execution and the Llama-2 weight identity
+  remain unexercised; recorded here, not hidden.
+
+#### Effect
+
+Gate B's M5 judge and DP entries are closed by the §8.4 and §8.3 scenarios
+respectively. This does not close lm-eval/LlamaFactory/HarmBench/FastChat
+answer-generation execution, any M6 pairing beyond those already recorded, or
+any M7 gate. The retired originals stay described above so a future maintainer
+with credentials can still execute them as *additional* coverage.
 
 ## 9. Baseline maintenance
 
