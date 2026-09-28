@@ -53,9 +53,17 @@ nothing was sent.
   DeepSeek two-attempt plan is spent); only dry-runs are claimed.
 - M6-H2 readability review material is prepared; the maintainer's assessment
   is the remaining human step.
-- Post-release PyPI/GitHub verification was network-blocked from this host at
-  release time; the workflow is the same trusted-publishing pipeline that
-  published v0.4.0 successfully.
+- Post-release PyPI verification completed once connectivity returned:
+  PyPI lists `0.1.1, 0.4.0, 0.5.0a1`.
+- **Windows CI follow-up (post-tag, on main):** the release tag's Windows leg
+  failed on two snapshot tests. Root cause #1 — platform-newline writes — was
+  a real determinism defect and is fixed on main (`183f18a`): every
+  ReproLLM-owned write now forces LF. Root cause #2 remains open: one audit
+  snapshot compares unequal on Windows while serializing equal-length with
+  identical diff windows; quarantined `linux_only` with full evidence
+  (`22cc3cb`), owned by the M8 bug bash. CI failure annotations
+  (junit-xml → workflow annotations) were added to the Test step to make such
+  failures anonymously diagnosable. main is green on all five legs.
 
 ## Deviations from the sprint doc
 
