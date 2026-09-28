@@ -101,7 +101,7 @@ def export(
     target = output if output.is_absolute() else root / output
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(document, encoding="utf-8")
+        target.write_text(document, encoding="utf-8", newline="\n")
     except OSError as exc:
         raise UserError(f"cannot write {target}: {exc.strerror or type(exc).__name__}") from exc
     typer.echo(

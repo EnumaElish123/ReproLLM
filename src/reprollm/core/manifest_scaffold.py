@@ -366,19 +366,19 @@ def write_scaffold(root: Path, manifest_text: str, *, force: bool) -> ScaffoldRe
             f"{manifest_path} already exists; pass --force to overwrite it "
             "(files under .reprollm/ are never overwritten)"
         )
-    manifest_path.write_text(manifest_text, encoding="utf-8")
+    manifest_path.write_text(manifest_text, encoding="utf-8", newline="\n")
 
     dotdir = root / ".reprollm"
     dotdir.mkdir(parents=True, exist_ok=True)
     config_path = dotdir / "config.yaml"
     config_written = False
     if not config_path.exists():
-        config_path.write_text(_config_template_text(), encoding="utf-8")
+        config_path.write_text(_config_template_text(), encoding="utf-8", newline="\n")
         config_written = True
     project_rules_path = dotdir / "project-rules.yaml"
     project_rules_written = False
     if not project_rules_path.exists():
-        project_rules_path.write_text(_PROJECT_RULES_TEMPLATE, encoding="utf-8")
+        project_rules_path.write_text(_PROJECT_RULES_TEMPLATE, encoding="utf-8", newline="\n")
         project_rules_written = True
 
     # The generated manifest must load; fail loudly and remove the broken file.

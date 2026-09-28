@@ -128,7 +128,7 @@ def discover(
         raw_dir = root / ".reprollm" / "discover"
         raw_dir.mkdir(parents=True, exist_ok=True)
         raw_path = raw_dir / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.raw.txt"
-        raw_path.write_text(exc.raw_text or user_content, encoding="utf-8")
+        raw_path.write_text(exc.raw_text or user_content, encoding="utf-8", newline="\n")
         from reprollm.core.errors import InternalError
 
         raise InternalError(
@@ -147,7 +147,7 @@ def discover(
     out_dir = root / ".reprollm" / "discover"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
-    out_path.write_text(document.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    out_path.write_text(document.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n")
 
     typer.echo(f"\nWrote {len(document.candidates)} candidates → {out_path}")
     for candidate in document.candidates:

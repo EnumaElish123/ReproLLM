@@ -21,7 +21,6 @@ runner = CliRunner()
 
 def run_cli(argv: list[str]):
     """Invoke through the cli() exit-code boundary (UserError→2 etc.)."""
-    import sys
 
     import pytest as _pytest
 
@@ -115,10 +114,6 @@ def test_gate_requires_experimental(tmp_path: Path, monkeypatch) -> None:
     assert excinfo.value.code == 2
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="stderr capture across the click boundary differs on Windows; tracked in backlog",
-)
 def test_paper_rejected_in_beta(repo: Path, capsys) -> None:
     code = run_cli(["discover", ".", "--experimental", "--paper", "p.pdf"])
     assert code == 2

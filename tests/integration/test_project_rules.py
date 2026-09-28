@@ -30,6 +30,7 @@ def repo(tmp_path: Path) -> Path:
             / "complete.yaml"
         ).read_text(encoding="utf-8"),
         encoding="utf-8",
+        newline="\n",
     )
     commit_all(repo)
     return repo
@@ -192,7 +193,9 @@ def test_audit_l2_project_rules_snapshot(repo: Path, monkeypatch) -> None:
         / "expected"
     )
     (repo / "reprollm.lock").write_text(
-        (fixture_root / "lock.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+        (fixture_root / "lock.yaml").read_text(encoding="utf-8"),
+        encoding="utf-8",
+        newline="\n",
     )
     (repo / ".reprollm").mkdir(exist_ok=True)
     (repo / ".reprollm" / "project-rules.yaml").write_text(

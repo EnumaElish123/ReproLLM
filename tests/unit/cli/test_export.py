@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 from pathlib import Path
 
 import pytest
@@ -31,11 +30,15 @@ def _assemble(tmp_path: Path, name: str, *, with_run: bool = True) -> Path:
     manifests = FIXTURES / name / "manifests"
     if (manifests / "complete.yaml").is_file():
         (repo / "reprollm.yaml").write_text(
-            (manifests / "complete.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+            (manifests / "complete.yaml").read_text(encoding="utf-8"),
+            encoding="utf-8",
+            newline="\n",
         )
     if (base / "lock.yaml").is_file():
         (repo / "reprollm.lock").write_text(
-            (base / "lock.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+            (base / "lock.yaml").read_text(encoding="utf-8"),
+            encoding="utf-8",
+            newline="\n",
         )
     if with_run and (base / "run.json").is_file():
         run_id = f"20260101T000000Z-{name[:6]}"
@@ -53,13 +56,19 @@ def _assemble(tmp_path: Path, name: str, *, with_run: bool = True) -> Path:
             "hostname_sha256",
             "sha256:" + "0" * 64,
         )
-        (run_dir / "run.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+        (run_dir / "run.json").write_text(
+            json.dumps(record, indent=2), encoding="utf-8", newline="\n"
+        )
         (run_dir / "manifest.yaml").write_text(
-            (repo / "reprollm.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+            (repo / "reprollm.yaml").read_text(encoding="utf-8"),
+            encoding="utf-8",
+            newline="\n",
         )
         if (repo / "reprollm.lock").is_file():
             (run_dir / "lock.yaml").write_text(
-                (repo / "reprollm.lock").read_text(encoding="utf-8"), encoding="utf-8"
+                (repo / "reprollm.lock").read_text(encoding="utf-8"),
+                encoding="utf-8",
+                newline="\n",
             )
     from tests.conftest import commit_all
 
@@ -89,10 +98,6 @@ def test_export_without_run_states_so(tmp_path: Path) -> None:
     assert "`reprollm run -- <command>`" in document
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="unlink immediately after write hits Windows file locking; tracked in backlog",
-)
 def test_export_deterministic(tmp_path: Path) -> None:
     """Same *inputs* → byte-identical output (spec §19). The exported file
     itself must not be part of the input: remove it between runs, otherwise
@@ -140,7 +145,6 @@ def test_export_no_lock_marks_not_locked(tmp_path: Path) -> None:
 
 
 def test_export_requires_manifest(tmp_path: Path, monkeypatch) -> None:
-    import pytest
 
     from reprollm.cli.main import cli
 

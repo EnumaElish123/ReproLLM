@@ -35,7 +35,7 @@ def _write_rules(root: Path, document: ProjectRules) -> None:
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
         temporary = target.with_suffix(".yaml.tmp")
-        temporary.write_text(text, encoding="utf-8")
+        temporary.write_text(text, encoding="utf-8", newline="\n")
         temporary.replace(target)
     except OSError as exc:
         raise UserError(f"cannot write {target}: {exc.strerror or type(exc).__name__}") from exc
