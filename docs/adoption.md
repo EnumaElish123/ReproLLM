@@ -5,7 +5,12 @@ project is positioned in applications and outreach.
 
 | Month | PyPI downloads | GitHub dependents | External issues | External PRs | Known repos using ReproLLM | Papers with `REPRODUCIBILITY.md` |
 |---|---:|---:|---:|---:|---|---|
-| 2026-09 | 0 | 0 | 0 | 0 | — | — |
+| 2026-09 | 110 (30-day window incl. CI/mirror scans) | 0 | 0 | 0 | 0 (self) | 0 |
+
+September note: v0.1.1 (2026-09-17) and v0.4.0 (2026-09-28) were published with
+no outreach; the download count is dominated by automated scans and is not a
+human-adoption signal. 4 GitHub stars. October is the first month with a
+complete Beta-track release to measure.
 
 Notes:
 
