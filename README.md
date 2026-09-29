@@ -6,9 +6,8 @@
 
 > Make LLM experiments reproducible.
 
-**Status: alpha. PyPI 0.1.1 supports Audit Level 0/1 and `init`. The development
-checkout adds `lock`, runtime capture, Level 2 consistency checks and semantic
-`diff`. The 0.2/0.3/0.4 releases still await their validation gates.**
+**Status: beta (0.5.0). The full workflow — audit, init, lock, run, diff,
+export, rules, and experimental discover — is usable.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
 research. It records the LLM-specific state that other tools ignore — model revision,
@@ -129,21 +128,39 @@ parameters, model identities, LLM package versions and accepted custom fields
 against the latest valid run. The [runtime guide](docs/run.md) explains bindings,
 environment policies, redacted snapshots and how to share selected records.
 
+## The 30-second demo
+
+```text
+$ cd your-llm-experiment
+$ reprollm audit .
+ReproLLM audit · level 0 · profiles: core
+
+WARNING (3)
+  ! env.llm_critical_deps_pinned      vllm is used but not pinned...
+
+Detected profiles: evaluation (medium), inference (high)
+  — run: reprollm init --profiles evaluation,inference
+```
+
 ## Commands
 
-| Command | Status | Purpose |
-|---|---|---|
-| `reprollm audit` | **usable** (Level 0/1/2 on main) | deterministic reproducibility audit |
-| `reprollm init` | **usable** | create `reprollm.yaml` from detected experiment profiles |
-| `reprollm doctor` | **usable** | environment diagnostics |
-| `reprollm profiles list/show` | **usable** | inspect the seven built-in profiles |
-| `reprollm lock` | **usable on main**, planned for 0.2.0 | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
-| `reprollm run -- CMD` | **usable in development**, planned for 0.3.0 | execute a command and record runtime truth |
-| `reprollm runs list/show` | **usable in development**, planned for 0.3.0 | inspect saved runtime evidence |
-| `reprollm diff A B` | **usable in development**, planned for 0.4.0 | semantic drift between two runs or lockfiles |
-| `reprollm export` | **usable** | generate a `REPRODUCIBILITY.md` for your paper artifact |
-| `reprollm rules add/list` | **usable** | accept repository-specific requirements |
+| Command | Purpose |
+|---|---|
+| `reprollm audit` | deterministic reproducibility audit (Level 0/1/2) |
+| `reprollm init` | scaffold `reprollm.yaml` from detected experiment profiles |
+| `reprollm lock` | resolve models/datasets/prompts into a reviewable `reprollm.lock` |
+| `reprollm run -- CMD` | execute a command and record runtime truth |
+| `reprollm runs list/show` | inspect saved runtime evidence |
+| `reprollm diff A B` | semantic drift between two runs or lockfiles |
+| `reprollm export` | generate `REPRODUCIBILITY.md` for your paper artifact |
+| `reprollm rules add/list/accept/ignore` | repository-specific requirements |
+| `reprollm discover --experimental` | opt-in LLM candidate discovery |
+| `reprollm doctor` | environment diagnostics |
+| `reprollm profiles list/show` | inspect the seven built-in profiles |
 
+Docs: [Quick start](docs/quickstart.md) · [Concepts](docs/concepts.md) ·
+[Why ReproLLM](docs/why.md) · [CLI reference](docs/cli.md) ·
+[Reading a diff](docs/diff.md) · [FAQ](docs/faq.md)
 ReproLLM is CLI-first, local-first, and collects no telemetry. The only network calls are
 revision resolution against provider APIs (`lock`), an opt-in LLM endpoint
 (`discover --experimental`), an opt-in `doctor --check-network`, and version verification

@@ -1,6 +1,9 @@
 # Security Policy
 
-## Supported versions
+## Supported timeline
+
+The current minor series is supported while it is the latest release. Security
+fixes are backported only to the latest released minor.
 
 ReproLLM is pre-1.0 software. Security fixes are applied to the latest released version
 on PyPI and the `main` branch only.

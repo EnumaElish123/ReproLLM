@@ -1,0 +1,119 @@
+schema_version: 1
+reprollm_version: 0.5.0a1
+generated_at: '2026-09-29T03:12:48Z'
+manifest_sha256: sha256:d38b8c948e2491b62bf15df9d6157b50400d3574f0f67f579c16e8d0846bd3f3
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-32B
+    pinnability: exact
+    revision:
+      value: 9216db5781bf21249d130ec9da846c4624c16137
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-09-29T03:12:48Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: Qwen/Qwen3-32B
+      revision:
+        value: 9216db5781bf21249d130ec9da846c4624c16137
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-09-29T03:12:48Z'
+        note: null
+    chat_template:
+      sha256:
+        value: sha256:a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8
+        source: hf_file:tokenizer_config.json
+        confidence: exact
+        resolved_at: '2026-09-29T03:12:48Z'
+        note: null
+      status: present
+    config_sha256:
+      value: sha256:97e295b63283935788fac5e4f8860862a56d4089538cafc93f0431f2ebe483bb
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-09-29T03:12:48Z'
+      note: null
+    adapter: null
+    local: null
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: null
+datasets:
+  eval:
+    provider: huggingface
+    id: cais/mmlu
+    revision:
+      value: c30699e8356da336a370243923dbaf21066bb9fe
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-09-29T03:12:48Z'
+      note: null
+    subset: abstract_algebra
+    split: test
+    content_fingerprint:
+      status: not_computed
+    files: null
+prompts:
+  system:
+    path: prompts/system.txt
+    sha256: sha256:1012fd0edf9e8ecd0aef9107beb1817f8fb0e0be689245a0be34efd80e88add9
+    size_bytes: 162
+    text_sha256: null
+files:
+- path: configs/eval.yaml
+  sha256: sha256:6403ccd2e879b6087ee5118e03cb0a282110d307fd5206fd11c5814a537923d4
+  size_bytes: 204
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  top_k: null
+  max_tokens: 2048
+  seed: 42
+  do_sample: null
+  stop: []
+  repetition_penalty: null
+  n: null
+inference:
+  backend: vllm
+  version:
+    value: null
+    source: importlib_metadata
+    confidence: unresolved
+    resolved_at: null
+    note: 'distribution not installed: vllm'
+  mode: null
+  dtype: bfloat16
+  tensor_parallel_size: 2
+  gpu_memory_utilization: 0.9
+  quantization: none
+  max_model_len: null
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation:
+  metrics:
+  - name: accuracy
+    implementation: eval.py
+    implementation_sha256: sha256:2ac2a4b8f5fe2b4f91dbfef5fe2d3d3d829909bed21e4164e06607ab646cd792
+    implementation_version: null
+  aggregation: mean
+  repetitions: 1
+  thresholds: null
+  definitions: null
+  query_budget: null
+  judge: null
+privacy: null
+environment:
+  python: 3.10.21
+  platform: linux
+  packages: {}
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.2'
+    source: nvidia_smi

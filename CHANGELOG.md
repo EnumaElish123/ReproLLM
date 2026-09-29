@@ -7,6 +7,37 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] — Beta — 2026-09-29
+
+The complete Beta workflow: audit (Level 0/1/2), init, lock, run with
+redaction, semantic diff, export, project rules, and experimental discover.
+
+### Added (M8 stabilization)
+
+- `examples/` — three runnable example repositories with real mirror-resolved
+  lockfiles, refreshed by `scripts/refresh_examples.py` and audited in CI.
+- Documentation suite: CI-regenerated `quickstart.md` (real output, cannot
+  rot) and `cli.md`; new `concepts.md`, `why.md`, and a 12-entry `faq.md`;
+  README rewritten for the Beta; `docs/diff.md` gained a line-by-line
+  output-reading guide.
+- Boundary guarantees as regression tests: empty manifest, corrupt lock,
+  future `schema_version` (clear upgrade message), manifest-only repo,
+  non-UTF-8 filenames — all actionable errors, never tracebacks.
+- Performance budgets (20k-file audit < 10 s, init < 15 s) run nightly;
+  per-PR runs stay fast.
+- Packaging: `py.typed` ships; twine check passes; `CITATION.cff`;
+  `scripts/check_no_leaks.py` for post-hoc artifact scans.
+- Community: roadmap and good-first-issue catalog under `docs/community/`;
+  CONTRIBUTING/SECURITY finalized.
+
+### Fixed
+
+- The Windows golden mismatch is closed at the root: test-written fixtures
+  now force LF endings everywhere (the last straggler of the platform-newline
+  family), and golden comparisons use a byte-exact canonical form whose
+  failure messages carry hex dumps.
+- `lock --offline` constructs no HTTP client at all.
+
 ## [0.5.0a1] - 2026-09-28
 
 ### Added (M7)
@@ -392,7 +423,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0a1...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0
 [0.5.0a1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0a1
 [0.4.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...v0.4.0
 [0.1.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.0...v0.1.1

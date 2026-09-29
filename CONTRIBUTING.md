@@ -75,3 +75,16 @@ disclosure.
 ## Code of conduct
 
 See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+
+## How to propose a rule
+
+Use the `new_rule` issue template, which asks for the rule ID, category,
+default severity, FAIL condition, and fix hint. If you want to implement it
+yourself, see the recipe in [`AGENTS.md` §6](AGENTS.md) — a `@register_rule`
+class, PASS and FAIL tests, profile wiring, regenerated docs.
+
+## Good first issues
+
+Look for the `good first issue` label. Each is self-contained and expected to
+take under half a day, including tests.

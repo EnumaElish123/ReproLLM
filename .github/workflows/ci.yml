@@ -88,11 +88,21 @@ jobs:
           uv run reprollm schema export --out /tmp/schemas
           diff -r schemas /tmp/schemas
 
+      - name: Examples stay valid
+        if: matrix.schema-check
+        run: |
+          for example in examples/*/; do
+            uv run reprollm audit "$example" --fail-on never --format json > /dev/null
+            uv run reprollm lock --check "$example" || true  # offline check of committed state
+          done
+
       - name: Generated documentation freshness
         if: matrix.schema-check
         run: |
           uv run python scripts/gen_rules_doc.py --check
           uv run python scripts/gen_profiles_doc.py --check
+          uv run python scripts/gen_cli_doc.py --check
+          uv run python scripts/gen_quickstart.py --check
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
