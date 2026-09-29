@@ -27,14 +27,12 @@ roadmap issues; nothing here is scheduled for the Beta.
 
 ## Engineering
 
-- **Windows snapshot mismatch (M7, open):** `test_audit_l2_project_rules_snapshot`
-  fails only on the Windows runner with a paradoxical signature — the audit JSON
-  compares unequal, yet serialized forms are equal-length and every reported
-  diff window renders identically (suspect: an invisible/same-width character or
-  a str-vs-int JSON coercion in one nested value). Eight diagnostic rounds
-  narrowed it this far; the test is `linux_only` for now with the diagnostic
-  helper retained in-file. CI failure annotations (added in the Test step)
-  reproduce the evidence. Fix in the M8 bug bash.
+- **Windows snapshot mismatch (M7→M8):** the golden comparison now uses a
+  byte-exact canonical form (bools wrapped so `true`/`1` cannot alias; hex-dump
+  delta in any failure message) and the `linux_only` quarantine is lifted. The
+  comparator already caught and resolved one class of aliasing locally. If the
+  Windows leg fails again, its annotation will contain unambiguous hex bytes —
+  one round settles it.
 
 - RepoScanner/pyscan performance pass on very large repositories (the ~28 s
   lm-eval Level 0 audit is the recorded benchmark; M8-T04).

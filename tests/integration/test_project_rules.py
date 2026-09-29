@@ -177,7 +177,6 @@ def test_rules_add_rejects_bad_input(repo: Path, monkeypatch) -> None:
     assert excinfo.value.code == 2
 
 
-@pytest.mark.linux_only
 def test_audit_l2_project_rules_snapshot(repo: Path, monkeypatch) -> None:
     import os
 
@@ -242,33 +241,33 @@ rules:
         for volatile in ("generated_at", "reprollm_version"):
             document.pop(volatile, None)
             expected.pop(volatile, None)
-        assert document == expected, _first_delta(document, expected)
+        assert _canonical(document) == _canonical(expected), _delta(document, expected)
 
 
-def _first_delta(actual: dict, expected: dict, prefix: str = "") -> str:
-    """First differing leaf as an assert message (surfaces in CI annotations)."""
-    keys = sorted(set(actual) | set(expected))
-    for key in keys:
-        path = f"{prefix}.{key}" if prefix else key
-        a, b = actual.get(key, "<missing>"), expected.get(key, "<missing>")
-        if isinstance(a, dict) and isinstance(b, dict):
-            nested = _first_delta(a, b, path)
-            if nested:
-                return nested
-            continue
-        if a != b:
-            return f"first delta at {path}: actual={str(a)[:200]} expected={str(b)[:200]}"
-    sa = json.dumps(actual, sort_keys=True, default=str)
-    sb = json.dumps(expected, sort_keys=True, default=str)
-    if len(sa) != len(sb):
-        return (
-            f"length differs: actual={len(sa)} keys={sorted(actual)}; "
-            f"expected={len(sb)} keys={sorted(expected)}"
-        )
-    fallback = min(len(sa), len(sb))
+def _canonical(node: object) -> str:
+    """Byte-exact canonical form: bool/int aliasing and key order cannot hide."""
+    return json.dumps(_typed(node), sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+
+
+def _typed(node: object) -> object:
+    """Wrap bools so true and 1 canonicalize differently (Python == aliases them)."""
+    if isinstance(node, bool):
+        return {"__bool__": str(node)}
+    if isinstance(node, dict):
+        return {key: _typed(value) for key, value in node.items()}
+    if isinstance(node, list):
+        return [_typed(item) for item in node]
+    return node
+
+
+def _delta(actual: object, expected: object) -> str:
+    """Hex-dump the first differing canonical byte — unambiguous on any runner."""
+    sa = _canonical(actual).encode("utf-8")
+    sb = _canonical(expected).encode("utf-8")
     pairs = enumerate(zip(sa, sb, strict=False))
-    i = next((k for k, (x, y) in pairs if x != y), fallback)
+    i = next((k for k, (x, y) in pairs if x != y), min(len(sa), len(sb)))
+    lo = max(0, i - 24)
     return (
-        f"serialized diff at {i}: actual…{sa[max(0, i - 60) : i + 80]!r} "
-        f"expected…{sb[max(0, i - 60) : i + 80]!r}"
+        f"canonical bytes differ at {i} (lengths {len(sa)}/{len(sb)}): "
+        f"actual={sa[lo : i + 24].hex(' ')} expected={sb[lo : i + 24].hex(' ')}"
     )
