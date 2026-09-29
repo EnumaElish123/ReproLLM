@@ -60,11 +60,15 @@ def main(check: bool = False) -> int:
         import os
         import subprocess as sp
 
-        env = {**os.environ,
-               "GIT_AUTHOR_NAME": "Demo", "GIT_AUTHOR_EMAIL": "demo@localhost",
-               "GIT_COMMITTER_NAME": "Demo", "GIT_COMMITTER_EMAIL": "demo@localhost",
-               "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",
-               "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z"}
+        env = {
+            **os.environ,
+            "GIT_AUTHOR_NAME": "Demo",
+            "GIT_AUTHOR_EMAIL": "demo@localhost",
+            "GIT_COMMITTER_NAME": "Demo",
+            "GIT_COMMITTER_EMAIL": "demo@localhost",
+            "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",
+            "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z",
+        }
         sp.run(["git", "init", "-q"], cwd=work, check=True)
         sp.run(["git", "add", "-A"], cwd=work, check=True, env=env)
         sp.run(["git", "commit", "-qm", "demo"], cwd=work, check=True, env=env)
