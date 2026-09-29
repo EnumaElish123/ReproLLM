@@ -99,10 +99,13 @@ jobs:
       - name: Generated documentation freshness
         if: matrix.schema-check
         run: |
+          set -x
           uv run python scripts/gen_rules_doc.py --check
           uv run python scripts/gen_profiles_doc.py --check
           uv run python scripts/gen_cli_doc.py --check
           uv run python scripts/gen_quickstart.py --check
+          # On failure the runner prints the regeneration diff for diagnosis
+          uv run python scripts/gen_quickstart.py || (git diff docs/ && exit 1)
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
