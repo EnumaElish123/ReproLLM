@@ -50,6 +50,12 @@ def main(check: bool = False) -> int:
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "hf_vllm_eval"
         shutil.copytree(ROOT / "examples" / "hf_vllm_eval", work)
+        # The quickstart must not depend on artifacts other steps create in
+        # examples/ (REPRODUCIBILITY.md, run records); start from the committed
+        # state exactly.
+        for noise in work.rglob("REPRODUCIBILITY.md"):
+            noise.unlink()
+        shutil.rmtree(work / ".reprollm", ignore_errors=True)
         for title, args, _tag in steps:
             output = _run(args, work)
             body.append(f"## {title}")

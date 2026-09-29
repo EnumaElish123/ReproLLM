@@ -28,7 +28,7 @@ CRITICAL (3)
       generation.top_p (absent)
       fix: Set generation.max_tokens, generation.temperature, generation.top_p in reprollm.yaml.
 
-WARNING (10)
+WARNING (9)
   ! env.llm_critical_deps_pinned      vllm is used but not pinned to an exact version (suggestion: vllm==<version>)
       requirements.txt (declared as >=0.10)
       fix: Pin vllm exactly, e.g. `vllm==<version>`.
@@ -58,9 +58,6 @@ WARNING (10)
   ! consistency.lock_fresh      reprollm.yaml changed after reprollm.lock was generated
       manifest_sha256
       fix: Run `reprollm lock` to refresh reprollm.lock after declaration changes.
-  ! consistency.lock_fresh      .reprollm/project-rules.yaml changed after reprollm.lock was generated
-      project_rules_sha256
-      fix: Run `reprollm lock` to refresh reprollm.lock after declaration changes.
 
 INFO (3)
   i exec.run_recorded      no run records found under .reprollm/runs
@@ -74,7 +71,7 @@ INFO (3)
       fix: Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.
 
 9 passed · 0 suppressed · 19 skipped        (use --show-passed / --show-skipped)
-Result: FAIL (3 critical, 10 warning)
+Result: FAIL (3 critical, 9 warning)
 ```
 
 ## Scaffold a manifest from detection
