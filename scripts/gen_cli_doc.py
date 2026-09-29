@@ -13,10 +13,7 @@ def _help(args: list[str]) -> str:
     import os
     import shutil
 
-    exe = (
-        shutil.which("reprollm")
-        or str(ROOT / ".venv" / "bin" / "reprollm")
-    )
+    exe = shutil.which("reprollm") or str(ROOT / ".venv" / "bin" / "reprollm")
     if not Path(exe).is_file():
         raise FileNotFoundError(f"reprollm not found at {exe}")
     env = {**os.environ, "COLUMNS": "80", "LINES": "24"}  # fixed wrap = portable doc
