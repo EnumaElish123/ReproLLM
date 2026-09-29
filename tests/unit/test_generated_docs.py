@@ -28,10 +28,13 @@ def test_profiles_document_is_fresh_and_complete() -> None:
 
 
 def test_ci_checks_coverage_and_generated_docs() -> None:
+    """The per-PR CI enforces coverage; doc freshness runs in the nightly
+    (runner-environment delta documented in docs/plan/backlog.md)."""
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert "--cov-fail-under=85" in workflow
-    assert "python scripts/gen_rules_doc.py --check" in workflow
-    assert "python scripts/gen_profiles_doc.py --check" in workflow
+    nightly = (ROOT / ".github/workflows/nightly.yml").read_text(encoding="utf-8")
+    assert "python scripts/gen_rules_doc.py --check" in nightly
+    assert "python scripts/gen_profiles_doc.py --check" in nightly
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "[rule catalog](docs/rules.md)" in readme
     assert "[profile catalog](docs/profiles.md)" in readme
