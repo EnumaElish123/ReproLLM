@@ -79,8 +79,15 @@ def export(
     output: Annotated[
         Path, typer.Option("--output", help="Output file (default: REPRODUCIBILITY.md).")
     ] = Path("REPRODUCIBILITY.md"),
+    template: Annotated[
+        str, typer.Option("--template", help="Checklist mapping: default | neurips | acl | acm.")
+    ] = "default",
 ) -> None:
     """Write REPRODUCIBILITY.md from manifest + lock + the selected run."""
+    if template not in ("default", "neurips", "acl", "acm"):
+        raise typer.BadParameter(
+            f"unknown template {template!r}; choose default, neurips, acl, or acm"
+        )
     root = find_root(path)
     if not (root / MANIFEST).is_file():
         raise UserError(f"no reprollm.yaml under {root}; run `reprollm init` first")
@@ -97,6 +104,12 @@ def export(
         manifest, lock, run_record, state, reprollm_version=__version__, audit_report=audit_report
     )
     document = render(data)
+
+    if template != "default":
+        from reprollm.export.exporter import enrich_for_checklist, render_checklist_mapping
+
+        enrich_for_checklist(data, manifest, lock)
+        document += "\n" + render_checklist_mapping(data, venue=template)
 
     target = output if output.is_absolute() else root / output
     try:

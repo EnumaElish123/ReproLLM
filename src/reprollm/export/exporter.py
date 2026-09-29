@@ -43,6 +43,13 @@ class ExportInput:
     profiles: list[str] = field(default_factory=list)
     reprollm_version: str = ""
     schema_versions: dict[str, int | None] = field(default_factory=dict)
+    # Checklist-template summaries (populated by enrich_for_checklist)
+    metrics_summary: str = ""
+    adapter_summary: str = ""
+    prompt_formats: str = ""
+    has_judge: bool = False
+    judge_summary: str = ""
+    has_privacy: bool = False
 
     def has_run(self) -> bool:
         return bool(self.execution)
@@ -259,3 +266,60 @@ def render(data: ExportInput) -> str:
     rendered = template.render(data=data, short=_short)
     safe, _count = redact_text(rendered)
     return safe.lstrip("\n")
+
+
+def enrich_for_checklist(
+    data: ExportInput,
+    manifest: Manifest | None,
+    lock: Lock | None,
+) -> None:
+    """Add the derived summaries the checklist template needs."""
+    metrics = (
+        [m.name for m in manifest.evaluation.metrics]
+        if manifest is not None and manifest.evaluation is not None
+        else []
+    )
+    data.metrics_summary = ", ".join(metrics) if metrics else "not declared"
+
+    models = manifest.models if manifest is not None else {}
+    adapters = [
+        f"{spec.adapter.id} @ {spec.adapter.revision or 'unpinned'}"
+        for spec in models.values()
+        if spec.adapter is not None
+    ]
+    data.adapter_summary = adapters[0] if adapters else "none"
+
+    prompts = manifest.prompts if manifest is not None else {}
+    formats = [f"{role}:{spec.format or 'plain'}" for role, spec in prompts.items()]
+    data.prompt_formats = ", ".join(formats) if formats else "none"
+
+    judge = (
+        manifest.evaluation.judge
+        if manifest is not None and manifest.evaluation is not None
+        else None
+    )
+    data.has_judge = judge is not None
+    judge_id = (
+        models[judge.model_ref].id if judge is not None and judge.model_ref in models else None
+    )
+    data.judge_summary = judge_id if judge_id is not None else "unknown"
+    data.has_privacy = bool(
+        manifest is not None and manifest.privacy is not None and manifest.privacy.mechanism
+    )
+
+
+def render_checklist_mapping(data: ExportInput, *, venue: str) -> str:
+    """Render the venue-specific checklist-mapping template."""
+    source = (files("reprollm.export") / "templates" / "checklist_mapping.md.j2").read_text(
+        encoding="utf-8"
+    )
+    environment = jinja2.Environment(
+        undefined=jinja2.StrictUndefined,
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    template = environment.from_string(source)
+    rendered = template.render(data=data, venue=venue)
+    safe, _count = redact_text(rendered)
+    return safe.lstrip("\n").rstrip("\n") + "\n"
