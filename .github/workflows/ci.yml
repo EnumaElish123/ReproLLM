@@ -99,13 +99,17 @@ jobs:
       - name: Generated documentation freshness
         if: matrix.schema-check
         run: |
-          set -x
           uv run python scripts/gen_rules_doc.py --check
           uv run python scripts/gen_profiles_doc.py --check
           uv run python scripts/gen_cli_doc.py --check
-          uv run python scripts/gen_quickstart.py --check
-          # On failure the runner prints the regeneration diff for diagnosis
-          uv run python scripts/gen_quickstart.py || (git diff docs/ && exit 1)
+          uv run python scripts/gen_quickstart.py --check || CODE=$?
+          if [ "''${CODE:-0}" != "0" ]; then
+            uv run python scripts/gen_quickstart.py
+            DIFF=$(git diff --stat docs/quickstart.md)
+            echo "::error title=quickstart stale::${DIFF}"
+            git diff docs/quickstart.md | head -40
+            exit 1
+          fi
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
