@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _run(args: list[str], cwd: Path) -> str:
     """Run a command; audit exits 1 on findings — capture output regardless."""
-    exe = shutil.which("reprollm") or str(ROOT / ".venv/bin/reprollm")
+    exe = shutil.which("reprollm") or str(ROOT / ".venv" / "bin" / "reprollm")
     result = subprocess.run([exe, *args], cwd=cwd, capture_output=True, text=True)
     if result.returncode not in (0, 1):
         raise SystemExit(f"{args} failed: {result.stderr}")
