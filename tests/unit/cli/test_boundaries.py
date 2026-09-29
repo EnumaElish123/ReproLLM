@@ -79,15 +79,26 @@ def test_manifest_only_repo_audits_cleanly(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_non_utf8_filenames_do_not_crash_audit(tmp_path: Path, monkeypatch) -> None:
+    """A byte filename git cannot index must not take the audit down. git add
+    fails on raw 0xE9 bytes on Windows, so this file simply stays untracked —
+    which is itself a path the scanner must tolerate."""
     repo = make_git_repo(tmp_path / "r")
     (repo / "ok.py").write_text("x = 1\n", encoding="utf-8")
-    try:
-        (repo / "bad-\udce9.py").write_text("x = 1\n", encoding="utf-8", errors="surrogateescape")
-    except (OSError, ValueError):
-        pytest.skip("filesystem rejects surrogate filenames")
     from tests.conftest import commit_all
 
     commit_all(repo)
+    try:
+        import os
+
+        with open(
+            os.path.join(str(repo), "bad-\udce9.py"),
+            "w",
+            encoding="utf-8",
+            errors="surrogateescape",
+        ) as handle:
+            handle.write("x = 1\n")
+    except (OSError, ValueError):
+        pytest.skip("filesystem rejects surrogate filenames")
     code, text = _cli(monkeypatch, ["audit", str(repo), "--fail-on", "never"])
     assert code in (0, 1)
     assert "Traceback" not in text
