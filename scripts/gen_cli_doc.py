@@ -10,16 +10,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _help(args: list[str]) -> str:
+    import os
     import shutil
 
     exe = shutil.which("reprollm")
     assert exe, "reprollm console script not on PATH"
+    env = {**os.environ, "COLUMNS": "80", "LINES": "24"}  # fixed wrap = portable doc
     result = subprocess.run(
         [exe, *args, "--help"],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=True,
+        env=env,
     )
     return result.stdout
 
