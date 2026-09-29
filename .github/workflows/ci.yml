@@ -106,6 +106,13 @@ jobs:
         run: |
           uv run reprollm audit . --format github --fail-on never
 
+      - name: ReproLLM self-audit via the published Action
+        if: matrix.schema-check
+        uses: EnumaElish123/reprollm-action@v1
+        with:
+          path: examples/hf_vllm_eval
+          fail-on: never
+
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:

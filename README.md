@@ -128,6 +128,15 @@ parameters, model identities, LLM package versions and accepted custom fields
 against the latest valid run. The [runtime guide](docs/run.md) explains bindings,
 environment policies, redacted snapshots and how to share selected records.
 
+## Use in CI (one line)
+
+```yaml
+- uses: EnumaElish123/reprollm-action@v1
+```
+
+Findings appear as inline PR annotations; no `reprollm.yaml` needed for
+Level 0. See the [Action repo](https://github.com/EnumaElish123/reprollm-action).
+
 ## The 30-second demo
 
 ```text
