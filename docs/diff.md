@@ -18,6 +18,29 @@ invalid snapshots are errors. A lockfile includes an adjacent `reprollm.yaml`
 when present. Comparing a run to a lock also shows fields only the run recorded,
 such as hardware and the command, as added or removed.
 
+## Reading the output
+
+Every `reprollm diff` report lists only what changed between the two
+experiments, grouped by section, each line as `path  A → B  [SEVERITY]`.
+Here is what each kind of line means:
+
+| Line kind | Meaning | Why it can change |
+|---|---|---|
+| `generation.max_tokens 32 → 48 [HIGH]` | A declared experiment parameter differs. | You (or a config) changed it between runs — the usual suspect for result differences. |
+| `files.configs/eval.yaml.sha256 … [HIGH]` | A tracked input **file's content hash** differs. | The file's bytes changed (often the same edit as the parameter above — the hash proves the file on disk really changed, independent of what the manifest declares). The hash is not meant to be read; it is meant to be compared. |
+| `code.commit … [MEDIUM]` + `code changed` | The two runs executed at different git commits. | Expected when each variant's inputs were committed separately; becomes a real warning when the tree was dirty (`[HIGH]`). |
+| `models.*`, `datasets.*`, `prompts.*`, `inference.*` … | Identity drift in experiment inputs (revision, prompt hash, backend…). | Model/dataset/prompt changed — results are usually not comparable. |
+| `environment.packages.torch 2.8.0 → 2.8.1 [LOW]` | A dependency changed at patch level. | Major/minor bumps raise the severity (`MEDIUM_HIGH`). |
+| `run_id`, `started_at`, `duration_seconds` … `[NONE]` | Bookkeeping fields that always differ. | Listed for completeness; never counted as drift. |
+
+The final verdict line summarizes: `HIGH` present → *not directly
+comparable*; `MEDIUM` → *results may differ; review the changes above*;
+only `LOW`/`NONE` → *no reproducibility-relevant drift detected*.
+
+Severity comes from the drift table (`drift_severity.yaml`), which profiles
+can override; see the rest of this guide for the full table and
+version-component semantics.
+
 ## What gets compared
 
 Both inputs become a State with a value and provenance for every field. Effective

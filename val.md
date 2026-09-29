@@ -584,6 +584,18 @@ commit MEDIUM + four NONE. The §8.3 HarmBench row is complete.
 With §8.5a this closes every §8.3 runtime row. GPU 0/1 readings returned to
 their pre-run levels afterward; no download or validation process remains.
 
+### 8.5c M6-H2 maintainer acceptance (2026-09-29)
+
+**Accepted.** The maintainer reviewed the text diff of the 2026-09-29 clean
+lm-eval pair and confirmed the 30-second readability requirement is met: the
+change source (`generation.max_tokens 32 → 48 [HIGH]`) is immediately clear,
+and the verdict line states non-comparability. Review note, recorded verbatim
+in substance: `files.*.sha256` lines may confuse users unfamiliar with
+development workflows; address via README or a dedicated output-reading
+document. Disposition: `docs/diff.md` gained a "Reading the output" section
+explaining every line kind (including file-hash and commit rows); README
+links to it. M6-H2 is closed.
+
 ### 8.5 Baseline maintenance: promotion of supplementary scenarios (2026-09-28)
 
 Maintainer decision recorded in a dedicated reviewed change per §9. Two Gate B
