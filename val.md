@@ -548,6 +548,42 @@ required HIGH leaf plus config hash HIGH and clean commit MEDIUM. Evidence
 under `evidence/runtime/{FastChat,LlamaFactory}/`; review recorded in the
 Linux validation report. HarmBench and the lm-eval clean re-pair remain open.
 
+### 8.5b Completion record — lm-eval clean re-pair and HarmBench (2026-09-29)
+
+Maintainer authorized shared-GPU execution (relaxed guard recorded in the
+controller: exclusive lease, GPU-0 pinning, memory-fraction caps and the disk
+reserve all retained) plus completing the classifier download.
+
+**lm-evaluation-harness clean re-pair.** The fidelity fix (`fc3f6aa`) was
+active through an editable install pointing at main `690fe67`. Variant inputs
+restored byte-identical from the corrected 2026-09-27 commits (`2a977fd1` /
+`0b99b87e`); runs `20260929T012042Z-b154ee` / `…T012830Z…` completed with
+exit 0 (79.7 s / comparable). The pair diff is exactly the required
+`generation.max_tokens` 32 → 48 HIGH plus config hash HIGH, clean commit
+MEDIUM and four NONE fields; self-diff empty. Both manifest/lock snapshots are
+byte-identical to the expected privacy-processed sources with **zero**
+path-redaction misfire lines — the 2026-09-27 corruption does not reproduce.
+Historical runs and evidence archived under
+`evidence/runtime/lm-evaluation-harness-pre-fix-20260927/`. The §8.3 lm-eval
+row is complete.
+
+**HarmBench local pair (first execution).** The queued classifier download
+was incomplete: shards 1–3 fully downloaded but never renamed, and the
+tokenizer files absent — the cause of the one prior failure. The three shards
+were resumed-verified, `tokenizer.model`/configs fetched, and every shard plus
+the tokenizer verified against the official API LFS sha256 (mirror ETags are
+not LFS hashes — recorded to prevent a repeat misdiagnosis). Variant inputs
+match the reviewed input plan bytes. Runs `20260929T013849Z-8c6d58` (A) and
+the B run completed with exit 0 through the real DirectRequest target
+(Vicuna 7B, revision `3321f76e…`) and HarmBench classifier (Llama-2-13b-cls,
+revision `bda70534…`); five bindings observed including both model revisions;
+no privacy violations; snapshots clean against each variant's own commit.
+Pair diff: exactly `generation.max_tokens` 16 → 24 HIGH + config hash HIGH +
+commit MEDIUM + four NONE. The §8.3 HarmBench row is complete.
+
+With §8.5a this closes every §8.3 runtime row. GPU 0/1 readings returned to
+their pre-run levels afterward; no download or validation process remains.
+
 ### 8.5 Baseline maintenance: promotion of supplementary scenarios (2026-09-28)
 
 Maintainer decision recorded in a dedicated reviewed change per §9. Two Gate B
