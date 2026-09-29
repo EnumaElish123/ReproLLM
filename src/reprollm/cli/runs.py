@@ -22,6 +22,7 @@ app = typer.Typer(help="Inspect recorded runs.", no_args_is_help=True)
 def list_command(
     as_json: Annotated[bool, typer.Option("--json", help="Emit run summaries as JSON.")] = False,
 ) -> None:
+    """List recorded runs under .reprollm/runs, newest first."""
     records, warnings = list_runs(find_root(Path.cwd()))
     for warning in warnings:
         typer.echo(f"warning: {warning}", err=True)
@@ -62,6 +63,7 @@ def show(
         bool, typer.Option("--json", help="Print run.json exactly as saved.")
     ] = False,
 ) -> None:
+    """Show one run record: command, code, environment, bindings, warnings."""
     record, raw = read_run(find_root(Path.cwd()), run_id)
     if as_json:
         typer.echo(raw, nl=False)
