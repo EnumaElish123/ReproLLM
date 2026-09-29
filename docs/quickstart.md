@@ -13,22 +13,9 @@ cd ReproLLM/examples/hf_vllm_eval
 
 $ reprollm audit . --no-color
 ```text
-ReproLLM audit · level 2 · profiles: core, inference
+ReproLLM audit · level 1 · profiles: core, inference, evaluation
 
-CRITICAL (3)
-  X code.git_repo      . is not inside a git work tree
-      . (git rev-parse --is-inside-work-tree failed)
-      fix: Run `git init` and commit the experiment code so its state is recorded.
-  X gen.backend_declared      inference.backend is missing
-      inference.backend (absent)
-      fix: Set inference.backend in reprollm.yaml.
-  X gen.params_declared      Missing fields: generation.max_tokens, generation.temperature, generation.top_p
-      generation.max_tokens (absent)
-      generation.temperature (absent)
-      generation.top_p (absent)
-      fix: Set generation.max_tokens, generation.temperature, generation.top_p in reprollm.yaml.
-
-WARNING (9)
+WARNING (3)
   ! env.llm_critical_deps_pinned      vllm is used but not pinned to an exact version (suggestion: vllm==<version>)
       requirements.txt (declared as >=0.10)
       fix: Pin vllm exactly, e.g. `vllm==<version>`.
@@ -38,47 +25,24 @@ WARNING (9)
   ! env.python_version_declared      no Python version requirement is declared
       no requires-python / .python-version / conda python= found
       fix: Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.
-  ! exec.command_declared      execution.command is missing; the experiment command is not recorded
-      execution.command (absent)
-      fix: Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.
-  ! exec.seed_declared      no seed is declared (checked execution.seed, generation.seed, training.seed)
-      execution.seed (absent)
-      generation.seed (absent)
-      training.seed (absent)
-      fix: Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.
-  ! model.dtype_declared      models.primary.dtype is missing
-      models.primary.dtype (absent)
-      fix: Set models.primary.dtype in reprollm.yaml.
-  ! model.quantization_declared      models.primary.quantization is missing
-      models.primary.quantization (absent)
-      fix: Set models.primary.quantization in reprollm.yaml.
-  ! prompt.declared      prompts is missing
-      prompts (absent)
-      fix: Set prompts in reprollm.yaml.
-  ! consistency.lock_fresh      reprollm.yaml changed after reprollm.lock was generated
-      manifest_sha256
-      fix: Run `reprollm lock` to refresh reprollm.lock after declaration changes.
 
-INFO (3)
+INFO (2)
+  i code.remote_recorded      no 'origin' remote is configured
+      git remote get-url origin failed
+      fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
   i exec.run_recorded      no run records found under .reprollm/runs
       .reprollm/runs (no run.json found)
       fix: Wrap your command with `reprollm run -- <command>` to record runtime truth.
-  i gen.stop_declared      generation.stop is missing
-      generation.stop (absent)
-      fix: Set generation.stop in reprollm.yaml.
-  i prompt.few_shot_declared      prompts has no few_shot declaration
-      prompts (empty)
-      fix: Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.
 
-9 passed · 0 suppressed · 19 skipped        (use --show-passed / --show-skipped)
-Result: FAIL (3 critical, 9 warning)
+32 passed · 0 suppressed · 4 skipped        (use --show-passed / --show-skipped)
+Result: FAIL (3 warning)
 ```
 
 ## Scaffold a manifest from detection
 
 $ reprollm init . --force
 ```text
-Created examples/hf_vllm_eval/reprollm.yaml (profiles: inference; 5 required fields to fill)
+Created examples/hf_vllm_eval/reprollm.yaml (profiles: evaluation, inference; 7 required fields to fill)
 Next: fill the TODO fields, then run `reprollm audit .`
 ```
 
@@ -86,12 +50,14 @@ Next: fill the TODO fields, then run `reprollm audit .`
 
 $ reprollm audit . --no-color
 ```text
-ReproLLM audit · level 2 · profiles: core, inference
+ReproLLM audit · level 1 · profiles: core, inference, evaluation
 
-CRITICAL (3)
-  X code.git_repo      . is not inside a git work tree
-      . (git rev-parse --is-inside-work-tree failed)
-      fix: Run `git init` and commit the experiment code so its state is recorded.
+CRITICAL (4)
+  X exec.seed_declared      no seed is declared (checked execution.seed, generation.seed, training.seed)
+      execution.seed (absent)
+      generation.seed (absent)
+      training.seed (absent)
+      fix: Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.
   X gen.backend_declared      inference.backend is missing
       inference.backend (absent)
       fix: Set inference.backend in reprollm.yaml.
@@ -100,8 +66,17 @@ CRITICAL (3)
       generation.temperature (absent)
       generation.top_p (absent)
       fix: Set generation.max_tokens, generation.temperature, generation.top_p in reprollm.yaml.
+  X eval.metrics_declared      evaluation.metrics is missing
+      evaluation.metrics (absent)
+      fix: Set evaluation.metrics in reprollm.yaml.
 
 WARNING (10)
+  ! code.clean_tree      working tree has 1 modified/staged tracked file(s): reprollm.yaml
+      reprollm.yaml (reprollm.yaml modified vs HEAD)
+      fix: Commit or stash your changes: `git add -A && git commit` or `git stash`.
+  ! code.no_untracked      1 untracked non-ignored file(s): .reprollm/
+      .reprollm/ (.reprollm/ untracked)
+      fix: Commit them, delete them, or add them to .gitignore.
   ! env.llm_critical_deps_pinned      vllm is used but not pinned to an exact version (suggestion: vllm==<version>)
       requirements.txt (declared as >=0.10)
       fix: Pin vllm exactly, e.g. `vllm==<version>`.
@@ -114,28 +89,23 @@ WARNING (10)
   ! exec.command_declared      execution.command is missing; the experiment command is not recorded
       execution.command (absent)
       fix: Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.
-  ! exec.seed_declared      no seed is declared (checked execution.seed, generation.seed, training.seed)
-      execution.seed (absent)
-      generation.seed (absent)
-      training.seed (absent)
-      fix: Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.
   ! model.dtype_declared      models.primary.dtype is missing
       models.primary.dtype (absent)
       fix: Set models.primary.dtype in reprollm.yaml.
   ! model.quantization_declared      models.primary.quantization is missing
       models.primary.quantization (absent)
       fix: Set models.primary.quantization in reprollm.yaml.
+  ! dataset.preprocessing_declared      datasets.eval.preprocessing is missing
+      datasets.eval.preprocessing (absent)
+      fix: Set datasets.eval.preprocessing in reprollm.yaml.
   ! prompt.declared      prompts is missing
       prompts (absent)
       fix: Set prompts in reprollm.yaml.
-  ! consistency.lock_fresh      reprollm.yaml changed after reprollm.lock was generated
-      manifest_sha256
-      fix: Run `reprollm lock` to refresh reprollm.lock after declaration changes.
-  ! consistency.lock_fresh      .reprollm/project-rules.yaml changed after reprollm.lock was generated
-      project_rules_sha256
-      fix: Run `reprollm lock` to refresh reprollm.lock after declaration changes.
 
-INFO (3)
+INFO (4)
+  i code.remote_recorded      no 'origin' remote is configured
+      git remote get-url origin failed
+      fix: Run `git remote add origin <url>` so the experiment's code source is recorded.
   i exec.run_recorded      no run records found under .reprollm/runs
       .reprollm/runs (no run.json found)
       fix: Wrap your command with `reprollm run -- <command>` to record runtime truth.
@@ -146,8 +116,8 @@ INFO (3)
       prompts (empty)
       fix: Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.
 
-9 passed · 0 suppressed · 19 skipped        (use --show-passed / --show-skipped)
-Result: FAIL (3 critical, 10 warning)
+7 passed · 0 suppressed · 13 skipped        (use --show-passed / --show-skipped)
+Result: FAIL (4 critical, 10 warning)
 ```
 
 ---

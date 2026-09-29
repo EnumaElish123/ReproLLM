@@ -49,13 +49,25 @@ def main(check: bool = False) -> int:
     ]
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "hf_vllm_eval"
-        shutil.copytree(ROOT / "examples" / "hf_vllm_eval", work)
-        # The quickstart must not depend on artifacts other steps create in
-        # examples/ (REPRODUCIBILITY.md, run records); start from the committed
-        # state exactly.
-        for noise in work.rglob("REPRODUCIBILITY.md"):
-            noise.unlink()
-        shutil.rmtree(work / ".reprollm", ignore_errors=True)
+        fixture = ROOT / "tests" / "fixtures" / "repos" / "hf_vllm_eval"
+        shutil.copytree(fixture / "tree", work)
+        manifest = fixture / "manifests" / "complete.yaml"
+        (work / "reprollm.yaml").write_text(
+            manifest.read_text(encoding="utf-8") + "\n", encoding="utf-8"
+        )
+        # A deterministic git repository — the runner's git identity must not
+        # influence the documented output.
+        import os
+        import subprocess as sp
+
+        env = {**os.environ,
+               "GIT_AUTHOR_NAME": "Demo", "GIT_AUTHOR_EMAIL": "demo@localhost",
+               "GIT_COMMITTER_NAME": "Demo", "GIT_COMMITTER_EMAIL": "demo@localhost",
+               "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",
+               "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z"}
+        sp.run(["git", "init", "-q"], cwd=work, check=True)
+        sp.run(["git", "add", "-A"], cwd=work, check=True, env=env)
+        sp.run(["git", "commit", "-qm", "demo"], cwd=work, check=True, env=env)
         for title, args, _tag in steps:
             output = _run(args, work)
             body.append(f"## {title}")
