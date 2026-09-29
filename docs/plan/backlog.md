@@ -27,12 +27,13 @@ roadmap issues; nothing here is scheduled for the Beta.
 
 ## Engineering
 
-- **Windows snapshot mismatch (M7→M8):** the golden comparison now uses a
-  byte-exact canonical form (bools wrapped so `true`/`1` cannot alias; hex-dump
-  delta in any failure message) and the `linux_only` quarantine is lifted. The
-  comparator already caught and resolved one class of aliasing locally. If the
-  Windows leg fails again, its annotation will contain unambiguous hex bytes —
-  one round settles it.
+- **Windows snapshot mismatch — RESOLVED (M8-T01).** The canonical comparator's
+  hex annotation decoded to `sha256:6655ca5f…` — the **CRLF** hash of the
+  project-rules file the test writes, vs the golden's LF hash
+  (`18818d586f…`, verified byte-for-byte locally). The write lacked
+  `newline="\n"`; fixed. This is the same platform-newline family as the
+  product fix in `183f18a`; the test-side straggler is now closed and the
+  comparator stays as a permanent guard.
 
 - RepoScanner/pyscan performance pass on very large repositories (the ~28 s
   lm-eval Level 0 audit is the recorded benchmark; M8-T04).

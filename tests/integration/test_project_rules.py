@@ -219,6 +219,7 @@ rules:
   accepted_at: 2026-09-28T00:00:00Z
 """,
         encoding="utf-8",
+        newline="\n",
     )
     monkeypatch.chdir(repo)
     result = runner.invoke(app, ["audit", ".", "--format", "json", "--fail-on", "never"])
