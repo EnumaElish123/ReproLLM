@@ -14,6 +14,7 @@ from reprollm.core.config import load_config
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
 from reprollm.core.paths import display_target, find_root
+from reprollm.reporters.github import render_audit_github
 from reprollm.reporters.json_ import audit_report_to_json
 from reprollm.reporters.text import render_audit_text
 from reprollm.schemas.finding import SEVERITY_RANK, AuditReport, FindingStatus, Severity
@@ -24,6 +25,7 @@ app = typer.Typer(help="Run the reproducibility audit.", no_args_is_help=True)
 class OutputFormat(str, Enum):
     TEXT = "text"
     JSON = "json"
+    GITHUB = "github"
 
 
 class FailOn(str, Enum):
@@ -110,7 +112,9 @@ def audit(
         elif STATE["verbose"]:
             typer.echo(f"scan: {entry}", err=True)
 
-    if format == OutputFormat.JSON:
+    if format == OutputFormat.GITHUB:
+        typer.echo(render_audit_github(report))
+    elif format == OutputFormat.JSON:
         if output is None:
             typer.echo(audit_report_to_json(report))
         else:

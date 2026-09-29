@@ -1,0 +1,95 @@
+name: ReproLLM Audit
+description: Deterministic reproducibility audit for LLM experiments — model revisions, prompt hashes, generation parameters, drift detection.
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  path:
+    description: Repository directory to audit
+    required: false
+    default: .
+  fail-on:
+    description: Exit 1 when findings reach this severity (critical | warning | never)
+    required: false
+    default: critical
+  level:
+    description: Force a lower audit level (0 | 1 | 2 | auto)
+    required: false
+    default: auto
+  version:
+    description: ReproLLM version to install (e.g. 0.5.0, latest)
+    required: false
+    default: latest
+  check-lock:
+    description: Also run `reprollm lock --check` (exit 1 when stale)
+    required: false
+    default: "false"
+
+outputs:
+  critical-count:
+    description: Number of CRITICAL findings
+    value: ${{ steps.audit.outputs.critical-count }}
+  warning-count:
+    description: Number of WARNING findings
+    value: ${{ steps.audit.outputs.warning-count }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install ReproLLM
+      shell: bash
+      run: |
+        if [ "${{ inputs.version }}" = "latest" ]; then
+          pip install reprollm
+        else
+          pip install "reprollm==${{ inputs.version }}"
+        fi
+
+    - name: Run audit
+      id: audit
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: |
+        reprollm audit . \
+          --format json \
+          --output reprollm-audit.json \
+          --fail-on ${{ inputs.fail-on }} \
+          ${{ inputs.level != 'auto' && format('--level {0}', inputs.level) || '' }} \
+          || AUDIT_EXIT=$?
+
+        # Extract counts for outputs and the step summary
+        CRITICAL=$(python -c "import json; print(json.load(open('reprollm-audit.json'))['summary']['critical'])")
+        WARNING=$(python -c "import json; print(json.load(open('reprollm-audit.json'))['summary']['warning'])")
+        echo "critical-count=$CRITICAL" >> "$GITHUB_OUTPUT"
+        echo "warning-count=$WARNING" >> "$GITHUB_OUTPUT"
+
+        # Step Summary: a readable table for the PR Checks tab
+        {
+          echo "## ReproLLM Audit"
+          echo ""
+          echo "| Severity | Count |"
+          echo "|---|---|"
+          echo "| CRITICAL | $CRITICAL |"
+          echo "| WARNING | $WARNING |"
+          echo ""
+          echo "Full report: [reprollm-audit.json](#artifacts)"
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        # Inline annotations via workflow commands
+        reprollm audit . --format github --fail-on never || true
+
+        exit "''${AUDIT_EXIT:-0}"
+
+    - name: Check lock freshness
+      if: inputs.check-lock == 'true'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: reprollm lock --check .
+
+    - name: Upload audit report
+      uses: actions/upload-artifact@v4
+      with:
+        name: reprollm-audit
+        path: ${{ inputs.path }}/reprollm-audit.json
+        if-no-files-found: warn

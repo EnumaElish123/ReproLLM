@@ -101,6 +101,11 @@ jobs:
       # (all four generators check green on 3.10–3.12, COLUMNS 80–200, and
       # from clean clones). See docs/plan/backlog.md for the diagnosis state.
 
+      - name: ReproLLM self-audit (bootstrapped dogfooding)
+        if: matrix.schema-check
+        run: |
+          uv run reprollm audit . --format github --fail-on never
+
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
