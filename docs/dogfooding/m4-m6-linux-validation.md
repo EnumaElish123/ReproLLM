@@ -726,3 +726,41 @@ closes LlamaFactory's §8.3 row.
 queue's own status file remains untouched as historical automation state.
 Still open at this point: the lm-eval clean re-pair after the fidelity fix,
 HarmBench (GPU wait), M6-H2 review material, and M7.
+
+## Final GPU gates — 2026-09-29
+
+Maintainer authorization: shared-GPU execution (relaxed controller guard;
+lease, GPU-0 pin, memory-fraction caps and disk reserve retained) and
+completion of the pending classifier download.
+
+**lm-evaluation-harness clean re-pair (the fidelity-fix re-run).** Code path:
+editable install at main `690fe67` (fix `fc3f6aa` verified active in the
+environment before launch). Inputs restored byte-identical from the corrected
+2026-09-27 commits; the failed first-queue-era run records were archived so
+`name` selection stays unique. Both variants completed exit 0 (~80 s each).
+Pair diff is exactly `generation.max_tokens` 32→48 HIGH + config hash HIGH +
+commit MEDIUM + four NONE; self-diff empty. **Both snapshot pairs are
+byte-identical to the expected privacy-processed sources with zero
+path-redaction misfire lines** — the defect fixed in `fc3f6aa` does not
+reproduce in real execution. This supersedes the earlier
+`snapshot_semantics_pass: false` disposition; the corrupted 2026-09-27
+artifacts remain archived unchanged as history.
+
+**HarmBench first full execution.** Root cause of the earlier failure found
+and closed: the classifier download was incomplete — shards 1–3 were fully
+downloaded bytes that the dead queue never renamed, and tokenizer files were
+never fetched. Shards resumed/renamed, tokenizer files downloaded, and every
+shard + `tokenizer.model` verified against the official Hub API LFS sha256
+(the mirror's ETags are not LFS hashes — noted to prevent repeat
+misdiagnosis; `training_args.bin` intentionally not fetched, unused by
+inference). Real DirectRequest target (Vicuna 7B, `3321f76e…`) and classifier
+(HarmBench-Llama-2-13b-cls, `bda70534…`) ran in separate processes; A
+(69.6 s) and B completed exit 0 with five bindings observed (cap, both model
+ids and revisions), no privacy violations, and snapshots byte-identical to
+each variant's own commit. Pair diff is exactly `generation.max_tokens`
+16→24 HIGH + config hash HIGH + commit MEDIUM + four NONE.
+
+All five §8.3 runtime rows are now complete (see val.md §8.5a/§8.5b). GPU
+readings returned to pre-run levels; no validation or download process
+remains. M4–M6 resource gates: closed for the activated scenarios.
+
