@@ -7,6 +7,22 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-09-29
+
+### Added (M9)
+
+- `audit --format github`: workflow-command output for any CI that speaks
+  GitHub Actions annotations — `::error`/`::warning`/`::notice` with
+  file/line backlinks from finding evidence, spec-compliant escaping, and a
+  summary notice. No Action installation required.
+- `action/` — the complete composite Action (`action.yml` + Marketplace
+  README), ready for the maintainer to push to the `reprollm/action` repo.
+  Inputs: path, fail-on, level, version, check-lock; outputs:
+  critical-count, warning-count; steps include a Step Summary table and an
+  artifact upload.
+- CI now self-audits ReproLLM with `--format github` (bootstrapped
+  dogfooding in the Checks tab).
+
 ## [0.5.0] — Beta — 2026-09-29
 
 The complete Beta workflow: audit (Level 0/1/2), init, lock, run with
@@ -423,7 +439,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0
 [0.5.0a1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0a1
 [0.4.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.1.1...v0.4.0
