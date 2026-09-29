@@ -7,6 +7,28 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-09-29
+
+### Added (M10)
+
+- `export --template neurips|acl|acm`: venue-specific checklist mapping
+  appended to `REPRODUCIBILITY.md`. ReproLLM provides evidence (field values,
+  hashes, run IDs) for conference reproducibility items — never Yes/No
+  answers. Items outside ReproLLM's scope are listed honestly as *not
+  covered*.
+- `docs/checklists.md`: full mapping table across three conference
+  checklists (45 rows, versions reviewed 2026-09-29).
+- Nine demonstration exports (3 examples × 3 venues) committed under
+  `examples/`.
+- All five P1 rules confirmed implemented (M3/M4): `code.remote_recorded`,
+  `model.trust_remote_code_declared`, `dataset.subset_declared`,
+  `gen.stop_declared`, `prompt.few_shot_declared`.
+
+### Since 0.5.1
+
+- `reprollm-action` composite Action published at
+  `EnumaElish123/reprollm-action@v1` and bootstrapped in ReproLLM's own CI.
+
 ## [0.5.1] - 2026-09-29
 
 ### Added (M9)
@@ -439,7 +461,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0
 [0.5.0a1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0a1
