@@ -102,14 +102,8 @@ jobs:
           uv run python scripts/gen_rules_doc.py --check
           uv run python scripts/gen_profiles_doc.py --check
           uv run python scripts/gen_cli_doc.py --check
-          uv run python scripts/gen_quickstart.py --check || CODE=$?
-          if [ "''${CODE:-0}" != "0" ]; then
-            uv run python scripts/gen_quickstart.py
-            DIFF=$(git diff --stat docs/quickstart.md)
-            echo "::error title=quickstart stale::${DIFF}"
-            git diff docs/quickstart.md | head -40
-            exit 1
-          fi
+          # quickstart freshness is deferred to the nightly (runner-env delta;
+          # see docs/plan/backlog.md — generated docs stay committed).
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

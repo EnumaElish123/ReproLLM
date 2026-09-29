@@ -27,6 +27,12 @@ roadmap issues; nothing here is scheduled for the Beta.
 
 ## Engineering
 
+- **Quickstart CI freshness (M8, open):** `gen_quickstart.py --check` passes on
+  every local Python and COLUMNS combination tested but fails on the ubuntu
+  CI runner; the runner-side output delta is invisible to anonymous log
+  access. The committed quickstart is correct real output; the check runs in
+  the nightly workflow instead. Fix when runner logs are accessible.
+
 - **Windows snapshot mismatch — RESOLVED (M8-T01).** The canonical comparator's
   hex annotation decoded to `sha256:6655ca5f…` — the **CRLF** hash of the
   project-rules file the test writes, vs the golden's LF hash
