@@ -7,6 +7,35 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-29
+
+Adoption-sprint release: everything in the M9–M11 track plus the Beta
+baseline from M1–M8.
+
+### M9: GitHub Actions integration
+- `audit --format github` — workflow-command output for any CI
+- `reprollm-action@v1` — published composite Action, bootstrapped in CI
+
+### M10: Paper checklist alignment
+- `export --template neurips|acl|acm` — venue-specific checklist mappings
+- `docs/checklists.md` — 45-row mapping across three conference checklists
+- All five P1 rules confirmed implemented
+
+### M11: Evaluation framework integrations
+- `lm_eval`, `lighteval`, `inspect_ai` — detect usage, extract task names
+  for init pre-filling, report versions
+- `docs/integrations/` — manifest examples and run snippets per framework
+- `docs/integrations/card-snippets.md` — HF model/dataset card snippets
+
+### Since 0.5.0 (Beta)
+- Windows golden comparison closed at the root (byte-exact canonical form)
+- Performance budgets (20k-file audit <10s) in nightly CI
+- `py.typed`, `CITATION.cff`, `twine check` clean
+- `examples/` with real lockfiles, CI-validated
+- Documentation suite: quickstart (CI-regenerated), concepts, FAQ, why,
+  CLI reference, diff reading guide
+- `lock --offline` constructs no HTTP client (SOCKS-proxy environments)
+
 ## [0.5.3] - 2026-09-29
 
 ### Added (M11)
@@ -475,7 +504,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.3...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...v0.5.1
