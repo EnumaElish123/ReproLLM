@@ -7,6 +7,20 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-09-29
+
+### Added (M11)
+
+- Evaluation framework integrations (`integrations/`): `lm_eval`,
+  `lighteval`, `inspect_ai` — each detects usage (imports, CLI invocations),
+  extracts task names from framework config files (lm-eval task YAMLs,
+  inspect-ai `@task` decorators) for `init` pre-filling, and reports
+  installed versions. They never import the target library.
+- `docs/integrations/` — manifest examples and recorded-run snippets for
+  lm-evaluation-harness, lighteval, and inspect-ai.
+- `docs/integrations/card-snippets.md` — copy-paste reproducibility snippets
+  for Hugging Face model cards, dataset cards, and paper artifact READMEs.
+
 ## [0.5.2] - 2026-09-29
 
 ### Added (M10)
@@ -461,7 +475,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.4.0...v0.5.0

@@ -15,6 +15,9 @@ export and discovery arrive in a later milestone.
 
 ## Documentation map
 
+- [Framework integrations](integrations/lm-eval.md) — lm-eval, lighteval, inspect-ai
+- [Model/dataset card snippets](integrations/card-snippets.md)
+
 - [Roadmap and architecture](plan/00_architecture_and_decisions.md) — product definition,
   boundaries, and the frozen decision register (D-01 … D-42)
 - [Beta specification](plan/01_specification.md) — CLI contract, schemas, rule catalog,
