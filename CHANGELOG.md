@@ -9,6 +9,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- M9-T02: emit comma-separated GitHub workflow-command properties and keep
+  the file and line from the same evidence item, preserving escaping.
 - M7-T04: keep the invalid-candidate retry available after an endpoint rejects
   JSON mode; retain the final failed response and cap all requests at three.
 - M11-T01: connect evaluation framework detection and task extraction to `init`;

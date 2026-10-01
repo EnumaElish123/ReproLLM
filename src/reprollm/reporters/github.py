@@ -41,17 +41,16 @@ def _annotation(finding: Finding) -> str:
 
     # Attach file/line when evidence carries a path so the annotation renders
     # inline on the PR diff.
-    first_path = next((e.path for e in finding.evidence if e.path), None)
-    first_line = next((e.line for e in finding.evidence if e.line is not None), None)
-    if first_path:
-        properties.append(f"file={_escape_property(first_path)}")
-        if first_line is not None:
-            properties.append(f"line={first_line}")
+    location = next((e for e in finding.evidence if e.path), None)
+    if location is not None and location.path:
+        properties.append(f"file={_escape_property(location.path)}")
+        if location.line is not None:
+            properties.append(f"line={location.line}")
 
     message = finding.message
     if finding.fix_hint:
         message = f"{message} — fix: {finding.fix_hint}"
-    return f"{command} {' '.join(properties)}::{_escape_data(message)}"
+    return f"{command} {','.join(properties)}::{_escape_data(message)}"
 
 
 def render_audit_github(report: AuditReport) -> str:
