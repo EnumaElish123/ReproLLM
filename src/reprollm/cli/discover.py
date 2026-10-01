@@ -8,7 +8,9 @@ sends nothing.
 
 from __future__ import annotations
 
+import getpass
 import os
+import socket
 from datetime import datetime, timezone
 from importlib.resources import files
 from pathlib import Path
@@ -21,6 +23,7 @@ from reprollm.core.config import load_config
 from reprollm.core.errors import UserError
 from reprollm.core.paths import find_root
 from reprollm.discover.collector import collect, dry_run_report
+from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.config import DiscoverConfig
 
 app = typer.Typer(help="Experimental LLM-assisted discovery.", no_args_is_help=True)
@@ -90,7 +93,16 @@ def discover(
 
     base_url, api_key, model = _endpoint_credentials(discover_config)
 
-    typer.echo(report, nl=False)
+    from reprollm.discover.candidates import finalize, sanitize_response_text
+    from reprollm.discover.client import DiscoverError, request_candidates
+
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    secret_values = (api_key,)
+
+    def safe_text(value: str) -> str:
+        return sanitize_response_text(value, privacy, secret_values=secret_values)[0]
+
+    typer.echo(safe_text(report), nl=False)
     if yes:
         pass
     elif not sys_stdin_is_tty():
@@ -98,14 +110,11 @@ def discover(
     else:
         if not typer.confirm(
             f"Send these {len(payload.files)} files ({payload.total_chars} chars) "
-            f"to {model} at {base_url}?",
+            f"to {safe_text(model)} at {safe_text(base_url)}?",
             default=False,
         ):
             typer.echo("Aborted; nothing was sent.")
             return
-
-    from reprollm.discover.candidates import finalize
-    from reprollm.discover.client import DiscoverError, request_candidates
 
     system_prompt = (files("reprollm.discover") / "prompts" / "system.md").read_text(
         encoding="utf-8"
@@ -128,11 +137,12 @@ def discover(
         raw_dir = root / ".reprollm" / "discover"
         raw_dir.mkdir(parents=True, exist_ok=True)
         raw_path = raw_dir / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.raw.txt"
-        raw_path.write_text(exc.raw_text or user_content, encoding="utf-8", newline="\n")
+        raw_path.write_text(safe_text(exc.raw_text or user_content), encoding="utf-8", newline="\n")
         from reprollm.core.errors import InternalError
 
         raise InternalError(
-            f"discovery request failed ({exc}); raw response saved to {raw_path}"
+            f"discovery request failed ({safe_text(str(exc))}); raw response saved to "
+            f"{raw_path.relative_to(root).as_posix()}"
         ) from None
 
     document = finalize(
@@ -143,13 +153,17 @@ def discover(
         dropped_files=payload.dropped_files,
         truncated_files=payload.truncated_files,
         generated_at=datetime.now(timezone.utc),
+        privacy=privacy,
+        secret_values=secret_values,
     )
     out_dir = root / ".reprollm" / "discover"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
     out_path.write_text(document.model_dump_json(indent=2) + "\n", encoding="utf-8", newline="\n")
 
-    typer.echo(f"\nWrote {len(document.candidates)} candidates → {out_path}")
+    typer.echo(
+        f"\nWrote {len(document.candidates)} candidates → {out_path.relative_to(root).as_posix()}"
+    )
     for candidate in document.candidates:
         typer.echo(
             f"  {candidate.id}  {candidate.kind}  {candidate.confidence}  "

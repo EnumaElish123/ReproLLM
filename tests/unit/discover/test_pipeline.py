@@ -284,3 +284,95 @@ def test_finalize_recognizes_collected_source_snippets() -> None:
     assert actual.confidence == "high"
     assert actual.evidence[0].path == "arguments/privacy.py"
     assert actual.evidence[0].line == 10
+
+
+@respx.mock
+def test_success_response_is_private_before_persistence(repo: Path, monkeypatch, capsys) -> None:
+    secret = "sk-" + "a" * 40
+    monkeypatch.setattr("getpass.getuser", lambda: "private-author")
+    monkeypatch.setattr("socket.gethostname", lambda: "private-node")
+    body = json.loads(MOCK_RESPONSE["choices"][0]["message"]["content"])
+    body["candidates"][0]["rationale"] = (
+        f"{secret} private-author private-node /Users/example/private-experiment"
+    )
+    body["candidates"][0]["evidence"][0]["snippet"] = str(repo / "configs/privacy.yaml")
+    body["candidates"][0]["suggested_bindings"]["cli"] = f"--secret={secret}"
+    response = {"choices": [{"message": {"content": json.dumps(body)}}]}
+    respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=response)
+    )
+
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 0
+
+    output = capsys.readouterr()
+    saved_path = next((repo / ".reprollm" / "discover").glob("*.json"))
+    saved = saved_path.read_text(encoding="utf-8")
+    for value in (secret, "private-author", "private-node", "/Users/example", str(repo)):
+        assert value not in saved
+        assert value not in output.out + output.err
+    actual = next(item for item in json.loads(saved)["candidates"] if item["name"] == "alpha")
+    assert actual["suggested_bindings"]["cli"] is None
+    assert actual["suggested_bindings"]["config"] == "configs/privacy.yaml:method.alpha"
+    assert actual["evidence"][0]["snippet"] == "configs/privacy.yaml"
+    assert actual["confidence"] == "low"
+
+
+@respx.mock
+def test_invalid_raw_response_is_private_before_persistence(
+    repo: Path, monkeypatch, capsys
+) -> None:
+    secret = "sk-" + "a" * 40
+    monkeypatch.setattr("getpass.getuser", lambda: "private-author")
+    monkeypatch.setattr("socket.gethostname", lambda: "private-node")
+    raw = f"invalid {secret} private-author private-node /Users/example/private-experiment"
+    response = {"choices": [{"message": {"content": raw}}]}
+    respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=response)
+    )
+
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 3
+
+    output = capsys.readouterr()
+    saved_path = next((repo / ".reprollm" / "discover").glob("*.raw.txt"))
+    saved = saved_path.read_text(encoding="utf-8")
+    for value in (secret, "private-author", "private-node", "/Users/example", str(repo)):
+        assert value not in saved
+        assert value not in output.out + output.err
+    assert "<REDACTED:openai>" in saved
+    assert ".reprollm/discover/" in output.err
+
+
+@respx.mock
+def test_http_error_is_private_before_display(repo: Path, monkeypatch, capsys) -> None:
+    secret = "sk-" + "a" * 40
+    monkeypatch.setattr("getpass.getuser", lambda: "private-author")
+    monkeypatch.setattr("socket.gethostname", lambda: "private-node")
+    respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(
+            403, text=f"{secret} private-author private-node /Users/example/private-experiment"
+        )
+    )
+
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 3
+
+    output = capsys.readouterr()
+    for value in (secret, "private-author", "private-node", "/Users/example", str(repo)):
+        assert value not in output.out + output.err
+    assert "HTTP 403" in output.err
+
+
+@respx.mock
+def test_echoed_configured_credential_is_not_persisted(repo: Path, monkeypatch, capsys) -> None:
+    credential = "opaque-discovery-credential-value"
+    monkeypatch.setenv("REPROLLM_LLM_API_KEY", credential)
+    response = {"choices": [{"message": {"content": f"invalid {credential}"}}]}
+    respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=response)
+    )
+
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 3
+
+    output = capsys.readouterr()
+    saved_path = next((repo / ".reprollm" / "discover").glob("*.raw.txt"))
+    assert credential not in saved_path.read_text(encoding="utf-8")
+    assert credential not in output.out + output.err

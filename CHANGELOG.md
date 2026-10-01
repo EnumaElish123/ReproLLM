@@ -20,6 +20,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - M7-T04: include explicitly declared built-in manifest fields in discover's duplicate
   exclusion context, recognize source-snippet evidence, and discard evidence outside the
   sent input files while retaining the candidate's stable ID and lowering confidence.
+  Clean returned candidates, failed raw responses and errors before persistence,
+  remove unsafe fields/bindings and exact credential echoes, and preserve real
+  filenames containing `#L` while normalizing generated snippet locators.
 
 ## [0.6.0] - 2026-09-29
 
