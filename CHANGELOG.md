@@ -14,8 +14,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   executing tags or importing the framework. Authors still confirm selected tasks and
   metric implementations.
 - M8-T02: refresh CLI documentation for GitHub output and checklist templates, repair
-  macOS temporary-directory alias normalization in quickstart generation, show freshness
-  diffs, and enforce all generated-document checks in ordinary CI and nightly again.
+  macOS temporary-directory aliases and Windows path separators in quickstart generation,
+  fix captured terminal styling and width under GitHub Actions, show freshness diffs,
+  and enforce all generated-document checks in ordinary CI and nightly again.
 - M7-T04: include explicitly declared built-in manifest fields in discover's duplicate
   exclusion context, recognize source-snippet evidence, and discard evidence outside the
   sent input files while retaining the candidate's stable ID and lowering confidence.

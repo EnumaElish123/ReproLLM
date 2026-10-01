@@ -17,7 +17,13 @@ def _help(args: list[str]) -> str:
     exe = shutil.which("reprollm") or str(ROOT / ".venv" / "bin" / "reprollm")
     if not Path(exe).is_file():
         raise FileNotFoundError(f"reprollm not found at {exe}")
-    env = {**os.environ, "COLUMNS": "80", "LINES": "24"}  # fixed wrap = portable doc
+    # Typer forces terminal styling under GitHub Actions even with piped stdout.
+    # Only the captured child needs a plain terminal and a fixed wrap width.
+    terminal_flags = {"GITHUB_ACTIONS", "FORCE_COLOR", "PY_COLORS", "TTY_COMPATIBLE"}
+    env = {key: value for key, value in os.environ.items() if key not in terminal_flags}
+    env.update(
+        {"COLUMNS": "80", "LINES": "24", "TERMINAL_WIDTH": "80", "TERM": "dumb", "NO_COLOR": "1"}
+    )
     result = subprocess.run(
         [exe, *args, "--help"],
         cwd=ROOT,

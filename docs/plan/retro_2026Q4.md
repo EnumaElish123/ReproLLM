@@ -49,9 +49,12 @@ calendar weeks). The M12 review.
 Follow-up, 2026-10-01: authenticated nightly logs corrected the document-freshness
 diagnosis above. The CLI reference lacked the M9/M10 options, reproducibly on
 the local runner too; rules and profiles passed. A separate macOS temporary-path
-alias bug in quickstart generation was fixed with a regression test. All four
-checks are restored to ordinary CI and retained in nightly; see the dated
-validation report for remote verification.
+alias bug in quickstart generation was fixed with a regression test. Remote
+revalidation exposed forced terminal styling in GitHub Actions and Windows
+artifact separators; captured subprocess output now has a fixed plain-terminal
+environment and normalized example paths. All four checks are restored to
+ordinary CI and retained in nightly; see the dated validation report for remote
+verification.
 
 1. **Adoption above everything.** The upstream PR (lm-eval recipe), the
    GitHub Action marketplace listing, and one real external user are worth

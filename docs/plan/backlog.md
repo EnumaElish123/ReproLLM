@@ -33,10 +33,14 @@ roadmap issues; nothing here is scheduled for the Beta.
   This reproduces locally; the earlier all-generators/Ubuntu-only diagnosis was
   incorrect. Refreshing the reviewed help diff and restoring all four checks to
   ordinary CI prevents another delayed failure; nightly retains the checks.
+  Revalidation exposed GitHub Actions forcing terminal styling and wrapping in
+  captured Typer output. Documentation subprocesses now use a plain terminal
+  with fixed dimensions; a regression reproduces the runner environment.
 - **Quickstart path aliases — fixed (M8-T02, 2026-10-01):** on macOS, temporary
   `/var` paths resolve to `/private/var`; replacing only the original spelling
   left a `/private` prefix in generated examples. Both aliases are normalized,
-  with a regression test; the committed quickstart body is unchanged. CLI and
+  with a regression test. Windows artifact separators are also normalized from
+  authenticated runner evidence; the committed quickstart body is unchanged. CLI and
   quickstart checks now print the exact generated diff on failure.
 
 - **Windows snapshot mismatch — RESOLVED (M8-T01).** The canonical comparator's

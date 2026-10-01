@@ -6,6 +6,7 @@ CI re-runs this and diffs — the documented output cannot rot.
 from __future__ import annotations
 
 import difflib
+import os
 import shutil
 import subprocess
 import sys
@@ -18,7 +19,12 @@ ROOT = Path(__file__).resolve().parents[1]
 def _run(args: list[str], cwd: Path) -> str:
     """Run a command; audit exits 1 on findings — capture output regardless."""
     exe = shutil.which("reprollm") or str(ROOT / ".venv" / "bin" / "reprollm")
-    result = subprocess.run([exe, *args], cwd=cwd, capture_output=True, text=True)
+    terminal_flags = {"GITHUB_ACTIONS", "FORCE_COLOR", "PY_COLORS", "TTY_COMPATIBLE"}
+    env = {key: value for key, value in os.environ.items() if key not in terminal_flags}
+    env.update(
+        {"COLUMNS": "80", "LINES": "24", "TERMINAL_WIDTH": "80", "TERM": "dumb", "NO_COLOR": "1"}
+    )
+    result = subprocess.run([exe, *args], cwd=cwd, capture_output=True, text=True, env=env)
     if result.returncode not in (0, 1):
         raise SystemExit(f"{args} failed: {result.stderr}")
     return result.stdout.rstrip()
@@ -30,7 +36,7 @@ def scrub(text: str, work: Path) -> str:
     # Replace the longer resolved alias first so no prefix remains in the doc.
     for spelling in sorted({str(work), str(work.resolve())}, key=len, reverse=True):
         text = text.replace(spelling, "examples/hf_vllm_eval")
-    return text
+    return text.replace("examples/hf_vllm_eval\\", "examples/hf_vllm_eval/")
 
 
 def main(check: bool = False) -> int:
@@ -62,7 +68,6 @@ def main(check: bool = False) -> int:
         )
         # A deterministic git repository — the runner's git identity must not
         # influence the documented output.
-        import os
         import subprocess as sp
 
         env = {

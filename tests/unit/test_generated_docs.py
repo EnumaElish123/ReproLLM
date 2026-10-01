@@ -57,3 +57,29 @@ def test_quickstart_scrubs_resolved_tempdir_alias(monkeypatch) -> None:
     assert gen_quickstart.scrub(output, work) == (
         "Created examples/hf_vllm_eval/reprollm.yaml\nScanned examples/hf_vllm_eval/config.yaml"
     )
+
+
+def test_cli_document_is_plain_in_ci_environment(monkeypatch) -> None:
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("FORCE_COLOR", "1")
+    monkeypatch.setenv("PY_COLORS", "1")
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setenv("TERMINAL_WIDTH", "120")
+    assert gen_cli_doc.main(check=True) == 0
+
+
+def test_quickstart_document_is_plain_in_ci_environment(monkeypatch) -> None:
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("FORCE_COLOR", "1")
+    monkeypatch.setenv("PY_COLORS", "1")
+    monkeypatch.setenv("TERM", "xterm-256color")
+    monkeypatch.setenv("COLUMNS", "120")
+    assert gen_quickstart.main(check=True) == 0
+
+
+def test_quickstart_scrubs_windows_artifact_separator() -> None:
+    work = Path(r"D:\a\temp\hf_vllm_eval")
+    output = f"Created {work}\\reprollm.yaml (profiles: evaluation, inference)"
+    assert gen_quickstart.scrub(output, work) == (
+        "Created examples/hf_vllm_eval/reprollm.yaml (profiles: evaluation, inference)"
+    )
