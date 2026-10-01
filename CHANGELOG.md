@@ -48,7 +48,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   change only their two package-version markers.
 - The maintainer deferred remote/GPU and unavailable exact judge-input
   validation for this patch; these resource checks are not fresh passes.
-  See `val.md` §8.7 and the patch session report for executable-gate results.
+  Five-project full Gate A and available command/metadata matrices have zero
+  new gold deltas; one real DeepSeek discover request passed independent
+  candidate review and acceptance/audit checks. See `val.md` §8.7 and the
+  [patch session report](docs/dogfooding/2026-10-01-patch-0.6.1.md).
 
 ## [0.6.0] - 2026-09-29
 
