@@ -9,6 +9,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- M7-T04: keep the invalid-candidate retry available after an endpoint rejects
+  JSON mode; retain the final failed response and cap all requests at three.
 - M11-T01: connect evaluation framework detection and task extraction to `init`;
   pre-fill sorted task candidates, including lm-eval YAMLs with custom tags, without
   executing tags or importing the framework. Authors still confirm selected tasks and

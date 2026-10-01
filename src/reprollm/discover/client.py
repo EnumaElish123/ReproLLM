@@ -68,6 +68,7 @@ def request_candidates(
 
     raw_text = ""
     json_mode = True
+    invalid_responses = 0
     for attempt in range(3):
         try:
             raw_text, _served = call(json_mode)
@@ -79,7 +80,9 @@ def request_candidates(
         candidates, error = _parse(raw_text)
         if candidates is not None:
             return DiscoverResponse(model=model, raw_text=raw_text, candidates=candidates)
-        if attempt == 1:
+        # An unsupported JSON mode is not a candidate-validation attempt.
+        invalid_responses += 1
+        if invalid_responses == 2:
             raise DiscoverError(f"invalid candidate JSON: {error}", raw_text=raw_text)
         messages.append(
             {

@@ -213,18 +213,22 @@ def test_discover_writes_candidates_and_accept(repo: Path) -> None:
     assert "[pending]" in listing.output
 
 
+@pytest.mark.parametrize("reject_json_mode", [False, True])
 @respx.mock
-def test_invalid_json_retry_then_raw_saved(repo: Path) -> None:
+def test_invalid_json_retry_then_raw_saved(repo: Path, reject_json_mode: bool) -> None:
     route = respx.post("https://llm.example.com/v1/chat/completions")
-    route.mock(
-        side_effect=[
-            httpx.Response(200, json={"choices": [{"message": {"content": "not json"}}]}),
-            httpx.Response(200, json={"choices": [{"message": {"content": "still not json"}}]}),
-        ]
-    )
+    responses = [
+        httpx.Response(200, json={"choices": [{"message": {"content": "not json"}}]}),
+        httpx.Response(200, json={"choices": [{"message": {"content": "still not json"}}]}),
+    ]
+    if reject_json_mode:
+        responses.insert(0, httpx.Response(400, text="response_format is unsupported"))
+    route.mock(side_effect=responses)
     assert run_cli(["discover", ".", "--experimental", "--yes"]) == 3
     raw = sorted((repo / ".reprollm" / "discover").glob("*.raw.txt"))
-    assert raw, "the failed payload must be saved for inspection"
+    assert len(raw) == 1, "the failed payload must be saved for inspection"
+    assert raw[0].read_text(encoding="utf-8") == "still not json"
+    assert route.call_count == (3 if reject_json_mode else 2)
 
 
 def test_finalize_deterministic_ids() -> None:
