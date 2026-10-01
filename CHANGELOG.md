@@ -12,7 +12,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - M11-T01: connect evaluation framework detection and task extraction to `init`;
   pre-fill sorted task candidates, including lm-eval YAMLs with custom tags, without
   executing tags or importing the framework. Authors still confirm selected tasks and
-  metric implementations.
+  metric implementations; secret-bearing and machine-specific task names are excluded.
 - M8-T02: refresh CLI documentation for GitHub output and checklist templates, repair
   macOS temporary-directory aliases and Windows path separators in quickstart generation,
   fix captured terminal styling and width under GitHub Actions, show freshness diffs,

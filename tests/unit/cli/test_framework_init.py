@@ -175,3 +175,39 @@ def test_secret_looking_task_names_are_not_persisted(tmp_path: Path) -> None:
     result = runner.invoke(app, ["init", str(tmp_path)])
     assert result.exit_code == 0, result.output
     assert secret not in (tmp_path / "reprollm.yaml").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "unsafe_name",
+    [
+        "/Users/example/private-experiment",
+        r"C:\Users\example\private-experiment",
+        r"\\private-host\shared\task",
+        "task for example-user",
+        "task on private-host",
+    ],
+)
+def test_task_candidates_drop_host_paths_and_machine_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unsafe_name: str
+) -> None:
+    monkeypatch.setattr("getpass.getuser", lambda: "example-user")
+    monkeypatch.setattr("socket.gethostname", lambda: "private-host")
+    (tmp_path / "run.sh").write_text("lm_eval --tasks custom\n", encoding="utf-8", newline="\n")
+    tasks = tmp_path / "tasks"
+    tasks.mkdir()
+    for index, name in enumerate(
+        ["relative/task", "普通_task", unsafe_name, str(tmp_path / "task")]
+    ):
+        (tasks / f"{index}.yaml").write_text(
+            f"task: {json.dumps(name)}\n", encoding="utf-8", newline="\n"
+        )
+
+    result = runner.invoke(app, ["init", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    text = (tmp_path / "reprollm.yaml").read_text(encoding="utf-8")
+    manifest = load_manifest(tmp_path / "reprollm.yaml")
+    assert manifest.evaluation is not None
+    assert [metric.name for metric in manifest.evaluation.metrics] == ["relative/task", "普通_task"]
+    assert "example-user" not in text
+    assert "private-host" not in text
+    assert str(tmp_path) not in text

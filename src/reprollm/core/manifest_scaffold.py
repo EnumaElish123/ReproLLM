@@ -9,7 +9,9 @@ become ``TODO`` keys; null values keep the result loadable.
 
 from __future__ import annotations
 
+import getpass
 import json
+import socket
 from dataclasses import dataclass, field
 from importlib.resources import files
 from pathlib import Path
@@ -20,10 +22,10 @@ import jinja2
 from reprollm.core.context import AuditContext
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST
-from reprollm.core.redaction import redact_text
 from reprollm.core.yaml_io import load_manifest
 from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.profiles import loader
+from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.finding import DetectionResult
 
 #: Section order follows the manifest schema (spec §3).
@@ -349,9 +351,12 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
     task_names: set[str] = set()
     task_sources: set[str] = set()
     if "evaluation.metrics" in resolved.required_fields:
+        privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
         for integration, _evidence in detected_frameworks(ctx.fs, ctx.pyscan):
             names = integration.extract_task_hints(ctx.fs).task_names
-            safe_names = {name for name in names if redact_text(name)[1] == 0}
+            # A sanitized name would identify a different task. Exclude
+            # host-specific or secret-bearing candidates instead of renaming.
+            safe_names = {name for name in names if privacy.text(name)[1] == 0}
             if safe_names:
                 task_names.update(safe_names)
                 task_sources.add(integration.name)
