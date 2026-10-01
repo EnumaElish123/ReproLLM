@@ -157,4 +157,19 @@ All expected/actual command exit statuses were 0. Latest elapsed times:
 
 Compatibility correction: `0ce63d5fca6c71d133468d07c70afc03fd82e971`
 (`fix(discover): preserve safe relative config bindings`, M7-T04).
-Final cloud validation is recorded after pushing.
+Execution and resource-gate report: `35c6d22f80d662a03f24fa96484a3e944156414d`
+(`docs(validation): complete real DeepSeek discover gate`, M7-T04/T06).
+
+Exact HEAD `35c6d22f80d662a03f24fa96484a3e944156414d` passed cloud validation:
+
+- [CI 36824409229](https://github.com/EnumaElish123/ReproLLM/actions/runs/36824409229)
+  completed successfully. Ubuntu Python 3.10/3.11/3.12, macOS Python 3.12 and
+  Windows Python 3.12 all passed. Ubuntu 3.12 schema freshness, examples,
+  generated-document freshness, self-audit and published Action also passed.
+- [Nightly 36824467968](https://github.com/EnumaElish123/ReproLLM/actions/runs/36824467968)
+  completed successfully after one explicit dispatch. Performance: two tests
+  passed in 4.71 seconds. Rules, profiles, CLI and quickstart document checks
+  all executed and passed.
+
+This cloud-results addendum changes only this report; the code, validation
+inputs, source gold, schemas and fixture snapshots are unchanged.
