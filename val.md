@@ -656,6 +656,61 @@ answer-generation execution, any M6 pairing beyond those already recorded, or
 any M7 gate. The retired originals stay described above so a future maintainer
 with credentials can still execute them as *additional* coverage.
 
+### 8.6 Real discover validation (prepared 2026-10-01)
+
+Maintainer authorization: on 2026-10-01, complete the pending real DeepSeek
+discover check; sufficient account balance is confirmed. The key's current
+location is pending. No paid request has been issued at preparation time.
+This supplements the existing M7 gate without changing pins or earlier gold.
+
+Project C is an initialized disposable `llm-dp-finetune` clone at the §2 pin.
+Run `reprollm discover . --experimental --dry-run --max-chars 30000`, review the
+actual payload, then `reprollm discover . --experimental --yes --max-chars 30000`
+with `REPROLLM_LLM_BASE_URL=https://api.deepseek.com` and
+`REPROLLM_LLM_MODEL=deepseek-flash`. The key is supplied only in process memory.
+The production client is used unchanged; an observer records sanitized response
+usage and request hashes. Allow at most three HTTP attempts, a 400-second whole
+run deadline, and a 40,000-character actual user-message ceiling, including
+collection headers and declared-field context. A timeout after submission
+leaves charging uncertain and is not retried outside the bounded client.
+
+Prepared input hashes:
+
+- Generated manifest SHA-256:
+  `c23306a04f2a0ebc3ca28f9e3a2cd8ce27255342d302faee15c78367755e2477`.
+- Rendered collection SHA-256:
+  `861765d98613dc6069d5be38c0202b4fa5f4ee315323bc90397dfb0a87995802`.
+- Content budget: 30,000 characters; actual rendered collection includes
+  separators/locators and is 31,210 characters (31,215 UTF-8 bytes). Check the
+  final message independently against the 40,000-character execution ceiling.
+
+Independent source expectations, reviewed before execution:
+
+- The payload contains only public source at the pin and generated intent;
+  forbidden files, dataset content, credentials and local identity are absent.
+  A second redaction check returns zero. No GPU or weight download is authorized
+  or required for this gate.
+- `PrivacyArgs`, sent from `src/llm_pft/arguments/privacy_args.py#L7`, declares
+  `target_epsilon` (line 10), `target_delta` (14), `noise_multiplier` (18),
+  `eps_error` (22), and `max_grad_norm_dp` (26). At least one candidate must have
+  a reproducibility-relevant parameter with independently verified sent-source
+  evidence. Counts and wording are not deterministic gold.
+- The nested DP8 YAML is visible only as a tree path, not sent file contents;
+  a model cannot use it as verified value/line evidence. A training seed is not
+  defined in the sent class snippets and is not a required discovery result.
+- Parse the real candidates through the production schema/finalizer; check
+  stable IDs, normalized relative evidence paths, actual source lines/snippets,
+  and absence of secrets/identity. Record valid, noisy and repeated candidates.
+- Accept a manually justified candidate in the disposable clone, retain its
+  source/candidate ID and reviewed bindings, and audit the resulting project
+  rule. Missing values must be reported; any declaration used to demonstrate
+  a PASS is an explicit validation input with independently sourced value,
+  never an inferred model value silently written into an author's manifest.
+- Preserve sanitized model identity, finish reason, usage and attempt count.
+  A successful paid response alone does not pass this gate; usable evidence
+  and acceptance/audit behavior are required. Default provider thinking may
+  ignore temperature zero; do not claim byte-identical LLM results.
+
 ## 9. Baseline maintenance
 
 - Pinned commits do not move implicitly. A refresh changes this file in a dedicated reviewed commit
