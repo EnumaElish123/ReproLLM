@@ -10,29 +10,19 @@ import ast
 import re
 
 from reprollm.core.envinfo import installed_versions
+from reprollm.core.pyscan import PyScanResult
 from reprollm.core.scanner import RepoScanner
+from reprollm.integrations._static import cli_evidence, import_evidence
 from reprollm.integrations.base import TaskHints
 from reprollm.schemas.finding import Evidence
-
-_IMPORTS = ("inspect_ai",)
 
 
 class InspectAIIntegration:
     name = "inspect_ai"
 
-    def detect(self, scanner: RepoScanner) -> list[Evidence]:
-        evidence: list[Evidence] = []
-        for path in scanner.python_files():
-            text = scanner.read_text(path)
-            if text is None:
-                continue
-            if any(f"import {mod}" in text or f"from {mod}" in text for mod in _IMPORTS):
-                evidence.append(Evidence(kind="detection", path=path, note="import inspect_ai"))
-        for path in scanner.files():
-            if path.endswith(".sh") or path == "Makefile":
-                text = scanner.read_text(path)
-                if text and "inspect eval" in text:
-                    evidence.append(Evidence(kind="detection", path=path, note="CLI: inspect eval"))
+    def detect(self, scanner: RepoScanner, *, pyscan: PyScanResult | None = None) -> list[Evidence]:
+        evidence = import_evidence(scanner, self.name, pyscan)
+        evidence.extend(cli_evidence(scanner, (("inspect", "eval"),), module=self.name))
         return evidence
 
     def capture(self) -> dict[str, str]:

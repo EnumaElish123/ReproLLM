@@ -20,6 +20,7 @@ from reprollm.core._toml import tomllib
 from reprollm.core.deps import Declarations, canonical_dep_name
 from reprollm.core.pyscan import PyScanResult
 from reprollm.core.scanner import RepoScanner
+from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.schemas.finding import DetectionResult, Evidence, ProfileDetection
 from reprollm.schemas.profile import DetectSignals
 
@@ -185,6 +186,10 @@ def run_detection(
             ],
         )
 
+    if "evaluation" in signals:
+        for _integration, evidence in detected_frameworks(scanner, pyscan):
+            _record(entries, "evaluation", "high", evidence)
+
     # Hints never create profile signals (§13).
     for module, hint in _IMPORT_HINTS.items():
         if module not in modules:
@@ -209,7 +214,7 @@ def run_detection(
             profile=profile,
             confidence=confidence,
             evidence=sorted(
-                evidence,
+                {(item.path, item.line, item.note): item for item in evidence}.values(),
                 key=lambda e: (e.path or "", e.line or 0, e.note or ""),
             )[:_EVIDENCE_CAP],
             shipped=profile not in _UNSHIPPED_PROFILES,

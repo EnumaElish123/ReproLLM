@@ -658,6 +658,8 @@ Signals (Level 1 = deterministic, Level 2 = heuristic):
 | import `vllm`, `sglang` | AST | `inference`; hint backend | high |
 | import `openai`, `anthropic` | AST | hint provider | — |
 | import `lm_eval`, `lighteval`, `inspect_ai`, `evaluate` | AST | `evaluation` | high |
+| `lm_eval` / `lm-eval`, `python -m lm_eval`, `lighteval`, or `inspect eval` command | shell script / Makefile command, excluding comments | `evaluation` | high |
+| recognizable lm-eval task YAML | bounded framework configuration scan | `evaluation` | high |
 | import `datasets` | AST | hint datasets | — |
 | distribution names above in pyproject/requirements | deps | same profile | medium |
 | string constants passed to `from_pretrained(`, `LLM(model=`, `AutoTokenizer.from_pretrained(` matching `^[\w.-]+/[\w.-]+$` | AST | hint `hf_ids` | — |
@@ -680,13 +682,15 @@ Keyword matching is case-insensitive and **word-boundary based** (`\bkeyword\b`,
 
 ```python
 class Integration(Protocol):
-    name: str  # huggingface | vllm | openai | peft | transformers
+    # Includes provider names and lm_eval, lighteval, inspect_ai frameworks.
+    name: str
 
     def detect(self, scanner: RepoScanner) -> list[Evidence]: ...  # optional
     def resolve(
         self, manifest: Manifest, *, offline: bool, http: httpx.Client
     ) -> LockFragment: ...  # optional
     def capture(self) -> dict: ...  # runtime facts, e.g. package versions; optional
+    def extract_task_hints(self, scanner: RepoScanner) -> TaskHints: ...  # evaluation frameworks
 ```
 
 | Integration | detect | resolve | capture |
@@ -696,8 +700,18 @@ class Integration(Protocol):
 | `vllm` | import | `inference.version` | `vllm` version, `VLLM_*` env (allowlisted) |
 | `openai` | import; `base_url` strings containing `openrouter.ai` → provider hint openrouter | pinnability, optional `--verify-api` | `openai` version |
 | `peft` | import | adapter repo resolution | `peft` version |
+| `lm_eval` | bounded imports, CLI entry, recognizable task YAML | — | `lm_eval` version |
+| `lighteval` | bounded imports, CLI entry | — | `lighteval` version |
+| `inspect_ai` | bounded imports, `inspect eval`; task extraction from `@task` | — | `inspect_ai` version |
 
 Integrations MUST NOT import their target libraries.
+
+Evaluation framework task hints are internal initialization candidates, not an assertion that
+every discovered task was used by an experiment. When `evaluation.metrics` is required, `init`
+pre-fills sorted, unique task names and asks the author to remove unused tasks and confirm each
+metric name and implementation. An explicit profile selection that does not require evaluation
+does not pre-fill metrics. Framework YAML tags are inspected as syntax only and never executed;
+non-string task names and secret-bearing names are not pre-filled.
 
 ---
 

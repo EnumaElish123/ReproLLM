@@ -9,7 +9,8 @@ become ``TODO`` keys; null values keep the result loadable.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
+from dataclasses import dataclass, field
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,9 @@ import jinja2
 from reprollm.core.context import AuditContext
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST
+from reprollm.core.redaction import redact_text
 from reprollm.core.yaml_io import load_manifest
+from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.profiles import loader
 from reprollm.schemas.finding import DetectionResult
 
@@ -184,6 +187,8 @@ def _build_sections(
     values: dict[str, Any],
     primary_detection: tuple[str, str, int] | None,
     other_detections: list[tuple[str, str, int]],
+    task_names: list[str] | None = None,
+    task_sources: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     trees: dict[str, dict[str, Any]] = {}
     commented: dict[str, list[str]] = {}
@@ -214,9 +219,22 @@ def _build_sections(
             else:
                 node[parts[-1]] = _leaf()
         elif field_path in _LIST_FIELDS:
-            node[parts[-1]] = _leaf(
-                value="[]", comment="TODO: list of {name, implementation}", todo=False
-            )
+            if field_path in values:
+                node[parts[-1]] = _leaf(value=json.dumps(values[field_path]), todo=False)
+            elif task_names:
+                node[parts[-1]] = _leaf(
+                    value=json.dumps([{"name": name} for name in task_names], ensure_ascii=False),
+                    comment="detected task candidates; verify tasks and set implementation",
+                    todo=False,
+                    extra=[
+                        f"task candidates from: {', '.join(task_sources or [])}",
+                        "Remove unused tasks; confirm each metric name and implementation.",
+                    ],
+                )
+            else:
+                node[parts[-1]] = _leaf(
+                    value="[]", comment="TODO: list of {name, implementation}", todo=False
+                )
         else:
             provided = values.get(field_path)
             node[parts[-1]] = _leaf(value=provided, todo=provided is None)
@@ -305,6 +323,8 @@ class InitPlan:
     detection: DetectionResult
     primary_detection: tuple[str, str, int] | None
     other_detections: list[tuple[str, str, int]]
+    task_names: list[str] = field(default_factory=list)
+    task_sources: list[str] = field(default_factory=list)
 
 
 def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
@@ -326,6 +346,15 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
         ((hint.value, hint.path, hint.line) for hint in detection.hints.hf_ids),
         key=lambda item: (item[1], item[2], item[0]),
     )
+    task_names: set[str] = set()
+    task_sources: set[str] = set()
+    if "evaluation.metrics" in resolved.required_fields:
+        for integration, _evidence in detected_frameworks(ctx.fs, ctx.pyscan):
+            names = integration.extract_task_hints(ctx.fs).task_names
+            safe_names = {name for name in names if redact_text(name)[1] == 0}
+            if safe_names:
+                task_names.update(safe_names)
+                task_sources.add(integration.name)
     return InitPlan(
         project_name=root.name,
         profiles=profile_list,
@@ -333,13 +362,20 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
         detection=detection,
         primary_detection=hf_ids[0] if hf_ids else None,
         other_detections=hf_ids[1:] if hf_ids else [],
+        task_names=sorted(task_names),
+        task_sources=sorted(task_sources),
     )
 
 
 def render_manifest(plan: InitPlan, values: dict[str, Any]) -> str:
     """Render reprollm.yaml text for the plan (values from interactive input)."""
     sections = _build_sections(
-        plan.required_fields, values, plan.primary_detection, plan.other_detections
+        plan.required_fields,
+        values,
+        plan.primary_detection,
+        plan.other_detections,
+        plan.task_names,
+        plan.task_sources,
     )
     return _render_manifest(
         project_name=plan.project_name,

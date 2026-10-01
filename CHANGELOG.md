@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- M11-T01: connect evaluation framework detection and task extraction to `init`;
+  pre-fill sorted task candidates, including lm-eval YAMLs with custom tags, without
+  executing tags or importing the framework. Authors still confirm selected tasks and
+  metric implementations.
+
 ## [0.6.0] - 2026-09-29
 
 Adoption-sprint release: everything in the M9–M11 track plus the Beta
