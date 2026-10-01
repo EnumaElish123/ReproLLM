@@ -8,27 +8,47 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+HELP_PROGRAM = """\
+from functools import partial
+
+import typer.rich_utils
+from rich.console import Console
+
+from reprollm.cli.main import app
+
+typer.rich_utils.Console = partial(Console, legacy_windows=False)
+typer.rich_utils.FORCE_TERMINAL = False
+typer.rich_utils.COLOR_SYSTEM = None
+typer.rich_utils.MAX_WIDTH = 80
+app(prog_name="reprollm")
+"""
 
 
 def _help(args: list[str]) -> str:
     import os
-    import shutil
 
-    exe = shutil.which("reprollm") or str(ROOT / ".venv" / "bin" / "reprollm")
-    if not Path(exe).is_file():
-        raise FileNotFoundError(f"reprollm not found at {exe}")
     # Typer forces terminal styling under GitHub Actions even with piped stdout.
     # Only the captured child needs a plain terminal and a fixed wrap width.
     terminal_flags = {"GITHUB_ACTIONS", "FORCE_COLOR", "PY_COLORS", "TTY_COMPATIBLE"}
     env = {key: value for key, value in os.environ.items() if key not in terminal_flags}
     env.update(
-        {"COLUMNS": "80", "LINES": "24", "TERMINAL_WIDTH": "80", "TERM": "dumb", "NO_COLOR": "1"}
+        {
+            "COLUMNS": "80",
+            "LINES": "24",
+            "TERMINAL_WIDTH": "80",
+            "TERM": "dumb",
+            "NO_COLOR": "1",
+            "PYTHONIOENCODING": "utf-8",
+        }
     )
+    # Console-script names and Rich's legacy Windows fallback differ by host.
+    # Render the same Typer app in isolation with canonical documentation styling.
     result = subprocess.run(
-        [exe, *args, "--help"],
+        [sys.executable, "-c", HELP_PROGRAM, *args, "--help"],
         cwd=ROOT,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=True,
         env=env,
     )

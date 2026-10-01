@@ -54,7 +54,9 @@ revalidation exposed forced terminal styling in GitHub Actions and Windows
 artifact separators; captured subprocess output now has a fixed plain-terminal
 environment and normalized example paths. All four checks are restored to
 ordinary CI and retained in nightly; see the dated validation report for remote
-verification.
+verification. Windows additionally selected an `.EXE` console-script name and
+legacy ASCII rendering; documentation generation fixes its isolated presentation
+while retaining full output comparison on every platform.
 
 1. **Adoption above everything.** The upstream PR (lm-eval recipe), the
    GitHub Action marketplace listing, and one real external user are worth

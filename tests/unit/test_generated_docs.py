@@ -1,5 +1,7 @@
 """Generated rule/profile documentation stays complete and deterministic (M3-T09)."""
 
+import subprocess
+import sys
 from pathlib import Path
 
 from scripts import gen_cli_doc, gen_quickstart
@@ -83,3 +85,24 @@ def test_quickstart_scrubs_windows_artifact_separator() -> None:
     assert gen_quickstart.scrub(output, work) == (
         "Created examples/hf_vllm_eval/reprollm.yaml (profiles: evaluation, inference)"
     )
+
+
+def test_cli_document_is_fresh_with_legacy_windows_console(monkeypatch) -> None:
+    run = subprocess.run
+    windows_console = (
+        "import sys, rich.console\n"
+        "rich.console.detect_legacy_windows = lambda: True\n"
+        "sys.argv[0] = 'reprollm.EXE'\n"
+    )
+
+    def simulate_windows(command, **kwargs):
+        if command[:2] == [sys.executable, "-c"]:
+            program = windows_console + command[2]
+            arguments = command[3:]
+        else:
+            program = windows_console + "from reprollm.cli.main import cli\ncli()\n"
+            arguments = command[1:]
+        return run([sys.executable, "-c", program, *arguments], **kwargs)
+
+    monkeypatch.setattr(gen_cli_doc.subprocess, "run", simulate_windows)
+    assert gen_cli_doc.main(check=True) == 0

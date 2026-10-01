@@ -36,6 +36,9 @@ roadmap issues; nothing here is scheduled for the Beta.
   Revalidation exposed GitHub Actions forcing terminal styling and wrapping in
   captured Typer output. Documentation subprocesses now use a plain terminal
   with fixed dimensions; a regression reproduces the runner environment.
+  Windows also selected a `.EXE` program name and legacy ASCII console. The
+  isolated CLI-document renderer now fixes those presentation choices, with
+  a complete-output Windows simulation and unchanged committed body.
 - **Quickstart path aliases — fixed (M8-T02, 2026-10-01):** on macOS, temporary
   `/var` paths resolve to `/private/var`; replacing only the original spelling
   left a `/private` prefix in generated examples. Both aliases are normalized,
