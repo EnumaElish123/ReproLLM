@@ -128,6 +128,41 @@ def test_missing_credentials_named(repo: Path, monkeypatch) -> None:
     assert code == 2
 
 
+@respx.mock
+def test_request_lists_declared_builtin_and_custom_fields(repo: Path) -> None:
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\n"
+        "project: {name: declared-fields}\n"
+        "experiment: {profiles: [privacy]}\n"
+        "generation: {temperature: 0.0}\n"
+        "execution: {seed: 0}\n"
+        "evaluation:\n"
+        "  metrics: [{name: accuracy, implementation: eval.py}]\n"
+        "custom: {privacy_method: {alpha: 0.25}}\n",
+        encoding="utf-8",
+    )
+    route = respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=MOCK_RESPONSE)
+    )
+
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 0
+
+    request = json.loads(route.calls[0].request.content)
+    content = request["messages"][1]["content"]
+    fields = content.split("Already-declared manifest fields (do not re-suggest):\n")[1]
+    actual = fields.split(", ")
+    assert actual == sorted(actual)
+    assert {
+        "custom.privacy_method.alpha",
+        "evaluation.metrics.0.implementation",
+        "evaluation.metrics.0.name",
+        "execution.seed",
+        "generation.temperature",
+    } <= set(actual)
+    assert "generation.top_p" not in actual
+    assert "privacy.mechanism.name" not in actual
+
+
 def test_dry_run_sends_nothing(repo: Path) -> None:
     result = runner.invoke(app, ["discover", ".", "--experimental", "--dry-run"])
     assert result.exit_code == 0
@@ -154,6 +189,7 @@ def test_discover_writes_candidates_and_accept(repo: Path) -> None:
     assert len(ids) == 3
     ghost = next(c for c in payload["candidates"] if c["name"] == "ghost")
     assert ghost["confidence"] == "low"  # evidence outside payload → demoted
+    assert ghost["evidence"] == []
     alpha = next(c for c in payload["candidates"] if c["name"] == "alpha")
     assert alpha["confidence"] == "high"
     assert "configs/privacy.yaml" in payload["input_files"]
@@ -220,3 +256,31 @@ def test_finalize_deterministic_ids() -> None:
     assert first.candidates[0].id == second.candidates[0].id
     assert first.candidates[0].id.startswith("c-")
     assert len(first.candidates[0].id) == 8
+
+
+def test_finalize_recognizes_collected_source_snippets() -> None:
+    from datetime import datetime, timezone
+
+    candidate = Candidate(
+        id="pending",
+        kind="parameter",
+        name="epsilon",
+        suggested_field="custom.privacy.epsilon",
+        suggested_severity="WARNING",
+        confidence="high",
+        rationale="Privacy budget changes training.",
+        evidence=[CandidateEvidence(path="arguments/privacy.py#L7", line=10)],
+    )
+    document = finalize(
+        [candidate],
+        model="m",
+        reprollm_version="0.6.0",
+        input_files=["arguments/privacy.py#L7"],
+        dropped_files=[],
+        truncated_files=[],
+        generated_at=datetime(2026, 10, 1, tzinfo=timezone.utc),
+    )
+    actual = document.candidates[0]
+    assert actual.confidence == "high"
+    assert actual.evidence[0].path == "arguments/privacy.py"
+    assert actual.evidence[0].line == 10

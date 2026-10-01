@@ -166,18 +166,22 @@ def _manifest_field_list(root: Path) -> list[str]:
         return []
 
     def walk(node: object, prefix: str) -> list[str]:
-        if not isinstance(node, dict):
-            return [prefix] if prefix else []
         flat: list[str] = []
-        for key, value in node.items():
-            flat.extend(walk(value, f"{prefix}.{key}" if prefix else str(key)))
-        return flat
+        if isinstance(node, dict):
+            for key, value in node.items():
+                flat.extend(walk(value, f"{prefix}.{key}" if prefix else str(key)))
+            return flat
+        if isinstance(node, list):
+            for index, value in enumerate(node):
+                flat.extend(walk(value, f"{prefix}.{index}"))
+            return flat
+        return [prefix] if prefix and node is not None else []
 
     try:
         manifest = load_manifest(manifest_path)
     except UserError:
         return []
-    return walk(manifest.custom, "custom")
+    return sorted(walk(manifest.model_dump(mode="json", exclude_unset=True), ""))
 
 
 def sys_stdin_is_tty() -> bool:

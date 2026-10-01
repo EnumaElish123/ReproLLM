@@ -27,7 +27,7 @@ def finalize(
 ) -> DiscoverCandidates:
     from datetime import timezone
 
-    allowed = set(input_files)
+    allowed = {_strip_locator(path) for path in input_files}
     finalized: list[Candidate] = []
     for raw in raw_candidates:
         evidence = [
@@ -38,6 +38,7 @@ def finalize(
         )
         confidence = raw.confidence if trustable else "low"
         first_path = next((item.path for item in evidence if item.path), None)
+        evidence = [item for item in evidence if item.path is None or item.path in allowed]
         finalized.append(
             raw.model_copy(
                 update={
