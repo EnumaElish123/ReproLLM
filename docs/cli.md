@@ -47,7 +47,7 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │   path      <path>  Repository to audit (default: .) [default: .]            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --format                              <text|json>         Output format.     │
+│ --format                              <text|json|github>  Output format.     │
 │                                                           [default: text]    │
 │ --output                              <path>              Write the report   │
 │                                                           to a file.         │
@@ -195,10 +195,12 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │   path      <path>  Repository to export (default: .) [default: .]           │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --run           <str>   Run ID or unique prefix (default: latest).           │
-│ --output        <path>  Output file (default: REPRODUCIBILITY.md).           │
-│                         [default: REPRODUCIBILITY.md]                        │
-│ --help                  Show this message and exit.                          │
+│ --run             <str>   Run ID or unique prefix (default: latest).         │
+│ --output          <path>  Output file (default: REPRODUCIBILITY.md).         │
+│                           [default: REPRODUCIBILITY.md]                      │
+│ --template        <str>   Checklist mapping: default | neurips | acl | acm.  │
+│                           [default: default]                                 │
+│ --help                    Show this message and exit.                        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 

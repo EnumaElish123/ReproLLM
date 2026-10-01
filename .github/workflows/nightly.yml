@@ -20,7 +20,7 @@ jobs:
       - run: uv sync --dev
       - name: Performance budgets (M8-T04)
         run: uv run pytest -q tests/perf -m slow
-      - name: Generated documentation freshness (deferred from per-PR)
+      - name: Generated documentation freshness
         run: |
           uv run python scripts/gen_rules_doc.py --check
           uv run python scripts/gen_profiles_doc.py --check

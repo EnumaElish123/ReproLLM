@@ -13,6 +13,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   pre-fill sorted task candidates, including lm-eval YAMLs with custom tags, without
   executing tags or importing the framework. Authors still confirm selected tasks and
   metric implementations.
+- M8-T02: refresh CLI documentation for GitHub output and checklist templates, repair
+  macOS temporary-directory alias normalization in quickstart generation, show freshness
+  diffs, and enforce all generated-document checks in ordinary CI and nightly again.
 
 ## [0.6.0] - 2026-09-29
 

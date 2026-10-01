@@ -5,6 +5,7 @@ CI re-runs this and diffs — the documented output cannot rot.
 
 from __future__ import annotations
 
+import difflib
 import shutil
 import subprocess
 import sys
@@ -25,7 +26,11 @@ def _run(args: list[str], cwd: Path) -> str:
 
 def scrub(text: str, work: Path) -> str:
     """Remove tempdir paths so the document is reproducible across runs."""
-    return text.replace(str(work), "examples/hf_vllm_eval")
+    # macOS temp directories can be spelled /var/... or /private/var/....
+    # Replace the longer resolved alias first so no prefix remains in the doc.
+    for spelling in sorted({str(work), str(work.resolve())}, key=len, reverse=True):
+        text = text.replace(spelling, "examples/hf_vllm_eval")
+    return text
 
 
 def main(check: bool = False) -> int:
@@ -91,6 +96,17 @@ def main(check: bool = False) -> int:
         current = target.read_text(encoding="utf-8") if target.exists() else ""
         if current != text:
             print("docs/quickstart.md is stale; regenerate with scripts/gen_quickstart.py")
+            print(
+                "".join(
+                    difflib.unified_diff(
+                        current.splitlines(keepends=True),
+                        text.splitlines(keepends=True),
+                        fromfile="docs/quickstart.md",
+                        tofile="generated/quickstart.md",
+                    )
+                ),
+                end="",
+            )
             return 1
         print("quickstart fresh")
         return 0

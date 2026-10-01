@@ -27,16 +27,17 @@ roadmap issues; nothing here is scheduled for the Beta.
 
 ## Engineering
 
-- **Quickstart CI freshness (M8, open):** `gen_quickstart.py --check` passes on
-  every local Python and COLUMNS combination tested but fails on the ubuntu
-  CI runner; the runner-side output delta is invisible to anonymous log
-  access. The committed quickstart is correct real output; the check runs in
-  the nightly workflow instead. Fix when runner logs are accessible.
-- **All doc freshness checks (M8):** the same runner delta affects rules/
-  profiles/cli generators too despite passing in every local combination
-  (3.10–3.12, COLUMNS 80–200, clean clones, after the Examples CI step).
-  The entire freshness gate runs nightly; the maintainer with authenticated
-  Actions log access should read one failing run's diff to close this.
+- **Generated-document freshness — fixed (M8-T02, 2026-10-01):** authenticated
+  logs for nightly run `36698429076` show performance, rules and profiles passing;
+  `docs/cli.md` was stale after the M9 GitHub format and M10 template additions.
+  This reproduces locally; the earlier all-generators/Ubuntu-only diagnosis was
+  incorrect. Refreshing the reviewed help diff and restoring all four checks to
+  ordinary CI prevents another delayed failure; nightly retains the checks.
+- **Quickstart path aliases — fixed (M8-T02, 2026-10-01):** on macOS, temporary
+  `/var` paths resolve to `/private/var`; replacing only the original spelling
+  left a `/private` prefix in generated examples. Both aliases are normalized,
+  with a regression test; the committed quickstart body is unchanged. CLI and
+  quickstart checks now print the exact generated diff on failure.
 
 - **Windows snapshot mismatch — RESOLVED (M8-T01).** The canonical comparator's
   hex annotation decoded to `sha256:6655ca5f…` — the **CRLF** hash of the

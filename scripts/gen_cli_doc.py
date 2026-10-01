@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import subprocess
 import sys
 from pathlib import Path
@@ -69,6 +70,17 @@ def main(check: bool = False) -> int:
         current = target.read_text(encoding="utf-8") if target.exists() else ""
         if current != body:
             print("docs/cli.md is stale; regenerate with scripts/gen_cli_doc.py")
+            print(
+                "".join(
+                    difflib.unified_diff(
+                        current.splitlines(keepends=True),
+                        body.splitlines(keepends=True),
+                        fromfile="docs/cli.md",
+                        tofile="generated/cli.md",
+                    )
+                ),
+                end="",
+            )
             return 1
         print("docs/cli.md fresh")
         return 0
