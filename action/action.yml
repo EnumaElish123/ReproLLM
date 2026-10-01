@@ -79,7 +79,7 @@ runs:
         # Inline annotations via workflow commands
         reprollm audit . --format github --fail-on never || true
 
-        exit "''${AUDIT_EXIT:-0}"
+        exit "${AUDIT_EXIT:-0}"
 
     - name: Check lock freshness
       if: inputs.check-lock == 'true'

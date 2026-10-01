@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- M9-T01: align the local composite Action with the published Action's
+  numeric audit exit code; validate all four CLI exits with successful and
+  failed annotation steps.
 - M9-T02: emit comma-separated GitHub workflow-command properties and keep
   the file and line from the same evidence item, preserving escaping.
 - M7-T04: keep the invalid-candidate retry available after an endpoint rejects
