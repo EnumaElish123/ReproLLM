@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Documentation
+
+- Track the three deferred resource-validation groups after 0.6.1 in a
+  [resumption checklist](docs/dogfooding/pending-resource-validation.md), linked
+  from val.md, the patch report and backlog. Preserve blocked status and the
+  independent gold while recording resources, replay steps and closure criteria.
+
 ## [0.6.1] - 2026-10-01
 
 ### Fixed

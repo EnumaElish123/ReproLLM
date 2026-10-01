@@ -747,6 +747,11 @@ passes. Record any further provider/input obstruction separately, complete
 unaffected cases, and preserve the independent gold instead of copying current
 tool output into it. The patch session report lists actual results and deltas.
 
+The [pending resource checklist](docs/dogfooding/pending-resource-validation.md)
+tracks these checks and the separately blocked successful HF gated-file path
+from §8.1, with required resources, resumption steps and closure criteria.
+The checklist does not change this baseline or turn deferred checks into passes.
+
 ## 9. Baseline maintenance
 
 - Pinned commits do not move implicitly. A refresh changes this file in a dedicated reviewed commit

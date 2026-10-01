@@ -3,6 +3,14 @@
 Deferred items collected during M2–M7 with their reasons. M8 turns this into
 roadmap issues; nothing here is scheduled for the Beta.
 
+## Pending resource validation
+
+The [resource-validation checklist](../dogfooding/pending-resource-validation.md)
+tracks the three groups deferred after 0.6.1: VAL-R01 (Linux H2 and five-project
+GPU/pair replay), VAL-R02 (formal FastChat/DeepSeek judge inputs and replay), and
+VAL-R03 (successful HF gated-file access). They remain BLOCKED until their
+resources and acceptance evidence are available; val.md remains the gold source.
+
 ## Rules & detection
 
 - P1 rule polish: `gen.stop_declared` / `prompt.few_shot_declared` negative
