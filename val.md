@@ -721,6 +721,32 @@ require evidence or binding correction and were not accepted. See the
 These observations do not replace the source-derived expectations above or
 change any repository pin or earlier gold answer.
 
+### 8.7 Patch 0.6.1 resource execution deferral (2026-10-01)
+
+For this patch release, the maintainer explicitly directed the session to defer
+checks requiring a remote server or GPU, complete every currently executable
+task, and list outstanding work afterward. Apply the same treatment to other
+unavailable inputs. This is an execution exception for this release; it does
+not change any repository pin, source-derived gold, or formal scenario.
+
+Fresh Gate A and the available local/offline, HF metadata and real-discover
+paths remain executable. Standard-library capture probes validate the wrapper
+only; they do not replace inference, training or judge acceptance.
+
+The following resource checks are **deferred, not passed for 0.6.1**:
+
+- M4 Linux H2: an available Linux runner and its connection are absent.
+- The five-project GPU inference/training and paired semantic-diff scenarios:
+  the previously used remote GPU resource is not provisioned for this session.
+- The formal FastChat/DeepSeek judge pair: its exact approved entry, transport,
+  fixed-answer and configuration input bundle is only in the remote resource
+  store. Public question/rubric files do not reproduce those approved inputs.
+
+Historical successful records remain historical evidence, rather than fresh
+passes. Record any further provider/input obstruction separately, complete
+unaffected cases, and preserve the independent gold instead of copying current
+tool output into it. The patch session report lists actual results and deltas.
+
 ## 9. Baseline maintenance
 
 - Pinned commits do not move implicitly. A refresh changes this file in a dedicated reviewed commit

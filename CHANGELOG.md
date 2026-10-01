@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-01
+
 ### Fixed
 
 - M4-T02 / M11-T01: complete the Hugging Face, Transformers, vLLM,
@@ -38,6 +40,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   filenames containing `#L` while normalizing generated snippet locators.
   Preserve valid relative config bindings containing `./` without allowing
   normalization to hide original credential, identity or traversal content.
+
+### Validation
+
+- Local quality gate: 1,437 tests passed; redaction branch coverage remains
+  100%; schemas and generated documentation are current. Export snapshots
+  change only their two package-version markers.
+- The maintainer deferred remote/GPU and unavailable exact judge-input
+  validation for this patch; these resource checks are not fresh passes.
+  See `val.md` §8.7 and the patch session report for executable-gate results.
 
 ## [0.6.0] - 2026-09-29
 
@@ -536,7 +547,8 @@ First usable release: **audit Level 0/1 + `init`**.
 Not yet usable: `init`, `lock`, `run`, `diff`, `export`, and the full rule
 catalog arrive in 0.1.0+ (see `docs/plan/00_architecture_and_decisions.md`).
 
-[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/EnumaElish123/ReproLLM/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/EnumaElish123/ReproLLM/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/EnumaElish123/ReproLLM/compare/v0.5.1...v0.5.2
