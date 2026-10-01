@@ -51,8 +51,21 @@ def distribution_name(name: str) -> str:
 
 def installed_versions(names: Iterable[str] | None = None) -> dict[str, str]:
     """Versions of installed packages, keyed by the name as listed; absent → omitted."""
-    if names is None:
-        names = LLM_CRITICAL_PACKAGES
+    if names is not None:
+        return metadata_versions(names)
+    # Capture methods call only the explicit-name leaf, so the registry can
+    # import this module without a cycle or default-capture recursion.
+    from reprollm.integrations.providers import CAPTURED_PACKAGES, capture_versions
+
+    versions = metadata_versions(
+        name for name in LLM_CRITICAL_PACKAGES if name not in CAPTURED_PACKAGES
+    )
+    versions.update(capture_versions())
+    return {name: versions[name] for name in LLM_CRITICAL_PACKAGES if name in versions}
+
+
+def metadata_versions(names: Iterable[str]) -> dict[str, str]:
+    """Metadata-only leaf shared by general and integration-specific capture."""
     versions: dict[str, str] = {}
     for name in names:
         try:

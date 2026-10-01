@@ -29,10 +29,20 @@ class ImportInfo:
     line: int
 
 
+@dataclass(frozen=True)
+class EndpointInfo:
+    """An endpoint's provider and source location; never retain its URL or key."""
+
+    provider: str
+    path: str
+    line: int
+
+
 @dataclass
 class PyScanResult:
     imports: list[ImportInfo] = field(default_factory=list)
     hf_ids: list[HfIdHint] = field(default_factory=list)
+    endpoints: list[EndpointInfo] = field(default_factory=list)
     trust_remote_code: bool = False
     trainer_import: bool = False
     warnings: list[str] = field(default_factory=list)
@@ -65,6 +75,7 @@ def scan_python(scanner: RepoScanner) -> PyScanResult:
         _scan_tree(tree, path, result)
     result.hf_ids.sort(key=lambda hint: (hint.path, hint.line, hint.value))
     result.imports.sort(key=lambda info: (info.path, info.line, info.module))
+    result.endpoints.sort(key=lambda info: (info.path, info.line, info.provider))
     return result
 
 
@@ -88,6 +99,15 @@ def _scan_call(node: ast.Call, path: str, result: PyScanResult) -> None:
     for keyword in node.keywords:
         if keyword.arg == "trust_remote_code" and _is_true(keyword.value):
             result.trust_remote_code = True
+        elif (
+            keyword.arg == "base_url"
+            and isinstance(keyword.value, ast.Constant)
+            and isinstance(keyword.value.value, str)
+            and "openrouter.ai" in keyword.value.value.lower()
+        ):
+            result.endpoints.append(
+                EndpointInfo(provider="openrouter", path=path, line=keyword.value.lineno)
+            )
 
     func = node.func
     name = (

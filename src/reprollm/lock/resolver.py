@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.metadata
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -13,9 +12,11 @@ import httpx
 
 from reprollm.core import envinfo, proc
 from reprollm.core.hashing import sha256_file, sha256_text
-from reprollm.lock.api_resolver import resolve_api_model
-from reprollm.lock.hf_client import HfClient
-from reprollm.lock.hf_resolver import resolve_hf_dataset, resolve_hf_model
+from reprollm.integrations._resolution import installed_version as _installed_version
+from reprollm.integrations._resolution import resolve_inference as _resolve_inference
+from reprollm.integrations.huggingface import HuggingFaceIntegration
+from reprollm.integrations.openai_ import OpenAIIntegration
+from reprollm.integrations.vllm import VllmIntegration
 from reprollm.lock.local_resolver import resolve_local_dataset, resolve_local_model
 from reprollm.schemas.lock import (
     Confidence,
@@ -32,12 +33,6 @@ from reprollm.schemas.lock import (
 )
 from reprollm.schemas.manifest import Generation, Manifest, MetricSpec, Privacy, Training
 
-_BACKEND_DISTRIBUTIONS = {
-    "vllm": "vllm",
-    "transformers": "transformers",
-    "sglang": "sglang",
-    "openai": "openai",
-}
 _CUDA_VERSION = re.compile(r"CUDA Version:\s*([0-9.]+)")
 
 
@@ -83,16 +78,15 @@ def resolve_manifest(
 ) -> ResolvedManifest:
     """Resolve every lockable manifest field without writing any files."""
     timestamp = now or datetime.now(timezone.utc).replace(microsecond=0)
-    # Offline never dereferences the client; narrow once for the type checker.
     assert offline or http is not None
-    client = HfClient(http or _NULL_CLIENT(), token=None)
-    models: dict[str, ModelLock] = {}
+    hf = HuggingFaceIntegration(root, now=timestamp).resolve(manifest, offline=offline, http=http)
+    api = OpenAIIntegration(root, now=timestamp, verify_api=verify_api).resolve(
+        manifest, offline=offline, http=http
+    )
+    backend = VllmIntegration(root, now=timestamp).resolve(manifest, offline=offline, http=http)
+    models = {**hf.models, **api.models}
     for role, model_spec in sorted(manifest.models.items()):
-        if model_spec.provider == "huggingface":
-            models[role] = resolve_hf_model(
-                root, model_spec, client=client, offline=offline, now=timestamp
-            )
-        elif model_spec.provider == "local":
+        if model_spec.provider == "local":
             models[role] = resolve_local_model(
                 root,
                 model_spec,
@@ -100,20 +94,10 @@ def resolve_manifest(
                 now=timestamp,
                 field_path=f"models.{role}.id",
             )
-        else:
-            models[role] = resolve_api_model(
-                model_spec,
-                http=http or _NULL_CLIENT(),
-                verify_api=verify_api and not offline,
-                now=timestamp,
-            )
-
-    datasets: dict[str, DatasetLock] = {}
+    datasets = dict(hf.datasets)
     for role, dataset_spec in sorted(manifest.datasets.items()):
         if dataset_spec.provider == "huggingface":
-            datasets[role] = resolve_hf_dataset(
-                dataset_spec, client=client, offline=offline, now=timestamp
-            )
+            continue
         elif dataset_spec.provider == "local":
             datasets[role] = resolve_local_dataset(root, dataset_spec, now=timestamp)
         else:
@@ -126,12 +110,12 @@ def resolve_manifest(
             )
 
     return ResolvedManifest(
-        models=models,
-        datasets=datasets,
+        models=dict(sorted(models.items())),
+        datasets=dict(sorted(datasets.items())),
         prompts=_resolve_prompts(root, manifest),
         files=_resolve_files(root, manifest),
         generation=manifest.generation.model_copy(deep=True) if manifest.generation else None,
-        inference=_resolve_inference(manifest, timestamp),
+        inference=backend.inference or _resolve_inference(manifest, timestamp),
         training=manifest.training.model_copy(deep=True) if manifest.training else None,
         evaluation=_resolve_evaluation(root, manifest, timestamp),
         privacy=manifest.privacy.model_copy(deep=True) if manifest.privacy else None,
@@ -188,31 +172,6 @@ def _resolve_files(root: Path, manifest: Manifest) -> list[FileEntry]:
     return files
 
 
-def _resolve_inference(manifest: Manifest, now: datetime) -> InferenceLock | None:
-    spec = manifest.inference
-    if spec is None:
-        return None
-    backend = spec.backend or "other"
-    distribution = _BACKEND_DISTRIBUTIONS.get(backend)
-    version = (
-        _installed_version(distribution, declared=spec.version, now=now)
-        if distribution is not None
-        else _declared_or_unresolved(spec.version, source="unsupported_backend")
-    )
-    return InferenceLock(
-        backend=backend,
-        version=version,
-        mode=spec.mode,
-        dtype=spec.dtype,
-        tensor_parallel_size=spec.tensor_parallel_size,
-        gpu_memory_utilization=spec.gpu_memory_utilization,
-        quantization=spec.quantization,
-        max_model_len=spec.max_model_len,
-        kv_cache_dtype=spec.kv_cache_dtype,
-        params=spec.params,
-    )
-
-
 def _resolve_evaluation(root: Path, manifest: Manifest, now: datetime) -> EvaluationLock | None:
     spec = manifest.evaluation
     if spec is None:
@@ -249,30 +208,6 @@ def _resolve_metric(root: Path, metric: MetricSpec, now: datetime) -> MetricLock
             declared=declared if separator else None,
             now=now,
         ),
-    )
-
-
-def _installed_version(distribution: str, *, declared: str | None, now: datetime) -> Provenance:
-    try:
-        version = importlib.metadata.version(distribution)
-    except importlib.metadata.PackageNotFoundError:
-        return Provenance(
-            value=None,
-            source="importlib_metadata",
-            confidence=Confidence.UNRESOLVED,
-            note=f"distribution not installed: {distribution}",
-        )
-    note = (
-        f"declared {declared}, installed {version}"
-        if declared is not None and declared != version
-        else None
-    )
-    return Provenance(
-        value=version,
-        source="importlib_metadata",
-        confidence=Confidence.EXACT,
-        resolved_at=now,
-        note=note,
     )
 
 
@@ -326,8 +261,3 @@ def _safe_project_file(root: Path, relative: str) -> Path | None:
     except ValueError:
         return None
     return resolved if resolved.is_file() else None
-
-
-def _NULL_CLIENT() -> httpx.Client:
-    """Dummy client for offline narrowing; offline paths never send."""
-    return httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(500)))

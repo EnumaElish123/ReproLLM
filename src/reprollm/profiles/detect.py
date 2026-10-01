@@ -21,6 +21,7 @@ from reprollm.core.deps import Declarations, canonical_dep_name
 from reprollm.core.pyscan import PyScanResult
 from reprollm.core.scanner import RepoScanner
 from reprollm.integrations.frameworks import detected_frameworks
+from reprollm.integrations.providers import detect_providers
 from reprollm.schemas.finding import DetectionResult, Evidence, ProfileDetection
 from reprollm.schemas.profile import DetectSignals
 
@@ -40,17 +41,6 @@ _UNSHIPPED_PROFILES: set[str] = set(_REPORT_ONLY_PROFILES)
 #: Confidence rules that the profile schema cannot express (§13): imports are
 #: high except these documented downgrades.
 _IMPORT_CONFIDENCE_OVERRIDES: dict[str, str] = {"accelerate": "medium"}
-
-#: Import module → hint recorded in DetectionHints (providers/backends/
-#: datasets/adapter). These are hints, never profile signals.
-_IMPORT_HINTS: dict[str, str] = {
-    "openai": "provider:openai",
-    "anthropic": "provider:anthropic",
-    "datasets": "datasets",
-    "vllm": "backend:vllm",
-    "sglang": "backend:sglang",
-    "peft": "adapter",
-}
 
 #: Exact directory-segment signals (§13): one canonical concept per profile
 #: regardless of alias count; cannot be expressed as the schema's file globs.
@@ -120,12 +110,7 @@ def run_detection(
         signals = detection_signals(scanner.root)
 
     entries: dict[str, tuple[str, list[Evidence]]] = {}
-    providers: list[str] = []
-    backends: list[str] = []
-    datasets_hint = False
-    adapter_hint = False
-
-    modules = pyscan.module_names()
+    provider_detection = detect_providers(scanner, pyscan)
     for profile, sig in sorted(signals.items()):
         for module in sorted(sig.imports):
             hits = [info for info in pyscan.imports if info.module.split(".", 1)[0] == module]
@@ -169,43 +154,16 @@ def run_detection(
     # AST-only signal: from transformers import Trainer|Seq2SeqTrainer|
     # TrainingArguments → finetuning high (schema cannot express symbols).
     if pyscan.trainer_import and "finetuning" in signals:
-        trainer_hits = [info for info in pyscan.imports if info.module == "transformers"]
-        path = trainer_hits[0].path if trainer_hits else ""
-        line = trainer_hits[0].line if trainer_hits else None
         _record(
             entries,
             "finetuning",
             "high",
-            [
-                Evidence(
-                    kind="detection",
-                    path=path,
-                    line=line,
-                    note="from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
-                )
-            ],
+            provider_detection.trainer_evidence,
         )
 
     if "evaluation" in signals:
         for _integration, evidence in detected_frameworks(scanner, pyscan):
             _record(entries, "evaluation", "high", evidence)
-
-    # Hints never create profile signals (§13).
-    for module, hint in _IMPORT_HINTS.items():
-        if module not in modules:
-            continue
-        if hint.startswith("provider:"):
-            provider = hint.split(":", 1)[1]
-            if provider not in providers:
-                providers.append(provider)
-        elif hint.startswith("backend:"):
-            backend = hint.split(":", 1)[1]
-            if backend not in backends:
-                backends.append(backend)
-        elif hint == "datasets":
-            datasets_hint = True
-        elif hint == "adapter":
-            adapter_hint = True
 
     _scan_keywords(scanner, entries, signals)
 
@@ -221,18 +179,9 @@ def run_detection(
         )
         for profile, (confidence, evidence) in sorted(entries.items())
     ]
-    from reprollm.schemas.finding import DetectionHints
-
     return DetectionResult(
         profiles=detected,
-        hints=DetectionHints(
-            providers=providers,
-            backends=backends,
-            datasets=datasets_hint,
-            adapter=adapter_hint,
-            trust_remote_code=pyscan.trust_remote_code,
-            hf_ids=pyscan.hf_ids,
-        ),
+        hints=provider_detection.hints,
     )
 
 

@@ -26,7 +26,7 @@ def resolve_hf_model(
     root: Path,
     spec: ModelSpec,
     *,
-    client: HfClient,
+    client: HfClient | None,
     offline: bool,
     now: datetime,
 ) -> ModelLock:
@@ -100,7 +100,7 @@ def resolve_hf_model(
 def resolve_hf_dataset(
     spec: DatasetSpec,
     *,
-    client: HfClient,
+    client: HfClient | None,
     offline: bool,
     now: datetime,
 ) -> DatasetLock:
@@ -123,7 +123,7 @@ def resolve_hf_dataset(
 
 
 def _resolve_repo(
-    client: HfClient,
+    client: HfClient | None,
     kind: Literal["model", "dataset"],
     repo_id: str,
     declared_revision: str | None,
@@ -160,6 +160,7 @@ def _resolve_repo(
             ),
             None,
         )
+    assert client is not None
     try:
         info = (
             client.model_info(repo_id, declared_revision or "main")
@@ -188,7 +189,7 @@ def _resolve_repo(
 
 
 def _remote_chat_template(
-    client: HfClient,
+    client: HfClient | None,
     repo_id: str,
     revision: Provenance,
     info: RepoInfo | None,
@@ -214,6 +215,7 @@ def _remote_chat_template(
         provenance = _fetch_hash(client, repo_id, revision.value, "chat_template.jinja", now=now)
         return ChatTemplateLock(sha256=provenance, status="present")
     if "tokenizer_config.json" in info.siblings:
+        assert client is not None
         try:
             content = client.fetch_file("model", repo_id, revision.value, "tokenizer_config.json")
             payload = json.loads(content.decode("utf-8"))
@@ -280,7 +282,7 @@ def _custom_chat_template(root: Path, relative: str, now: datetime) -> ChatTempl
 
 
 def _remote_file_hash(
-    client: HfClient,
+    client: HfClient | None,
     repo_id: str,
     revision: Provenance,
     info: RepoInfo | None,
@@ -302,8 +304,9 @@ def _remote_file_hash(
 
 
 def _fetch_hash(
-    client: HfClient, repo_id: str, sha: str, filename: str, *, now: datetime
+    client: HfClient | None, repo_id: str, sha: str, filename: str, *, now: datetime
 ) -> Provenance:
+    assert client is not None
     try:
         content = client.fetch_file("model", repo_id, sha, filename)
     except HfError as exc:
@@ -325,7 +328,7 @@ def _resolve_adapter(
     root: Path,
     spec: AdapterSpec,
     *,
-    client: HfClient,
+    client: HfClient | None,
     offline: bool,
     now: datetime,
 ) -> AdapterLock:

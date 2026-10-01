@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- M4-T02 / M11-T01: complete the Hugging Face, Transformers, vLLM,
+  OpenAI-compatible and PEFT integration interfaces and consume them in
+  detection, lock resolution and metadata capture. Reuse the bounded AST scan,
+  resolve adapters once, and avoid HTTP client construction during offline lock.
+  Detect literal OpenRouter `base_url` arguments without retaining URLs or keys.
 - M9-T01: align the local composite Action with the published Action's
   numeric audit exit code; validate all four CLI exits with successful and
   failed annotation steps.

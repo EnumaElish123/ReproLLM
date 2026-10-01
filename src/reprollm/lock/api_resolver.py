@@ -27,7 +27,7 @@ _KEY_NAMES = {
 def resolve_api_model(
     spec: ModelSpec,
     *,
-    http: httpx.Client,
+    http: httpx.Client | None,
     verify_api: bool,
     now: datetime,
 ) -> ModelLock:
@@ -42,6 +42,7 @@ def resolve_api_model(
         if not api_key:
             note = "verify skipped: no api key"
         else:
+            assert http is not None
             note = _verify_model(http, provider, model_id, spec, api_key)
     return ModelLock(
         provider=provider,
