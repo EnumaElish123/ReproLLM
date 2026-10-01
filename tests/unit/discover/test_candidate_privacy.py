@@ -40,7 +40,12 @@ def candidate(**updates: object) -> Candidate:
     return Candidate.model_validate(values)
 
 
-def document(raw: Candidate, *, input_files: list[str] | None = None) -> DiscoverCandidates:
+def document(
+    raw: Candidate,
+    *,
+    input_files: list[str] | None = None,
+    secret_values: tuple[str, ...] = (),
+) -> DiscoverCandidates:
     return finalize(
         [raw],
         model="test-model",
@@ -49,6 +54,7 @@ def document(raw: Candidate, *, input_files: list[str] | None = None) -> Discove
         dropped_files=[],
         truncated_files=[],
         generated_at=datetime(2026, 10, 1, tzinfo=timezone.utc),
+        secret_values=secret_values,
     )
 
 
@@ -126,6 +132,71 @@ def test_finalize_preserves_safe_dsl_bindings_and_ids(private_root: Path) -> Non
     assert actual.suggested_bindings == bindings
     assert actual.id == candidate_id(raw.kind, raw.name, "configs/privacy.yaml")
     assert actual.confidence == "high"
+
+
+@pytest.mark.parametrize(
+    "binding",
+    [
+        "./configs/privacy.yaml:method.alpha",
+        "configs/./privacy.yaml:method.alpha",
+        "./configs/./privacy.yaml:method.alpha",
+    ],
+)
+def test_finalize_preserves_relative_config_dot_segments(private_root: Path, binding: str) -> None:
+    bindings = CandidateSuggestedBindings(cli="--alpha", config=binding, env="ALPHA")
+    raw = candidate(suggested_bindings=bindings)
+
+    actual = document(raw).candidates[0]
+
+    assert actual.suggested_bindings == bindings
+    assert actual.confidence == "high"
+    assert actual.id == candidate_id(raw.kind, raw.name, "configs/privacy.yaml")
+
+
+@pytest.mark.parametrize(
+    ("binding", "configured_secret"),
+    [
+        ("./configs/opaque-credential.yaml:alpha", "./configs/opaque-credential"),
+        ("configs/./opaque-credential.yaml:alpha", "configs/./opaque-credential"),
+    ],
+)
+def test_relative_config_normalization_cannot_hide_configured_secret(
+    private_root: Path, binding: str, configured_secret: str
+) -> None:
+    raw = candidate(suggested_bindings=CandidateSuggestedBindings(config=binding, cli="--alpha"))
+
+    actual = document(raw, secret_values=(configured_secret,)).candidates[0]
+
+    assert actual.suggested_bindings == CandidateSuggestedBindings(cli="--alpha")
+    assert actual.confidence == "low"
+    assert configured_secret not in actual.model_dump_json()
+
+
+@pytest.mark.parametrize(
+    "binding",
+    [
+        "/opt/private/./config.yaml:alpha",
+        "../configs/./privacy.yaml:alpha",
+        "configs/../outside/./privacy.yaml:alpha",
+        "C:/Users/example/./privacy.yaml:alpha",
+        "C:\\Users\\example\\.\\privacy.yaml:alpha",
+        "\\\\private-server\\share\\privacy.yaml:alpha",
+        "//private-server/share/./privacy.yaml:alpha",
+        f"./configs/{SECRET}.yaml:alpha",
+        "./configs/private-author.yaml:alpha",
+        "configs/./private-node.yaml:alpha",
+    ],
+)
+def test_relative_config_exception_still_rejects_unsafe_originals(
+    private_root: Path, binding: str
+) -> None:
+    raw = candidate(suggested_bindings=CandidateSuggestedBindings(config=binding, env="ALPHA"))
+
+    actual = document(raw).candidates[0]
+
+    assert actual.suggested_bindings == CandidateSuggestedBindings(env="ALPHA")
+    assert actual.confidence == "low"
+    assert binding not in actual.model_dump_json()
 
 
 @pytest.mark.parametrize("filename", ["README#Links.md", "README#L12", "config.py#L12"])

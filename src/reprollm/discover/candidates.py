@@ -10,8 +10,9 @@ import getpass
 import re
 import socket
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
+from reprollm.core.redaction import redact_text
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.discover_candidates import (
     Candidate,
@@ -34,6 +35,30 @@ def sanitize_response_text(
             value = value.replace(secret, "<REDACTED:credential>")
     safe, redactions = privacy.text(value)
     return safe, count + redactions
+
+
+def _safe_relative_config_binding(
+    value: str, privacy: RunPrivacy, *, secret_values: tuple[str, ...]
+) -> bool:
+    # Check the original before removing dot segments: an endpoint can echo a
+    # credential containing './', and normalization must not hide that echo.
+    if (
+        "<REDACTED:" in value
+        or any(secret and secret in value for secret in secret_values)
+        or redact_text(value)[1]
+        or any(pattern.search(value) for pattern, _kind in privacy.identities)
+    ):
+        return False
+    path, separator, key = value.partition(":")
+    if not path or not separator or not key or "\\" in path or PureWindowsPath(value).drive:
+        return False
+    relative = PurePosixPath(path)
+    if relative.is_absolute() or ".." in relative.parts:
+        return False
+    safe, redactions = sanitize_response_text(
+        f"{relative.as_posix()}:{key}", privacy, secret_values=secret_values
+    )
+    return redactions == 0 and "<REDACTED:" not in safe
 
 
 def finalize(
@@ -103,7 +128,13 @@ def finalize(
                     cleaned_bindings[key] = None
                     continue
                 safe, redactions = safe_text(value)
-                if redactions or "<REDACTED:" in safe:
+                if (
+                    (redactions or "<REDACTED:" in safe)
+                    and key == "config"
+                    and _safe_relative_config_binding(value, privacy, secret_values=secret_values)
+                ):
+                    cleaned_bindings[key] = value
+                elif redactions or "<REDACTED:" in safe:
                     cleaned_bindings[key] = None
                     trustable = False
                 else:

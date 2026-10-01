@@ -24,6 +24,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   Clean returned candidates, failed raw responses and errors before persistence,
   remove unsafe fields/bindings and exact credential echoes, and preserve real
   filenames containing `#L` while normalizing generated snippet locators.
+  Preserve valid relative config bindings containing `./` without allowing
+  normalization to hide original credential, identity or traversal content.
 
 ## [0.6.0] - 2026-09-29
 
