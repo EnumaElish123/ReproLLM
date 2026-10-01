@@ -27,6 +27,14 @@ roadmap issues; nothing here is scheduled for the Beta.
 
 ## Engineering
 
+- **Privacy heuristic punctuation / relative-source false positives (M7 follow-up,
+  2026-10-01):** existing `RunPrivacy.text` treats standalone `/` prose separators
+  and some `./` source strings as absolute-path matches. Independent real-discover
+  review found no actual leak; candidate and accounting artifacts are clean.
+  Discover now preserves verified relative config DSL bindings with original-text
+  secret/identity checks. A broader prose heuristic change needs separate source
+  cases and security review; it is outside this scoped binding correction.
+
 - **Generated-document freshness — fixed (M8-T02, 2026-10-01):** authenticated
   logs for nightly run `36698429076` show performance, rules and profiles passing;
   `docs/cli.md` was stale after the M9 GitHub format and M10 template additions.

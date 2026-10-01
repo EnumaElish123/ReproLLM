@@ -656,11 +656,11 @@ answer-generation execution, any M6 pairing beyond those already recorded, or
 any M7 gate. The retired originals stay described above so a future maintainer
 with credentials can still execute them as *additional* coverage.
 
-### 8.6 Real discover validation (prepared 2026-10-01)
+### 8.6 Real discover validation (2026-10-01)
 
 Maintainer authorization: on 2026-10-01, complete the pending real DeepSeek
-discover check; sufficient account balance is confirmed. The key's current
-location is pending. No paid request has been issued at preparation time.
+discover check; sufficient account balance is confirmed. The credential was
+subsequently provisioned locally and used only in process memory for this gate.
 This supplements the existing M7 gate without changing pins or earlier gold.
 
 Project C is an initialized disposable `llm-dp-finetune` clone at the §2 pin.
@@ -710,6 +710,16 @@ Independent source expectations, reviewed before execution:
   A successful paid response alone does not pass this gate; usable evidence
   and acceptance/audit behavior are required. Default provider thinking may
   ignore temperature zero; do not claim byte-identical LLM results.
+
+Completion: the production CLI made one successful DeepSeek request (HTTP 200),
+returned ten candidates, and the independently reviewed `max_grad_norm_dp`
+candidate passed explicit acceptance, missing-to-PASS audit and duplicate
+acceptance rejection. Eight artifacts passed credential/identity checks.
+The real-discover resource gate passes; five other returned candidates still
+require evidence or binding correction and were not accepted. See the
+[complete execution and review record](docs/dogfooding/2026-10-01-discover-live.md).
+These observations do not replace the source-derived expectations above or
+change any repository pin or earlier gold answer.
 
 ## 9. Baseline maintenance
 

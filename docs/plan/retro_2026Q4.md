@@ -44,6 +44,13 @@ calendar weeks). The M12 review.
    (the endpoint budget was consumed by the judge validation). Real
    `discover --yes` needs a provisioned endpoint.
 
+Follow-up, 2026-10-01: the maintainer provisioned DeepSeek credentials and the
+production discover CLI completed a real request. Ten candidates were independently
+reviewed; one was accepted in a disposable clone and its missing field moved from
+FAIL/WARNING to PASS after an explicit validation declaration. The resource gate
+now passes; five proposed evidence/binding corrections remain documented in the
+[execution record](../dogfooding/2026-10-01-discover-live.md).
+
 ## Top three things for next quarter
 
 Follow-up, 2026-10-01: authenticated nightly logs corrected the document-freshness
