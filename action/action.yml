@@ -51,6 +51,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.path }}
       run: |
+        AUDIT_EXIT=0
         reprollm audit . \
           --format json \
           --output reprollm-audit.json \
@@ -58,26 +59,49 @@ runs:
           ${{ inputs.level != 'auto' && format('--level {0}', inputs.level) || '' }} \
           || AUDIT_EXIT=$?
 
-        # Extract counts for outputs and the step summary
-        CRITICAL=$(python -c "import json; print(json.load(open('reprollm-audit.json'))['summary']['critical'])")
-        WARNING=$(python -c "import json; print(json.load(open('reprollm-audit.json'))['summary']['warning'])")
-        echo "critical-count=$CRITICAL" >> "$GITHUB_OUTPUT"
-        echo "warning-count=$WARNING" >> "$GITHUB_OUTPUT"
+        # Usage/internal failures do not produce a report; never reuse an old one.
+        if [ "${AUDIT_EXIT:-0}" -gt 1 ]; then
+          echo "::error title=ReproLLM audit::Audit failed before generating reprollm-audit.json; counts unavailable."
+          exit "$AUDIT_EXIT"
+        fi
+        if [ ! -f reprollm-audit.json ]; then
+          echo "::error title=ReproLLM audit::No reprollm-audit.json was generated; counts unavailable."
+          if [ "$AUDIT_EXIT" -eq 0 ]; then
+            AUDIT_EXIT=3
+          fi
+          exit "$AUDIT_EXIT"
+        fi
+        echo "report-written=true" >> "$GITHUB_OUTPUT"
 
-        # Step Summary: a readable table for the PR Checks tab
-        {
-          echo "## ReproLLM Audit"
-          echo ""
-          echo "| Severity | Count |"
-          echo "|---|---|"
-          echo "| CRITICAL | $CRITICAL |"
-          echo "| WARNING | $WARNING |"
-          echo ""
-          echo "Full report: [reprollm-audit.json](#artifacts)"
-        } >> "$GITHUB_STEP_SUMMARY"
-
-        # Inline annotations via workflow commands
-        reprollm audit . --format github --fail-on never || true
+        # Derive every presentation from the same report without another audit.
+        PRESENTATION_EXIT=0
+        python -X utf8 - <<'PY' || PRESENTATION_EXIT=$?
+        import json
+        import os
+        from reprollm.reporters.github import render_audit_github
+        from reprollm.schemas.finding import AuditReport
+        with open("reprollm-audit.json", encoding="utf-8") as stream:
+            report = AuditReport.model_validate(json.load(stream))
+        annotations = render_audit_github(report)
+        critical = report.summary.critical
+        warning = report.summary.warning
+        summary = (
+            "## ReproLLM Audit\n\n| Severity | Count |\n|---|---|\n"
+            f"| CRITICAL | {critical} |\n| WARNING | {warning} |\n\n"
+            "Full report: [reprollm-audit.json](#artifacts)\n"
+        )
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+            stream.write(f"critical-count={critical}\nwarning-count={warning}\n")
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+            stream.write(summary)
+        print(annotations, end="")
+        PY
+        if [ "$PRESENTATION_EXIT" -ne 0 ]; then
+          echo "::error title=ReproLLM audit::Cannot render reprollm-audit.json; counts unavailable. See the previous error."
+          if [ "${AUDIT_EXIT:-0}" -eq 0 ]; then
+            AUDIT_EXIT=3
+          fi
+        fi
 
         exit "${AUDIT_EXIT:-0}"
 
@@ -88,6 +112,7 @@ runs:
       run: reprollm lock --check .
 
     - name: Upload audit report
+      if: ${{ !cancelled() && steps.audit.outputs.report-written == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: reprollm-audit

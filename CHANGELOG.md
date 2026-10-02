@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX-T07 / M9-T01: derive Action counts, summary and annotations from a single
+  saved audit report. Preserve finding/error exit codes and upload a generated
+  report after finding failures without reusing stale reports after errors.
 - UX-T02 / M8-T02: preserve operating-system identity variables in the
   credential-filtered quickstart environment so Windows capture and audit can
   resolve the username for privacy redaction without the Unix-only `pwd` module.
