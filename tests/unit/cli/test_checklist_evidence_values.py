@@ -62,11 +62,13 @@ def test_judge_identity_uses_referenced_role(manifest: Manifest) -> None:
     assert "models.judge" not in line
 
 
-def test_privacy_mapping_supplies_values_without_nonexistent_section(manifest: Manifest) -> None:
+def test_privacy_mapping_supplies_values_and_references_research_section(
+    manifest: Manifest,
+) -> None:
     line = _line(_mapping(manifest, "neurips"), "Attack/defense")
     assert "Declared observer." in line
     assert "declared-mechanism" in line
-    assert "Privacy section above" not in line
+    assert "Privacy section above" in line
 
 
 def test_acl_metrics_and_split_are_present_in_mapping(manifest: Manifest) -> None:
@@ -164,7 +166,7 @@ def test_new_inline_privacy_evidence_uses_existing_redaction_gate(manifest: Mani
     mapping = _mapping(manifest, "neurips", State.from_flat(flat))
     privacy = _line(mapping, "Attack/defense")
     assert fake_key not in privacy
-    assert "<REDACTED:openai>" in privacy
+    assert "&lt;REDACTED:openai&gt;" in privacy
 
 
 def test_effective_metric_list_uses_only_named_metric_objects(manifest: Manifest) -> None:
@@ -188,5 +190,5 @@ def test_effective_metric_list_uses_only_named_metric_objects(manifest: Manifest
     )
     assert (
         metrics == "| 4.1–4.3 Evaluation metrics / protocol | Metrics: observed-score; "
-        "generation parameters above |"
+        "Evaluation section above; generation parameters above |"
     )

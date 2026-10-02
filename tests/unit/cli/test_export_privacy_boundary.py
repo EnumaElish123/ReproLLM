@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from html import unescape
 from pathlib import Path
 
 import pytest
@@ -62,7 +63,7 @@ def test_export_removes_paths_identities_and_secrets_before_persistence(
         app, ["export", str(repo), "--template", template, "--output", str(output)]
     )
     assert result.exit_code == 0, result.output
-    document = output.read_text(encoding="utf-8")
+    document = unescape(output.read_text(encoding="utf-8"))
     for private in [FAKE_UNIX_PATH, FAKE_WINDOWS_PATH, inside_root, FAKE_HOST, FAKE_KEY]:
         assert private not in document
     assert f"owner={username}" not in document
@@ -150,7 +151,7 @@ def test_export_keyed_opaque_secret_is_not_hidden_by_markdown_backticks(
         app, ["export", str(repo), "--template", template, "--output", str(output)]
     )
     assert result.exit_code == 0, result.output
-    document = output.read_text(encoding="utf-8")
+    document = unescape(output.read_text(encoding="utf-8"))
     for opaque in [
         opaque_fake,
         "opaque-nested-validation-value",

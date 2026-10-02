@@ -14,6 +14,7 @@ from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
 from reprollm.core.paths import LOCK, MANIFEST, find_root
 from reprollm.core.yaml_io import load_manifest, load_yaml
+from reprollm.diff.state import _snapshots, observed_state
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.lock import Lock
 from reprollm.schemas.run_record import RunRecord
@@ -95,10 +96,15 @@ def export(
     if not (root / MANIFEST).is_file():
         raise UserError(f"no reprollm.yaml under {root}; run `reprollm init` first")
 
-    manifest = load_manifest(root / MANIFEST)
-    lock = _load_lock(root)
     run_record, run_dir = _select_run(root, run)
-    state = State.merge(manifest, lock, run_record, run_dir=run_dir)
+    if run_record is not None:
+        # Same-ranked current declarations must not replace a selected run's own evidence.
+        manifest, lock = _snapshots(run_record, run_dir)
+        state = State.merge(manifest, lock, observed_state(run_record))
+    else:
+        manifest = load_manifest(root / MANIFEST)
+        lock = _load_lock(root)
+        state = State.merge(manifest, lock)
 
     from reprollm.export.exporter import build_input, render
 

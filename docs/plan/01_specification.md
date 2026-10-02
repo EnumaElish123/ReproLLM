@@ -987,8 +987,35 @@ Text output groups by top-level section, shows `A → B` per change, severity ta
 
 ## 19. Export (M7)
 
-`reprollm export` renders `REPRODUCIBILITY.md` from `templates/REPRODUCIBILITY.md.j2` using the merged State (manifest + latest lock + selected/latest run). Sections in order: Title & generated-by line; **Experiment identity** (models table: role, provider, id, revision/pinnability, tokenizer rev, chat-template hash; datasets table; prompts table with hashes; generation parameters; inference backend/version); **Code** (commit, branch, dirty, remote); **Environment** (python, LLM-critical packages, GPU names/driver); **Execution** (command, run id, timestamps, duration, exit code); **Audit summary** (counts by severity; list CRITICAL and WARNING messages); **Known limitations** (every `unresolved`, `unpinnable`, `not_computed`, and unresolved binding); footer with `reprollm` version and schema versions.
+`reprollm export` renders `REPRODUCIBILITY.md` from `templates/REPRODUCIBILITY.md.j2` using merged State. With a selected/latest run, merge that run's own available manifest/lock snapshots and observations; current declarations must not replace historical evidence. Without a run, merge the current manifest and lock. Sections in order: Title & generated-by/source line; **Experiment identity** (models table: role, provider, id, revision/pinnability, tokenizer rev, chat-template hash; datasets table; prompts table with hashes; generation parameters; inference backend/version; optional Training; optional Evaluation with Judge subsection; optional Privacy); **Code** (commit, branch, dirty, remote); **Environment** (python, LLM-critical packages); **Hardware** (available captured GPU/driver details); **Execution** (command, run id, timestamps, duration, exit code); **Audit summary** (counts by severity; list CRITICAL and WARNING messages); **Known limitations** (every `unresolved`, `unpinnable`, `not_computed`, and unresolved binding); footer with `reprollm` version and schema versions.
 Requirements: deterministic ordering; relative paths only; redaction applied; if no run exists the Execution section states so; if no lock exists the identity table marks revisions as `not locked`.
+
+Evaluation includes metric name, implementation, recorded hash/version and
+parameters; declared aggregation, repetitions, definitions, thresholds and query
+budget. Judge names actual model_ref/prompt_ref roles and its own parameters,
+repetitions and parser, separate from primary generation. Privacy includes
+declared threat model, mechanism/parameters, metrics and attack settings.
+Add available model dtype/quantization/adapter, dataset subset/split/preprocessing
+and prompt format/few-shot details beside their identity tables. All values
+derive from effective State, including identity/hash tables; never bypass
+observations with a direct current-manifest/lock lookup. Source labels distinguish
+declared manifest values, locked confidence and observed run values. Preserve
+zero, false, nested maps/lists and absent-value honesty; compute no new measurements.
+
+The existing Audit summary remains a current-working-tree audit using current
+declarations/lock and latest valid run when applicable. Label that scope explicitly;
+it is not a re-audit of the selected historical run. Explain the selected-run
+snapshot source in the report opening and never call unobserved fields verified.
+
+Before serialization or display escaping, redact keyed secrets and remove
+machine-specific paths/identity recursively from free-form keys and values using
+existing privacy helpers. Preserve safe relative paths, ordinary URLs and Unicode.
+Render free text as literal Markdown/HTML-safe cells; embedded pipes, newlines,
+tags, images or links must not invent report structure or executable content.
+Use safe code spans for commands and identifiers so visible literal text remains
+copyable, then apply the final secret-redaction gate. Keep rendering deterministic.
+Checklist mappings cite actual rendered evidence or say not covered. Export makes
+no model/provider request and changes no persisted artifact schema.
 
 ---
 

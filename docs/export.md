@@ -12,6 +12,19 @@ environment, hardware, execution, an audit run at export time embedded
 verbatim, and known limitations (every unresolved, `unpinnable`, or
 `not_computed` value plus binding caveats).
 
+On `main` (unreleased), the default report also includes Evaluation, Judge and
+Privacy details when present: metric implementations and hashes, aggregation,
+repetitions, judge parameters and parser, threat model, privacy mechanism and
+attack settings. Model, dataset and prompt details include declared dtype,
+quantization, adapters, splits, preprocessing and few-shot settings.
+
+Evidence labels distinguish declarations, locked values and runtime observations.
+A run record does not prove that every declared field was observed. When exporting
+an older run, experiment details use that run's own available snapshots and
+observations. The separately labelled audit summary still checks the current
+working tree, current declarations/lock and latest valid run when applicable.
+It is not a new validation of the selected historical run.
+
 ## Usage
 
 ```console
@@ -29,3 +42,7 @@ audit summary; delete the artifact between byte-identical comparisons.
 
 Hashes display 12 leading characters. The document passes secret redaction
 before it is written; no absolute paths, hostnames, or usernames appear.
+
+Free-form values are checked before serialization and rendered as literal text,
+so embedded Markdown links, images or HTML cannot impersonate report evidence.
+Displayed command code spans preserve their literal text for copying.

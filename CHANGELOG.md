@@ -16,6 +16,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX2-T05 / UX-T08 extension: include effective Evaluation/Judge/Privacy and
+  model/dataset/prompt research details with declared/locked/observed labels.
+  Selected runs use their own snapshots and observations; label the current
+  audit scope separately. Protect free-form Markdown/HTML and keyed secrets
+  before serialization while preserving copyable command text.
 - UX2-T04 / UX-T06 judge: add explicitly selected `judge_only` for grading
   existing answers, with its own judge parameters and evaluation evidence.
   Share a narrow primary-model exemption between audit and init; mixed/custom
