@@ -1,8 +1,8 @@
 # UX2 workflow session, 2026-10-02
 
 Status: **S01 and T01–T05 implemented; all applicable local quality and five-project
-init/audit/export gates passed at `b00f06c`. T06 final integration/lifecycle checks
-and D-41 review remain separate; push/CI are recorded below.** This report
+init/audit/export gates passed at `b00f06c`; main `1451032` is pushed with all five CI
+jobs successful. T06 is separately implemented and locally validated, pending D-41 review.** This report
 follows [the approved ordered work](../plan/UX2_2026-10-02.md), following the prior
 [UX repair session](2026-10-02-ux-repairs.md). It is not a release or completed-session claim.
 
@@ -183,12 +183,12 @@ integration, approval or the final T05-baseline lifecycle gate.
 
 ## Delivery and remaining review
 
-- **T01–T05:** all applicable local gates passed; this report accompanies their
-  main push. Remote CI has not run at this report commit. Its exact result will be
-  retained in the subsequent T06 delivery report, without inferring success from
-  local checks.
-- **T06:** the final T05-based candidate, full quality and lifecycle gate are being
-  prepared for an explicit D-41 review. No approval or merge is claimed here.
+- **T01–T05:** main `145103291ff819d0ed534e5afa7dc3ec211b160a` is pushed and its
+  [five-job CI run passed](https://github.com/EnumaElish123/ReproLLM/actions/runs/37017287499).
+- **T06:** final candidate `94ae366` passed 1,797 tests and the five-project
+  lifecycle gate (92 commands). Its [separate report](2026-10-02-ux2-rule-lifecycle.md)
+  records the complete provenance, recovery comparisons and D-41 review boundary.
+  The candidate PR tracks remote delivery/CI and approval; no merge is claimed.
 
 Resource Gate B, model/GPU/credential/paid API use, package release and separate
 Action publication are outside this request. Existing deferred resource gates

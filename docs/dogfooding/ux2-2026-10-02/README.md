@@ -2,7 +2,9 @@
 
 This portable evidence covers completed local gates through UX2-T05.
 The five-project init/audit and export gates passed; `session-status.json` keeps
-T06 final integration/lifecycle Gate A, D-41 review and push/CI separate.
+T06 and its D-41 review separate. Main delivery and all five CI jobs have passed;
+[the final T06 report](../2026-10-02-ux2-rule-lifecycle.md) records its completed
+local quality/lifecycle gates and the separate PR delivery boundary.
 
 - `quality-summary.json` binds local test/coverage summaries and raw-file hashes to the six recorded commits. Per-task quality files retain command/exit/timing observations. `t04-quality-initial-failure.json` preserves the old seven-profile assertion and overlapping generator/document-read failure.
 - `t01-gate-a-complete.json`, `t01-commands.json` and `t01-command-summary.json` retain all 100 commands, pins, expected/actual exits, subprocess timing and output hashes. Logical path labels replace local roots in the command ledger.
