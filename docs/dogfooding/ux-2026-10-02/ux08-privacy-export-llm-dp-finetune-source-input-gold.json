@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "targets": {
+    "llm-dp-finetune": {
+      "pin": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "origin": "https://github.com/jyhong836/llm-dp-finetune.git",
+      "manifest_sha256": "sha256:5b53f6552e12e152b1efb21f995adc73ce6c06ffe73aed436924588c88724b82",
+      "source_files": {
+        "configs/fine-tune/deepspeed_stage3.json": {
+          "sha256": "sha256:c445beb05234a979ed80a71a7e209395564eea39630c730de18eb2d51be8b722",
+          "size_bytes": 436
+        },
+        "configs/fine-tune/echr-llama2-7b-dp8.yml": {
+          "sha256": "sha256:20c9c1ab6bd19f5b92789d394beee9a4131d28a841d2c80ee93235271490fc12",
+          "size_bytes": 1656
+        },
+        "data/echr/echr.py": {
+          "sha256": "sha256:0112037c9b509e83ed1957b8d2ae8504b2449257b58f25a1d9034ac48a21aa8d",
+          "size_bytes": 5382
+        },
+        "src/llm_pft/arguments/privacy_args.py": {
+          "sha256": "sha256:39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7",
+          "size_bytes": 1357
+        },
+        "src/llm_pft/models/language_model.py": {
+          "sha256": "sha256:b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896",
+          "size_bytes": 28860
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "train": "train+test+validation"
+        },
+        "repetitions": null,
+        "generation_seed": null,
+        "metrics": [],
+        "judge_model_ref": null,
+        "privacy": {
+          "threat_model": "An observer of the released fine-tuned model seeks information about individual training examples.",
+          "mechanism": {
+            "name": "dp_sgd",
+            "params": {
+              "target_epsilon": 8,
+              "max_grad_norm_dp": 1.0,
+              "target_delta": "computed from training sample count"
+            }
+          },
+          "metrics": [
+            "epsilon",
+            "perplexity"
+          ]
+        }
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    }
+  }
+}

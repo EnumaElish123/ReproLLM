@@ -1,0 +1,885 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "verify original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original clean",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.056,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:98c33a967eb65c166fb182dba9a57d83776ffccdd29aff40348b162b75e8d6ef",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "resolve reviewed pre-UX08 baseline",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a^{commit}"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:1df681a8575935961806f2d4b77e6c859aa14abd6d9ea8e5e51acab918ad6ae3",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "extract baseline source without checkout",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline.tar",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.061,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current source commit",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.02,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current tracked source diff",
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--binary"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.023,
+      "stdout_sha256": "sha256:b9fb7488f3bd35e7a7893272b8edec94af55d2421195be9f0f597ee0264ef637",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "original L0 complete reviewed gold comparison",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "-v",
+        "audit",
+        "<pinned-sources>/LlamaFactory",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.607,
+      "stdout_sha256": "sha256:14c64e5de14c9d8f6bd7e76cd615e28509cb7f320cd55686e39f5671c2c5e744",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "local disposable clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-hardlinks",
+        "<pinned-sources>/LlamaFactory",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.139,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:0410eb002add1fa711ac25af79a8037cd8863919d9470c58af575e86e0cc9fb6"
+    },
+    {
+      "label": "verify clone original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "record upstream origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/hiyouga/LlamaFactory"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.017,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.106,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.141,
+      "stdout_sha256": "sha256:dc1b802c18a99b888fb606465ea910cfdf9f5723c46c92850ff95d348d2bbd6a",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "manifest-only: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.436,
+      "stdout_sha256": "sha256:fb630eaedff7f4b611702d6814643af32f7c1ee9a1d900cc540503cb2a0624eb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.293,
+      "stdout_sha256": "sha256:f58be7cdbf908929d2b70036e844cedd07187b096e55e1ca468d360eb85edb58",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.174,
+      "stdout_sha256": "sha256:22ddb30ceea77b2ddafcf09067c62ec84ff49d69d97f563c8d5e1c7148992e4b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.242,
+      "stdout_sha256": "sha256:12e811470730d83581d46207cdda28641da7a446d6f02acfff444a2f6c07d227",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.164,
+      "stdout_sha256": "sha256:af64cc5a9dd5d3a46bda35faa5cd88c8fea7819342bd0571f2aefc355566630f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.244,
+      "stdout_sha256": "sha256:c1c92af4d6cee1bd7ad240f2cf4e499478d6c11af0081bf6bfd7f3fed7f50887",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.221,
+      "stdout_sha256": "sha256:78a64097dc0b5fff9025f4ac84d567a239247b6cba767b2e1146969f7efcc2f1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.235,
+      "stdout_sha256": "sha256:d9e78e4611846355978e8f3f281713006a5ff8e212a2701104211c30282f1493",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.222,
+      "stdout_sha256": "sha256:94e1d552c1d7803f1bcfd120faf1fdd1b32768e12fc2e05ecbfe042d51dabf5b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.201,
+      "stdout_sha256": "sha256:3a8484baff0729659fc53348fd6f4a201c0222df0bbb8a7fe7c6e115fdd74be6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.15,
+      "stdout_sha256": "sha256:48d26d220fbaa8595544887b8745c018fd5ce728357412bb2c0a4733566ed7cf",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.115,
+      "stdout_sha256": "sha256:795e6d5b374e99e1773e86bbaff8642c811e6a779edc4ffecb08691551598cb5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.149,
+      "stdout_sha256": "sha256:2f2688840a9cd1f54e8af95d5285c55de660ba95e2b4f6e45b2e0363563d9045",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/manifest-only-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.106,
+      "stdout_sha256": "sha256:d340b9b8d885e1122aba01b4a42e17a7b68aaddc7a32be8022a59b094fef0dba",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline owned lock; HTTP constructors forbidden",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--offline"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.258,
+      "stdout_sha256": "sha256:8d589586c58185eda8b415dc03c73166b22e0964f22acaa52e11fcfacb701a28",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.lock"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.021,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.028,
+      "stdout_sha256": "sha256:ab0516b9ade0ec81879b7bc5801d86afb28cbd2b95db09129e44c17a28416930",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "source-backed lock freshness",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.226,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.107,
+      "stdout_sha256": "sha256:610d92205e04094247158e5b2c6b4a790a22c0b0c8d123c59b1252f28819f91c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.148,
+      "stdout_sha256": "sha256:436c794e34ec1d48e72836e498567021bc35355520e3c32b2bd4eea9d10cd301",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.158,
+      "stdout_sha256": "sha256:e9ac3a87585396006b334d4cd646cd6fc017a767aebb73557ed6489c28f4c37b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.144,
+      "stdout_sha256": "sha256:f231741a17bd277d185191acc410248aeca94e22d0dd63baeb5001dc3e7c3919",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.161,
+      "stdout_sha256": "sha256:b85e6f714d4c09d67cf1c2ab63f352cd3680cdc902a7e18767f0a18862910111",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.16,
+      "stdout_sha256": "sha256:2780bd7dd44c26df38cf53a6ea70986b12c769da1242b5c4aa47037b31c88d43",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.089,
+      "stdout_sha256": "sha256:7557e67b441552f024b596e1f66347810d2a7a554f67e36ec69caf7fa3a0ebc0",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.078,
+      "stdout_sha256": "sha256:bbeeacb770e4f9dad4c7552085f9bcdd4af64fc70169b1076f744f6fd3d874bc",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.981,
+      "stdout_sha256": "sha256:cece5cb008d81c823401a2f1605cd9aaf407a4caeb4f6f9b0d1eb354c5358436",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.972,
+      "stdout_sha256": "sha256:d8af1afe066c56a7609dcf5dc0f8e5e8010102b659e662b66ae2f7b1350a0116",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.954,
+      "stdout_sha256": "sha256:de2b144a298aee86600bd5c5aabe44186ab56bbddb30a896d4c8d5e18a48c7ee",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.968,
+      "stdout_sha256": "sha256:67b3317bf88d488c1500c1a955c4ef94e0291d148358314b3791b9318c7e229e",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.957,
+      "stdout_sha256": "sha256:d7f7c7b2dd653d2910642b74a0959fcc8698fd726213c9e022646653e6870342",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/LlamaFactory/offline-locked-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.956,
+      "stdout_sha256": "sha256:89d56f72dfd852a28e6242506bab1b69d1f95ddec5df5cad0deba93b380367e2",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

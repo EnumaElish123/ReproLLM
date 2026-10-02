@@ -11,6 +11,16 @@ GPU/pair replay), VAL-R02 (formal FastChat/DeepSeek judge inputs and replay), an
 VAL-R03 (successful HF gated-file access). They remain BLOCKED until their
 resources and acceptance evidence are available; val.md remains the gold source.
 
+## Product trial follow-up (2026-10-02)
+
+The [UX repair report](../dogfooding/2026-10-02-ux-repairs.md) records the
+Discover, onboarding, candidate-list, Action and export fixes and their five-project
+validation. The [review bundle](ux-2026-10-02-proposals/README.md) retains concrete
+pending choices for task selection during init (UX-T03), audit text (UX-T04),
+provider identity and judge-only profiles (UX-T06), and additional export sections.
+These are not approved contract changes or adopted gold. Full candidate
+view/removal/history remains a separate future proposal.
+
 ## Rules & detection
 
 - P1 rule polish: `gen.stop_declared` / `prompt.few_shot_declared` negative
@@ -37,11 +47,11 @@ resources and acceptance evidence are available; val.md remains the gold source.
 
 - **Privacy heuristic punctuation / relative-source false positives (M7 follow-up,
   2026-10-01):** existing `RunPrivacy.text` treats standalone `/` prose separators
-  and some `./` source strings as absolute-path matches. Independent real-discover
-  review found no actual leak; candidate and accounting artifacts are clean.
-  Discover now preserves verified relative config DSL bindings with original-text
-  secret/identity checks. A broader prose heuristic change needs separate source
-  cases and security review; it is outside this scoped binding correction.
+  as absolute-path matches. UX-T08's 2026-10-02 persistence fix preserves valid
+  POSIX `./` and `../` source strings while retaining secret/identity redaction
+  and explicit Discover traversal checks. The broader prose-separator heuristic
+  remains pending separate source cases and security review; that part is not
+  closed by the dot-relative correction.
 
 - **Generated-document freshness — fixed (M8-T02, 2026-10-01):** authenticated
   logs for nightly run `36698429076` show performance, rules and profiles passing;

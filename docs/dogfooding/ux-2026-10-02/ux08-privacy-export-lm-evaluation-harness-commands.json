@@ -1,0 +1,885 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "verify original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original clean",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.239,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.021,
+      "stdout_sha256": "sha256:b5e62f230e9db4bb828b2db0851cde9009cafb2614a37c36b4f3b247e94bd0a4",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "resolve reviewed pre-UX08 baseline",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a^{commit}"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:1df681a8575935961806f2d4b77e6c859aa14abd6d9ea8e5e51acab918ad6ae3",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "extract baseline source without checkout",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline.tar",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.05,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current source commit",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current tracked source diff",
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--binary"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.027,
+      "stdout_sha256": "sha256:b9fb7488f3bd35e7a7893272b8edec94af55d2421195be9f0f597ee0264ef637",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "original L0 complete reviewed gold comparison",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "-v",
+        "audit",
+        "<pinned-sources>/lm-evaluation-harness",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 9.703,
+      "stdout_sha256": "sha256:99826adede9404bfae452a068ec303b4239644992187ac19317d201d4d55e082",
+      "stderr_sha256": "sha256:da6306fc463667fce64b9d4a17b1d57648003613cf5bc320cc2b1061c1ae0f42"
+    },
+    {
+      "label": "local disposable clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-hardlinks",
+        "<pinned-sources>/lm-evaluation-harness",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.4,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:8dac03bdd44c9097de15d40ccb2575cf7c8a137e8736eec479726a967ebf651e"
+    },
+    {
+      "label": "verify clone original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "record upstream origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/EleutherAI/lm-evaluation-harness"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.014,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.08,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.104,
+      "stdout_sha256": "sha256:6919ce1dee5d7f3fa209566cf75ca49cd1fdfb530efce86297bcd012c014439d",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "manifest-only: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 9.498,
+      "stdout_sha256": "sha256:fe1bc19c8ab1266079d7563254e18d8ae2f418fe30e42d8d5dbda3233ec0fd2c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 9.055,
+      "stdout_sha256": "sha256:bf5d7a76aa0c03912f92cf6781d0822be367a81f7dad1ba7f8c746d3a685f813",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 7.597,
+      "stdout_sha256": "sha256:098a7cfb5ee392823e87da3122e9bfacde0b37123fe5e7531477f29cfc66cc7a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.844,
+      "stdout_sha256": "sha256:6e8863fc0c2accde614b0f9bcc0f58fe0447078ba421f2c3bf96c24ce84f4da8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.648,
+      "stdout_sha256": "sha256:03b8157d7681f8540120c87f3f9f6a0f62dd338087656c42e5fbb85d4df8b722",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.68,
+      "stdout_sha256": "sha256:e6c8b098d390f4842904f3db7285783ce7bc64adcef902de3b7d1c679221c029",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.822,
+      "stdout_sha256": "sha256:f57b6b96ee8f8b18815cd58d7c049ab1d6195c7136387a07ad5b10cbf4cfb716",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.7,
+      "stdout_sha256": "sha256:b4cdcf6ff83c19f6d037889b7cae7e1e629b09d0eab2dddd7598573f2a03cc1a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.655,
+      "stdout_sha256": "sha256:7bc10390369d43a927eb3357863dec1346b23e6f3d6732c58274b7ba33a924bb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.665,
+      "stdout_sha256": "sha256:288f88cf8eb8e3b827c5555fab6a2261fd765ced8bbc3c7260143137789d3cac",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.726,
+      "stdout_sha256": "sha256:108cf61ab9c7051d3fb5b30136b0cddb5c388c0a6d89326e2616f5d1a510fd8a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.775,
+      "stdout_sha256": "sha256:49c836636f76061afe8d6efb5c6372073fc1a5182fa549e6f151a271b682aee5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.738,
+      "stdout_sha256": "sha256:c48528bfa4888c108650684e45357acfd2cbd4ac534ad8cf2d2323c5662f3861",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/manifest-only-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 7.054,
+      "stdout_sha256": "sha256:468302880c355a1c4a94e54aae8778294dcaec735b2d2e131357f965417cd548",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline owned lock; HTTP constructors forbidden",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--offline"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.182,
+      "stdout_sha256": "sha256:b089e6ecf04a878946b62617d67db2cede166581e19b6f5c90a9eb3b248626c5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.lock"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.038,
+      "stdout_sha256": "sha256:570f1147340ddf4108301f39e00bc034ec32a2d63a0b7fb817f61e351481017a",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "source-backed lock freshness",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.168,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.701,
+      "stdout_sha256": "sha256:8c7c5fe7c422b34448b396535b2639a77fd5924c61c7453c61690828f619f14b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 7.011,
+      "stdout_sha256": "sha256:faef9826f5d772717e509c0b32948fed6880e5e91b05521f3bcb9faa6f2f57eb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 7.197,
+      "stdout_sha256": "sha256:70166a11b2487f62a765e53a63b972a0b51186258c6a42650a5e7937c71de759",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.765,
+      "stdout_sha256": "sha256:5367768b85c755fdee23c244d1d8e2eaf085c524e2d511d906e2476458443ee1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.709,
+      "stdout_sha256": "sha256:30a778dc42233ad7472d33c68df02cd8bf3232b11a42b9b48324c3a4a4dd56a4",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.684,
+      "stdout_sha256": "sha256:2eddc8eb8d7b726051c23fd8a34d8fd012e7145a2b5cf828feb8869dbb50212a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.856,
+      "stdout_sha256": "sha256:88121a13aa1de8ae754abc6363204305507451856a05f98ff9120eac8cf04c50",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.741,
+      "stdout_sha256": "sha256:6df4c6b9966c15b3d706c337f8d0dc8f39cf8a165991ff82d608325c45892f0f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.672,
+      "stdout_sha256": "sha256:a3d0f244efa399a4c83c816391ce2e30a15407ca7eea8818a89e23497647bb23",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.651,
+      "stdout_sha256": "sha256:eeb59c18c61358c55e3608a3a31b4bfb9373a838bd5fa9794ded3aedab283475",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.772,
+      "stdout_sha256": "sha256:443143507ca23b46a196624ba8b24e8672dffb82d8d9481d6da37294bef4eece",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.659,
+      "stdout_sha256": "sha256:161bd8832ea53c84ead582d33742ee9beb883296447da9f2d067c52f3f39097b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.857,
+      "stdout_sha256": "sha256:cb7341f975d0ff4728a0f69fdb4f3c59ea4acc883a03ac161f9a35f646d4dcdb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/lm-evaluation-harness/offline-locked-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 6.757,
+      "stdout_sha256": "sha256:9145dfb3c105adca122a5bf302f7c87f7684cf68ceeea938c6dd29722458fcab",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.047,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.049,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

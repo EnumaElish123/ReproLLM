@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "tests": {
+    "passed": 1518,
+    "skipped": 3,
+    "deselected": 2,
+    "elapsed_seconds": 84.59
+  },
+  "ruff_check": "pass",
+  "ruff_format_files": 392,
+  "mypy_files": 115,
+  "schema_files_unchanged": 9,
+  "generated_docs": [
+    "rules",
+    "profiles",
+    "cli",
+    "quickstart"
+  ],
+  "coverage_totals": {
+    "covered_lines": 7250,
+    "num_statements": 7645,
+    "percent_covered": 93.04258594150846,
+    "percent_covered_display": "93",
+    "missing_lines": 395,
+    "excluded_lines": 34,
+    "percent_statements_covered": 94.83322432962721,
+    "percent_statements_covered_display": "95",
+    "num_branches": 2100,
+    "num_partial_branches": 223,
+    "covered_branches": 1817,
+    "missing_branches": 283,
+    "percent_branches_covered": 86.52380952380952,
+    "percent_branches_covered_display": "87"
+  },
+  "redaction": {
+    "covered_lines": 59,
+    "num_statements": 59,
+    "percent_covered": 100.0,
+    "percent_covered_display": "100",
+    "missing_lines": 0,
+    "excluded_lines": 0,
+    "percent_statements_covered": 100.0,
+    "percent_statements_covered_display": "100",
+    "num_branches": 24,
+    "num_partial_branches": 0,
+    "covered_branches": 24,
+    "missing_branches": 0,
+    "percent_branches_covered": 100.0,
+    "percent_branches_covered_display": "100"
+  },
+  "quality_commands": [
+    "pytest -q --cov=reprollm --cov-branch --cov-report=json:<local-coverage>",
+    "ruff check .",
+    "ruff format --check .",
+    "mypy src/",
+    "reprollm schema export --out <schema-check-directory>",
+    "diff -r schemas <schema-check-directory>",
+    "python scripts/gen_rules_doc.py --check",
+    "python scripts/gen_profiles_doc.py --check",
+    "python scripts/gen_cli_doc.py --check",
+    "python scripts/gen_quickstart.py --check",
+    "git diff --check"
+  ],
+  "command_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "warning": "Existing unregistered slow marker in tests/perf/test_large_repo.py; no new warning."
+}

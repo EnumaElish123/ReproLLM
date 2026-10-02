@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "upload": {
+    "uses": "actions/upload-artifact@v4",
+    "condition": "${{ !cancelled() && steps.audit.outputs.report-written == 'true' }}",
+    "new_report_output": "report-written",
+    "path": "${{ inputs.path }}/reprollm-audit.json",
+    "only_static_verification": true,
+    "cloud_upload_executed": false
+  },
+  "executed_step": "audit",
+  "install_executed": false,
+  "optional_lock_executed": false
+}

@@ -1,0 +1,1301 @@
+{
+  "schema_version": 1,
+  "source_artifact": "UX05-validation/rules/commands.json",
+  "data": [
+    {
+      "label": "workspace-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:8f1d30df7e2f63bed7945b082668fb740c63a610c835acb94cd598329e204f40",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.197,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:b5e62f230e9db4bb828b2db0851cde9009cafb2614a37c36b4f3b247e94bd0a4",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/lm-evaluation-harness",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.182,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:3f242337f4ce0ab1d12bf4a0b3d802b4381c50da7a94b3a4ae643308fb527f65"
+    },
+    {
+      "label": "lm-evaluation-harness-clone-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/EleutherAI/lm-evaluation-harness.git"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-no-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.173,
+      "stdout_sha256": "sha256:cd65a91dc6c5c1e6b3909d4bb4f691b3c4e3682f101588631dfceaa36bf57df6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-no-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.166,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-ignore-beta",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "ignore",
+        "c-469585",
+        "--reason",
+        "Synthetic fixture rejection."
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.173,
+      "stdout_sha256": "sha256:f45d0355bd5d7fb7746d42ad34a357980983131c8414b2a1ff7f55c4e0937f7d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-ignored-without-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:324db2243d726f4fd4f96708b2591afe23d16e9b4faa8833ba4ff86bb9c9d361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-ignored-without-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.174,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-accept-alpha",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.173,
+      "stdout_sha256": "sha256:7bbcc69743e8a602a94cbc316886587070d9f7366385148fcc066a2439f1ff10",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.171,
+      "stdout_sha256": "sha256:cf25d231e0b86ffcb41174ffcecd7f688f5529a1c32ba42d4c1a1a66115ddd8b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:b37f9dbbbc411c7581342adbea49e0a2e219d5d7ac8dd653e79c88f28b0ecf36",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-duplicate-accept",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:78d2e026a0d9f06bc40f24e91d3051f10ad6670587edc5f193785c8baaeb70ec"
+    },
+    {
+      "label": "lm-evaluation-harness-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.051,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e8791e63ed04e8eaca5a15dd6530cb67fd95e3adf2b93d43bfa99809f5ef52df",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/FastChat",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.09,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-clone-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/lm-sys/FastChat.git"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "FastChat-no-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:cd65a91dc6c5c1e6b3909d4bb4f691b3c4e3682f101588631dfceaa36bf57df6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-no-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.171,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-ignore-beta",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "ignore",
+        "c-469585",
+        "--reason",
+        "Synthetic fixture rejection."
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:5df8ca9bedf4e80993e6fd1c831b7ee02bf3dcd44c1b82231fddda3364fbdc4a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-ignored-without-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.164,
+      "stdout_sha256": "sha256:324db2243d726f4fd4f96708b2591afe23d16e9b4faa8833ba4ff86bb9c9d361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-ignored-without-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-accept-alpha",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.17,
+      "stdout_sha256": "sha256:ebe7008cbec2358dc41da2a23ad181a5b166cdfd527e49fc2fa67d1787336565",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.167,
+      "stdout_sha256": "sha256:cf25d231e0b86ffcb41174ffcecd7f688f5529a1c32ba42d4c1a1a66115ddd8b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:d85115d3c29701fb6eaaf4c9fd7c73392b6427780e5bc0857fefe4ddc63f2978",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-duplicate-accept",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:78d2e026a0d9f06bc40f24e91d3051f10ad6670587edc5f193785c8baaeb70ec"
+    },
+    {
+      "label": "FastChat-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.025,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:98c33a967eb65c166fb182dba9a57d83776ffccdd29aff40348b162b75e8d6ef",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/LlamaFactory",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.096,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:50e4986484b6bf2ce3054494c34174403f9b21b0e3100c172d3047cf242a8f67"
+    },
+    {
+      "label": "LlamaFactory-clone-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/hiyouga/LlamaFactory.git"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "LlamaFactory-no-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.173,
+      "stdout_sha256": "sha256:cd65a91dc6c5c1e6b3909d4bb4f691b3c4e3682f101588631dfceaa36bf57df6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-no-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.166,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-ignore-beta",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "ignore",
+        "c-469585",
+        "--reason",
+        "Synthetic fixture rejection."
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.17,
+      "stdout_sha256": "sha256:e9236fec6b38d04f303bcd907ee0bfc3e6c2ba4ddcedfe0bdbadc71f85222ace",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-ignored-without-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.166,
+      "stdout_sha256": "sha256:324db2243d726f4fd4f96708b2591afe23d16e9b4faa8833ba4ff86bb9c9d361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-ignored-without-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.165,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-accept-alpha",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.165,
+      "stdout_sha256": "sha256:8728021774aa8348145770ec8179c564ec796f8ba407484e61ef292ba5a1b237",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.167,
+      "stdout_sha256": "sha256:cf25d231e0b86ffcb41174ffcecd7f688f5529a1c32ba42d4c1a1a66115ddd8b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.168,
+      "stdout_sha256": "sha256:a3538aa7b1c113e9336e7c1247aa3cd0c97a00200242092fcc3b983daf5ec21e",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-duplicate-accept",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:78d2e026a0d9f06bc40f24e91d3051f10ad6670587edc5f193785c8baaeb70ec"
+    },
+    {
+      "label": "LlamaFactory-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:45824e83cd3c8eabbdf245c63633ada0e7e22250c2af62b7f4e0275316d00c6a",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/HarmBench",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.374,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-clone-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/centerforaisafety/HarmBench.git"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "HarmBench-no-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.172,
+      "stdout_sha256": "sha256:cd65a91dc6c5c1e6b3909d4bb4f691b3c4e3682f101588631dfceaa36bf57df6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-no-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.172,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-ignore-beta",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "ignore",
+        "c-469585",
+        "--reason",
+        "Synthetic fixture rejection."
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.172,
+      "stdout_sha256": "sha256:76770f54ffe907f69f77783a9a735cc35dfa2376167bfd507839426ac55a6fc3",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-ignored-without-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.169,
+      "stdout_sha256": "sha256:324db2243d726f4fd4f96708b2591afe23d16e9b4faa8833ba4ff86bb9c9d361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-ignored-without-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.166,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-accept-alpha",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.175,
+      "stdout_sha256": "sha256:573524d221f9bde74644c786f9ad090c73e2b4c1cb49d248849d8e7f061d1dc7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.176,
+      "stdout_sha256": "sha256:cf25d231e0b86ffcb41174ffcecd7f688f5529a1c32ba42d4c1a1a66115ddd8b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.17,
+      "stdout_sha256": "sha256:634b3578d25cecb42fb5b0a4b8dbc194de0315d1d9ef5394e1ef4a50fe19b2c1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-duplicate-accept",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "elapsed_seconds": 0.172,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:78d2e026a0d9f06bc40f24e91d3051f10ad6670587edc5f193785c8baaeb70ec"
+    },
+    {
+      "label": "HarmBench-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:1f42245b902c6bc81fccb0461bfbe91b7c3d9a2484cea02628612685b860a30f",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/llm-dp-finetune",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.042,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-clone-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/jyhong836/llm-dp-finetune.git"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "llm-dp-finetune-no-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.177,
+      "stdout_sha256": "sha256:cd65a91dc6c5c1e6b3909d4bb4f691b3c4e3682f101588631dfceaa36bf57df6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-no-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.179,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-ignore-beta",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "ignore",
+        "c-469585",
+        "--reason",
+        "Synthetic fixture rejection."
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.17,
+      "stdout_sha256": "sha256:22ebcff5cb409fbc676069563c3b7f5fcce1d860976a401a526839cad7e132cb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-ignored-without-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.173,
+      "stdout_sha256": "sha256:324db2243d726f4fd4f96708b2591afe23d16e9b4faa8833ba4ff86bb9c9d361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-ignored-without-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.174,
+      "stdout_sha256": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-accept-alpha",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.172,
+      "stdout_sha256": "sha256:8a721ddd7e4c9d4f15eee0105bd06002fc0ff041d19385230e0fd6868cac45bc",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-accepted-text",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.168,
+      "stdout_sha256": "sha256:cf25d231e0b86ffcb41174ffcecd7f688f5529a1c32ba42d4c1a1a66115ddd8b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-accepted-json",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "list",
+        "--json"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.168,
+      "stdout_sha256": "sha256:a04accf1bec52dc4b0cb8e37fe7812d1cd05b3bd49780fdf0cb08e3460f74b90",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-duplicate-accept",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "rules",
+        "accept",
+        "c-f7c229"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "elapsed_seconds": 0.166,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:78d2e026a0d9f06bc40f24e91d3051f10ad6670587edc5f193785c8baaeb70ec"
+    },
+    {
+      "label": "llm-dp-finetune-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

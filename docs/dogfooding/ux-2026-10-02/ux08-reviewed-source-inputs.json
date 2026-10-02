@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "targets": {
+    "lm-evaluation-harness": {
+      "pin": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "origin": "https://github.com/EleutherAI/lm-evaluation-harness.git",
+      "manifest_sha256": "sha256:39eee344461c486bef31b55cce53789fd17c71e47a637f7d195c9ef9d68ad41a",
+      "source_files": {
+        "lm_eval/tasks/gsm8k/gsm8k.yaml": {
+          "sha256": "sha256:82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833",
+          "size_bytes": 1014
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "eval": "test"
+        },
+        "repetitions": 1,
+        "generation_seed": 42,
+        "metrics": [
+          "exact_match"
+        ],
+        "judge_model_ref": null,
+        "privacy": null
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    },
+    "FastChat": {
+      "pin": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "origin": "https://github.com/lm-sys/FastChat.git",
+      "manifest_sha256": "sha256:649372b39a13262ca09649a3d65849b748a778bb0d3c480895cf251ee9920189",
+      "source_files": {
+        "fastchat/llm_judge/common.py": {
+          "sha256": "sha256:71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+          "size_bytes": 22379
+        },
+        "fastchat/llm_judge/data/judge_prompts.jsonl": {
+          "sha256": "sha256:fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+          "size_bytes": 10449
+        },
+        "fastchat/llm_judge/data/mt_bench/question.jsonl": {
+          "sha256": "sha256:119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7",
+          "size_bytes": 48929
+        },
+        "fastchat/llm_judge/data/mt_bench/reference_answer/gpt-4.jsonl": {
+          "sha256": "sha256:f957a5bc977badb66885ec970e6cd08527845780313f0995764260e5777b9b3f",
+          "size_bytes": 51109
+        },
+        "fastchat/llm_judge/gen_judgment.py": {
+          "sha256": "sha256:b6d74c050f91d93eb8c3e339ccc11f230032b4c6093c65f3683e0eba1c13b2ea",
+          "size_bytes": 9560
+        },
+        "fastchat/llm_judge/gen_model_answer.py": {
+          "sha256": "sha256:8feb3c19262b8f8567b49c1cd45b0adfd83f199bdcd17e891a05dd608300c7c6",
+          "size_bytes": 9659
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "eval": null
+        },
+        "repetitions": 1,
+        "generation_seed": 0,
+        "metrics": [
+          "mt_bench_score"
+        ],
+        "judge_model_ref": "judge",
+        "privacy": null
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    },
+    "LlamaFactory": {
+      "pin": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "origin": "https://github.com/hiyouga/LlamaFactory.git",
+      "manifest_sha256": "sha256:3e28d429fe19e3b179314584c0402ea857e95cf9be52061a1198839f6612cda0",
+      "source_files": {
+        "data/alpaca_en_demo.json": {
+          "sha256": "sha256:bcc37c64db1a739a0789a1b81f251146fcf4459f903474bc9e3c21bbb5628318",
+          "size_bytes": 859893
+        },
+        "data/dataset_info.json": {
+          "sha256": "sha256:17162e129cbfede1ef7e955dbb7819146b78cd8809fa4f39dff4f9e61308c50f",
+          "size_bytes": 17748
+        },
+        "data/identity.json": {
+          "sha256": "sha256:fd029da7dd3df283ed034c82375d16d125a7b07cf1cb0316d03fb8743057d5f2",
+          "size_bytes": 20306
+        },
+        "examples/train_lora/qwen3_lora_sft.yaml": {
+          "sha256": "sha256:783c247613e0c46c4b4ea5c6627acd5387d939af91f22a9d6a9efdb4996147ae",
+          "size_bytes": 907
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "train": null
+        },
+        "repetitions": null,
+        "generation_seed": null,
+        "metrics": [],
+        "judge_model_ref": null,
+        "privacy": null
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    },
+    "HarmBench": {
+      "pin": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "origin": "https://github.com/centerforaisafety/HarmBench.git",
+      "manifest_sha256": "sha256:a0899d290472ecbf4e366298059ba629c079d39795925403fe0f331e37665ba7",
+      "source_files": {
+        "configs/model_configs/models.yaml": {
+          "sha256": "sha256:8d4b6c734bae3035ec007276e91b37bbcd07edc9649b97bc2d7cb77c563cf6b5",
+          "size_bytes": 8815
+        },
+        "data/behavior_datasets/harmbench_behaviors_text_all.csv": {
+          "sha256": "sha256:8d81accedd38eaaf8b760618622bb888417d1fd0c86eba65c427a16f1cbb4afc",
+          "size_bytes": 198850
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "eval": null
+        },
+        "repetitions": null,
+        "generation_seed": null,
+        "metrics": [],
+        "judge_model_ref": null,
+        "privacy": null
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    },
+    "llm-dp-finetune": {
+      "pin": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "origin": "https://github.com/jyhong836/llm-dp-finetune.git",
+      "manifest_sha256": "sha256:5b53f6552e12e152b1efb21f995adc73ce6c06ffe73aed436924588c88724b82",
+      "source_files": {
+        "configs/fine-tune/deepspeed_stage3.json": {
+          "sha256": "sha256:c445beb05234a979ed80a71a7e209395564eea39630c730de18eb2d51be8b722",
+          "size_bytes": 436
+        },
+        "configs/fine-tune/echr-llama2-7b-dp8.yml": {
+          "sha256": "sha256:20c9c1ab6bd19f5b92789d394beee9a4131d28a841d2c80ee93235271490fc12",
+          "size_bytes": 1656
+        },
+        "data/echr/echr.py": {
+          "sha256": "sha256:0112037c9b509e83ed1957b8d2ae8504b2449257b58f25a1d9034ac48a21aa8d",
+          "size_bytes": 5382
+        },
+        "src/llm_pft/arguments/privacy_args.py": {
+          "sha256": "sha256:39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7",
+          "size_bytes": 1357
+        },
+        "src/llm_pft/models/language_model.py": {
+          "sha256": "sha256:b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896",
+          "size_bytes": 28860
+        }
+      },
+      "declared_values": {
+        "dataset_splits": {
+          "train": "train+test+validation"
+        },
+        "repetitions": null,
+        "generation_seed": null,
+        "metrics": [],
+        "judge_model_ref": null,
+        "privacy": {
+          "threat_model": "An observer of the released fine-tuned model seeks information about individual training examples.",
+          "mechanism": {
+            "name": "dp_sgd",
+            "params": {
+              "target_epsilon": 8,
+              "max_grad_norm_dp": 1.0,
+              "target_delta": "computed from training sample count"
+            }
+          },
+          "metrics": [
+            "epsilon",
+            "perplexity"
+          ]
+        }
+      },
+      "provenance": "val.md §8.1 reviewed M4 source manifest; all referenced source bytes independently matched"
+    }
+  }
+}

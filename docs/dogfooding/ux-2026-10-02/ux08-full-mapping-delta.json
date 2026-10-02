@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "baseline_sha": "bfdb82ec96f297b37cc650e630953c507e762a0a",
+  "source_code_sha": "bfdb82ec96f297b37cc650e630953c507e762a0a",
+  "source_tracked_diff_sha256": "sha256:b2241d64f79afc0bafd6930ada7a9aead9455b35d2fee97aadef9d96b71fe54d",
+  "driver_sha256": "sha256:0211c5f3d235d0273f38bdcf22ef6ad0ef999d913ea945c3069346d6b639fe71",
+  "command_count": 219,
+  "command_failures": [],
+  "subprocess_seconds": 311.746,
+  "current_exports": 40,
+  "baseline_exports": 40,
+  "repeat_exports": 40,
+  "changed_mapping_rows": 50,
+  "targets": [
+    {
+      "name": "lm-evaluation-harness",
+      "pin": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "subprocess_seconds": 220.978,
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "default_full_bytes_equal": true,
+      "repeat_all_bytes_equal": true,
+      "mapping_changes": {
+        "manifest-only": {
+          "neurips": [
+            {
+              "item": "2.1–2.4 Hyperparameters / runs",
+              "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 42 |",
+              "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+              "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+            },
+            {
+              "item": "3.1–3.3 Datasets / splits",
+              "before": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked, split: not declared |",
+              "after": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked, split: test |",
+              "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: exact_match; splits: `datasets.eval.split` = test |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: task:jinja |",
+              "after": "| C3 Prompt details | Prompt table above; format: task:jinja |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        },
+        "offline-locked": {
+          "neurips": [
+            {
+              "item": "2.1–2.4 Hyperparameters / runs",
+              "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 42 |",
+              "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+              "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+            },
+            {
+              "item": "3.1–3.3 Datasets / splits",
+              "before": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked (unresolved), split: not declared |",
+              "after": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked (unresolved), split: test |",
+              "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: exact_match; splits: `datasets.eval.split` = test |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: task:jinja |",
+              "after": "| C3 Prompt details | Prompt table above; format: task:jinja |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        }
+      }
+    },
+    {
+      "name": "FastChat",
+      "pin": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "subprocess_seconds": 21.438,
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "default_full_bytes_equal": true,
+      "repeat_all_bytes_equal": true,
+      "mapping_changes": {
+        "manifest-only": {
+          "neurips": [
+            {
+              "item": "2.1–2.4 Hyperparameters / runs",
+              "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 0 |",
+              "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+              "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: mt_bench_score; splits: `datasets.eval.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: judge:plain |",
+              "after": "| C3 Prompt details | Prompt table above; format: judge:plain |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        },
+        "offline-locked": {
+          "neurips": [
+            {
+              "item": "2.1–2.4 Hyperparameters / runs",
+              "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 0 |",
+              "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+              "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: mt_bench_score; splits: `datasets.eval.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: judge:plain |",
+              "after": "| C3 Prompt details | Prompt table above; format: judge:plain |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        }
+      }
+    },
+    {
+      "name": "LlamaFactory",
+      "pin": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "subprocess_seconds": 31.217,
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "default_full_bytes_equal": true,
+      "repeat_all_bytes_equal": true,
+      "mapping_changes": {
+        "manifest-only": {
+          "neurips": [],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        },
+        "offline-locked": {
+          "neurips": [],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        }
+      }
+    },
+    {
+      "name": "HarmBench",
+      "pin": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "subprocess_seconds": 25.039,
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "default_full_bytes_equal": true,
+      "repeat_all_bytes_equal": true,
+      "mapping_changes": {
+        "manifest-only": {
+          "neurips": [],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.eval.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        },
+        "offline-locked": {
+          "neurips": [],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.eval.split` = not declared |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        }
+      }
+    },
+    {
+      "name": "llm-dp-finetune",
+      "pin": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "subprocess_seconds": 12.941,
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "default_full_bytes_equal": true,
+      "repeat_all_bytes_equal": true,
+      "mapping_changes": {
+        "manifest-only": {
+          "neurips": [
+            {
+              "item": "3.1–3.3 Datasets / splits",
+              "before": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked, split: not declared |",
+              "after": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked, split: train+test+validation |",
+              "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+            },
+            {
+              "item": "5.7 Attack/defense",
+              "before": "| 5.7 Attack/defense | Privacy section above (threat model, mechanism) |",
+              "after": "| 5.7 Attack/defense | `privacy.threat_model`: An observer of the released fine-tuned model seeks information about individual training examples.; `privacy.mechanism.name`: dp_sgd |",
+              "why": "default has no Privacy section; mapping now supplies the reviewed values inline"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = train+test+validation |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        },
+        "offline-locked": {
+          "neurips": [
+            {
+              "item": "3.1–3.3 Datasets / splits",
+              "before": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked (unresolved), split: not declared |",
+              "after": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked (unresolved), split: train+test+validation |",
+              "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+            },
+            {
+              "item": "5.7 Attack/defense",
+              "before": "| 5.7 Attack/defense | Privacy section above (threat model, mechanism) |",
+              "after": "| 5.7 Attack/defense | `privacy.threat_model`: An observer of the released fine-tuned model seeks information about individual training examples.; `privacy.mechanism.name`: dp_sgd |",
+              "why": "default has no Privacy section; mapping now supplies the reviewed values inline"
+            }
+          ],
+          "acl": [
+            {
+              "item": "B6 Data usage",
+              "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+              "after": "| B6 Data usage | Dataset table above (id, revision) |",
+              "why": "default dataset table has no preprocessing column"
+            },
+            {
+              "item": "B9 Model / LLM details",
+              "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+              "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+              "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+            },
+            {
+              "item": "C1 Tasks and evaluation",
+              "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+              "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = train+test+validation |",
+              "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+            },
+            {
+              "item": "C3 Prompt details",
+              "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+              "after": "| C3 Prompt details | Prompt table above; format: none |",
+              "why": "prompt format is not the number/content of few-shot examples"
+            }
+          ],
+          "acm": []
+        }
+      }
+    }
+  ],
+  "resource_claim": "none; resource groups remain deferred"
+}

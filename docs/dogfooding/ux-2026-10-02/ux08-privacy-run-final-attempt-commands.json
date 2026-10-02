@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "workspace-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-original-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-original-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.053,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-original-origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:b5e62f230e9db4bb828b2db0851cde9009cafb2614a37c36b4f3b247e94bd0a4",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/lm-evaluation-harness",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.18,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:3f242337f4ce0ab1d12bf4a0b3d802b4381c50da7a94b3a4ae643308fb527f65"
+    },
+    {
+      "label": "lm-evaluation-harness-set-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/EleutherAI/lm-evaluation-harness.git"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-stage-fixture",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "validation/privacy_probe.py",
+        "configs/probe.json",
+        "configs/peer.json",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.12,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-commit-fixture",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "Synthetic stdlib privacy fixture"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.127,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:134828ec22efdb302c8be34eeb90c107d963df6ea44c1388dde2dcbe7b3248a7",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-fixture-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.023,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:d650c7d6b558a848299a15be75124eaf0ea5690d7d073f275e29899d650df931",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "lm-evaluation-harness-capture",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "run",
+        "--capture-output",
+        "--name",
+        "synthetic-privacy-capture",
+        "--cwd",
+        "<evidence>/clones/lm-evaluation-harness/validation",
+        "--",
+        "python",
+        "privacy_probe.py",
+        "--relative",
+        "./configs/probe.json",
+        "--parent",
+        "../configs/peer.json",
+        "--outside",
+        "/private/fake-external/study",
+        "--inside",
+        "<evidence>/clones/lm-evaluation-harness/configs/probe.json",
+        "--windows",
+        "C:\\fake-external\\study",
+        "--token",
+        "<REDACTED:openai>",
+        "--owner",
+        "trial-user",
+        "--node",
+        "fake-runtime-host"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "06d38d89abc8c1851427b47081c5685033c8f34b",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.648,
+      "stdin_sha256": null,
+      "stdout_sha256": "sha256:feb27a8709fc4e1f795792452c5d56fd0a4bebccf57f3c90160b32aceb3b8b45",
+      "stderr_sha256": "sha256:5d26d60d15e4c5f5a89b4cec58c45e6d04696337db270db87b49d8b077713f80",
+      "argv_original_sha256": "sha256:04eaa04cafe62864536e70494715a41b724f801b3b82fab84793d076d06ecf02",
+      "argv_redactions": 1,
+      "synthetic_canaries": [
+        {
+          "type": "synthetic_openai_key",
+          "length": 43,
+          "sha256": "sha256:f8b8639c6815cd632fa9d5a1da5caac917232af90ec402b2ff816be2f8bc5573"
+        }
+      ],
+      "argv_hash_scope": "Recorded source-ledger argv before copy redaction; source-driver path labels were already normalized."
+    }
+  ],
+  "copy_privacy_note": "Workspace/evidence paths are logical labels. Synthetic secret-pattern canaries in argv are redacted with existing core helper; type/length/hash and original recorded-argv/file hashes remain. Original recorded bytes stay local. This portable copy is not a character-for-character record of the actual process argv."
+}

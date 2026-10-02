@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "files": {
+    "src/reprollm/cli/export.py": {
+      "after_sha256": "ed3a112e47a3143d32015576d4e8906b02da2a8ad9cf8d27d07bdb930bfaf5c4",
+      "before_sha256": "a05cbaae3208bd64dba4a7287e3c22bcf17880a43ed2571c7aeab4fb070f6bcc"
+    },
+    "src/reprollm/discover/candidates.py": {
+      "after_sha256": "ea3200adecd959297924f230c4787e20d2ea78fcf6c4377b4b8b5c3570fb7fc4",
+      "before_sha256": "b3fc45da58039ab917a6cc0ed1091f3a1724dec24fcfc82927ca6b7ebc100dee"
+    },
+    "src/reprollm/export/exporter.py": {
+      "after_sha256": "b7866f505811cb4ea6c6a9010fe14c11bc8711ee00a505db9dffb5a0c0adb1b3",
+      "before_sha256": "ff2f4dd906036f96d064cd98eb1779624ece897650dfa3b102dfcbbc640712a2"
+    },
+    "src/reprollm/run/privacy.py": {
+      "after_sha256": "5afac820ed2200ea7727c85ac9861e5c1b1aad4c041178912f583e8630507cc7",
+      "before_sha256": "38ec755b890a3724cbb6a172b3653e27f74ac01ab0e3ca9ef8fccfb0fb444df7"
+    },
+    "tests/unit/cli/test_export_privacy_boundary.py": {
+      "after_sha256": "a86a66b52bb59e4f5e2a5ca0f2e5c20e7ff5ead199c0a39c393d990b3350d4e0",
+      "before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/unit/run/test_privacy.py": {
+      "after_sha256": "9bde1eb6111f08ea018f4c1cf4738fbf254cfd2ab393b86d66f3ce670d016dc5",
+      "before_sha256": "57817fa27e0351905edef3ef465b1e310556606867aa7e7fca6565a353c29972"
+    }
+  },
+  "fixtures": "Every CLI privacy test fixes synthetic username and hostname; no host identity dependency.",
+  "forbidden_unchanged": [
+    "core/redaction.py",
+    "schemas",
+    "core/engine.py"
+  ],
+  "new_tests": {
+    "cli": 17,
+    "helper": 7
+  },
+  "patch": "<validation-workspace>/rules-team/export_privacy_followup_with_tests.patch",
+  "patch_sha256": "b40dbfdda339cc85e16819d6d10372501db3db7240567cdf26127f9719883177",
+  "root_head": "da211efd4272d1f8f6ed5bd3d23537a0307a904b",
+  "root_modified_by_agent": false,
+  "status": "stable; targeted compatibility and explicit security gate green; root full gate pending",
+  "tests_first": {
+    "dot_relative_before": "5 failed, 18 passed (3 helper dot-relative, 1 helper identities-with-relative, 1 CLI dot-relative)",
+    "opaque_key_before": "4 failed, 13 deselected in 1.02s; opaque-first-red.log",
+    "privacy_helper_compat_before": "3 existing discover security/privacy cases failed; traversal and field absolute component restored explicitly"
+  },
+  "validation": {
+    "five_project_final": "pending current_validation; former311.746s UX08 run pre-followup only",
+    "full_quality": "pending root",
+    "mypy": "4 source files clean",
+    "ruff": "all checks pass; 6 files formatted",
+    "security_explicit": "27 passed, 30 deselected in 2.61s",
+    "targeted": "191 passed, 2 skipped in 9.95s"
+  }
+}

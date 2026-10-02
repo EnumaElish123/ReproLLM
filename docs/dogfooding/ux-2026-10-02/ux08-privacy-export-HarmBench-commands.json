@@ -1,0 +1,885 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "verify original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.014,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original clean",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.04,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.024,
+      "stdout_sha256": "sha256:45824e83cd3c8eabbdf245c63633ada0e7e22250c2af62b7f4e0275316d00c6a",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "resolve reviewed pre-UX08 baseline",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a^{commit}"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:1df681a8575935961806f2d4b77e6c859aa14abd6d9ea8e5e51acab918ad6ae3",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "extract baseline source without checkout",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline.tar",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.081,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current source commit",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.014,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current tracked source diff",
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--binary"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.022,
+      "stdout_sha256": "sha256:b9fb7488f3bd35e7a7893272b8edec94af55d2421195be9f0f597ee0264ef637",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "original L0 complete reviewed gold comparison",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "-v",
+        "audit",
+        "<pinned-sources>/HarmBench",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.208,
+      "stdout_sha256": "sha256:187e1e7baea75a5f3181367350c798d6444816e892eacc3b58baa07cc6545020",
+      "stderr_sha256": "sha256:bf1fbd0e44d8898ea0a130d97e555cf231dbde175a34ee72a4cecb534cad30eb"
+    },
+    {
+      "label": "local disposable clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-hardlinks",
+        "<pinned-sources>/HarmBench",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.014,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:68653f76ea2dc7569fa4fa3375afa3346ad8831735be209dcffa3ab907c84605"
+    },
+    {
+      "label": "verify clone original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "record upstream origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/centerforaisafety/HarmBench"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.176,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.195,
+      "stdout_sha256": "sha256:0ba0393f30ec29d7fef9d172c6e527d7a94d74bb3b3ab012a550c450a0a3c40d",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "manifest-only: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.067,
+      "stdout_sha256": "sha256:98d47d690c5b43b18f1199c3c03ee6762d785abad82e16b9a8279311f148ee64",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.958,
+      "stdout_sha256": "sha256:86a8e75421315ffc744f72e4e7b371540602fb2c399064232566b43c320bcc5d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.868,
+      "stdout_sha256": "sha256:f6a6cd4846c136f437b08be050d30aa4378fc62b12a4fe5487358cc905ad92a4",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.882,
+      "stdout_sha256": "sha256:4b8bb3cc5e55e76805e483d2c249b47ac0facac15f183d247a4c832050fb3187",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.862,
+      "stdout_sha256": "sha256:98718e4dfd5d4ab4a654548fd23a2fe4bcba87dbc00591f24445b09de22139fb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.91,
+      "stdout_sha256": "sha256:32d7858f974d617dc974d7f6c834747f0b3a20e523f2892f0abc7464576d8b7c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.851,
+      "stdout_sha256": "sha256:64e816613810c0f767c2d9c79b881cc499b0ed9cbb67f0f682b491ead3eb1547",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.933,
+      "stdout_sha256": "sha256:32037613598bf81f19dc8bfcac7a60e024e2f240406ed2c9648092e56e5c12b7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.897,
+      "stdout_sha256": "sha256:804b81fce1812a4c6fb9d9dec1e1f11d9be423270b6fb35bba5ebad9f3cabe3f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.89,
+      "stdout_sha256": "sha256:2572f2183aafc628fcea64387df0a5d5be7b23c5ac361278adb74d94bcbd2628",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.862,
+      "stdout_sha256": "sha256:940940d1286ad686cf581d285b3649cc53e04cc55a4c7467a261c7183a8f72f5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.911,
+      "stdout_sha256": "sha256:f9c4c81b752179298e53ee2e576a602e8578a5fc813ca8b4651937f97f211464",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.864,
+      "stdout_sha256": "sha256:3415615ca8810f8dae00070f56b0785b1840387361ae7bcf7a8e144374bc61c4",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/manifest-only-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.816,
+      "stdout_sha256": "sha256:cd373377881f5cbba75618f62f1d027db178abd963e9367bafcd34b7aade1834",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline owned lock; HTTP constructors forbidden",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--offline"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.252,
+      "stdout_sha256": "sha256:8d589586c58185eda8b415dc03c73166b22e0964f22acaa52e11fcfacb701a28",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.lock"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.029,
+      "stdout_sha256": "sha256:acea225b14252085709fa028065304952b345cac937538cd8ade9b1a0bdd338e",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "source-backed lock freshness",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.242,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.824,
+      "stdout_sha256": "sha256:fcd99ac4011d0090ccb7675d9da53041d9381bba210b0dd2a783807007ad5f3a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.804,
+      "stdout_sha256": "sha256:a963cf040381d0c259d79b9f022fd6ce41d6c5583172bef85a7a72c6109baf7d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.842,
+      "stdout_sha256": "sha256:b8595f1cc637c7bb8d4c5647f6d1ac2bcdfb837402b72da3c821d11394183b89",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.864,
+      "stdout_sha256": "sha256:dd9979575a380ea6829466a4267e2fe45a90ce3ef6500a86c401a59c22dfb70d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.847,
+      "stdout_sha256": "sha256:ccf2c4c033b54ee109c76363e2e8dab62e73ac2a44bf6e792f2236f6036952cf",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.856,
+      "stdout_sha256": "sha256:de9c22cd550f10cce5a17f2d38210448fb867bea236fa64d904f9f18ca7356ae",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.844,
+      "stdout_sha256": "sha256:62a1d360eb6963bd2e6f511f05a3bc95090be46d2d33f9d08f78def1140fe58f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.846,
+      "stdout_sha256": "sha256:62fd8d48c6b81844dc3c50fc35b7bcd6a3655dff32deca89d90f4f53ecfdf48c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.873,
+      "stdout_sha256": "sha256:d6e046aa917916e7174924c2594711081724ee7ed893b22db916624793e1f2f5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.824,
+      "stdout_sha256": "sha256:3f3a9e11aa84f1083ed70a90f99a9fa1a7a8981466ec7191160bd587780d3b7a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.879,
+      "stdout_sha256": "sha256:1645fbcfa3c6502d684f41fa14ea1a4765791de2f62d92c0cb2a39a6969477c8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.884,
+      "stdout_sha256": "sha256:fe1a8e7ad76d5590e5d735559f57c2731591a28958e5bca458c543dec92be168",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.764,
+      "stdout_sha256": "sha256:7d9c1e470beb1cb5425a561443ceab8093ac1d768bc22ae92f843a1eb9113361",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/HarmBench/offline-locked-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.792,
+      "stdout_sha256": "sha256:0bbbfecca7e0b2550e48aa45639e0c96ec5c614f5b370406fd1bf36e7aa1b524",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

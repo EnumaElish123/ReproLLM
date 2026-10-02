@@ -1,0 +1,671 @@
+{
+  "schema_version": 1,
+  "source_artifact": "UX01-validation-20261002/payload-deltas-source-evidence.json",
+  "data": [
+    {
+      "name": "lm-evaluation-harness",
+      "source_removals": {},
+      "added_oversize_diagnostics": [
+        {
+          "path": "lm_eval/api/task.py",
+          "bytes": 71925,
+          "sha256": "4c25a4f1949488483b833ce4fcf91cfd3e066084a9ea00079c6879ae3ba95657",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "lm_eval/models/huggingface.py",
+          "bytes": 78180,
+          "sha256": "56d215b8f713d7579f9c7b58a9b8771b09c88e0e4fb8d1b6dd9068033b614b80",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "lm_eval/tasks/med_prescriptions/utils.py",
+          "bytes": 88709,
+          "sha256": "0e8a11142dc0b38755d36c269fed62ceb817822c0901a07c9be59cbbc7b68b17",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "lm_eval/tasks/nerel-bench/utils.py",
+          "bytes": 69278,
+          "sha256": "0bacefdcc9aceb1775c5c8b79be78ab64173ed4eca127400cbbca77133618b78",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        }
+      ],
+      "added_safe_content": [],
+      "tree_equal": true,
+      "old_dropped": [],
+      "new_dropped": [
+        "lm_eval/models/api_models.py",
+        "lm_eval/models/openai_completions.py",
+        "lm_eval/models/textsynth.py",
+        "lm_eval/tasks/pisa/utils.py",
+        "lm_eval/tasks/realtoxicityprompts/metric.py",
+        "lm_eval/utils.py",
+        "tests/models/test_api.py",
+        "tests/test_utils.py"
+      ],
+      "old_total_chars": 60000,
+      "new_total_chars": 60000,
+      "default_full_payload_equal": false,
+      "all_discover_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "FastChat",
+      "source_removals": {
+        "fastchat/llm_judge/common.py": {
+          "snippet_count": 3,
+          "bytes": 22379,
+          "whole_source_redactions": 6,
+          "source_sha256": "sha256:71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+          "oversize_64k": false
+        },
+        "fastchat/model/model_adapter.py": {
+          "snippet_count": 23,
+          "bytes": 92186,
+          "whole_source_redactions": 0,
+          "source_sha256": "sha256:364bada5bd04f915ce94ccbca59cbfd95446231e91688a6a2259d4c9fd4b2a43",
+          "oversize_64k": true
+        }
+      },
+      "added_oversize_diagnostics": [
+        {
+          "path": "fastchat/conversation.py",
+          "bytes": 102989,
+          "sha256": "f641a0eb13edc43fc49c13b8c1fce3649f49567882bc0981d0677fd99c392e64",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "fastchat/model/model_adapter.py",
+          "bytes": 92186,
+          "sha256": "364bada5bd04f915ce94ccbca59cbfd95446231e91688a6a2259d4c9fd4b2a43",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        }
+      ],
+      "added_safe_content": [
+        {
+          "path": "fastchat/serve/gradio_web_server.py",
+          "bytes": 37150,
+          "source_sha256": "sha256:7f96d0a5bbd311285af362b3f622a52f21c70063e984031480f9d4652dddee7b",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server.py#L1098",
+          "collected_text_sha256": "sha256:66189d2c4e967c54a69fe5910aff8ac15f5256a35343dc8da7dc03984a4f7b02",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server.py",
+          "bytes": 37150,
+          "source_sha256": "sha256:7f96d0a5bbd311285af362b3f622a52f21c70063e984031480f9d4652dddee7b",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server.py#L1103",
+          "collected_text_sha256": "sha256:e3771f7dfab614f79daa3483553989d925cf7b7cb2fcd07fee6dc2842f29dd18",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server.py",
+          "bytes": 37150,
+          "source_sha256": "sha256:7f96d0a5bbd311285af362b3f622a52f21c70063e984031480f9d4652dddee7b",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server.py#L1108",
+          "collected_text_sha256": "sha256:897be2422b74ae8286aecba0fb0b56d059aedd6b9dc40d5625ac9fb48e92abcc",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server.py",
+          "bytes": 37150,
+          "source_sha256": "sha256:7f96d0a5bbd311285af362b3f622a52f21c70063e984031480f9d4652dddee7b",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server.py#L1113",
+          "collected_text_sha256": "sha256:4303bec09779a480e8446bf5b11fdcc3610b52981998ed9694fb64810b1771e9",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L280",
+          "collected_text_sha256": "sha256:23c7325f56bafa730518ff45dd986b5adef46d2b37e48ebc2efea930095789c6",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L281",
+          "collected_text_sha256": "sha256:4e0dfc0d1a18ece537d052e305fc1b956979ec7ae5ddd05a843dde35308f38db",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L286",
+          "collected_text_sha256": "sha256:5e20df6584c99f59a79d2b949709ba24c547eb25c26a772a7fc34b1c533e3c37",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L292",
+          "collected_text_sha256": "sha256:2fa795cbc07acf223ca722eca94527fdfd2c5f43bff1f112f2baf891092dee3b",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L298",
+          "collected_text_sha256": "sha256:05126e0a933fbf507de9d33025db1a0fd936c772f6fb7b49dd4d737b3585d073",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L305",
+          "collected_text_sha256": "sha256:7320ee3911d85adeee7ad8943cdcee5e10db892f0684ae46fc1a799033478c37",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L310",
+          "collected_text_sha256": "sha256:26f8318d4782722609c375250490f03651daa0a1285d103d318d30d9ca0709de",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L315",
+          "collected_text_sha256": "sha256:af9b8ac8350c7146b3f800e03b43e880fd403fdb0c6178006b3006edd853a94f",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L318",
+          "collected_text_sha256": "sha256:88d3c58c31c25e990bf7e7c967803c8f5db7fbe4cb777833a7d3ff21371a50fc",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L321",
+          "collected_text_sha256": "sha256:66189d2c4e967c54a69fe5910aff8ac15f5256a35343dc8da7dc03984a4f7b02",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L326",
+          "collected_text_sha256": "sha256:d23743648052e9f232c5bd5910cfbba62dc12e51ec0b6acef887fc937cbc6472",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L333",
+          "collected_text_sha256": "sha256:a65b45aca7c5660bb1ed7ce5a52faa37c7f206df9ee338e051cdc1afbce8fa47",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L336",
+          "collected_text_sha256": "sha256:bbb29d5c609a12f803e3c837c72b81edff88b77c128cb4f31e12adc1ad742ca9",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L339",
+          "collected_text_sha256": "sha256:47b6c486cd028957defacdde549bdc9b9f29b8ee25cd30ebae46fc5f4ed82124",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L342",
+          "collected_text_sha256": "sha256:c3070c68eae07019161ac6d76562e2417ac95439c66c497c3b7cb4b1c43f9f9d",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L348",
+          "collected_text_sha256": "sha256:ad4f266693a463c1b3a40d59d1fe97ab08a2c70aedc1ae6c4260205a8debd993",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L354",
+          "collected_text_sha256": "sha256:4303bec09779a480e8446bf5b11fdcc3610b52981998ed9694fb64810b1771e9",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L360",
+          "collected_text_sha256": "sha256:3602a7bf17050212e5942a1c837a1b35e6287c6276a742142bdd63697785a1ae",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/gradio_web_server_multi.py",
+          "bytes": 15419,
+          "source_sha256": "sha256:62d3a4af620ff8812a92d5b4fba4b79a1b4402e3b071ea6ba32865394de31945",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/gradio_web_server_multi.py#L365",
+          "collected_text_sha256": "sha256:13a6d85f15bd705d9bceae55904196f0a5fd1b92122b04951b1ec7d2dd17ca8d",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api.py",
+          "bytes": 2296,
+          "source_sha256": "sha256:0791ca4c239b84b91dad82ff20525a61a5b4e88bfcf0b4d737c9f06325a00c7a",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api.py#L62",
+          "collected_text_sha256": "sha256:fbc96a2eb5d3e5c46c31218487bda0041db870d8919ae6b64ab64badbfa195de",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api.py",
+          "bytes": 2296,
+          "source_sha256": "sha256:0791ca4c239b84b91dad82ff20525a61a5b4e88bfcf0b4d737c9f06325a00c7a",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api.py#L63",
+          "collected_text_sha256": "sha256:2c6756743b25a22a2687eedb83cfff697f0f50e9e2dc67c789c45979f0790f4a",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api.py",
+          "bytes": 2296,
+          "source_sha256": "sha256:0791ca4c239b84b91dad82ff20525a61a5b4e88bfcf0b4d737c9f06325a00c7a",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api.py#L64",
+          "collected_text_sha256": "sha256:03ba9bb2ad235c87a4dadf1793f2d506ea296568f226c0d0be5bf86d95e9fcd0",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api.py",
+          "bytes": 2296,
+          "source_sha256": "sha256:0791ca4c239b84b91dad82ff20525a61a5b4e88bfcf0b4d737c9f06325a00c7a",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api.py#L65",
+          "collected_text_sha256": "sha256:050cabf28cd533e2a6204cb82447f9e211d3aa9fec8680bba702da942c050fbe",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api.py",
+          "bytes": 2296,
+          "source_sha256": "sha256:0791ca4c239b84b91dad82ff20525a61a5b4e88bfcf0b4d737c9f06325a00c7a",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api.py#L66",
+          "collected_text_sha256": "sha256:bd9475aae1c664f277c0999953dc3ff4b8ac0c12df467a3167372ae2a472debf",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L283",
+          "collected_text_sha256": "sha256:b61cb292081c4d322ac865e0a95490131ef24b7d5bc556d5919765120082d1e2",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L284",
+          "collected_text_sha256": "sha256:d552f84bf291774f777afc311d285354c56650c4830e093f400cd3baa969420a",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L285",
+          "collected_text_sha256": "sha256:c47e74a0c5da9fc03c5d5ebfa88fdf1234c3682cdbe487fca8042265745786ec",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L286",
+          "collected_text_sha256": "sha256:f0e9635dfc0e7904ac418bdd6161b69c52c92af7d6fbe1d71a0bed1da50844b4",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L290",
+          "collected_text_sha256": "sha256:9dc95ab8d81c4f4df93a97f44019225040a00bf0d3399256ba46cf2cf9128274",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        },
+        {
+          "path": "fastchat/serve/huggingface_api_worker.py",
+          "bytes": 12619,
+          "source_sha256": "sha256:d8c96d4f1338093230f6ef0d25add508f35d729c240eb3d49a94ce3631d96dfd",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "fastchat/serve/huggingface_api_worker.py#L297",
+          "collected_text_sha256": "sha256:1044cb2c83c7642cf008bb1c131a5655832573ca9aada96fb07cd4f6cdd16807",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        }
+      ],
+      "tree_equal": false,
+      "old_dropped": [],
+      "new_dropped": [
+        "fastchat/llm_judge/common.py",
+        "fastchat/serve/api_provider.py",
+        "fastchat/serve/monitor/criteria_labeling.py",
+        "fastchat/utils.py",
+        "tests/load_test.py"
+      ],
+      "old_total_chars": 60000,
+      "new_total_chars": 60000,
+      "default_full_payload_equal": false,
+      "all_discover_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "LlamaFactory",
+      "source_removals": {
+        "src/llamafactory/data/template.py": {
+          "snippet_count": 1,
+          "bytes": 110387,
+          "whole_source_redactions": 0,
+          "source_sha256": "sha256:9a35dadadbbec78e0a6a5fb9cf565227de586c060c80177b568fd3ea6cc21210",
+          "oversize_64k": true
+        }
+      },
+      "added_oversize_diagnostics": [
+        {
+          "path": "README.md",
+          "bytes": 70241,
+          "sha256": "7c72bce01922b0ab829b3562b1196ed9d17d77d2543e562b871ee5e0f6f29b0a",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "README_zh.md",
+          "bytes": 68712,
+          "sha256": "d769c034c92c146e5c4b7fac2bcd941fe4f0fb5be88e78ac967edf06526125ae",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "src/llamafactory/data/mm_plugin.py",
+          "bytes": 137906,
+          "sha256": "b3a46744dac669f8941534e967b678466b47f76e3108d6f997ad0da0d9871ec9",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "src/llamafactory/data/template.py",
+          "bytes": 110387,
+          "sha256": "9a35dadadbbec78e0a6a5fb9cf565227de586c060c80177b568fd3ea6cc21210",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "src/llamafactory/extras/constants.py",
+          "bytes": 131102,
+          "sha256": "54bc1d67cd163bde7b0d0358e57b0a9a087096719005ffd27380b77ddd1695fa",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "src/llamafactory/webui/locales.py",
+          "bytes": 109938,
+          "sha256": "eb66c16771253ba17e49801c3a41ff09314a016d6f59d0e8315f898036de3bf4",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        }
+      ],
+      "added_safe_content": [
+        {
+          "path": "src/llamafactory/hparams/training_args.py",
+          "bytes": 5209,
+          "source_sha256": "sha256:4e70536ef02e3ec17dd88d64f82021cf8f585d3808a62e3775b7751b87778690",
+          "whole_source_redactions": 0,
+          "path_redactions": 0,
+          "oversize_64k": false,
+          "is_symlink": false,
+          "snippet_path": "src/llamafactory/hparams/training_args.py#L143",
+          "collected_text_sha256": "sha256:475929bc73672db2f5cde8395b122f14a5d0853b7b76640a647911794da3549c",
+          "reason": "previous budget truncation freed by unsafe source removal"
+        }
+      ],
+      "tree_equal": false,
+      "old_dropped": [],
+      "new_dropped": [
+        "src/llamafactory/api/app.py",
+        "src/llamafactory/train/trainer_utils.py"
+      ],
+      "old_total_chars": 60000,
+      "new_total_chars": 60000,
+      "default_full_payload_equal": false,
+      "all_discover_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "HarmBench",
+      "source_removals": {},
+      "added_oversize_diagnostics": [
+        {
+          "path": "baselines/autodan/templates.py",
+          "bytes": 422508,
+          "sha256": "e0cc5e29812386dea6e8228b0f306f9e37b3b3d27edfef08abdd9c31450f58d4",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        },
+        {
+          "path": "baselines/human_jailbreaks/jailbreaks.py",
+          "bytes": 231148,
+          "sha256": "62e53558de1da3e67d1aec15c0dff59c848c0b374fd262ffad8f723fda0cd099",
+          "redaction_count": 0,
+          "reason": "oversize_source"
+        }
+      ],
+      "added_safe_content": [],
+      "tree_equal": true,
+      "old_dropped": [],
+      "new_dropped": [
+        "api_models.py",
+        "baselines/artprompt/utils/model.py",
+        "baselines/pair/language_models.py",
+        "baselines/tap/language_models.py"
+      ],
+      "old_total_chars": 30896,
+      "new_total_chars": 30896,
+      "default_full_payload_equal": false,
+      "all_discover_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "llm-dp-finetune",
+      "source_removals": {},
+      "added_oversize_diagnostics": [],
+      "added_safe_content": [],
+      "tree_equal": true,
+      "old_dropped": [],
+      "new_dropped": [],
+      "old_total_chars": 29890,
+      "new_total_chars": 29890,
+      "default_full_payload_equal": true,
+      "all_discover_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

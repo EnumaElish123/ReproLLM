@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "targets": [
+    {
+      "name": "FastChat",
+      "pin": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "L0_gold_sha256": "sha256:2bbf6cf621d811bc4b834b5eb378cc94a9d66c60274c9e3529e12e82ebf20e83",
+      "export_states": [
+        {
+          "stage": "manifest-only",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "2.1–2.4 Hyperparameters / runs",
+                  "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 0 |",
+                  "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+                  "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: mt_bench_score; splits: `datasets.eval.split` = not declared |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: judge:plain |",
+                  "after": "| C3 Prompt details | Prompt table above; format: judge:plain |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": null
+        },
+        {
+          "stage": "offline-locked",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "2.1–2.4 Hyperparameters / runs",
+                  "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 0 |",
+                  "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+                  "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: mt_bench_score; splits: `datasets.eval.split` = not declared |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: judge:plain |",
+                  "after": "| C3 Prompt details | Prompt table above; format: judge:plain |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": "sha256:29b5b98c1dabf1927c5169c569abbcd80a497afcb4d4a083df4ab3cfe45f00b2"
+        }
+      ]
+    }
+  ],
+  "originals_clean": true,
+  "target_count": 1,
+  "states_per_target": 2,
+  "templates": [
+    "default",
+    "neurips",
+    "acl",
+    "acm"
+  ],
+  "current_exports": 8,
+  "baseline_exports": 8,
+  "repeat_exports": 8,
+  "full_default_unchanged": true,
+  "all_mapping_deltas_explained": true,
+  "resource_claim": "none; declared/locked values checked; observed precedence covered by UX08 regression tests"
+}

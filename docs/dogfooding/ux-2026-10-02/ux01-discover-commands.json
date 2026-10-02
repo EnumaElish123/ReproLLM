@@ -1,0 +1,1257 @@
+{
+  "schema_version": 1,
+  "source_artifact": "UX01-validation-20261002/discover-final/commands.json",
+  "data": [
+    {
+      "label": "workspace-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:8d14f43eff12247fcf1d2a064f5645c0a78a6efbb97d8cfe0e03024770c50cff",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "baseline-source-archive",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline-source.tar",
+        "eb9c9484fe045117e123a369984b7e299e1727a5",
+        "src/reprollm"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.051,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/lm-evaluation-harness",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.134,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:3f242337f4ce0ab1d12bf4a0b3d802b4381c50da7a94b3a4ae643308fb527f65",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/EleutherAI/lm-evaluation-harness.git"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-baseline-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.815,
+      "stdout_sha256": "sha256:d67936a5d8dd9748770df75aa642583f49f530bd937237a4ac2e7ddc54048a28",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "lm-evaluation-harness-current-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.08,
+      "stdout_sha256": "sha256:de90b8fc859bc304b09eb5c7da038417f8521d9939f50ba4acfc31bf19587c9d",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-baseline-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/lm-evaluation-harness",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.931,
+      "stdout_sha256": "sha256:ee7e602adc42c01538ea669ac8b3b35de4edc3caa37a0dfc6b84534e90e09d6f",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "lm-evaluation-harness-current-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/lm-evaluation-harness",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.199,
+      "stdout_sha256": "sha256:b545ca89d7a0476cab34b79ea4b5f498bfbea5ffa96d0271efd2455d0a11f0a7",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-default-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/lm-evaluation-harness",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.215,
+      "stdout_sha256": "sha256:00a2470eb5764fd2f75e2a331ede8128f817ca7ea73d5a6bebe7bac4ee19665b",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-controlled-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.122,
+      "stdout_sha256": "sha256:bfac590823b2a3f39e3f75cc62ae28a6ec1a1e61444bd29fc0a37bbf570864a3",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-controlled-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/lm-evaluation-harness",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.186,
+      "stdout_sha256": "sha256:0efe1bdc0a4045bdb0e5bfea0dda7ec16f4ae300445c7439a8dbfd00c1f85bc1",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-controlled-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/lm-evaluation-harness",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 2.154,
+      "stdout_sha256": "sha256:addec442439d238f2e762e9d98a15b08b412264bf36efd33a3ce622abc231144",
+      "stderr_sha256": "sha256:9b51979210e67c836e6deaa980e04b4c42ea714a90c2e004aa69566f91324e20",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "lm-evaluation-harness-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.059,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.013,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.014,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/FastChat",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.092,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/lm-sys/FastChat.git"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-baseline-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.331,
+      "stdout_sha256": "sha256:3a4fc2be99bb950d97d4fe2e79961e9739910114763575cdd7dd51e1255c2008",
+      "stderr_sha256": "sha256:86ec656a16047a882a35bc8c30243d5f11f5b96f0c50df422e877b38e44dfc05",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "FastChat-current-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.343,
+      "stdout_sha256": "sha256:9a419c8dd26adc18d9304505998abf3db061de901c7ff852c12d4378b165f065",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-baseline-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/FastChat",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.407,
+      "stdout_sha256": "sha256:051829dae878cf79aabe728201538676edbb984be644166a191ab1741431de22",
+      "stderr_sha256": "sha256:86ec656a16047a882a35bc8c30243d5f11f5b96f0c50df422e877b38e44dfc05",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "FastChat-current-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/FastChat",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.442,
+      "stdout_sha256": "sha256:18a1613f3afdf70787740707d131a9b3a69becd88ced2b250433223eb446b1c8",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-default-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/FastChat",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.438,
+      "stdout_sha256": "sha256:c717ad0e52fcad65d81dbc1dfa6878a2bff70403dfa8fc2e16fc0fbf4f2745c6",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-controlled-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.338,
+      "stdout_sha256": "sha256:f9c1a4da766a1b93b7114a933fa6bc3bf6a3f562b0d69b0eafdb2d46209d230c",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-controlled-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/FastChat",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.424,
+      "stdout_sha256": "sha256:6a77e1d1f9861741ccb9d91c354b9fc345d1bcf81c07ca3a59523e0183e5c9ef",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-controlled-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/FastChat",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.435,
+      "stdout_sha256": "sha256:e91120c62707f862f7c65ff6f5a38765b371e0341b9d03acd103fb88a6cdad28",
+      "stderr_sha256": "sha256:248619651e9f1993b709479c8ebf85d8c48ac7666605ae01bb7041d3c50e5619",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "FastChat-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.017,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/LlamaFactory",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.115,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:50e4986484b6bf2ce3054494c34174403f9b21b0e3100c172d3047cf242a8f67",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/hiyouga/LlamaFactory.git"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-baseline-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.421,
+      "stdout_sha256": "sha256:7ffcf9716e1d93a92074754fd4501eb99790e020491d9afc30da963f697afd80",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "LlamaFactory-current-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.451,
+      "stdout_sha256": "sha256:88e0b47a605dd663633ad535018a13c836bb48e193865b94658d9eccea39fea1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-baseline-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/LlamaFactory",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.446,
+      "stdout_sha256": "sha256:290a99d92988193da45ab036bb475ab6da72e6e302d69acc77c4a1e8f5111600",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "LlamaFactory-current-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/LlamaFactory",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.492,
+      "stdout_sha256": "sha256:1eaafe5737cfb16be8aaad9f9592905d4f5d272a92326eb8eca207e102784888",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-default-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/LlamaFactory",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.5,
+      "stdout_sha256": "sha256:bb84fe3cb51ad8a40f99e1a0b12a42affecac051c39af63339bb931afe868048",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-controlled-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/LlamaFactory"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.395,
+      "stdout_sha256": "sha256:30e25fd06ce10f7b46c1c6e77e7999e2c5c09481e464b580509f3511c58846fe",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-controlled-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/LlamaFactory",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.478,
+      "stdout_sha256": "sha256:a871faae37cf7c4c9d316ba9e3a9f2e821c5e06a2eb0b6727a9121094f86f75a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-controlled-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/LlamaFactory",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.49,
+      "stdout_sha256": "sha256:d05dcc8c838ae4bb19fd5a77c2dbc134296dc9e59b3536bd64d44b7fe98a250b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "LlamaFactory-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/HarmBench",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.368,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/centerforaisafety/HarmBench.git"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.01,
+      "stdout_sha256": "sha256:c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-baseline-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.802,
+      "stdout_sha256": "sha256:f2264e6c040c774936e7fcac17fbd9db50e97a5e1b591cb43f85ff8283b1ef32",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "HarmBench-current-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.318,
+      "stdout_sha256": "sha256:30b2920f858ebeae10ff15e01c0db387a3a24db09025f68a8b89b4383642b9f8",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-baseline-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/HarmBench",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.352,
+      "stdout_sha256": "sha256:d5c3e607d978545a2bfe279d8f2eaba8b6a2a60885452bd75fddd97bca963400",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "HarmBench-current-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/HarmBench",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.415,
+      "stdout_sha256": "sha256:d36ed8fb6c21d2a101bbe5c787018dab836e6123aa3c2d35bf6822ae4eea4d22",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-default-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/HarmBench",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.405,
+      "stdout_sha256": "sha256:6cdc909cd0fc1e138edeb1047d1f97e90a2eb827edd2d9d384958450d2981817",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-controlled-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/HarmBench"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.313,
+      "stdout_sha256": "sha256:5abb6b3cf1680b590142227d250ae3423027a8a2e4966ac913237fd39d9b896c",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-controlled-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/HarmBench",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.397,
+      "stdout_sha256": "sha256:50659a08043cb2b9f2885d3592b8d7083dfd5c76341638834ee6fc4721812629",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-controlled-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/HarmBench",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.395,
+      "stdout_sha256": "sha256:ef2031a0509ce1bdb6464efe2f06891a27e778e198e11942cff37ee803a39573",
+      "stderr_sha256": "sha256:d203885d9e87e96475fa7bf16ce3c0e237f1d338982fe91e9be80caa26b66588",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "HarmBench-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<pinned-sources>/llm-dp-finetune",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.042,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/jyhong836/llm-dp-finetune.git"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-clone-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.011,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-baseline-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.171,
+      "stdout_sha256": "sha256:04327879e14be93dbd104dd2aeb292a1552ed3721310e0b114e8df58a0258b01",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "llm-dp-finetune-current-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.178,
+      "stdout_sha256": "sha256:04327879e14be93dbd104dd2aeb292a1552ed3721310e0b114e8df58a0258b01",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-baseline-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/llm-dp-finetune",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.275,
+      "stdout_sha256": "sha256:91b763c8b9a32d0351aef0440a85ec427f81df2806658c95af18ae9e76a4abef",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "<evidence>/baseline-source/src"
+    },
+    {
+      "label": "llm-dp-finetune-current-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/llm-dp-finetune",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.283,
+      "stdout_sha256": "sha256:91b763c8b9a32d0351aef0440a85ec427f81df2806658c95af18ae9e76a4abef",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-default-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/llm-dp-finetune",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.274,
+      "stdout_sha256": "sha256:cb0ae6080a4b749e232ca0a22c437482d0856bcb328cff91e0f1da97f041ef8f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-controlled-payload",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "<evidence>/dump_payload.py",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.186,
+      "stdout_sha256": "sha256:7c477c5c09035bf48ac3d6350b9dca6a11e770d25c5bf45eb8706894e8766e77",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-controlled-dry-run",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/llm-dp-finetune",
+        "--experimental",
+        "--dry-run"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.27,
+      "stdout_sha256": "sha256:188dc80f19c580308f26dbc59bf75c97fb3223bdc2a385ef3fa9118fe14e44f8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-controlled-preview",
+      "argv": [
+        "<workspace>/.venv/bin/reprollm",
+        "discover",
+        "<evidence>/clones/llm-dp-finetune",
+        "--experimental",
+        "--dry-run",
+        "--show-content"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.267,
+      "stdout_sha256": "sha256:72f4d4ff5823d59a8579b503493931779a74c195bbcac822717edfb8d1899355",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pythonpath": "current editable install"
+    },
+    {
+      "label": "llm-dp-finetune-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.012,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb",
+      "pythonpath": "current editable install"
+    }
+  ]
+}

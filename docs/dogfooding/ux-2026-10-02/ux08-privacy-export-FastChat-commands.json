@@ -1,0 +1,885 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "verify original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original clean",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.026,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.025,
+      "stdout_sha256": "sha256:e8791e63ed04e8eaca5a15dd6530cb67fd95e3adf2b93d43bfa99809f5ef52df",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "resolve reviewed pre-UX08 baseline",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a^{commit}"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.028,
+      "stdout_sha256": "sha256:1df681a8575935961806f2d4b77e6c859aa14abd6d9ea8e5e51acab918ad6ae3",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "extract baseline source without checkout",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline.tar",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.086,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current source commit",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current tracked source diff",
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--binary"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.025,
+      "stdout_sha256": "sha256:b9fb7488f3bd35e7a7893272b8edec94af55d2421195be9f0f597ee0264ef637",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "original L0 complete reviewed gold comparison",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "-v",
+        "audit",
+        "<pinned-sources>/FastChat",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.169,
+      "stdout_sha256": "sha256:4d548045f19abd636fd65abf480bb9360aa8e5928bc72c6c53672bb94c6fd85f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "local disposable clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-hardlinks",
+        "<pinned-sources>/FastChat",
+        "<evidence>/clones/FastChat"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.165,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:099cdeb7ab62f737a6dec0a40572da86fc5b04d99c0e83516b2e71f339edf4d7"
+    },
+    {
+      "label": "verify clone original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.02,
+      "stdout_sha256": "sha256:9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "record upstream origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/lm-sys/FastChat"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.077,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.072,
+      "stdout_sha256": "sha256:13fd26778e6b035d0223417933a0e2d1c4a6206d6630616f180650a01a76e06c",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "manifest-only: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.151,
+      "stdout_sha256": "sha256:5b771681824687062989b5efa13b025bd1c9053b13d6a3dfc93197e5ae7a4766",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 1.075,
+      "stdout_sha256": "sha256:b9d255b1cdc98b24f243f66918eef47b8a0eddad390e84a2fd017dc890f65f1c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.919,
+      "stdout_sha256": "sha256:f9f8ca5bc31294e4479b6ae31921eb8bd665fc7a808d3764f3c1edc586ab05a3",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.869,
+      "stdout_sha256": "sha256:ba46d43b1bddd809144a280d8c3ef9add79fca7ee480539ed270aa12701777d6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.898,
+      "stdout_sha256": "sha256:8255ea4b99a3b743ec1f0c8aea529a167d5ac54b164ff7bb084f8a76caa828cd",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.862,
+      "stdout_sha256": "sha256:dd3c69be1614b6639d40df56a96daeac5c51aa64e831b0a51107457615d416da",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.83,
+      "stdout_sha256": "sha256:7f0aa31726e12cf2e45f0885b369f34fdb667abe5d56b7804bc9d504b48e1d22",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.83,
+      "stdout_sha256": "sha256:e85ae9ec6ed2f1f00f42c64af9c9853c577d120022e50fad9576c2ae46156cf1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.87,
+      "stdout_sha256": "sha256:c4fdf92d35465b3a3b73d227b57b21bdadaa2a8b4596697bf08ed27760d14019",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.909,
+      "stdout_sha256": "sha256:844a1c9a79748a25bf782d7f0da242a8f4b0346cc59f74a11a527d853563634a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.903,
+      "stdout_sha256": "sha256:01a99c6397cac6fc4715dfebf7f0eea4f45139de7a18cb772c6690b86277027d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.864,
+      "stdout_sha256": "sha256:c9c86b25dd8a6125cbd2ef1897c0c866f9fc740af8d9b11d9eece04a41c02194",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.883,
+      "stdout_sha256": "sha256:f77f9591577a2e87bdab1a3546d8526119bd1c39cd4098182d505b73ea67f8a3",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/manifest-only-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.878,
+      "stdout_sha256": "sha256:be70c0378bec278b62ec407b573212ae044d3237cea062a91e644eb7e37e4b4f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline owned lock; HTTP constructors forbidden",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--offline"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.259,
+      "stdout_sha256": "sha256:1a7e795c35acda21f3f530ceef9b40525e994903d162d3bc7c6a6356882304d1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.lock"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.018,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.027,
+      "stdout_sha256": "sha256:0edda6208e41c596f566961fd5fc7056d28e089e524d0d9669614427cb720457",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "source-backed lock freshness",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.295,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.844,
+      "stdout_sha256": "sha256:f2f5f27c7b1a1a7a7bcd424f741b30db18e46cc6a23428e9aa5660ab1719fcbe",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.84,
+      "stdout_sha256": "sha256:931903341b76464c4594dd2036a812a1b60efe28fac0c1fe77b8e5aa1f01b436",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.833,
+      "stdout_sha256": "sha256:8937a065c5b1e430eb0c1486b8409e0f953327301047f89c91e24f3bbac3b539",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.812,
+      "stdout_sha256": "sha256:ab3b6cc3f0d7808bd0decb073f209b380b02fe69b57bbeaff6d152febd333596",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.834,
+      "stdout_sha256": "sha256:be96997da771d25a4b45974192d7b2740a154f0e9b263d07e5d59b99cf312edc",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.842,
+      "stdout_sha256": "sha256:91d5ec28bd20ba5533857510f7823c31ac767f03b4559d657a321e512a06fd37",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.833,
+      "stdout_sha256": "sha256:9da3695e0dfb45730202e2654ec19d190c8d708a076f593d336ec68be6ac4a5e",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.866,
+      "stdout_sha256": "sha256:f7a2029ccaad65b7275a1b22702f3227e45c6c9276f64746184bc2b70eec5598",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.848,
+      "stdout_sha256": "sha256:5b4a34ea3e89757c7804c788d0feba64646155aba1c07cdaac11bb28b2067171",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.864,
+      "stdout_sha256": "sha256:696381cab15b06e8abf982a9e47420572936e406836aa77466b9fddea0249dca",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.86,
+      "stdout_sha256": "sha256:3c49cc3b3806d4cdc9edafa4765c266f9f3bb8fc2bb9a030eb7a46949a9d4f39",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.885,
+      "stdout_sha256": "sha256:9fca7d107e48264904d9304479cc2e299dbe175f091e4bbd9d561646f75fc32c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.856,
+      "stdout_sha256": "sha256:517b4a4eaa995e1fcd6fecd24c301f122cbbdc8d62fc6c34361172c889768ca3",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/FastChat/offline-locked-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.883,
+      "stdout_sha256": "sha256:40e75b9f580e70dc56754016b1e2fee6b6f222baf690392a17f584f05ec11bba",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.016,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<evidence>/clones/FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

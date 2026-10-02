@@ -1,0 +1,885 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "label": "verify original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.017,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original clean",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.023,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "verify original origin",
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:1f42245b902c6bc81fccb0461bfbe91b7c3d9a2484cea02628612685b860a30f",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "resolve reviewed pre-UX08 baseline",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a^{commit}"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.029,
+      "stdout_sha256": "sha256:1df681a8575935961806f2d4b77e6c859aa14abd6d9ea8e5e51acab918ad6ae3",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "extract baseline source without checkout",
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "<evidence>/baseline.tar",
+        "bfdb82ec96f297b37cc650e630953c507e762a0a"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.089,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current source commit",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.015,
+      "stdout_sha256": "sha256:c8b46151452f020241a79ca2d75a5f00aaedfdd196d7cb3bad166a757fe2b7b6",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "current tracked source diff",
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--binary"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": null,
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.021,
+      "stdout_sha256": "sha256:b9fb7488f3bd35e7a7893272b8edec94af55d2421195be9f0f597ee0264ef637",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "original L0 complete reviewed gold comparison",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "-v",
+        "audit",
+        "<pinned-sources>/llm-dp-finetune",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.636,
+      "stdout_sha256": "sha256:46032ddd7c5d7460c94541a33bcac185863c695d1ae0abda14cd3808032caa63",
+      "stderr_sha256": "sha256:3ba6787cebc195541f36e9d0c87d66dc18173c05020e111edc3a39bf06e7c36a"
+    },
+    {
+      "label": "local disposable clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-hardlinks",
+        "<pinned-sources>/llm-dp-finetune",
+        "<evidence>/clones/llm-dp-finetune"
+      ],
+      "cwd": "<workspace>",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.078,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:ebdfda2bb0ff1e100fcd36eeba4d1feb7ccfde4cbb9c4a6a3d85792f61a78408"
+    },
+    {
+      "label": "verify clone original pin",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.019,
+      "stdout_sha256": "sha256:6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "record upstream origin",
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/jyhong836/llm-dp-finetune"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.021,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.yaml"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.023,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.028,
+      "stdout_sha256": "sha256:d103a079e3fec2376dfed36e1d12bf1e6b4361fa715ec557ac0b9fdc9478315b",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "manifest-only: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.51,
+      "stdout_sha256": "sha256:6d0a205fe98b6dbd42bdf8e5891a74124869228243ec97b34d05d43bf42dfacd",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.624,
+      "stdout_sha256": "sha256:6d0a205fe98b6dbd42bdf8e5891a74124869228243ec97b34d05d43bf42dfacd",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.561,
+      "stdout_sha256": "sha256:5ae9649fcceb8331b6e42673b61be9cf5133d1cab76f15bb0aee66901b13192d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.573,
+      "stdout_sha256": "sha256:4e5093cdc252e75cd1a91e10443702388e35cf9dcc7ddc07f6bd4da82d836173",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.525,
+      "stdout_sha256": "sha256:5f49230c32f8d7257c9bc661105238e47a9b5d4261f91d392748639c5ebed322",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.545,
+      "stdout_sha256": "sha256:a46f7b07d3694f77ad9fe965a369d67b51b395a2701d65ea634d4bf012ebbb38",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.446,
+      "stdout_sha256": "sha256:6ae75de1a4358060642f40f0079bbf0c6daf1b119101e9b0c2cb86b3d58987a8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.48,
+      "stdout_sha256": "sha256:88bf00f360857bfd695cf5e403f3ef5a692ac635c61cef98e09ddb7f77f0cf5f",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.459,
+      "stdout_sha256": "sha256:b23c3e225d20c283a3bacacff6f51f44a0180edab47f68ffdb3a6252c27f4c44",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.452,
+      "stdout_sha256": "sha256:c553f270a2fe95709b23a7d51df9171f2967e4df5c847adc4e74b77572d9c6a1",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.466,
+      "stdout_sha256": "sha256:04dfe67ca21341acf1081dde2782cb337c04c45d4e15639ebb0a0d5429318283",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.495,
+      "stdout_sha256": "sha256:975a176b1236b4dc02a52c18649c8d423dcb3d12c76aeaae21e367b2ee17f400",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.456,
+      "stdout_sha256": "sha256:2d48fece5d52c7e0d106a1b9318b8710511bf1fda407eaf21e69bff2d3131645",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "manifest-only: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/manifest-only-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.464,
+      "stdout_sha256": "sha256:a71789237f2f83792f78ff59e32e547c093bb8f975c77bc267d57a4e8ba5240b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline owned lock; HTTP constructors forbidden",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--offline"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.266,
+      "stdout_sha256": "sha256:5a661a27fd8d91ab8d2a17c326dff0e76496fd37519d2e3e7b35d71549692029",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "stage disposable owned artifact",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "reprollm.lock"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.021,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "commit disposable owned artifact",
+      "argv": [
+        "git",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "record disposable validation input"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.029,
+      "stdout_sha256": "sha256:06284f512df9a7a74ee4978c4a4e827285e0ed1a63dd4449a923ff101d3cce2e",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "source-backed lock freshness",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.254,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current full audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.438,
+      "stdout_sha256": "sha256:841f69856932325848b8e9bce21a2e218a9595841e3a6ef56ee5b5c37037232a",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: pre-UX08 audit",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.444,
+      "stdout_sha256": "sha256:a53d79879169abb68dd6541a5daae66b3767422594d1e465a07484f2b530eb5c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-default.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.446,
+      "stdout_sha256": "sha256:6d4e11023ee663ceb5a1a36ee9f1e6621dfd3dc495ab6f4873a6ffadb8a1078c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-default-baseline.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.528,
+      "stdout_sha256": "sha256:abe1b15fbfe229945408f08eda4639bfafd85b93e7d9901cc850b33bf54fbde8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export default",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-default-repeat.md",
+        "--template",
+        "default"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.5,
+      "stdout_sha256": "sha256:ceb3183415d3e9fa886bda4f80cc04e76baf58dc807cf36cee0f697b1fe80984",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-neurips.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.504,
+      "stdout_sha256": "sha256:8a9f3cb17eb0d1eeece629c7c02dcc0cb6f48fa629202727cf82a48fd1bad267",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-neurips-baseline.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.493,
+      "stdout_sha256": "sha256:ce2f1a3abbf4e85fabd2106ebb7e5a0579713b7b601395051c4b73492350c63b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export neurips",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-neurips-repeat.md",
+        "--template",
+        "neurips"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.486,
+      "stdout_sha256": "sha256:d7690b1d46e5729a8bdaba5254ed163d9d792ed31ab1016b325f238bb679aa1b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acl.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.482,
+      "stdout_sha256": "sha256:7d13addc0003e003e9b68bf2c8ffa493217888f0e159a3819f7ebbfe4845f67b",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acl-baseline.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.5,
+      "stdout_sha256": "sha256:7523b19c2e3eaac0ada60744a807e04e734248e40a32a2ccf973703ca4b318ea",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acl",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acl-repeat.md",
+        "--template",
+        "acl"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.476,
+      "stdout_sha256": "sha256:64f9ff42310c6b41284ee2a91b1d7bbd80425ce00444d3fd5af010289529fde8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acm.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.466,
+      "stdout_sha256": "sha256:3a0e4f6ff464be40c06982d69b698bb2f914b2e8c621918abc1aa5efe265e1de",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: baseline export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acm-baseline.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.502,
+      "stdout_sha256": "sha256:1ba789051c82361758f7deb116ea5f9b2274cb1d40b7ef91e77b9992b1197aab",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "offline-locked: current export acm",
+      "argv": [
+        "<workspace>/.venv/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "export",
+        "--output",
+        "<evidence>/llm-dp-finetune/offline-locked-acm-repeat.md",
+        "--template",
+        "acm"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.486,
+      "stdout_sha256": "sha256:4492c3b00fa9dbf811bcaf5f527d65be6a7e65d77e03e1455e97b3a33bb810c5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.017,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    },
+    {
+      "label": "final original and disposable input cleanliness",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<evidence>/clones/llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "elapsed_seconds": 0.017,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:54dc9366cf6d804bdf5ae1ffa172dab10fc68a63170232134cbe6981ee4634fb"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "read_only_proposal_evidence_not_new_gold",
+  "workspace_sha": "eb9c9484fe045117e123a369984b7e299e1727a5",
+  "pins": [
+    {
+      "repository": "lm-evaluation-harness",
+      "sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "clean": true
+    },
+    {
+      "repository": "FastChat",
+      "sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "clean": true
+    },
+    {
+      "repository": "LlamaFactory",
+      "sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "clean": true
+    },
+    {
+      "repository": "HarmBench",
+      "sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "clean": true
+    },
+    {
+      "repository": "llm-dp-finetune",
+      "sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "clean": true
+    }
+  ],
+  "source_helper_sha256": "bd3e08aae8d3bfca87c27fb75b470f3ef18b8cf4bd70a73dfdf0a30e75c030e0",
+  "task_count": 13123,
+  "task_name_set_sha256": "2a5d98bfd121e95919da7d472c40d89a2580746672a2109e79fcd407c06c36f3",
+  "selected_task_source_evidence": [
+    {
+      "task_name": "gsm8k",
+      "path": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+      "line": 3,
+      "source_sha256": "82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833",
+      "metric_names_in_source": [
+        "exact_match"
+      ],
+      "reason_not_auto_metric_implementation": "Task identity differs from metric identity; no implementation is inferred."
+    },
+    {
+      "task_name": "arc_easy",
+      "path": "lm_eval/tasks/arc/arc_easy.yaml",
+      "line": 3,
+      "source_sha256": "96da1d9efe1df88659481cedc13985cb347dc068554a2eae561303fa39bfab3f",
+      "metric_names_in_source": [
+        "acc",
+        "acc_norm"
+      ],
+      "reason_not_auto_metric_implementation": "Task identity differs from metric identity; no implementation is inferred."
+    }
+  ],
+  "historical_report_provenance": "0.6.1 Gate A, lm-evaluation-harness-current-L1.json; not a source of new gold",
+  "historical_summary": {
+    "critical": 5,
+    "warning": 13151,
+    "info": 3,
+    "pass": 10,
+    "suppressed": 0,
+    "skipped": 13
+  },
+  "historical_affected_findings": [
+    {
+      "rule_id": "eval.aggregation_declared",
+      "status": "fail",
+      "severity": "WARNING",
+      "count": 1
+    },
+    {
+      "rule_id": "eval.metric_implementation_referenced",
+      "status": "fail",
+      "severity": "WARNING",
+      "count": 13123
+    },
+    {
+      "rule_id": "eval.metrics_declared",
+      "status": "pass",
+      "severity": "PASS",
+      "count": 1
+    },
+    {
+      "rule_id": "eval.repetitions_declared",
+      "status": "fail",
+      "severity": "WARNING",
+      "count": 1
+    }
+  ],
+  "independent_rule_behavior_sources": {
+    "eval.metrics_declared": "src/reprollm/rules/eval_.py:40-47; CRITICAL override profiles/evaluation.yaml:22",
+    "eval.metric_implementation_referenced": "src/reprollm/rules/eval_.py:54-56,68-75",
+    "eval.aggregation_declared": "src/reprollm/rules/eval_.py:117-133",
+    "eval.repetitions_declared": "src/reprollm/rules/eval_.py:117-141"
+  },
+  "proposed_default_lm_evaluation_harness_summary": {
+    "critical": 6,
+    "warning": 26,
+    "info": 3,
+    "pass": 9,
+    "suppressed": 0,
+    "skipped": 16
+  },
+  "proposed_one_selected_task_summary": {
+    "critical": 5,
+    "warning": 29,
+    "info": 3,
+    "pass": 10,
+    "suppressed": 0,
+    "skipped": 13
+  },
+  "scope_review_seconds": 4.355,
+  "full_inventory": {
+    "included_in_bundle": false,
+    "retained_in_local_validation_workspace": true,
+    "local_artifact_label": "scope/independent-lm-eval-task-gold.json",
+    "reason": "Full 3.9 MB inventory is unnecessary for pending policy review; exact pins, source anchors, count and set hash are preserved."
+  }
+}

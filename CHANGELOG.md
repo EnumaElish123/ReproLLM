@@ -41,6 +41,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- Record the product-trial repairs, complete five-project comparisons and
+  [pending specification choices](docs/plan/ux-2026-10-02-proposals/README.md)
+  in the [UX session report](docs/dogfooding/2026-10-02-ux-repairs.md).
 - Track the three deferred resource-validation groups after 0.6.1 in a
   [resumption checklist](docs/dogfooding/pending-resource-validation.md), linked
   from val.md, the patch report and backlog. Preserve blocked status and the

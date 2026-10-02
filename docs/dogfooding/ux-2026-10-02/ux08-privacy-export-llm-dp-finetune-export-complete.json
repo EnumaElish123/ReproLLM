@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "targets": [
+    {
+      "name": "llm-dp-finetune",
+      "pin": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "L0_gold_sha256": "sha256:e15cb496f611dcb87d819b2e38ac5f945540272a6b07a636406f0302421c7070",
+      "export_states": [
+        {
+          "stage": "manifest-only",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "3.1–3.3 Datasets / splits",
+                  "before": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked, split: not declared |",
+                  "after": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked, split: train+test+validation |",
+                  "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+                },
+                {
+                  "item": "5.7 Attack/defense",
+                  "before": "| 5.7 Attack/defense | Privacy section above (threat model, mechanism) |",
+                  "after": "| 5.7 Attack/defense | `privacy.threat_model`: An observer of the released fine-tuned model seeks information about individual training examples.; `privacy.mechanism.name`: dp_sgd |",
+                  "why": "default has no Privacy section; mapping now supplies the reviewed values inline"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = train+test+validation |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+                  "after": "| C3 Prompt details | Prompt table above; format: none |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": null
+        },
+        {
+          "stage": "offline-locked",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "3.1–3.3 Datasets / splits",
+                  "before": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked (unresolved), split: not declared |",
+                  "after": "| 3.1–3.3 Datasets / splits | `datasets.train` = ecthr_cases @ not locked (unresolved), split: train+test+validation |",
+                  "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+                },
+                {
+                  "item": "5.7 Attack/defense",
+                  "before": "| 5.7 Attack/defense | Privacy section above (threat model, mechanism) |",
+                  "after": "| 5.7 Attack/defense | `privacy.threat_model`: An observer of the released fine-tuned model seeks information about individual training examples.; `privacy.mechanism.name`: dp_sgd |",
+                  "why": "default has no Privacy section; mapping now supplies the reviewed values inline"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: not declared; splits: `datasets.train.split` = train+test+validation |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: none |",
+                  "after": "| C3 Prompt details | Prompt table above; format: none |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": "sha256:e3598d4cd58b40adf2692cacb3dee63f1e3b5e057c3040faaf9c7e4844879156"
+        }
+      ]
+    }
+  ],
+  "originals_clean": true,
+  "target_count": 1,
+  "states_per_target": 2,
+  "templates": [
+    "default",
+    "neurips",
+    "acl",
+    "acm"
+  ],
+  "current_exports": 8,
+  "baseline_exports": 8,
+  "repeat_exports": 8,
+  "full_default_unchanged": true,
+  "all_mapping_deltas_explained": true,
+  "resource_claim": "none; declared/locked values checked; observed precedence covered by UX08 regression tests"
+}

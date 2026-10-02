@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "source_artifact": "UX05-validation/rules/independent-expectations.json",
+  "data": {
+    "kind": "synthetic_contract_expectations_not_real_repository_results",
+    "fixture_candidates": [
+      {
+        "id": "c-f7c229",
+        "kind": "parameter",
+        "name": "alpha",
+        "suggested_field": "custom.synthetic.alpha",
+        "suggested_severity": "WARNING",
+        "confidence": "high",
+        "rationale": "Synthetic fixture: declare alpha.",
+        "evidence": [
+          {
+            "kind": "file",
+            "path": "validation/probe.py",
+            "line": 1,
+            "snippet": "alpha = 0.25"
+          }
+        ]
+      },
+      {
+        "id": "c-469585",
+        "kind": "parameter",
+        "name": "beta",
+        "suggested_field": "custom.synthetic.beta",
+        "suggested_severity": "WARNING",
+        "confidence": "high",
+        "rationale": "Synthetic fixture: declare beta.",
+        "evidence": [
+          {
+            "kind": "file",
+            "path": "validation/probe.py",
+            "line": 2,
+            "snippet": "beta = 0.25"
+          }
+        ]
+      },
+      {
+        "id": "c-ef16f1",
+        "kind": "parameter",
+        "name": "gamma",
+        "suggested_field": "custom.synthetic.gamma",
+        "suggested_severity": "WARNING",
+        "confidence": "high",
+        "rationale": "Synthetic fixture: declare gamma.",
+        "evidence": [
+          {
+            "kind": "file",
+            "path": "validation/probe.py",
+            "line": 3,
+            "snippet": "gamma = 0.25"
+          }
+        ]
+      }
+    ],
+    "candidate_identity_derivation": "sha256(kind+name+first_evidence_path)[:6]",
+    "initial": {
+      "states": {
+        "c-f7c229": "pending",
+        "c-469585": "pending",
+        "c-ef16f1": "pending"
+      },
+      "json": []
+    },
+    "ignored_without_accepted": {
+      "states": {
+        "c-f7c229": "pending",
+        "c-469585": "ignored",
+        "c-ef16f1": "pending"
+      },
+      "json": []
+    },
+    "accepted": {
+      "pending": [
+        "c-ef16f1"
+      ],
+      "ignored": [
+        "c-469585"
+      ],
+      "accepted": [
+        "c-f7c229"
+      ],
+      "json": [
+        {
+          "id": "project.alpha",
+          "field": "custom.synthetic.alpha",
+          "severity": "WARNING",
+          "reason": "Synthetic fixture: declare alpha.",
+          "source": "discover",
+          "candidate_id": "c-f7c229",
+          "accepted_at": "<timestamp>",
+          "bindings": null
+        }
+      ]
+    },
+    "baseline_updates": false
+  }
+}

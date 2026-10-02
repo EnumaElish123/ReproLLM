@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "targets": [
+    {
+      "name": "lm-evaluation-harness",
+      "pin": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "L0_full_gold_equal": true,
+      "L0_stderr_equal": true,
+      "L0_gold_sha256": "sha256:99992dbc70abf601edb706e25cbd19a37da6c2d386decdb0b80867c855bb98af",
+      "export_states": [
+        {
+          "stage": "manifest-only",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "2.1–2.4 Hyperparameters / runs",
+                  "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 42 |",
+                  "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+                  "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+                },
+                {
+                  "item": "3.1–3.3 Datasets / splits",
+                  "before": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked, split: not declared |",
+                  "after": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked, split: test |",
+                  "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: exact_match; splits: `datasets.eval.split` = test |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: task:jinja |",
+                  "after": "| C3 Prompt details | Prompt table above; format: task:jinja |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": null
+        },
+        {
+          "stage": "offline-locked",
+          "templates": [
+            "default",
+            "neurips",
+            "acl",
+            "acm"
+          ],
+          "default_full_bytes_equal_to_baseline": true,
+          "all_templates_repeat_bytes_equal": true,
+          "mapping_deltas": [
+            {
+              "template": "neurips",
+              "explained_changed_rows": [
+                {
+                  "item": "2.1–2.4 Hyperparameters / runs",
+                  "before": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 42 |",
+                  "after": "| 2.1–2.4 Hyperparameters / runs | *not covered* (no `training` section); repetitions: 1 |",
+                  "why": "evaluation.repetitions is experiment repetition count; generation.seed is a different field"
+                },
+                {
+                  "item": "3.1–3.3 Datasets / splits",
+                  "before": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked (unresolved), split: not declared |",
+                  "after": "| 3.1–3.3 Datasets / splits | `datasets.eval` = openai/gsm8k @ not locked (unresolved), split: test |",
+                  "why": "dataset.split exists in reviewed input/lock and was omitted from exporter rows"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acl",
+              "explained_changed_rows": [
+                {
+                  "item": "B6 Data usage",
+                  "before": "| B6 Data usage | Dataset table above (id, revision, preprocessing) |",
+                  "after": "| B6 Data usage | Dataset table above (id, revision) |",
+                  "why": "default dataset table has no preprocessing column"
+                },
+                {
+                  "item": "B9 Model / LLM details",
+                  "before": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |",
+                  "after": "| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |",
+                  "why": "default identity table does not contain the claimed dtype/quantization/adapter columns"
+                },
+                {
+                  "item": "C1 Tasks and evaluation",
+                  "before": "| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |",
+                  "after": "| C1 Tasks and evaluation | Metrics: exact_match; splits: `datasets.eval.split` = test |",
+                  "why": "default does not list evaluation metrics or split columns; correct values are now inline"
+                },
+                {
+                  "item": "C3 Prompt details",
+                  "before": "| C3 Prompt details | Prompt table above; few-shot: task:jinja |",
+                  "after": "| C3 Prompt details | Prompt table above; format: task:jinja |",
+                  "why": "prompt format is not the number/content of few-shot examples"
+                }
+              ],
+              "full_document_equal_after_exact_expected_reversion": true
+            },
+            {
+              "template": "acm",
+              "explained_changed_rows": [],
+              "full_document_equal_after_exact_expected_reversion": true
+            }
+          ],
+          "lock_sha256": "sha256:d328b4a9a531876df5342c7ff6ae6061145eac3536c5422d01684b28ae3df9dc"
+        }
+      ]
+    }
+  ],
+  "originals_clean": true,
+  "target_count": 1,
+  "states_per_target": 2,
+  "templates": [
+    "default",
+    "neurips",
+    "acl",
+    "acm"
+  ],
+  "current_exports": 8,
+  "baseline_exports": 8,
+  "repeat_exports": 8,
+  "full_default_unchanged": true,
+  "all_mapping_deltas_explained": true,
+  "resource_claim": "none; declared/locked values checked; observed precedence covered by UX08 regression tests"
+}
