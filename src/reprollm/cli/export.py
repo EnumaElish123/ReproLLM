@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import getpass
+import socket
 from pathlib import Path
 from typing import Annotated
 
@@ -12,6 +14,7 @@ from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
 from reprollm.core.paths import LOCK, MANIFEST, find_root
 from reprollm.core.yaml_io import load_manifest, load_yaml
+from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.lock import Lock
 from reprollm.schemas.run_record import RunRecord
 from reprollm.schemas.state import State
@@ -103,13 +106,18 @@ def export(
     data = build_input(
         manifest, lock, run_record, state, reprollm_version=__version__, audit_report=audit_report
     )
-    document = render(data)
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+
+    def portable_text(value: str) -> str:
+        return privacy.text(value)[0]
+
+    document = render(data, sanitize=portable_text)
 
     if template != "default":
         from reprollm.export.exporter import enrich_for_checklist, render_checklist_mapping
 
         enrich_for_checklist(data, manifest, lock)
-        document += "\n" + render_checklist_mapping(data, venue=template)
+        document += "\n" + render_checklist_mapping(data, venue=template, sanitize=portable_text)
 
     target = output if output.is_absolute() else root / output
     try:

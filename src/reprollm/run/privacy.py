@@ -19,7 +19,10 @@ from reprollm.core.redaction import redact_text
 # separator, glob star, or the "<" of a closing token (</s>, </think>).
 # Without the star/angle exclusions, "…**/*.json" loses its "/…" suffix and
 # "</s>" stop tokens become "<<REDACTED:path>>" in captured snapshots.
-_ABSOLUTE_PATH = re.compile(r"""(?<![\w:/\\*<])(?:[A-Za-z]:[\\/]|/|\\\\)[^\s"'<>;,\)\]}>]*""")
+# Dot exclusion belongs only to POSIX: .C:\file and .\\server must still redact.
+_ABSOLUTE_PATH = re.compile(
+    r"""(?<![\w:/\\*<])(?:[A-Za-z]:[\\/]|(?<!\.)/|\\\\)[^\s"'<>;,\)\]}>]*"""
+)
 
 
 class RunPrivacy:

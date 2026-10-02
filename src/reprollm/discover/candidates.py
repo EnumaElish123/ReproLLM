@@ -98,7 +98,11 @@ def finalize(
     finalized: list[Candidate] = []
     for raw in raw_candidates:
         field, field_redactions = safe_text(raw.suggested_field)
-        if field_redactions or "<REDACTED:" in field:
+        absolute_component = any(
+            PurePosixPath(part).is_absolute() or PureWindowsPath(part).is_absolute()
+            for part in raw.suggested_field.split(".")
+        )
+        if field_redactions or "<REDACTED:" in field or absolute_component:
             continue
         name, name_redactions = safe_text(raw.name)
         trustable = name_redactions == 0 and "<REDACTED:" not in name
@@ -127,14 +131,15 @@ def finalize(
                 if value is None:
                     cleaned_bindings[key] = None
                     continue
+                if key == "config":
+                    if _safe_relative_config_binding(value, privacy, secret_values=secret_values):
+                        cleaned_bindings[key] = value
+                    else:
+                        cleaned_bindings[key] = None
+                        trustable = False
+                    continue
                 safe, redactions = safe_text(value)
-                if (
-                    (redactions or "<REDACTED:" in safe)
-                    and key == "config"
-                    and _safe_relative_config_binding(value, privacy, secret_values=secret_values)
-                ):
-                    cleaned_bindings[key] = value
-                elif redactions or "<REDACTED:" in safe:
+                if redactions or "<REDACTED:" in safe:
                     cleaned_bindings[key] = None
                     trustable = False
                 else:

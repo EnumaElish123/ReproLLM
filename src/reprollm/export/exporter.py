@@ -9,7 +9,9 @@ and an audit runs at export time to embed its summary verbatim.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
 from importlib.resources import files
 from typing import Any
 
@@ -258,7 +260,28 @@ def build_input(
     return data
 
 
-def render(data: ExportInput) -> str:
+def _redact_keyed_values(value: Any, keys: tuple[str, ...] = ()) -> Any:
+    """Keep secret-key context before Markdown punctuation or nested repr hides it."""
+    if isinstance(value, dict):
+        return {key: _redact_keyed_values(item, (*keys, str(key))) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_redact_keyed_values(item, keys) for item in value]
+    original = str(value)
+    safe = original
+    for key in keys:
+        # JSON escaping guarantees a single physical separator, even for free-form keys.
+        encoded_key = json.dumps(key, ensure_ascii=False)[1:-1]
+        redacted, _ = redact_text(f"{encoded_key}=\n{safe}")
+        _prefix, separator, displayed = redacted.partition("\n")
+        safe = displayed if separator else redacted
+    return value if safe == original else safe
+
+
+def _render_input(data: ExportInput) -> ExportInput:
+    return ExportInput(**_redact_keyed_values(asdict(data)))
+
+
+def render(data: ExportInput, *, sanitize: Callable[[str], str] | None = None) -> str:
     source = (files("reprollm.export") / "templates" / "REPRODUCIBILITY.md.j2").read_text(
         encoding="utf-8"
     )
@@ -267,9 +290,10 @@ def render(data: ExportInput) -> str:
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
+        finalize=(lambda value: sanitize(str(value))) if sanitize is not None else None,
     )
     template = environment.from_string(source)
-    rendered = template.render(data=data, short=_short)
+    rendered = template.render(data=_render_input(data), short=_short)
     safe, _count = redact_text(rendered)
     return safe.lstrip("\n")
 
@@ -310,7 +334,9 @@ def enrich_for_checklist(
     data.has_privacy = bool(data.privacy.get("mechanism.name"))
 
 
-def render_checklist_mapping(data: ExportInput, *, venue: str) -> str:
+def render_checklist_mapping(
+    data: ExportInput, *, venue: str, sanitize: Callable[[str], str] | None = None
+) -> str:
     """Render the venue-specific checklist-mapping template."""
     source = (files("reprollm.export") / "templates" / "checklist_mapping.md.j2").read_text(
         encoding="utf-8"
@@ -320,8 +346,9 @@ def render_checklist_mapping(data: ExportInput, *, venue: str) -> str:
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
+        finalize=(lambda value: sanitize(str(value))) if sanitize is not None else None,
     )
     template = environment.from_string(source)
-    rendered = template.render(data=data, venue=venue)
+    rendered = template.render(data=_render_input(data), venue=venue)
     safe, _count = redact_text(rendered)
     return safe.lstrip("\n").rstrip("\n") + "\n"

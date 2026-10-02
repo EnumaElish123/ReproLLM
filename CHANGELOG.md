@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX-T08 / M10-T01: remove machine paths and identity from displayed export
+  values, and redact keyed credentials before Markdown hides their key context.
+  Preserve portable dot-relative paths in the shared run privacy helper while
+  keeping explicit Discover field and config traversal checks.
 - UX-T08 / M10-T01: render checklist splits, repetitions, metric names, judge
   roles and privacy values from the effective experiment state. Remove
   references to absent evidence sections and guard malformed observed metrics;
