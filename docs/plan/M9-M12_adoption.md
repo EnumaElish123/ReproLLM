@@ -100,7 +100,7 @@ H3 反馈的 crash / 误报当周修复。
 
 ### M11-T01 评测框架 Integration 与 Profile 增强（L）
 
-- `integrations/lm_eval.py`、`lighteval.py`、`inspect_ai.py`：`detect()`（导入、CLI 入口 `lm_eval`/`lighteval`/`inspect eval`、任务 YAML 结构）→ `evaluation` high；`capture()` 版本；对各框架的**任务配置文件**（如 lm-eval 的 task YAML、inspect 的 `@task` 装饰器）在检测 `hints` 中提取任务名，供 `init` 预填 `evaluation.metrics[].name`。
+- `integrations/lm_eval.py`、`lighteval.py`、`inspect_ai.py`：`detect()`（导入、CLI 入口 `lm_eval`/`lighteval`/`inspect eval`、任务 YAML 结构）→ `evaluation` high；`capture()` 版本；对各框架的**任务配置文件**（如 lm-eval 的 task YAML、inspect 的 `@task` 装饰器）提取完整任务候选供 `init --list-tasks` 审阅；只有作者通过 `--task` 或交互明确选择的名称才预填 `evaluation.metrics[].name`，仍须确认 metric 名称及 implementation（UX2-T01，2026-10-02 批准）。
 - `docs/integrations/<framework>.md`：各框架的 manifest 写法示例（models/datasets/generation/bindings 如何对应到框架 CLI flag），并附 `reprollm run -- lm_eval …` 的真实 run 片段。
 
 ### M11-T02 上游文档 PR（M，人工主导 + agent 起草）

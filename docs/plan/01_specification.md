@@ -30,7 +30,7 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm --version` | print version | M1 |
 | `reprollm doctor [--json] [--check-network]` | environment diagnostics | M1 |
 | `reprollm schema export [--out DIR]` | write JSON Schema files | M1 |
-| `reprollm init [PATH] [--force] [--interactive] [--profiles a,b]` | create `reprollm.yaml` + `.reprollm/` | M2 |
+| `reprollm init [PATH] [--force] [--interactive] [--profiles a,b] [--task NAME]... [--list-tasks]` | create `reprollm.yaml` + `.reprollm/`; list task candidates without writes | M2 / UX2-T01 |
 | `reprollm audit [PATH] [--format text\|json] [--output FILE] [--fail-on critical\|warning\|never] [--level 0\|1\|2\|auto] [--profiles a,b] [--show-passed] [--show-skipped]` | run rules | M2–M6 |
 | `reprollm profiles list \| show NAME` | inspect profiles | M2 |
 | `reprollm lock [PATH] [--offline] [--check] [--verify-api] [--hash-large-files]` | resolve and write `reprollm.lock` | M4 |
@@ -204,6 +204,21 @@ artifacts:
 ### 3.2 `init` template
 
 `init` writes YAML text from `reprollm/cli/templates/manifest.yaml.j2` (comments preserved), not from a model dump. Detected profiles fill `experiment.profiles`. Fields listed in the union of selected profiles' `required_fields` are rendered with `# TODO` comments; detected literal HF ids (AST string constants passed to `from_pretrained`/`LLM(model=…)`) are pre-filled with `# detected: <file>:<line>`.
+
+Task inventory and experiment selection are separate (UX2-T01, approved 2026-10-02).
+`init --list-tasks` lists the complete safe deterministic inventory, sorted and
+unique, one name per line, without writes even if a manifest already exists.
+It rejects combinations with `--interactive`, `--task`, `--force` or `--profiles`.
+Ordinary init leaves `evaluation.metrics` empty unless the author selects exact
+names using repeatable `--task NAME` or interactive task selection. Deduplicate
+and sort selections; unknown/unsafe names and selectors incompatible with the
+selected profiles are usage errors before writes. Candidates are nonempty,
+single-line strings without control/format/line-separator characters or existing
+secret/machine-identity redaction triggers; preserve remaining Unicode exactly.
+Print detected/selected profiles and candidate/selection counts with review and
+listing guidance. Interactive init offers profile selection (the detected or
+explicit list as its visible default), then exact task names one per prompt
+(empty ends selection), then required fields. Noninteractive init never prompts.
 
 ---
 
@@ -717,11 +732,13 @@ class Integration(Protocol):
 Integrations MUST NOT import their target libraries.
 
 Evaluation framework task hints are internal initialization candidates, not an assertion that
-every discovered task was used by an experiment. When `evaluation.metrics` is required, `init`
-pre-fills sorted, unique task names and asks the author to remove unused tasks and confirm each
-metric name and implementation. An explicit profile selection that does not require evaluation
-does not pre-fill metrics. Framework YAML tags are inspected as syntax only and never executed;
-non-string task names and secret-bearing names are not pre-filled.
+every discovered task was used by an experiment. Retain the complete sorted unique safe inventory
+independently of selected profiles. When `evaluation.metrics` is required, `init` pre-fills only
+explicitly selected task names; no selection renders an empty TODO list. The author must confirm
+each metric name and implementation: task identity is not metric identity. An explicit profile
+selection that does not require evaluation does not pre-fill metrics. Framework YAML tags are
+inspected as syntax only and never executed; names not satisfying §3.2 are neither listed nor
+selected. Do not infer metric implementation, aggregation or bindings from task names.
 
 ---
 

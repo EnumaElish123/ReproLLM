@@ -176,6 +176,41 @@ README/config values never auto-fill a model. FastChat and LlamaFactory are mult
 the current static evidence cannot determine their semantic primary model, so validation checks
 allowed-set membership and provenance rather than hard-coding one candidate.
 
+### 7.1 Selected-task supplement (UX2-T01, approved 2026-10-02)
+
+The maintainer approved separating repository task inventory from this
+experiment's selected tasks. This supplements §7, not the five pins or L0 gold.
+Independent YAML-node inspection of pinned lm-eval identifies 13,123 safe task
+names, sorted-set SHA-256
+`2a5d98bfd121e95919da7d472c40d89a2580746672a2109e79fcd407c06c36f3`.
+Source: `lm_eval/tasks/gsm8k/gsm8k.yaml:3` declares `gsm8k` (metric `exact_match`
+at lines 12–15); `lm_eval/tasks/arc/arc_easy.yaml:3` declares `arc_easy` (metrics
+`acc` and `acc_norm` at lines 15–20). Task and metric identity are distinct.
+See the [source-reviewed proposal](docs/plan/ux-2026-10-02-proposals/UX-T03-T04-proposal.md).
+
+- `init --list-tasks` preserves that full inventory/hash, with no artifact
+  writes. Ordinary lm-eval init keeps the same profiles/model hints but writes
+  `evaluation.metrics: []`; it does not assert all available tasks were used.
+- Relative to the historical full-candidate L1 manifest, default lm-eval changes
+  only the metrics declaration and dependent evaluation checks:
+  `eval.metrics_declared` becomes CRITICAL FAIL; per-metric implementation
+  warnings become one skipped finding; aggregation/repetition warnings become
+  skipped. Expected C/W/I/P/S = **6/26/3/9/16**.
+- One explicitly selected `--task gsm8k` with default profiles produces exactly
+  `[{name: gsm8k}]`, no invented implementation. Expected C/W/I/P/S =
+  **5/29/3/10/13**. Two selections `gsm8k` and `arc_easy` produce sorted names
+  `[arc_easy, gsm8k]` and **5/30/3/10/13**. Duplicates/order cannot change bytes.
+- `--profiles evaluation --task gsm8k` applies only the evaluation closure;
+  do not compare its counts with the default multi-profile case. Unknown,
+  unsafe or incompatible task selectors exit 2 before writes.
+- The other four pinned frameworks have no candidates in the supported task
+  extractors. Their default manifest bytes and full L1 reports are unchanged.
+  All five L0 rule sets, detection, hints, paths and diagnostics stay unchanged.
+
+These expectations were derived from upstream task syntax and evaluation-rule
+semantics before implementing the new behavior. Complete reports must still be
+compared, not only the summary counts above. The historical baseline is retained.
+
 ## 8. Mandatory validation gates
 
 ### Gate A — every development session

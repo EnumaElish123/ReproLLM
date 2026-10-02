@@ -1,6 +1,11 @@
 # Pending UX specification proposals
 
-Status: **PENDING maintainer review and approval**. The GitHub login page is open; no authenticated issue submission has occurred. These drafts are durable review material, not new CLI behavior or adopted gold. Existing normative documents and val gold remain authoritative until an explicitly reviewed amendment is made.
+Status: **Product changes approved for implementation on 2026-10-02** by the
+maintainer's instruction to complete all six recommendations in order. The
+[ordered delivery plan](../UX2_2026-10-02.md) records scope and acceptance. Proposal
+files below retain their historical pending labels and evidence; implementation
+and normative updates land task by task, so approval alone is not a claim that
+the commands exist. D-41 still requires review of concrete schema/core changes.
 
 | Task | Concrete proposal | Approval boundary |
 |---|---|---|

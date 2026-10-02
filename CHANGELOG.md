@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Specification
+
+- UX2-S01 / UX2-T01: record maintainer approval of the six product workflow
+  improvements. Separate complete framework task inventories from explicitly
+  selected experiment tasks; retain the five pinned repositories and add
+  source-derived expectations for zero, one and two selected tasks.
+
 ### Fixed
 
 - UX-T08 / M10-T01: remove machine paths and identity from displayed export
