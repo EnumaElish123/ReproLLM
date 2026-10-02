@@ -16,6 +16,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX2-T02 / UX-T04: separate audit findings from the effective exit threshold.
+  Group repeated failing warnings with three examples and a shared fix; add
+  `--details` to expand every row. Preserve full JSON/GitHub evidence and exits.
 - UX2-T01 / UX-T03: keep the complete framework task inventory separate from
   experiment metrics. Add read-only `init --list-tasks`, exact repeatable
   `--task` selection and interactive profile/task prompts. Default init now

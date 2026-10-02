@@ -38,6 +38,22 @@ Run directories can also contain input snapshots and captured logs, so inspect
 their contents and size before sharing them. Follow your project's storage
 and access policy when choosing which records to commit or archive.
 
+## Why does audit show Findings FAIL but exit 0?
+
+`Findings` describes the unresolved CRITICAL and WARNING findings. `Result`
+shows the actual exit code and the effective `--fail-on` threshold, including
+`.reprollm/config.yaml` settings. The default `critical` threshold exits 0
+when only warnings remain; `--fail-on warning` makes those warnings exit 1.
+`--fail-on never` disables finding-based failure and still shows every issue.
+
+## How do I see every repeated warning?
+
+The default text report groups failing warnings with the same rule ID and
+fix hint. Each group gives the full count, up to three examples with evidence,
+and one shared fix. Run `reprollm audit --details` for every individual finding.
+`--format json` and `--format github` always retain every finding they report;
+text grouping does not change the summary, severity, or exit code.
+
 ## How do I silence a rule I disagree with?
 
 `.reprollm/config.yaml`:

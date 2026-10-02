@@ -45,9 +45,70 @@ def _symbol(kind: Severity | str, ascii_symbols: bool) -> str:
     return table[kind]
 
 
+def _evidence_lines(finding: Finding) -> list[str]:
+    lines: list[str] = []
+    for item in finding.evidence:
+        location = item.field or item.path or ""
+        note = item.note or ""
+        if location and note:
+            lines.append(f"      {location} ({note})")
+        elif location or note:
+            lines.append(f"      {location}{note}")
+    return lines
+
+
+def _finding_lines(finding: Finding, *, ascii_symbols: bool) -> list[str]:
+    if finding.status == FindingStatus.SKIPPED:
+        symbol = _symbol("muted", ascii_symbols)
+        return [f"  {symbol} {finding.rule_id}      skipped: {finding.message}"]
+    if finding.status == FindingStatus.SUPPRESSED:
+        symbol = _symbol("muted", ascii_symbols)
+        return [
+            f"  {symbol} {finding.rule_id}      suppressed: {finding.message} "
+            f"(reason: {finding.suppressed_reason})"
+        ]
+    symbol = _symbol(finding.severity, ascii_symbols)
+    return [
+        f"  {symbol} {finding.rule_id}      {finding.message}",
+        *_evidence_lines(finding),
+        f"      fix: {finding.fix_hint}",
+    ]
+
+
+def _warning_groups(members: list[Finding]) -> list[list[Finding]]:
+    groups: list[list[Finding]] = []
+    repeated: dict[tuple[str, str], list[Finding]] = {}
+    for finding in members:
+        if finding.status != FindingStatus.FAIL:
+            groups.append([finding])
+            continue
+        key = (finding.rule_id, finding.fix_hint)
+        if key not in repeated:
+            repeated[key] = []
+            groups.append(repeated[key])
+        repeated[key].append(finding)
+    return sorted(groups, key=lambda group: group[0].rule_id)
+
+
+def _warning_group_lines(group: list[Finding], *, ascii_symbols: bool) -> list[str]:
+    finding = group[0]
+    symbol = _symbol(Severity.WARNING, ascii_symbols)
+    examples = group[:3]
+    lines = [f"  {symbol} {finding.rule_id} — {len(group)} findings ({len(examples)} shown)"]
+    for example in examples:
+        lines.append(f"      {example.message}")
+        lines.extend(_evidence_lines(example))
+    lines.append(f"      fix: {finding.fix_hint}")
+    lines.append("      Use --details for every finding; --format json preserves all evidence.")
+    return lines
+
+
 def render_audit_text(
     report: AuditReport,
     *,
+    fail_on: str,
+    exit_code: int,
+    details: bool = False,
     show_passed: bool = False,
     show_skipped: bool = False,
     ascii_symbols: bool = False,
@@ -67,28 +128,16 @@ def render_audit_text(
         if not members:
             continue
         lines.append(f"{_GROUP_TITLES[group]} ({len(members)})")
-        for finding in members:
-            if finding.status == FindingStatus.SKIPPED:
-                symbol = _symbol("muted", ascii_symbols)
-                lines.append(f"  {symbol} {finding.rule_id}      skipped: {finding.message}")
-                continue
-            if finding.status == FindingStatus.SUPPRESSED:
-                symbol = _symbol("muted", ascii_symbols)
-                lines.append(
-                    f"  {symbol} {finding.rule_id}      suppressed: {finding.message} "
-                    f"(reason: {finding.suppressed_reason})"
-                )
-                continue
-            symbol = _symbol(finding.severity, ascii_symbols)
-            lines.append(f"  {symbol} {finding.rule_id}      {finding.message}")
-            for item in finding.evidence:
-                location = item.field or item.path or ""
-                note = item.note or ""
-                if location and note:
-                    lines.append(f"      {location} ({note})")
-                elif location or note:
-                    lines.append(f"      {location}{note}")
-            lines.append(f"      fix: {finding.fix_hint}")
+        entries = (
+            _warning_groups(members)
+            if group == Severity.WARNING and not details
+            else [[finding] for finding in members]
+        )
+        for entry in entries:
+            if len(entry) > 1:
+                lines.extend(_warning_group_lines(entry, ascii_symbols=ascii_symbols))
+            else:
+                lines.extend(_finding_lines(entry[0], ascii_symbols=ascii_symbols))
         lines.append("")
 
     summary = report.summary
@@ -99,15 +148,18 @@ def render_audit_text(
         counts_line += "        (use --show-passed / --show-skipped)"
     lines.append(counts_line)
 
-    if summary.critical:
-        detail = f"{summary.critical} critical"
-        if summary.warning:
-            detail += f", {summary.warning} warning"
-        lines.append(f"Result: FAIL ({detail})")
-    elif summary.warning:
-        lines.append(f"Result: FAIL ({summary.warning} warning)")
+    if summary.critical or summary.warning:
+        lines.append(f"Findings: FAIL ({summary.critical} critical, {summary.warning} warning)")
     else:
-        lines.append("Result: PASS")
+        lines.append("Findings: PASS")
+
+    if fail_on == "never":
+        reason = "finding-based failure disabled"
+    elif exit_code:
+        reason = "findings reach the threshold"
+    else:
+        reason = "no finding reaches the threshold"
+    lines.append(f"Result: exit {exit_code} (--fail-on {fail_on}; {reason})")
 
     if report.level == 0:
         detected = [

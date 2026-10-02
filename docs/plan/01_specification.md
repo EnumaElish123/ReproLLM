@@ -31,7 +31,7 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm doctor [--json] [--check-network]` | environment diagnostics | M1 |
 | `reprollm schema export [--out DIR]` | write JSON Schema files | M1 |
 | `reprollm init [PATH] [--force] [--interactive] [--profiles a,b] [--task NAME]... [--list-tasks]` | create `reprollm.yaml` + `.reprollm/`; list task candidates without writes | M2 / UX2-T01 |
-| `reprollm audit [PATH] [--format text\|json] [--output FILE] [--fail-on critical\|warning\|never] [--level 0\|1\|2\|auto] [--profiles a,b] [--show-passed] [--show-skipped]` | run rules | M2–M6 |
+| `reprollm audit [PATH] [--format text\|json] [--output FILE] [--fail-on critical\|warning\|never] [--level 0\|1\|2\|auto] [--profiles a,b] [--show-passed] [--show-skipped] [--details]` | run rules | M2–M6 |
 | `reprollm profiles list \| show NAME` | inspect profiles | M2 |
 | `reprollm lock [PATH] [--offline] [--check] [--verify-api] [--hash-large-files]` | resolve and write `reprollm.lock` | M4 |
 | `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] -- CMD…` | execute and record | M5 |
@@ -1007,10 +1007,30 @@ INFO (3)
   ...
 
 21 passed · 1 suppressed · 4 skipped        (use --show-passed / --show-skipped)
-Result: FAIL (2 critical)
+Findings: FAIL (2 critical, 5 warning)
+Result: exit 1 (--fail-on critical; findings reach the threshold)
 ```
 
 Symbols: `✖` CRITICAL, `▲` WARNING, `ℹ` INFO, `✔` PASS, `–` suppressed/skipped. With `--no-color`/non-TTY, symbols remain ASCII-safe alternatives (`X`, `!`, `i`, `+`, `-`).
+
+`Findings: PASS` means no unsuppressed FAIL CRITICAL or WARNING findings remain;
+otherwise report both counts as `Findings: FAIL (N critical, M warning)`.
+`Result` states the actual exit code and effective `--fail-on`, including config
+and explicit flag precedence. Its reason is `findings reach the threshold` for
+exit 1, `no finding reaches the threshold` for exit 0, or `finding-based failure
+disabled` for `never`. CLI calculates the exit once from the full unchanged report,
+passes it and the effective threshold to the text renderer, and exits with that code.
+Warnings at the default `critical` threshold therefore show Findings FAIL and exit 0.
+
+Default text groups repeated FAIL WARNING findings only when both `rule_id` and
+`fix_hint` match. Sort groups by rule ID; show the exact count, up to three example
+messages and evidence locations in existing report order, one shared fix, and
+`Use --details for every finding; --format json preserves all evidence.`
+Single warnings and every CRITICAL, INFO, PASS, suppressed or skipped row remain
+individual. Never infer a shared cause, normalize hints or change finding data.
+`--details` emits every original row with the same visibility flags and symbols.
+Summary counts, severities, JSON, GitHub annotations and exit semantics stay complete
+and unchanged. No threshold or presentation fields are added to AuditReport.
 
 ---
 

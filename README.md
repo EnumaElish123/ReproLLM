@@ -135,6 +135,10 @@ experiment profiles. Audit runs locally and makes no model calls.
 > when the text verdict says `FAIL`. Use `--fail-on warning` for a stricter gate,
 > or `--format json` for structured findings. [Exit-code reference](docs/cli.md)
 
+On `main` (unreleased), the terminal separates `Findings` from `Result`, which
+states the exit code and threshold. Repeated warnings are compact by default;
+use `reprollm audit --details` to expand every finding.
+
 ### 3. Describe the experiment you intend to run
 
 ```bash

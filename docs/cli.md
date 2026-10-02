@@ -63,6 +63,9 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │                                                           manifest.          │
 │ --show-passed     --no-show-passed                                           │
 │ --show-skipped                                                               │
+│ --details                                                 Show every finding │
+│                                                           individually in    │
+│                                                           text output.       │
 │ --no-color                                                Plain ASCII        │
 │                                                           output.            │
 │ --help                                                    Show this message  │

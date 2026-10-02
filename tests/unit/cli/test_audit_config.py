@@ -187,7 +187,7 @@ def test_suppressed_is_visible_in_info_without_show_skipped(tmp_path: Path) -> N
     config(repo, ignore=[{"rule": "code.no_untracked", "reason": "scratch outputs"}])
     report = run_audit(repo)
     for ascii_symbols, symbol in [(False, "–"), (True, "-")]:
-        text = render_audit_text(report, ascii_symbols=ascii_symbols)
+        text = render_audit_text(report, fail_on="never", exit_code=0, ascii_symbols=ascii_symbols)
         assert f"{symbol} code.no_untracked" in text
         assert "suppressed:" in text and "scratch outputs" in text
         assert text.index("INFO (") < text.index(f"{symbol} code.no_untracked")

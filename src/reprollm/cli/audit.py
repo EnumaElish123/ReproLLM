@@ -81,6 +81,9 @@ def audit(
     ] = None,
     show_passed: Annotated[bool | None, typer.Option("--show-passed/--no-show-passed")] = None,
     show_skipped: Annotated[bool, typer.Option("--show-skipped")] = False,
+    details: Annotated[
+        bool, typer.Option("--details", help="Show every finding individually in text output.")
+    ] = False,
     no_color: Annotated[bool, typer.Option("--no-color", help="Plain ASCII output.")] = False,
 ) -> None:
     """Audit a repository and print findings (exit 1 at/above --fail-on)."""
@@ -112,6 +115,7 @@ def audit(
         elif STATE["verbose"]:
             typer.echo(f"scan: {entry}", err=True)
 
+    exit_code = _exit_code(report, effective_fail_on)
     if format == OutputFormat.GITHUB:
         typer.echo(render_audit_github(report))
     elif format == OutputFormat.JSON:
@@ -136,6 +140,9 @@ def audit(
         typer.echo(
             render_audit_text(
                 report,
+                fail_on=effective_fail_on.value,
+                exit_code=exit_code,
+                details=details,
                 show_passed=effective_show_passed,
                 show_skipped=show_skipped,
                 ascii_symbols=use_ascii,
@@ -143,4 +150,4 @@ def audit(
             nl=False,
         )
 
-    raise typer.Exit(_exit_code(report, effective_fail_on))
+    raise typer.Exit(exit_code)
