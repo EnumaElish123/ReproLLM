@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -108,3 +110,26 @@ def test_readme_install_starts_with_supported_public_package() -> None:
     assert "Python 3.10 or newer" in text
     assert "python -m pip install reprollm" in text
     assert "Status: beta (0.5.0)" not in text
+
+
+@pytest.mark.parametrize("identity_variable", ["USERNAME", "USER", "LOGNAME", "LNAME"])
+def test_quickstart_preserves_identity_for_redaction_without_pwd(
+    monkeypatch: pytest.MonkeyPatch, identity_variable: str
+) -> None:
+    # Windows has no pwd module: getpass must retain an environment fallback.
+    for name in ("USERNAME", "USER", "LOGNAME", "LNAME"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv(identity_variable, "fake-user")
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import getpass,sys; sys.modules['pwd']=None; print(getpass.getuser())",
+        ],
+        env=gen_quickstart._env(),
+        capture_output=True,
+        encoding="utf-8",
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "fake-user"

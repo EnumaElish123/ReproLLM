@@ -37,7 +37,22 @@ class Step:
 def _env() -> dict[str, str]:
     # Child commands need executable lookup and platform temp locations, not
     # credentials inherited from a developer's interactive shell.
-    names = ("PATH", "PYTHONPATH", "SystemRoot", "WINDIR", "PATHEXT", "TMPDIR", "TEMP", "TMP")
+    # getpass needs these on Windows, where pwd is absent. Runtime privacy
+    # uses this identity to remove usernames from captured artifacts.
+    names = (
+        "PATH",
+        "PYTHONPATH",
+        "SystemRoot",
+        "WINDIR",
+        "PATHEXT",
+        "TMPDIR",
+        "TEMP",
+        "TMP",
+        "LOGNAME",
+        "USER",
+        "LNAME",
+        "USERNAME",
+    )
     env = {name: os.environ[name] for name in names if name in os.environ}
     env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
     env.update(
