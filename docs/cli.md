@@ -283,7 +283,23 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
  List accepted project rules and the latest discovery candidates.
 
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --json          Emit JSON.                                                   │
+│ --json                Emit JSON.                                             │
+│ --candidates          Inspect full latest candidates and their status.       │
+│ --help                Show this message and exit.                            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## reprollm rules show
+```text
+
+ Usage: reprollm rules show [OPTIONS] {identifier}
+
+ Inspect a complete rule, latest candidate, or immutable recovery copy.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│ *    identifier      <str>  Rule, candidate, or archive id. [required]       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
@@ -338,6 +354,37 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --reason        <str>  Why this candidate is rejected.                       │
 │ --help                 Show this message and exit.                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## reprollm rules remove
+```text
+
+ Usage: reprollm rules remove [OPTIONS] {rule_id}
+
+ Save an immutable recovery copy before removing an active rule.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│ *    rule_id      <str>  Active project rule id. [required]                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --reason        <str>  Why this rule is no longer active. [required]      │
+│    --help                 Show this message and exit.                        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## reprollm rules restore
+```text
+
+ Usage: reprollm rules restore [OPTIONS] {archive_id}
+
+ Restore the complete original rule without overwriting an active rule.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│ *    archive_id      <str>  Recovery archive id. [required]                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 

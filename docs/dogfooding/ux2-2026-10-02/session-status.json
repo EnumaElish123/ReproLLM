@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "T01_T05_local_gates_passed_T06_review_pending",
+  "status": "T01_T05_delivered_CI_passed_T06_locally_validated_review_pending",
   "completed_local_commits": [
     {
       "task": "S01",
@@ -30,18 +30,8 @@
   "pending": [
     {
       "item": "T06",
-      "status": "pending_explicit_D41_review",
-      "required": "Concrete archive schema/implementation review; final baseline QA, gate and integration outcome."
-    },
-    {
-      "item": "final_lifecycle_gate_A",
-      "status": "pending",
-      "required": "Run the same lifecycle harness on the reviewed final T05+T06 baseline."
-    },
-    {
-      "item": "push_and_CI",
-      "status": "pending",
-      "required": "Record exact pushed head, CI URL and each job conclusion; local checks do not establish CI."
+      "status": "pending_explicit_D41_review_and_PR_delivery",
+      "required": "See ../2026-10-02-ux2-rule-lifecycle.md and the associated PR for exact remote delivery, CI and maintainer approval."
     }
   ],
   "outside_scope": [
@@ -68,6 +58,20 @@
       "scenarios_per_target": 3,
       "unexplained_deltas": 0,
       "evidence": "t05-export-complete.json"
+    },
+    {
+      "item": "final_lifecycle_gate_A",
+      "status": "passed",
+      "code_sha": "94ae36643d7fba5019a6f14adffc08cefd3df7bc",
+      "targets": 5,
+      "command_count": 92,
+      "evidence": "../ux2-rule-lifecycle-2026-10-02/matrix-summary.json"
     }
-  ]
+  ],
+  "main_delivery": {
+    "head_sha": "145103291ff819d0ed534e5afa7dc3ec211b160a",
+    "pushed": true,
+    "ci": "success",
+    "evidence": "../ux2-rule-lifecycle-2026-10-02/main-ci-success.json"
+  }
 }

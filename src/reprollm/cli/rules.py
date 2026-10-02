@@ -16,7 +16,17 @@ import typer
 from reprollm.core.errors import UserError
 from reprollm.core.paths import find_root, repo_paths
 from reprollm.core.project_rules import load_project_rules
+from reprollm.core.rule_lifecycle import (
+    ARCHIVE_DIR,
+    archive_state,
+    display_value,
+    load_archive,
+    read_rules,
+    remove_rule,
+    restore_rule,
+)
 from reprollm.core.yaml_io import dump_yaml
+from reprollm.schemas.discover_candidates import DiscoverCandidates
 from reprollm.schemas.project_rules import (
     IgnoredCandidate,
     ProjectRule,
@@ -54,11 +64,24 @@ def _unique_id(document: ProjectRules, base: str) -> str:
 @app.command("list")
 def list_rules(
     json_output: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
+    candidates: Annotated[
+        bool, typer.Option("--candidates", help="Inspect full latest candidates and their status.")
+    ] = False,
 ) -> None:
     """List accepted project rules and the latest discovery candidates."""
     root = find_root(Path.cwd())
-    document = load_project_rules(root)
+    document = read_rules(root)
     rules = document.rules if document else []
+    if candidates:
+        records = _candidate_records(root, document or ProjectRules())
+        if json_output:
+            typer.echo(json.dumps(display_value(root, records), indent=2, ensure_ascii=False))
+        elif not records:
+            typer.echo("No discovery candidates found under .reprollm/discover.")
+        else:
+            for record in records:
+                typer.echo(json.dumps(display_value(root, record), indent=2, ensure_ascii=False))
+        return
     if json_output:
         typer.echo(json.dumps([rule.model_dump(mode="json") for rule in rules], indent=2))
         return
@@ -99,6 +122,14 @@ def list_rules(
                     f"  candidate {candidate.id}  {candidate.kind}  [{state}]  "
                     f"{candidate.suggested_field}"
                 )
+    archive_dir = root / ARCHIVE_DIR
+    if archive_dir.is_symlink() or archive_dir.parent.is_symlink():
+        raise UserError(f"{ARCHIVE_DIR} must not contain symlinks")
+    if archive_dir.is_dir():
+        for archive_path in sorted(archive_dir.glob("*.json")):
+            archive = load_archive(root, archive_path.stem)
+            state = archive_state(document or ProjectRules(), archive)
+            typer.echo(f"  archive {archive.archive_id}  [{state}]  {archive.rule.id}")
 
 
 @app.command("add")
@@ -150,11 +181,12 @@ def add(
     typer.echo("Run `reprollm lock` again: its project_rules_sha256 must be refreshed.")
 
 
-def _latest_discovery(root: Path) -> tuple[Path, Any]:
+def _latest_discovery(root: Path) -> tuple[Path, DiscoverCandidates]:
     import glob
 
-    from reprollm.schemas.discover_candidates import DiscoverCandidates
-
+    directory = root / ".reprollm" / "discover"
+    if directory.is_symlink() or directory.parent.is_symlink():
+        raise UserError(".reprollm/discover must not contain symlinks")
     runs = sorted(glob.glob(str(root / ".reprollm" / "discover" / "*.json")))
     if not runs:
         raise UserError(
@@ -162,11 +194,102 @@ def _latest_discovery(root: Path) -> tuple[Path, Any]:
             "`reprollm discover --experimental` first"
         )
     path = Path(runs[-1])
+    if path.is_symlink():
+        raise UserError("discovery candidate files must not be symlinks")
     try:
         document = DiscoverCandidates.model_validate(json.loads(path.read_text(encoding="utf-8")))
-    except Exception as exc:  # noqa: BLE001 - name the broken file
-        raise UserError(f"cannot read {path}: {exc}") from exc
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise UserError(
+            f"cannot read latest .reprollm/discover candidate file ({type(exc).__name__}); fix it"
+        ) from None
     return path, document
+
+
+def _candidate_records(root: Path, current: ProjectRules) -> list[dict[str, Any]]:
+    directory = root / ".reprollm" / "discover"
+    if not directory.exists() and not directory.is_symlink():
+        return []
+    if directory.is_symlink() or directory.parent.is_symlink():
+        raise UserError(".reprollm/discover must not contain symlinks")
+    if directory.is_dir() and not any(directory.glob("*.json")):
+        return []
+    path, document = _latest_discovery(root)
+    accepted = {rule.candidate_id for rule in current.rules if rule.candidate_id is not None}
+    ignored = {entry.candidate_id for entry in current.ignored_candidates}
+    return [
+        {
+            "candidate": candidate.model_dump(mode="json"),
+            "status": "accepted"
+            if candidate.id in accepted
+            else "ignored"
+            if candidate.id in ignored
+            else "pending",
+            "source": path.relative_to(root).as_posix(),
+        }
+        for candidate in sorted(document.candidates, key=lambda item: item.id)
+    ]
+
+
+@app.command("show")
+def show(
+    identifier: Annotated[str, typer.Argument(help="Rule, candidate, or archive id.")],
+) -> None:
+    """Inspect a complete rule, latest candidate, or immutable recovery copy."""
+    root = find_root(Path.cwd())
+    current = read_rules(root)
+    if identifier.startswith("ra-"):
+        archive = load_archive(root, identifier)
+        payload: dict[str, Any] = {
+            "kind": "archive",
+            "archive": archive.model_dump(mode="json"),
+            "source": f"{ARCHIVE_DIR}/{archive.archive_id}.json",
+            "state": archive_state(current, archive),
+            "note": "Archive is a recovery copy; state is derived from current project rules.",
+        }
+    elif identifier.startswith("project."):
+        rule = next((rule for rule in current.rules if rule.id == identifier), None)
+        if rule is None:
+            raise UserError("unknown active rule; inspect `reprollm rules list`")
+        payload = {
+            "kind": "rule",
+            "rule": rule.model_dump(mode="json"),
+            "source": ".reprollm/project-rules.yaml",
+        }
+    else:
+        record = next(
+            (
+                record
+                for record in _candidate_records(root, current)
+                if record["candidate"]["id"] == identifier
+            ),
+            None,
+        )
+        if record is None:
+            raise UserError("unknown latest candidate; inspect `reprollm rules list --candidates`")
+        payload = {"kind": "candidate", **record}
+    typer.echo(json.dumps(display_value(root, payload), indent=2, ensure_ascii=False))
+
+
+@app.command("remove")
+def remove(
+    rule_id: Annotated[str, typer.Argument(help="Active project rule id.")],
+    reason: Annotated[str, typer.Option("--reason", help="Why this rule is no longer active.")],
+) -> None:
+    """Save an immutable recovery copy before removing an active rule."""
+    root = find_root(Path.cwd())
+    archive = remove_rule(root, rule_id, reason)
+    typer.echo(f"Removed {rule_id}; recovery copy: {archive.archive_id}.")
+    typer.echo(f"Restore with `reprollm rules restore {archive.archive_id}`.")
+    typer.echo("Run `reprollm lock` again: its project_rules_sha256 must be refreshed.")
+
+
+@app.command("restore")
+def restore(archive_id: Annotated[str, typer.Argument(help="Recovery archive id.")]) -> None:
+    """Restore the complete original rule without overwriting an active rule."""
+    root = find_root(Path.cwd())
+    rule = restore_rule(root, archive_id)
+    typer.echo(f"Restored {rule.id} from {archive_id}; original source and bindings retained.")
+    typer.echo("Run `reprollm lock` again: its project_rules_sha256 must be refreshed.")
 
 
 @app.command("accept")
@@ -235,11 +358,17 @@ def ignore(
 ) -> None:
     """Record a candidate as ignored so future discoveries mark it."""
     root = find_root(Path.cwd())
+    current = load_project_rules(root) or ProjectRules()
+    accepted = next((rule for rule in current.rules if rule.candidate_id == candidate_id), None)
+    if accepted is not None:
+        raise UserError(
+            f"candidate is already accepted as {accepted.id}; use "
+            f"`reprollm rules remove {accepted.id} --reason REASON` to deactivate it"
+        )
     _path, document = _latest_discovery(root)
     if document.by_id(candidate_id) is None:
         known = ", ".join(c.id for c in document.candidates) or "none"
         raise UserError(f"unknown candidate {candidate_id!r} (known: {known})")
-    current = load_project_rules(root) or ProjectRules()
     if any(entry.candidate_id == candidate_id for entry in current.ignored_candidates):
         raise UserError(f"candidate {candidate_id!r} is already ignored")
     current.ignored_candidates.append(

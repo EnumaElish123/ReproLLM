@@ -15,7 +15,7 @@ EXPECTED_FILES = sorted(f"{name}.schema.json" for name in SCHEMA_MODELS)
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
-def test_nine_schema_files_exist() -> None:
+def test_all_schema_files_exist() -> None:
     repo_root = _REPO_ROOT
     exported = sorted(p.name for p in (repo_root / "schemas").glob("*.schema.json"))
     assert exported == [
@@ -27,6 +27,7 @@ def test_nine_schema_files_exist() -> None:
         "manifest.schema.json",
         "profile.schema.json",
         "project_rules.schema.json",
+        "rule_archive.schema.json",
         "run_record.schema.json",
     ]
 

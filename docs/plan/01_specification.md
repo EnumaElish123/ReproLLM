@@ -39,7 +39,13 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` | semantic drift | M6 |
 | `reprollm export [--run RUN_ID] [--output PATH] [--template default]` | write `REPRODUCIBILITY.md` | M7 |
 | `reprollm discover [PATH] --experimental [--yes] [--dry-run] [--show-content] [--max-chars N] [--paper FILE]` | LLM-assisted candidate discovery | M7 |
-| `reprollm rules list [--json] \| accept CANDIDATE_ID [--severity S] \| ignore CANDIDATE_ID \| add --field F --severity S --reason R [--cli FLAG] [--config P:K] [--env VAR]` | manage project rules | M7 |
+| `reprollm rules list [--json] [--candidates]` | inspect active rules, latest candidates and recovery-copy state | M7 / UX2-T06 |
+| `reprollm rules show ID` | inspect an active rule, latest candidate or recovery archive without writes | UX2-T06 |
+| `reprollm rules accept CANDIDATE_ID [--severity S] [--field F]` | accept a latest discovery candidate | M7 |
+| `reprollm rules ignore CANDIDATE_ID [--reason R]` | record an ignored, inactive candidate | M7 / UX2-T06 |
+| `reprollm rules add --field F --severity S --reason R [--id ID] [--cli FLAG] [--config P:K] [--env VAR]` | add a manual project rule | M7 |
+| `reprollm rules remove RULE_ID --reason TEXT` | save an immutable recovery copy, then deactivate the rule | UX2-T06 |
+| `reprollm rules restore ARCHIVE_ID` | restore the complete original rule when its identifiers are inactive | UX2-T06 |
 
 `PATH` defaults to `.`. The repository root is the nearest ancestor containing `reprollm.yaml`, else the git toplevel, else `PATH` itself.
 
@@ -74,6 +80,9 @@ USER_PROFILES_DIR = ".reprollm/profiles"
 RUNS_DIR = ".reprollm/runs"
 DISCOVER_DIR = ".reprollm/discover"
 ```
+
+Lifecycle recovery copies live under `.reprollm/rule-archives/`; their
+`ARCHIVE_DIR` constant belongs to `reprollm/core/rule_lifecycle.py`.
 
 ---
 
@@ -481,6 +490,112 @@ ignored_candidates:
 ```
 
 Semantics: each entry generates a rule instance with `id`, `default_severity = severity`, `min_level = 1`, check = "field present and non-null in manifest"; with `bindings`, `consistency.custom_fields` additionally compares observed values at Level 2.
+
+### 7.1 Ownership and active state
+
+`rules add`, `accept`, `ignore`, `remove` and `restore` own
+`.reprollm/project-rules.yaml`. Only entries in its `rules` array generate active
+checks. An active rule's candidate ID takes precedence over a matching
+`ignored_candidates` entry for presentation; accepting an ignored candidate does
+not erase that earlier ignored record. `ignore` must reject an already active
+candidate, even if its discovery file no longer exists, and direct the author to
+`rules remove RULE_ID --reason TEXT`.
+
+`rules remove` additionally owns `.reprollm/rule-archives/<archive_id>.json`.
+`restore` reads the archive and writes the active rules file; it leaves the archive
+unchanged. Inspection writes nothing. These commands never modify the manifest,
+config, bindings in experiment code, or discovery output. Successful removal or
+restoration changes `project_rules_sha256` freshness and must instruct the author
+to run `reprollm lock` again.
+
+### 7.2 Recovery archive schema — `.reprollm/rule-archives/<archive_id>.json`
+
+`RuleArchive` (`reprollm/schemas/rule_archive.py`) is an additive, independent v1
+persisted document; `ProjectRules` stays at schema version 1. Unknown fields are
+forbidden. The new schema remains subject to explicit maintainer code review under
+D-41; contract approval does not replace that review.
+
+```json
+{
+  "schema_version": 1,
+  "archive_id": "ra-d48db3bd01e05c7f",
+  "archived_at": "2026-10-02T00:00:00Z",
+  "reason": "This experiment no longer uses alpha.",
+  "rule": {
+    "id": "project.alpha",
+    "field": "custom.privacy_method.alpha",
+    "severity": "WARNING",
+    "reason": "Record the privacy parameter.",
+    "source": "discover",
+    "candidate_id": "c-3f9a1b",
+    "accepted_at": "2026-01-02T00:00:00Z",
+    "bindings": {
+      "cli": "--alpha",
+      "config": "configs/privacy.yaml:method.alpha",
+      "env": "ALPHA"
+    }
+  }
+}
+```
+
+- `schema_version` is integer 1. A newer version exits 2 with an upgrade message.
+- `archive_id` matches `^ra-[0-9a-f]{16}$` and is the filename stem.
+- `archived_at` requires a timezone. The writer uses UTC, second precision, with `Z`.
+- `reason` is the nonblank removal reason, distinct from `rule.reason`; the writer
+  strips its outer whitespace.
+- `rule` is the complete original `ProjectRule` from §7, including its ID, field,
+  severity, reason, `source`, `candidate_id`, `accepted_at` and every binding.
+  Manual rules retain `source: manual` and their original optional candidate ID.
+  Restoration must not replace approval time, invent discovery provenance or
+  substitute current candidate suggestions. Optional values, including nulls,
+  retain their original model values; preservation is semantic, not YAML formatting.
+
+Compute the ID as `"ra-" + sha256(canonical_utf8)[:16]`, where `canonical_utf8` is
+`json.dumps(payload_without_archive_id, ensure_ascii=False, sort_keys=True,
+separators=(",", ":")).encode("utf-8")` from the model's JSON-mode values. Thus the
+ID includes the archive timestamp, removal reason and complete original rule.
+Readers verify both the filename/embedded ID and the recomputed content ID.
+A mismatched or malformed archive exits 2 rather than being restored.
+
+### 7.3 Archive-first deactivation and recovery
+
+`remove` requires an active rule ID and a nonblank reason. It first saves a complete
+archive by writing and fsyncing a temporary file and publishing an exclusive
+hard link;
+publication must never overwrite an existing archive. An identical archive may be
+reused, including an identical request in the same second. A conflicting existing
+file is an error. Only after the archive is available does the command replace
+`project-rules.yaml` with the selected rule removed.
+
+An archive records a **recovery copy**, not a completed removal event. If archive
+publication fails, do not remove the rule. If the active-file update fails after
+publication, retain the archive, exit 2, report its ID and state that the rule was
+not removed by this command. Direct the author to inspect the current rules and
+`rules show ARCHIVE_ID` before retrying; concurrent edits may have changed the
+current file. Never infer inactivity from an archive's existence.
+
+Archive state is computed from the current active rules and is never persisted:
+`active-identical` means the original rule is active unchanged; `inactive` means
+neither its rule ID nor its candidate ID is active; `conflict` means an active
+entry with either identifier differs from the archived rule. Conflicts take
+precedence over an identical active entry. `restore` accepts
+only `inactive`, appends the entire original rule without discovery, and keeps the
+archive. Even an identical active rule is a restore conflict, so restoration never
+overwrites or silently duplicates an active entry.
+
+Removal and restoration parse the same bytes used as their source snapshot and
+compare that snapshot with the current file immediately before replacing it. A
+visible edit, disappearance or read failure exits 2 without overwriting that
+state; a removal archive already saved remains available. This is best-effort
+conflict detection, not a filesystem transaction or compare-and-swap guarantee.
+There is no cross-process lock; callers must serialize concurrent rule mutations.
+
+Check privacy before publishing an archive or rewriting the active document.
+Reject secret-bearing or machine-specific variable text with exit 2 and leave the
+original fields unchanged; never sanitize and save an altered recovery copy.
+Inspection may redact displayed variable text while preserving fixed schema keys,
+enum values and owned source-path prefixes. Refuse symlinks in the owned rules,
+archive and inspected discovery paths before reading or writing their targets.
 
 ---
 
@@ -1067,7 +1182,38 @@ Single chat-completion request (OpenAI-compatible `POST {base_url}/chat/completi
 
 ### 20.5 Acceptance
 
-`reprollm rules accept c-3f9a1b [--severity S] [--field F]` appends to `project-rules.yaml` (`source: discover`, `candidate_id`), copying bindings. `rules ignore` records the id in `ignored_candidates` so re-running discover marks it `ignored`. `rules add` creates a manual rule. `rules list` shows active rules and pending candidates from the latest discover file.
+`reprollm rules accept c-3f9a1b [--severity S] [--field F]` appends to
+`project-rules.yaml` (`source: discover`, `candidate_id`), copying bindings and
+recording the approval time. Duplicate acceptance of an active candidate exits 2.
+`rules add` creates a manual rule. `rules ignore` records an inactive candidate ID
+in `ignored_candidates`; an already active candidate must be deactivated through
+§7.3 instead. Acceptance may follow an earlier ignore, with active acceptance
+winning the displayed state.
+
+Candidate inspection uses the lexicographically last `.json` file in
+`.reprollm/discover/`. It never searches an older discovery for an unknown ID.
+`rules show CANDIDATE_ID` and the explicit candidates view fail with exit 2 on a
+malformed latest file rather than falling back silently.
+
+`rules list` prints active rules, latest candidates labelled accepted/ignored/pending,
+and stored archive IDs with their derived state. Its established `--json` output
+remains an array of complete active rule objects. `rules list --candidates --json`
+instead returns an array sorted by candidate ID, each entry shaped as
+`{"candidate": <complete §20.4 Candidate>, "status": "accepted|ignored|pending",
+"source": ".reprollm/discover/<latest>.json"}`. The same explicit view without
+`--json` prints the complete records for review. Missing or empty discovery
+directories produce an empty candidate array; no status is added to persisted
+Candidate documents.
+
+`rules show ID` is read-only and emits the complete requested record with a relative
+source path: an active rule gives `{"kind": "rule", "rule": <ProjectRule>,
+"source": ".reprollm/project-rules.yaml"}`; a latest candidate gives
+`{"kind": "candidate", "candidate": <Candidate>, "status": <computed status>,
+"source": <latest relative path>}`; an archive gives `{"kind": "archive",
+"archive": <RuleArchive>, "source": <archive relative path>, "state": <computed state>,
+"note": <recovery-copy explanation>}`. Unknown active rule, candidate or archive
+IDs exit 2. The display privacy rules in §7.3 apply to these inspection views.
+Removal/restoration and lock-staleness requirements are defined in §7.3.
 
 ---
 
@@ -1120,7 +1266,7 @@ and unchanged. No threshold or presentation fields are added to AuditReport.
 ## 22. Testing requirements
 
 - T-01 Unit tests per module; every rule has ≥ 1 PASS and ≥ 1 FAIL test using minimal in-memory manifests or fixture repos.
-- T-02 Golden fixture repos in `tests/fixtures/repos/` (see M1). Each has `expected/audit_L0.json`, later `audit_L1.json`, `lock.yaml`, `audit_L2.json`, `diff.json`. Snapshot comparison ignores `generated_at`, `reprollm_version`, `resolved_at`, `observed_at`.
+- T-02 Golden fixture repos in `tests/fixtures/repos/` (see M1). Each has `expected/audit_L0.json`, later `audit_L1.json`, `lock.yaml`, `audit_L2.json`, `diff.json`. Snapshot comparison ignores `generated_at`, `reprollm_version`, `resolved_at`, `observed_at`, and the archive operation timestamp `archived_at`. Archive identity tests freeze `archived_at` when comparing filenames/hashes and verify content IDs against the original, unnormalized document; do not ignore mismatched archive IDs.
 - T-03 Fixture git repos are materialized in a temp dir at test time by `tests/conftest.py::materialize_repo(name)` with `GIT_AUTHOR_NAME=ReproLLM Test`, `GIT_AUTHOR_EMAIL=test@reprollm.dev`, `GIT_AUTHOR_DATE=GIT_COMMITTER_DATE=2026-01-01T00:00:00Z`, so commit SHAs are deterministic across machines.
 - T-04 No network: `respx` mocks all `httpx` calls; a session-scoped autouse fixture fails any unmocked request. Recorded Hub responses live in `tests/fixtures/hf_api/`.
 - T-05 `nvidia-smi` and `git` are invoked through `reprollm/core/proc.py::run_cmd`, which tests monkeypatch; fixtures provide canned outputs (`tests/fixtures/nvidia_smi/*.txt`).
@@ -1133,4 +1279,4 @@ and unchanged. No threshold or presentation fields are added to AuditReport.
 
 ## 23. JSON Schema export
 
-`reprollm schema export --out schemas/` writes: `manifest.schema.json`, `lock.schema.json`, `run_record.schema.json`, `profile.schema.json`, `project_rules.schema.json`, `config.schema.json`, `audit_report.schema.json`, `diff_report.schema.json`, `discover_candidates.schema.json`. CI fails if the committed `schemas/` differ from a fresh export.
+`reprollm schema export --out schemas/` writes: `manifest.schema.json`, `lock.schema.json`, `run_record.schema.json`, `profile.schema.json`, `project_rules.schema.json`, `config.schema.json`, `audit_report.schema.json`, `diff_report.schema.json`, `discover_candidates.schema.json`, and `rule_archive.schema.json` (ten documents). The archive schema is additive; the other nine documents retain their existing schemas. CI fails if the committed `schemas/` differ from a fresh export.

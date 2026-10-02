@@ -16,6 +16,22 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX2-T06: add `rules show` and `rules list --candidates` to inspect complete candidate,
+  active-rule and archive records with source paths and current status; preserve
+  the existing `rules list --json` active-rule array. Reject ignoring active
+  candidates and direct users to removal.
+- Add `rules remove RULE_ID --reason TEXT` and `rules restore ARCHIVE_ID` with
+  immutable archive-first recovery copies, conflict checks, privacy checks and
+  best-effort protection against detected concurrent active-file edits. Archives
+  record recoverable rules rather than successful removal events; failed active
+  updates retain the archive and report the recovery ID. Refresh the lock after
+  successful removal or restoration.
+- Schema migration: add independent `RuleArchive` v1 documents at
+  `.reprollm/rule-archives/<archive_id>.json` and the tenth exported schema,
+  `rule_archive.schema.json`. Existing project-rules v1 documents and the other
+  nine exported schemas are unchanged; no migration is required. The new schema
+  requires explicit maintainer code review under D-41.
+
 - UX2-T05 / UX-T08 extension: include effective Evaluation/Judge/Privacy and
   model/dataset/prompt research details with declared/locked/observed labels.
   Selected runs use their own snapshots and observations; label the current
