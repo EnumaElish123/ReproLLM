@@ -163,6 +163,22 @@ all references, and re-configuration of PyPI trusted publishing in the same chan
 
 **D-06 Composable profiles; Beta ships seven.** An experiment declares a *list* of profiles. Built-in for Beta: `core` (implicit), `inference`, `evaluation`, `llm_judge`, `finetuning`, `safety`, `privacy`. Deferred: `rag`, `agent`, `privacy_inference`.
 
+The seven-profile limit is **superseded by D-44** (2026-10-02); composition and
+the existing profiles retain their behavior.
+
+**D-44 Explicit judging of existing outputs (supersedes D-06's profile limit).**
+Maintainer approval: “好的，按照你的顺序依次完成所有的任务”, following the six
+reviewed UX recommendations, including the concrete judge-only proposal.
+Ship an eighth profile, `judge_only`, extending core directly with the exact
+policy in spec §6.1. It is never auto-detected. Only an explicitly declared
+judge_only with a resolved closure contained in `{core, judge_only, privacy}`
+and no applicable user profile override may omit a primary generation model.
+The same predicate governs audit and init. Judge identity, prompt, parameters,
+evaluation data and metrics remain required under their selected rules.
+Mixed inference/training/custom profiles retain their existing requirements.
+This is an author-declared experiment policy, not proof of what an arbitrary
+command executes. It adds no schema field and preserves the seven existing profiles.
+
 **D-17 Consistency checks are structured-source only in Beta.** Manifest vs lock vs run-captured values (CLI/config/env via declared bindings). README/paper prose is out of scope.
 
 **D-22 No dataset content fingerprint in Beta.** Lock records HF dataset `revision`, `subset`, `split`; `content_fingerprint.status: not_computed`. An INFO finding reports this.

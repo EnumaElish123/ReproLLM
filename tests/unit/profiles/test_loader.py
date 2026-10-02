@@ -18,6 +18,7 @@ def test_builtin_profile_names() -> None:
         "evaluation",
         "finetuning",
         "inference",
+        "judge_only",
         "llm_judge",
         "privacy",
         "safety",
@@ -99,7 +100,16 @@ def test_profiles_list_cli(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(app, ["profiles", "list"])
     assert result.exit_code == 0, result.output
-    for name in ("core", "inference", "evaluation", "llm_judge", "finetuning", "safety", "privacy"):
+    for name in (
+        "core",
+        "inference",
+        "evaluation",
+        "llm_judge",
+        "judge_only",
+        "finetuning",
+        "safety",
+        "privacy",
+    ):
         assert name in result.output
 
 

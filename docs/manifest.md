@@ -6,6 +6,20 @@ found by static scanning are candidates: confirm that each one has the role it
 plays in this experiment, especially in repositories that support many models
 or workflows.
 
+## Judge existing answers
+
+On `main` (unreleased), choose `reprollm init . --profiles judge_only` when your
+command grades an existing answer collection. Fill `datasets.eval` with that
+collection, `models.judge` and `prompts.judge` with the judge identity and prompt,
+and `evaluation.judge.params` and `evaluation.metrics` with the actual grading
+settings and metrics. Review the remaining TODOs and audit before recording a run.
+
+The shipped `judge_only` selection (optionally combined with shipped `privacy`)
+does not demand a primary generation model or general generation/backend fields.
+Adding inference, finetuning or a custom profile, or overriding an applicable
+built-in profile, restores the normal requirements. `llm_judge` continues to
+include evaluation and inference. The tool never selects judge_only automatically.
+
 ## Select this experiment's tasks
 
 On main (unreleased), inspect the complete framework task inventory before

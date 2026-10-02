@@ -1,0 +1,25 @@
+# Source-authored UX-T06 positive intent: judge stored pairs without fresh inference.
+schema_version: 1
+project: {name: stored-answer-judging}
+experiment: {profiles: [judge_only]}
+models:
+  judge: {provider: openai, id: gpt-4o-2024-08-06}
+prompts:
+  judge: {path: prompts/judge.txt}
+datasets:
+  eval:
+    provider: local
+    id: data/pairs.jsonl
+    files: [data/pairs.jsonl]
+    preprocessing: {description: 'Stored answer pairs, no transformation'}
+    sampling: {n: 2, seed: 17}
+evaluation:
+  metrics: [{name: preference, implementation: judge.py}]
+  aggregation: mean
+  repetitions: 1
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params: {temperature: 0, max_tokens: 256}
+    repetitions: 1
+execution: {command: python judge.py, seed: 17}

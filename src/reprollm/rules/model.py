@@ -6,6 +6,7 @@ from typing import ClassVar
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.profiles.policy import judge_only_exception
 from reprollm.rules._api import is_api_model
 from reprollm.rules._lock import LockRule, provenance_evidence
 from reprollm.rules._presence import PresenceRule
@@ -201,6 +202,14 @@ class PrimaryDeclaredRule(PresenceRule):
 
     def check(self, ctx: AuditContext) -> list[Finding]:
         assert ctx.manifest is not None
+        if judge_only_exception(ctx.root, ctx.declared_profiles, ctx.resolved_profiles):
+            return [
+                self.skipped_field(
+                    ctx,
+                    "models.primary.id",
+                    "not required for the explicitly selected shipped judge_only experiment",
+                )
+            ]
         model = ctx.manifest.models.get("primary")
         return [
             self.field_result(ctx, "models.primary.id", model is not None and model.id is not None)

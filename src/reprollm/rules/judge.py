@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.profiles.policy import judge_only_exception
 from reprollm.rules._lock import LockRule, prompt_hash_field
 from reprollm.rules._presence import PresenceRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
@@ -103,6 +104,15 @@ class ModelDeclaredRule(PresenceRule):
         assert ctx.manifest is not None
         judge = _judge(ctx)
         role = judge.model_ref if judge is not None else "judge"
+        if judge_only_exception(ctx.root, ctx.declared_profiles, ctx.resolved_profiles):
+            model = ctx.manifest.models.get(role)
+            return [
+                self.field_result(
+                    ctx,
+                    f"models.{role}.id",
+                    model is not None and model.id is not None and bool(model.id.strip()),
+                )
+            ]
         return [self.field_result(ctx, f"models.{role}", role in ctx.manifest.models)]
 
 
@@ -120,6 +130,15 @@ class PromptDeclaredRule(PresenceRule):
         assert ctx.manifest is not None
         judge = _judge(ctx)
         role = judge.prompt_ref if judge is not None else "judge"
+        if judge_only_exception(ctx.root, ctx.declared_profiles, ctx.resolved_profiles):
+            prompt = ctx.manifest.prompts.get(role)
+            return [
+                self.field_result(
+                    ctx,
+                    f"prompts.{role}",
+                    prompt is not None and (prompt.path is not None or prompt.text is not None),
+                )
+            ]
         return [self.field_result(ctx, f"prompts.{role}", role in ctx.manifest.prompts)]
 
 

@@ -1,0 +1,43 @@
+# Explicit judging of stored outputs; never selected through repository detection.
+schema_version: 1
+name: judge_only
+description: >-
+  Judge pre-generated outputs with separate judge parameters. Explicit selection
+  with shipped core/judge_only/privacy profiles permits no primary model;
+  other combinations and user profile overrides retain primary requirements.
+extends: [core]
+rules:
+  - dataset.declared
+  - dataset.preprocessing_declared
+  - dataset.sampling_seed_declared
+  - dataset.subset_declared
+  - eval.metrics_declared
+  - eval.metric_implementation_referenced
+  - eval.aggregation_declared
+  - eval.repetitions_declared
+  - judge.model_declared
+  - judge.prompt_declared
+  - judge.prompt_hashed
+  - judge.params_declared
+  - judge.pinnability_recorded
+  - judge.repetitions_declared
+required_fields:
+  - datasets.eval.id
+  - evaluation.metrics
+  - models.judge.id
+  - prompts.judge.path
+  - evaluation.judge.params.temperature
+  - evaluation.judge.params.max_tokens
+severity_overrides:
+  dataset.declared: CRITICAL
+  dataset.revision_pinned: CRITICAL
+  dataset.sampling_seed_declared: CRITICAL
+  eval.metrics_declared: CRITICAL
+  exec.seed_declared: CRITICAL
+drift_overrides:
+  "evaluation.judge.*": HIGH
+detect:
+  imports: []
+  dependencies: []
+  keywords: []
+  files: []

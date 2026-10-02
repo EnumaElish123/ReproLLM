@@ -7,6 +7,7 @@ from pathlib import Path
 
 import reprollm.rules  # noqa: F401 -- profile resolution validates rule IDs
 from reprollm.profiles.loader import builtin_profile_names, load_builtin, resolve
+from reprollm.profiles.policy import judge_only_exception
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "profiles.md"
@@ -33,6 +34,13 @@ def render_profiles_doc() -> str:
     for name in builtin_profile_names():
         profile = load_builtin(name)
         resolved = resolve([] if name == "core" else [name], ROOT)
+        required_fields = [
+            field
+            for field in resolved.required_fields
+            if not (
+                field == "models.primary.id" and judge_only_exception(ROOT, [name], resolved.names)
+            )
+        ]
         lines.extend(
             [
                 "",
@@ -42,7 +50,7 @@ def render_profiles_doc() -> str:
                 "",
                 f"- Extends: {_items(profile.extends)}",
                 f"- Resolution order: {_items(resolved.names)}",
-                f"- Required fields: {_items(resolved.required_fields)}",
+                f"- Required fields: {_items(required_fields)}",
                 f"- Severity overrides: {_mapping(resolved.severity_overrides)}",
                 f"- Drift overrides: {_mapping(resolved.drift_overrides)}",
                 f"- Detection imports: {_items(resolved.detect.imports)}",

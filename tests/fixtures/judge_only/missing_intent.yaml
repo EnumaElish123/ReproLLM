@@ -1,0 +1,16 @@
+# Source-authored negative intent: empty roles load but do not declare judge identity.
+schema_version: 1
+project: {name: missing-judge-intent}
+experiment: {profiles: [judge_only]}
+models:
+  judge: {provider: openai, id: '   '}
+prompts:
+  judge: {}
+datasets: {}
+evaluation:
+  metrics: []
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params: {}
+execution: {}

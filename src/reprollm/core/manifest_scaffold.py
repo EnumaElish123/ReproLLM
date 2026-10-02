@@ -26,6 +26,7 @@ from reprollm.core.paths import MANIFEST
 from reprollm.core.yaml_io import load_manifest
 from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.profiles import loader
+from reprollm.profiles.policy import judge_only_exception
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.finding import DetectionResult
 
@@ -68,6 +69,7 @@ _NUMERIC_FIELDS = {
     "generation.max_tokens",
     "training.learning_rate",
     "evaluation.judge.params.temperature",
+    "evaluation.judge.params.max_tokens",
 }
 
 #: Static example blocks appended for sections the profiles did not require.
@@ -242,6 +244,12 @@ def _build_sections(
             provided = values.get(field_path)
             node[parts[-1]] = _leaf(value=provided, todo=provided is None)
 
+    if primary_detection is None and other_detections:
+        commented.setdefault("models", []).extend(
+            f"detected model candidate (unassigned): {value} ({path}:{line})"
+            for value, path, line in other_detections
+        )
+
     def materialize(node: dict[str, Any]) -> dict[str, Any]:
         children: dict[str, Any] = {}
         for key, value in node.items():
@@ -345,6 +353,12 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
             if entry.shipped and entry.confidence in {"high", "medium"}
         ]
     resolved = loader.resolve(profile_list, root)  # validates names and rule IDs
+    judge_only = judge_only_exception(root, profile_list, resolved.names)
+    required_fields = [
+        name
+        for name in resolved.required_fields
+        if not (judge_only and name == "models.primary.id")
+    ]
     hf_ids = sorted(
         ((hint.value, hint.path, hint.line) for hint in detection.hints.hf_ids),
         key=lambda item: (item[1], item[2], item[0]),
@@ -369,10 +383,10 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
     return InitPlan(
         project_name=root.name,
         profiles=profile_list,
-        required_fields=resolved.required_fields,
+        required_fields=required_fields,
         detection=detection,
-        primary_detection=hf_ids[0] if hf_ids else None,
-        other_detections=hf_ids[1:] if hf_ids else [],
+        primary_detection=hf_ids[0] if hf_ids and not judge_only else None,
+        other_detections=hf_ids if judge_only else hf_ids[1:],
         task_names=sorted(task_names),
         task_sources=sorted(task_sources),
     )

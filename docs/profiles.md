@@ -243,6 +243,71 @@ Effective rules (43):
 - `prompt.file_exists`
 - `prompt.hashed`
 
+## `judge_only`
+
+Judge pre-generated outputs with separate judge parameters. Explicit selection with shipped core/judge_only/privacy profiles permits no primary model; other combinations and user profile overrides retain primary requirements.
+
+- Extends: `core`
+- Resolution order: `core`, `judge_only`
+- Required fields: `project.name`, `datasets.eval.id`, `evaluation.metrics`, `models.judge.id`, `prompts.judge.path`, `evaluation.judge.params.temperature`, `evaluation.judge.params.max_tokens`
+- Severity overrides: `dataset.declared`: CRITICAL, `dataset.revision_pinned`: CRITICAL, `dataset.sampling_seed_declared`: CRITICAL, `eval.metrics_declared`: CRITICAL, `exec.seed_declared`: CRITICAL
+- Drift overrides: `evaluation.judge.*`: HIGH
+- Detection imports: —
+- Detection dependencies: —
+- Detection keywords: —
+- Detection files: —
+
+Effective rules (48):
+
+- `code.clean_tree`
+- `code.git_commit`
+- `code.git_repo`
+- `code.no_untracked`
+- `code.remote_recorded`
+- `code.submodules_initialized`
+- `consistency.custom_fields`
+- `consistency.env_vs_lock`
+- `consistency.file_hashes`
+- `consistency.generation_params`
+- `consistency.lock_fresh`
+- `consistency.model_identity`
+- `dataset.declared`
+- `dataset.local_files_hashed`
+- `dataset.preprocessing_declared`
+- `dataset.revision_pinned`
+- `dataset.sampling_seed_declared`
+- `dataset.split_declared`
+- `dataset.subset_declared`
+- `env.dependency_manifest_present`
+- `env.llm_critical_deps_pinned`
+- `env.lockfile_present`
+- `env.python_version_declared`
+- `env.reprollm_initialized`
+- `env.secret_files_ignored`
+- `eval.aggregation_declared`
+- `eval.metric_implementation_referenced`
+- `eval.metrics_declared`
+- `eval.repetitions_declared`
+- `exec.command_declared`
+- `exec.profile_detection_mismatch`
+- `exec.run_recorded`
+- `exec.seed_declared`
+- `gen.backend_version_locked`
+- `judge.model_declared`
+- `judge.params_declared`
+- `judge.pinnability_recorded`
+- `judge.prompt_declared`
+- `judge.prompt_hashed`
+- `judge.repetitions_declared`
+- `model.dtype_declared`
+- `model.primary_declared`
+- `model.provider_known`
+- `model.revision_pinned`
+- `model.tokenizer_pinned`
+- `model.trust_remote_code_declared`
+- `prompt.file_exists`
+- `prompt.hashed`
+
 ## `llm_judge`
 
 LLM-as-a-judge evaluation (judge model, prompt, and parameters).

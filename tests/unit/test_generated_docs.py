@@ -18,14 +18,30 @@ def test_rules_document_is_fresh_and_complete() -> None:
     assert "`model.primary_declared`" in rendered
     assert "`model.revision_pinned`" in rendered
     assert "stub, arrives in 0.3.0" not in rendered
-    assert "core, evaluation, finetuning, inference, llm_judge, privacy, safety" in rendered
+    assert (
+        "core, evaluation, finetuning, inference, judge_only, llm_judge, privacy, safety"
+        in rendered
+    )
 
 
 def test_profiles_document_is_fresh_and_complete() -> None:
     rendered = render_profiles_doc()
     assert rendered == (ROOT / "docs/profiles.md").read_text(encoding="utf-8")
-    for name in ("core", "inference", "evaluation", "llm_judge", "finetuning", "safety", "privacy"):
+    for name in (
+        "core",
+        "inference",
+        "evaluation",
+        "llm_judge",
+        "judge_only",
+        "finetuning",
+        "safety",
+        "privacy",
+    ):
         assert f"## `{name}`" in rendered
+    judge = rendered.split("## `judge_only`", 1)[1].split("## `llm_judge`", 1)[0]
+    required = next(line for line in judge.splitlines() if line.startswith("- Required fields:"))
+    assert "models.primary.id" not in required
+    assert "models.judge.id" in required and "evaluation.judge.params.max_tokens" in required
     assert "`gen.seed_declared`: CRITICAL" in rendered
     assert "`evaluation.judge.*`: HIGH" in rendered
 

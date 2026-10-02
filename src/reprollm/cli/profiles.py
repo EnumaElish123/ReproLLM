@@ -11,6 +11,7 @@ from reprollm.core.errors import UserError
 from reprollm.core.paths import find_root
 from reprollm.core.registry import get_rule
 from reprollm.profiles import loader
+from reprollm.profiles.policy import judge_only_exception
 
 app = typer.Typer(help="Inspect experiment profiles.", no_args_is_help=True)
 
@@ -79,8 +80,14 @@ def show(
         )
     typer.echo("")
     typer.echo("required fields:")
+    judge_only = judge_only_exception(root, [name], resolved.names)
     for field_path in resolved.required_fields:
-        typer.echo(f"  {field_path}")
+        note = (
+            " (not required for this shipped judge_only selection)"
+            if judge_only and field_path == "models.primary.id"
+            else ""
+        )
+        typer.echo(f"  {field_path}{note}")
     if resolved.severity_overrides:
         typer.echo("")
         typer.echo("severity overrides:")

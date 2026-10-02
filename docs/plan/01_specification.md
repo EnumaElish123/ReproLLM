@@ -220,6 +220,13 @@ listing guidance. Interactive init offers profile selection (the detected or
 explicit list as its visible default), then exact task names one per prompt
 (empty ends selection), then required fields. Noninteractive init never prompts.
 
+When the §6.1 explicit shipped `judge_only` exception applies, omit only
+`models.primary.id` from the required-field union. Keep detected model candidates
+as unassigned comments, without inserting one into the active model block.
+Keep judge fields and every other selected required field. Apply normal init
+behavior whenever the exception does not apply. Judge max_tokens is a numeric
+interactive field; metric task selection follows the same policy above.
+
 ---
 
 ## 4. Lock schema — `reprollm.lock`
@@ -437,8 +444,22 @@ Merge semantics: `rules` = union; `required_fields` = union; `severity_overrides
 | `finetuning` | core | `model.adapter_declared`, `dataset.declared`, `dataset.preprocessing_declared`, `train.method_declared`, `train.hyperparameters_declared`, `train.optimizer_declared`, `train.precision_declared`, `train.lora_config_complete` | `exec.seed_declared: CRITICAL`, `dataset.declared: CRITICAL` | `training.method`, `training.learning_rate`, `datasets.train.id` |
 | `safety` | evaluation | `eval.definitions_declared`, `eval.query_budget_declared` | `eval.definitions_declared: CRITICAL` | `evaluation.definitions.refusal` or `evaluation.definitions.asr` |
 | `privacy` | core | `privacy.threat_model_declared`, `privacy.mechanism_declared`, `privacy.metrics_declared`, `privacy.attack_config_declared` | — | `privacy.threat_model`, `privacy.mechanism.name` |
+| `judge_only` | core | `dataset.declared`, `dataset.preprocessing_declared`, `dataset.sampling_seed_declared`, `dataset.subset_declared`, `eval.metrics_declared`, `eval.metric_implementation_referenced`, `eval.aggregation_declared`, `eval.repetitions_declared`, `judge.model_declared`, `judge.prompt_declared`, `judge.prompt_hashed`, `judge.params_declared`, `judge.pinnability_recorded`, `judge.repetitions_declared` | `dataset.declared: CRITICAL`, `dataset.revision_pinned: CRITICAL`, `dataset.sampling_seed_declared: CRITICAL`, `eval.metrics_declared: CRITICAL`, `exec.seed_declared: CRITICAL` | `datasets.eval.id`, `evaluation.metrics`, `models.judge.id`, `prompts.judge.path`, `evaluation.judge.params.temperature`, `evaluation.judge.params.max_tokens` |
 
 Detection signals per profile are in §13.
+
+`judge_only` has empty detection signals and `evaluation.judge.*: HIGH` drift
+override. It is explicitly selected for judging pre-generated outputs; declare
+the actual answer/input collection in `datasets.eval`. Core remains implicit.
+The primary exception applies exactly when `judge_only` is explicitly declared
+(manifest or CLI profile override), the resolved closure is a subset of
+`{core, judge_only, privacy}`, and no resolved member is replaced by a user
+`.reprollm/profiles/<name>.yaml`. Keep `model.primary_declared` selected but emit
+SKIPPED only under that predicate. Additional/custom profiles or applicable user
+overrides restore the existing primary and their own task requirements. No new
+generation rules are added by judge_only; no existing inference/training checks
+are weakened. This predicate also controls the scoped judge intent checks in §12.9
+and init in §3.2. It does not verify the purpose of the execution command.
 
 ---
 
@@ -595,7 +616,7 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 
 | ID | Sev | L | applies | FAIL when |
 |---|---|---|---|---|
-| `model.primary_declared` | CRITICAL | 1 | manifest | `models.primary.id` absent |
+| `model.primary_declared` | CRITICAL | 1 | manifest, except §6.1's explicit shipped judge_only predicate | `models.primary.id` absent |
 | `model.provider_known` | WARNING | 1 | per model | provider is `other` |
 | `model.revision_pinned` | CRITICAL | 2 | per model | HF: lock `revision.confidence != exact`; API: `pinnability == unpinnable` → rule emits WARNING, `snapshot_alias` → rule emits INFO (see §11 step 6); local: `config_sha256` absent |
 | `model.tokenizer_pinned` | WARNING | 2 | per HF model | lock `tokenizer.revision.confidence != exact` |
@@ -658,6 +679,16 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 | `judge.params_declared` | CRITICAL | 1 | manifest | `evaluation.judge.params.temperature` or `.max_tokens` absent |
 | `judge.pinnability_recorded` | WARNING | 2 | judge model declared | lock lacks `pinnability` for judge role |
 | `judge.repetitions_declared` | WARNING | 1 | manifest | `evaluation.judge.repetitions` absent |
+
+Under the exact §6.1 primary exception only, `judge.model_declared` additionally
+fails for a referenced model with absent/empty/whitespace-only id, and
+`judge.prompt_declared` fails when both path and inline text are absent. Explicit
+empty inline text counts as declared content. Existing reference validation,
+file existence and hashing remain unchanged; invalid references still exit 2.
+Outside that predicate these two rules preserve their released presence behavior.
+Keep existing numeric validation: zero temperature is valid, max_tokens must be
+positive, and repetitions has no added positive constraint (zero remains a
+declared value). No schema relaxation or new rule ID is introduced.
 
 ### 12.10 `train.*` (M3)
 

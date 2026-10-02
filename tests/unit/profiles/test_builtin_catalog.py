@@ -74,6 +74,22 @@ OWN_RULES = {
         "judge.pinnability_recorded",
         "judge.repetitions_declared",
     },
+    "judge_only": {
+        "dataset.declared",
+        "dataset.preprocessing_declared",
+        "dataset.sampling_seed_declared",
+        "dataset.subset_declared",
+        "eval.metrics_declared",
+        "eval.metric_implementation_referenced",
+        "eval.aggregation_declared",
+        "eval.repetitions_declared",
+        "judge.model_declared",
+        "judge.prompt_declared",
+        "judge.prompt_hashed",
+        "judge.params_declared",
+        "judge.pinnability_recorded",
+        "judge.repetitions_declared",
+    },
     "finetuning": {
         "model.adapter_declared",
         "dataset.declared",
@@ -109,6 +125,13 @@ OVERRIDES = {
         "gen.seed_declared": "CRITICAL",
     },
     "llm_judge": {},
+    "judge_only": {
+        "dataset.declared": "CRITICAL",
+        "dataset.revision_pinned": "CRITICAL",
+        "dataset.sampling_seed_declared": "CRITICAL",
+        "eval.metrics_declared": "CRITICAL",
+        "exec.seed_declared": "CRITICAL",
+    },
     "finetuning": {"exec.seed_declared": "CRITICAL", "dataset.declared": "CRITICAL"},
     "safety": {"eval.definitions_declared": "CRITICAL"},
     "privacy": {},
@@ -134,11 +157,11 @@ def test_every_builtin_resolves_only_registered_rules(name: str, tmp_path: Path)
     assert all(get_rule(rule_id) is not None for rule_id in resolved.rules)
 
 
-def test_builtin_catalog_has_exactly_the_seven_beta_profiles() -> None:
+def test_builtin_catalog_has_exactly_the_eight_approved_profiles() -> None:
     assert builtin_profile_names() == sorted(OWN_RULES)
 
 
 @pytest.mark.parametrize("name", sorted(OWN_RULES))
 def test_builtin_drift_overrides_use_only_specified_profile_policy(name: str) -> None:
-    expected = {"evaluation.judge.*": "HIGH"} if name == "llm_judge" else {}
+    expected = {"evaluation.judge.*": "HIGH"} if name in {"llm_judge", "judge_only"} else {}
     assert load_builtin(name).drift_overrides == expected
