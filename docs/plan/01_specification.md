@@ -38,7 +38,7 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm runs list [--json]` / `runs show RUN_ID [--json]` | inspect run records | M5 |
 | `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` | semantic drift | M6 |
 | `reprollm export [--run RUN_ID] [--output PATH] [--template default]` | write `REPRODUCIBILITY.md` | M7 |
-| `reprollm discover [PATH] --experimental [--yes] [--dry-run] [--max-chars N] [--paper FILE]` | LLM-assisted candidate discovery | M7 |
+| `reprollm discover [PATH] --experimental [--yes] [--dry-run] [--show-content] [--max-chars N] [--paper FILE]` | LLM-assisted candidate discovery | M7 |
 | `reprollm rules list [--json] \| accept CANDIDATE_ID [--severity S] \| ignore CANDIDATE_ID \| add --field F --severity S --reason R [--cli FLAG] [--config P:K] [--env VAR]` | manage project rules | M7 |
 
 `PATH` defaults to `.`. The repository root is the nearest ancestor containing `reprollm.yaml`, else the git toplevel, else `PATH` itself.
@@ -448,6 +448,16 @@ discover:
 ```
 
 CLI flags override config; config overrides defaults.
+
+Discover include globs add small text files to the default selection; they do
+not replace it. Exclude globs remove matching repository-relative POSIX paths
+from file contents, source snippets and the outgoing tree, taking precedence
+over includes. Matching is case-sensitive shell-style matching (`*`, `?`,
+`[seq]`) of the whole relative path; `*` can match `/`. Explicit includes never
+override forbidden paths, lockfile exclusion, binary/size checks or redaction.
+Symbolic links must resolve inside the repository and their target paths must
+pass the same hard and configured exclusions. Source files used for AST
+snippets are subject to the same 64 KiB limit.
 
 ---
 
@@ -920,6 +930,14 @@ Requires `--experimental` **or** `config.discover.enabled: true`. Requires `REPR
 Include: `README*`, top-level `*.md`, `*.yaml|*.yml|*.json|*.toml` ≤ 64 KiB (excluding lockfiles and `.reprollm/`), AST-extracted snippets of `argparse.add_argument(...)`, `@dataclass` classes, `hydra`/`omegaconf` config classes, the repository tree (paths only, ≤ 2000 entries). Exclude: forbidden files (§16.4), files > 64 KiB, binary files, anything under `data/`, `datasets/`, `checkpoints/`, `outputs/`, `wandb/`. All text passes §16.2 redaction; any file whose redaction count > 0 is **dropped** and listed. Total ≤ `max_chars` (default 60 000); truncated files listed. `--dry-run` prints the file list and byte counts, sends nothing. Without `--yes`, the file list is printed and the user must confirm.
 
 ### 20.3 Request
+
+`discover --dry-run --show-content` prints the complete initial system/user
+messages as JSON after the collection report; it needs no endpoint credentials
+and makes no request. `--show-content` without `--dry-run` is a usage error.
+The preview and production request share message construction. A manifest
+excluded or dropped from collected content also contributes no field-name
+context. Configured exclusions are listed locally, with their reason, but are
+absent from the outgoing contents and tree.
 
 Single chat-completion request (OpenAI-compatible `POST {base_url}/chat/completions`) with a packaged system prompt (`discover/prompts/system.md`) demanding JSON only, and `response_format: {type: json_object}` when supported. Temperature 0. Timeout 120 s. Invalid JSON → one retry with the validation error appended; second failure → raw response saved to `.reprollm/discover/<ts>.raw.txt`, exit 3.
 

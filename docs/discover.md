@@ -23,6 +23,7 @@ anything oversized. All included text still passes value redaction first.
 
 ```console
 $ reprollm discover . --experimental --dry-run   # see the payload, send nothing
+$ reprollm discover . --experimental --dry-run --show-content  # full system/user messages
 $ reprollm discover . --experimental --yes       # one temperature-0 request
 $ reprollm rules list                            # candidates: pending/ignored
 $ reprollm rules accept c-3f9a1b                 # → project rule
@@ -42,3 +43,28 @@ confidence. `--paper` (paper–code consistency) is rejected in Beta.
 
 Output quality varies with the model; treat candidates as review input, not
 verdicts — "LLM discovers. Rules decide."
+
+## Select additional files and exclude private material
+
+Configure repository-relative, case-sensitive globs in `.reprollm/config.yaml`:
+
+```yaml
+schema_version: 1
+discover:
+  include: ["configs/experiments/*.yaml"]
+  exclude: ["internal/**", "notes/private.json"]
+```
+
+`include` adds matching small text files to the default selection; it is not
+an allowlist replacing the defaults. `exclude` wins over includes and removes
+contents, source snippets and tree paths. Globs match the whole POSIX relative
+path, with `*` also matching `/`. Hard exclusions, lockfile exclusion, binary
+checks, the 64 KiB per-file limit and redaction still apply to explicit includes.
+Excluding `reprollm.yaml` also excludes its field-name context from the request.
+Symbolic links must resolve inside the repository; the same exclusions apply
+to their targets. The 64 KiB limit also applies to source files used for snippets.
+
+The default dry run lists selected, excluded, secret-bearing and truncated
+files. Add `--show-content` to inspect the complete initial system/user request
+messages, including tree paths, without credentials or a network request.
+This option requires `--dry-run`.

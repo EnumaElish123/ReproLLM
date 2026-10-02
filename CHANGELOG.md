@@ -7,6 +7,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- UX-T01 / M7-T03–T04: honor discover exclude globs for contents, source
+  snippets, tree paths and manifest context. Include globs add bounded text
+  files without bypassing safety exclusions. Add an offline full-message
+  preview with `discover --dry-run --show-content`. Apply the 64 KiB source
+  limit and whole-file secret rejection to snippets, and check symbolic-link
+  targets against the same boundaries. Drop secret-bearing paths from outgoing
+  trees and headers, with redacted local diagnostics.
+
 ### Documentation
 
 - Track the three deferred resource-validation groups after 0.6.1 in a

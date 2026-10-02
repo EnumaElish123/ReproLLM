@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from reprollm.core.git import inspect_git
 from reprollm.core.scanner import RepoScanner
 from reprollm.discover.collector import Payload, collect, dry_run_report
@@ -94,3 +96,134 @@ def test_deterministic(tmp_path: Path) -> None:
     assert [f.path for f in first.files] == [f.path for f in second.files]
     assert first.render() == second.render()
     assert first.tree == second.tree
+
+
+def test_exclude_removes_text_snippets_and_tree_paths(tmp_path: Path) -> None:
+    (tmp_path / "README.md").write_text("Public experiment\n", encoding="utf-8")
+    (tmp_path / "private.json").write_text('{"note": "DO_NOT_SEND"}', encoding="utf-8")
+    (tmp_path / "private.py").write_text(
+        'parser.add_argument("--private-alpha", default=0.2)\n', encoding="utf-8"
+    )
+    scanner = RepoScanner(tmp_path, inspect_git(tmp_path))
+    payload = collect(tmp_path, scanner, DiscoverConfig(exclude=["private.*"]))
+    assert _paths(payload) == {"README.md"}
+    assert payload.tree == ["README.md"]
+    assert "DO_NOT_SEND" not in payload.render()
+    assert "private" not in payload.render()
+    assert "Excluded by discover.exclude" in dry_run_report(payload)
+
+
+def test_include_adds_nested_text_without_replacing_defaults(tmp_path: Path) -> None:
+    nested = tmp_path / "configs" / "experiment"
+    nested.mkdir(parents=True)
+    (tmp_path / "README.md").write_text("Experiment\n", encoding="utf-8")
+    (nested / "eval.yaml").write_text("temperature: 0.25\n", encoding="utf-8")
+    scanner = RepoScanner(tmp_path, inspect_git(tmp_path))
+    payload = collect(tmp_path, scanner, DiscoverConfig(include=["configs/**/*.yaml"]))
+    assert _paths(payload) == {"README.md", "configs/experiment/eval.yaml"}
+    assert "temperature: 0.25" in payload.render()
+
+
+def test_extra_includes_cannot_override_safety_or_exclude(tmp_path: Path) -> None:
+    for path, contents in {
+        "README.md": "Public\n",
+        "data/private.txt": "RESTRICTED_DATA\n",
+        ".env": "FAKE_CREDENTIAL\n",
+        "uv.lock": "LOCKFILE_CONTENT\n",
+        "notes/private.txt": "EXCLUDED_TEXT\n",
+        "notes/leaky.txt": "api_key: abcdefgh12345678\n",
+        "notes/oversize.txt": "x" * (64 * 1024 + 1),
+        "notes/binary.txt": "binary\x00content",
+    }.items():
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(contents, encoding="utf-8")
+    scanner = RepoScanner(tmp_path, inspect_git(tmp_path))
+    payload = collect(
+        tmp_path, scanner, DiscoverConfig(include=["*"], exclude=["notes/private.txt"])
+    )
+    assert _paths(payload) == {"README.md"}
+    assert "notes/leaky.txt" in payload.dropped_files
+    assert "notes/oversize.txt" in payload.truncated_files
+    assert "notes/private.txt" not in payload.tree
+    for forbidden in (
+        "RESTRICTED_DATA",
+        "FAKE_CREDENTIAL",
+        "LOCKFILE_CONTENT",
+        "EXCLUDED_TEXT",
+        "abcdefgh12345678",
+    ):
+        assert forbidden not in payload.render()
+
+
+def test_explicit_source_included_once_and_excluded_before_read(tmp_path: Path) -> None:
+    (tmp_path / "args.py").write_text('p.add_argument("--alpha", default=0.25)\n', encoding="utf-8")
+    scanner = RepoScanner(tmp_path, inspect_git(tmp_path))
+    payload = collect(tmp_path, scanner, DiscoverConfig(include=["args.py"]))
+    assert _paths(payload) == {"args.py"}
+    assert payload.render().count('p.add_argument("--alpha"') == 1
+    payload = collect(tmp_path, scanner, DiscoverConfig(include=["args.py"], exclude=["*.py"]))
+    assert not payload.files
+    assert not payload.tree
+
+
+def test_oversize_source_cannot_send_snippets(tmp_path: Path) -> None:
+    (tmp_path / "large.py").write_text(
+        'p.add_argument("--do-not-send", default=0.25)\n#' + "x" * (64 * 1024),
+        encoding="utf-8",
+    )
+    payload = _collect(tmp_path)
+    assert not payload.files
+    assert payload.truncated_files == ["large.py"]
+    assert "--do-not-send" not in payload.render()
+
+
+def test_secret_anywhere_in_source_drops_all_its_snippets(tmp_path: Path) -> None:
+    (tmp_path / "args.py").write_text(
+        'p.add_argument("--public-alpha", default=0.25)\napi_key = "abcdefgh12345678"\n',
+        encoding="utf-8",
+    )
+    payload = _collect(tmp_path)
+    assert not payload.files
+    assert payload.dropped_files == ["args.py"]
+    assert "--public-alpha" not in payload.render()
+
+
+def test_secret_in_path_never_enters_tree_header_or_report(tmp_path: Path) -> None:
+    fake_secret = "sk-" + "a" * 40
+    path = tmp_path / "notes" / f"{fake_secret}.txt"
+    path.parent.mkdir()
+    path.write_text("Public marker\n", encoding="utf-8")
+    for config in (DiscoverConfig(), DiscoverConfig(include=["notes/*"])):
+        payload = collect(tmp_path, RepoScanner(tmp_path, inspect_git(tmp_path)), config)
+        assert not payload.files
+        assert not payload.tree
+        assert payload.dropped_files
+        assert fake_secret not in payload.render() + dry_run_report(payload)
+
+
+def test_includes_cannot_follow_aliases_to_excluded_content(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    for name in ("data/private.txt", ".env", "private.txt", "uv.lock", "public.txt"):
+        target = repo / name
+        target.parent.mkdir(exist_ok=True)
+        target.write_text(f"MARKER_{name}\n", encoding="utf-8")
+    (tmp_path / "outside.txt").write_text("OUTSIDE_MARKER\n", encoding="utf-8")
+    targets = ["data/private.txt", ".env", "private.txt", "uv.lock", "../outside.txt"]
+    try:
+        for index, target in enumerate(targets):
+            (repo / f"alias{index}.txt").symlink_to(target)
+        (repo / "safe-alias.txt").symlink_to("public.txt")
+    except OSError:
+        pytest.skip("symlink creation is unavailable")
+    payload = collect(
+        repo,
+        RepoScanner(repo, inspect_git(repo)),
+        DiscoverConfig(include=["*.txt"], exclude=["private.txt"]),
+    )
+    assert _paths(payload) == {"public.txt", "safe-alias.txt"}
+    assert all(f"alias{index}.txt" not in payload.tree for index in (0, 1, 2, 4))
+    assert "MARKER_private" not in payload.render()
+    assert "MARKER_uv.lock" not in payload.render()
+    assert "OUTSIDE_MARKER" not in payload.render()

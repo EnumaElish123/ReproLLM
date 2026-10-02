@@ -219,6 +219,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │ --yes                        Send without confirmation.                      │
 │ --dry-run                    Print the payload report; send nothing.         │
 │ --paper               <str>  Reserved for post-Beta.                         │
+│ --show-content               With --dry-run, show the complete request       │
+│                              messages.                                       │
 │ --max-chars           <int>  Payload budget override.                        │
 │ --help                       Show this message and exit.                     │
 ╰──────────────────────────────────────────────────────────────────────────────╯

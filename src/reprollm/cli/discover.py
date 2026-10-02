@@ -9,6 +9,7 @@ sends nothing.
 from __future__ import annotations
 
 import getpass
+import json
 import os
 import socket
 from datetime import datetime, timezone
@@ -59,11 +60,17 @@ def discover(
         bool, typer.Option("--dry-run", help="Print the payload report; send nothing.")
     ] = False,
     paper: Annotated[str | None, typer.Option("--paper", help="Reserved for post-Beta.")] = None,
+    show_content: Annotated[
+        bool,
+        typer.Option("--show-content", help="With --dry-run, show the complete request messages."),
+    ] = False,
     max_chars: Annotated[int | None, typer.Option(help="Payload budget override.")] = None,
 ) -> None:
     """Propose project-rule candidates from repository content (JSON only)."""
     if paper is not None:
         raise UserError("Paper analysis is not available in Beta.")
+    if show_content and not dry_run:
+        raise UserError("--show-content requires --dry-run; preview sends nothing")
     root = find_root(path)
     config = load_config(root)
     discover_config = config.discover if config else None
@@ -87,8 +94,37 @@ def discover(
     payload = collect(root, ctx.fs, discover_config)
     report = dry_run_report(payload)
 
+    if dry_run and not show_content:
+        typer.echo(report, nl=False)
+        return
+
+    system_prompt = (files("reprollm.discover") / "prompts" / "system.md").read_text(
+        encoding="utf-8"
+    )
+    # Excluding or dropping the manifest must also exclude its field-name context.
+    manifest_fields = (
+        _manifest_field_list(root)
+        if any(entry.path == "reprollm.yaml" for entry in payload.files)
+        else []
+    )
+    user_content = (
+        payload.render()
+        + "\n\nAlready-declared manifest fields (do not re-suggest):\n"
+        + (", ".join(manifest_fields) or "(none)")
+    )
     if dry_run:
         typer.echo(report, nl=False)
+        typer.echo("\nRequest messages (nothing sent):")
+        typer.echo(
+            json.dumps(
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_content},
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return
 
     base_url, api_key, model = _endpoint_credentials(discover_config)
@@ -116,15 +152,6 @@ def discover(
             typer.echo("Aborted; nothing was sent.")
             return
 
-    system_prompt = (files("reprollm.discover") / "prompts" / "system.md").read_text(
-        encoding="utf-8"
-    )
-    manifest_fields = _manifest_field_list(root)
-    user_content = (
-        payload.render()
-        + "\n\nAlready-declared manifest fields (do not re-suggest):\n"
-        + (", ".join(manifest_fields) or "(none)")
-    )
     try:
         response = request_candidates(
             base_url=base_url,

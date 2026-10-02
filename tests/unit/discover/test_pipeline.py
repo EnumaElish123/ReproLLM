@@ -171,6 +171,45 @@ def test_dry_run_sends_nothing(repo: Path) -> None:
     assert ".env" not in result.output.split("Files included")[1].split("Dropped")[0]
 
 
+@respx.mock
+def test_preview_matches_request_and_respects_excluded_manifest(repo: Path, monkeypatch) -> None:
+    config_dir = repo / ".reprollm"
+    config_dir.mkdir(exist_ok=True)
+    (config_dir / "config.yaml").write_text(
+        "schema_version: 1\ndiscover:\n  exclude: [reprollm.yaml, private.json]\n",
+        encoding="utf-8",
+    )
+    (repo / "private.json").write_text('{"note": "DO_NOT_SEND"}', encoding="utf-8")
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: preview}\nexperiment: {profiles: []}\n"
+        "custom: {private_field_name: 0.25}\n",
+        encoding="utf-8",
+    )
+    for key in ("REPROLLM_LLM_BASE_URL", "REPROLLM_LLM_API_KEY", "REPROLLM_LLM_MODEL"):
+        monkeypatch.delenv(key)
+    preview = runner.invoke(app, ["discover", ".", "--experimental", "--dry-run", "--show-content"])
+    assert preview.exit_code == 0, preview.output
+    messages = json.loads(preview.output.split("Request messages (nothing sent):\n", 1)[1])
+    serialized = json.dumps(messages)
+    assert "DO_NOT_SEND" not in serialized
+    assert "private.json" not in serialized
+    assert "reprollm.yaml" not in messages[1]["content"]
+    assert "private_field_name" not in serialized
+    monkeypatch.setenv("REPROLLM_LLM_BASE_URL", "https://llm.example.com/v1")
+    monkeypatch.setenv("REPROLLM_LLM_API_KEY", "sk-test-not-a-real-key-000")
+    monkeypatch.setenv("REPROLLM_LLM_MODEL", "test-model")
+    route = respx.post("https://llm.example.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=MOCK_RESPONSE)
+    )
+    assert run_cli(["discover", ".", "--experimental", "--yes"]) == 0
+    assert json.loads(route.calls[0].request.content)["messages"] == messages
+
+
+def test_show_content_requires_dry_run(repo: Path, capsys) -> None:
+    assert run_cli(["discover", ".", "--experimental", "--show-content"]) == 2
+    assert "--show-content requires --dry-run" in capsys.readouterr().err
+
+
 def test_non_tty_without_yes_is_rejected(repo: Path) -> None:
     code = run_cli(["discover", ".", "--experimental"])
     assert code == 2

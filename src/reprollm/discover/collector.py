@@ -30,6 +30,18 @@ _EXCLUDED_DIRS = {"data", "datasets", "checkpoints", "outputs", "wandb", ".repro
 #: → AST snippets → tree.
 _KIND_PRIORITY = ("readme", "config", "snippet", "tree")
 
+_LOCKFILE_NAMES = {
+    "reprollm.lock",
+    "uv.lock",
+    "poetry.lock",
+    "pipfile.lock",
+    "conda-lock.yml",
+    "package-lock.json",
+    "npm-shrinkwrap.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+}
+
 
 @dataclass(frozen=True)
 class CollectedFile:
@@ -45,6 +57,7 @@ class Payload:
     dropped_files: list[str] = field(default_factory=list)
     truncated_files: list[str] = field(default_factory=list)
     total_chars: int = 0
+    excluded_files: list[str] = field(default_factory=list)
 
     def render(self) -> str:
         """The user-message content sent to the model (deterministic)."""
@@ -68,15 +81,7 @@ def _is_config(path: str) -> bool:
     suffix = Path(path).suffix.lower()
     if suffix not in {".yaml", ".yml", ".json", ".toml"}:
         return False
-    if Path(path).name.lower() in {
-        "uv.lock",
-        "poetry.lock",
-        "pipfile.lock",
-        "conda-lock.yml",
-        "package-lock.json",
-        "yarn.lock",
-        "pnpm-lock.yaml",
-    }:
+    if Path(path).name.lower() in _LOCKFILE_NAMES:
         return False
     return path.count("/") <= 1  # top-level configs only
 
@@ -88,13 +93,19 @@ def _excluded(path: str) -> bool:
     return first in _EXCLUDED_DIRS
 
 
-def _argparse_snippets(scanner: RepoScanner, paths: list[str]) -> list[tuple[str, int, str]]:
+def _argparse_snippets(
+    scanner: RepoScanner, paths: list[str], dropped_files: list[str]
+) -> list[tuple[str, int, str]]:
     """Source segments of argparse.add_argument / @dataclass / hydra-omegaconf
     class definitions (spec §20.2), extracted deterministically."""
     snippets: list[tuple[str, int, str]] = []
     for path in sorted(p for p in paths if p.endswith(".py")):
-        text = scanner.read_text(path)
+        text = scanner.read_text(path, max_bytes=MAX_FILE_BYTES)
         if text is None:
+            continue
+        # A safe-looking fragment must not bypass whole-file secret rejection.
+        if redact_text(text)[1] > 0:
+            dropped_files.append(path)
             continue
         try:
             tree = ast.parse(text)
@@ -139,16 +150,55 @@ def _interesting_class(node: ast.ClassDef) -> bool:
 def collect(root: Path, scanner: RepoScanner, config: DiscoverConfig) -> Payload:
     """Build the discover payload under ``config.max_chars`` (M7-T03)."""
     payload = Payload()
-    files = [p for p in scanner.files() if not _excluded(p)]
+    canonical_root = root.resolve()
+    resolved: dict[str, str] = {}
+    for path in scanner.files():
+        try:
+            source = (root / path).resolve().relative_to(canonical_root).as_posix()
+        except (OSError, ValueError, RuntimeError):
+            continue
+        if not _excluded(path) and not _excluded(source):
+            safe_path, path_redactions = redact_text(path)
+            if path_redactions > 0 or redact_text(source)[1] > 0:
+                payload.dropped_files.append(safe_path)
+                continue
+            resolved[path] = source
+    payload.excluded_files = [
+        p
+        for p, source in resolved.items()
+        if _matches(config.exclude, p) or _matches(config.exclude, source)
+    ]
+    excluded = set(payload.excluded_files)
+    files = [p for p in resolved if p not in excluded]
+    content_files = [
+        p
+        for p in files
+        if Path(p).name.lower() not in _LOCKFILE_NAMES
+        and Path(resolved[p]).name.lower() not in _LOCKFILE_NAMES
+    ]
+    extras = {
+        p
+        for p in content_files
+        if _matches(config.include, p) and Path(p).name.lower() not in _LOCKFILE_NAMES
+    }
 
-    readmes = sorted(p for p in files if _is_readme(p))
-    configs = sorted((p for p in files if _is_config(p)), key=lambda p: (len(p), p))
-    python = [p for p in files if p.endswith(".py") and p.count("/") <= 3]
+    readmes = sorted(p for p in content_files if _is_readme(p))
+    configs = sorted(
+        (p for p in content_files if (_is_config(p) or p in extras) and p not in readmes),
+        key=lambda p: (len(p), p),
+    )
+    python = [
+        p for p in content_files if p.endswith(".py") and p.count("/") <= 3 and p not in extras
+    ]
 
     budget = config.max_chars
 
     def take(path: str, kind: str) -> None:
         nonlocal budget
+        size = scanner.size(path)
+        if size is not None and size > MAX_FILE_BYTES:
+            payload.truncated_files.append(path)
+            return
         raw = scanner.read_text(path, max_bytes=MAX_FILE_BYTES)
         if raw is None:
             return
@@ -172,7 +222,14 @@ def collect(root: Path, scanner: RepoScanner, config: DiscoverConfig) -> Payload
         take(path, "config")
 
     snippet_budget = max(0, budget)
-    for path, lineno, segment in _argparse_snippets(scanner, python):
+    bounded_python = []
+    for path in python:
+        size = scanner.size(path)
+        if size is not None and size > MAX_FILE_BYTES:
+            payload.truncated_files.append(path)
+        else:
+            bounded_python.append(path)
+    for path, lineno, segment in _argparse_snippets(scanner, bounded_python, payload.dropped_files):
         snippet_path = f"{path}#L{lineno}"
         safe, redactions = redact_text(segment)
         if redactions > 0:
@@ -209,6 +266,10 @@ def dry_run_report(payload: Payload) -> str:
     lines.append(f"Files included ({len(payload.files)}):")
     for collected in payload.files:
         lines.append(f"  {collected.path}  ({collected.chars} chars)")
+    if payload.excluded_files:
+        lines.append(f"Excluded by discover.exclude (not sent): {len(payload.excluded_files)}")
+        for path in payload.excluded_files:
+            lines.append(f"  {path}")
     if payload.dropped_files:
         lines.append(f"Dropped (redaction triggered): {len(payload.dropped_files)}")
         for path in payload.dropped_files:
@@ -224,4 +285,9 @@ def dry_run_report(payload: Payload) -> str:
 def matches_include(patterns: list[str] | None, path: str) -> bool:
     if not patterns:
         return True
-    return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
+    return _matches(patterns, path)
+
+
+def _matches(patterns: list[str] | None, path: str) -> bool:
+    """Match repository-relative POSIX paths consistently on every platform."""
+    return any(fnmatch.fnmatchcase(path, pattern) for pattern in patterns or ())
