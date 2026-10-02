@@ -80,9 +80,12 @@ def main(check: bool = False) -> int:
         "profiles list",
         "profiles show",
         "rules list",
+        "rules show",
         "rules add",
         "rules accept",
         "rules ignore",
+        "rules remove",
+        "rules restore",
         "schema export",
     ):
         sections.append(f"## reprollm {command}")

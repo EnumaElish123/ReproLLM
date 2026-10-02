@@ -24,7 +24,7 @@ If the task description and the specification disagree, the specification wins; 
 - **No heavy dependencies.** Never add `torch`, `transformers`, `vllm`, `huggingface_hub`, `numpy`, or anything that pulls them. Call the HF Hub HTTP API with `httpx`. Read installed versions with `importlib.metadata`, never `import` the package.
 - **No network in tests.** All `httpx` calls are mocked with `respx`; an autouse fixture fails unmocked requests. `git` and `nvidia-smi` go through `reprollm.core.proc.run_cmd` so tests can stub them.
 - **Rule IDs are frozen once released.** Renaming requires an `aliases` entry. Never reuse an ID for different semantics.
-- **Never write user files** except the artifacts each command owns (`init` → manifest/.reprollm; `lock` → reprollm.lock; `run` → run directory; `rules accept/ignore/add` → project-rules.yaml). Never modify user code, configs, or prompts.
+- **Never write user files** except the artifacts each command owns (`init` → manifest/.reprollm; `lock` → reprollm.lock; `run` → run directory; `rules accept/ignore/add/remove/restore` → project-rules.yaml; `rules remove` additionally → immutable `.reprollm/rule-archives/<archive_id>.json` recovery copies). Never modify user code, configs, or prompts.
 - **Redaction is a security boundary.** Any change to `src/reprollm/core/redaction.py` must keep 100 % branch coverage and add cases to `tests/fixtures/secrets/`. A redaction bypass is a security bug, not a normal bug.
 - **Persisted artifacts contain no absolute paths, hostnames, usernames, or secrets.**
 - **Deterministic output.** Same inputs → byte-identical JSON (modulo timestamp fields listed in spec §22 T-02). Sort everything you emit.

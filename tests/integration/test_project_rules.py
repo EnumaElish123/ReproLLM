@@ -136,6 +136,27 @@ def test_lock_fresh_second_branch_triggers(repo: Path, monkeypatch) -> None:
     assert "project_rules_sha256" in json.dumps(fresh[0])
 
 
+def test_archive_roundtrip_changes_audit_and_lock_freshness(repo: Path, monkeypatch) -> None:
+    _add_rules(repo, monkeypatch)
+    assert runner.invoke(app, ["lock", str(repo), "--offline"]).exit_code == 0
+    removed = runner.invoke(app, ["rules", "remove", "project.alpha", "--reason", "Retired"])
+    assert removed.exit_code == 0, removed.output
+    archive_path = next((repo / ".reprollm/rule-archives").glob("*.json"))
+    original = json.loads(archive_path.read_text())["rule"]
+    audited = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "never"])
+    findings = json.loads(audited.output)["findings"]
+    assert not any(row["rule_id"] == "project.alpha" for row in findings)
+    assert any(row["rule_id"] == "project.delta" for row in findings)
+    fresh = next(row for row in findings if row["rule_id"] == "consistency.lock_fresh")
+    assert fresh["status"] == "fail" and "project_rules_sha256" in json.dumps(fresh)
+    restored = runner.invoke(app, ["rules", "restore", archive_path.stem])
+    assert restored.exit_code == 0, restored.output
+    current = load_yaml(repo / ".reprollm/project-rules.yaml")
+    assert next(rule for rule in current["rules"] if rule["id"] == "project.alpha") == original
+    audited = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "never"])
+    assert any(row["rule_id"] == "project.alpha" for row in json.loads(audited.output)["findings"])
+
+
 def test_rules_add_unique_ids_and_list(repo: Path, monkeypatch) -> None:
     monkeypatch.chdir(repo)
     for _ in range(2):

@@ -281,6 +281,7 @@ Level is auto-detected; `--level` may force a lower level.
 └── .reprollm/
     ├── config.yaml               # tool config: suppressions, run options, discover endpoint
     ├── project-rules.yaml        # accepted project-specific rules
+    ├── rule-archives/<id>.json   # immutable project-rule recovery copies
     ├── profiles/                 # optional user profiles (override built-ins by name)
     ├── discover/<ts>.json        # discovery candidates (experimental)
     └── runs/<run_id>/

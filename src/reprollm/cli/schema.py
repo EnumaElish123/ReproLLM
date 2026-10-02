@@ -21,6 +21,7 @@ from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 from reprollm.schemas.profile import Profile
 from reprollm.schemas.project_rules import ProjectRules
+from reprollm.schemas.rule_archive import RuleArchive
 from reprollm.schemas.run_record import RunRecord
 
 app = typer.Typer(help="Export JSON Schemas.", no_args_is_help=True)
@@ -33,6 +34,7 @@ SCHEMA_MODELS: dict[str, type[BaseModel]] = {
     "run_record": RunRecord,
     "profile": Profile,
     "project_rules": ProjectRules,
+    "rule_archive": RuleArchive,
     "config": Config,
     "audit_report": AuditReport,
     "diff_report": DiffReport,
