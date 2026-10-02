@@ -6,12 +6,11 @@ from typing import ClassVar
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import register_rule
+from reprollm.rules._api import is_api_model
 from reprollm.rules._lock import LockRule, provenance_evidence
 from reprollm.rules._presence import PresenceRule
 from reprollm.schemas.finding import Evidence, Finding, Severity
 from reprollm.schemas.lock import Confidence
-
-_API_PROVIDERS = frozenset({"openai", "openrouter", "anthropic"})
 
 
 @register_rule
@@ -31,8 +30,16 @@ class RevisionPinnedRule(LockRule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         assert ctx.lock is not None
         findings: list[Finding] = []
+        state = ctx.state
+        leaves = state.flatten() if state is not None else {}
         for role, model in sorted(ctx.lock.models.items()):
-            if model.provider in _API_PROVIDERS:
+            provider = leaves.get(f"models.{role}.provider")
+            endpoint = leaves.get(f"models.{role}.endpoint.base_url")
+            if is_api_model(
+                provider.value if provider is not None else model.provider,
+                endpoint.value if endpoint is not None else None,
+                ctx.root,
+            ):
                 if model.pinnability == "exact":
                     continue
                 severity = (
@@ -232,6 +239,13 @@ class ProviderKnownRule(PresenceRule):
             )
             if model.provider == "other":
                 finding.evidence[0].note = "unsupported provider"
+                endpoint = model.endpoint.base_url if model.endpoint is not None else None
+                if is_api_model(model.provider, endpoint, ctx.root):
+                    finding.fix_hint = (
+                        f"Keep models.{role}.provider as other and record "
+                        f"models.{role}.endpoint.base_url in reprollm.yaml; provider metadata "
+                        "is unsupported and API aliases do not guarantee immutable revisions."
+                    )
             findings.append(finding)
         return findings
 
@@ -250,7 +264,8 @@ class _ModelInferenceField(PresenceRule):
         findings: list[Finding] = []
         for role, model in sorted(ctx.manifest.models.items()):
             field = f"models.{role}.{self.field}"
-            if model.provider in _API_PROVIDERS:
+            endpoint = model.endpoint.base_url if model.endpoint is not None else None
+            if is_api_model(model.provider, endpoint, ctx.root):
                 findings.append(self.skipped_field(ctx, field, "not required for API models"))
                 continue
             value = getattr(model, self.field)

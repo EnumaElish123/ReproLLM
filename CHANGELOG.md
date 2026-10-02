@@ -16,6 +16,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX2-T03 / UX-T06: classify `provider: other` with a safe declared HTTP(S)
+  endpoint as an opaque API per model role. Preserve unsupported-provider and
+  alias warnings, unresolved identity, stale-lock checks and offline behavior;
+  avoid demanding unobservable dtype/quantization. No new provider calls or keys.
 - UX2-T02 / UX-T04: separate audit findings from the effective exit threshold.
   Group repeated failing warnings with three examples and a shared fix; add
   `--details` to expand every row. Preserve full JSON/GitHub evidence and exits.

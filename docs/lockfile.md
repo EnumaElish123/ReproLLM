@@ -74,6 +74,28 @@ metadata only when the provider's environment key is present; it records
 `exists` or `not_found` without changing the pinnability contract. No inference
 request is made. Missing keys yield `verify skipped: no api key`.
 
+On `main` (unreleased), declare an OpenAI-compatible service with an unsupported
+provider, such as DeepSeek, using its own identity:
+
+```yaml
+models:
+  primary:
+    provider: other
+    id: deepseek-chat
+    endpoint:
+      base_url: https://api.deepseek.com
+inference:
+  backend: openai
+```
+
+`backend: openai` describes client compatibility. It does not rename the provider.
+A safe HTTP(S) endpoint makes this role an API for audit: no dtype/quantization
+demand, an ordinary alias WARNING, or a dated snapshot-alias INFO. The provider
+still has an unsupported-metadata WARNING, and the revision remains unresolved.
+Without a qualifying endpoint the previous unsupported-provider checks apply.
+No request or generic API-key lookup is added for `other`; its `--verify-api`
+verification remains unavailable. Re-lock after changing the endpoint.
+
 ## Offline and access-restricted environments
 
 ```console

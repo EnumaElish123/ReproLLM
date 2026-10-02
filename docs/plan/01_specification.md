@@ -307,6 +307,31 @@ environment:                               # expected environment at lock time
 | `inference.version` | `importlib.metadata.version(backend_package)`; `unresolved` if not installed. |
 | `evaluation.metrics[].implementation` | if a relative path exists → `implementation_sha256`; if `pkg==ver` or `pkg` → `implementation_version` via importlib.metadata. |
 
+`provider: other` with a qualifying `endpoint.base_url` declares an opaque model
+API and follows the existing API pinnability policy for rule applicability.
+The original endpoint must be a nonempty HTTP(S) string parsed by `urlsplit`,
+with a hostname and valid optional port, no whitespace, Unicode Cc/Cf/Zl/Zp,
+backslash, fragment or userinfo, and zero existing secret/machine-identity
+privacy replacements. Test the original string before normalization; ordinary
+safe paths and queries are allowed. Invalid or absent endpoints retain the
+existing unsupported-other rule behavior without a new schema validation error.
+
+Preserve `provider: other` and its unsupported-provider WARNING; never infer
+provider identity from `inference.backend` or another role. Level 1 presence
+rules use each role's manifest provider/endpoint even in a Level 2 audit.
+Level 2 `model.revision_pinned` uses each role's effective provider/endpoint
+in merged State and retains source alternatives and existing consistency checks.
+Unpinnable aliases yield WARNING and dated snapshot aliases INFO; neither proves
+an immutable revision. Skip unobservable dtype/quantization presence demands
+for these API declarations. Keep unsupported `other` without a qualifying
+endpoint unchanged. This classification makes no request and adds no credential
+lookup, provider enum, endpoint lock field or verification transport. Existing
+API resolution still records null/unresolved revision; `--verify-api` for `other`
+remains unavailable. Offline lock creates no HTTP client; mixed online HF
+resolution remains permitted. Changed endpoint declarations still stale the
+manifest hash (`consistency.lock_fresh`: WARNING); identity conflicts remain
+CRITICAL under their existing rules.
+
 ### 4.4 LLM-critical package list
 
 `torch, transformers, tokenizers, datasets, accelerate, peft, trl, vllm, sglang, openai, anthropic, numpy, safetensors, deepspeed, flash_attn, xformers, bitsandbytes, sentencepiece, evaluate, lm_eval, lighteval, inspect_ai`. Constant `LLM_CRITICAL_PACKAGES` in `reprollm/core/envinfo.py`. Versions via `importlib.metadata`; never `import`.
@@ -575,7 +600,7 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 | `model.revision_pinned` | CRITICAL | 2 | per model | HF: lock `revision.confidence != exact`; API: `pinnability == unpinnable` → rule emits WARNING, `snapshot_alias` → rule emits INFO (see §11 step 6); local: `config_sha256` absent |
 | `model.tokenizer_pinned` | WARNING | 2 | per HF model | lock `tokenizer.revision.confidence != exact` |
 | `model.chat_template_hashed` | WARNING | 2 | per HF/local model | lock `chat_template` missing, or `status ∈ {present, custom_file}` with `sha256.confidence != exact`. `status: absent` (repository has no chat template) is PASS with an evidence note. |
-| `model.dtype_declared` | WARNING | 1 | per model, provider ∉ {openai, openrouter, anthropic} | `dtype` absent and `inference.dtype` absent |
+| `model.dtype_declared` | WARNING | 1 | per model, non-API under §4.3's per-role predicate | `dtype` absent and `inference.dtype` absent |
 | `model.quantization_declared` | INFO | 1 | per model, non-API | `quantization` absent and `inference.quantization` absent |
 | `model.adapter_declared` | WARNING | 1 | detection found `peft` import or dependency | no model has `adapter` |
 | `model.trust_remote_code_declared` **P1** | WARNING | 1 | scanner finds `trust_remote_code=True` in `*.py` | no model explicitly declares `trust_remote_code: true` or `trust_remote_code: false` |
