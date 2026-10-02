@@ -33,6 +33,8 @@ class ExportInput:
     generation: dict[str, Any] = field(default_factory=dict)
     inference: dict[str, Any] = field(default_factory=dict)
     training: dict[str, Any] = field(default_factory=dict)
+    evaluation: dict[str, Any] = field(default_factory=dict)
+    privacy: dict[str, Any] = field(default_factory=dict)
     code: dict[str, Any] = field(default_factory=dict)
     environment: dict[str, Any] = field(default_factory=dict)
     hardware: dict[str, Any] = field(default_factory=dict)
@@ -49,6 +51,7 @@ class ExportInput:
     prompt_formats: str = ""
     has_judge: bool = False
     judge_summary: str = ""
+    judge_model_ref: str = "judge"
     has_privacy: bool = False
 
     def has_run(self) -> bool:
@@ -119,6 +122,7 @@ def _dataset_rows(flat: dict[str, Leaf], lock: Lock | None) -> list[dict[str, An
             "role": role,
             "provider": _value(flat, f"{prefix}.provider") or "—",
             "id": _value(flat, f"{prefix}.id") or "—",
+            "split": _value(flat, f"{prefix}.split"),
         }
         if lock is not None and role in lock.datasets:
             revision = lock.datasets[role].revision
@@ -214,6 +218,8 @@ def build_input(
         generation=_section(flat, "generation"),
         inference=_section(flat, "inference"),
         training=_section(flat, "training"),
+        evaluation=_section(flat, "evaluation"),
+        privacy=_section(flat, "privacy"),
         code=dict(_section(flat, "code")),
         environment=dict(_section(flat, "environment")),
         hardware=dict(_section(flat, "hardware")),
@@ -274,11 +280,13 @@ def enrich_for_checklist(
     lock: Lock | None,
 ) -> None:
     """Add the derived summaries the checklist template needs."""
-    metrics = (
-        [m.name for m in manifest.evaluation.metrics]
-        if manifest is not None and manifest.evaluation is not None
-        else []
-    )
+    effective_metrics = data.evaluation.get("metrics")
+    metric_rows = effective_metrics if isinstance(effective_metrics, list) else []
+    metrics = [
+        metric["name"]
+        for metric in metric_rows
+        if isinstance(metric, dict) and isinstance(metric.get("name"), str)
+    ]
     data.metrics_summary = ", ".join(metrics) if metrics else "not declared"
 
     models = manifest.models if manifest is not None else {}
@@ -293,19 +301,13 @@ def enrich_for_checklist(
     formats = [f"{role}:{spec.format or 'plain'}" for role, spec in prompts.items()]
     data.prompt_formats = ", ".join(formats) if formats else "none"
 
-    judge = (
-        manifest.evaluation.judge
-        if manifest is not None and manifest.evaluation is not None
-        else None
-    )
-    data.has_judge = judge is not None
-    judge_id = (
-        models[judge.model_ref].id if judge is not None and judge.model_ref in models else None
+    data.has_judge = any(key.startswith("judge.") for key in data.evaluation)
+    data.judge_model_ref = str(data.evaluation.get("judge.model_ref", "judge"))
+    judge_id = next(
+        (model["id"] for model in data.models if model["role"] == data.judge_model_ref), None
     )
     data.judge_summary = judge_id if judge_id is not None else "unknown"
-    data.has_privacy = bool(
-        manifest is not None and manifest.privacy is not None and manifest.privacy.mechanism
-    )
+    data.has_privacy = bool(data.privacy.get("mechanism.name"))
 
 
 def render_checklist_mapping(data: ExportInput, *, venue: str) -> str:

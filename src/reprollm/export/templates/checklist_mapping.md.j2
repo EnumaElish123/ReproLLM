@@ -8,16 +8,16 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 | Checklist area | ReproLLM evidence in this document |
 |---|---|
 | 1.6 Baselines | {% for m in data.models %}`models.{{ m.role }}` = {{ m.id }} @ {{ m.revision }}{% if not loop.last %}; {% endif %}{% endfor %} |
-| 2.1–2.4 Hyperparameters / runs | {% if data.training %}Training section (method, lr, batch_size, epochs){% else %}*not covered* (no `training` section){% endif %}; repetitions: {{ data.generation.get("seed", "not declared") }} |
+| 2.1–2.4 Hyperparameters / runs | {% if data.training %}Training section (method, lr, batch_size, epochs){% else %}*not covered* (no `training` section){% endif %}; repetitions: {{ data.evaluation.get("repetitions", "not declared") }} |
 | 2.5 Experimental protocol | `execution.command` (Execution section above); run record: {{ data.execution.get("run_id", "none") }} |
-| 3.1–3.3 Datasets / splits | {% for d in data.datasets %}`datasets.{{ d.role }}` = {{ d.id }} @ {{ d.revision }}, split: {{ d.get("split", "not declared") }}{% if not loop.last %}; {% endif %}{% endfor %} |
+| 3.1–3.3 Datasets / splits | {% for d in data.datasets %}`datasets.{{ d.role }}` = {{ d.id }} @ {{ d.revision }}, split: {{ d.get("split") or "not declared" }}{% if not loop.last %}; {% endif %}{% endfor %} |
 | 4.1–4.3 Evaluation metrics / protocol | Metrics: {{ data.metrics_summary }}; generation parameters above |
 | 5.1–5.2 Model checkpoints / LLMs | Identity table above (revision, pinnability, tokenizer, chat template) |
 | 5.3 Fine-tuning | {% if data.training %}Training section; adapter: {{ data.adapter_summary }}{% else %}*not covered* (no fine-tuning){% endif %} |
 | 5.4 Prompts | Prompt table above (content hashes); format: {{ data.prompt_formats }} |
 | 5.5 Decoding parameters | Generation section above (temperature, top_p, max_tokens, stop, seed) |
-| 5.6 LLM judge | {% if data.has_judge %}Judge model: `models.judge` = {{ data.judge_summary }}{% else %}*not covered* (no judge configuration){% endif %} |
-| 5.7 Attack/defense | {% if data.has_privacy %}Privacy section above (threat model, mechanism){% else %}*not covered* (no privacy configuration){% endif %} |
+| 5.6 LLM judge | {% if data.has_judge %}Judge model: `models.{{ data.judge_model_ref }}` = {{ data.judge_summary }}{% else %}*not covered* (no judge configuration){% endif %} |
+| 5.7 Attack/defense | {% if data.has_privacy %}`privacy.threat_model`: {{ data.privacy.get("threat_model", "not declared") }}; `privacy.mechanism.name`: {{ data.privacy.get("mechanism.name", "not declared") }}{% else %}*not covered* (no privacy configuration){% endif %} |
 | 6.1–6.2 Software / versions | Environment section above; `env.llm_critical_deps_pinned` rule |
 | 6.3 Hardware / compute | Hardware section above |
 | 3.5, 6.4 Crowd-worker / stats | *not covered by ReproLLM* |
@@ -28,11 +28,11 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 |---|---|
 | B4 Research artifacts/code | Code section above (commit, branch, remote); run records under `.reprollm/runs/` |
 | B5 Computational reproducibility | Full pipeline: `init → lock → run → diff → export`; REPRODUCIBILITY.md is the output |
-| B6 Data usage | Dataset table above (id, revision, preprocessing) |
+| B6 Data usage | Dataset table above (id, revision) |
 | B7 Experimental setup | Generation, inference, and training sections above |
-| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template, dtype, quantization, adapter) |
-| C1 Tasks and evaluation | Metrics listed above; dataset splits in dataset table |
-| C3 Prompt details | Prompt table above; few-shot: {{ data.prompt_formats }} |
+| B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |
+| C1 Tasks and evaluation | Metrics: {{ data.metrics_summary }}; splits: {% for d in data.datasets %}`datasets.{{ d.role }}.split` = {{ d.get("split") or "not declared" }}{% if not loop.last %}; {% endif %}{% endfor %} |
+| C3 Prompt details | Prompt table above; format: {{ data.prompt_formats }} |
 | C5 Human subjects | *not covered by ReproLLM* |
 {% elif venue == "acm" %}
 ## ACM Artifact Badging Checklist mapping

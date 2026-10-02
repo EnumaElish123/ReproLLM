@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX-T08 / M10-T01: render checklist splits, repetitions, metric names, judge
+  roles and privacy values from the effective experiment state. Remove
+  references to absent evidence sections and guard malformed observed metrics;
+  preserve the default export and existing artifact schemas.
 - UX-T07 / M9-T01: derive Action counts, summary and annotations from a single
   saved audit report. Preserve finding/error exit codes and upload a generated
   report after finding failures without reusing stale reports after errors.
