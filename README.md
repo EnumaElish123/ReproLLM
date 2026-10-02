@@ -151,6 +151,11 @@ The manifest enables **Level 1** checks. Detection helps you get started; review
 suggested models, tasks and profiles for the one experiment you are documenting.
 The [manifest guide](docs/manifest.md) explains roles, settings and bindings.
 
+On **`main` (unreleased)**, `reprollm init . --list-tasks` previews the full task
+inventory without writing files. When creating the manifest, select exact listed
+names with repeatable `--task NAME`, or use `--interactive`. Default init leaves
+`evaluation.metrics` empty until you select the experiment's tasks.
+
 **Want a complete practice run first?** Follow the
 [copy-and-run tutorial](https://github.com/EnumaElish123/ReproLLM/blob/main/docs/quickstart.md):
 audit → init → offline lock → two captures → diff → export. It uses a disposable
@@ -241,6 +246,11 @@ dependencies and resources; the [resource-free tour](docs/quickstart.md) is sepa
 `safety` · `privacy`, plus implicit `core`. Explore inheritance, required fields
 and detection in the [profile catalog](docs/profiles.md).
 
+On **`main` (unreleased)**, the eighth profile, `judge_only`, supports judging
+existing answers. Select it explicitly with `reprollm init . --profiles judge_only`
+and declare the judge, input dataset and metrics. Its scoped primary-model
+exception does not apply when mixed with inference, training or custom profiles.
+
 **Framework guides:** [lm-eval](docs/integrations/lm-eval.md) ·
 [lighteval](docs/integrations/lighteval.md) · [inspect-ai](docs/integrations/inspect-ai.md).
 Integrations help detect configuration and record versions; they do not run
@@ -258,6 +268,12 @@ reprollm export --template acm --output REPRODUCIBILITY.acm.md
 Exports describe models, data, prompts, execution, audit findings and known
 limitations. Conference templates add evidence mappings; they do not certify
 compliance or answer checklist Yes/No questions on your behalf.
+
+On **`main` (unreleased)**, exports also include available dataset splits and
+preprocessing, model dtype/quantization/adapters, prompt few-shot settings, and
+Evaluation/Judge/Privacy details. Source labels distinguish declared, locked and
+observed values. Selecting an old run uses its own snapshots and observations;
+the audit summary is labelled separately as a current-working-tree check.
 
 [Export guide](docs/export.md) · [Checklist coverage](docs/checklists.md) ·
 [Example artifact](examples/hf_vllm_eval/REPRODUCIBILITY.neurips.md)
@@ -340,12 +356,12 @@ tracks `main`; [Unreleased changes](CHANGELOG.md#unreleased) may not be in PyPI 
 Quality checks cover Linux, macOS and Windows. Our
 [five-project validation](val.md) uses pinned public research repositories;
 these are maintainer validation targets, not claims of upstream adoption.
-[Current repair evidence](docs/dogfooding/2026-10-02-ux-repairs.md) and
+[Current workflow evidence](docs/dogfooding/2026-10-02-ux2-workflows.md) and
 [deferred resource checks](docs/dogfooding/pending-resource-validation.md) distinguish
 local checks from real-model/GPU acceptance.
 
 Next work is tracked in the [backlog](docs/plan/backlog.md) and
-[pending UX proposals](docs/plan/ux-2026-10-02-proposals/README.md).
+[UX delivery and review status](docs/plan/ux-2026-10-02-proposals/README.md).
 ReproLLM records and audits reproducibility-critical state. It does not guarantee
 bitwise-identical results, score model quality or fingerprint entire datasets.
 

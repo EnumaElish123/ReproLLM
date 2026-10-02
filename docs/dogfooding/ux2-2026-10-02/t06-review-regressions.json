@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task": "UX2-T06",
+  "status": "isolated_candidate_pending_D41_and_final_integration",
+  "candidate_patch_sha256": "41e68530e5ca5351b6e4240d0e61d5f74c2a3f9bd270dd0bf4ce700747ff6a03",
+  "base_source_sha": "b2b99f4bfeeb878962fbfdb9923133eb7f73c3ea",
+  "scope": "Generated archive_id metadata only; no core redaction, engine or schema changes in this review fix.",
+  "red": {
+    "failed": 2,
+    "passed": 10,
+    "deselected": 32,
+    "seconds": 0.27,
+    "raw_log_sha256": "234bad88a7a3352aba11588ab068766b9ebe9af8c19fd8f10bc4c4080145e732",
+    "cases": [
+      "username is ra: safe remove is rejected before the fix",
+      "hostname is ra: safe remove is rejected before the fix"
+    ]
+  },
+  "green": {
+    "passed": 58,
+    "seconds": 4.35,
+    "raw_log_sha256": "bc9d03607148bc2a844c0b4905afc3f31dbe2e544f531f2a3a63a96dbfb6bd58",
+    "command": [
+      "<runtime>/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/unit/cli/test_rule_lifecycle.py",
+      "tests/unit/schemas/test_rule_archive.py",
+      "tests/integration/test_project_rules.py"
+    ],
+    "source_selection": {
+      "PYTHONPATH": "<isolated-candidate>/src"
+    },
+    "checks": [
+      "Both identities complete real CLI remove/show/restore and preserve the original rule and immutable archive.",
+      "Machine identity in removal reason, original rule reason and binding still rejects archival without writes.",
+      "An ID-looking value under reason is not exempt; malformed, suffixed and uppercase archive IDs are not exempt.",
+      "Prior lifecycle conflict-precedence, failure recovery and schema tests remain passing."
+    ]
+  },
+  "static_checks": {
+    "ruff_check": "passed_changed_files",
+    "ruff_format": "passed_changed_files",
+    "mypy": "passed_all_117_source_files",
+    "git_diff_check": "passed"
+  },
+  "historical_full_quality": {
+    "patch_sha256": "9b4aec8a7ab25ed44f2d5d082b607fea285ab757c9cdc67754ce90fe578eae02",
+    "passed": 1557,
+    "seconds": 205.06,
+    "note": "Predates the archive_id-prefix fix; not claimed as full QA of the current candidate."
+  },
+  "remaining": [
+    "Explicit D-41 concrete schema/implementation review",
+    "Final T05+T06 baseline integration and full QA",
+    "Final lifecycle Gate A and remote review outcome"
+  ]
+}

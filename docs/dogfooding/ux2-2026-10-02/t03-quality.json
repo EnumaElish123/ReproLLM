@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "commands": [
+    {
+      "command": [
+        ".venv/bin/pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-branch",
+        "--cov-report=json:<validation>/coverage.json"
+      ],
+      "exit": 0,
+      "seconds": 209.397
+    },
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 0.063
+    },
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit": 0,
+      "seconds": 0.024
+    },
+    {
+      "command": [
+        ".venv/bin/mypy",
+        "src/"
+      ],
+      "exit": 0,
+      "seconds": 0.391
+    },
+    {
+      "command": [
+        ".venv/bin/reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<validation>/schemas"
+      ],
+      "exit": 0,
+      "seconds": 0.326
+    },
+    {
+      "command": [
+        "diff",
+        "-r",
+        "schemas",
+        "<validation>/schemas"
+      ],
+      "exit": 0,
+      "seconds": 0.008
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.257
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.586
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 8.068
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 9.617
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.051
+    }
+  ]
+}

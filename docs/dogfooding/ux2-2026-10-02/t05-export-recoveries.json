@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "recoveries": [
+    {
+      "id": 1,
+      "target": "lm-evaluation-harness",
+      "stage": "offline-locked",
+      "kind": "harness parser error",
+      "assertion": "old_rows.keys() == new_rows.keys()",
+      "root_cause": "The split selected the evidence column rather than the checklist-area column, so an approved Evaluation citation was mistaken for a new checklist key.",
+      "independent_evidence": "Both source templates and the two preserved NeurIPS output rows use the same first column: 4.1–4.3 Evaluation metrics / protocol. The new evidence column adds the approved Evaluation section citation.",
+      "repair": "Extract the first cell after the leading pipe. Rendered cell evidence continues to be independently checked against authored manifest and lock inputs.",
+      "recovery": "Reuse preserved output only after product-source hashes and audited scenario artifact fingerprints match. No product code or expected authored input changed.",
+      "initial_process_exit": 1
+    },
+    {
+      "id": 2,
+      "target": "lm-evaluation-harness",
+      "stage": "offline-locked",
+      "kind": "unlisted but approved presentation deltas",
+      "assertion": "unreviewed mapping delta: NeurIPS 1.6 Baselines",
+      "root_cause": "The oracle did not yet enumerate removal of inline-code styling on dynamic checklist field paths, or ACL B7 truthful Training-section presence wording.",
+      "independent_review": "Parent independently read commit b00f06c checklist_mapping diff and preserved before/after outputs, then explicitly approved the exact rows.",
+      "approved_source_commit": "b00f06c",
+      "repair": "Allow only NeurIPS 1.6 models.<authored-role>, 3.1–3.3 datasets.<authored-role>, and ACL C1 datasets.<authored-role>.split styling changes with exactly equal rendered cell text. Existing 5.6 independently verifies its Judge citation/model value. ACL B7 must match authored training presence. No global code-span stripping.",
+      "recovery": "Recheck unchanged preserved scene and all literal field/provenance assertions. Product code and reviewed upstream gold are unchanged.",
+      "process_exit": 1
+    },
+    {
+      "id": 3,
+      "target": "LlamaFactory",
+      "stage": "offline-locked",
+      "kind": "unlisted product display change pending independent review",
+      "assertion": "unreviewed mapping delta: NeurIPS 5.4 Prompts",
+      "difference": "No authored prompt formats: NeurIPS5.4 and ACL C3 change the fallback from none to not declared.",
+      "independent_source_evidence": "The reviewed LlamaFactory M4 manifest has no prompts section. Commit b00f06c enrich_for_checklist explicitly changes the fallback and stops manufacturing plain for absent formats.",
+      "process_exit": 1,
+      "status": "approved and resumed",
+      "independent_review": "Parent independently reviewed b00f06c effective-State prompt-format extraction and explicitly approved only NeurIPS5.4 and ACL C3.",
+      "repair": "For those two rows, independently derive effective prompt-format leaves and their sorted order from manifest/lock; absent formats must read not declared. Check the complete rendered row and preserve all other rows.",
+      "recovery": "Recheck preserved same-scene outputs after source-hash and artifact-fingerprint equality; no product or source-gold mutation."
+    }
+  ]
+}

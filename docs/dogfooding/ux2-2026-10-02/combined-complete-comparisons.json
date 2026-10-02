@@ -1,0 +1,609 @@
+{
+  "schema_version": 1,
+  "code_sha": "b00f06c683652aa33c7036d2f89109917f05e64c",
+  "normalization": "Full-report hashes remove only generated_at; historical lm-eval L1 exclusions are explicit.",
+  "t01_exhaustive_cases_reused": true,
+  "targets": [
+    {
+      "name": "lm-evaluation-harness",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "L0_complete_equal": true,
+      "L0_normalized_actual_and_expected_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+      "L0_stderr_sha256": "da6306fc463667fce64b9d4a17b1d57648003613cf5bc320cc2b1061c1ae0f42",
+      "default_L1_complete_equal_to_completed_T01": true,
+      "default_L1_normalized_sha256": "52748b7a71ceeaa2130850d6d19c43bc983ab00286a09fc511f465d8e4e85c96",
+      "historical_L1_normalized_sha256": "6dc0752d6e1d1536c05ccd7afd65d4b76900fe47291f173df5ecd582a12dddc8",
+      "L1_unchanged_portion_actual_and_expected_sha256": "b48ab1897041ea88aa29c98de98ce506c9f13ea1d5ee79e38f6937a95e2d8b80",
+      "L1_reviewed_exclusions": [
+        "four evaluation rules",
+        "derived summary",
+        "independently checked manifest digest"
+      ],
+      "default_manifest_sha256": "1543654db2ce6db0da35598a573a6632eae9f576979519f300bd146d09cf37f9",
+      "default_L1_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hints_verified_by_gate": true,
+      "complete_hints_artifact_sha256": "ff510c6054f2829490d5d8db6def6003caf4efcab613aab12eb3c953abdc615a",
+      "threshold_details_matrix": [
+        {
+          "threshold": "critical",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "52748b7a71ceeaa2130850d6d19c43bc983ab00286a09fc511f465d8e4e85c96",
+          "compact_stdout_sha256": "44159a6c09d06f8ac30c9a28242322cb99f6bd79b276a5520037b7502b948c3a",
+          "details_stdout_sha256": "a8f27f70d564b1188b14abdcce9a2b585859f6667679facedcb0c8cb76ff1010",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "warning",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "52748b7a71ceeaa2130850d6d19c43bc983ab00286a09fc511f465d8e4e85c96",
+          "compact_stdout_sha256": "15c65a05bdce9684316046cd7b3610bfb0545ad0effc8450fb3207fc0310f305",
+          "details_stdout_sha256": "471a28e2f4e577fc38b429cef502cf982f20bfd0bf13c9ab5776030cf60d31d1",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "never",
+          "expected_exit": 0,
+          "actual_exits": [
+            0,
+            0,
+            0
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "52748b7a71ceeaa2130850d6d19c43bc983ab00286a09fc511f465d8e4e85c96",
+          "compact_stdout_sha256": "1593969d8e7340a0f1eb569795df3c7cba33667b392b897eb40baa79478f632b",
+          "details_stdout_sha256": "e469dbf6f66d770aeccdfddca2b05b49219006d1fdbd19131d45acb3a0b48051",
+          "all_critical_warning_messages_present_in_details": true
+        }
+      ],
+      "judge_only": {
+        "exact_contract_scaffold_equal": true,
+        "manifest_sha256": "8538283e7f9391d17c932fe3e3a06183bca545864e02ddde1490bcbd6b0ae727",
+        "complete_actual_report_normalized_sha256": "4ca53287d743e8118e9f1a6d9bb9a1e4d0173a77ec718d1f6f2491cdea848f03",
+        "comparison_kind": "Exact scaffold, complete rule-ID set and source-defined finding predicates; not a claim of a pre-existing full-report golden snapshot.",
+        "expected_rule_ids": [
+          "code.clean_tree",
+          "code.git_commit",
+          "code.git_repo",
+          "code.no_untracked",
+          "code.remote_recorded",
+          "code.submodules_initialized",
+          "dataset.declared",
+          "dataset.preprocessing_declared",
+          "dataset.sampling_seed_declared",
+          "dataset.split_declared",
+          "dataset.subset_declared",
+          "env.dependency_manifest_present",
+          "env.llm_critical_deps_pinned",
+          "env.lockfile_present",
+          "env.python_version_declared",
+          "env.reprollm_initialized",
+          "env.secret_files_ignored",
+          "eval.aggregation_declared",
+          "eval.metric_implementation_referenced",
+          "eval.metrics_declared",
+          "eval.repetitions_declared",
+          "exec.command_declared",
+          "exec.profile_detection_mismatch",
+          "exec.run_recorded",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared",
+          "judge.repetitions_declared",
+          "model.dtype_declared",
+          "model.primary_declared",
+          "model.provider_known",
+          "model.trust_remote_code_declared",
+          "prompt.file_exists"
+        ],
+        "expected_critical_failure_rule_ids": [
+          "eval.metrics_declared",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared"
+        ],
+        "primary_model_skipped": true,
+        "no_generation_or_training_rules": true,
+        "actual_summary": {
+          "critical": 5,
+          "warning": 20,
+          "info": 5,
+          "pass": 8,
+          "suppressed": 0,
+          "skipped": 11
+        }
+      }
+    },
+    {
+      "name": "FastChat",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "L0_complete_equal": true,
+      "L0_normalized_actual_and_expected_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+      "L0_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "default_L1_complete_equal_to_completed_T01": true,
+      "default_L1_normalized_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+      "historical_L1_normalized_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+      "L1_unchanged_portion_actual_and_expected_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+      "L1_reviewed_exclusions": [],
+      "default_manifest_sha256": "675f94ccfc8b38a23b118acecac461a23c6c91990be924a988c4590d0946eab9",
+      "default_L1_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hints_verified_by_gate": true,
+      "complete_hints_artifact_sha256": "cd5300841b2f52b3fa5a189ce82c23d8e5684386caa759e1409b0e46e38304ae",
+      "threshold_details_matrix": [
+        {
+          "threshold": "critical",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+          "compact_stdout_sha256": "9ebb440c191815920402b335b0d19614a2f626240f260391a6f922d1b072dfcc",
+          "details_stdout_sha256": "1b4b92a58f988a74790473e3e9e6157e3c5b5d2b638d012a347d06a95fbf0122",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "warning",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+          "compact_stdout_sha256": "6e89b1fbc9bd4356c54f4d673d92dd72b64944cb802a145880fc4da67347a94e",
+          "details_stdout_sha256": "82ef04ab4e7fe12cae3f47ccba789d7d074672a1055ecafc62095bff8b96d2a2",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "never",
+          "expected_exit": 0,
+          "actual_exits": [
+            0,
+            0,
+            0
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "903a3e4dfa2dc7b3657fd4cd833f81ffc2bbcc6b5bb3db258fedc1822265a832",
+          "compact_stdout_sha256": "064952908f2504d60adec2a8fed525c9f64b9fc1359995f4811509c15c09222a",
+          "details_stdout_sha256": "1ac1695e84deb34c0b0a606ad6656c7ce85219056b9fe1165f52c7ddeb53d079",
+          "all_critical_warning_messages_present_in_details": true
+        }
+      ],
+      "judge_only": {
+        "exact_contract_scaffold_equal": true,
+        "manifest_sha256": "d85501995a3e1c5e28136293063d33add59224e0f95635e885f0644e197a35cd",
+        "complete_actual_report_normalized_sha256": "7c285719cab0c1549ab40e9971f7826f8b764e8ac6fae501c0ed158ca8f08399",
+        "comparison_kind": "Exact scaffold, complete rule-ID set and source-defined finding predicates; not a claim of a pre-existing full-report golden snapshot.",
+        "expected_rule_ids": [
+          "code.clean_tree",
+          "code.git_commit",
+          "code.git_repo",
+          "code.no_untracked",
+          "code.remote_recorded",
+          "code.submodules_initialized",
+          "dataset.declared",
+          "dataset.preprocessing_declared",
+          "dataset.sampling_seed_declared",
+          "dataset.split_declared",
+          "dataset.subset_declared",
+          "env.dependency_manifest_present",
+          "env.llm_critical_deps_pinned",
+          "env.lockfile_present",
+          "env.python_version_declared",
+          "env.reprollm_initialized",
+          "env.secret_files_ignored",
+          "eval.aggregation_declared",
+          "eval.metric_implementation_referenced",
+          "eval.metrics_declared",
+          "eval.repetitions_declared",
+          "exec.command_declared",
+          "exec.profile_detection_mismatch",
+          "exec.run_recorded",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared",
+          "judge.repetitions_declared",
+          "model.dtype_declared",
+          "model.primary_declared",
+          "model.provider_known",
+          "model.trust_remote_code_declared",
+          "prompt.file_exists"
+        ],
+        "expected_critical_failure_rule_ids": [
+          "eval.metrics_declared",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared"
+        ],
+        "primary_model_skipped": true,
+        "no_generation_or_training_rules": true,
+        "actual_summary": {
+          "critical": 5,
+          "warning": 22,
+          "info": 4,
+          "pass": 8,
+          "suppressed": 0,
+          "skipped": 11
+        }
+      }
+    },
+    {
+      "name": "LlamaFactory",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "L0_complete_equal": true,
+      "L0_normalized_actual_and_expected_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+      "L0_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "default_L1_complete_equal_to_completed_T01": true,
+      "default_L1_normalized_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+      "historical_L1_normalized_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+      "L1_unchanged_portion_actual_and_expected_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+      "L1_reviewed_exclusions": [],
+      "default_manifest_sha256": "ff4daea390e4bc8d276a57385ff9766187109f91ccb2d780aef66cf52de65ce5",
+      "default_L1_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hints_verified_by_gate": true,
+      "complete_hints_artifact_sha256": "783120eb9397d0db2cb5eaf57bfc4f67ac1bb7efc2b4364ff1a075c44f921838",
+      "threshold_details_matrix": [
+        {
+          "threshold": "critical",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+          "compact_stdout_sha256": "f5cdecc9e8aff054f4ebd24d8fe393adb29b067f102ba316337558fb2a4e4120",
+          "details_stdout_sha256": "30b6073c97356e17628bab28b739305dedf28f0657826d603199991f617b3281",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "warning",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+          "compact_stdout_sha256": "9eb41251e2bcf717f756ee4da808ec4e2c4d12ee5a76e1fa1633e961512da7b9",
+          "details_stdout_sha256": "e84d72595cd6c53281721bb13bb88b4e8da665f5fbc13ea0fe08f363830fe294",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "never",
+          "expected_exit": 0,
+          "actual_exits": [
+            0,
+            0,
+            0
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "ac8b5606320301581921125c72fb8ea4ee6477c16a75f98d1c3418cce79eca80",
+          "compact_stdout_sha256": "bf6fb82f9c8d0459ef799a7fd0941d3f6cba299c2ff46174cc587c48c9f3311f",
+          "details_stdout_sha256": "5ef68b2f04a8e3b21e24329524c202a43ee3f7acc8a3fe4f6d58e28338f6f4dc",
+          "all_critical_warning_messages_present_in_details": true
+        }
+      ],
+      "judge_only": {
+        "exact_contract_scaffold_equal": true,
+        "manifest_sha256": "463a48bf32f2da5e946ada01fcce2f21aba05cf619822567cbe98f97553b350d",
+        "complete_actual_report_normalized_sha256": "79d4b32290fca775e168a502a938501b977256992fbf2182bd91e181ca87574c",
+        "comparison_kind": "Exact scaffold, complete rule-ID set and source-defined finding predicates; not a claim of a pre-existing full-report golden snapshot.",
+        "expected_rule_ids": [
+          "code.clean_tree",
+          "code.git_commit",
+          "code.git_repo",
+          "code.no_untracked",
+          "code.remote_recorded",
+          "code.submodules_initialized",
+          "dataset.declared",
+          "dataset.preprocessing_declared",
+          "dataset.sampling_seed_declared",
+          "dataset.split_declared",
+          "dataset.subset_declared",
+          "env.dependency_manifest_present",
+          "env.llm_critical_deps_pinned",
+          "env.lockfile_present",
+          "env.python_version_declared",
+          "env.reprollm_initialized",
+          "env.secret_files_ignored",
+          "eval.aggregation_declared",
+          "eval.metric_implementation_referenced",
+          "eval.metrics_declared",
+          "eval.repetitions_declared",
+          "exec.command_declared",
+          "exec.profile_detection_mismatch",
+          "exec.run_recorded",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared",
+          "judge.repetitions_declared",
+          "model.dtype_declared",
+          "model.primary_declared",
+          "model.provider_known",
+          "model.trust_remote_code_declared",
+          "prompt.file_exists"
+        ],
+        "expected_critical_failure_rule_ids": [
+          "env.secret_files_ignored",
+          "eval.metrics_declared",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared"
+        ],
+        "primary_model_skipped": true,
+        "no_generation_or_training_rules": true,
+        "actual_summary": {
+          "critical": 6,
+          "warning": 21,
+          "info": 4,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 11
+        }
+      }
+    },
+    {
+      "name": "HarmBench",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "L0_complete_equal": true,
+      "L0_normalized_actual_and_expected_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+      "L0_stderr_sha256": "bf1fbd0e44d8898ea0a130d97e555cf231dbde175a34ee72a4cecb534cad30eb",
+      "default_L1_complete_equal_to_completed_T01": true,
+      "default_L1_normalized_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+      "historical_L1_normalized_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+      "L1_unchanged_portion_actual_and_expected_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+      "L1_reviewed_exclusions": [],
+      "default_manifest_sha256": "efadc1f6a570a78d699b7a2f6aaa729ea8f42e296eb3e5b2c321c3964c37dd17",
+      "default_L1_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hints_verified_by_gate": true,
+      "complete_hints_artifact_sha256": "26b1f2137e4eed70cbfc60ce4951d4e9a8fe2aea6ccdc34cd7a3ee8cbe430ab2",
+      "threshold_details_matrix": [
+        {
+          "threshold": "critical",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+          "compact_stdout_sha256": "bf474a569d6ac0487a04844b68c918cc5b1afd412144800316fbd3368598f26a",
+          "details_stdout_sha256": "18a608baa6d0f3bd8e7e0a6babedfefe7105d636b465087a2c50304c13d54ed5",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "warning",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+          "compact_stdout_sha256": "5256382ee34c56c2fea8e440cfbd4c115df7e0d39a4c14be5939ff34f0f5f70d",
+          "details_stdout_sha256": "efaa097e27482496e9829f22c6e00581183c27717fa9b6ab2a23125dfd893b8d",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "never",
+          "expected_exit": 0,
+          "actual_exits": [
+            0,
+            0,
+            0
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "2a18fb2b58a7eabc6f2669707fac0d0652b6f2efebebc7efc13e8f28b4f972c9",
+          "compact_stdout_sha256": "85d87b2bc43f85e69d7e83c24f6328654b3b319bc5a0fb63d6f927309f0c770b",
+          "details_stdout_sha256": "4e1ac79830b13e40e6f64ea79bf23bc64a002f2f74cf755b5f8e3dd16cca32fb",
+          "all_critical_warning_messages_present_in_details": true
+        }
+      ],
+      "judge_only": {
+        "exact_contract_scaffold_equal": true,
+        "manifest_sha256": "c07012205c8b4c3eac1ce3ea98bfae9b9be046d6f0b3d7da8a246b314de348bf",
+        "complete_actual_report_normalized_sha256": "55eddde9f6261b509c653844eb5e70eb53b63dea103c3a4fdc926df5331e80c6",
+        "comparison_kind": "Exact scaffold, complete rule-ID set and source-defined finding predicates; not a claim of a pre-existing full-report golden snapshot.",
+        "expected_rule_ids": [
+          "code.clean_tree",
+          "code.git_commit",
+          "code.git_repo",
+          "code.no_untracked",
+          "code.remote_recorded",
+          "code.submodules_initialized",
+          "dataset.declared",
+          "dataset.preprocessing_declared",
+          "dataset.sampling_seed_declared",
+          "dataset.split_declared",
+          "dataset.subset_declared",
+          "env.dependency_manifest_present",
+          "env.llm_critical_deps_pinned",
+          "env.lockfile_present",
+          "env.python_version_declared",
+          "env.reprollm_initialized",
+          "env.secret_files_ignored",
+          "eval.aggregation_declared",
+          "eval.metric_implementation_referenced",
+          "eval.metrics_declared",
+          "eval.repetitions_declared",
+          "exec.command_declared",
+          "exec.profile_detection_mismatch",
+          "exec.run_recorded",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared",
+          "judge.repetitions_declared",
+          "model.dtype_declared",
+          "model.primary_declared",
+          "model.provider_known",
+          "model.trust_remote_code_declared",
+          "prompt.file_exists"
+        ],
+        "expected_critical_failure_rule_ids": [
+          "eval.metrics_declared",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared"
+        ],
+        "primary_model_skipped": true,
+        "no_generation_or_training_rules": true,
+        "actual_summary": {
+          "critical": 5,
+          "warning": 13,
+          "info": 4,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 11
+        }
+      }
+    },
+    {
+      "name": "llm-dp-finetune",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "L0_complete_equal": true,
+      "L0_normalized_actual_and_expected_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+      "L0_stderr_sha256": "3ba6787cebc195541f36e9d0c87d66dc18173c05020e111edc3a39bf06e7c36a",
+      "default_L1_complete_equal_to_completed_T01": true,
+      "default_L1_normalized_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+      "historical_L1_normalized_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+      "L1_unchanged_portion_actual_and_expected_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+      "L1_reviewed_exclusions": [],
+      "default_manifest_sha256": "c7794c7c6303f48aace66aedd3c009a55bf71bc4a1daf676f97ab4a3f144c999",
+      "default_L1_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hints_verified_by_gate": true,
+      "complete_hints_artifact_sha256": "c586a8e9d87f3c356cfa42bd4004e821e2cfaad587d767f44dd0dbaf72c60d3b",
+      "threshold_details_matrix": [
+        {
+          "threshold": "critical",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+          "compact_stdout_sha256": "6dc762eb815416a65f7771530304f560b9d0bb12b578416bcc5730e94acd83e0",
+          "details_stdout_sha256": "7d13f5e0ebce9d0fb0a1a985376a1c5cf6ec8af76941f0a71cf8639ae42f686d",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "warning",
+          "expected_exit": 1,
+          "actual_exits": [
+            1,
+            1,
+            1
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+          "compact_stdout_sha256": "b5bc72479a89ed70218ffe4274a9d3baa03babd2d43c4c45cfb63baf115e4fcb",
+          "details_stdout_sha256": "638e089dce2ad92cec29db6697c12ec3f776b6c753579dd4ed16facc88837191",
+          "all_critical_warning_messages_present_in_details": true
+        },
+        {
+          "threshold": "never",
+          "expected_exit": 0,
+          "actual_exits": [
+            0,
+            0,
+            0
+          ],
+          "complete_details_json_equal": true,
+          "normalized_json_sha256": "dcb811855ba96f829b2fd7f61eeacb3171bb6f05110974139cf3efb2078a95bb",
+          "compact_stdout_sha256": "cef80a21a1819eac18c5f69e7376e7519f2c8d849a6567d89dd8efeeaf03212c",
+          "details_stdout_sha256": "7e10286c1d9f209166ab1bde1bc80c6569a0167da263fbe579888f92f0cdddb3",
+          "all_critical_warning_messages_present_in_details": true
+        }
+      ],
+      "judge_only": {
+        "exact_contract_scaffold_equal": true,
+        "manifest_sha256": "f8954d1b3d80041d1afde0826783962cf658bb7ba14da1029e39a7c1bd20959d",
+        "complete_actual_report_normalized_sha256": "fa491fccca0251890a02a8b495050d2e9cc18e65f23c39a7ca0534b3f2a58ed7",
+        "comparison_kind": "Exact scaffold, complete rule-ID set and source-defined finding predicates; not a claim of a pre-existing full-report golden snapshot.",
+        "expected_rule_ids": [
+          "code.clean_tree",
+          "code.git_commit",
+          "code.git_repo",
+          "code.no_untracked",
+          "code.remote_recorded",
+          "code.submodules_initialized",
+          "dataset.declared",
+          "dataset.preprocessing_declared",
+          "dataset.sampling_seed_declared",
+          "dataset.split_declared",
+          "dataset.subset_declared",
+          "env.dependency_manifest_present",
+          "env.llm_critical_deps_pinned",
+          "env.lockfile_present",
+          "env.python_version_declared",
+          "env.reprollm_initialized",
+          "env.secret_files_ignored",
+          "eval.aggregation_declared",
+          "eval.metric_implementation_referenced",
+          "eval.metrics_declared",
+          "eval.repetitions_declared",
+          "exec.command_declared",
+          "exec.profile_detection_mismatch",
+          "exec.run_recorded",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared",
+          "judge.repetitions_declared",
+          "model.dtype_declared",
+          "model.primary_declared",
+          "model.provider_known",
+          "model.trust_remote_code_declared",
+          "prompt.file_exists"
+        ],
+        "expected_critical_failure_rule_ids": [
+          "eval.metrics_declared",
+          "exec.seed_declared",
+          "judge.model_declared",
+          "judge.params_declared",
+          "judge.prompt_declared"
+        ],
+        "primary_model_skipped": true,
+        "no_generation_or_training_rules": true,
+        "actual_summary": {
+          "critical": 5,
+          "warning": 13,
+          "info": 3,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 11
+        }
+      }
+    }
+  ],
+  "unknown_deltas": []
+}
