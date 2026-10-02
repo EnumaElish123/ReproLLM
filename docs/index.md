@@ -1,62 +1,67 @@
 # ReproLLM documentation
 
-> Make LLM experiments reproducible.
+ReproLLM is a CLI-first, local-first reproducibility toolkit for LLM research.
+Audit a repository, declare its experiment, lock inputs, capture a run, compare
+recorded state and export the evidence with your paper artifact.
 
-ReproLLM is a CLI-first, local-first reproducibility toolkit for LLM research experiments.
-It records the LLM-specific state that other tools ignore — model revisions, tokenizer and
-chat-template hashes, prompt hashes, generation parameters, LLM-as-a-Judge configuration,
-and the pinnability of closed-source API models — and tells you why two runs differ.
+**Start here:** the [quick start](quickstart.md) exercises the whole workflow
+with a standard-library probe in a disposable example. No GPU, model download
+or API account is needed. For a first look at your own repository, install
+ReproLLM with Python 3.10 or newer and run `reprollm audit .`.
 
-**Status: alpha.** PyPI 0.1.1 provides Audit Level 0/1, manifest scaffolding, and the
-seven built-in profiles. The development branch adds lock and Level 2 verification
-for 0.2.0, plus runtime capture and consistency checks for 0.3.0. Releases await
-their validation gates. Semantic diff is available in development for 0.4.0;
-export and discovery arrive in a later milestone.
+## Choose a guide
 
-## Documentation map
-
-- [Framework integrations](integrations/lm-eval.md) — lm-eval, lighteval, inspect-ai
-- [Model/dataset card snippets](integrations/card-snippets.md)
-
-- [Roadmap and architecture](plan/00_architecture_and_decisions.md) — product definition,
-  boundaries, and the frozen decision register (D-01 … D-42)
-- [Beta specification](plan/01_specification.md) — CLI contract, schemas, rule catalog,
-  redaction policy, diff semantics
-- [Manifest guide](manifest.md) — map model/data/prompt roles, execution settings, and
-  detected candidates into one concrete experiment
-- [Lockfile guide](lockfile.md) — resolve identities, interpret provenance, and check
-  offline state, credentials, and file freshness
-- [Runtime guide](run.md) — capture runs, declare bindings, understand redaction,
-  inspect conflicts and share selected artifacts
-- [Diff guide](diff.md) — compare recorded states, interpret severity and source
-  conflicts, customize policy and select CI thresholds
-- [Rule catalog](rules.md) and [profile catalog](profiles.md) — Level 1 checks,
-  inheritance, severities, and detection signals
-- [Adoption metrics](adoption.md) — updated monthly from week 1 (D-37)
-
-## Commands (current)
-
-| Command | Status |
+| Goal | Guide |
 |---|---|
-| `reprollm --version` | available |
-| `reprollm doctor [--json] [--check-network]` | available |
-| `reprollm audit [PATH] [--format text\|json] ...` | available at Level 0/1/2 on main |
-| `reprollm schema export [--out DIR]` | available |
-| `reprollm init` | available |
-| `reprollm profiles list/show` | available |
-| `reprollm lock` | available on main; planned for 0.2.0 |
-| `reprollm run` / `runs list` / `runs show` | available in development; planned for 0.3.0 |
-| `reprollm diff` | available in development; planned for 0.4.0 |
-| `reprollm export` / `discover` | planned — see the roadmap |
+| Understand the problem and evidence model | [Why ReproLLM](why.md) · [Concepts](concepts.md) |
+| Describe one experiment | [Manifest](manifest.md) · [Profiles](profiles.md) |
+| Resolve revisions and file hashes | [Lockfile](lockfile.md) |
+| Record commands, settings and snapshots | [Runtime capture](run.md) |
+| Explain changes between runs | [Semantic diff](diff.md) |
+| Create a paper artifact | [Export](export.md) · [Checklist coverage](checklists.md) |
+| Add project-specific checks | [Project rules](project-rules.md) · [Experimental discovery](discover.md) |
+| Look up options or findings | [CLI reference](cli.md) · [Rule catalog](rules.md) · [FAQ](faq.md) |
 
-## Core principle
+## Frameworks and examples
 
-**LLM discovers. Rules decide. Runtime verifies.** Known reproducibility requirements are
-checked by deterministic rules; an optional, opt-in LLM step only proposes candidates that
-take effect after you accept them; runtime capture records what actually happened,
-independent of what was declared.
+- [lm-eval](integrations/lm-eval.md), [lighteval](integrations/lighteval.md),
+  and [inspect-ai](integrations/inspect-ai.md): configuration, detection and capture.
+- [Completed examples](../examples/README.md): HF/vLLM evaluation, API-based
+  judging and privacy/custom parameters. Copy them before modifying artifacts;
+  their real model scripts need separate dependencies and resources.
+- [Model/dataset card snippets](integrations/card-snippets.md).
+- [GitHub Action](https://github.com/EnumaElish123/reprollm-action): audit in CI.
 
-## Security
+## Current availability
 
-Secret redaction is a security boundary. See [SECURITY.md](../SECURITY.md) for private
-disclosure; redaction bypasses are treated as security bugs, not normal bugs.
+The full audit → init → lock → run → diff → export workflow is available,
+together with project rules, profiles, diagnostics and experimental discovery.
+The latest published package at this update is **0.6.1**. These documents track
+`main`; consult [Unreleased changes](../CHANGELOG.md#unreleased) before assuming a
+new option or fix is present in PyPI. The Action's published tag is maintained
+separately from this repository's Action source.
+
+| Audit level | Evidence used |
+|---|---|
+| 0 | Repository code and dependency declarations; no manifest needed |
+| 1 | A manifest describing the experiment |
+| 2 | A manifest plus lock and/or run evidence for consistency checks |
+
+Levels describe evidence depth, not a passing result. Audit is deterministic
+and makes no model calls. Discovery is opt-in and proposes candidates that only
+become rules after acceptance. Provider resolution and explicit network checks
+have separate network requirements; see the linked command guides.
+
+## Project and validation
+
+- [Architecture and decisions](plan/00_architecture_and_decisions.md) and
+  [normative specification](plan/01_specification.md).
+- [Five-project validation baseline](../val.md),
+  [current repair report](dogfooding/2026-10-02-ux-repairs.md) and
+  [deferred resource checks](dogfooding/pending-resource-validation.md).
+- [Backlog](plan/backlog.md), [pending UX proposals](plan/ux-2026-10-02-proposals/README.md)
+  and [adoption records](adoption.md).
+- [Contributing](../CONTRIBUTING.md), [citation](../CITATION.cff) and
+  [security reporting](../SECURITY.md).
+
+**LLM discovers. Rules decide. Runtime verifies.**

@@ -41,6 +41,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- README-T01 / M8-T02–T08: redesign the README around a responsive original
+  banner, sourced CLI evidence, research use cases, a minimal first audit,
+  artifact workflow and paper/CI examples. Refresh the linked documentation
+  index and distinguish published features from unreleased changes; record
+  the five-project README study and validation evidence.
 - Record the product-trial repairs, complete five-project comparisons and
   [pending specification choices](docs/plan/ux-2026-10-02-proposals/README.md)
   in the [UX session report](docs/dogfooding/2026-10-02-ux-repairs.md).
