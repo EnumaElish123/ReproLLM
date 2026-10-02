@@ -86,6 +86,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- UX3-T01: reconcile the roadmap, backlog and UX delivery index with the
+  published 0.6.1 baseline and merged, unreleased UX2 improvements; record PR #8
+  approval and successful main CI without rewriting historical validation.
+
 - README-T01 / M8-T02–T08: redesign the README around a responsive original
   banner, sourced CLI evidence, research use cases, a minimal first audit,
   artifact workflow and paper/CI examples. Refresh the linked documentation

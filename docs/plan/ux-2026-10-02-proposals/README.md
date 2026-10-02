@@ -3,11 +3,12 @@
 Status: **Product changes approved for implementation on 2026-10-02** by the
 maintainer's instruction to complete all six recommendations in order. The
 [ordered delivery plan](../UX2_2026-10-02.md) records scope and acceptance.
-**UX2-T01–T05 are implemented on `main` (unreleased).** T06's product contract is
-approved; its prepared archive schema and concrete implementation await explicit
-D-41 maintainer review before integration. Product approval does not waive that
-review. The [session report](../../dogfooding/2026-10-02-ux2-workflows.md) tracks local
-validation, remaining gates and push/CI separately.
+**UX2-T01–T06 are implemented on `main` (unreleased).** T06 received explicit
+D-41 maintainer approval and [PR #8](https://github.com/EnumaElish123/ReproLLM/pull/8)
+was squash-merged as `b5e1317`. [All five main CI jobs passed](https://github.com/EnumaElish123/ReproLLM/actions/runs/37023660708).
+The [workflow report](../../dogfooding/2026-10-02-ux2-workflows.md) and
+[lifecycle report](../../dogfooding/2026-10-02-ux2-rule-lifecycle.md) retain their
+dated validation snapshots; the PR records subsequent approval and merge.
 
 Proposal files below retain their historical pending labels and evidence; this
 index and the normative specification record their current disposition.
@@ -19,7 +20,7 @@ index and the normative specification record their current disposition.
 | UX2-T03 / UX-T06 provider | [Classify provider=other with an explicit API endpoint](UX-T06-provider-other-api.md) | Implemented under §§4.3/12.4; provider identity, D-21 pinnability and metadata-only/offline behavior preserved. |
 | UX2-T04 / UX-T06 judge-only | [Add an explicit judge-only profile](UX-T06-judge-only-profile.md) | Implemented: approved D-44 supersedes only D-06's seven-profile limit; explicit `judge_only` is the eighth profile with the conservative exception in §6.1. |
 | UX2-T05 / UX-T08 extension | [Render evaluation/judge/privacy research details](UX-T08-export-research-details.md) | Implemented under §19 with effective values, source labels, selected-run evidence and safe Markdown. |
-| UX2-T06 / UX-T05 lifecycle | [Full candidate view and reversal/deactivation](future-rules-lifecycle.md) | Product contract approved; candidate implementation prepared with versioned recovery copies and retained provenance. Concrete schema/code D-41 review remains pending before integration. |
+| UX2-T06 / UX-T05 lifecycle | [Full candidate view and reversal/deactivation](future-rules-lifecycle.md) | Implemented and explicitly reviewed under D-41: versioned recovery copies, retained provenance, inspection, removal and restoration. Merged via PR #8. |
 
 [UX-T03/T04 GitHub issue draft](UX-T03-T04-issue-draft.md) is prepared but unfiled. [Independent source review](source-review.json) records exact pins, source anchors, count and set hash. The complete 13,123-entry source inventory is retained only in the local validation workspace as `scope/independent-lm-eval-task-gold.json`; it is not included in this compact historical proposal bundle and this label is not a repository link. The inventory has 13,123 safe lm-eval names and set hash `2a5d98bfd121e95919da7d472c40d89a2580746672a2109e79fcd407c06c36f3`; it is not evidence that an experiment ran every task. Historical proposed output counts are predictions from source/rule semantics; the adopted task-selection expectations and measured deltas are recorded separately in val §7.1 and the session report.
 

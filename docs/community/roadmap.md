@@ -1,19 +1,67 @@
-# Roadmap (post-Beta)
+# Roadmap and delivery status
 
-Issue-ready items from `docs/plan/backlog.md`; each becomes a GitHub issue
-with the matching label and milestone when the tracker is available.
+Updated 2026-10-02. Status is based on recorded releases and merged changes;
+historical sprint dates are planning records, not a statement of availability.
+The [changelog](../../CHANGELOG.md) identifies release contents. Documentation
+on main can describe options not yet included in the published package.
 
-| Priority | Item | Why now |
-|---|---|---|
-| P1 | `export --template neurips/acl/acm` checklist mapping (M10) | Direct paper-submission value |
-| P1 | GitHub Action + `--format github` (M9) | Zero-install adoption path |
-| P2 | Provider identity vs compatibility contract (DeepSeek `provider: other` CRITICAL) | Honest severity for OpenAI-compatible vendors |
-| P2 | Judge-only profile variant | Five presence CRITICALs on judge-only runs are noise |
-| P2 | Nested judge-parameter drift severity (`evaluation.judge.*` MEDIUM gap) | Policy review, spec change first |
-| P2 | Dataset content fingerprints (sampled hashing) | Closes the largest "not recorded" gap |
-| P3 | `rag` / `agent` profiles | Detected, report-only today |
-| P3 | `discover --paper` (paper–code consistency) | D-26; blocked on maintainer decision |
-| P3 | SARIF output | CI integrations |
+## Released baseline
+
+The latest recorded package release is **0.6.1**. Install with
+`python -m pip install reprollm` and check `reprollm --version`.
+
+| Capability | Release evidence |
+|---|---|
+| Audit, manifest, lock, runtime capture, semantic diff, export and experimental discovery | [0.5.0 Beta](../../CHANGELOG.md#050--beta--2026-09-29), with subsequent fixes |
+| `audit --format github` | [0.5.1](../../CHANGELOG.md#051---2026-09-29) |
+| NeurIPS / ACL / ACM export checklist mappings | [0.5.2](../../CHANGELOG.md#052---2026-09-29) |
+| Framework integrations and metadata/CLI fixes | [0.6.1 release report](../dogfooding/2026-10-01-patch-0.6.1.md) |
+| Standalone GitHub Action | [Published Action repository](https://github.com/EnumaElish123/reprollm-action); its `v1` tag is distributed separately |
+
+## Implemented on main, not yet released
+
+All six [UX2 tasks](../plan/UX2_2026-10-02.md) are integrated:
+
+- Explicit experiment-task selection during init.
+- Separate audit findings and exit policy, with compact warning output.
+- Honest identity handling for `provider: other` with a declared API endpoint.
+- Explicit `judge_only` experiments.
+- Detailed research exports with effective values and evidence sources.
+- Full project-rule inspection and reversible removal/restoration.
+
+The last item received explicit D-41 approval and merged in
+[PR #8](https://github.com/EnumaElish123/ReproLLM/pull/8), commit `b5e1317`;
+[all five main CI jobs passed](https://github.com/EnumaElish123/ReproLLM/actions/runs/37023660708).
+Other unreleased fixes are listed in [Unreleased](../../CHANGELOG.md#unreleased).
+Use the [source-checkout instructions](../../README.md#quick-start) to try main.
+Changes to the local Action source do not update its standalone published tag.
+
+## Approved next work
+
+The [UX3 plan](../plan/UX3_2026-10-02.md) schedules, in order: delivery-status
+alignment; a narrow nested-judge drift-policy review; read-only run preflight;
+and run filtering with explicit recent-run comparison. A scheduled item is not
+an available CLI feature until its implementation and validation are recorded.
+
+## Future proposals
+
+| Candidate | Boundary |
+|---|---|
+| Dataset content fingerprints | Requires a reviewed sampling policy and D-22 amendment |
+| `rag` / `agent` profiles | Currently detected but report-only |
+| `discover --paper` | Post-Beta scope under D-26 |
+| SARIF output | Additional CI integration |
+| Multi-stage experiments | Requires manifest/schema design |
+
+These are unscheduled proposals, not promises for the next release.
+
+## Pending validation
+
+[VAL-R01, VAL-R02 and VAL-R03](../dogfooding/pending-resource-validation.md)
+remain blocked on Linux/GPU resources, the formal judge input bundle and
+successful HF gated-file access respectively. They describe fresh acceptance
+coverage, not unimplemented features. Historical successes remain historical;
+the [five-project baseline](../../val.md) governs resumption and release gates.
 
 ## Good first issues
 

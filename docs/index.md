@@ -59,7 +59,8 @@ have separate network requirements; see the linked command guides.
 - [Five-project validation baseline](../val.md),
   [current repair report](dogfooding/2026-10-02-ux-repairs.md) and
   [deferred resource checks](dogfooding/pending-resource-validation.md).
-- [Backlog](plan/backlog.md), [pending UX proposals](plan/ux-2026-10-02-proposals/README.md)
+- [Current roadmap](community/roadmap.md), [backlog](plan/backlog.md),
+  [UX delivery status](plan/ux-2026-10-02-proposals/README.md)
   and [adoption records](adoption.md).
 - [Contributing](../CONTRIBUTING.md), [citation](../CITATION.cff) and
   [security reporting](../SECURITY.md).

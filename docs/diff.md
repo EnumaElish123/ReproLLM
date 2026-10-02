@@ -1,7 +1,7 @@
 # Compare experiment states
 
 `reprollm diff A B` explains recorded differences that may affect reproducibility.
-It is available in the development checkout for the planned 0.4.0 release.
+It has been available since 0.4.0; these docs track the current main branch.
 It reads local artifacts without running a model or contacting a provider.
 
 ```bash
@@ -30,7 +30,7 @@ Here is what each kind of line means:
 | `files.configs/eval.yaml.sha256 … [HIGH]` | A tracked input **file's content hash** differs. | The file's bytes changed (often the same edit as the parameter above — the hash proves the file on disk really changed, independent of what the manifest declares). The hash is not meant to be read; it is meant to be compared. |
 | `code.commit … [MEDIUM]` + `code changed` | The two runs executed at different git commits. | Expected when each variant's inputs were committed separately; becomes a real warning when the tree was dirty (`[HIGH]`). |
 | `models.*`, `datasets.*`, `prompts.*`, `inference.*` … | Identity drift in experiment inputs (revision, prompt hash, backend…). | Model/dataset/prompt changed — results are usually not comparable. |
-| `environment.packages.torch 2.8.0 → 2.8.1 [LOW]` | A dependency changed at patch level. | Major/minor bumps raise the severity (`MEDIUM_HIGH`). |
+| `environment.packages.torch 2.8.0 → 2.8.1 [MEDIUM]` | A dependency changed at patch level. | Major/minor bumps raise the severity (`MEDIUM_HIGH`). |
 | `run_id`, `started_at`, `duration_seconds` … `[NONE]` | Bookkeeping fields that always differ. | Listed for completeness; never counted as drift. |
 
 The final verdict line summarizes: `HIGH` present → *not directly

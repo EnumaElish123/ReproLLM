@@ -1,7 +1,8 @@
 # Post-Beta backlog
 
-Deferred items collected during M2–M7 with their reasons. M8 turns this into
-roadmap issues; nothing here is scheduled for the Beta.
+Active follow-up and deferred items, reconciled on 2026-10-02. Historical sprint
+plans retain their original scope; current delivery state is summarized in the
+[public roadmap](../community/roadmap.md) and [changelog](../../CHANGELOG.md).
 
 ## Pending resource validation
 
@@ -13,34 +14,29 @@ resources and acceptance evidence are available; val.md remains the gold source.
 
 ## Product trial follow-up (2026-10-02)
 
-The [UX repair report](../dogfooding/2026-10-02-ux-repairs.md) records the
-Discover, onboarding, candidate-list, Action and export fixes and their five-project
-validation. The [review bundle](ux-2026-10-02-proposals/README.md) retains concrete
-pending choices for task selection during init (UX-T03), audit text (UX-T04),
-provider identity and judge-only profiles (UX-T06), and additional export sections.
-These are not approved contract changes or adopted gold. Full candidate
-view/removal/history remains a separate future proposal.
+The [UX repair report](../dogfooding/2026-10-02-ux-repairs.md) records Discover,
+onboarding, candidate-list, Action and export fixes and five-project validation.
+All six [UX2 tasks](UX2_2026-10-02.md) are implemented on main, unreleased:
+task selection, clearer audit outcomes, opaque API identity, `judge_only`, research
+export details and reversible project-rule lifecycle. [PR #8](https://github.com/EnumaElish123/ReproLLM/pull/8)
+received explicit D-41 approval and merged as `b5e1317`; its five main CI jobs
+passed. The [review bundle](ux-2026-10-02-proposals/README.md) retains historical
+proposals, not pending product decisions. The next approved work is the
+[four-task UX3 plan](UX3_2026-10-02.md).
 
 ## Rules & detection
 
 - P1 rule polish: `gen.stop_declared` / `prompt.few_shot_declared` negative
   corpora from real repositories (M3 risk table leftovers).
-- Provider identity vs API compatibility: `model.revision_pinned` treats a
-  truthful `provider: other` OpenAI-compatible vendor (e.g. DeepSeek) as
-  CRITICAL even when the lock records `pinnability` correctly — surfaced by the
-  DeepSeek validation. Needs a spec-reviewed provider contract, not a relabel.
-- Judge-only manifests trip the full `llm_judge → … → core` presence chain
-  (five CRITICALs in the DeepSeek pair); a profile variant for judging stored
-  answers could express that honestly. Spec change first.
 - Nested judge-parameter drift currently MEDIUM under the one-segment wildcard
-  policy (§8.4 gap); review `evaluation.judge.*` severity semantics.
+  policy (val §8.4 gap); narrow policy review is scheduled as UX3-T02.
 
 ## Features (post-Beta by decision)
 
 - `discover --paper` (D-26) and paper–code consistency.
 - `rag` / `agent` profiles (detected, report-only today).
 - Dataset content fingerprints (D-22; sampled hashing is the candidate design).
-- SARIF output; `export --template neurips|acl|acm` checklist mapping (M10).
+- SARIF output (checklist export templates already shipped in 0.5.2).
 - Multi-stage/pipeline experiments (multiple manifests per repository).
 
 ## Engineering
