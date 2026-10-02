@@ -52,7 +52,7 @@ def _help(args: list[str]) -> str:
         check=True,
         env=env,
     )
-    return result.stdout
+    return "\n".join(line.rstrip() for line in result.stdout.splitlines()) + "\n"
 
 
 def main(check: bool = False) -> int:

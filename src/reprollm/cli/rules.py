@@ -1,7 +1,7 @@
 """``reprollm rules`` — manage project rules (spec §7, M7-T02).
 
-Only this command writes ``.reprollm/project-rules.yaml``. ``rules accept`` /
-``rules ignore`` arrive with discover in M7-T04.
+This command group owns ``.reprollm/project-rules.yaml`` and reports the latest
+discovery candidates (M7-T04).
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ def _unique_id(document: ProjectRules, base: str) -> str:
 def list_rules(
     json_output: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    """List accepted project rules (pending discover candidates arrive in M7-T04)."""
+    """List accepted project rules and the latest discovery candidates."""
     root = find_root(Path.cwd())
     document = load_project_rules(root)
     rules = document.rules if document else []
@@ -64,9 +64,10 @@ def list_rules(
         return
     if not rules:
         typer.echo("No project rules accepted. Add one with `reprollm rules add`.")
-        return
+    else:
+        typer.echo(f"{len(rules)} project rule(s):")
     ignored = {entry.candidate_id for entry in (document.ignored_candidates if document else [])}
-    typer.echo(f"{len(rules)} project rule(s):")
+    accepted = {rule.candidate_id for rule in rules if rule.candidate_id is not None}
     for rule in rules:
         bindings = ""
         if rule.bindings is not None:
@@ -87,7 +88,13 @@ def list_rules(
             latest = None
         if latest is not None:
             for candidate in latest.candidates:
-                state = "ignored" if candidate.id in ignored else "pending"
+                state = (
+                    "accepted"
+                    if candidate.id in accepted
+                    else "ignored"
+                    if candidate.id in ignored
+                    else "pending"
+                )
                 typer.echo(
                     f"  candidate {candidate.id}  {candidate.kind}  [{state}]  "
                     f"{candidate.suggested_field}"

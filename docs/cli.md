@@ -4,11 +4,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm
 ```text
-                                                                                
- Usage: reprollm [OPTIONS] COMMAND [ARGS]...                                    
-                                                                                
- Make LLM experiments reproducible.                                             
-                                                                                
+
+ Usage: reprollm [OPTIONS] COMMAND [ARGS]...
+
+ Make LLM experiments reproducible.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --version                       Print the reprollm version and exit.         │
 │ --no-color                      Disable colored output.                      │
@@ -38,11 +38,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 ```
 ## reprollm audit
 ```text
-                                                                                
- Usage: reprollm audit [OPTIONS] [path]                                         
-                                                                                
- Audit a repository and print findings (exit 1 at/above --fail-on).             
-                                                                                
+
+ Usage: reprollm audit [OPTIONS] [path]
+
+ Audit a repository and print findings (exit 1 at/above --fail-on).
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to audit (default: .) [default: .]            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -72,11 +72,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm init
 ```text
-                                                                                
- Usage: reprollm init [OPTIONS] [path]                                          
-                                                                                
- Create reprollm.yaml and .reprollm/ from detected experiment signals.          
-                                                                                
+
+ Usage: reprollm init [OPTIONS] [path]
+
+ Create reprollm.yaml and .reprollm/ from detected experiment signals.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Directory to initialize (default: .) [default: .]        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -91,11 +91,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm lock
 ```text
-                                                                                
- Usage: reprollm lock [OPTIONS] [path]                                          
-                                                                                
- Resolve declared experiment state into reprollm.lock.                          
-                                                                                
+
+ Usage: reprollm lock [OPTIONS] [path]
+
+ Resolve declared experiment state into reprollm.lock.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to lock (default: .) [default: .]             │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -111,11 +111,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm run
 ```text
-                                                                                
- Usage: reprollm run [OPTIONS] [command]...                                     
-                                                                                
- Execute a command and record its runtime state.                                
-                                                                                
+
+ Usage: reprollm run [OPTIONS] [command]...
+
+ Execute a command and record its runtime state.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   command      <str>  Command and arguments after --.                        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -133,11 +133,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm runs list
 ```text
-                                                                                
- Usage: reprollm runs list [OPTIONS]                                            
-                                                                                
- List recorded runs under .reprollm/runs, newest first.                         
-                                                                                
+
+ Usage: reprollm runs list [OPTIONS]
+
+ List recorded runs under .reprollm/runs, newest first.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --json          Emit run summaries as JSON.                                  │
 │ --help          Show this message and exit.                                  │
@@ -146,11 +146,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm runs show
 ```text
-                                                                                
- Usage: reprollm runs show [OPTIONS] {run_id}                                   
-                                                                                
- Show one run record: command, code, environment, bindings, warnings.           
-                                                                                
+
+ Usage: reprollm runs show [OPTIONS] {run_id}
+
+ Show one run record: command, code, environment, bindings, warnings.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │ *    run_id      <str>  Run ID or unique prefix. [required]                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -162,11 +162,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm diff
 ```text
-                                                                                
- Usage: reprollm diff [OPTIONS] {a} {b}                                         
-                                                                                
- Explain semantic differences between two captured experiments.                 
-                                                                                
+
+ Usage: reprollm diff [OPTIONS] {a} {b}
+
+ Explain semantic differences between two captured experiments.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │ *    a      <str>  Run ID/prefix, run.json, run directory, or lock file.     │
 │                    [required]                                                │
@@ -186,11 +186,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm export
 ```text
-                                                                                
- Usage: reprollm export [OPTIONS] [path]                                        
-                                                                                
- Write REPRODUCIBILITY.md from manifest + lock + the selected run.              
-                                                                                
+
+ Usage: reprollm export [OPTIONS] [path]
+
+ Write REPRODUCIBILITY.md from manifest + lock + the selected run.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to export (default: .) [default: .]           │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -206,11 +206,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm discover
 ```text
-                                                                                
- Usage: reprollm discover [OPTIONS] [path]                                      
-                                                                                
- Propose project-rule candidates from repository content (JSON only).           
-                                                                                
+
+ Usage: reprollm discover [OPTIONS] [path]
+
+ Propose project-rule candidates from repository content (JSON only).
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to analyze (default: .) [default: .]          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -228,11 +228,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm doctor
 ```text
-                                                                                
- Usage: reprollm doctor [OPTIONS]                                               
-                                                                                
- Diagnose the local environment for ReproLLM.                                   
-                                                                                
+
+ Usage: reprollm doctor [OPTIONS]
+
+ Diagnose the local environment for ReproLLM.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --json                   Emit JSON.                                          │
 │ --check-network          Probe the Hugging Face Hub (network).               │
@@ -243,11 +243,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm profiles list
 ```text
-                                                                                
- Usage: reprollm profiles list [OPTIONS]                                        
-                                                                                
- List available profiles (built-ins plus user overrides).                       
-                                                                                
+
+ Usage: reprollm profiles list [OPTIONS]
+
+ List available profiles (built-ins plus user overrides).
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --json          Emit JSON.                                                   │
 │ --help          Show this message and exit.                                  │
@@ -256,11 +256,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm profiles show
 ```text
-                                                                                
- Usage: reprollm profiles show [OPTIONS] {name}                                 
-                                                                                
- Show a profile's inheritance chain, rules, and required fields.                
-                                                                                
+
+ Usage: reprollm profiles show [OPTIONS] {name}
+
+ Show a profile's inheritance chain, rules, and required fields.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │ *    name      <str>  Profile name. [required]                               │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -271,11 +271,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm rules list
 ```text
-                                                                                
- Usage: reprollm rules list [OPTIONS]                                           
-                                                                                
- List accepted project rules (pending discover candidates arrive in M7-T04).    
-                                                                                
+
+ Usage: reprollm rules list [OPTIONS]
+
+ List accepted project rules and the latest discovery candidates.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --json          Emit JSON.                                                   │
 │ --help          Show this message and exit.                                  │
@@ -284,11 +284,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm rules add
 ```text
-                                                                                
- Usage: reprollm rules add [OPTIONS]                                            
-                                                                                
- Append a manual project rule to .reprollm/project-rules.yaml.                  
-                                                                                
+
+ Usage: reprollm rules add [OPTIONS]
+
+ Append a manual project rule to .reprollm/project-rules.yaml.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ *  --field           <str>  Manifest field path, e.g. custom.alpha.          │
 │                             [required]                                       │
@@ -304,11 +304,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm rules accept
 ```text
-                                                                                
- Usage: reprollm rules accept [OPTIONS] {candidate_id}                          
-                                                                                
- Accept a discovered candidate as a project rule (source: discover).            
-                                                                                
+
+ Usage: reprollm rules accept [OPTIONS] {candidate_id}
+
+ Accept a discovered candidate as a project rule (source: discover).
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │ *    candidate_id      <str>  Candidate id, e.g. c-3f9a1b. [required]        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -321,11 +321,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm rules ignore
 ```text
-                                                                                
- Usage: reprollm rules ignore [OPTIONS] {candidate_id}                          
-                                                                                
- Record a candidate as ignored so future discoveries mark it.                   
-                                                                                
+
+ Usage: reprollm rules ignore [OPTIONS] {candidate_id}
+
+ Record a candidate as ignored so future discoveries mark it.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │ *    candidate_id      <str>  Candidate id to ignore. [required]             │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -337,11 +337,11 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
 ## reprollm schema export
 ```text
-                                                                                
- Usage: reprollm schema export [OPTIONS]                                        
-                                                                                
- Write all exported JSON Schema files listed in spec §23.                       
-                                                                                
+
+ Usage: reprollm schema export [OPTIONS]
+
+ Write all exported JSON Schema files listed in spec §23.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --out         <directory>  Directory to write *.schema.json files into.      │
 │                            [default: schemas]                                │

@@ -25,7 +25,7 @@ anything oversized. All included text still passes value redaction first.
 $ reprollm discover . --experimental --dry-run   # see the payload, send nothing
 $ reprollm discover . --experimental --dry-run --show-content  # full system/user messages
 $ reprollm discover . --experimental --yes       # one temperature-0 request
-$ reprollm rules list                            # candidates: pending/ignored
+$ reprollm rules list                            # candidates: pending/accepted/ignored
 $ reprollm rules accept c-3f9a1b                 # → project rule
 $ reprollm rules ignore c-42b0c9                 # → recorded, never re-offered as pending
 ```
@@ -40,6 +40,17 @@ Discovery only proposes. A candidate becomes a checked rule through your
 explicit `rules accept`; its evidence paths are verified against the actual
 payload, and anything citing files you never sent is demoted to `low`
 confidence. `--paper` (paper–code consistency) is rejected in Beta.
+
+`rules list` shows candidates from the latest discovery even before the first
+acceptance. It labels active accepted candidates separately from pending and
+ignored candidates. `rules list --json` retains its accepted-rule array format.
+
+Before acceptance, open the JSON file reported by `discover` under
+`.reprollm/discover/` to review each candidate's rationale, evidence, confidence,
+suggested field and bindings. Accepted rules retain their candidate ID and reason
+in `.reprollm/project-rules.yaml`. To stop enforcing an accepted rule, remove its
+entry from that file and run `reprollm lock` again. `rules ignore` records a
+discovery choice; it leaves any already accepted rule active.
 
 Output quality varies with the model; treat candidates as review input, not
 verdicts — "LLM discovers. Rules decide."
