@@ -17,6 +17,7 @@ from reprollm.core.manifest_scaffold import (
     parse_scalar,
     plan_init,
     render_manifest,
+    select_tasks,
     write_scaffold,
 )
 
@@ -58,22 +59,72 @@ def init(
         str | None,
         typer.Option("--profiles", help="Comma-separated profile names (default: detected)."),
     ] = None,
+    task: Annotated[
+        list[str] | None, typer.Option("--task", help="Select an exact task candidate; repeatable.")
+    ] = None,
+    list_tasks: Annotated[
+        bool,
+        typer.Option("--list-tasks", help="List all safe task candidates without writing files."),
+    ] = False,
 ) -> None:
     """Create reprollm.yaml and .reprollm/ from detected experiment signals."""
     root = path.resolve()
     if not root.is_dir():
         raise UserError(f"{path} is not an existing directory")
+    if list_tasks and (interactive or task is not None or force or profiles is not None):
+        raise UserError(
+            "--list-tasks cannot be combined with --interactive, --task, --force or --profiles"
+        )
 
     override = None
     if profiles is not None:
         override = [name.strip() for name in profiles.split(",") if name.strip()]
     plan = plan_init(root, profiles_override=override)
+    if list_tasks:
+        for name in plan.task_names:
+            typer.echo(name)
+        return
 
     values: dict[str, Any] = {}
     if interactive:
+        choices = (
+            ", ".join(
+                f"{entry.profile} ({entry.confidence})"
+                for entry in plan.detection.profiles
+                if entry.shipped
+            )
+            or "none"
+        )
+        typer.echo(f"Detected profile candidates: {choices}")
+        selected_profiles = str(
+            typer.prompt(
+                "Profiles for this experiment (comma-separated)", default=",".join(plan.profiles)
+            )
+        )
+        override = [name.strip() for name in selected_profiles.split(",") if name.strip()]
+        if override:
+            plan = plan_init(root, profiles_override=override)
+        elif plan.profiles:
+            raise UserError("select at least one detected profile or use --profiles explicitly")
+    selected = select_tasks(plan, task or [])
+    if interactive:
+        if plan.task_names and "evaluation.metrics" in plan.required_fields:
+            typer.echo(
+                f"Task candidates: {len(plan.task_names)}. "
+                "List with: reprollm init PATH --list-tasks"
+            )
+            while True:
+                name = str(
+                    typer.prompt(
+                        "Task name (empty finishes selection)", default="", show_default=False
+                    )
+                )
+                if not name:
+                    break
+                selected = select_tasks(plan, [*selected, name])
         _prompt_required(plan, values)
 
-    manifest_text = render_manifest(plan, values)
+    manifest_text = render_manifest(plan, values, selected_tasks=selected)
     write_scaffold(root, manifest_text, force=force)
 
     if plan.profiles:
@@ -85,5 +136,17 @@ def init(
         typer.echo(
             f"Created {root / 'reprollm.yaml'} (no profiles detected; "
             "pass --profiles or edit experiment.profiles)"
+        )
+    source = "selected" if override is not None else "detected"
+    typer.echo(f"Applied {source} profiles: {', '.join(plan.profiles) or 'none'}.")
+    typer.echo("Review experiment.profiles; use --profiles to select this experiment's profiles.")
+    typer.echo(
+        f"Task candidates: {len(plan.task_names)}; selected: {len(selected)}. "
+        "List with: reprollm init PATH --list-tasks"
+    )
+    if "evaluation.metrics" in plan.required_fields and not selected:
+        typer.echo(
+            "No task is declared in evaluation.metrics. Select with --task NAME, "
+            "or edit metrics manually."
         )
     typer.echo("Next: fill the TODO fields, then run `reprollm audit .`")

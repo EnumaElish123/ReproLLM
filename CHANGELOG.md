@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX2-T01 / UX-T03: keep the complete framework task inventory separate from
+  experiment metrics. Add read-only `init --list-tasks`, exact repeatable
+  `--task` selection and interactive profile/task prompts. Default init now
+  leaves metrics empty for author selection; invalid selectors fail before
+  writes. Task names remain Unicode-safe, sorted and deduplicated.
+
 - UX-T08 / M10-T01: remove machine paths and identity from displayed export
   values, and redact keyed credentials before Markdown hides their key context.
   Preserve portable dot-relative paths in the shared run privacy helper while

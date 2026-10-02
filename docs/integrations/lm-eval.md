@@ -1,7 +1,10 @@
 # lm-evaluation-harness
 
 ReproLLM detects lm-eval usage (imports, CLI invocations, task YAMLs) and
-extracts task names + metrics for `init` pre-filling.
+extracts task candidates. On main (unreleased), `reprollm init --list-tasks`
+lists the complete inventory; `reprollm init --profiles evaluation --task gsm8k`
+selects one task. Unselected candidates are not declared as experiment metrics.
+Confirm the actual metric name and implementation using the task YAML.
 
 ## Manifest example
 

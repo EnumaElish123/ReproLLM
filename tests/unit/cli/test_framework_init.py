@@ -43,7 +43,7 @@ runner = CliRunner()
         ),
     ],
 )
-def test_framework_cli_selects_evaluation_and_prefills_tasks(
+def test_framework_cli_selects_evaluation_and_prefills_selected_tasks(
     tmp_path: Path,
     command: str,
     task_path: str,
@@ -55,7 +55,8 @@ def test_framework_cli_selects_evaluation_and_prefills_tasks(
     task.parent.mkdir(parents=True, exist_ok=True)
     task.write_text(task_text, encoding="utf-8", newline="\n")
 
-    result = runner.invoke(app, ["init", str(tmp_path)])
+    selectors = [value for name in expected_names for value in ("--task", name)]
+    result = runner.invoke(app, ["init", str(tmp_path), *selectors])
     assert result.exit_code == 0, result.output
     manifest = load_manifest(tmp_path / "reprollm.yaml")
     assert "evaluation" in manifest.experiment.profiles
@@ -77,7 +78,7 @@ def test_lm_eval_task_structure_selects_evaluation_without_import_or_command(
     (tasks / "custom.yaml").write_text(
         "task: custom\ndataset_path: demo/corpus\n", encoding="utf-8", newline="\n"
     )
-    result = runner.invoke(app, ["init", str(tmp_path)])
+    result = runner.invoke(app, ["init", str(tmp_path), "--task", "custom"])
     assert result.exit_code == 0, result.output
     manifest = load_manifest(tmp_path / "reprollm.yaml")
     assert "evaluation" in manifest.experiment.profiles
@@ -102,7 +103,10 @@ def test_task_names_are_deduplicated_quoted_and_sorted(tmp_path: Path) -> None:
     plan = plan_init(tmp_path, profiles_override=None)
     first = render_manifest(plan, {})
     assert first == render_manifest(plan_init(tmp_path, profiles_override=None), {})
-    result = runner.invoke(app, ["init", str(tmp_path)])
+    result = runner.invoke(
+        app,
+        ["init", str(tmp_path), "--task", "zeta", "--task", "alpha: [quoted]", "--task", "zeta"],
+    )
     assert result.exit_code == 0, result.output
     manifest = load_manifest(tmp_path / "reprollm.yaml")
     assert manifest.evaluation is not None
@@ -145,7 +149,7 @@ def test_task_yaml_custom_tags_are_read_statically(tmp_path: Path) -> None:
         encoding="utf-8",
         newline="\n",
     )
-    result = runner.invoke(app, ["init", str(tmp_path)])
+    result = runner.invoke(app, ["init", str(tmp_path), "--task", "custom"])
     assert result.exit_code == 0, result.output
     manifest = load_manifest(tmp_path / "reprollm.yaml")
     assert manifest.evaluation is not None
@@ -202,7 +206,9 @@ def test_task_candidates_drop_host_paths_and_machine_identity(
             f"task: {json.dumps(name)}\n", encoding="utf-8", newline="\n"
         )
 
-    result = runner.invoke(app, ["init", str(tmp_path)])
+    result = runner.invoke(
+        app, ["init", str(tmp_path), "--task", "relative/task", "--task", "普通_task"]
+    )
     assert result.exit_code == 0, result.output
     text = (tmp_path / "reprollm.yaml").read_text(encoding="utf-8")
     manifest = load_manifest(tmp_path / "reprollm.yaml")

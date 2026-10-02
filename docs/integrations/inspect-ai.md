@@ -34,4 +34,7 @@ reprollm run -- inspect eval solver.py --model openai/gpt-4o-2024-08-06
 ```
 
 The `@task` decorated function names in your solver files are extracted as
-task hints for `reprollm init` pre-filling.
+task candidates. On main (unreleased), use `reprollm init --list-tasks` to inspect
+them, then `reprollm init --profiles evaluation --task NAME` to select this
+experiment's tasks. Confirm the metric names and implementations; without
+selection the generated metrics list remains empty.

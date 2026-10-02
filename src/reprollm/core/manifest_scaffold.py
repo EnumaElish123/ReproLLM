@@ -12,6 +12,7 @@ from __future__ import annotations
 import getpass
 import json
 import socket
+import unicodedata
 from dataclasses import dataclass, field
 from importlib.resources import files
 from pathlib import Path
@@ -226,11 +227,11 @@ def _build_sections(
             elif task_names:
                 node[parts[-1]] = _leaf(
                     value=json.dumps([{"name": name} for name in task_names], ensure_ascii=False),
-                    comment="detected task candidates; verify tasks and set implementation",
+                    comment="selected task candidates; verify tasks and set implementation",
                     todo=False,
                     extra=[
                         f"task candidates from: {', '.join(task_sources or [])}",
-                        "Remove unused tasks; confirm each metric name and implementation.",
+                        "Confirm each metric name and implementation for this experiment.",
                     ],
                 )
             else:
@@ -350,16 +351,21 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
     )
     task_names: set[str] = set()
     task_sources: set[str] = set()
-    if "evaluation.metrics" in resolved.required_fields:
-        privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
-        for integration, _evidence in detected_frameworks(ctx.fs, ctx.pyscan):
-            names = integration.extract_task_hints(ctx.fs).task_names
-            # A sanitized name would identify a different task. Exclude
-            # host-specific or secret-bearing candidates instead of renaming.
-            safe_names = {name for name in names if privacy.text(name)[1] == 0}
-            if safe_names:
-                task_names.update(safe_names)
-                task_sources.add(integration.name)
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    for integration, _evidence in detected_frameworks(ctx.fs, ctx.pyscan):
+        names = integration.extract_task_hints(ctx.fs).task_names
+        # Inventory is independent of selection. Never sanitize an identifier
+        # into a different task or let it inject extra terminal rows.
+        safe_names = {
+            name
+            for name in names
+            if name
+            and not any(unicodedata.category(c) in {"Cc", "Cf", "Zl", "Zp"} for c in name)
+            and privacy.text(name)[1] == 0
+        }
+        if safe_names:
+            task_names.update(safe_names)
+            task_sources.add(integration.name)
     return InitPlan(
         project_name=root.name,
         profiles=profile_list,
@@ -372,14 +378,32 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
     )
 
 
-def render_manifest(plan: InitPlan, values: dict[str, Any]) -> str:
+def select_tasks(plan: InitPlan, names: list[str]) -> list[str]:
+    """Validate exact selections before any scaffold files are written."""
+    if names and "evaluation.metrics" not in plan.required_fields:
+        raise UserError(
+            "--task requires profiles with evaluation.metrics; select this experiment's "
+            "evaluation profile with --profiles"
+        )
+    if set(names) - set(plan.task_names):
+        # Invalid names may contain credentials or terminal control sequences.
+        raise UserError(
+            "unknown or unsafe task name; run `reprollm init PATH --list-tasks` "
+            "and select an exact name with --task NAME"
+        )
+    return sorted(set(names))
+
+
+def render_manifest(
+    plan: InitPlan, values: dict[str, Any], *, selected_tasks: list[str] | None = None
+) -> str:
     """Render reprollm.yaml text for the plan (values from interactive input)."""
     sections = _build_sections(
         plan.required_fields,
         values,
         plan.primary_detection,
         plan.other_detections,
-        plan.task_names,
+        select_tasks(plan, selected_tasks or []),
         plan.task_sources,
     )
     return _render_manifest(

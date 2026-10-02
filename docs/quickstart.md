@@ -62,6 +62,9 @@ reprollm init .
 
 ```text
 Created <workdir>/reprollm.yaml (profiles: inference; 5 required fields to fill)
+Applied detected profiles: inference.
+Review experiment.profiles; use --profiles to select this experiment's profiles.
+Task candidates: 0; selected: 0. List with: reprollm init PATH --list-tasks
 Next: fill the TODO fields, then run `reprollm audit .`
 ```
 Exit: `0`.

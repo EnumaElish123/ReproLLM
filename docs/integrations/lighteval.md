@@ -3,6 +3,11 @@
 ReproLLM detects lighteval usage (imports, CLI) and extracts task names from
 config YAMLs.
 
+On main (unreleased), list candidates with `reprollm init --list-tasks`, then
+select exact names with repeated `--task NAME` options during initialization.
+An ordinary init leaves the metrics list empty; confirm metric implementations
+for the selected experiment.
+
 ## Manifest example
 
 ```yaml

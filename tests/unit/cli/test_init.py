@@ -102,6 +102,7 @@ def test_init_interactive_prompts(tmp_path: Path) -> None:
     # prompts.judge.path, evaluation.judge.params.temperature
     answers = "\n".join(
         [
+            "",  # accept the explicitly selected profile before required fields
             "gpt-4o-mini",  # models.primary.id
             "openai",  # inference.backend
             "0.7",  # generation.temperature

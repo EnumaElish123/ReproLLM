@@ -6,6 +6,24 @@ found by static scanning are candidates: confirm that each one has the role it
 plays in this experiment, especially in repositories that support many models
 or workflows.
 
+## Select this experiment's tasks
+
+On main (unreleased), inspect the complete framework task inventory before
+selecting the tasks used by this experiment:
+
+```bash
+reprollm init . --list-tasks
+reprollm init . --profiles evaluation --task gsm8k --task arc_easy
+```
+
+Listing writes nothing and also works after initialization. Only exact selected
+names become `evaluation.metrics` entries; no selection leaves an empty TODO
+list. Confirm the actual metric names and implementations before auditing: a
+task such as `gsm8k` may report a metric such as `exact_match`. Initialization
+does not infer that mapping. `--interactive` offers profile and task selection
+before prompting for required fields. The displayed automatic profile choices
+still describe repository signals; review them for this one experiment.
+
 ## Map the experiment before filling fields
 
 - `models.primary` is the model being trained or evaluated. Add roles such as

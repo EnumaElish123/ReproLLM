@@ -85,6 +85,9 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │ --interactive               Prompt for required fields.                      │
 │ --profiles           <str>  Comma-separated profile names (default:          │
 │                             detected).                                       │
+│ --task               <str>  Select an exact task candidate; repeatable.      │
+│ --list-tasks                List all safe task candidates without writing    │
+│                             files.                                           │
 │ --help                      Show this message and exit.                      │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
