@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX-T02 / M8-T02: restore completed examples to their reviewed lock and
+  implementation hashes; preserve historical lock/export files when refreshing
+  examples and fail CI on stale locks. Replace destructive demo commands with
+  a disposable standard-library capture, diff and export walkthrough; clarify
+  installation, Python requirements, audit levels and credential prerequisites.
 - UX-T01 / M7-T03–T04: honor discover exclude globs for contents, source
   snippets, tree paths and manifest context. Include globs add bounded text
   files without bypassing safety exclusions. Add an offline full-message

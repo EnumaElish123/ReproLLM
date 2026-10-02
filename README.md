@@ -6,7 +6,7 @@
 
 > Make LLM experiments reproducible.
 
-**Status: beta (0.5.0). The full workflow — audit, init, lock, run, diff,
+**Status: beta. The full workflow — audit, init, lock, run, diff,
 export, rules, and experimental discover — is usable.**
 
 A reproducibility linter, experiment recorder, lockfile system, and drift detector for LLM
@@ -27,10 +27,28 @@ happened, independent of what was declared. An optional, opt-in LLM step only pr
 *candidates* for project-specific parameters; a candidate takes effect only after you
 explicitly accept it.
 
-## Quick start (development checkout)
+## Quick start
+
+Use **Python 3.10 or newer**. Check `python --version` before installing;
+on macOS, the system Python may be older. In the commands below, use the
+executable for your supported Python installation.
+
+```bash
+python -m venv .venv
+# macOS/Linux: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install reprollm
+reprollm --version
+```
+
+The [complete quick start](docs/quickstart.md) exercises audit, init, offline
+lock, two captures, diff and export with only the Python standard library.
+It needs no model download, GPU, API account or token. For development from a
+checkout, use `uv sync --dev` and `uv run reprollm --help`.
+
+Start on your own research repository:
 
 ```console
-$ pip install .             # inside a checkout of ReproLLM main
 $ cd your-llm-experiment
 $ reprollm audit .
 ReproLLM audit · level 0 · profiles: core

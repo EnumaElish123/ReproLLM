@@ -28,10 +28,7 @@ def main() -> None:
             model=args.judge_model,
             messages=[
                 {"role": "system", "content": rubric},
-                {
-                    "role": "user",
-                    "content": f"Prompt: {pair['prompt']}\nA: {pair['a']}\nB: {pair['b']}",
-                },
+                {"role": "user", "content": f"Prompt: {pair['prompt']}\nA: {pair['a']}\nB: {pair['b']}"},
             ],
         )
         verdict = response.choices[0].message.content or ""

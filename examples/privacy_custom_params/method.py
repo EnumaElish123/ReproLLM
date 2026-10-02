@@ -1,7 +1,7 @@
 """Orthogonal-noise privacy mechanism (golden fixture)."""
 
-import torch
 import yaml
+import torch
 from transformers import AutoModelForCausalLM
 
 

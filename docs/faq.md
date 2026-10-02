@@ -2,29 +2,41 @@
 
 ## The model I use is gated; lock says `hf_api_forbidden`
 
-Gated repositories reject anonymous metadata requests. Export your
-`HF_TOKEN`, run `reprollm lock` again, and the token is used for the request
-but never written to any file. If you cannot provide a token, the field stays
-`unresolved` — honestly, rather than guessed.
+Gated repositories require model-author approval for your Hugging Face
+account, plus a token permitted to read that repository. Logging in or setting
+`HF_TOKEN` alone does not grant access; a valid token can still receive 403.
+After approval, set `HF_TOKEN` in your shell and run `reprollm lock` again.
+ReproLLM uses the token for requests without writing it into its artifacts.
+Without access, the affected metadata stays `unresolved`; check the recorded
+HTTP error and repository permissions before retrying.
 
 ## I'm on a GPU node without internet. Can I still use lock?
 
-Run `reprollm lock --offline` on the machine with network access, commit the
-`reprollm.lock`, and audit on the GPU node. Offline mode records declared
-values with `confidence: declared`; nothing is invented.
+Run `reprollm lock .` on the machine with network access to resolve remote
+metadata. Transfer the matching manifest, lock, declared input files and
+separately prepared model/data resources to the GPU node. `reprollm lock .
+--check` checks manifest/project-rule freshness without network access;
+`reprollm audit .` checks the available evidence there.
+
+If no online machine is available, `reprollm lock . --offline` hashes local
+inputs and records declared values without fetching remote metadata.
+Unresolved revisions stay unresolved. Offline mode writes a new lock; it does
+not reuse remote resolutions from a previous lock or download model weights.
 
 ## Why is my API model a WARNING? I pinned the version!
 
-You pinned a *snapshot alias* (`gpt-4o-2024-08-06`). The provider can still
-change what that alias serves. ReproLLM records it as `snapshot_alias`
-pinnability — better than a bare alias, not an immutable artifact. The
-finding is informational about the platform's limits, not about your manifest.
+A dated snapshot alias such as `gpt-4o-2024-08-06` produces an INFO finding
+for `model.revision_pinned`; a bare mutable alias such as `gpt-4o` produces a
+WARNING. Check the finding's rule ID and the lock's `models.<role>.pinnability`
+to identify the cause. Neither alias is an immutable model artifact, and a
+dated label cannot establish access to the provider's weights.
 
 ## Should I commit `.reprollm/runs/`?
 
-They are small and text-only by design. Commit at least the run(s) your paper
-reports; that is what `diff` and `export` consume. Add the rest if you want
-full history.
+Keep the records for runs your paper reports; `diff` and `export` consume them.
+Run directories can also contain input snapshots and captured logs, so inspect
+their contents and size before sharing them. Follow your project's storage
+and access policy when choosing which records to commit or archive.
 
 ## How do I silence a rule I disagree with?
 
@@ -53,11 +65,12 @@ Core commands (audit, init, lock, export, diff) are tested on Windows in CI.
 
 ## What exactly does `discover` send?
 
-Run `reprollm discover --dry-run` to see the exact file list and byte counts
+Run `reprollm discover --experimental --dry-run` to see the exact file list and byte counts
 before anything is sent. README files, top-level configs, argparse/dataclass
 snippets, and the file tree — never secret-pattern files, `data/`,
 `checkpoints/`, or anything where redaction triggers (those are dropped and
-listed). Nothing is sent without `--yes`.
+listed). A live request requires experimental opt-in and either interactive confirmation
+or `--yes`. Dry-run sends no model request.
 
 ## Why does the lock hash not match my file after I edit it?
 
@@ -66,9 +79,13 @@ file was at lock time. Re-run `reprollm lock` after intentional edits.
 
 ## Can I track a parameter ReproLLM doesn't know about?
 
-Yes — project rules. `reprollm rules add --field custom.my_method.alpha
---severity CRITICAL --reason "…"` or accept a discovered candidate. From then
-on it is checked deterministically like any built-in.
+Yes — add a project rule or accept a discovered candidate:
+
+```bash
+reprollm rules add --field custom.my_method.alpha --severity CRITICAL --reason "…"
+```
+
+The accepted field is then checked deterministically like a built-in.
 
 ## Does export include the audit?
 

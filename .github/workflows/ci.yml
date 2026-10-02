@@ -92,8 +92,8 @@ jobs:
         if: matrix.schema-check
         run: |
           for example in examples/*/; do
-            uv run reprollm audit "$example" --fail-on never --format json > /dev/null
-            uv run reprollm lock --check "$example" || true  # offline check of committed state
+            uv run reprollm audit "$example" --level 1 --fail-on never --format json > /dev/null
+            uv run reprollm lock --check "$example"
           done
 
       - name: Generated documentation freshness
