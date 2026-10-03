@@ -1,0 +1,747 @@
+{
+  "schema_version": 1,
+  "task": "PLAN-IMPORT",
+  "date": "2026-10-03",
+  "base_commit": "590ee1739484bd21e21594e294e7ddf14bfd093f",
+  "environment": {
+    "python": "3.12.14",
+    "os": "Linux"
+  },
+  "scope": "Documentation and agent navigation only",
+  "unchanged_product_paths": [
+    "src",
+    "schemas",
+    "tests",
+    "scripts",
+    "pyproject.toml",
+    "uv.lock",
+    ".github/workflows",
+    "action",
+    "examples",
+    "val.md",
+    "docs/plan/00_architecture_and_decisions.md",
+    "docs/plan/01_specification.md"
+  ],
+  "plan_sha256": {
+    "00_Execution_Guide.md": "e2ad0e036229d82c92f5e3efb6af1102cdf75d8fe1f8ee2175325cf0d098a408",
+    "01_Persistence_and_State.md": "8264de451e906497a643d5e8bb71ba01445d8960f68ba77ae686728ce33c2604",
+    "02_Dependency_Accuracy.md": "8e635aa985280c762b37ec03aaa7babf570fc0e6c16d3247770beaf0c8a7461a",
+    "03_Scan_and_Runtime_Evidence.md": "2af88f03714b680ebd8e4f248e003a3269069dc6111f064d3c6438955d8eaa5d",
+    "04_Recipe_and_Release.md": "97da5b127a409aaefcf86ce1ed3bcfb324bc9c5ecbd937481f7e42afde6e81b6",
+    "05_Policy_and_Compatibility.md": "231e43e18b81b71db20c56136c8a7ce912a8f8b1c718cc84ccb20c877976a534",
+    "06_Validation_and_Adoption.md": "b180f380363003c0ea2ab491c032cbc80ec3ee9053ad1c479c6a92bf05bdfdc7"
+  },
+  "quality": [
+    {
+      "label": "locked_dependencies",
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev"
+      ],
+      "exit_code": 0,
+      "seconds": 0.051,
+      "output_sha256": "e3904311292b91eb53767e6882de51f35a1eee5b27d230893e6f37398a1e0786"
+    },
+    {
+      "label": "pytest",
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85"
+      ],
+      "exit_code": 0,
+      "seconds": 115.925,
+      "output_sha256": "4f3139671407693da76ad6ce1ae5364c0828cb8bde9780df79c7e7ef97ea359d"
+    },
+    {
+      "label": "redaction_coverage",
+      "command": [
+        "uv",
+        "run",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.116,
+      "output_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1"
+    },
+    {
+      "label": "ruff",
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.027,
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "label": "format",
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 0.024,
+      "output_sha256": "64a4fa60ca2bda7893c1e4b8ea53a24a76e4ea49ffc3d32207015731000ca7cc"
+    },
+    {
+      "label": "mypy",
+      "command": [
+        "uv",
+        "run",
+        "mypy",
+        "src/"
+      ],
+      "exit_code": 0,
+      "seconds": 0.199,
+      "output_sha256": "a1051ec290fd198fdc01a84ce45195d00fd6617246598e305eb28ab300452773"
+    },
+    {
+      "label": "security",
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "exit_code": 0,
+      "seconds": 2.385,
+      "output_sha256": "6cb0ad316bbe17f4d3175d8a93db2c477752308cde1a6f1d0ae800014813938e"
+    },
+    {
+      "label": "rules_doc",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.258,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "profiles_doc",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.271,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cli_doc",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 7.853,
+      "output_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c"
+    },
+    {
+      "label": "quickstart_doc",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 4.315,
+      "output_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3"
+    },
+    {
+      "label": "schema_export",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<temporary-schema-directory>"
+      ],
+      "exit_code": 0,
+      "seconds": 0.382,
+      "output_sha256": "1f604441c6696cb573bd84d3b9ba8bf4e69b4e860b8db3f801605b1c5ebaa091"
+    },
+    {
+      "label": "schema_freshness",
+      "exit_code": 0,
+      "schema_count": 10,
+      "all_bytes_equal": true
+    },
+    {
+      "label": "hf_vllm_eval_audit",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "audit",
+        "examples/hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.378,
+      "output_sha256": "61c48e881398471b0c05001c0a9dc01f26485f5173049177ac36318a251ffae5"
+    },
+    {
+      "label": "hf_vllm_eval_lock",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/hf_vllm_eval"
+      ],
+      "exit_code": 0,
+      "seconds": 0.381,
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "label": "openai_judge_eval_audit",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "audit",
+        "examples/openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.377,
+      "output_sha256": "371b36007697c20e4041d8bfba4121ebfb974b48b67b740979f4f314427e8630"
+    },
+    {
+      "label": "openai_judge_eval_lock",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/openai_judge_eval"
+      ],
+      "exit_code": 0,
+      "seconds": 0.423,
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "label": "privacy_custom_params_audit",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "audit",
+        "examples/privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.366,
+      "output_sha256": "b2fe6d45a1c89013e8a2cafd8cd2535263fc3f1d4b082e484ff47528ef53acb7"
+    },
+    {
+      "label": "privacy_custom_params_lock",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/privacy_custom_params"
+      ],
+      "exit_code": 0,
+      "seconds": 0.311,
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "label": "self_audit",
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "exit_code": 0,
+      "seconds": 3.439,
+      "output_sha256": "896036594727e3a66ec7a52b8fabb582dc83512b74c1902ed57d9b1f82ea0a1f"
+    }
+  ],
+  "gate_a": {
+    "schema_version": 1,
+    "reprollm_base_sha": "590ee1739484bd21e21594e294e7ddf14bfd093f",
+    "normalization": [
+      "generated_at"
+    ],
+    "scope": "Documentation import; product implementation unchanged",
+    "targets": [
+      {
+        "name": "FastChat",
+        "sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "origin": "https://github.com/lm-sys/FastChat.git",
+        "clean_before_and_after": true,
+        "python_file_count": 148,
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/FastChat-complete-comparisons.json",
+        "baseline_sha256": "c72bc1f9db5c1a3bd50db4aa8335fa82dff61e1fb53a06bd26824b66e45013be",
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/FastChat",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.863
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/FastChat",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.875
+          }
+        ],
+        "comparisons": [
+          {
+            "label": "default-L0-full",
+            "equal": true,
+            "expected_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "actual_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c"
+          },
+          {
+            "label": "default-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "verbose-L0-full",
+            "equal": true,
+            "expected_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "actual_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c"
+          },
+          {
+            "label": "verbose-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "hints-full",
+            "equal": true,
+            "expected_sha256": "ee437b6920365d185eb870ab8cb48cc7f0f8bb532fbec5607830b1450c240be9",
+            "actual_sha256": "ee437b6920365d185eb870ab8cb48cc7f0f8bb532fbec5607830b1450c240be9"
+          }
+        ],
+        "summary": {
+          "critical": 0,
+          "warning": 16,
+          "info": 1,
+          "pass": 8,
+          "suppressed": 0,
+          "skipped": 1
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "HarmBench",
+        "sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+        "origin": "https://github.com/centerforaisafety/HarmBench.git",
+        "clean_before_and_after": true,
+        "python_file_count": 123,
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/HarmBench-complete-comparisons.json",
+        "baseline_sha256": "a6a8036c4ff1694dd3d0095657ee34be1f349f79b40471b45074b712d50d8c8a",
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/HarmBench",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.916
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/HarmBench",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.917
+          }
+        ],
+        "comparisons": [
+          {
+            "label": "default-L0-full",
+            "equal": true,
+            "expected_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "actual_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b"
+          },
+          {
+            "label": "default-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "verbose-L0-full",
+            "equal": true,
+            "expected_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "actual_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b"
+          },
+          {
+            "label": "verbose-diagnostics",
+            "equal": true,
+            "expected_sha256": "a26a61e697eaacc06292e5ab9f80c8061b5846d52e8333c27237b0b9a8d5bae0",
+            "actual_sha256": "a26a61e697eaacc06292e5ab9f80c8061b5846d52e8333c27237b0b9a8d5bae0"
+          },
+          {
+            "label": "hints-full",
+            "equal": true,
+            "expected_sha256": "719689864e9e89a76646155283c3b34f2c82b3a86e2e172ab15c776a34e6cedc",
+            "actual_sha256": "719689864e9e89a76646155283c3b34f2c82b3a86e2e172ab15c776a34e6cedc"
+          }
+        ],
+        "summary": {
+          "critical": 0,
+          "warning": 7,
+          "info": 1,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 1
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "LlamaFactory",
+        "sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+        "origin": "https://github.com/hiyouga/LlamaFactory.git",
+        "clean_before_and_after": true,
+        "python_file_count": 311,
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/LlamaFactory-complete-comparisons.json",
+        "baseline_sha256": "472d7d25189cb5e602bdbd913cb3997a12dd6d993e9534e4fc41cef5323be57c",
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/LlamaFactory",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 1.265
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/LlamaFactory",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 1.322
+          }
+        ],
+        "comparisons": [
+          {
+            "label": "default-L0-full",
+            "equal": true,
+            "expected_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "actual_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b"
+          },
+          {
+            "label": "default-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "verbose-L0-full",
+            "equal": true,
+            "expected_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "actual_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b"
+          },
+          {
+            "label": "verbose-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "hints-full",
+            "equal": true,
+            "expected_sha256": "8b62d1eac7cec11f5bd0cded559bf09ca6ca7cf5bdd7c59b942bc48b77d7dfc1",
+            "actual_sha256": "8b62d1eac7cec11f5bd0cded559bf09ca6ca7cf5bdd7c59b942bc48b77d7dfc1"
+          }
+        ],
+        "summary": {
+          "critical": 1,
+          "warning": 15,
+          "info": 1,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 1
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "llm-dp-finetune",
+        "sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+        "origin": "https://github.com/jyhong836/llm-dp-finetune.git",
+        "clean_before_and_after": true,
+        "python_file_count": 46,
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/llm-dp-finetune-complete-comparisons.json",
+        "baseline_sha256": "c88648af54af99a987dad79377b181694f221a47e38c047b46c0e00fb4ca7453",
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/llm-dp-finetune",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.398
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/llm-dp-finetune",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 0.397
+          }
+        ],
+        "comparisons": [
+          {
+            "label": "default-L0-full",
+            "equal": true,
+            "expected_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "actual_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080"
+          },
+          {
+            "label": "default-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "verbose-L0-full",
+            "equal": true,
+            "expected_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "actual_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080"
+          },
+          {
+            "label": "verbose-diagnostics",
+            "equal": true,
+            "expected_sha256": "d544dbb1a1cbe4ed87023a675ca850e09d536024968b8527bfb04af6bfbc0ee1",
+            "actual_sha256": "d544dbb1a1cbe4ed87023a675ca850e09d536024968b8527bfb04af6bfbc0ee1"
+          },
+          {
+            "label": "hints-full",
+            "equal": true,
+            "expected_sha256": "18ea2a1c98cc548a4900c4a7832aac583be67bc6c0a66920d0431f47d2c20c9b",
+            "actual_sha256": "18ea2a1c98cc548a4900c4a7832aac583be67bc6c0a66920d0431f47d2c20c9b"
+          }
+        ],
+        "summary": {
+          "critical": 0,
+          "warning": 7,
+          "info": 1,
+          "pass": 7,
+          "suppressed": 0,
+          "skipped": 1
+        },
+        "status": "PASS"
+      },
+      {
+        "name": "lm-evaluation-harness",
+        "sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "origin": "https://github.com/EleutherAI/lm-evaluation-harness.git",
+        "clean_before_and_after": true,
+        "python_file_count": 816,
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/lm-evaluation-harness-complete-comparisons.json",
+        "baseline_sha256": "e3a2bd897e3d484a4ad622ffa38f120e7e321f5175797be5febf445505d42df0",
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/lm-evaluation-harness",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 11.355
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/lm-evaluation-harness",
+            "expected_exit": 0,
+            "actual_exit": 0,
+            "seconds": 11.168
+          }
+        ],
+        "comparisons": [
+          {
+            "label": "default-L0-full",
+            "equal": true,
+            "expected_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "actual_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0"
+          },
+          {
+            "label": "default-diagnostics",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+          },
+          {
+            "label": "verbose-L0-full",
+            "equal": true,
+            "expected_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "actual_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0"
+          },
+          {
+            "label": "verbose-diagnostics",
+            "equal": true,
+            "expected_sha256": "adab9b75e4b252b0670fa908cf6cf2afd9a215aefc9699bc2f6a8a78e1fd4adb",
+            "actual_sha256": "adab9b75e4b252b0670fa908cf6cf2afd9a215aefc9699bc2f6a8a78e1fd4adb"
+          },
+          {
+            "label": "hints-full",
+            "equal": true,
+            "expected_sha256": "1f1e059c956c538905d8bab436478fa9ff29d290daa2fc1b7a1165306d93b562",
+            "actual_sha256": "1f1e059c956c538905d8bab436478fa9ff29d290daa2fc1b7a1165306d93b562"
+          }
+        ],
+        "summary": {
+          "critical": 0,
+          "warning": 14,
+          "info": 1,
+          "pass": 8,
+          "suppressed": 0,
+          "skipped": 1
+        },
+        "status": "PASS"
+      }
+    ],
+    "unexplained_deltas": []
+  },
+  "gate_b": "Not activated: this is an ordinary documentation import, not a milestone or release",
+  "remote_ci": "See the delivery commit checks in GitHub Actions; this file records local pre-push validation"
+}

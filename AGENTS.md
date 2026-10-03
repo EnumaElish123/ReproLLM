@@ -14,7 +14,7 @@ Principle: **LLM discovers. Rules decide. Runtime verifies.**
 
 1. `docs/plan/00_architecture_and_decisions.md` — frozen decisions (`D-nn`). Never violate one; if a task seems to require it, stop and report.
 2. `docs/plan/01_specification.md` — normative CLI contract, schemas, rule catalog, redaction policy, diff semantics, test requirements. Field names and behaviors come from here, not from memory.
-3. The current sprint document (`docs/plan/M<N>_*.md`) — the task list (T-numbers), each task's acceptance criteria, and this sprint's forbidden zone (禁区). Tasks come from this document, in order; acceptance criteria are turned into tests *before* implementation; the forbidden zone is binding.
+3. [`docs/plan/README.md`](docs/plan/README.md) — the current execution-plan index. Follow its linked execution guide and the assigned sprint/session document for task IDs, acceptance criteria, and the forbidden zone (禁区). Historical milestone plans remain under `docs/plan/M<N>_*.md`. Tasks come from the assigned document, in order; acceptance criteria are turned into tests *before* implementation; the forbidden zone is binding.
 
 If the task description and the specification disagree, the specification wins; say so in the session report or PR.
 
@@ -97,7 +97,7 @@ Then: add it to the right profile YAML(s) per spec §6.1; add a PASS and a FAIL 
 
 Every development session follows the plan documents in `docs/plan/`:
 
-1. **Scope comes from the current sprint doc** (`docs/plan/M<N>_*.md`): implement its tasks (T-numbers) in order, honoring each task's acceptance criteria and the sprint's forbidden zone (§2). A session never invents, reorders into unrelated territory, or "improves" beyond the sprint list; anything found along the way that belongs to a later sprint goes to a backlog note, not into the diff.
+1. **Scope comes from the assigned sprint/session doc**, selected through [`docs/plan/README.md`](docs/plan/README.md): implement its task IDs in order, honoring each task's acceptance criteria and the sprint's forbidden zone (§2). A session never invents, reorders into unrelated territory, or "improves" beyond the sprint list; anything found along the way that belongs to a later sprint goes to a backlog note, not into the diff.
 2. **Sessions per sprint**: by maintainer decision a sprint is delivered in two sessions (typically first half / second half of the task list); both follow this protocol, and the second session starts from the first session's report.
 3. **Per task**: write the tests implied by the acceptance criteria first, then implement, then run the full quality gate (`pytest`, `ruff`, `mypy`, schema freshness). One task = one commit with Conventional Commits (`feat(rules): add model.revision_pinned`, `fix(redaction): handle jwt with padding`, `test(fixtures): add dirty_tree repo`, `docs: …`, `chore: …`). The commit message cites the spec sections implemented, notes fixture/snapshot changes and why, and references the sprint task (e.g. "M2-T03").
 4. **Before pushing**: quality gate green **and** the §10 dogfooding run done; then push directly to `main` (the branch/issue/PR flow applies only when the maintainer explicitly asks for a reviewed change). Session reports list: tasks completed with commit hashes, dogfooding delta versus the last baseline, deviations from the sprint doc and why.

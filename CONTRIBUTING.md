@@ -13,6 +13,9 @@ process below keeps the project deterministic and reviewable.
 - [`docs/plan/01_specification.md`](docs/plan/01_specification.md) — the normative CLI
   contract and schemas. **If a task description and the specification disagree, the
   specification wins; say so in your PR.**
+- [Current execution plans](docs/plan/README.md) — select the assigned sprint/session
+  and its acceptance criteria. [Coding-agent prompts](docs/plan/reliability-2026-10-03/AGENT_PROMPTS.md)
+  provide the first reliability session and continuation instructions.
 
 ## Development setup
 

@@ -101,6 +101,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- PLAN-IMPORT: add the 2026-10-03 reliability execution plans v1.1, copyable
+  coding-agent prompts and a current-plan index linked from contributor and
+  documentation entry points. Preserve planned task status, pending policy
+  decisions and resource-validation boundaries; no product behavior changes.
+
 - UX3-T01: reconcile the roadmap, backlog and UX delivery index with the
   published 0.6.1 baseline and merged, unreleased UX2 improvements; record PR #8
   approval and successful main CI without rewriting historical validation.

@@ -44,6 +44,13 @@ The report and its CI reference distinguish local validation from remote results
 
 ## Approved next work
 
+The [2026-10-03 reliability execution package](../plan/reliability-2026-10-03/README.md)
+records four two-session engineering sprints plus policy and validation/adoption
+workstreams. Its [agent prompts](../plan/reliability-2026-10-03/AGENT_PROMPTS.md)
+start implementation at S1-A (R00/R01). The package is committed planning work;
+its repairs remain planned, and pending policy/schema decisions retain their
+separate review requirements.
+
 The remaining [UX3 task](../plan/UX3_2026-10-02.md), T02, awaits the concrete
 policy/baseline amendment in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
 It proposes HIGH for direct judge parameter leaves while preserving user profile

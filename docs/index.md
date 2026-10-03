@@ -54,6 +54,8 @@ have separate network requirements; see the linked command guides.
 
 ## Project and validation
 
+- [Current development plans](plan/README.md) and
+  [coding-agent prompts](plan/reliability-2026-10-03/AGENT_PROMPTS.md).
 - [Architecture and decisions](plan/00_architecture_and_decisions.md) and
   [normative specification](plan/01_specification.md).
 - [Five-project validation baseline](../val.md),
