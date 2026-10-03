@@ -25,6 +25,37 @@ manifest permits basic capture with a warning, but audit remains at Level 0.
 
 ## Captured evidence
 
+### Preview capture before spending compute
+
+On main (unreleased), run a read-only preview before the real command:
+
+```console
+reprollm run --dry-run -- python eval.py --temperature 0.0
+```
+
+This requires an existing `reprollm.yaml` in the working directory or an
+ancestor. The preview lists declared bindings and whether their CLI flag,
+configuration key or environment variable can be located; input-file capture
+eligibility; required environment-variable presence; declared parameters with
+no binding; and local lock freshness. It prints no bound values or raw command
+arguments. A present environment variable does not prove credentials are valid.
+
+The preview starts no process, makes no network request and writes no run
+record or snapshots. `--cwd`, `--no-snapshot`, `--capture-output` and
+`--env-capture` describe the same policies as a real run. The preview inspects
+at most 2 MiB per file; larger inputs/configurations are explicitly not fully
+inspected. A missing manifest or an invalid existing ReproLLM document is a
+usage error (exit 2); a missing lock is reported as an advisory.
+A completed preview exits 0 even when it reports warnings. Read those warnings
+before launching the real command without `--dry-run`.
+
+This is a snapshot of what can be located now. It does not verify executable
+availability, dependencies, GPUs, provider access or remote revisions, and it
+cannot discover undeclared parameters. Files may change after the preview;
+normal runtime capture still records evidence using the rules below.
+
+### What a real run records
+
 | Evidence | Recorded form |
 |---|---|
 | Execution | Redacted argv, relative working directory, optional name, UTC start/end, duration, status and child exit code |

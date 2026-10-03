@@ -16,6 +16,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX3-T03: add `run --dry-run` for a read-only preview of declared bindings,
+  input capture eligibility, required environment-variable presence and local
+  lock freshness. It starts no subprocess, makes no request and writes no
+  artifacts; values are withheld and input reads are bounded. A completed
+  preview with warnings exits 0; invalid required inputs exit 2. Existing
+  runtime capture and persisted schemas remain unchanged.
+
 - UX2-T06: add `rules show` and `rules list --candidates` to inspect complete candidate,
   active-rule and archive records with source paths and current status; preserve
   the existing `rules list --json` active-rule array. Reject ignoring active

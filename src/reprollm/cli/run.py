@@ -11,6 +11,7 @@ import typer
 from reprollm.core.config import load_config
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST, RUNS_DIR, find_root
+from reprollm.run.preflight import preview
 from reprollm.run.wrapper import create_run_dir, execute
 
 
@@ -36,10 +37,25 @@ def run(
     cwd: Annotated[
         Path | None, typer.Option("--cwd", help="Working directory for the child command.")
     ] = None,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Preview capture readiness without executing or writing."),
+    ] = False,
 ) -> None:
     """Execute a command and record its runtime state."""
     if not command:
         raise UserError("run requires a command after --")
+    if dry_run:
+        typer.echo(
+            preview(
+                command,
+                cwd=cwd or Path.cwd(),
+                capture_output=capture_output,
+                env_capture=env_capture.value if env_capture is not None else None,
+                snapshot=not no_snapshot,
+            )
+        )
+        return
     working = (cwd or Path.cwd()).resolve()
     if not working.is_dir():
         raise UserError("--cwd must name an existing directory")

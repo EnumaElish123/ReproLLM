@@ -133,6 +133,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │                                          their contents.                     │
 │ --cwd                   <path>           Working directory for the child     │
 │                                          command.                            │
+│ --dry-run                                Preview capture readiness without   │
+│                                          executing or writing.               │
 │ --help                                   Show this message and exit.         │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

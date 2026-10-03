@@ -34,7 +34,7 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm audit [PATH] [--format text\|json] [--output FILE] [--fail-on critical\|warning\|never] [--level 0\|1\|2\|auto] [--profiles a,b] [--show-passed] [--show-skipped] [--details]` | run rules | M2–M6 |
 | `reprollm profiles list \| show NAME` | inspect profiles | M2 |
 | `reprollm lock [PATH] [--offline] [--check] [--verify-api] [--hash-large-files]` | resolve and write `reprollm.lock` | M4 |
-| `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] -- CMD…` | execute and record | M5 |
+| `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] [--dry-run] -- CMD…` | execute and record, or preview capture without execution | M5 / UX3-T03 |
 | `reprollm runs list [--json]` / `runs show RUN_ID [--json]` | inspect run records | M5 |
 | `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` | semantic drift | M6 |
 | `reprollm export [--run RUN_ID] [--output PATH] [--template default]` | write `REPRODUCIBILITY.md` | M7 |
@@ -419,6 +419,64 @@ pydantic model `RunRecord` (`reprollm/schemas/run_record.py`).
 - R-12 `--no-snapshot` disables file snapshots (hashes still recorded).
 
 ---
+
+### 5.2 Read-only run preflight (UX3-T03)
+
+`reprollm run --dry-run [--cwd DIR] [--no-snapshot] [--capture-output]
+[--env-capture allowlist|all] [--name LABEL] -- COMMAND...` previews capture
+readiness without executing COMMAND. The command remains required. This mode
+requires the nearest ancestor `reprollm.yaml` from the selected working
+directory; it does not invoke Git for fallback root discovery. Missing or
+invalid manifests are usage errors with an actionable `init`/repair hint.
+Normal `run` retains its existing behavior, including capture without a manifest.
+
+Preflight MUST NOT execute subprocesses (including Git and nvidia-smi), make
+network calls, create a run ID/directory, write snapshots, hash experiment input
+contents or mutate any file. Only the bounded manifest and project-rule bytes
+are hashed for local lock freshness. It uses the existing schemas to read manifest,
+optional config/project rules and optional lock. Documents must be regular files
+contained in the manifest root; dangling links and links escaping the root are
+usage errors. Read at most 2 MiB per document or inspected configuration/input
+file. Oversized required ReproLLM documents are usage errors; an oversized input
+or bound config is explicitly `not inspected`, never reported as missing or
+successfully observed. Errors must not echo parser input, values or host paths.
+
+Text output is deterministic and includes:
+
+- Portable working directory and effective snapshot/output/environment policies.
+- Declared and existing argv files using §5.1 R-03/R-04's exact discovery and
+  deduplication policy. Report available text eligible for redacted snapshots,
+  hash-only files (snapshot disabled/forbidden name/binary/size), unavailable
+  required files and optional declarations that are not files. Preview never
+  reads forbidden file contents. Apply the existing 200-file snapshot limit.
+- Every distinct declared CLI/config/environment binding location, grouped by
+  field, and whether it can be located now. Preserve repeated CLI occurrence
+  counts; configuration key traversal and null/list handling follow §15.
+  Secret environment bindings remain refused. Never print bound values or raw
+  argv, config contents, environment values or a command label.
+- Sorted unique `execution.env_requirements` names with presence only; an empty
+  environment value is present. Presence is not proof that a credential works.
+- Declared non-null leaf fields under `generation`, `evaluation.judge.params`,
+  `inference.params`, `training.params`, `privacy.mechanism.params`,
+  `privacy.attack.params` and `custom`, plus model `id`/`revision` fields and
+  accepted project-rule fields, that lack any declared binding location. Accepted
+  rule fields are included even when their manifest value is absent or null:
+  the advisory describes a missing capture source, not a missing experiment
+  value. Lists are atomic leaves. This fixed advisory set is not a claim to find all
+  reproducibility parameters or infer the meaning of undeclared command flags.
+- Local lock status: missing, fresh or stale, based only on the exact manifest
+  and active project-rule bytes (§4.5). A valid missing project-rules file uses
+  the same null-hash semantics as lock. State that remote revisions, artifact
+  hashes, dependencies, hardware and provider access are not revalidated.
+
+Sanitize user-controlled names, paths and field labels with existing secret and
+machine-identity protection and escape terminal control characters; keep fixed
+headings/status labels intact. Preflight may report warnings without preventing
+a subsequent real run. A completed preview exits 0 even with warnings; malformed
+inputs/options exit 2 and unexpected internal errors exit 3. It never claims an
+experiment ran or will succeed. State that files/bindings can change after this
+preview and actual run evidence is still collected by the existing run path.
+No persisted document or JSON schema is added; no JSON preview mode is defined.
 
 ## 6. Profile schema
 
