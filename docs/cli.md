@@ -147,8 +147,16 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
  List recorded runs under .reprollm/runs, newest first.
 
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --json          Emit run summaries as JSON.                                  │
-│ --help          Show this message and exit.                                  │
+│ --json                                         Emit run summaries as JSON.   │
+│ --name           <str>                         Match an exact saved run      │
+│                                                name.                         │
+│ --status         <running|completed|failed|in  Filter saved run status.      │
+│                  terrupted>                                                  │
+│ --outcome        <success|failure>             Filter child success or       │
+│                                                failure.                      │
+│ --limit          <int range> [x>=1]            Show at most this many        │
+│                                                matching runs.                │
+│ --help                                         Show this message and exit.   │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -171,24 +179,30 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 ## reprollm diff
 ```text
 
- Usage: reprollm diff [OPTIONS] {a} {b}
+ Usage: reprollm diff [OPTIONS] [a] [b]
 
  Explain semantic differences between two captured experiments.
 
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
-│ *    a      <str>  Run ID/prefix, run.json, run directory, or lock file.     │
-│                    [required]                                                │
-│ *    b      <str>  Second run or lock input. [required]                      │
+│   a      <str>  Run ID/prefix, run.json, run directory, or lock file.        │
+│   b      <str>  Second run or lock input.                                    │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --format              <text|json>                 [default: text]            │
-│ --min-severity        <LOW|MEDIUM|MEDIUM_HIGH|HI  Filter displayed changes;  │
-│                       GH>                         preserve the full summary. │
-│ --fail-on             <HIGH|MEDIUM_HIGH|MEDIUM|L  Exit 1 for drift at or     │
-│                       OW|NONE>                    above this level.          │
-│ --no-color                                        Disable colored output.    │
-│ --help                                            Show this message and      │
-│                                                   exit.                      │
+│ --format                   <text|json>              [default: text]          │
+│ --min-severity             <LOW|MEDIUM|MEDIUM_HIGH  Filter displayed         │
+│                            |HIGH>                   changes; preserve the    │
+│                                                     full summary.            │
+│ --fail-on                  <HIGH|MEDIUM_HIGH|MEDIU  Exit 1 for drift at or   │
+│                            M|LOW|NONE>              above this level.        │
+│ --no-color                                          Disable colored output.  │
+│ --latest-successful                                 Compare the two newest   │
+│                                                     completed runs with exit │
+│                                                     0.                       │
+│ --name                     <str>                    Select an exact run name │
+│                                                     with                     │
+│                                                     --latest-successful.     │
+│ --help                                              Show this message and    │
+│                                                     exit.                    │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 

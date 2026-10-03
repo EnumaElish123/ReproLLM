@@ -23,6 +23,29 @@ With a manifest and at least one valid run, audit reaches Level 2 even without
 a lock. Lock-dependent comparisons still require `reprollm.lock`. A missing
 manifest permits basic capture with a warning, but audit remains at Level 0.
 
+## Find the runs you need
+
+On main (unreleased), filter records before choosing a comparison:
+
+```console
+reprollm runs list --name baseline --outcome success --limit 5
+reprollm runs list --status interrupted --json
+reprollm runs list --outcome failure
+```
+
+Names match exactly, including case and spaces; duplicate labels remain separate
+records. Combine name, status and outcome filters as needed. `--limit` must be
+positive and applies after filtering, in the existing newest-first order.
+JSON retains the same seven summary fields. No matches is a successful empty
+result; warnings about corrupt records are still shown even with a limit.
+
+`success` means completed with exit code 0. `failure` includes completed records
+with a nonzero exit and failed/interrupted records. Running records and completed
+records with an unknown exit match neither outcome. A successful process can
+still leave capture warnings or failing audit findings; inspect its evidence.
+Use `reprollm diff --latest-successful --name baseline` to compare the two newest
+successful records under that label; see [run selection](diff.md#compare-recent-successful-runs).
+
 ## Captured evidence
 
 ### Preview capture before spending compute

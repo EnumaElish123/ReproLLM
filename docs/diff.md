@@ -18,6 +18,33 @@ invalid snapshots are errors. A lockfile includes an adjacent `reprollm.yaml`
 when present. Comparing a run to a lock also shows fields only the run recorded,
 such as hardware and the command, as added or removed.
 
+## Compare recent successful runs
+
+On main (unreleased), use this shortcut to select the two newest successful
+records in the current project:
+
+```console
+reprollm diff --latest-successful
+reprollm diff --latest-successful --name baseline --format json --fail-on HIGH
+```
+
+The older selected record is A and the newest is B. Text and JSON reports include
+their full IDs. Success requires completed status and exit code 0; labels match
+exactly. Without `--name`, the two records may have different labels. Filters
+and start-time/ID ordering are the same as [run listing](run.md#find-the-runs-you-need).
+
+If fewer than two records qualify, the command exits 2 and suggests listing
+successful runs. It keeps corruption warnings visible and skips invalid records.
+Once a pair is selected, missing or invalid snapshots cause an error; the command
+does not substitute an older pair. A current file named like a selected ID cannot
+replace that stored run. The comparison still uses captured historical values
+and the usual profile/threshold policy.
+
+Use either this shortcut or explicit A/B inputs. `--name` is available only with
+`--latest-successful`; names are labels, not run-ID aliases. A successful child
+process does not prove complete capture or comparable experiments. Review the
+resolved IDs and drift report before relying on the result.
+
 ## Reading the output
 
 Every `reprollm diff` report lists only what changed between the two

@@ -20,6 +20,20 @@ class DiffInput:
     source: DiffSource
 
 
+def from_selected_run(record: RunRecord, run_dir: Path) -> DiffInput:
+    """Use the scanned record rather than resolving its ID as a current cwd path."""
+    try:
+        return DiffInput(
+            State.from_run(record, run_dir=run_dir),
+            DiffSource(kind="run", ref=record.run_id),
+        )
+    except (OSError, ValueError, UserError):
+        raise UserError(
+            f"cannot load selected run {record.run_id} or its snapshots; "
+            "inspect run.json and adjacent snapshots (schema_version 1)"
+        ) from None
+
+
 def _reference(path: Path, root: Path) -> str:
     try:
         return path.relative_to(root.resolve()).as_posix()

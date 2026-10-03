@@ -3,17 +3,47 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Literal
 
 from pydantic import ValidationError
 
 from reprollm.core.errors import UserError
 from reprollm.core.paths import RUNS_DIR, resolve_project_file
-from reprollm.schemas.run_record import RunRecord
+from reprollm.schemas.run_record import RunRecord, RunStatus
 
 _RUN_ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[a-f0-9]{6}\Z")
 _PREFIX = re.compile(r"[0-9TZa-f-]+\Z")
+RunOutcome = Literal["success", "failure"]
+
+
+def run_outcome(record: RunRecord) -> RunOutcome | None:
+    if record.status == RunStatus.COMPLETED and record.exit_code is not None:
+        return "success" if record.exit_code == 0 else "failure"
+    if record.status in (RunStatus.FAILED, RunStatus.INTERRUPTED):
+        return "failure"
+    return None
+
+
+def filter_runs(
+    records: Sequence[RunRecord],
+    *,
+    name: str | None = None,
+    status: RunStatus | None = None,
+    outcome: RunOutcome | None = None,
+    limit: int | None = None,
+) -> list[RunRecord]:
+    """Filter an already validated, ordered scan without hiding its warnings."""
+    matching = [
+        record
+        for record in records
+        if (name is None or record.name == name)
+        and (status is None or record.status == status)
+        and (outcome is None or run_outcome(record) == outcome)
+    ]
+    return matching if limit is None else matching[:limit]
 
 
 def _folders(root: Path) -> list[Path]:

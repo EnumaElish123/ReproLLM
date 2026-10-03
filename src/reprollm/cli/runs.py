@@ -13,7 +13,8 @@ from rich.table import Table
 from rich.text import Text
 
 from reprollm.core.paths import find_root
-from reprollm.run.reader import list_runs, read_run
+from reprollm.run.reader import RunOutcome, filter_runs, list_runs, read_run
+from reprollm.schemas.run_record import RunStatus
 
 app = typer.Typer(help="Inspect recorded runs.", no_args_is_help=True)
 
@@ -21,11 +22,24 @@ app = typer.Typer(help="Inspect recorded runs.", no_args_is_help=True)
 @app.command(name="list")
 def list_command(
     as_json: Annotated[bool, typer.Option("--json", help="Emit run summaries as JSON.")] = False,
+    name: Annotated[
+        str | None, typer.Option("--name", help="Match an exact saved run name.")
+    ] = None,
+    status: Annotated[
+        RunStatus | None, typer.Option("--status", help="Filter saved run status.")
+    ] = None,
+    outcome: Annotated[
+        RunOutcome | None, typer.Option("--outcome", help="Filter child success or failure.")
+    ] = None,
+    limit: Annotated[
+        int | None, typer.Option("--limit", min=1, help="Show at most this many matching runs.")
+    ] = None,
 ) -> None:
     """List recorded runs under .reprollm/runs, newest first."""
     records, warnings = list_runs(find_root(Path.cwd()))
     for warning in warnings:
         typer.echo(f"warning: {warning}", err=True)
+    records = filter_runs(records, name=name, status=status, outcome=outcome, limit=limit)
     rows = [
         {
             "run_id": record.run_id,

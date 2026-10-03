@@ -35,8 +35,8 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm profiles list \| show NAME` | inspect profiles | M2 |
 | `reprollm lock [PATH] [--offline] [--check] [--verify-api] [--hash-large-files]` | resolve and write `reprollm.lock` | M4 |
 | `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] [--dry-run] -- CMD…` | execute and record, or preview capture without execution | M5 / UX3-T03 |
-| `reprollm runs list [--json]` / `runs show RUN_ID [--json]` | inspect run records | M5 |
-| `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` | semantic drift | M6 |
+| `reprollm runs list [--json] [--name TEXT] [--status running\|completed\|failed\|interrupted] [--outcome success\|failure] [--limit N]` / `runs show RUN_ID [--json]` | inspect and filter run records | M5 / UX3-T04 |
+| `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` / `diff --latest-successful [--name TEXT] [same options]` | semantic drift | M6 / UX3-T04 |
 | `reprollm export [--run RUN_ID] [--output PATH] [--template default]` | write `REPRODUCIBILITY.md` | M7 |
 | `reprollm discover [PATH] --experimental [--yes] [--dry-run] [--show-content] [--max-chars N] [--paper FILE]` | LLM-assisted candidate discovery | M7 |
 | `reprollm rules list [--json] [--candidates]` | inspect active rules, latest candidates and recovery-copy state | M7 / UX2-T06 |
@@ -477,6 +477,33 @@ inputs/options exit 2 and unexpected internal errors exit 3. It never claims an
 experiment ran or will succeed. State that files/bindings can change after this
 preview and actual run evidence is still collected by the existing run path.
 No persisted document or JSON schema is added; no JSON preview mode is defined.
+
+### 5.3 Recorded-run listing filters (UX3-T04)
+
+`runs list` retains its default table and the existing seven-field JSON rows:
+`run_id`, `started_at`, `status`, `exit_code`, `duration_seconds`, `name`, `dirty`.
+No derived outcome field or wrapper is added. The following optional selectors
+are combined with AND, before applying a positive integer `--limit`:
+
+- `--name TEXT` matches the saved name exactly and case-sensitively. Do not trim,
+  normalize or interpret patterns/prefixes. An explicit empty string matches an
+  empty name, not null. Duplicate names remain separate records.
+- `--status` accepts exactly `running`, `completed`, `failed`, `interrupted`.
+- `--outcome success` requires `status: completed` AND `exit_code: 0`.
+  `--outcome failure` matches completed records with a non-null nonzero exit,
+  or any failed/interrupted record. Running records and completed records with
+  a null exit match neither outcome, regardless of other recorded values.
+- `--limit N` requires an integer at least 1; invalid options exit 2 before
+  scanning records. Omission applies no limit.
+
+Preserve start time descending, then full run ID descending; missing start times
+sort oldest and historical naive timestamps are treated as UTC. Scan/validate
+all recognized records before filtering/limiting; corrupt/missing/unsafe records
+retain existing safe stderr warnings and are excluded. A limit must not hide
+warnings. Zero matches produce the normal empty table or `[]` JSON and exit 0.
+Outcome describes child termination, not complete capture, passing audit or
+experiment comparability. These commands remain read-only; `runs show` ID and
+prefix resolution and exact saved JSON output are unchanged.
 
 ## 6. Profile schema
 
@@ -1155,6 +1182,36 @@ relative paths or external input basenames, never absolute host paths.
 ```
 
 Text output groups by top-level section, shows `A → B` per change, severity tag, and ends with a one-line verdict: `Highest drift: HIGH (2 changes). These runs are not directly comparable.` when HIGH exists.
+
+### 18.4 Recent successful-run selection (UX3-T04)
+
+`diff --latest-successful [--name TEXT]` selects the two newest valid records in
+the current project using §5.3 ordering and success/exact-name predicates. A is
+the second-newest (older) and B the newest. Without a name filter, labels may
+differ. This flag is mutually exclusive with either positional input; explicit
+mode still requires both A and B. `--name` is valid only in shortcut mode.
+Invalid combinations exit 2 before reading inputs.
+
+Scan records once and print the same corruption warnings to stderr as listing.
+Fewer than two qualifying records is a usage error stating the count and
+suggesting `reprollm runs list --outcome success` and a name filter when relevant;
+do not echo raw selector text. Never widen a filter, substitute a non-success
+record or compare a record with itself. After selecting two valid run records,
+invalid/missing referenced snapshots cause exit 2; never fall back to a third run.
+
+Construct inputs from the selected validated records and their owned run
+directories, with §18.3 snapshot containment and historical-state rules. Do not
+resolve selected IDs again through generic input parsing: a same-named current
+directory/file must not shadow a selected stored run. This avoids a second
+eligibility read, without promising a transaction across snapshot files.
+
+The existing text A/B lines and JSON `a.ref`/`b.ref` contain the full selected
+IDs with `kind: run`; add no selection preamble to JSON or persisted schema
+fields. Format, profile overrides, display thresholds and full-summary/fail-on
+semantics are unchanged. Selection never depends on a threshold. Success alone
+does not establish that the experiments are comparable. Ordinary explicit
+inputs and unique/ambiguous ID-prefix behavior remain unchanged; labels do not
+become input aliases.
 
 ---
 

@@ -16,6 +16,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- UX3-T04: filter `runs list` by exact name, saved status, derived outcome and
+  positive limit while preserving default table/JSON output. Add
+  `diff --latest-successful [--name TEXT]` to compare the two newest completed
+  exit-0 records, older to newer, with full IDs in the existing report. Preserve
+  corruption warnings, historical snapshots, explicit input resolution and
+  threshold behavior; reject insufficient pairs and invalid selector modes
+  without silently choosing alternatives. Persisted schemas are unchanged.
+
 - UX3-T03: add `run --dry-run` for a read-only preview of declared bindings,
   input capture eligibility, required environment-variable presence and local
   lock freshness. It starts no subprocess, makes no request and writes no
