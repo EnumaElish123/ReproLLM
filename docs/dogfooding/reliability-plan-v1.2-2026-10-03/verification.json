@@ -1,0 +1,842 @@
+{
+  "base_commit": "781366e89362a54d9036d3aed070fad169ba8204",
+  "date": "2026-10-03",
+  "deviations": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "initial_exit_code": 1,
+      "initial_output_sha256": "28b8a2ddea0f9d48b2c0f6cefb1fcb594c5e5d8fa38e52389a7439ccd3356378",
+      "kind": "environment",
+      "reason": "Build dependency absent from offline cache.",
+      "resolution": "Installed locked dependencies with network access, then repeated offline verification successfully. No lockfile changes."
+    },
+    {
+      "command": [
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "initial_exit_code": 1,
+      "initial_output_sha256": "e8cc165c249d49e73c39abe00732bbeda95ea6f43de15260b24c491768e0bcd9",
+      "kind": "untracked_user_draft",
+      "reason": "Existing untracked plan/ReproLLM_Agent_Development_Plan_2026-10-03_v1.0.md.md contains an unformatted code block.",
+      "resolution": "Preserved the user draft and excluded that exact uncommitted file in the final format command. It is absent from the committed tree."
+    },
+    {
+      "kind": "existing_test_warning",
+      "reason": "Unregistered pytest slow marker. Test configuration unchanged."
+    },
+    {
+      "kind": "platform",
+      "reason": "This macOS run reports 3 skips; the previous Linux documentation session reported 1930 passed. Skips are not counted as passes."
+    }
+  ],
+  "document_checks": {
+    "files_checked": 13,
+    "local_links_and_anchors_checked": 82,
+    "new_task_cross_references": true,
+    "schema_version": 1,
+    "status": "PASS",
+    "unchanged_product_paths": [
+      "src",
+      "tests",
+      "schemas",
+      "scripts",
+      ".github",
+      "examples",
+      "pyproject.toml",
+      "uv.lock",
+      "val.md",
+      "docs/plan/00_architecture_and_decisions.md",
+      "docs/plan/01_specification.md"
+    ]
+  },
+  "environment": {
+    "os": "Darwin",
+    "python": "3.12.14",
+    "reprollm": "0.6.1"
+  },
+  "gate_a": {
+    "normalization": [
+      "generated_at"
+    ],
+    "reprollm_base_sha": "781366e89362a54d9036d3aed070fad169ba8204",
+    "schema_version": 1,
+    "targets": [
+      {
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/FastChat-complete-comparisons.json",
+        "baseline_sha256": "c72bc1f9db5c1a3bd50db4aa8335fa82dff61e1fb53a06bd26824b66e45013be",
+        "clean_before_and_after": true,
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/FastChat",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.553,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "2927f3062040c81e30833e35f9bd94ecc8e3da9f094252fb2b4dc9ba5cbb0a21"
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/FastChat",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.541,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "4a6e2bb13aec51a747806a1f152c530058a458be732f2e7089df7c266901798d"
+          }
+        ],
+        "comparisons": [
+          {
+            "actual_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "equal": true,
+            "expected_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "label": "FastChat-default-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "FastChat-default-diagnostics"
+          },
+          {
+            "actual_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "equal": true,
+            "expected_sha256": "18ad750565326ef1e9473342e00ac92bc6082bea946b651ec4219b3272ddc10c",
+            "label": "FastChat-verbose-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "FastChat-verbose-diagnostics"
+          },
+          {
+            "actual_sha256": "ee437b6920365d185eb870ab8cb48cc7f0f8bb532fbec5607830b1450c240be9",
+            "equal": true,
+            "expected_sha256": "ee437b6920365d185eb870ab8cb48cc7f0f8bb532fbec5607830b1450c240be9",
+            "label": "FastChat-hints-full"
+          }
+        ],
+        "hints_command": "<python> -B -c <AuditContext full hints>",
+        "hints_exit_code": 0,
+        "hints_seconds": 0.483,
+        "name": "FastChat",
+        "origin": "https://github.com/lm-sys/FastChat.git",
+        "python_file_count": 148,
+        "sha": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "status": "PASS",
+        "summary": {
+          "critical": 0,
+          "info": 1,
+          "pass": 8,
+          "skipped": 1,
+          "suppressed": 0,
+          "warning": 16
+        }
+      },
+      {
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/HarmBench-complete-comparisons.json",
+        "baseline_sha256": "a6a8036c4ff1694dd3d0095657ee34be1f349f79b40471b45074b712d50d8c8a",
+        "clean_before_and_after": true,
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/HarmBench",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.564,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "865cc2e69ba3c2cd266d819fedc64cbf8a46bc8d6b8c143f9766cca6931f92c8"
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/HarmBench",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.556,
+            "stderr_sha256": "bf1fbd0e44d8898ea0a130d97e555cf231dbde175a34ee72a4cecb534cad30eb",
+            "stdout_sha256": "27291ebc032bb0fe2280453bc225262bf14a6ede14af983e837e196907040b2c"
+          }
+        ],
+        "comparisons": [
+          {
+            "actual_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "equal": true,
+            "expected_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "label": "HarmBench-default-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "HarmBench-default-diagnostics"
+          },
+          {
+            "actual_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "equal": true,
+            "expected_sha256": "b7badcbc7d9259e45f2a7eb45563e60b95583119a75ad7fe7ba420b3673c669b",
+            "label": "HarmBench-verbose-L0-full"
+          },
+          {
+            "actual_sha256": "a26a61e697eaacc06292e5ab9f80c8061b5846d52e8333c27237b0b9a8d5bae0",
+            "equal": true,
+            "expected_sha256": "a26a61e697eaacc06292e5ab9f80c8061b5846d52e8333c27237b0b9a8d5bae0",
+            "label": "HarmBench-verbose-diagnostics"
+          },
+          {
+            "actual_sha256": "719689864e9e89a76646155283c3b34f2c82b3a86e2e172ab15c776a34e6cedc",
+            "equal": true,
+            "expected_sha256": "719689864e9e89a76646155283c3b34f2c82b3a86e2e172ab15c776a34e6cedc",
+            "label": "HarmBench-hints-full"
+          }
+        ],
+        "hints_command": "<python> -B -c <AuditContext full hints>",
+        "hints_exit_code": 0,
+        "hints_seconds": 0.496,
+        "name": "HarmBench",
+        "origin": "https://github.com/centerforaisafety/HarmBench.git",
+        "python_file_count": 123,
+        "sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+        "status": "PASS",
+        "summary": {
+          "critical": 0,
+          "info": 1,
+          "pass": 7,
+          "skipped": 1,
+          "suppressed": 0,
+          "warning": 7
+        }
+      },
+      {
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/LlamaFactory-complete-comparisons.json",
+        "baseline_sha256": "472d7d25189cb5e602bdbd913cb3997a12dd6d993e9534e4fc41cef5323be57c",
+        "clean_before_and_after": true,
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/LlamaFactory",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.782,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "73542ce145d0eba47c77262bd88a75b514a7028f330ae37f11c2657b14fd4c69"
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/LlamaFactory",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.765,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "5546ec40915842e5d3f1fc33b71c591b2dc69448a11c7a4971cbd9908cad87b4"
+          }
+        ],
+        "comparisons": [
+          {
+            "actual_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "equal": true,
+            "expected_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "label": "LlamaFactory-default-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "LlamaFactory-default-diagnostics"
+          },
+          {
+            "actual_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "equal": true,
+            "expected_sha256": "0d9bebbf44096d2d632a811466e73a6bb01db896e0afb044de5064b24074d82b",
+            "label": "LlamaFactory-verbose-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "LlamaFactory-verbose-diagnostics"
+          },
+          {
+            "actual_sha256": "8b62d1eac7cec11f5bd0cded559bf09ca6ca7cf5bdd7c59b942bc48b77d7dfc1",
+            "equal": true,
+            "expected_sha256": "8b62d1eac7cec11f5bd0cded559bf09ca6ca7cf5bdd7c59b942bc48b77d7dfc1",
+            "label": "LlamaFactory-hints-full"
+          }
+        ],
+        "hints_command": "<python> -B -c <AuditContext full hints>",
+        "hints_exit_code": 0,
+        "hints_seconds": 0.719,
+        "name": "LlamaFactory",
+        "origin": "https://github.com/hiyouga/LlamaFactory.git",
+        "python_file_count": 311,
+        "sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+        "status": "PASS",
+        "summary": {
+          "critical": 1,
+          "info": 1,
+          "pass": 7,
+          "skipped": 1,
+          "suppressed": 0,
+          "warning": 15
+        }
+      },
+      {
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/llm-dp-finetune-complete-comparisons.json",
+        "baseline_sha256": "c88648af54af99a987dad79377b181694f221a47e38c047b46c0e00fb4ca7453",
+        "clean_before_and_after": true,
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/llm-dp-finetune",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.295,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "ad09aae25a2bf8461ee096a30a86a915c564f5e3fb68c86abc47bd3ea0405d8d"
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/llm-dp-finetune",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 0.291,
+            "stderr_sha256": "3ba6787cebc195541f36e9d0c87d66dc18173c05020e111edc3a39bf06e7c36a",
+            "stdout_sha256": "ad09aae25a2bf8461ee096a30a86a915c564f5e3fb68c86abc47bd3ea0405d8d"
+          }
+        ],
+        "comparisons": [
+          {
+            "actual_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "equal": true,
+            "expected_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "label": "llm-dp-finetune-default-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "llm-dp-finetune-default-diagnostics"
+          },
+          {
+            "actual_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "equal": true,
+            "expected_sha256": "f54eeefdd2b78e188f32abaf8a5930f1d9bb161ef20755dd161588279b675080",
+            "label": "llm-dp-finetune-verbose-L0-full"
+          },
+          {
+            "actual_sha256": "d544dbb1a1cbe4ed87023a675ca850e09d536024968b8527bfb04af6bfbc0ee1",
+            "equal": true,
+            "expected_sha256": "d544dbb1a1cbe4ed87023a675ca850e09d536024968b8527bfb04af6bfbc0ee1",
+            "label": "llm-dp-finetune-verbose-diagnostics"
+          },
+          {
+            "actual_sha256": "18ea2a1c98cc548a4900c4a7832aac583be67bc6c0a66920d0431f47d2c20c9b",
+            "equal": true,
+            "expected_sha256": "18ea2a1c98cc548a4900c4a7832aac583be67bc6c0a66920d0431f47d2c20c9b",
+            "label": "llm-dp-finetune-hints-full"
+          }
+        ],
+        "hints_command": "<python> -B -c <AuditContext full hints>",
+        "hints_exit_code": 0,
+        "hints_seconds": 0.225,
+        "name": "llm-dp-finetune",
+        "origin": "https://github.com/jyhong836/llm-dp-finetune.git",
+        "python_file_count": 46,
+        "sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+        "status": "PASS",
+        "summary": {
+          "critical": 0,
+          "info": 1,
+          "pass": 7,
+          "skipped": 1,
+          "suppressed": 0,
+          "warning": 7
+        }
+      },
+      {
+        "baseline_path": "docs/dogfooding/ux3-2026-10-03/lm-evaluation-harness-complete-comparisons.json",
+        "baseline_sha256": "e3a2bd897e3d484a4ad622ffa38f120e7e321f5175797be5febf445505d42df0",
+        "clean_before_and_after": true,
+        "commands": [
+          {
+            "command": [
+              "<reprollm>",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/lm-evaluation-harness",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 6.794,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_sha256": "b06040ba3f8162fe1b776e90a79f5d04a0bfeb4cd1161d42629eef9ae3126ee7"
+          },
+          {
+            "command": [
+              "<reprollm>",
+              "-v",
+              "audit",
+              ".",
+              "--format",
+              "json",
+              "--fail-on",
+              "never"
+            ],
+            "cwd": "<pinned-sources>/lm-evaluation-harness",
+            "exit_code": 0,
+            "expected_exit": 0,
+            "seconds": 6.503,
+            "stderr_sha256": "da6306fc463667fce64b9d4a17b1d57648003613cf5bc320cc2b1061c1ae0f42",
+            "stdout_sha256": "1dbd917b548f462e90ac87f6d52eb61b5a75944303bf815c7fb6c6590b42aaed"
+          }
+        ],
+        "comparisons": [
+          {
+            "actual_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "equal": true,
+            "expected_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "label": "lm-evaluation-harness-default-L0-full"
+          },
+          {
+            "actual_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "equal": true,
+            "expected_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+            "label": "lm-evaluation-harness-default-diagnostics"
+          },
+          {
+            "actual_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "equal": true,
+            "expected_sha256": "f623a62aef9123b2364d6a666f812a16b2a05ebd6075ce2b1fa866dea3167da0",
+            "label": "lm-evaluation-harness-verbose-L0-full"
+          },
+          {
+            "actual_sha256": "adab9b75e4b252b0670fa908cf6cf2afd9a215aefc9699bc2f6a8a78e1fd4adb",
+            "equal": true,
+            "expected_sha256": "adab9b75e4b252b0670fa908cf6cf2afd9a215aefc9699bc2f6a8a78e1fd4adb",
+            "label": "lm-evaluation-harness-verbose-diagnostics"
+          },
+          {
+            "actual_sha256": "1f1e059c956c538905d8bab436478fa9ff29d290daa2fc1b7a1165306d93b562",
+            "equal": true,
+            "expected_sha256": "1f1e059c956c538905d8bab436478fa9ff29d290daa2fc1b7a1165306d93b562",
+            "label": "lm-evaluation-harness-hints-full"
+          }
+        ],
+        "hints_command": "<python> -B -c <AuditContext full hints>",
+        "hints_exit_code": 0,
+        "hints_seconds": 6.299,
+        "name": "lm-evaluation-harness",
+        "origin": "https://github.com/EleutherAI/lm-evaluation-harness.git",
+        "python_file_count": 816,
+        "sha": "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "status": "PASS",
+        "summary": {
+          "critical": 0,
+          "info": 1,
+          "pass": 8,
+          "skipped": 1,
+          "suppressed": 0,
+          "warning": 14
+        }
+      }
+    ]
+  },
+  "gate_b": {
+    "existing_resource_gates": {
+      "scope": "Existing resource blocks retained; no resource gate attempted in this documentation session.",
+      "source": "docs/dogfooding/pending-resource-validation.md",
+      "source_sha256": "273865b651508cf85892f1de7a138e00a09a54827ff063d0ce206ef1170164a7",
+      "status": {
+        "VAL-R01": "BLOCKED",
+        "VAL-R02": "BLOCKED",
+        "VAL-R03": "BLOCKED"
+      }
+    },
+    "reason": "Ordinary documentation revision, not a milestone or release.",
+    "status": "NOT_ACTIVATED"
+  },
+  "plan_sha256": {
+    "docs/plan/reliability-2026-10-03/00_Execution_Guide.md": "38bfbb9157744fd088888b7e0d73b83ec864f263fd460bc7a802a07f8cf229ec",
+    "docs/plan/reliability-2026-10-03/01_Persistence_and_State.md": "12432b6a02a3e9351aa0a5653f9252eceef517f7b0dd11cb43e45bc95a90469b",
+    "docs/plan/reliability-2026-10-03/02_Dependency_Accuracy.md": "c9872ea3c94aa239680948a878d7e4d5b1a701a2dd70afd18f9e728660d105e2",
+    "docs/plan/reliability-2026-10-03/03_Scan_and_Runtime_Evidence.md": "ae9c5226b241ff5aeeb825d0d924e2d2df6095af5a778dd5d6b5f9e9a3c15205",
+    "docs/plan/reliability-2026-10-03/04_Recipe_and_Release.md": "cad086ea4ad2699fe4768d730d713ce701d9220ac80e8c9868a43e98131aeae6",
+    "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md": "724c85a30cc89e4f53d981b8861e5e0fbbcb04af8df1d96e829b235e315efe0c",
+    "docs/plan/reliability-2026-10-03/06_Validation_and_Adoption.md": "2ba829d2e634c4d24b81082fceedee7a1277dd761f9e0e8841fe4035efdd209f",
+    "docs/plan/reliability-2026-10-03/AGENT_PROMPTS.md": "206250ea3de84ebaf589545cd37f47d049b0f36ca0fa478cc3cb5dbcd3fad071",
+    "docs/plan/reliability-2026-10-03/README.md": "b566e2544c990b7e810500810aef8834d34b2fe60bc416a328861989025a5bf6"
+  },
+  "quality": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "exit_code": 0,
+      "label": "locked_dependencies",
+      "output_sha256": "2354a4f8e7ebbf7798d8c54d2a26992c5512fa76482dd5dcd2038838750f7874",
+      "seconds": 0.014
+    },
+    {
+      "command": [
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-branch",
+        "--cov-report=term",
+        "--cov-report=json:<validation>/coverage.json",
+        "--cov-fail-under=85"
+      ],
+      "exit_code": 0,
+      "label": "pytest",
+      "output_sha256": "b8252b095f86f67b7e0f6c650de00a3a6e51c09927b39f71f5f465df34806933",
+      "seconds": 102.738
+    },
+    {
+      "command": [
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "exit_code": 0,
+      "label": "redaction_coverage",
+      "output_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1",
+      "seconds": 0.077
+    },
+    {
+      "command": [
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "label": "ruff",
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "seconds": 0.052
+    },
+    {
+      "command": [
+        "ruff",
+        "format",
+        "--check",
+        "--exclude",
+        "plan/ReproLLM_Agent_Development_Plan_2026-10-03_v1.0.md.md",
+        "."
+      ],
+      "exit_code": 0,
+      "label": "format",
+      "output_sha256": "c06826fa6dd0720b26dd3f072a0591e7aa42d5470b3b4febec4f59cd8ff7e3e2",
+      "seconds": 0.032
+    },
+    {
+      "command": [
+        "mypy",
+        "src/"
+      ],
+      "exit_code": 0,
+      "label": "mypy",
+      "output_sha256": "a1051ec290fd198fdc01a84ce45195d00fd6617246598e305eb28ab300452773",
+      "seconds": 0.201
+    },
+    {
+      "command": [
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "exit_code": 0,
+      "label": "security",
+      "output_sha256": "e1596ccd7da1fb3f61cb37f1939f251dbaec95f7c968a2cbac18daa113b275a7",
+      "seconds": 3.593
+    },
+    {
+      "command": [
+        "python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "rules_doc",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.129
+    },
+    {
+      "command": [
+        "python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "profiles_doc",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.133
+    },
+    {
+      "command": [
+        "python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "cli_doc",
+      "output_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c",
+      "seconds": 3.884
+    },
+    {
+      "command": [
+        "python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "label": "quickstart_doc",
+      "output_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "seconds": 2.823
+    },
+    {
+      "command": [
+        "reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<validation>/schemas"
+      ],
+      "exit_code": 0,
+      "label": "schema_export",
+      "output_sha256": "53472e17f3dba9cba25cb24f168088cd52742b09d7a7a176426d2d37e35936b6",
+      "seconds": 0.832
+    },
+    {
+      "command": [
+        "diff",
+        "-r",
+        "schemas",
+        "<validation>/schemas"
+      ],
+      "exit_code": 0,
+      "label": "schema_freshness",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.004
+    },
+    {
+      "command": [
+        "reprollm",
+        "audit",
+        "examples/hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "label": "hf_vllm_eval_audit",
+      "output_sha256": "042935f6fb9e0f1f5d8c5811f76581a6fcc7ddf49f990b7e9405e21a2697b606",
+      "seconds": 0.247
+    },
+    {
+      "command": [
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/hf_vllm_eval"
+      ],
+      "exit_code": 0,
+      "label": "hf_vllm_eval_lock",
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "seconds": 0.159
+    },
+    {
+      "command": [
+        "reprollm",
+        "audit",
+        "examples/openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "label": "openai_judge_eval_audit",
+      "output_sha256": "f64f5f061368821e77b1053d22df5bcbd54b4f1c2f5896d38d686b7f5948cf1e",
+      "seconds": 0.249
+    },
+    {
+      "command": [
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/openai_judge_eval"
+      ],
+      "exit_code": 0,
+      "label": "openai_judge_eval_lock",
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "seconds": 0.16
+    },
+    {
+      "command": [
+        "reprollm",
+        "audit",
+        "examples/privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "label": "privacy_custom_params_audit",
+      "output_sha256": "4da59a305a96c26a74ab7760d29d5e0b681638ccd25e5f01a665f72117fdbfd5",
+      "seconds": 0.256
+    },
+    {
+      "command": [
+        "reprollm",
+        "lock",
+        "--check",
+        "examples/privacy_custom_params"
+      ],
+      "exit_code": 0,
+      "label": "privacy_custom_params_lock",
+      "output_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "seconds": 0.165
+    },
+    {
+      "command": [
+        "reprollm",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "exit_code": 0,
+      "label": "self_audit",
+      "output_sha256": "e286d26ec906c1778eb295362abbd24ecc84bc319629bf70a7a0ef91d478b3d9",
+      "seconds": 2.06
+    }
+  ],
+  "remote_ci": {
+    "boundary": "Local verification does not assert remote success.",
+    "evidence": "GitHub Actions for the PLAN-REVISE commit containing this file.",
+    "workflow": "https://github.com/EnumaElish123/ReproLLM/actions/workflows/ci.yml?query=branch%3Amain"
+  },
+  "schema_version": 1,
+  "scope": "Documentation only: reliability execution package v1.2; product repairs remain planned.",
+  "task": "PLAN-REVISE",
+  "test_summary": {
+    "coverage_percent": 93.24699352451434,
+    "deselected": 2,
+    "passed": 1927,
+    "redaction_branches": 24,
+    "redaction_coverage_percent": 100,
+    "redaction_statements": 59,
+    "security_passed": 29,
+    "skipped": 3,
+    "warnings": 1
+  },
+  "unchanged_product_paths": [
+    "src",
+    "tests",
+    "schemas",
+    "scripts",
+    ".github",
+    "examples",
+    "pyproject.toml",
+    "uv.lock",
+    "val.md",
+    "docs/plan/00_architecture_and_decisions.md",
+    "docs/plan/01_specification.md"
+  ]
+}

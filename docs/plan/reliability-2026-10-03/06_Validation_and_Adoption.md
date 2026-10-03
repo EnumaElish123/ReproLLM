@@ -1,6 +1,6 @@
 # 专项方案：可重放证据、独立试用与申请材料
 
-版本：v1.1 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -85,16 +85,16 @@
 
 ### 输入
 
-D01 最终 recipe、D02 的候选 wheel / hash、A01-A 的已验证输入、R03 的有效值合同、R04 的来源合同、R08 的实际生效策略。
+D01 最终 recipe、D02 的候选 wheel / hash、A01-A 的已验证输入、R02-R 的产物脱敏、R03 的有效值合同、R04-A 的环境来源、R04-B 的输入时点/变化合同、R08 的实际生效策略。
 
 ### 实施步骤
 
 1. 在干净临时项目 / 外部一次性 clone 和新环境中安装已验证 wheel；实际导入来自 wheel，不依赖维护者开发 checkout。
 2. 校验输入和上游 SHA，记录 case ID / ReproLLM SHA / version / wheel hash / Python 与平台的安全摘要。
 3. 用确定命令完成 audit、lock、run A / B、diff、export；资源不足则停在对应层次，保留已完成部分。
-4. 对输入文件直接计算独立 SHA-256，与 lock / run 记录核对；对运行参数以实际 child parser / request / config 消费证据核对。不能只自比两个 ReproLLM 输出。
+4. 对输入文件直接计算独立 SHA-256，与对应采集阶段的 lock / run 记录核对；记录运行期间是否改写、删除或新建。对运行参数以实际 child parser / request / config 消费证据核对。不能只自比两个 ReproLLM 输出，也不能将 post-run 配置或未改写的启动前基线单独视为消费证明。
 5. 解释完整 drift 集合；目标字段、config hash、clean commit、argv 分别标明，避免一个无关 HIGH 掩盖目标丢失。
-6. 检查 artifact 中的凭据、机器身份、绝对路径和敏感内容。对可执行参数不能静默修改后声称仍是原始精确重放；确需净化的份额单独说明。
+6. 检查整个证据包中的凭据、机器身份、绝对路径和敏感内容，覆盖结构化 run 值和 JSON/YAML 快照，不只检查 lock；使用 R02-R 的合成正反例验证检测边界。对可执行参数不能静默修改后声称仍是原始精确重放；确需净化的份额单独说明。
 7. 从已分享的包再做一次独立路径重放，验证相对路径和输入可获取性；这是对“可重放”主张的必要检查，不要求重复跑所有昂贵资源场景。
 
 ### 证据包内容

@@ -1,6 +1,6 @@
 # Sprint 1：产物保全与有效运行参数
 
-版本：v1.1 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -11,9 +11,9 @@
 | 会话 | 按顺序执行 | 完成后交接 |
 |---|---|---|
 | S1-A | R00 → R01 | 当前问题矩阵、init 保全实现、Gate A、R02 / R03 输入 |
-| S1-B | R02 → R03 | lock 安全边界、State 选择合同、Gate A、S2 / S3 接口说明 |
+| S1-B | R02 → R02-R → R03 | lock 拒绝写入、run 安全脱敏、State 选择合同、Gate A、S2 / S3 接口说明 |
 
-优先级：R01 / R02 为 P0，R03 为紧随其后的 P1。R00 只建立必要基线，不做全仓重构。
+优先级：R01 / R02 / R02-R 为 P0，R03 为紧随其后的 P1。R00 只建立必要基线，不做全仓重构。R02-R 独立提交；若安全修复或审阅占满 S1-B，将尚未开始的 R03 登记到具名接续会话，保留 R04 对它的依赖，不缩减测试。
 
 禁区：不放宽项目名 schema；不增加 unsafe 写入开关；不实现通用多文件事务框架；不扩大 diff 漂移策略；不改一致性规则“任何 observation 与声明冲突”的现有语义。
 
@@ -23,7 +23,7 @@
 
 1. 记录实际 SHA、工作区、Python / ReproLLM 版本、依赖安装结果。HEAD 与审查不同则先检查相关提交和复测行为。
 2. 运行总则 §6 的质量门。把既有失败、环境失败和新回归分开登记；不为恢复审查基线而改版本或回退代码。
-3. 依据本包每项的最小场景，给 R01–R07 填写“仍复现 / 已修复 / 环境阻塞 / 需重新界定”。可以先完成 P0 的测试，再顺序补其他复核。
+3. 依据本包每项的最小场景，给 R01–R07（含 v1.2 的 R02-R、R06-G、R04-B）填写“仍复现 / 已修复 / 环境阻塞 / 需重新界定”。可以先完成 P0 的测试，再顺序补其他复核；同时登记 R05-S 的已知规范冲突。
 4. 验证 `val.md` 五个 checkout 的存在、SHA、origin、干净状态；登记缺失输入及可恢复步骤。
 5. 建立任务账本和会话报告骨架。把 R08 / scope 等拟改策略列为 PROPOSED，不写成已存在缺陷的默认预期。
 
@@ -137,6 +137,44 @@ uv run pytest -q -m security
 
 建议提交：`fix(lock): reject unsafe persisted values before writing (R02)`。
 
+## 4.1 R02-R：run 结构化值与文本快照的密钥脱敏
+
+### 当前证据与范围
+
+补充审查 SHA：`781366e89362a54d9036d3aed070fad169ba8204`。真实 stdlib 包装运行读取 `config.json` 的 `settings` 对象，经 `custom.settings` 的 config binding 捕获。对象内的合成值 `{"api_key": "syntheticPlainCanaryABC123"}` 同时原样进入 `run.json` 和 `files/` 配置快照。只为 lock 增加检查不能修复这两条路径。
+
+入口：`core/bindings.py::_safe_value`、`run/privacy.py::RunPrivacy.value / text`、`run/wrapper.py::_write_record / _snapshot_document`、`run/capture.py::hash_and_snapshot`；对照 `export/exporter.py::_redact_keyed_values` 已保留键上下文的做法。结构化键和值目前分别处理，普通值缺少密钥前缀时无法单独识别；JSON 带引号的键也不匹配当前 generic_kv 文本模式。
+
+### 实施与安全边界
+
+1. 先建立真正经过 `execute` 的失败回归：manifest 绑定 `custom.settings` 到 `config.json:settings`，stdlib child 读取配置；检查整个 run 目录，不只调用脱敏 helper。
+2. 对嵌套 mapping、list 内对象及绑定标量保留可验证的键 / 字段上下文，复用现有受支持的秘密分类。对原始 JSON/YAML 等文本快照覆盖带引号的键，不靠在序列化后搜索几个已知 canary 值。
+3. 在临时及最终产物落盘之前完成脱敏；范围包括 `run.json`、manifest/lock 快照、声明文件快照、patch 和保存的 stdout/stderr。既有 child 原始终端输出合同保持；ReproLLM 自身诊断不得回显秘密。
+4. R02 的 lock 默认拒绝不安全参数，R02-R 的 run 保存安全脱敏的观察。不能将 lock 的拒绝策略直接移到 child 已完成后的路径，造成退出码变化或丢失运行记录。脱敏失败时保留安全最小记录及捕获失败说明，不回退到保存原文。
+5. 原始文件哈希、脱敏后快照和 `redacted` 标记按现有合同区分；不将替换后的参数宣称为原始可执行配置。旧产物不自动改写；文档明确新写入保护的边界。
+6. 若调整 generic_kv 的规范模式，先准备 §16.2 的具体补充、正反例和影响范围。触及 `core/redaction.py` 时遵循 D-41：补 corpus、保持 100% 分支覆盖并取得明确代码审阅。此次计划修订不代替该审阅。
+
+### 必须建立的验收矩阵
+
+| 场景 | 独立预期 |
+|---|---|
+| 普通合成 `api_key`，没有服务商前缀 | run.json 与配置快照均无原值；记录安全替代及脱敏事实 |
+| JSON 双引号键、YAML 普通/带引号键、嵌套对象、list 内对象 | 键上下文保留，所有持久化副本均受保护 |
+| 被绑定的叶子自身是秘密字段 | 不因离开父对象而丢失秘密上下文；不回显原值 |
+| `max_tokens`、`TOKENIZERS_PARALLELISM`、模型 ID、相对路径、glob、`</s>` | 保留实验值，不扩大成所有含 token/key 字样的值都删除 |
+| snapshot 开/关、capture-output 开/关 | 相应产物检查一致；关闭某条路径不能掩盖其他路径泄漏 |
+| child exit 7、捕获/脱敏故障、原子替换失败 | 遵守已完成 child 退出码合同；没有含秘密的临时或最终文件 |
+| 两个不同的秘密值与已有 diff/export 消费路径 | 安全处理及无法比较的边界明确，不虚称已恢复被脱敏值的差异 |
+
+定向入口：`tests/unit/run/test_wrapper.py`、`test_privacy.py`、`test_privacy_fidelity.py`、`tests/unit/core/test_bindings.py` 及 security corpus。
+
+- [ ] 真正包装运行、快照字节和整个 run 目录的正反例通过。
+- [ ] 不改变正常实验值、哈希语义和子进程退出码。
+- [ ] 全质量门、五项目受影响的无资源 run/diff/export Gate A、必要规范决定和 D-41 审阅完成。
+- [ ] R02 与 R02-R 分别记录结果；不得用 lock 测试代替 run 安全验收。
+
+建议提交：`fix(run): redact keyed secrets before persisting captures (R02-R)`。
+
 ## 5. R03：repeated CLI 的 last-wins 与 State 合并
 
 ### 代码入口与已确认问题
@@ -187,7 +225,7 @@ uv run pytest -q tests/unit/cli/test_diff.py tests/unit/rules/test_runtime_consi
 ## 6. Sprint 收尾
 
 - [ ] S1-A 和 S1-B 各有自己的五项目 Gate A 报告；不能用第二次报告替代第一次。
-- [ ] R01 / R02 的失败保全有文件字节证据；R03 的有效值有真实 child 证据。
+- [ ] R01 / R02 的失败保全有文件字节证据；R02-R 有整个 run 目录的脱敏证据；R03 的有效值有真实 child 证据。
 - [ ] 把安全检查复用点交给后续 recipe / 证据包工作；把 State 选择合同交给 R04-A。
 - [ ] 尚未获得必要审阅的部分标记 REVIEW_READY；其余任务照常推进。
 

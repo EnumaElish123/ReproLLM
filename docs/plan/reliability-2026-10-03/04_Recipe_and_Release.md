@@ -1,6 +1,6 @@
 # Sprint 4：真实 recipe、分发验证与发布门
 
-版本：v1.1 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -14,6 +14,8 @@
 | S4-B | D03 | 发布 gate 改动、故障阻断证据、release readiness 报告 |
 
 D01 输入准备依赖 [06](06_Validation_and_Adoption.md) 的 A01-A，可以在 S1 开始时开展。D01 的真实资源回放若阻塞，先交付静态校验、stdlib probe 和完整待运行输入；D02 / D03 可继续完成可审阅代码，正式发布状态保持 BLOCKED。
+
+D01 正式验收和 A01-B 可分享证据包还依赖 R02-R 的 run 脱敏、R03 的有效值、R04-A 的环境来源及 R04-B 的输入采集时点。准备 recipe 可提前，但不能以当前 post-run 配置快照代替消费证明；这些实现或必要决定未完成时分别记录，不用静态文档通过填补。
 
 禁区：不新增泛化框架绑定语言；不默认要求 32B 模型；不搭建新的发布服务；不重复建设两套 wheel 验证器；不为验证工作流创建并发布试验性正式 tag；不擅自决定下一个公开版本号。
 
@@ -37,7 +39,7 @@ D01 输入准备依赖 [06](06_Validation_and_Adoption.md) 的 A01-A，可以在
 
 ### 实施步骤
 
-1. 生成一张四列映射：manifest 字段 → 实际框架配置 / 参数 → binding → 独立消费证据。必须涵盖 model revision、dataset/task/split、generation cap、seed、metric。
+1. 生成映射：manifest 字段 → 实际框架配置 / 参数 → binding → 观测阶段 / 运行中变化 → 独立消费证据。必须涵盖 model revision、dataset/task/split、generation cap、seed、metric；启动前基线和退出后快照均不自动等于实际消费。
 2. 优先使用固定框架支持且被实际消费的配置文件，配置中承载 cap，binding 读取同一字段；不声明一个命令没有传入的独立 CLI flag。
 3. 基础 binding 不会解析 `--gen_kwargs key=value,...` 内部字段。若最终 CLI 只能用复合参数，先说明现有能力缺口，再实现非常窄且有测试的框架适配；不暗示通用 flag binding 已支持复合语法。
 4. 让执行命令显式消费固定 revision / snapshot；如果没有这个能力，导出仅称 `resolved intent`，不称实际观察到 exact model。对 tokenizer、chat template 和文件哈希应用相同证据纪律。
@@ -71,6 +73,7 @@ L2 不替代 L3。L3 没资源时保留 BLOCKED 及精确恢复命令，不把 d
 - [ ] 模型版本的“声明、解析、消费”三种证据明确。
 - [ ] A / B 的目标语义叶子存在且数值正确；不以摘要 HIGH 替代字段断言。
 - [ ] L1 / L2 有回归；L3 有真实结果或单列 BLOCKED。
+- [ ] L2 增加“消费后改写 config”的案例：消费值有独立依据，记录遵循 R04-B，不能把改写后的值当作已消费参数；可分享产物经过 R02-R 检查。
 - [ ] 全质量门、适用五项目 Gate A、文档 / CHANGELOG 完成。
 
 建议提交：`docs(recipe): align lm-eval declarations with consumed inputs (D01)`。若必须增加 adapter，单列具体实现子任务与测试，保持一任务一提交。

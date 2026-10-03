@@ -45,8 +45,10 @@ The report and its CI reference distinguish local validation from remote results
 ## Approved next work
 
 The [2026-10-03 reliability execution package](../plan/reliability-2026-10-03/README.md)
-records four two-session engineering sprints plus policy and validation/adoption
-workstreams. Its [agent prompts](../plan/reliability-2026-10-03/AGENT_PROMPTS.md)
+is now v1.2, with four two-session engineering sprints plus policy and
+validation/adoption workstreams. The code-review revision adds run redaction,
+shared file-read boundaries, input-capture phases and an explicit Conda
+specification prerequisite. Its [agent prompts](../plan/reliability-2026-10-03/AGENT_PROMPTS.md)
 start implementation at S1-A (R00/R01). The package is committed planning work;
 its repairs remain planned, and pending policy/schema decisions retain their
 separate review requirements.

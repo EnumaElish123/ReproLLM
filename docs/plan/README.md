@@ -8,8 +8,10 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The maintainer requested the **2026-10-03 reliability execution package v1.1**
-and its coding-agent prompts be committed to the repository. Start at the
+The current plan is the **2026-10-03 reliability execution package v1.2**,
+revised after code review at `781366e` at the maintainer's request. It adds
+run-persistence redaction, shared file-read boundaries, input-capture phases and
+an explicit dependency-specification prerequisite. Start at the
 [package index](reliability-2026-10-03/README.md), then read the
 [execution guide](reliability-2026-10-03/00_Execution_Guide.md) and the assigned
 Sprint/Session document. The first implementation session is **S1-A: R00 and R01**.

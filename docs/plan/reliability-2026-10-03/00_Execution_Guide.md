@@ -1,8 +1,10 @@
 # ReproLLM 开发执行总则与任务索引
 
-版本：v1.1 · 日期：2026-10-03 · 文档状态：待执行
+版本：v1.2 · 日期：2026-10-03 · 文档状态：待执行
 
 审查基线：`590ee1739484bd21e21594e294e7ddf14bfd093f`。本包承接 `ReproLLM_Agent_Development_Plan_2026-10-03_v1.0.md`，采用第二轮代码核对后的结论。旧文档保留为历史路线图；任务范围、拆分和验收以本包与执行时仓库规范共同确定。本包中的“已复现”是审查证据，“验收要求”是未来目标，二者不能互相替代。
+
+v1.2 补充审查基线：`781366e89362a54d9036d3aed070fad169ba8204`，产品代码与前述基线相同。维护者要求按代码审查结论优化并推送方案；新增工作仍为 PLANNED，规范提案仍按具体内容审议。补充证据与任务调整见 §10.1。
 
 ## 1. 如何交给开发 Agent
 
@@ -22,17 +24,17 @@
 不要把历史成功、计划中的测试或缺少资源的检查标为本次通过。
 ```
 
-计划进入仓库时，建议整体放到 `docs/plan/reliability-2026-10-03/`，保持文件名及相对链接；在现有当前计划入口登记本轮 Sprint。这里建议的是目录组织，不新增产品命令或自动执行器。
+本包已登记在 `docs/plan/reliability-2026-10-03/`，由 `docs/plan/README.md` 作为当前入口；保持文件名及相对链接，不新增产品命令或自动执行器。
 
 ## 2. 文件与推进顺序
 
 | 文件 | 工作目标 | 会话安排 | 开始条件 |
 |---|---|---|---|
-| [01_Persistence_and_State.md](01_Persistence_and_State.md) | init / lock 保全与 State 有效值 | S1-A：R00、R01；S1-B：R02、R03 | 首个开发 Sprint |
-| [02_Dependency_Accuracy.md](02_Dependency_Accuracy.md) | 精确版本、同名文件、requirements 引用图 | S2-A：R05-A、R06-A；S2-B：R06-P、R05-B | R00；建议 S1 后合入 |
-| [03_Scan_and_Runtime_Evidence.md](03_Scan_and_Runtime_Evidence.md) | 扫描候选集、截断提示、环境来源与时点 | S3-A：R07-A、R07-B；S3-B：R04-A | R00；R04-A 接续 R03 |
+| [01_Persistence_and_State.md](01_Persistence_and_State.md) | init / lock 保全、run 脱敏与 State 有效值 | S1-A：R00、R01；S1-B：R02、R02-R、R03 | 首个开发 Sprint |
+| [02_Dependency_Accuracy.md](02_Dependency_Accuracy.md) | 公共读取边界、精确版本、同名文件、requirements 引用图 | S2-A：R06-G、R05-A、R06-A；S2-B：R06-P、R05-B | R00；安全读取先行，R05-B 须有 R05-S 决定 |
+| [03_Scan_and_Runtime_Evidence.md](03_Scan_and_Runtime_Evidence.md) | 扫描候选集、截断提示、环境来源与输入时点 | S3-A：R07-A、R07-B；S3-B：R04-A、R04-B | R07-A 接续 R06-G；R04 接续 R03 / R02-R |
 | [04_Recipe_and_Release.md](04_Recipe_and_Release.md) | 可执行 recipe、wheel 实装、发布前置检查 | S4-A：D01、D02；S4-B：D03 | 核心相关修复；输入准备可提前 |
-| [05_Policy_and_Compatibility.md](05_Policy_and_Compatibility.md) | scope、覆盖率结论、judge 策略、必要的 schema 决策 | P-A：提出具体方案；P-B：处理决定与验收 | R00 后可准备；逐项独立审议 |
+| [05_Policy_and_Compatibility.md](05_Policy_and_Compatibility.md) | 已知版本规范冲突、scope、覆盖率结论、judge 策略、必要的 schema 决策 | P-A：提出具体方案；P-B：处理决定与验收 | R00 后提前准备 R05-S；逐项独立审议 |
 | [06_Validation_and_Adoption.md](06_Validation_and_Adoption.md) | 输入包、正式回放、试用反馈和申请材料 | 支持工作流，按活动交付 | A01-A 立即开始；其余按依赖推进 |
 
 四个工程 Sprint 各两次会话，遵循 `AGENTS.md §7`。这是工作边界，不是工时承诺。单项超过会话容量时，将未开始的任务移入具名后续会话并说明原因；不得压缩验收来凑进度。策略和外部工作可在逻辑上提前准备；不要求启用多个 Agent，也不要求并发编辑同一模块。
@@ -46,20 +48,24 @@
 | R00 | 当前基线、问题复核、五项目输入清单、状态账本 | 01 |
 | R01 | init 校验先于写入，失败保全，合法名称处理 | 01 |
 | R02 | lock 持久化安全检查；保留已有原子写入 | 01 |
+| R02-R | P0：run 键上下文与 JSON/YAML 快照脱敏；接续 R02 安全分类，保留 child 退出码 | 01 |
 | R03 | repeated CLI last-wins；合并及序列化后选择稳定 | 01 |
+| R06-G | 所有静态消费者的公共内容读取边界；不依赖版本解析或 include 图 | 02 |
 | R05-A | Python 格式 exact-version 语义 | 02 |
 | R06-A | 同 basename 文件保留路径身份；根文件优先 | 02 |
-| R06-P | requirements 路径边界、引用图和包归属；依赖 R05-A / R06-A | 02 |
-| R05-B | Conda 独立语法和语义表；依赖 R05-A 的内部合同 | 02 |
+| R06-P | requirements 安全引用图和包归属；依赖 R06-G / R05-A / R06-A | 02 |
+| R05-S | §12.2 的已知 Conda 冲突及 Python exact / requirements-as-lock 措辞修订前置 | 05 |
+| R05-B | Conda 独立语法和语义表；依赖 R05-A 的内部合同及 R05-S 明确决定 | 02 |
 | R07-A | 静态候选过滤发生在预算之前；保留安全/Git 文件事实 | 03 |
 | R07-B | 默认可见的截断诊断；同步修订规格 §13 | 03 |
 | R04-A | recorder / child 来源及采集时点；消费端一致；接续 R03 | 03 |
+| R04-B | 启动前输入基线、结束后变化与真实消费证据；接续 R02-R / R03 / R04-A，在 D01 验收前完成 | 03 |
 | R06-B | 多项目依赖与 lock scope 方案；不能覆盖 HarmBench gold | 05 |
 | R07-C | 不完整扫描下的逐规则结论合同；接续 R07-A / B | 05 |
 | R08-A | Issue #9：judge 直接 params 叶子默认 HIGH | 05 |
 | R08-B | privacy / training 自由参数风险清单和逐项提案 | 05 |
-| R04-S | R04-A 确需持久化字段时的有界 schema 变更方案 | 05 |
-| D01 | 单一真实框架 recipe 的三层验证；依赖相关修复与 A01-A | 04 |
+| R04-S | R04-A / R04-B 确需持久化字段时的有界 schema 变更方案 | 05 |
+| D01 | 单一真实框架 recipe 的三层验证；验收依赖 R02-R / R03 / R04-A / R04-B 与 A01-A | 04 |
 | D02 | 源码、候选 wheel、发布版的文档和版本证据对齐 | 04 |
 | D03 | 同一 SHA 的质量门、候选 wheel 验证、发布前 release notes 检查 | 04 |
 | A01-A | 固定输入可获取性、校验和、资源阻塞表；可先做 | 06 |
@@ -67,9 +73,9 @@
 | A02 | 试用材料、反馈记录、问题转任务；外部反馈单独计状态 | 06 |
 | A03 | 有来源的采用与维护证据、申请草稿 | 06 |
 
-R06-P 是第二轮新增的明确缺陷任务。R04-S 是条件任务：若 R04-A 用现有合同即可准确表达，则记录 `NOT_NEEDED` 的理由，不为完成列表而增加 schema。
+R06-P 保留第二轮的 include 图范围；v1.2 单列 R06-G 避免只修引用行而遗漏普通文件软链接。R04-S 是条件任务：若 R04-A / R04-B 用现有合同即可准确表达，则记录 `NOT_NEEDED` 的理由，不为完成列表而增加 schema。
 
-模块协调：`core/deps.py` 由 S2 连续处理；`diff/state.py` 先做 R03 再做 R04-A；扫描与 `core/engine.py` 语义分开；D02 / D03 共用一个 wheel 验证入口。接续任务读取前项的实际提交和测试，避免重复抽象。
+模块协调：R02 / R02-R 复用明确的秘密分类，分别验收拒绝写入与安全脱敏；`core/scanner.py` 先做 R06-G 内容边界再做 R07-A 候选过滤；`core/deps.py` 由 S2 连续处理；`diff/state.py` 先做 R03 再接续 R04-A / R04-B；扫描与 `core/engine.py` 语义分开；D02 / D03 共用一个 wheel 验证入口。接续任务读取前项的实际提交和测试，避免重复抽象。
 
 ## 4. 当前证据与执行前复核
 
@@ -225,6 +231,21 @@ Linux 本地通过不能替代 CI 中的 Python 3.10 / 3.11 / 3.12、macOS、Win
 - R04 保留 recorder 环境与宿主信息，明确来源 / 时点；不将整个 environment 清空。
 - D02 / D03 共用 wheel 验证；CHANGELOG / release notes 在 PyPI 发布之前检查。
 - A01 输入恢复提前开展；独立用户采用和资源 Gate B 不伪装成代码任务完成。
+
+### 10.1 v1.2 根据当前代码补充的四项调整
+
+2026-10-03 在 `781366e` 的隔离临时目录中用合成输入完成复核；没有真实凭据、模型请求或 GPU。下表是已观察的当前问题，不是未来修复已通过验收：
+
+| 调整 | 独立观察 | 计划后果 |
+|---|---|---|
+| R02-R | stdlib 包装运行的普通 `api_key` 合成值同时进入 run.json 与 JSON 配置快照 | 与 lock 同为 P0；安全写入不能只覆盖 lock |
+| R06-G | 无 include 的 requirements 软链接和普通 Python 软链接均可读取根外合成内容 | 公共内容边界先行，R06-P 继续处理图与归属；保留安全文件事实 |
+| R04-B | child 实际读取 0.1 后改写 config 为 0.9，记录却观察到 0.9 | 分别记录输入基线、结束后变化和真实消费证据，在 D01 验收前完成 |
+| R05-S | §12.2 的单等号完整版本措辞与官方 Conda 前缀语义冲突 | 明确规范决定是 R05-B 前置，不再使用“若冲突”的条件描述 |
+
+同时再次复现 R01 失败删除旧 manifest、R02 lock 密钥落盘、R03 两组相反 CLI 顺序均选 0.1、Python wildcard 误判、同名 pyproject 覆盖和 Git 模式下 venv 挤占业务扫描预算。保留四阶段方向、窄范围 judge 策略、条件 schema、同一 wheel 发布验证与独立资源状态；没有将这些缺陷改写为已修复。
+
+本次计划修订的检查、五项目对比和提交记录见 [PLAN-REVISE 会话报告](../../dogfooding/2026-10-03-reliability-plan-v1.2.md)。它不替代未来代码任务的失败回归或 R00 基线。
 
 ## 11. 依据
 

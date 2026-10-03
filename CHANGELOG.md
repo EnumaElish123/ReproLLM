@@ -101,6 +101,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- PLAN-REVISE: update the reliability execution package to v1.2 after code
+  review. Add P0 run/capture redaction (R02-R), shared static-content read
+  boundaries (R06-G), input-capture phases (R04-B), and the explicit dependency
+  specification prerequisite (R05-S). Align sessions, acceptance matrices,
+  recipe/evidence dependencies and agent prompts; repairs remain planned.
+
 - PLAN-IMPORT: add the 2026-10-03 reliability execution plans v1.1, copyable
   coding-agent prompts and a current-plan index linked from contributor and
   documentation entry points. Preserve planned task status, pending policy

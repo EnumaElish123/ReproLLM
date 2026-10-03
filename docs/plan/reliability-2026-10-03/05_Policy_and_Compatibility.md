@@ -1,6 +1,6 @@
 # 专项方案：语义决策、策略变更与兼容性
 
-版本：v1.1 · 日期：2026-10-03 · 状态：PROPOSED
+版本：v1.2 · 日期：2026-10-03 · 状态：PROPOSED
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -10,12 +10,12 @@
 
 | 会话 | 交付 |
 |---|---|
-| P-A | 核对已有决定；按 R08-A、R06-B、R07-C、R04-S、R08-B 的相关性准备具体提案；没有触发的 R04-S 标明 NOT_NEEDED |
+| P-A | 核对已有决定；提前准备 R05-S，并按 R08-A、R06-B、R07-C、R04-S、R08-B 的相关性准备具体提案；没有触发的 R04-S 标明 NOT_NEEDED |
 | P-B | 根据逐项决定落实被接受的范围、测试和迁移；被拒绝或待决事项保持原合同并记录理由 |
 
 这是独立的设计 / 审议工作流。实际代码任务仍按“一任务一提交、先测试、完整质量门、每会话五项目 Gate A”执行；范围不足以在一次会话完成时记录后续会话，不压缩验收。
 
-下列项目互不构成全局批准开关。R06-B 不能阻塞同名文件 / include 越界修复，R07-C 不能阻塞候选过滤，R08-B 不能阻塞窄范围 judge 政策，R04-S 只阻塞确实依赖新增字段的部分。
+下列项目互不构成全局批准开关。R05-S 只阻塞依赖新版本语义的部分，R06-B 不能阻塞同名文件 / 公共读取边界 / include 越界修复，R07-C 不能阻塞候选过滤，R08-B 不能阻塞窄范围 judge 政策，R04-S 只阻塞确实依赖新增字段的部分。R02-R 的脱敏模式补充和 R04-B 的输入时点合同也须形成具体材料，按相同审议流程处理，不因纳入任务表而自动视作规范已修改。
 
 ## 2. 统一决策材料
 
@@ -75,6 +75,39 @@
 - [ ] UI / README 不再用原有 config-hash HIGH 结果证明 judge 参数政策已经正确。
 
 建议提交：`fix(diff): classify direct judge parameter drift as high (R08-A)`。
+
+## 3.1 R05-S：精确版本与 requirements-as-lock 的规范修订前置
+
+### 已确认冲突
+
+在 `781366e89362a54d9036d3aed070fad169ba8204`，规范 §12.2 将 Conda `name=version`（single `=` with a full version）视为精确固定，并把 requirements-as-lock 描述为每个非注释行使用 `==`。前者与无 build 的 Conda 单等号前缀语义冲突；后者未明确排除 `==2.5.*` 及解释 include 闭包。
+
+2026-10-03 核对的独立依据：[Conda MatchSpec](https://docs.conda.io/projects/conda/en/stable/dev-guide/api/conda/models/match_spec/) 将无 build 的 `=1.2.3` 规范化为前缀匹配，而 `foo=1.0=py27_0` 规范化为 `foo==1.0=py27_0`；[PyPA version specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/) 将 `.*` 明确定义为 prefix matching。实施前核对来源，不新增 Conda 依赖来完成产品解析。
+
+### 具体待接受范围
+
+| 项目 | 拟定规范文字 / 语义 |
+|---|---|
+| Python 单版本 | 受支持格式下的无通配符单版本限制可视为版本精确；local/pre/post/dev/epoch 不因纯数字正则被拒绝；不宣称构建或文件哈希一致 |
+| Python 通配版本 | `==2.5.*` 非 exact，不能单独使 requirements 成为精确 lock |
+| Conda 单等号且无 build | `python=3.11`、`torch=2.5.1` 均为前缀限制，非 exact；不能用点的个数判断 |
+| Conda 双等号 / 精确三段形式 | 支持 `torch==2.5.1` 与无 wildcard 的 `torch=2.5.1=cuda12.1`；version/build/channel/platform 的保证分别说明 |
+| requirements-as-lock | 只使用合法根内实际 include 闭包；有效声明均精确且没有未解决的引用/语法问题时才满足本轮合同；未引用 sibling 不提供证明 |
+
+这是具体提案，状态仍为 PROPOSED。本次维护者授权修订开发方案，不代替规范文字批准或任何 D-41 代码审阅。
+
+### 交付与依赖
+
+1. 在 R00 后准备 §12.2 的精确 before/after 修订、格式支持表、相关测试及完整 finding 变化。检查 R05-A / R06-P 的规范措辞是否需同步，不机械阻塞已有明确缺陷修复。
+2. 按 AGENTS 的 spec issue/决定流程记录接受范围。R05-B 的实现合入必须引用该决定，不能保留矛盾规范却修改测试期望。
+3. 核对五项目固定源文件，以独立版本语义解释每项 delta；gold 变化另审，不复制 parser 当前输出。
+4. 通过后同步规范、实现测试、文档与 CHANGELOG；未通过则保持旧行为并准确记录冲突，继续其他任务。
+
+- [ ] 冲突明确登记，官方来源、日期、完整示例和负例可审阅。
+- [ ] 决定与 R05-B 的依赖在总索引、会话报告中一致。
+- [ ] 没有将“完整版本”误写为完全相同的可安装产物。
+
+建议提案提交：`docs(spec): clarify exact dependency and requirements lock semantics (R05-S)`。
 
 ## 4. R06-B：依赖和 lock 的 scope
 
@@ -142,13 +175,13 @@
 
 建议提案提交：`docs(spec): define conclusions under incomplete scans (R07-C)`。
 
-## 6. R04-S：环境来源字段的条件 schema 方案
+## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
-触发条件：R04-A 已给出来源 / 时点矩阵，但现有字段不能让持久化产物及所有消费者准确表达它，无法通过内部类型与已有 provenance 合理完成。
+触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
 
 ### 提案要求
 
-1. 以真实 before / after run JSON 展示最少字段。至少区分 recorder Python / packages、host facts、启动前继承 env、child verification 状态；不同采集时点不能伪装成同一快照。
+1. 以真实 before / after run JSON 展示最少字段。环境方案区分 recorder Python / packages、host facts、启动前继承 env、child verification 状态；输入方案区分启动前基线、结束后状态与变化/未知，不能将它们伪装成同一快照或已验证消费。
 2. 固定字段枚举和 unknown 的含义。不得把 unknown 解释成 empty package set；不得记录解释器绝对路径作身份。
 3. 新读者读旧 run：按可识别 producer 合同解释；不能还原的来源保留 unknown。旧文件原字节不改。
 4. 旧读者读新产物：检查 `extra='forbid'` 与版本拒绝行为。不要把“optional 字段”直接当作双向兼容。
