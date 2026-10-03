@@ -1,0 +1,507 @@
+{
+  "corrupt_run_id": "20261002T000014Z-a00014",
+  "derived_from": [
+    "val.md sections 2-8",
+    "specification section 5.2",
+    "UX3-T04 explicit contract from coordinator"
+  ],
+  "diff": {
+    "a": {
+      "kind": "run",
+      "ref": "20261002T000003Z-a00003"
+    },
+    "b": {
+      "kind": "run",
+      "ref": "20261002T000004Z-a00004"
+    },
+    "changes": [
+      {
+        "a": 0.1,
+        "b": 0.7,
+        "note": null,
+        "path": "generation.temperature",
+        "severity": "HIGH",
+        "status": "changed"
+      },
+      {
+        "a": "20261002T000003Z-a00003",
+        "b": "20261002T000004Z-a00004",
+        "note": null,
+        "path": "run_id",
+        "severity": "NONE",
+        "status": "changed"
+      }
+    ],
+    "filtered_below": null,
+    "reprollm_version": "0.6.1",
+    "schema_version": 1,
+    "summary": {
+      "counts": {
+        "HIGH": 1,
+        "LOW": 0,
+        "MEDIUM": 0,
+        "MEDIUM_HIGH": 0,
+        "NONE": 1
+      },
+      "highest": "HIGH",
+      "same": 9
+    }
+  },
+  "kind": "independent_preexecution_oracle",
+  "manifest": {
+    "bindings": {
+      "custom.flag": {
+        "env": "UX3_FLAG"
+      },
+      "custom.missing": {
+        "config": "ux3_probe/config.yaml:missing.value"
+      },
+      "generation.seed": {
+        "env": "UX3_REQUIRED_MISSING"
+      },
+      "generation.temperature": {
+        "cli": "--temperature",
+        "config": "ux3_probe/config.yaml:sampling.temperature"
+      }
+    },
+    "custom": {
+      "flag": true,
+      "missing": 1,
+      "null_value": null,
+      "project_bound": 1,
+      "project_unbound": 2,
+      "unbound": "fixture-unbound"
+    },
+    "execution": {
+      "config_files": [
+        "ux3_probe/config.yaml",
+        "ux3_probe/missing.yaml",
+        "ux3_probe/binary.bin",
+        "ux3_probe/oversized.txt",
+        "ux3_probe/.env.ux3"
+      ],
+      "env_requirements": [
+        "UX3_REQUIRED_MISSING",
+        "UX3_PRESENT",
+        "UX3_PRESENT"
+      ]
+    },
+    "experiment": {
+      "profiles": []
+    },
+    "generation": {
+      "max_tokens": 16,
+      "seed": 7,
+      "stop": [
+        "fixture-stop"
+      ],
+      "temperature": 0.2
+    },
+    "models": {
+      "primary": {
+        "id": "synthetic-model",
+        "provider": "local",
+        "revision": "synthetic-revision"
+      }
+    },
+    "project": {
+      "name": "ux3-validation"
+    },
+    "schema_version": 1
+  },
+  "missing_run_id": "20261002T000015Z-a00015",
+  "preflight": {
+    "bindings": {
+      "custom.flag": {
+        "env:UX3_FLAG": {
+          "count": 1,
+          "status": "present"
+        }
+      },
+      "custom.missing": {
+        "config:ux3_probe/config.yaml:missing.value": {
+          "count": 0,
+          "status": "missing"
+        }
+      },
+      "custom.project_bound": {
+        "config:ux3_probe/config.yaml:project.value": {
+          "count": 1,
+          "status": "present"
+        }
+      },
+      "generation.seed": {
+        "env:UX3_REQUIRED_MISSING": {
+          "count": 0,
+          "status": "missing"
+        }
+      },
+      "generation.temperature": {
+        "cli:--temperature": {
+          "count": 2,
+          "status": "present"
+        },
+        "config:ux3_probe/config.yaml:sampling.temperature": {
+          "count": 1,
+          "status": "present"
+        }
+      }
+    },
+    "environment": {
+      "UX3_PRESENT": "present",
+      "UX3_REQUIRED_MISSING": "missing"
+    },
+    "files": {
+      "ux3_probe/.env.ux3": "forbidden",
+      "ux3_probe/binary.bin": "binary",
+      "ux3_probe/config.yaml": "text",
+      "ux3_probe/missing.yaml": "missing",
+      "ux3_probe/oversized.txt": "oversize"
+    },
+    "forbidden_output_fragments": [
+      "fixture-unbound",
+      "synthetic-model",
+      "synthetic-revision",
+      "fixture-stop",
+      "UX3_NEVER_DISPLAY_BOUND_VALUE",
+      "ux3-never-execute",
+      "DO_NOT_PRINT_LABEL"
+    ],
+    "unbound": [
+      "custom.project_unbound",
+      "custom.unbound",
+      "generation.max_tokens",
+      "generation.stop",
+      "models.primary.id",
+      "models.primary.revision"
+    ]
+  },
+  "project_rules": {
+    "ignored_candidates": [],
+    "rules": [
+      {
+        "accepted_at": "2026-10-02T00:00:00Z",
+        "bindings": {
+          "config": "ux3_probe/config.yaml:project.value"
+        },
+        "field": "custom.project_bound",
+        "id": "project.ux3_bound",
+        "reason": "Offline validation fixture.",
+        "severity": "WARNING",
+        "source": "manual"
+      },
+      {
+        "accepted_at": "2026-10-02T00:00:00Z",
+        "field": "custom.project_unbound",
+        "id": "project.ux3_unbound",
+        "reason": "Offline validation fixture.",
+        "severity": "WARNING",
+        "source": "manual"
+      }
+    ],
+    "schema_version": 1
+  },
+  "run_cases": [
+    {
+      "exit_code": 0,
+      "id": "20261001T000000Z-a00001",
+      "name": "alpha",
+      "started_at": "2026-10-01T00:00:00Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000003Z-a00003",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:04Z",
+      "status": "completed",
+      "temperature": 0.1
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000004Z-a00004",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:04Z",
+      "status": "completed",
+      "temperature": 0.7
+    },
+    {
+      "exit_code": 9,
+      "id": "20261002T000005Z-a00005",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:05Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 3,
+      "id": "20261002T000006Z-a00006",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:06Z",
+      "status": "failed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": null,
+      "id": "20261002T000007Z-a00007",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:07Z",
+      "status": "interrupted",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": null,
+      "id": "20261002T000008Z-a00008",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:08Z",
+      "status": "running",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": null,
+      "id": "20261002T000009Z-a00009",
+      "name": "alpha",
+      "started_at": "2026-10-02T00:00:09Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000010Z-a00010",
+      "name": "beta",
+      "started_at": "2026-10-02T00:00:02Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000011Z-a00011",
+      "name": "Alpha",
+      "started_at": "2026-10-02T00:00:01Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000012Z-a00012",
+      "name": "",
+      "started_at": "2026-10-02T00:00:00Z",
+      "status": "completed",
+      "temperature": 0.0
+    },
+    {
+      "exit_code": 0,
+      "id": "20261002T000013Z-a00013",
+      "name": null,
+      "started_at": null,
+      "status": "completed",
+      "temperature": 0.0
+    }
+  ],
+  "run_lists": [
+    {
+      "flags": [],
+      "ids": [
+        "a00009",
+        "a00008",
+        "a00007",
+        "a00006",
+        "a00005",
+        "a00004",
+        "a00003",
+        "a00010",
+        "a00011",
+        "a00012",
+        "a00001",
+        "a00013"
+      ],
+      "label": "default"
+    },
+    {
+      "flags": [
+        "--name",
+        "alpha"
+      ],
+      "ids": [
+        "a00009",
+        "a00008",
+        "a00007",
+        "a00006",
+        "a00005",
+        "a00004",
+        "a00003",
+        "a00001"
+      ],
+      "label": "name-alpha"
+    },
+    {
+      "flags": [
+        "--name",
+        "Alpha"
+      ],
+      "ids": [
+        "a00011"
+      ],
+      "label": "name-case"
+    },
+    {
+      "flags": [
+        "--name",
+        ""
+      ],
+      "ids": [
+        "a00012"
+      ],
+      "label": "name-empty"
+    },
+    {
+      "flags": [
+        "--name",
+        " alpha "
+      ],
+      "ids": [],
+      "label": "name-no-trim"
+    },
+    {
+      "flags": [
+        "--outcome",
+        "success"
+      ],
+      "ids": [
+        "a00004",
+        "a00003",
+        "a00010",
+        "a00011",
+        "a00012",
+        "a00001",
+        "a00013"
+      ],
+      "label": "success"
+    },
+    {
+      "flags": [
+        "--outcome",
+        "failure"
+      ],
+      "ids": [
+        "a00007",
+        "a00006",
+        "a00005"
+      ],
+      "label": "failure"
+    },
+    {
+      "flags": [
+        "--status",
+        "running"
+      ],
+      "ids": [
+        "a00008"
+      ],
+      "label": "running"
+    },
+    {
+      "flags": [
+        "--status",
+        "completed"
+      ],
+      "ids": [
+        "a00009",
+        "a00005",
+        "a00004",
+        "a00003",
+        "a00010",
+        "a00011",
+        "a00012",
+        "a00001",
+        "a00013"
+      ],
+      "label": "completed"
+    },
+    {
+      "flags": [
+        "--status",
+        "failed"
+      ],
+      "ids": [
+        "a00006"
+      ],
+      "label": "failed"
+    },
+    {
+      "flags": [
+        "--status",
+        "interrupted"
+      ],
+      "ids": [
+        "a00007"
+      ],
+      "label": "interrupted"
+    },
+    {
+      "flags": [
+        "--outcome",
+        "success",
+        "--name",
+        "alpha",
+        "--limit",
+        "2"
+      ],
+      "ids": [
+        "a00004",
+        "a00003"
+      ],
+      "label": "success-alpha-limit"
+    },
+    {
+      "flags": [
+        "--status",
+        "completed",
+        "--outcome",
+        "failure",
+        "--limit",
+        "1"
+      ],
+      "ids": [
+        "a00005"
+      ],
+      "label": "completed-failure-limit"
+    },
+    {
+      "flags": [
+        "--status",
+        "running",
+        "--outcome",
+        "success"
+      ],
+      "ids": [],
+      "label": "running-success"
+    },
+    {
+      "flags": [
+        "--name",
+        "unknown"
+      ],
+      "ids": [],
+      "label": "zero-match"
+    },
+    {
+      "flags": [
+        "--limit",
+        "1"
+      ],
+      "ids": [
+        "a00009"
+      ],
+      "label": "limit-one"
+    }
+  ],
+  "run_warnings": [
+    "cannot read .reprollm/runs/20261002T000014Z-a00014/run.json (ValidationError); inspect run.json",
+    ".reprollm/runs/20261002T000015Z-a00015/run.json is missing or outside the repository",
+    ".reprollm/runs/20261002T000016Z-a00016/run.json is missing or outside the repository"
+  ],
+  "schema_version": 1,
+  "unsafe_run_id": "20261002T000016Z-a00016"
+}

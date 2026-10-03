@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "independent_source_review",
+  "review_date": "2026-10-03",
+  "task": "UX3-T04",
+  "files": {
+    "src/reprollm/run/reader.py": "8a3aa30054e3fc15723dc696100027314144e3cbe6a792ab50b6c2105763ec89",
+    "src/reprollm/cli/runs.py": "14c0473ac70157d791f7d2363ca08505c2f90f52455010da4b5de206fac2bc82",
+    "src/reprollm/cli/diff.py": "85c5adcfacb700cd4e67dcdd93742ba67cde40a1fab6526665a665a098335a82",
+    "src/reprollm/diff/inputs.py": "1ff416c08a73e022f7eba9daeceacdac23c7693ac81166c3fa7f55e7e6f1523f",
+    "tests/unit/cli/test_run_navigation.py": "77c56c0c62dd1f3c89e6fd055850190a086e71057c4af07a6e4e974355ecca6f",
+    "tests/unit/cli/test_diff_recent.py": "908dbe036959f8ac44ca7b29432dc54ea949f073e1e123f3090be94ae4704328"
+  },
+  "contracts": [
+    "specification sections 1,5.3,18.3-18.4",
+    "docs/plan/UX3_2026-10-02.md UX3-T04"
+  ],
+  "observations": [
+    "Completed AND exit0 is the sole success predicate. Completed nonzero and failed/interrupted are failure; completed null and running match neither derived outcome.",
+    "Exact optional name distinguishes empty string from null; AND predicates filter the existing ordered full scan before positive limit. Default rows and table rendering are unchanged.",
+    "CLI validates invalid selection modes before root/input reads. Recent selection scans once, warns all corrupt records and maps second-newest to A, newest to B.",
+    "Selected record objects directly construct captured State and full safe run refs. Same-name current paths cannot shadow selections; missing/invalid selected snapshots produce exit2 without fallback.",
+    "Explicit inputs, current profile resolution, full summary/fail-on, display filtering and postcomparison redaction retain the existing shared pipeline.",
+    "Tests exercise mode errors, duplicate/exact/empty/Unicode labels, status/outcome edge matrix, timestamp order, corruption, CWD shadowing, one-read mutation, capture history and profile overrides, readonly operation and stubbed manifestless Git lookup.",
+    "Copied historical manifest/lock fixtures use shutil.copyfile, preserving bytes on Windows. Newly written JSON strings have no hash dependency. Symlink-unavailable platforms explicitly skip only symlink cases."
+  ],
+  "verification_boundary": "Read-only source/test review; no additional product commands executed. Parent owns final local quality and five-project Gate A.",
+  "findings": [],
+  "outcome": "No blocking regression or contract mismatch found."
+}

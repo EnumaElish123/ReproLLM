@@ -1,6 +1,6 @@
 # Roadmap and delivery status
 
-Updated 2026-10-02. Status is based on recorded releases and merged changes;
+Updated 2026-10-03. Status is based on recorded releases and validated changes;
 historical sprint dates are planning records, not a statement of availability.
 The [changelog](../../CHANGELOG.md) identifies release contents. Documentation
 on main can describe options not yet included in the published package.
@@ -36,12 +36,19 @@ Other unreleased fixes are listed in [Unreleased](../../CHANGELOG.md#unreleased)
 Use the [source-checkout instructions](../../README.md#quick-start) to try main.
 Changes to the local Action source do not update its standalone published tag.
 
+The [UX3 delivery report](../dogfooding/2026-10-03-ux3-readiness.md) records
+delivery-status alignment, read-only `run --dry-run`, run listing filters and
+`diff --latest-successful`. These additions passed full local quality checks and
+the five-project offline Gate A and are also implemented on main, unreleased.
+The report and its CI reference distinguish local validation from remote results.
+
 ## Approved next work
 
-The [UX3 plan](../plan/UX3_2026-10-02.md) schedules, in order: delivery-status
-alignment; a narrow nested-judge drift-policy review; read-only run preflight;
-and run filtering with explicit recent-run comparison. A scheduled item is not
-an available CLI feature until its implementation and validation are recorded.
+The remaining [UX3 task](../plan/UX3_2026-10-02.md), T02, awaits the concrete
+policy/baseline amendment in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
+It proposes HIGH for direct judge parameter leaves while preserving user profile
+overrides and historical MEDIUM records. The current default policy has not
+changed; other UX3 tasks are delivered as recorded above.
 
 ## Future proposals
 

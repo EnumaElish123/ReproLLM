@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "independent_preexecution_review",
+  "review_date": "2026-10-03",
+  "new_product_commands_executed": 0,
+  "scope": "Offline UX3 Gate A driver and independent fixtures; T04 source review follows separately.",
+  "normative_sources": [
+    "AGENTS.md sections 2,3,7,10",
+    "val.md sections 2-9",
+    "docs/plan/UX3_2026-10-02.md",
+    "docs/plan/01_specification.md section 5.2",
+    "UX3-T04 reviewed explicit CLI contract"
+  ],
+  "contract_hashes": {
+    "AGENTS.md": "2367f0cd5f25f359800b7d10510b9b57ac81a26908408883720b76ebb8d0ebc1",
+    "val.md": "d19e741b1ddf50b6302f8e31635076de66c0a2197b975fe8ef44faf21c32a6f4",
+    "docs/plan/UX3_2026-10-02.md": "c9d88bd1bb26d662f8b737e8320ff09314b1e8b39ca48ca6197751e6b44e3ced",
+    "docs/plan/01_specification.md": "3527bf218ffd92696595036f6f30c453ecb45c4086d5a48035d676d9dc9d1e10"
+  },
+  "fixture_driver_hashes": {
+    "gate_a_ux3.py": "7c0dee89f879110b19716d87f7ed2fa19ac1c3856555faee0365662aeeec7c3a",
+    "readonly_cli.py": "2471aa10d853dd3872da2e4c943b4f56010de8c9afd3a652972b6188850208d0",
+    "ux3-fixture-expected.json": "0e5ac5a1ed1146c2758396264a11e281ccc336ba1c42f523082126d17092b6f8"
+  },
+  "review": {
+    "portfolio": "Exact five val.md pins; HEAD, clean state and origin checks before execution; original clean state checked after each target.",
+    "L0_gold": "Complete reports and verbose diagnostics reuse the previously source-reviewed UX2 baseline, ignoring generated_at only; full detection hints use the prior source-reviewed combined gate.",
+    "run_list": "Twelve explicit synthetic records cover four statuses, null exit/time/name, nonzero completed outcome, exact/case/empty/no-trim names, duplicate labels, timestamp/ID tie order, AND predicates, and filter-before-limit. Expected rows and JSON bytes are independently encoded.",
+    "warnings": "Malformed, missing and escaping run.json are skipped with complete source-defined relative warning strings; limiting and filtering cannot hide warnings.",
+    "preflight": "Bounded files/config bindings, env name presence, repeated CLI occurrences, fixed unbound field set and missing/fresh/stale local lock are checked as complete semantic blocks. No child/provider execution is authorized.",
+    "diff": "Latest pair is older a00003 then newer a00004. Direct runtime temperature 0.1 to 0.7 is HIGH; changed run_id is NONE. Nine equal leaves: CodeInfo dirty/modified_count/untracked_count; CommandInfo argv/cwd/redactions; started_at, ended_at, duration_seconds. Full reports, thresholds, prefix behavior, text refs, repeats, path shadow and missing selected snapshot are checked.",
+    "safety": "Preflight and manifest-present navigation run under external audit hook refusing writes, subprocesses, network and synthetic forbidden/escaping-file reads. Metadata equality independently checks tracked fixture trees; L0 Git inspection remains allowed. Mutations occur only in disposable clones or the evidence directory.",
+    "resource_boundary": "No credentials, restricted data, model/GPU workload or network resolution. Ordinary-session Gate B is not activated and VAL-R01/R02/R03 remain blocked.",
+    "portability": "Persist command/comparison ledgers, relative product reports, source hashes and synthetic oracle. Exclude clones, sentinel input and raw readonly tree snapshots because instrumentation symlink targets can contain local absolute paths. Wrap bare array/string comparison payloads with schema_version plus original source-byte hash."
+  },
+  "findings": [],
+  "outcome": "No unresolved harness/fixture blocker; runtime Gate A remains unexecuted pending full quality gate."
+}

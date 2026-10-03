@@ -1,6 +1,6 @@
 # Post-Beta backlog
 
-Active follow-up and deferred items, reconciled on 2026-10-02. Historical sprint
+Active follow-up and deferred items, reconciled on 2026-10-03. Historical sprint
 plans retain their original scope; current delivery state is summarized in the
 [public roadmap](../community/roadmap.md) and [changelog](../../CHANGELOG.md).
 
@@ -21,15 +21,18 @@ task selection, clearer audit outcomes, opaque API identity, `judge_only`, resea
 export details and reversible project-rule lifecycle. [PR #8](https://github.com/EnumaElish123/ReproLLM/pull/8)
 received explicit D-41 approval and merged as `b5e1317`; its five main CI jobs
 passed. The [review bundle](ux-2026-10-02-proposals/README.md) retains historical
-proposals, not pending product decisions. The next approved work is the
-[four-task UX3 plan](UX3_2026-10-02.md).
+proposals, not pending product decisions. The [UX3 delivery report](../dogfooding/2026-10-03-ux3-readiness.md)
+records T01/T03/T04: delivery-status alignment, read-only run preflight and run
+filtering/recent-successful comparison. These are implemented on main, unreleased;
+T02's concrete policy amendment remains pending as described below.
 
 ## Rules & detection
 
 - P1 rule polish: `gen.stop_declared` / `prompt.few_shot_declared` negative
   corpora from real repositories (M3 risk table leftovers).
 - Nested judge-parameter drift currently MEDIUM under the one-segment wildcard
-  policy (val §8.4 gap); narrow policy review is scheduled as UX3-T02.
+  policy (val §8.4 gap); UX3-T02's narrow default-row and prospective gold amendment
+  awaits maintainer confirmation in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
 
 ## Features (post-Beta by decision)
 
