@@ -10,9 +10,26 @@ import yaml
 
 from reprollm.core.yaml_io import dump_yaml
 from reprollm.lock.resolver import resolve_manifest
+from reprollm.lock.writer import build_lock, write_lock
 from reprollm.schemas.lock import Confidence, Lock, ResolutionMode
 
 from .helpers import NOW, manifest, resolve
+
+
+def test_secret_shaped_inline_prompt_is_persisted_only_as_hash(
+    tmp_path: Path, stub_run_cmd
+) -> None:
+    canary = "sk-abcdefghijklmnopQRST"
+    value = manifest(prompts={"system": {"text": canary}})
+    (tmp_path / "reprollm.yaml").write_text(dump_yaml(value), encoding="utf-8")
+    stub_run_cmd.on("nvidia-smi", returncode=127)
+    document = build_lock(
+        tmp_path, value, http=None, offline=True, verify_api=False, hash_large_files=False
+    )
+    target = tmp_path / "reprollm.lock"
+    write_lock(target, document)
+    assert canary not in target.read_text(encoding="utf-8")
+    assert document.prompts["system"].text_sha256 is not None
 
 
 def _without_volatile(value):

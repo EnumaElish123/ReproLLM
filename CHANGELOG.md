@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R02: reject secrets, absolute paths and machine identity in the final lock
+  object or serialized YAML before creating any temporary file. Preserve old
+  lock bytes and keep safe parameters unchanged; include nested key context for
+  the existing generic secret policy. Hash-only prompts and freshness checks
+  retain their contracts. Existing locks are not automatically cleaned.
+
 - R01: validate the final init YAML before writes, replace the manifest atomically
   after preparing missing auxiliary files, and preserve existing bytes and
   permissions on failure. Reject symlinked owned output nodes. Invalid or unsafe

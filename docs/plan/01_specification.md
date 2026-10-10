@@ -377,6 +377,31 @@ CRITICAL under their existing rules.
 
 `lock --check` exits 1 if the lock is missing, `manifest_sha256` differs from the current manifest, or `project_rules_sha256` differs. Rule `consistency.lock_fresh` reports the same at audit Level 2.
 
+### 4.6 Safe new writes
+
+Before creating a temporary lock file, check both the final persisted object and
+its complete serialized YAML. Apply §16.2 value patterns to mapping keys and
+values, including nested mappings/lists and provenance notes. Retain raw mapping
+key context for scalar leaves: the six `generic_kv` key aliases and its minimum
+eight-character value length also apply to structured values. This is contextual
+application of the existing policy, not recognition of arbitrary secret formats.
+
+Serialized YAML must decode to that checked object; comments and scalar text are
+also checked. Mapping-key syntax must not be mistaken for a following scalar
+value across newlines, and safety inspection never changes emitted bytes.
+
+Reject an unsafe new lock with `UserError` (exit 2), preserving any existing lock
+byte for byte. Also reject absolute paths (including local `file://` URIs) and
+current machine/user identity under
+the existing run privacy policy; use project-relative paths. Do not silently
+replace executable parameters with redaction markers. The diagnostic names
+`reprollm.yaml`, withholds unsafe values, and directs credentials to environment
+variables or another secure source read by the child. Manifest interpolation is
+not implied. Hash-only prompt bodies are not persisted and are not inspected by
+this boundary. Ordinary model IDs, HTTPS URLs, relative paths, globs, closing
+tokens and `max_tokens` remain valid. Old locks are not rewritten, and §4.5
+freshness checks remain unchanged.
+
 ---
 
 ## 5. Run record schema — `.reprollm/runs/<run_id>/run.json`

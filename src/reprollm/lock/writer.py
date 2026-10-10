@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import getpass
+import json
 import os
+import re
+import socket
 import tempfile
 from collections.abc import Iterator
 from contextlib import suppress
@@ -12,13 +16,17 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+import yaml
+from yaml.tokens import ScalarToken, ValueToken
 
 from reprollm import __version__
 from reprollm.core.errors import UserError
 from reprollm.core.hashing import sha256_file
 from reprollm.core.paths import repo_paths
+from reprollm.core.persistence import redact_keyed_values
 from reprollm.core.yaml_io import dump_yaml, load_lock
 from reprollm.lock.resolver import resolve_manifest
+from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.lock import Lock, ResolutionMode
 from reprollm.schemas.manifest import Manifest
 
@@ -92,6 +100,34 @@ def build_lock(
 def write_lock(target: Path, lock: Lock) -> None:
     """Replace ``target`` atomically, leaving any previous lock intact on failure."""
     text = dump_yaml(lock)
+    data = lock.model_dump(mode="json")
+    privacy = RunPrivacy(target.parent, hostname=socket.gethostname(), username=getpass.getuser())
+    try:
+        serialized_data = yaml.safe_load(text)
+        tokens = list(yaml.scan(text))
+        check_text = list(text)
+        for token, following in zip(tokens, tokens[1:], strict=False):
+            if isinstance(token, ScalarToken) and isinstance(following, ValueToken):
+                # Keys are checked structurally. A mapping key followed by another
+                # mapping is not a generic_kv scalar, despite the regex's \s*.
+                for index in range(token.start_mark.index, token.end_mark.index):
+                    if check_text[index] not in "\r\n":
+                        check_text[index] = " "
+        same_data = json.dumps(serialized_data, sort_keys=True) == json.dumps(data, sort_keys=True)
+        safe_serialization = same_data and not privacy.text("".join(check_text))[1]
+    except (yaml.YAMLError, TypeError, ValueError):
+        safe_serialization = False
+    if (
+        redact_keyed_values(data) != data
+        or privacy.value(data) != data
+        or re.search(r"(?i)\bfile:[/\\]{2}", text)
+        or not safe_serialization
+    ):
+        raise UserError(
+            "cannot write reprollm.lock: remove secrets and machine identity from reprollm.yaml; "
+            "let the child read credentials from environment variables or another secure source, "
+            "and use project-relative paths"
+        )
     temporary: Path | None = None
     try:
         descriptor, name = tempfile.mkstemp(
@@ -110,7 +146,7 @@ def write_lock(target: Path, lock: Lock) -> None:
             with suppress(OSError):
                 temporary.unlink(missing_ok=True)
         raise UserError(
-            f"cannot write reprollm.lock to {target}: {exc.strerror or type(exc).__name__}"
+            "cannot write reprollm.lock; check the project directory permissions"
         ) from exc
 
 

@@ -57,6 +57,32 @@ def test_lock_offline_never_uses_http(materialize, stub_run_cmd) -> None:
     assert "models.primary.revision" in result.output
 
 
+@pytest.mark.parametrize(
+    "unsafe", [{"api_key": "syntheticPlainCanaryABC"}, {"cache": "/external-private/cache"}]
+)
+def test_lock_rejects_unsafe_parameters_with_exit_two_and_safe_diagnostic(
+    materialize, stub_run_cmd, monkeypatch: pytest.MonkeyPatch, capsys, unsafe
+) -> None:
+    root = materialize("hf_vllm_eval", manifest="complete")
+    manifest_path = root / "reprollm.yaml"
+    data = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    data["inference"] = {"backend": "other", "params": unsafe}
+    manifest_path.write_text(yaml.safe_dump(data), encoding="utf-8")
+    target = root / "reprollm.lock"
+    target.write_bytes(b"previous lock bytes\n")
+    stub_run_cmd.on("nvidia-smi", returncode=127, stderr="not found")
+    monkeypatch.setattr("sys.argv", ["reprollm", "lock", str(root), "--offline"])
+    with pytest.raises(SystemExit) as caught:
+        cli()
+    captured = capsys.readouterr()
+    assert caught.value.code == 2
+    assert "reprollm.yaml" in captured.err
+    assert "environment variables" in captured.err
+    assert all(value not in captured.out + captured.err for value in unsafe.values())
+    assert target.read_bytes() == b"previous lock bytes\n"
+    assert not list(root.glob(".reprollm.lock.*.tmp"))
+
+
 def test_lock_api_summary_lists_unpinnable_model(materialize, stub_run_cmd) -> None:
     root = materialize("openai_judge_eval", manifest="complete")
     stub_run_cmd.on("nvidia-smi", returncode=127, stderr="not found")

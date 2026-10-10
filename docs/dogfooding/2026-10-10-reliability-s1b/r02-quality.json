@@ -1,0 +1,231 @@
+{
+  "all_passed": true,
+  "candidate_kind": "uncommitted_r02_product_tree",
+  "candidate_parent_head": "834db1951d771c16c641a23c29a650bb8b075698",
+  "ci_status": "NOT_RUN",
+  "command_count": 14,
+  "commands": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev"
+      ],
+      "elapsed_seconds": 0.036,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "e857af8aecbfc9becc0d5d755d88f6c84b74cdd5975e1906ae6b8ce1bb878015"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "--version"
+      ],
+      "elapsed_seconds": 0.037,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "4c3569f5da09975434dd9fd9a91fadbc4367a91d8f3c3fab59e9241ab9ee4bd8"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "--version"
+      ],
+      "elapsed_seconds": 0.455,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "aa6b6c8bf40849ecc649a33725872064c4ec8a259e4d0b3825ae119afe7cb2e3"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85"
+      ],
+      "elapsed_seconds": 306.511,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "0c96f990137d9451f644482c8d3f50065d1fa1c3da1b9372baf07e906a3886fa"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "elapsed_seconds": 0.192,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "elapsed_seconds": 0.104,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "elapsed_seconds": 0.102,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "c456d0070b126fa429959e6ee7bf1fb6a61a26be2df360a592641a7e340e2808"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "mypy",
+        "src/"
+      ],
+      "elapsed_seconds": 0.432,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "0cd98cfd5b35e0e85b86d75459966f02562f9c10fe59fb3d86271d1b9fa33e5c"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "elapsed_seconds": 9.221,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "1afb04863bf7743fa488b845835c99ec355a00003239423f6d6d8f2455733769"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.399,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.406,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 10.401,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "elapsed_seconds": 11.406,
+      "exit_code": 0,
+      "omitted_raw_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3"
+    },
+    {
+      "command": [
+        "reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<temporary-directory>"
+      ],
+      "elapsed_seconds": 0.499,
+      "exit_code": 0,
+      "same_bytes": true,
+      "schemas": [
+        "audit_report.schema.json",
+        "config.schema.json",
+        "diff_report.schema.json",
+        "discover_candidates.schema.json",
+        "lock.schema.json",
+        "manifest.schema.json",
+        "profile.schema.json",
+        "project_rules.schema.json",
+        "rule_archive.schema.json",
+        "run_record.schema.json"
+      ]
+    }
+  ],
+  "compatibility_environment": "Verified temporary Git init -b shim from S1-A; repository, dependencies and system Git unchanged.",
+  "date": "2026-10-10",
+  "environment": {
+    "git": "2.25.1",
+    "os": "Linux",
+    "python": "3.12.14",
+    "reprollm": "0.6.1"
+  },
+  "kind": "r02_quality_gate",
+  "pytest": {
+    "coverage_percent": 93.0,
+    "deselected": 2,
+    "failed": 0,
+    "passed": 2008,
+    "warnings": 1
+  },
+  "redaction": {
+    "branches": 24,
+    "coverage_percent": 100,
+    "partial_branches": 0,
+    "statements": 59
+  },
+  "remaining_existing_warning": "Unknown pytest slow marker; two existing slow tests excluded by default.",
+  "schema_version": 1,
+  "schemas": {
+    "count": 10,
+    "same_complete_file_set_and_bytes": true
+  },
+  "security": {
+    "deselected": 1981,
+    "failed": 0,
+    "passed": 29,
+    "warnings": 1
+  },
+  "source_sha256": {
+    "src/reprollm/core/persistence.py": "7e64d00fce007e04631d7c1751e4c43aa5bbadb350096e343c51a5b207f228c8",
+    "src/reprollm/lock/writer.py": "6133b98d07ec11be460a358c0c7e47ffd2474851f1f706ebc124716e6d60b5c0",
+    "tests/unit/cli/test_lock.py": "fe7354c2d4a8b8703ef369aa214f74583ae7ed82eaa2aff4dcae2bfd71267ef8",
+    "tests/unit/lock/test_resolver.py": "478fdab84813197e04d7563c565b1698b58617e2d4431a1dc6c5e573b74f1abf",
+    "tests/unit/lock/test_writer.py": "85071ecb2ca5a6e88609286f90797b7fd32e74551b0dbeff912bf360ab669a2d"
+  }
+}
