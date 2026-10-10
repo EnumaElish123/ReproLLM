@@ -13,7 +13,9 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from reprollm.core.redaction import redact_text
+from reprollm.core.persistence import redact_keyed_values
+from reprollm.run.contextual_text import redact_contextual_text
+from reprollm.schemas.run_record import Observation
 
 # An absolute path starts at a segment boundary: not after a word char,
 # separator, glob star, or the "<" of a closing token (</s>, </think>).
@@ -23,6 +25,7 @@ from reprollm.core.redaction import redact_text
 _ABSOLUTE_PATH = re.compile(
     r"""(?<![\w:/\\*<])(?:[A-Za-z]:[\\/]|(?<!\.)/|\\\\)[^\s"'<>;,\)\]}>]*"""
 )
+_LOCAL_URI = re.compile(r"""(?i)\bfile:[/\\]{2}[^\s"'<>;,\)\]}>]*""")
 
 
 class RunPrivacy:
@@ -34,8 +37,12 @@ class RunPrivacy:
             if value
         ]
 
-    def text(self, value: str) -> tuple[str, int]:
-        result, count = redact_text(value)
+    def text(
+        self, value: str, *, manifest: bool = False, keys: tuple[str, ...] = ()
+    ) -> tuple[str, int]:
+        result, count = redact_contextual_text(value, manifest=manifest, keys=keys)
+        result, replaced = _LOCAL_URI.subn("<REDACTED:path>", result)
+        count += replaced
 
         def path(match: re.Match[str]) -> str:
             try:
@@ -53,15 +60,26 @@ class RunPrivacy:
             count += replaced
         return result, count
 
-    def value(self, value: Any) -> Any:
+    def value(self, value: Any, keys: tuple[str, ...] = ()) -> Any:
+        if isinstance(value, Observation):
+            context = (*keys, value.source.key)
+            if value.source.type == "config":
+                context = (*context, *value.source.key.split("."))
+            return {
+                "value": self.value(value.value, context),
+                "source": self.value(value.source),
+            }
         if isinstance(value, BaseModel):
             return {key: self.value(item) for key, item in value}
         if isinstance(value, Enum):
             return value.value
         if isinstance(value, str):
-            return self.text(value)[0]
+            return self.text(value, keys=keys)[0]
         if isinstance(value, list):
-            return [self.value(item) for item in value]
+            return [self.value(item, keys) for item in value]
         if isinstance(value, dict):
-            return {self.text(str(key))[0]: self.value(item) for key, item in value.items()}
-        return value
+            return {
+                self.text(str(key))[0]: self.value(item, (*keys, str(key)))
+                for key, item in value.items()
+            }
+        return redact_keyed_values(value, keys)

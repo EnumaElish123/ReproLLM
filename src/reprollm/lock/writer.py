@@ -102,7 +102,9 @@ def write_lock(target: Path, lock: Lock) -> None:
     text = dump_yaml(lock)
     data = lock.model_dump(mode="json")
     privacy = RunPrivacy(target.parent, hostname=socket.gethostname(), username=getpass.getuser())
+    safe_values = False
     try:
+        safe_values = redact_keyed_values(data) == data and privacy.value(data) == data
         serialized_data = yaml.safe_load(text)
         tokens = list(yaml.scan(text))
         check_text = list(text)
@@ -117,12 +119,7 @@ def write_lock(target: Path, lock: Lock) -> None:
         safe_serialization = same_data and not privacy.text("".join(check_text))[1]
     except (yaml.YAMLError, TypeError, ValueError):
         safe_serialization = False
-    if (
-        redact_keyed_values(data) != data
-        or privacy.value(data) != data
-        or re.search(r"(?i)\bfile:[/\\]{2}", text)
-        or not safe_serialization
-    ):
+    if not safe_values or re.search(r"(?i)\bfile:[/\\]{2}", text) or not safe_serialization:
         raise UserError(
             "cannot write reprollm.lock: remove secrets and machine identity from reprollm.yaml; "
             "let the child read credentials from environment variables or another secure source, "

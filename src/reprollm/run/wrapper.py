@@ -27,6 +27,7 @@ from reprollm.core.errors import UserError
 from reprollm.core.git import inspect_git
 from reprollm.core.hashing import sha256_bytes
 from reprollm.core.paths import LOCK, MANIFEST, PROJECT_RULES, RUNS_DIR, resolve_project_file
+from reprollm.core.persistence import redact_keyed_values
 from reprollm.core.redaction import redact_env, redact_lines
 from reprollm.core.yaml_io import load_manifest, load_yaml
 from reprollm.run.capture import (
@@ -35,6 +36,7 @@ from reprollm.run.capture import (
     hash_and_snapshot,
     resolve_argv_files,
 )
+from reprollm.run.contextual_text import CaptureLineContext, shield_contextual_keys
 from reprollm.run.hardware import capture_hardware
 from reprollm.run.privacy import RunPrivacy
 from reprollm.run.slurm import capture_scheduler
@@ -84,6 +86,11 @@ def _destination(run_dir: Path, name: str) -> Path:
 
 def _write_record(record: RunRecord, run_dir: Path, privacy: RunPrivacy) -> RunRecord:
     safe = RunRecord.model_validate(privacy.value(record))
+    _save_record(safe, run_dir)
+    return safe
+
+
+def _save_record(safe: RunRecord, run_dir: Path) -> None:
     text = json.dumps(safe.model_dump(mode="json"), indent=2, sort_keys=True, ensure_ascii=False)
     destination = _destination(run_dir, "run.json")
     temporary: Path | None = None
@@ -97,7 +104,6 @@ def _write_record(record: RunRecord, run_dir: Path, privacy: RunPrivacy) -> RunR
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
-    return safe
 
 
 def _safe_load(root: Path) -> tuple[Manifest | None, ProjectRules | None]:
@@ -130,27 +136,39 @@ def _tee(
     warnings: list[str],
     label: str,
 ) -> None:
-    def echoed() -> Iterator[str]:
-        for line in source:
-            try:
-                terminal.write(line)
-                terminal.flush()
-            except (OSError, ValueError):
-                pass
-            yield line
+    originals: dict[str, str] = {}
+    context = CaptureLineContext()
+    keys: tuple[str, ...] = ()
 
-    failed = False
+    def echo(value: str) -> None:
+        try:
+            terminal.write(value)
+            terminal.flush()
+        except (OSError, ValueError):
+            pass
+
+    def echoed() -> Iterator[str]:
+        nonlocal originals, keys
+        for line in source:
+            echo(line)
+            keys = context.keys(line)
+            protected, originals, _ = shield_contextual_keys(line)
+            yield protected
+            originals.clear()
+
     try:
         for line in redact_lines(echoed()):
-            if not failed:
-                try:
-                    log.write(privacy.text(line)[0])
-                    log.flush()
-                except (OSError, ValueError) as exc:
-                    warnings.append(f"{label} capture failed ({type(exc).__name__})")
-                    failed = True
+            for marker, original in originals.items():
+                line = line.replace(marker, original)
+            log.write(privacy.text(line, keys=keys)[0])
+            log.flush()
     except Exception as exc:
         warnings.append(f"{label} capture failed ({type(exc).__name__})")
+        try:
+            while chunk := source.read(8192):
+                echo(chunk)
+        except (OSError, ValueError) as error:
+            warnings.append(f"{label} drain failed ({type(error).__name__})")
     finally:
         source.close()
 
@@ -216,7 +234,7 @@ def _snapshot_document(
     if resolved is None:
         raise UserError(f"{name} must remain inside the repository")
     data = resolved.read_bytes()
-    safe = privacy.text(data.decode("utf-8"))[0]
+    safe = privacy.text(data.decode("utf-8"), manifest=name == MANIFEST)[0]
     _destination(run_dir, snapshot).write_text(safe, encoding="utf-8", newline="")
     return DocumentRef(path=name, sha256=sha256_bytes(data), snapshot=snapshot)
 
@@ -319,12 +337,19 @@ def execute(
     hostname, username = socket.gethostname(), getpass.getuser()
     privacy = RunPrivacy(root, hostname=hostname, username=username)
     command, redactions = [], 0
-    for index, token in enumerate(argv):
-        if index == 0 and Path(token).is_absolute():
-            token = Path(token).name
-        safe, count = privacy.text(token)
-        command.append(safe)
-        redactions += count
+    try:
+        for index, token in enumerate(argv):
+            if index == 0 and Path(token).is_absolute():
+                token = Path(token).name
+            context = (argv[index - 1],) if index and argv[index - 1].startswith("-") else ()
+            keyed = str(redact_keyed_values(token, context))
+            safe, count = privacy.text(keyed)
+            command.append(safe)
+            redactions += count + (keyed != token)
+    except Exception as exc:
+        raise UserError(
+            f"cannot sanitize recorded command ({type(exc).__name__}); simplify command arguments"
+        ) from None
     record = RunRecord(
         reprollm_version=__version__,
         run_id=run_dir.name,
@@ -340,8 +365,8 @@ def execute(
     if manifest is None:
         record.warnings.append("no reprollm.yaml; bindings and declared files unavailable")
     try:
-        _write_record(record, run_dir, privacy)
-    except OSError as exc:
+        safe_base = _write_record(record, run_dir, privacy)
+    except Exception as exc:
         raise UserError(
             f"cannot write run.json ({type(exc).__name__}); check run directory permissions"
         ) from None
@@ -438,5 +463,17 @@ def execute(
         record.warnings.append(f"run.json finalization failed ({type(exc).__name__})")
         try:
             return _write_record(record, run_dir, privacy)
-        except Exception:
-            return RunRecord.model_validate(privacy.value(record))
+        except Exception as error:
+            minimal = safe_base.model_copy(deep=True)
+            minimal.exit_code = record.exit_code
+            minimal.status = record.status
+            minimal.ended_at = record.ended_at
+            minimal.duration_seconds = record.duration_seconds
+            minimal.warnings.append(f"capture finalization failed ({type(error).__name__})")
+            try:
+                _save_record(minimal, run_dir)
+            except Exception as write_error:
+                minimal.warnings.append(
+                    f"run.json finalization failed ({type(write_error).__name__})"
+                )
+            return minimal

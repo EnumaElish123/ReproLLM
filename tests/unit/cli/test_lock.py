@@ -58,7 +58,12 @@ def test_lock_offline_never_uses_http(materialize, stub_run_cmd) -> None:
 
 
 @pytest.mark.parametrize(
-    "unsafe", [{"api_key": "syntheticPlainCanaryABC"}, {"cache": "/external-private/cache"}]
+    "unsafe",
+    [
+        {"api_key": "syntheticPlainCanaryABC"},
+        {"cache": "/external-private/cache"},
+        {"message": json.dumps({"message": '{"api_key": "syntheticPlainCanaryABC123'})},
+    ],
 )
 def test_lock_rejects_unsafe_parameters_with_exit_two_and_safe_diagnostic(
     materialize, stub_run_cmd, monkeypatch: pytest.MonkeyPatch, capsys, unsafe

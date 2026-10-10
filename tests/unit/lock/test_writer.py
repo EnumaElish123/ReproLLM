@@ -202,3 +202,23 @@ def test_serialization_cannot_introduce_an_unchecked_structured_secret(
     with pytest.raises(UserError):
         write_lock(tmp_path / "reprollm.lock", _lock())
     assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize("in_note", [False, True])
+def test_contextual_capture_failure_is_a_safe_lock_usage_error(
+    tmp_path: Path, in_note: bool
+) -> None:
+    import json
+
+    canary = "syntheticPlainCanaryABC123"
+    malformed = json.dumps({"message": '{"api_key": "' + canary})
+    inference = _inference(
+        {} if in_note else {"message": malformed}, note=malformed if in_note else None
+    )
+    target = tmp_path / "reprollm.lock"
+    target.write_bytes(b"previous lock bytes\n")
+    with pytest.raises(UserError, match="remove secrets") as error:
+        write_lock(target, _lock().model_copy(update={"inference": inference}))
+    assert canary not in str(error.value)
+    assert target.read_bytes() == b"previous lock bytes\n"
+    assert not list(tmp_path.glob(".reprollm.lock.*.tmp"))

@@ -460,9 +460,39 @@ pydantic model `RunRecord` (`reprollm/schemas/run_record.py`).
 - R-07 Hardware: `nvidia-smi --query-gpu=index,name,memory.total,uuid --format=csv,noheader,nounits` and `nvidia-smi --query-gpu=driver_version --format=csv,noheader`; CUDA driver max from `nvidia-smi` header line; absent binary → `source: unavailable`. GPU UUIDs are hashed.
 - R-08 Scheduler: all `SLURM_*` variables except those matching secret patterns (values recorded; they are not secrets). `PBS_*`/`LSB_*` recorded likewise.
 - R-09 Bindings: for each manifest/project-rule binding, observe every declared location (§15). All observations are recorded; comparison happens in audit.
-- R-10 `cwd` is stored relative to the repository root; the record never contains absolute paths, hostnames, or usernames.
+- R-10 `cwd` is stored relative to the repository root; the record never contains absolute paths, local `file://` URIs, hostnames, or usernames.
 - R-11 `--capture-output` tees child stdout/stderr to `stdout.log`/`stderr.log` after redaction (line-buffered; redaction applied per line). Default off.
 - R-12 `--no-snapshot` disables file snapshots (hashes still recorded).
+
+R02-R capture protection applies to new run records, manifest/lock copies,
+declared-file copies, patches and saved output before any temporary or final
+write. File and document references retain hashes of original source bytes;
+redacted copies can therefore differ from those bytes. `files[].redacted`
+records an actual transformation or a forbidden-file decision. Existing run
+directories are not automatically rewritten.
+
+After a child completes, capture or privacy failures add fixed diagnostics and
+omit unsafe data. If record sanitation fails, save a minimal completed record
+using the already-safe prewrite command and the child's result; never retry by
+writing original values. Retry an atomic record replacement failure before this
+fallback. If the filesystem remains unwritable, keep the prior safe evidence
+and return the completed child's exit code with a finalization warning. Before
+child start, an unsanitizable command is a `UserError` (exit 2) with command
+guidance. None of these paths echo exception contents.
+
+Saved output retains line-buffered capture and streaming PEM removal. YAML
+parent-key context follows indented or indentless lists and block-scalar lines.
+TOML table context follows bare, quoted and dotted headers, including array
+tables. Supported TOML patch fragments retain visible parent-table context;
+changed assignments whose table context is absent are omitted with a fixed
+capture warning. No source lookup is added to infer missing patch context.
+The PEM stream pass runs before contextual scalar handling so BEGIN/END markers
+cannot be transformed before their private body is discarded. An unsafe incomplete
+fragment or sanitizer failure disables remaining saved output and drains the
+child stream in bounded chunks. Child argv and raw terminal output remain
+unchanged, including when saved capture fails. Saved argv retains adjacent
+secret-flag context for negative-looking values; this does not change §15.1's
+binding-observation token boundary.
 
 ---
 
@@ -1054,6 +1084,13 @@ selected. Do not infer metric implementation, aggregation or bindings from task 
 | `config: "path:dotted.key"` | load YAML/JSON/TOML by extension; traverse dotted key (list index as integer segment); missing → `warnings[]` entry, no observation |
 | `env: "VAR"` | `os.environ[VAR]`; if `VAR` matches secret-name rules (§16.1) the binding is refused with a warning |
 
+Before recording an observation, apply §16.2 with its binding field, actual
+source key, config traversal segments and enclosing data keys. Preserve context
+for nested mappings, lists and a bound secret scalar. Source type/key/path describe evidence rather
+than its secret value and retain their semantics. Typed presence records such
+as `{present: true}` are also retained. This contextual handling does not apply
+§16.1 environment-name classification to arbitrary experiment keys.
+
 ### 15.2 Normalization for comparison
 
 Values are normalized before comparison: strings that parse as int/float → numbers (`"0"` == `0` == `0.0`); `"true"/"false"` (case-insensitive) → booleans; other strings compared exactly; lists element-wise. Floats compared with `math.isclose(rel_tol=1e-9)`.
@@ -1085,6 +1122,42 @@ Required negative cases: `MAX_TOKENS`, `TOKENIZERS_PARALLELISM`, `CUDA_VISIBLE_D
 | generic_kv | `(?i)\b(api[_-]?key|access[_-]?token|auth[_-]?token|secret|password|passwd)\b\s*[:=]\s*["']?([^\s"']{8,})` (redact group 2 only) |
 
 Replacement: `<REDACTED:kind>`. Counting redactions per artifact is recorded (`command.redactions`, `files[].redacted`).
+
+R02-R adds capture context without changing the pattern table. Structured data
+leaves are checked with their raw enclosing keys and field/source context.
+Standard JSON/YAML quoted keys, escaped JSON strings, nested mappings/lists,
+flow containers and block scalars retain that context. Safe scalar source bytes
+remain unchanged; unsafe scalar spans are replaced while retaining surrounding
+structure. Keys and source gaps are checked separately so a mapping key such
+as `password` cannot consume a following `max_tokens` key as its value. Manifest
+binding descriptors retain their source-location semantics. Lexical scalar
+handling covers patch/output fragments, comments and embedded serialized text.
+Apply streaming PEM removal to decoded structured scalar values before keyed
+handling, including bound values; an incomplete PEM does not consume a safe
+sibling field outside that scalar.
+
+TOML capture uses the existing TOML reader to validate input, decode table and
+dotted assignment keys, and verify the sanitized result against the same keyed
+policy. Keep safe assignments unchanged and replace unsafe assignment values
+with valid TOML values while retaining data types and structure. Check comments
+inside container values as well as source gaps. If an unsafe key cannot be
+mapped safely, or a supported table context has an ambiguous incomplete value,
+omit that capture with a fixed warning rather than writing original text.
+
+Classification retains the existing generic aliases, case/separator variants
+and minimum matching length of eight; it does not identify arbitrary unknown
+secret formats. Malformed nested text with recognizable supported unsafe
+context fails closed even under an ordinary outer key. Structured parsing is
+bounded to 1 MiB, 10,000 visited nodes, 64 container ancestors and eight nested
+serialized-text levels; cycles or unsafe ambiguity produce capture warnings
+rather than original-text fallback. Applying capture privacy to its own safe
+output changes no bytes and records no new transformation.
+
+Redacted observations and snapshots are evidence substitutes, not runnable
+original configuration. Different secrets can produce the same placeholder,
+so diff/export cannot reconstruct or prove equality of their original values.
+Original file hashes can still report a source-file change. Protection applies
+to new writes and does not claim that historical artifacts have been cleaned.
 
 The maintainer-approved M5-T01 correction accepts zero to two trailing `=`
 characters per JWT segment and includes padding in the replacement. This

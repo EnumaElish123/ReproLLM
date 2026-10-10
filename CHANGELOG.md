@@ -16,6 +16,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R02-R: preserve key context when capturing nested or bound secret values and
+  quoted JSON/YAML/TOML text and comments. Apply PEM removal before keyed
+  handling and omit ambiguous TOML patches safely. Protect records, snapshots,
+  patches and saved output before writes, including saved secret argv; retain source metadata, benign
+  experiment values and original file hashes. Privacy failures keep safe child
+  evidence and its exit code while draining raw output. Existing runs remain
+  unchanged; redacted placeholders do not recover secret-value comparisons.
+
 - R02: reject secrets, absolute paths and machine identity in the final lock
   object or serialized YAML before creating any temporary file. Preserve old
   lock bytes and keep safe parameters unchanged; include nested key context for

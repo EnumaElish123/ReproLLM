@@ -11,7 +11,8 @@ import yaml
 
 from reprollm.core.configread import read_config_value
 from reprollm.core.paths import resolve_project_file
-from reprollm.core.redaction import is_forbidden_file, is_secret_env_name, redact_text
+from reprollm.core.persistence import redact_keyed_values
+from reprollm.core.redaction import is_forbidden_file, is_secret_env_name, redact_lines, redact_text
 from reprollm.schemas.manifest import BindingSpec
 from reprollm.schemas.project_rules import ProjectRuleBindings, ProjectRules
 from reprollm.schemas.run_record import Observation, ObservationSource
@@ -47,14 +48,16 @@ def values_equal(a: Any, b: Any) -> bool:
     return bool(a == b)
 
 
-def _safe_value(value: Any) -> Any:
+def _safe_value(value: Any, keys: tuple[str, ...] = ()) -> Any:
     if isinstance(value, str):
-        return redact_text(value)[0]
+        if "-----BEGIN " in value and "PRIVATE KEY-----" in value:
+            value = "".join(redact_lines(value.splitlines(keepends=True)))
+        return redact_text(str(redact_keyed_values(value, keys)))[0]
     if isinstance(value, list):
-        return [_safe_value(item) for item in value]
+        return [_safe_value(item, keys) for item in value]
     if isinstance(value, dict):
-        return {key: _safe_value(item) for key, item in value.items()}
-    return value
+        return {key: _safe_value(item, (*keys, str(key))) for key, item in value.items()}
+    return redact_keyed_values(value, keys)
 
 
 def observe(
@@ -94,7 +97,7 @@ def observe(
                     continue
                 observations.append(
                     Observation(
-                        value=_safe_value(normalize(value)),
+                        value=_safe_value(normalize(value), (field, flag)),
                         source=ObservationSource(type="cli", key=flag),
                     )
                 )
@@ -119,7 +122,7 @@ def observe(
                 continue
             observations.append(
                 Observation(
-                    value=_safe_value(normalize(value)),
+                    value=_safe_value(normalize(value), (field, key, *key.split("."))),
                     source=ObservationSource(type="config", path=relative, key=key),
                 )
             )
@@ -129,7 +132,7 @@ def observe(
             elif name in env:
                 observations.append(
                     Observation(
-                        value=_safe_value(normalize(env[name])),
+                        value=_safe_value(normalize(env[name]), (field, name)),
                         source=ObservationSource(type="env", key=name),
                     )
                 )
