@@ -16,6 +16,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R06-G validation: construct external sentinel fixtures with fixed UTF-8 bytes
+  so Windows newline conversion cannot invalidate the strict unchanged-byte check.
+  Preserve every external-read guard and static consumer assertion.
+
 - R05-B (spec §12.2, accepted R05-S C): treat single-equality Conda versions
   without a build as prefixes. Recognize numeric double-equality versions and
   supported export triples with literal ASCII builds; retain their original

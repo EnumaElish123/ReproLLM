@@ -1,0 +1,25 @@
+{
+  "approved_change": "Replace only sentinel.write_text(text) with sentinel.write_bytes(text.encode('utf-8')). Existing text.encode() assertion has the same UTF-8 bytes.",
+  "ci_annotations_sha256": "9062a0ea4b59f9ca1829bea1e4b41998e0dd932ef4a0d54fdabe60c4fce5ab90",
+  "ci_run_id": 38040056703,
+  "failed_sha": "a3d6948354841b0fbf4403ef2afb71abe75a3991",
+  "failures": [
+    "test_all_static_consumers_skip_external_content_and_keep_file_facts[git]::tests.unit.core.test_scanner_boundaries::test_all_static_consumers_skip_external_content_and_keep_file_facts[git]: AssertionError: assert b'outside-canary==1.2.3\\r\\n' == b'outside-canary==1.2.3\\n'",
+    "test_all_static_consumers_skip_external_content_and_keep_file_facts[walk]::tests.unit.core.test_scanner_boundaries::test_all_static_consumers_skip_external_content_and_keep_file_facts[walk]: AssertionError: assert b'outside-canary==1.2.3\\r\\n' == b'outside-canary==1.2.3\\n'"
+  ],
+  "preserved_contract": [
+    "No external content opened by any static consumer.",
+    "Same expected file facts in Git and walk modes.",
+    "Every external sentinel compared to its exact original bytes.",
+    "No platform skip or relaxed assertion.",
+    "No product source changes."
+  ],
+  "qualification": "Approval covers the proposed narrow fixture correction. Actual focused checks and exact new-SHA five-job CI remain required before final completion.",
+  "review_kind": "Read-only actual CI evidence plus exact fixture/source review; no product or test executions and no repository edits.",
+  "reviewed_source_sha256": "99cd6c9c2778bb5699c04cd7f0ab892b61737ff635f1a1bf6fb5b6919f4bc62e",
+  "root_cause": "Fixture write_text uses native Windows newline conversion while the final raw-byte preservation oracle compares against UTF-8 LF bytes. This is a fixture construction discrepancy. All semantic/static-consumer and zero external-open assertions precede the failing preservation assertion.",
+  "schema_version": 1,
+  "source_file": "tests/unit/core/test_scanner_boundaries.py",
+  "status": "PASS_FIX_PROPOSAL",
+  "windows_job_id": 114178331656
+}

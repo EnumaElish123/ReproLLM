@@ -1,0 +1,176 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_all_static_consumers_skip_external_content_and_keep_file_facts[walk] ___
+
+tmp_path = PosixPath('<pytest-temp>/test_all_static_consumers_skip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d8897e300>
+use_git = False
+
+    @pytest.mark.parametrize("use_git", [False, True], ids=["walk", "git"])
+    def test_all_static_consumers_skip_external_content_and_keep_file_facts(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, use_git: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        contents = {
+            "requirements.txt": "outside-canary==1.2.3\n",
+            "linked.py": (
+                "import vllm\nModel.from_pretrained('outside/model-canary', trust_remote_code=True)\n"
+                "parser.add_argument('--outside-canary')\n"
+            ),
+            "README.md": "judge rubric differential privacy\n",
+            "settings.yaml": "judge: rubric\n",
+            "sample.yaml": "task: outside_canary\ndataset_path: outside/dataset\n",
+            "launch.sh": "lm-eval --tasks outside_canary\n",
+            ".env.local": "OUTSIDE_CANARY=synthetic_value\n",
+        }
+        for name, text in contents.items():
+            sentinel = outside / name
+            sentinel.write_text(text)
+            _symlink(repo / name, sentinel)
+        (repo / "local.txt").write_text("local content\n")
+        if use_git:
+            for args in (["init"], ["add", "--", *contents]):
+                result = proc.run_cmd(["git", *args], cwd=repo)
+                assert result.returncode == 0, result.stderr
+        git = inspect_git(repo)
+        assert git.is_repo is use_git
+        if use_git:
+            assert ".env.local" in git.modified
+            assert git.untracked == ["local.txt"]
+        opened: list[str] = []
+        original_open = Path.open
+        sentinels = {outside / name for name in contents}
+
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() in sentinels:
+                opened.append(path.name)
+            return original_open(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, git)
+        assert set(contents) <= set(scanner.files())
+        assert scanner.exists("requirements.txt")
+        dependencies = scan_dependencies(scanner)
+        assert dependencies.manifest_present
+        assert dependencies.declarations == []
+        assert dependencies.lockfiles == []
+        python = scan_python(scanner)
+        assert python.imports == []
+        assert python.hf_ids == []
+        detection = run_detection(scanner, python, dependencies)
+        assert detection.profiles == []
+        assert detection.hints.providers == []
+        assert detection.hints.backends == []
+        assert detection.hints.hf_ids == []
+        assert not detection.hints.trust_remote_code
+        assert task_mapping(scanner, "sample.yaml") is None
+        assert cli_evidence(scanner, (("lm-eval",),)) == []
+        payload = collect(repo, scanner, DiscoverConfig())
+        assert payload.files == []
+        assert payload.tree == ["local.txt"]
+        findings = SecretFilesIgnoredRule().check(AuditContext(repo))
+        assert len(findings) == 1
+        assert findings[0].severity == (Severity.CRITICAL if use_git else Severity.WARNING)
+        assert [item.path for item in findings[0].evidence] == [".env.local"]
+        assert opened == []
+        for name, text in contents.items():
+            with original_open(outside / name, "rb") as stream:
+>               assert stream.read() == text.encode()
+E               AssertionError: assert b'outside-canary==1.2.3\r\n' == b'outside-canary==1.2.3\n'
+E
+E                 At index 21 diff: b'\r' != b'\n'
+E                 Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:300: AssertionError
+___ test_all_static_consumers_skip_external_content_and_keep_file_facts[git] ___
+
+tmp_path = PosixPath('<pytest-temp>/test_all_static_consumers_skip1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6d8897efc0>
+use_git = True
+
+    @pytest.mark.parametrize("use_git", [False, True], ids=["walk", "git"])
+    def test_all_static_consumers_skip_external_content_and_keep_file_facts(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, use_git: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        contents = {
+            "requirements.txt": "outside-canary==1.2.3\n",
+            "linked.py": (
+                "import vllm\nModel.from_pretrained('outside/model-canary', trust_remote_code=True)\n"
+                "parser.add_argument('--outside-canary')\n"
+            ),
+            "README.md": "judge rubric differential privacy\n",
+            "settings.yaml": "judge: rubric\n",
+            "sample.yaml": "task: outside_canary\ndataset_path: outside/dataset\n",
+            "launch.sh": "lm-eval --tasks outside_canary\n",
+            ".env.local": "OUTSIDE_CANARY=synthetic_value\n",
+        }
+        for name, text in contents.items():
+            sentinel = outside / name
+            sentinel.write_text(text)
+            _symlink(repo / name, sentinel)
+        (repo / "local.txt").write_text("local content\n")
+        if use_git:
+            for args in (["init"], ["add", "--", *contents]):
+                result = proc.run_cmd(["git", *args], cwd=repo)
+                assert result.returncode == 0, result.stderr
+        git = inspect_git(repo)
+        assert git.is_repo is use_git
+        if use_git:
+            assert ".env.local" in git.modified
+            assert git.untracked == ["local.txt"]
+        opened: list[str] = []
+        original_open = Path.open
+        sentinels = {outside / name for name in contents}
+
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() in sentinels:
+                opened.append(path.name)
+            return original_open(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, git)
+        assert set(contents) <= set(scanner.files())
+        assert scanner.exists("requirements.txt")
+        dependencies = scan_dependencies(scanner)
+        assert dependencies.manifest_present
+        assert dependencies.declarations == []
+        assert dependencies.lockfiles == []
+        python = scan_python(scanner)
+        assert python.imports == []
+        assert python.hf_ids == []
+        detection = run_detection(scanner, python, dependencies)
+        assert detection.profiles == []
+        assert detection.hints.providers == []
+        assert detection.hints.backends == []
+        assert detection.hints.hf_ids == []
+        assert not detection.hints.trust_remote_code
+        assert task_mapping(scanner, "sample.yaml") is None
+        assert cli_evidence(scanner, (("lm-eval",),)) == []
+        payload = collect(repo, scanner, DiscoverConfig())
+        assert payload.files == []
+        assert payload.tree == ["local.txt"]
+        findings = SecretFilesIgnoredRule().check(AuditContext(repo))
+        assert len(findings) == 1
+        assert findings[0].severity == (Severity.CRITICAL if use_git else Severity.WARNING)
+        assert [item.path for item in findings[0].evidence] == [".env.local"]
+        assert opened == []
+        for name, text in contents.items():
+            with original_open(outside / name, "rb") as stream:
+>               assert stream.read() == text.encode()
+E               AssertionError: assert b'outside-canary==1.2.3\r\n' == b'outside-canary==1.2.3\n'
+E
+E                 At index 21 diff: b'\r' != b'\n'
+E                 Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:300: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_scanner_boundaries.py::test_all_static_consumers_skip_external_content_and_keep_file_facts[walk]
+FAILED tests/unit/core/test_scanner_boundaries.py::test_all_static_consumers_skip_external_content_and_keep_file_facts[git]
+2 failed in 1.22s

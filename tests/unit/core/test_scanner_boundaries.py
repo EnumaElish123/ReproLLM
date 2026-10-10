@@ -247,7 +247,7 @@ def test_all_static_consumers_skip_external_content_and_keep_file_facts(
     }
     for name, text in contents.items():
         sentinel = outside / name
-        sentinel.write_text(text)
+        sentinel.write_bytes(text.encode("utf-8"))
         _symlink(repo / name, sentinel)
     (repo / "local.txt").write_text("local content\n")
     if use_git:

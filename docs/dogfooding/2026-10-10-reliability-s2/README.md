@@ -39,3 +39,9 @@ R05-B依已接受Conda语义和独立source oracle手改privacy夹具5个expecte
 CI字段保留各候选测试时NOT_RUN的历史事实。最终main推送后核对其精确HEAD的
 Linux Python3.10/3.11/3.12、macOS Python3.12、Windows Python3.12共五job；
 最终CI结果/run URL在交付消息中记录，避免文档commit自引用。
+
+后续Windows CI修正：首次最终HEAD `a3d6948` 的四个job通过，Windows有两条
+外部sentinel测试因fixture文本写入转换为CRLF而失败。改用固定UTF-8字节构建，
+保留全部原断言；完整质量门再次14/14通过，五项目再执行5条只读命令/100完整比较通过。
+[失败事实、真实CRLF模拟RED/GREEN、修正与后续验证](r06g-ci-portability-session.md)
+保留原始证据。产品字节与所有gold不变；后续精确main HEAD五job在交付消息记录。

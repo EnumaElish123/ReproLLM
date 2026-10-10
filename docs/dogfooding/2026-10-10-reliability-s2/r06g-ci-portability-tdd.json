@@ -1,0 +1,62 @@
+{
+  "actual_windows_failure_evidence": "r06g-ci-portability-annotations.json",
+  "commands": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "crlf_fixture_emulation",
+        "tests/unit/core/test_scanner_boundaries.py::test_all_static_consumers_skip_external_content_and_keep_file_facts"
+      ],
+      "exit_code": 1,
+      "label": "explicit_CRLF_fixture_emulation_red",
+      "log": "r06g-ci-portability-crlf-emulated-red.log",
+      "log_sha256": "bc0db5721c1edf2bf37689faa40467b4fa17fc6418028e934f0a9d17c52b0e52",
+      "omitted_raw_log_sha256": "50e7b2f40d9491884556ec0b23593d2f34d544dd2ca40bcee88c65e5266091b0",
+      "original_portable_presentation_sha256": "2ce2efff4a2c529405c7f4d2812778f5dee2c4ab8a89015ff34622a0472f19e4",
+      "portable_presentation_transformations": [
+        "Replace validation machine paths with portable labels",
+        "Strip pytest-rendered trailing whitespace for repository whitespace checks"
+      ],
+      "pytest_reported_elapsed_seconds": 1.22,
+      "pytest_result": "2 failed",
+      "raw_log_bytes_retained_unmodified": true,
+      "scope": "Local pytest plugin forces CRLF only for outside sentinel text construction; this is explicitly controlled emulation, separate from actual original Windows CI."
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "crlf_fixture_emulation",
+        "tests/unit/core/test_scanner_boundaries.py::test_all_static_consumers_skip_external_content_and_keep_file_facts"
+      ],
+      "exit_code": 0,
+      "label": "explicit_CRLF_fixture_emulation_green",
+      "log": "r06g-ci-portability-crlf-emulated-green.log",
+      "log_sha256": "57a0047b375c7cccfeed38aceaaa13dea74288de55f0b9790139d13e0cad7482",
+      "omitted_raw_log_sha256": "57a0047b375c7cccfeed38aceaaa13dea74288de55f0b9790139d13e0cad7482",
+      "portable_presentation_transformations": [
+        "Replace validation machine paths with portable labels",
+        "Strip pytest-rendered trailing whitespace for repository whitespace checks"
+      ],
+      "pytest_reported_elapsed_seconds": 4.9,
+      "pytest_result": "2 passed",
+      "raw_log_bytes_retained_unmodified": true,
+      "scope": "Local pytest plugin forces CRLF only for outside sentinel text construction; this is explicitly controlled emulation, separate from actual original Windows CI."
+    }
+  ],
+  "emulation_plugin_sha256": "dde2234ec07c4d5d92dceb75ce28d7b5fc4f350e88c0d41613f82977bc739f66",
+  "kind": "R06_G_CI_fixture_portability_TDD",
+  "product_commands_reexecuted_by_emulation": 0,
+  "schema_version": 1
+}
