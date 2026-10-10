@@ -1,0 +1,465 @@
+.................................................................FF...F. [ 86%]
+...FFFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+_________ test_accepted_format_table[bare-2.5.1-nonexact-requirements] _________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'requirements', kind = 'bare', expression = '2.5.1'
+expected_exact = None
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize(
+        ("kind", "expression", "expected_exact"),
+        [
+            ("release", "==2.5.1", "2.5.1"),
+            ("local", "==2.5.1+cu121", "2.5.1+cu121"),
+            ("pre", "==2.5.1rc1", "2.5.1rc1"),
+            ("post", "==2.5.1.post1", "2.5.1.post1"),
+            ("dev", "==2.5.1.dev1", "2.5.1.dev1"),
+            ("epoch", "==1!2.5.1", "1!2.5.1"),
+            ("wildcard", "==2.5.*", None),
+            ("range", ">=2.5", None),
+            ("compatible", "~=2.5", None),
+            ("multiclause", "==2.5.1,>=2", None),
+            ("arbitrary", "===2.5.1", None),
+            ("malformed", "==", None),
+            ("bare", "2.5.1", None),
+        ],
+        ids=lambda value: value if isinstance(value, str) else "nonexact",
+    )
+    def test_accepted_format_table(
+        tmp_path: Path, format_name: str, kind: str, expression: str, expected_exact: str | None
+    ) -> None:
+        # The accepted table uses Poetry's bare form for the six valid releases.
+        if format_name == "poetry":
+            if expected_exact is not None:
+                expression = expected_exact
+            elif kind == "bare":
+                expected_exact = "2.5.1"
+        filename, line = _write_format(tmp_path, format_name, expression)
+>       _assert_format_consumers(tmp_path, filename, line, expected_exact)
+
+tests/unit/core/test_python_exact_versions.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'requirements.txt', line = 2, expected_exact = None
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        assert all(item.exact_version is None for item in declarations) if expected_exact is None else True
+        if expected_exact is not None:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+            assert declaration.line == line
+        expected_lock = filename == "requirements.txt" and expected_exact is not None
+        assert [(lock.path, lock.packages) for lock in context.deps.lockfiles] == (
+            [(filename, frozenset({"torch"}))] if expected_lock else []
+        )
+        lock_findings = LockfilePresentRule().check(context)
+        assert len(lock_findings) == (0 if expected_lock else 1)
+        critical_findings = LlmCriticalDepsPinnedRule().check(context)
+        assert len(critical_findings) == (0 if expected_exact is not None else 1)
+        for finding in lock_findings + critical_findings:
+            assert finding.status == FindingStatus.FAIL
+            assert finding.severity == Severity.WARNING
+        if critical_findings and declarations:
+>           assert critical_findings[0].evidence[0].path == filename
+E           AssertionError: assert 'control.py' == 'requirements.txt'
+E             
+E             - requirements.txt
+E             + control.py
+
+tests/unit/core/test_python_exact_versions.py:164: AssertionError
+____________ test_accepted_format_table[bare-2.5.1-nonexact-pep621] ____________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621', kind = 'bare', expression = '2.5.1'
+expected_exact = None
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize(
+        ("kind", "expression", "expected_exact"),
+        [
+            ("release", "==2.5.1", "2.5.1"),
+            ("local", "==2.5.1+cu121", "2.5.1+cu121"),
+            ("pre", "==2.5.1rc1", "2.5.1rc1"),
+            ("post", "==2.5.1.post1", "2.5.1.post1"),
+            ("dev", "==2.5.1.dev1", "2.5.1.dev1"),
+            ("epoch", "==1!2.5.1", "1!2.5.1"),
+            ("wildcard", "==2.5.*", None),
+            ("range", ">=2.5", None),
+            ("compatible", "~=2.5", None),
+            ("multiclause", "==2.5.1,>=2", None),
+            ("arbitrary", "===2.5.1", None),
+            ("malformed", "==", None),
+            ("bare", "2.5.1", None),
+        ],
+        ids=lambda value: value if isinstance(value, str) else "nonexact",
+    )
+    def test_accepted_format_table(
+        tmp_path: Path, format_name: str, kind: str, expression: str, expected_exact: str | None
+    ) -> None:
+        # The accepted table uses Poetry's bare form for the six valid releases.
+        if format_name == "poetry":
+            if expected_exact is not None:
+                expression = expected_exact
+            elif kind == "bare":
+                expected_exact = "2.5.1"
+        filename, line = _write_format(tmp_path, format_name, expression)
+>       _assert_format_consumers(tmp_path, filename, line, expected_exact)
+
+tests/unit/core/test_python_exact_versions.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = None
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        assert all(item.exact_version is None for item in declarations) if expected_exact is None else True
+        if expected_exact is not None:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+            assert declaration.line == line
+        expected_lock = filename == "requirements.txt" and expected_exact is not None
+        assert [(lock.path, lock.packages) for lock in context.deps.lockfiles] == (
+            [(filename, frozenset({"torch"}))] if expected_lock else []
+        )
+        lock_findings = LockfilePresentRule().check(context)
+        assert len(lock_findings) == (0 if expected_lock else 1)
+        critical_findings = LlmCriticalDepsPinnedRule().check(context)
+        assert len(critical_findings) == (0 if expected_exact is not None else 1)
+        for finding in lock_findings + critical_findings:
+            assert finding.status == FindingStatus.FAIL
+            assert finding.severity == Severity.WARNING
+        if critical_findings and declarations:
+>           assert critical_findings[0].evidence[0].path == filename
+E           AssertionError: assert 'control.py' == 'pyproject.toml'
+E             
+E             - pyproject.toml
+E             + control.py
+
+tests/unit/core/test_python_exact_versions.py:164: AssertionError
+_ test_accepted_requirement_modifiers_and_url[[extra]==2.5.1; python_version >= "3.10"-2.5.1-pep621] _
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621', expression = '[extra]==2.5.1; python_version >= "3.10"'
+expected_exact = '2.5.1'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621"])
+    @pytest.mark.parametrize(
+        ("expression", "expected_exact"),
+        [
+            ('[extra]==2.5.1; python_version >= "3.10"', "2.5.1"),
+            (" @ https://example.invalid/torch.whl", None),
+        ],
+    )
+    def test_accepted_requirement_modifiers_and_url(
+        tmp_path: Path, format_name: str, expression: str, expected_exact: str | None
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, expression)
+>       _assert_format_consumers(tmp_path, filename, line, expected_exact)
+
+tests/unit/core/test_python_exact_versions.py:213: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        assert all(item.exact_version is None for item in declarations) if expected_exact is None else True
+        if expected_exact is not None:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 1 == 5
+E            +  where 1 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=1).line
+
+tests/unit/core/test_python_exact_versions.py:151: AssertionError
+__ test_audit_json_agrees_with_exact_version_consumers[==2.5.*-requirements] ___
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'requirements', expression = '==2.5.*'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.llm_cri...sent': 'fail'} == {'env.lockfil...nned': 'FAIL'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'fail'} != {'env.llm_critical_deps_pinned': 'FAIL'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+_____ test_audit_json_agrees_with_exact_version_consumers[==2.5.*-pep621] ______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621', expression = '==2.5.*'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.llm_cri...sent': 'fail'} == {'env.lockfil...nned': 'FAIL'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'fail'} != {'env.llm_critical_deps_pinned': 'FAIL'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+_____ test_audit_json_agrees_with_exact_version_consumers[==2.5.*-poetry] ______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry', expression = '==2.5.*'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.llm_cri...sent': 'fail'} == {'env.lockfil...nned': 'FAIL'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'fail'} != {'env.llm_critical_deps_pinned': 'FAIL'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+_____ test_audit_json_agrees_with_exact_version_consumers[==2.5.*-pipfile] _____
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile', expression = '==2.5.*'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.llm_cri...sent': 'fail'} == {'env.lockfil...nned': 'FAIL'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'fail'} != {'env.llm_critical_deps_pinned': 'FAIL'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+_ test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-requirements] _
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'requirements', expression = '==2.5.1+cu121'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.llm_cri...sent': 'pass'} == {'env.lockfil...nned': 'PASS'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'pass'} != {'env.lockfile_present': 'PASS'}
+E         {'env.llm_critical_deps_pinned': 'pass'} != {'env.llm_critical_deps_pinned': 'PASS'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+__ test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-pep621] ___
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621', expression = '==2.5.1+cu121'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.lockfil...nned': 'pass'} == {'env.lockfil...nned': 'PASS'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'pass'} != {'env.llm_critical_deps_pinned': 'PASS'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+__ test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-poetry] ___
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry', expression = '==2.5.1+cu121'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.lockfil...nned': 'pass'} == {'env.lockfil...nned': 'PASS'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'pass'} != {'env.llm_critical_deps_pinned': 'PASS'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+__ test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-pipfile] __
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile', expression = '==2.5.1+cu121'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    @pytest.mark.parametrize("expression", ["==2.5.*", "==2.5.1+cu121"])
+    def test_audit_json_agrees_with_exact_version_consumers(
+        tmp_path: Path, format_name: str, expression: str
+    ) -> None:
+        _write_format(tmp_path, format_name, expression)
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.output
+        findings = json.loads(result.output)["findings"]
+        rule_ids = {"env.lockfile_present", "env.llm_critical_deps_pinned"}
+        statuses = {finding["rule_id"]: finding["status"] for finding in findings if finding["rule_id"] in rule_ids}
+        exact = expression == "==2.5.1+cu121"
+>       assert statuses == {
+            "env.lockfile_present": "PASS" if format_name == "requirements" and exact else "FAIL",
+            "env.llm_critical_deps_pinned": "PASS" if exact else "FAIL",
+        }
+E       AssertionError: assert {'env.lockfil...nned': 'pass'} == {'env.lockfil...nned': 'PASS'}
+E         
+E         Differing items:
+E         {'env.lockfile_present': 'fail'} != {'env.lockfile_present': 'FAIL'}
+E         {'env.llm_critical_deps_pinned': 'pass'} != {'env.llm_critical_deps_pinned': 'PASS'}
+E         Use -v to get more diff
+
+tests/unit/core/test_python_exact_versions.py:240: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_accepted_format_table[bare-2.5.1-nonexact-requirements]
+FAILED tests/unit/core/test_python_exact_versions.py::test_accepted_format_table[bare-2.5.1-nonexact-pep621]
+FAILED tests/unit/core/test_python_exact_versions.py::test_accepted_requirement_modifiers_and_url[[extra]==2.5.1; python_version >= "3.10"-2.5.1-pep621]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.*-requirements]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.*-pep621]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.*-poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.*-pipfile]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-requirements]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-pep621]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_audit_json_agrees_with_exact_version_consumers[==2.5.1+cu121-pipfile]
+11 failed, 72 passed in 4.13s

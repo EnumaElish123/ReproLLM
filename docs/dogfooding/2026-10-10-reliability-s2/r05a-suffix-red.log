@@ -1,0 +1,56 @@
+.FF                                                                      [100%]
+=================================== FAILURES ===================================
+__ test_local_version_in_each_version_field_pins_critical_dependency[poetry] ___
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    def test_local_version_in_each_version_field_pins_critical_dependency(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = "==2.5.1+cu121"\n')
+        context = AuditContext(tmp_path)
+        assert len(context.deps.declarations) == 1
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version == "2.5.1+cu121"
+E       AssertionError: assert None == '2.5.1+cu121'
+E        +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1+cu121', exact_version=None, source_file='pyproject.toml', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:52: AssertionError
+__ test_local_version_in_each_version_field_pins_critical_dependency[pipfile] __
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    def test_local_version_in_each_version_field_pins_critical_dependency(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = "==2.5.1+cu121"\n')
+        context = AuditContext(tmp_path)
+        assert len(context.deps.declarations) == 1
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version == "2.5.1+cu121"
+E       AssertionError: assert None == '2.5.1+cu121'
+E        +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1+cu121', exact_version=None, source_file='Pipfile', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:52: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_local_version_in_each_version_field_pins_critical_dependency[poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_local_version_in_each_version_field_pins_critical_dependency[pipfile]
+2 failed, 1 passed in 0.60s

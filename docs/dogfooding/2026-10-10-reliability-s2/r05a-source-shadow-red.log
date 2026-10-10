@@ -1,0 +1,200 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[True-comment] _
+
+tmp_path = PosixPath('<test-tmp>')
+shadow = 'comment', inline = True
+
+    @pytest.mark.parametrize("shadow", ["comment", "description"])
+    @pytest.mark.parametrize("inline", [True, False])
+    def test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string(
+        tmp_path: Path, shadow: str, inline: bool
+    ) -> None:
+        requirement = json.dumps('torch[extra]==2.5.1; python_version >= "3.10"')
+        prefix = f"# {requirement}" if shadow == "comment" else f"description = {requirement}"
+        dependencies = (
+            f"dependencies = [{requirement}]\n"
+            if inline
+            else f"dependencies = [\n  {requirement},\n]\n"
+        )
+        (tmp_path / "pyproject.toml").write_text(
+            f'[project]\nname = "sample"\n{prefix}\n{dependencies}'
+        )
+>       _assert_format_consumers(tmp_path, "pyproject.toml", 4 if inline else 5, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 4, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 3 == 4
+E            +  where 3 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=3).line
+
+tests/unit/core/test_python_exact_versions.py:152: AssertionError
+_ test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[True-description] _
+
+tmp_path = PosixPath('<test-tmp>')
+shadow = 'description', inline = True
+
+    @pytest.mark.parametrize("shadow", ["comment", "description"])
+    @pytest.mark.parametrize("inline", [True, False])
+    def test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string(
+        tmp_path: Path, shadow: str, inline: bool
+    ) -> None:
+        requirement = json.dumps('torch[extra]==2.5.1; python_version >= "3.10"')
+        prefix = f"# {requirement}" if shadow == "comment" else f"description = {requirement}"
+        dependencies = (
+            f"dependencies = [{requirement}]\n"
+            if inline
+            else f"dependencies = [\n  {requirement},\n]\n"
+        )
+        (tmp_path / "pyproject.toml").write_text(
+            f'[project]\nname = "sample"\n{prefix}\n{dependencies}'
+        )
+>       _assert_format_consumers(tmp_path, "pyproject.toml", 4 if inline else 5, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 4, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 3 == 4
+E            +  where 3 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=3).line
+
+tests/unit/core/test_python_exact_versions.py:152: AssertionError
+_ test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[False-comment] _
+
+tmp_path = PosixPath('<test-tmp>')
+shadow = 'comment', inline = False
+
+    @pytest.mark.parametrize("shadow", ["comment", "description"])
+    @pytest.mark.parametrize("inline", [True, False])
+    def test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string(
+        tmp_path: Path, shadow: str, inline: bool
+    ) -> None:
+        requirement = json.dumps('torch[extra]==2.5.1; python_version >= "3.10"')
+        prefix = f"# {requirement}" if shadow == "comment" else f"description = {requirement}"
+        dependencies = (
+            f"dependencies = [{requirement}]\n"
+            if inline
+            else f"dependencies = [\n  {requirement},\n]\n"
+        )
+        (tmp_path / "pyproject.toml").write_text(
+            f'[project]\nname = "sample"\n{prefix}\n{dependencies}'
+        )
+>       _assert_format_consumers(tmp_path, "pyproject.toml", 4 if inline else 5, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 3 == 5
+E            +  where 3 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=3).line
+
+tests/unit/core/test_python_exact_versions.py:152: AssertionError
+_ test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[False-description] _
+
+tmp_path = PosixPath('<test-tmp>')
+shadow = 'description', inline = False
+
+    @pytest.mark.parametrize("shadow", ["comment", "description"])
+    @pytest.mark.parametrize("inline", [True, False])
+    def test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string(
+        tmp_path: Path, shadow: str, inline: bool
+    ) -> None:
+        requirement = json.dumps('torch[extra]==2.5.1; python_version >= "3.10"')
+        prefix = f"# {requirement}" if shadow == "comment" else f"description = {requirement}"
+        dependencies = (
+            f"dependencies = [{requirement}]\n"
+            if inline
+            else f"dependencies = [\n  {requirement},\n]\n"
+        )
+        (tmp_path / "pyproject.toml").write_text(
+            f'[project]\nname = "sample"\n{prefix}\n{dependencies}'
+        )
+>       _assert_format_consumers(tmp_path, "pyproject.toml", 4 if inline else 5, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 3 == 5
+E            +  where 3 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=3).line
+
+tests/unit/core/test_python_exact_versions.py:152: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[True-comment]
+FAILED tests/unit/core/test_python_exact_versions.py::test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[True-description]
+FAILED tests/unit/core/test_python_exact_versions.py::test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[False-comment]
+FAILED tests/unit/core/test_python_exact_versions.py::test_escaped_marker_source_is_the_dependency_array_not_a_shadow_string[False-description]
+4 failed, 128 deselected in 0.63s

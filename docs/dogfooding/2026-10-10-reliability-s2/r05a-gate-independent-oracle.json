@@ -1,0 +1,994 @@
+{
+  "approval_bindings": {
+    "accepted_patch_sha256": "280ef3d4b0085aae1dbee280c7eb29de4d2a26e94fda377b7f535f5dedaa126a",
+    "accepted_response": "接受 A/P+C，执行完整 S2（推荐）",
+    "decision": "docs/plan/reliability-2026-10-03/proposals/R05-S/decision.json",
+    "independent_source_provenance_sha256": "bbd37edb64e8dc96c3a28baf71710a1f112c6ad28e6ca8cfeecc6205340cf773",
+    "proposal_sha256": "055b7863e945f2a494879df47d10106d40c85207143f1b6bb713ecc9a5b431af"
+  },
+  "cases": [
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-release",
+      "raw_expression": "==2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1+cu121\n"
+      },
+      "format": "requirements",
+      "id": "requirements-local",
+      "raw_expression": "==2.5.1+cu121"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1rc1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1rc1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-pre",
+      "raw_expression": "==2.5.1rc1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.post1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1.post1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-post",
+      "raw_expression": "==2.5.1.post1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.dev1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1.dev1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-dev",
+      "raw_expression": "==2.5.1.dev1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "1!2.5.1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==1!2.5.1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-epoch",
+      "raw_expression": "==1!2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.*\n"
+      },
+      "format": "requirements",
+      "id": "requirements-wildcard",
+      "raw_expression": "==2.5.*"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch>=2.5\n"
+      },
+      "format": "requirements",
+      "id": "requirements-range",
+      "raw_expression": ">=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch~=2.5\n"
+      },
+      "format": "requirements",
+      "id": "requirements-compatible",
+      "raw_expression": "~=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==2.5.1,>=2\n"
+      },
+      "format": "requirements",
+      "id": "requirements-multiclause",
+      "raw_expression": "==2.5.1,>=2"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch===2.5.1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-arbitrary",
+      "raw_expression": "===2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch==\n"
+      },
+      "format": "requirements",
+      "id": "requirements-malformed",
+      "raw_expression": "=="
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch2.5.1\n"
+      },
+      "format": "requirements",
+      "id": "requirements-bare",
+      "raw_expression": "2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-release",
+      "raw_expression": "==2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1+cu121\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-local",
+      "raw_expression": "==2.5.1+cu121"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1rc1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1rc1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-pre",
+      "raw_expression": "==2.5.1rc1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.post1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1.post1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-post",
+      "raw_expression": "==2.5.1.post1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.dev1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1.dev1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-dev",
+      "raw_expression": "==2.5.1.dev1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "1!2.5.1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==1!2.5.1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-epoch",
+      "raw_expression": "==1!2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.*\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-wildcard",
+      "raw_expression": "==2.5.*"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch>=2.5\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-range",
+      "raw_expression": ">=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch~=2.5\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-compatible",
+      "raw_expression": "~=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==2.5.1,>=2\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-multiclause",
+      "raw_expression": "==2.5.1,>=2"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch===2.5.1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-arbitrary",
+      "raw_expression": "===2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch==\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-malformed",
+      "raw_expression": "=="
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch2.5.1\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-bare",
+      "raw_expression": "2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-release",
+      "raw_expression": "2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1+cu121\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-local",
+      "raw_expression": "2.5.1+cu121"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1rc1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1rc1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-pre",
+      "raw_expression": "2.5.1rc1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.post1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1.post1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-post",
+      "raw_expression": "2.5.1.post1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.dev1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1.dev1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-dev",
+      "raw_expression": "2.5.1.dev1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "1!2.5.1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"1!2.5.1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-epoch",
+      "raw_expression": "1!2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"==2.5.*\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-wildcard",
+      "raw_expression": "==2.5.*"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \">=2.5\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-range",
+      "raw_expression": ">=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"~=2.5\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-compatible",
+      "raw_expression": "~=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"==2.5.1,>=2\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-multiclause",
+      "raw_expression": "==2.5.1,>=2"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"===2.5.1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-arbitrary",
+      "raw_expression": "===2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"==\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-malformed",
+      "raw_expression": "=="
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"2.5.1\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-bare",
+      "raw_expression": "2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-release",
+      "raw_expression": "==2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1+cu121\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-local",
+      "raw_expression": "==2.5.1+cu121"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1rc1",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1rc1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-pre",
+      "raw_expression": "==2.5.1rc1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.post1",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1.post1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-post",
+      "raw_expression": "==2.5.1.post1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1.dev1",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1.dev1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-dev",
+      "raw_expression": "==2.5.1.dev1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "1!2.5.1",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==1!2.5.1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-epoch",
+      "raw_expression": "==1!2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.*\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-wildcard",
+      "raw_expression": "==2.5.*"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \">=2.5\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-range",
+      "raw_expression": ">=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"~=2.5\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-compatible",
+      "raw_expression": "~=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1,>=2\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-multiclause",
+      "raw_expression": "==2.5.1,>=2"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"===2.5.1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-arbitrary",
+      "raw_expression": "===2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-malformed",
+      "raw_expression": "=="
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": true
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"2.5.1\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-bare",
+      "raw_expression": "2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 2,
+        "requirements_root_lock": true,
+        "source_file": "requirements.txt",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch[extra]==2.5.1; python_version >= \"3.10\"\n"
+      },
+      "format": "requirements",
+      "id": "requirements-marker-extra"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "requirements.txt",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "requirements.txt": "# independent exact-version fixture\ntorch @ https://example.invalid/torch.whl\n"
+      },
+      "format": "requirements",
+      "id": "requirements-url"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch[extra]==2.5.1; python_version >= \\\"3.10\\\"\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-marker-extra"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_line": 5,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"bounded-s2-fixture\"\nrequires-python = \">=3.10\"\ndependencies = [\n  \"torch @ https://example.invalid/torch.whl\",\n]\n"
+      },
+      "format": "pep621",
+      "id": "pep621-url"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 4,
+        "requirements_root_lock": false,
+        "source_file": "pyproject.toml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry]\nname = \"bounded-s2-fixture\"\n[tool.poetry.dependencies]\ntorch = \"==2.5.1+cu121\"\n"
+      },
+      "format": "poetry",
+      "id": "poetry-explicit-local"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_line": 2,
+        "requirements_root_lock": false,
+        "source_file": "Pipfile",
+        "torch_warning": false
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch = \"==2.5.1+cu121\"\n",
+        "control.py": "import torch\n"
+      },
+      "format": "pipfile",
+      "id": "pipfile-explicit-local"
+    }
+  ],
+  "schema_version": 1,
+  "source": "Approved contract and independent literal fixtures, not candidate output",
+  "stage": "r05a"
+}

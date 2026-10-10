@@ -1,0 +1,166 @@
+........FFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+________ test_transport_table_is_not_an_exact_python_version[hg-poetry] ________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry', transport = 'hg'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='pyproject.toml', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+_______ test_transport_table_is_not_an_exact_python_version[hg-pipfile] ________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile', transport = 'hg'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='Pipfile', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+_______ test_transport_table_is_not_an_exact_python_version[svn-poetry] ________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry', transport = 'svn'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='pyproject.toml', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+_______ test_transport_table_is_not_an_exact_python_version[svn-pipfile] _______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile', transport = 'svn'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='Pipfile', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+_______ test_transport_table_is_not_an_exact_python_version[bzr-poetry] ________
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry', transport = 'bzr'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='pyproject.toml', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+_______ test_transport_table_is_not_an_exact_python_version[bzr-pipfile] _______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile', transport = 'bzr'
+
+    @pytest.mark.parametrize("format_name", ["poetry", "pipfile"])
+    @pytest.mark.parametrize("transport", ["url", "git", "path", "file", "hg", "svn", "bzr"])
+    def test_transport_table_is_not_an_exact_python_version(
+        tmp_path: Path, format_name: str, transport: str
+    ) -> None:
+        filename, table = (
+            ("pyproject.toml", "tool.poetry.dependencies")
+            if format_name == "poetry"
+            else ("Pipfile", "packages")
+        )
+        value = f'{{version = "==2.5.1", {transport} = "placeholder"}}'
+        (tmp_path / filename).write_text(f'[{table}]\n\ntorch = {value}\n')
+        context = AuditContext(tmp_path)
+        declaration = context.deps.declarations[0]
+        assert declaration.source_file == filename
+        assert declaration.line == 3
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.1' is None
+E        +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='Pipfile', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:80: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[hg-poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[hg-pipfile]
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[svn-poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[svn-pipfile]
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[bzr-poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_transport_table_is_not_an_exact_python_version[bzr-pipfile]
+6 failed, 8 passed, 75 deselected in 0.95s

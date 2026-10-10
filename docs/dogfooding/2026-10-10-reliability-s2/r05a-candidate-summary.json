@@ -1,0 +1,99 @@
+{
+  "baseline_commit": "a80a84eb61dfc2ad381e67228050f5ecf1995b04",
+  "final_validation_commands": [
+    "scoped-lint",
+    "focused-final",
+    "scoped-format-check",
+    "mypy"
+  ],
+  "focused_tests": 225,
+  "fresh_five_project_gate_a": "root pending",
+  "full_quality_gate": "root pending",
+  "implementation_limits": [
+    "Exact is a bounded version constraint, not wheel/build/index/hash identity.",
+    "TOML source matching supports existing single-line quoted array strings and physical continuation lines; no complete TOML grammar or lexer added."
+  ],
+  "independent_review": "r01 agent pending",
+  "new_tests": 132,
+  "owned_files_sha256": {
+    "CHANGELOG.md": "4808b444d8bf9a5ee616f3e71f89c14b8d096d72c0bc243bb4c50aa11b7de36e",
+    "src/reprollm/core/deps.py": "62fe8f756b923b2993e4ac69d6c7f991d0238bfb9f45e5dd0b94e3197c934df0",
+    "tests/unit/core/test_python_exact_versions.py": "6a0d2051de52f981320f462e10b73d7415ba020a82e78bd1549f61da8fec74dc"
+  },
+  "protected_file_bytes_all_unchanged": true,
+  "protected_file_count": 132,
+  "retained_ledger": "r05a-tdd.json",
+  "schema_version": 1,
+  "scope_limits": [
+    "No Conda semantic change",
+    "No include graph changes",
+    "No source basename or root scope selection changes",
+    "No inline-comment/URL diagnostic changes",
+    "No D-41/schema/dependency changes",
+    "No resource Gate B/GPU/network validation performed"
+  ],
+  "snapshot_changes": [],
+  "spec_authority": "Maintainer accepted R05-S A/P; normative update owned/applied by root in this task. C changes await R05-B and closure implementation awaits R06-P.",
+  "stages": [
+    {
+      "green": "wildcard-green",
+      "implementation": "Exclude wildcard from supported single equality clause.",
+      "red": "wildcard-red",
+      "slice": "wildcard"
+    },
+    {
+      "green": "suffix-green",
+      "implementation": "Common validated Python exact helper; Poetry bare version and Pipfile equality retain separate grammar.",
+      "red": "suffix-red",
+      "slice": "local_version_fields"
+    },
+    {
+      "green": "conservative-fields-green",
+      "implementation": "Source-bearing tables remain nonexact; unsupported scalar/array types do not crash.",
+      "red": "conservative-fields-red",
+      "slice": "conservative_tables"
+    },
+    {
+      "green": "vcs-and-marker-green",
+      "implementation": "Reject hg/svn/bzr source tables; decode escaped TOML string tokens using existing tomllib.",
+      "red": [
+        "vcs-fields-red",
+        "escaped-marker-source-red"
+      ],
+      "slice": "VCS_sources_and_escaped_marker_location"
+    },
+    {
+      "green": "duplicate-and-shadow-green",
+      "implementation": "Deduplicate identical operator/version pairs; index only supported dependency array values and skip comments/description.",
+      "red": [
+        "complete-matrix-green",
+        "source-shadow-red"
+      ],
+      "slice": "identical_clauses_and_source_shadow"
+    }
+  ],
+  "status": "FROZEN_FOCUSED_VALIDATION_PASS_FULL_GATE_PENDING",
+  "task": "R05-A",
+  "test_file": "tests/unit/core/test_python_exact_versions.py",
+  "test_inventory": {
+    "accepted_format_oracle": 58,
+    "actual_audit_json_consumers": 8,
+    "escaped_marker_shadow_sources": 4,
+    "identical_clause_controls": 4,
+    "initial_wildcard_and_local_tracers": 3,
+    "optional_and_embedded_pip": 18,
+    "poetry_nonexact_grammar_controls": 5,
+    "transport_tables": 14,
+    "unsupported_field_types": 6,
+    "version_tables_with_extras_and_markers": 12
+  },
+  "unchanged_function_bytes": {
+    "_add_conda_entry": true,
+    "_collect_lockfiles": true,
+    "_declares_from": true,
+    "_parse_environment": true,
+    "_parse_requirements": true,
+    "_requirements_all_pinned": true,
+    "scan_dependencies": true
+  }
+}

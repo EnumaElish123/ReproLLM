@@ -94,7 +94,7 @@
 | Conda 双等号 / 精确三段形式 | 支持 `torch==2.5.1` 与无 wildcard 的 `torch=2.5.1=cuda12.1`；version/build/channel/platform 的保证分别说明 |
 | requirements-as-lock | 只使用合法根内实际 include 闭包；有效声明均精确且没有未解决的引用/语法问题时才满足本轮合同；未引用 sibling 不提供证明 |
 
-这是具体提案，状态仍为 PROPOSED。本次维护者授权修订开发方案，不代替规范文字批准或任何 D-41 代码审阅。
+2026-10-10：维护者对完整 before/after 提案明确回复“接受 A/P+C，执行完整 S2（推荐）”，A/P 与 C 均为 ACCEPTED。见 [固定提案](proposals/R05-S/R05-S_exact_dependencies.md) 与 [具体决定记录](proposals/R05-S/decision.json)。提案快照保留原 PROPOSED 状态及原摘要；接受记录独立保存。Python/requirements 规范随 R05-A 同步，Conda 规范随 R05-B 同步；每项实现仍须独立验收，不以该决定替代 D-41 审阅。
 
 ### 交付与依赖
 
@@ -103,8 +103,8 @@
 3. 核对五项目固定源文件，以独立版本语义解释每项 delta；gold 变化另审，不复制 parser 当前输出。
 4. 通过后同步规范、实现测试、文档与 CHANGELOG；未通过则保持旧行为并准确记录冲突，继续其他任务。
 
-- [ ] 冲突明确登记，官方来源、日期、完整示例和负例可审阅。
-- [ ] 决定与 R05-B 的依赖在总索引、会话报告中一致。
+- [x] 冲突明确登记，官方来源、日期、完整示例和负例可审阅。
+- [x] 具体 A/P+C 决定已记录；R05-B 引用该接受记录。
 - [ ] 没有将“完整版本”误写为完全相同的可安装产物。
 
 建议提案提交：`docs(spec): clarify exact dependency and requirements lock semantics (R05-S)`。

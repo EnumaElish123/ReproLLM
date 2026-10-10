@@ -1,0 +1,51 @@
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_accepted_requirement_modifiers_and_url[[extra]==2.5.1; python_version >= "3.10"-2.5.1-pep621] _
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621', expression = '[extra]==2.5.1; python_version >= "3.10"'
+expected_exact = '2.5.1'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621"])
+    @pytest.mark.parametrize(
+        ("expression", "expected_exact"),
+        [
+            ('[extra]==2.5.1; python_version >= "3.10"', "2.5.1"),
+            (" @ https://example.invalid/torch.whl", None),
+        ],
+    )
+    def test_accepted_requirement_modifiers_and_url(
+        tmp_path: Path, format_name: str, expression: str, expected_exact: str | None
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, expression)
+>       _assert_format_consumers(tmp_path, filename, line, expected_exact)
+
+tests/unit/core/test_python_exact_versions.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+            assert declarations[0].exact_version == expected_exact
+            assert declarations[0].is_exact
+        for declaration in declarations:
+            assert declaration.source_file == filename
+>           assert declaration.line == line
+E           AssertionError: assert 1 == 5
+E            +  where 1 = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='pyproject.toml', line=1).line
+
+tests/unit/core/test_python_exact_versions.py:152: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_accepted_requirement_modifiers_and_url[[extra]==2.5.1; python_version >= "3.10"-2.5.1-pep621]
+1 failed, 3 passed, 85 deselected in 0.60s

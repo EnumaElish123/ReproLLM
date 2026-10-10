@@ -1,0 +1,214 @@
+{
+  "acceptance_review": {
+    "accepted_format_oracle": 58,
+    "actual_audit_json_cases": 8,
+    "all_retained_command_log_hashes_verified": true,
+    "consumer_seams": [
+      "AuditContext.deps declarations/source line",
+      "requirements-as-lock packages",
+      "LockfilePresentRule",
+      "LlmCriticalDepsPinnedRule status/severity/evidence",
+      "actual audit JSON enum/status/warnings"
+    ],
+    "focused_observed_result": "225 passed in 19.04s",
+    "harness_corrections": [
+      {
+        "command": "accepted-matrix-green",
+        "correction": "Use established FindingStatus/Severity enum values; no product enum change.",
+        "initial_false_assumption": "Uppercase JSON enum values"
+      },
+      {
+        "command": "accepted-matrix-green",
+        "correction": "Only torch declarations provide torch file evidence; torch2.5.1 stays an unversioned differently named package and torch import provides evidence. No grammar change.",
+        "initial_false_assumption": "Every parsed declaration belongs to imported torch"
+      }
+    ],
+    "new_tests": 132,
+    "retained_tdd_sha256": "e7d785976959d7427df667e5e180b430188b8437572dacd60886e40375c8f640",
+    "verified_commands": [
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "wildcard-red",
+        "log_sha256": "d7fdd64cdcd5c3524da05f7384655b4a48aab15087675f55e627646bea8efd05",
+        "observed_result": "1 failed"
+      },
+      {
+        "classification": "PRODUCT_GREEN",
+        "exit_code": 0,
+        "label": "wildcard-green",
+        "log_sha256": "d1fb44248c97911e9c5f3c7152b9a884d588e9b463f7a6d6d08e21a97862245d",
+        "observed_result": "1 passed"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "suffix-red",
+        "log_sha256": "d2fbaae323750a654fd7aa12974ad82e613ea91ee19e45b407c27b842c5ae125",
+        "observed_result": "2 failed, 1 passed"
+      },
+      {
+        "classification": "PRODUCT_GREEN",
+        "exit_code": 0,
+        "label": "suffix-green",
+        "log_sha256": "8bbc4d00d6a321a31d4bf47956a4d6cc557f5dc6fab20a80411dc519ba2e1419",
+        "observed_result": "3 passed"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "conservative-fields-red",
+        "log_sha256": "67123602e9bc2a52995cb43257ffab5201cc99b869dfc83da42e5c0178d691ab",
+        "observed_result": "14 failed, 3 passed"
+      },
+      {
+        "classification": "PRODUCT_GREEN",
+        "exit_code": 0,
+        "label": "conservative-fields-green",
+        "log_sha256": "b83eff26fc59014bb6258ee125e3ebe47a28077678f148090e0468feac4db4b8",
+        "observed_result": "17 passed"
+      },
+      {
+        "classification": "INITIAL_MATRIX_FAILURE",
+        "exit_code": 1,
+        "label": "accepted-matrix-green",
+        "log_sha256": "7d494bcfb2413ac9b1a860c45dbb2aed6e4a257f0aa274bc92074579abc71145",
+        "observed_result": "11 failed, 72 passed: 1 product physical-line failure; 8 enum-case and 2 unrelated declaration evidence harness assumptions"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "vcs-fields-red",
+        "log_sha256": "479e43597e48d02bd66b5070fcf42b8911507492a37e810abb53e96eec30dd05",
+        "observed_result": "6 failed, 8 passed, 75 deselected"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "escaped-marker-source-red",
+        "log_sha256": "7c6fae88fc21483b2f9f3c120cbbe4750d1e9ad60597e25f8c1fdeb062164a42",
+        "observed_result": "1 failed, 3 passed, 85 deselected"
+      },
+      {
+        "classification": "PRODUCT_GREEN",
+        "exit_code": 0,
+        "label": "vcs-and-marker-green",
+        "log_sha256": "0521678889dd8b2486ad246f3f130749d0b6bf9f4f7dbb3cf2172dab0130fb17",
+        "observed_result": "18 passed, 71 deselected"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "complete-matrix-green",
+        "log_sha256": "80c5f4fc591b8ef4eec4f96843014e792e391bd1f79710b8ef6878fc5e308f23",
+        "observed_result": "4 failed, 124 passed: identical-clause semantics"
+      },
+      {
+        "classification": "PRODUCT_RED",
+        "exit_code": 1,
+        "label": "source-shadow-red",
+        "log_sha256": "ba98209e0e1edc51a9906417b7c41e883107576923616a2cdf8b201fa1895bee",
+        "observed_result": "4 failed, 128 deselected"
+      },
+      {
+        "classification": "PRODUCT_GREEN",
+        "exit_code": 0,
+        "label": "duplicate-and-shadow-green",
+        "log_sha256": "208d21479de68823c5adead16e8c431e94f1e6e886e97376651aca480cfd712c",
+        "observed_result": "8 passed, 124 deselected"
+      },
+      {
+        "classification": "INTENTIONAL_FORMAT_MUTATION",
+        "exit_code": 0,
+        "label": "format",
+        "log_sha256": "96a977f329ec3c59092d40e041a019b49dcf03ca04055e177aa0ccb8c27234df",
+        "observed_result": "2 files reformatted; source before/after hash difference is expected"
+      },
+      {
+        "classification": "VALIDATION_PASS",
+        "exit_code": 0,
+        "label": "scoped-lint",
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "observed_result": "All checks passed"
+      },
+      {
+        "classification": "VALIDATION_PASS",
+        "exit_code": 0,
+        "label": "focused-final",
+        "log_sha256": "9076c3a572d74f729ba3994bf2f3bdd6a5a226e59bcc562f370713000a49c421",
+        "observed_result": "225 passed in 19.04s"
+      },
+      {
+        "classification": "VALIDATION_PASS",
+        "exit_code": 0,
+        "label": "scoped-format-check",
+        "log_sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+        "observed_result": "2 files already formatted"
+      },
+      {
+        "classification": "VALIDATION_PASS",
+        "exit_code": 0,
+        "label": "mypy",
+        "log_sha256": "f0589b4b402aba3c2eb319e964719fe30b143cab213cf5d528b089bc4d571edc",
+        "observed_result": "Success: no issues found in 122 source files"
+      }
+    ]
+  },
+  "baseline_commit": "a80a84eb61dfc2ad381e67228050f5ecf1995b04",
+  "five_project_gold": "Independent frozen source expects zero semantic delta; no current output promoted to gold.",
+  "independent_prior_public_reproductions": [
+    {
+      "evidence": "independent-vcs-probe.json",
+      "finding": "Pipfile hg/svn/bzr source-bearing tables previously claimed exact; final source and true RED/GREEN regressions now cover each.",
+      "sha256": "0d7df81449fc22ccd71d65ad33afd1ff88e4d4b245018d542a9a51acd3718fa1"
+    },
+    {
+      "evidence": "independent-source-shadow-probe.json",
+      "finding": "Comment/description shadow text previously stole escaped dependency physical line; final source and inline/multiline true RED/GREEN regressions cover both.",
+      "sha256": "9ff6b20eac9bdbea5ced1f51ce13a7a9d08632d92cfde0f3522382d8969f0e80"
+    }
+  ],
+  "limitations": [
+    "TOML index remains bounded to supported existing single-line quoted tokens and continuation arrays; complex multiline/dotted or fully general lexical source positions remain backlog, not a full lexer expansion."
+  ],
+  "owned_files_sha256": {
+    "CHANGELOG.md": "4808b444d8bf9a5ee616f3e71f89c14b8d096d72c0bc243bb4c50aa11b7de36e",
+    "docs/plan/01_specification.md": "c2883f30aaa1e91e3c093ff9e86a6ba26ae5de0ae81460347395ee2063555830",
+    "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md": "cd9febd078785a0ff4c8a56fde4d7ec360b9c357ea625c237470b6485a18ef6f",
+    "src/reprollm/core/deps.py": "62fe8f756b923b2993e4ac69d6c7f991d0238bfb9f45e5dd0b94e3197c934df0",
+    "tests/unit/core/test_python_exact_versions.py": "6a0d2051de52f981320f462e10b73d7415ba020a82e78bd1549f61da8fec74dc"
+  },
+  "remaining_validation": [
+    "root 14-command full quality",
+    "fresh five-pinned-project Gate A",
+    "main commit/push and exact SHA CI"
+  ],
+  "resource_gates": "No GPU, provider, credential or budget validation executed; unavailable historical resource Gate B remains BLOCKED.",
+  "review_execution": "Read-only final source/test/contract/log review. No product command or pytest run after final freeze; root full quality is serialized.",
+  "schema_version": 1,
+  "source_and_contract_review": {
+    "accepted_contract": "R05-S A/P+C accepted; this implementation applies A/P exact semantics only. Conda implementation and normative text remain R05-B; requirements closure implementation remains R06-P.",
+    "changed_product_files": [
+      "src/reprollm/core/deps.py"
+    ],
+    "exact_constraint_boundary": "One distinct valid non-wildcard == PEP440 version; Poetry additionally allows a valid bare PEP440 version. Raw supported suffix/local/pre/post/dev/epoch value is retained.",
+    "negative_boundaries": [
+      "range/wildcard/compatible/arbitrary equality/multiple distinct clauses are nonexact",
+      "URL/VCS/path/file and hg/svn/bzr version tables are nonexact",
+      "unsupported scalar/array and nonstring version fields are nonexact without new conversion"
+    ],
+    "protected_areas": "No schema, engine, redaction, dependency, format ownership, filesystem scanner, Conda, include graph or new multiproject-scope changes.",
+    "source_index_boundary": "Decode existing single-line TOML quoted value tokens with tomllib; index actual project dependency/optional array values rather than comment/description shadow strings; physical continuation lines retained.",
+    "unchanged_function_bytes": {
+      "_add_conda_entry": true,
+      "_collect_lockfiles": true,
+      "_declares_from": true,
+      "_parse_environment": true,
+      "_parse_requirements": true,
+      "_requirements_all_pinned": true,
+      "scan_dependencies": true
+    }
+  },
+  "status": "PASS_SOURCE_AND_ACCEPTANCE_REVIEW_FULL_QUALITY_AND_GATE_A_PENDING",
+  "task": "R05-A"
+}

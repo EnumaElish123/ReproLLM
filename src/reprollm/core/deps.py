@@ -16,7 +16,9 @@ from pathlib import Path
 
 import yaml
 from packaging.requirements import Requirement
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.utils import canonicalize_name
+from packaging.version import InvalidVersion, Version
 
 from reprollm.core._toml import tomllib
 from reprollm.core.scanner import RepoScanner, content_source_path
@@ -29,6 +31,48 @@ _EXACT_VERSION_RE = re.compile(r"^\d+(\.\d+)*$")
 
 def canonical_dep_name(name: str) -> str:
     return canonicalize_name(_NAME_OVERRIDES.get(name.strip().lower(), name.strip()))
+
+
+def _python_exact_version(specifier: SpecifierSet) -> str | None:
+    clauses = sorted({(clause.operator, clause.version) for clause in specifier})
+    if len(clauses) != 1 or clauses[0][0] != "==" or "*" in clauses[0][1]:
+        return None
+    version = clauses[0][1]
+    try:
+        Version(version)
+    except InvalidVersion:
+        return None
+    return version
+
+
+def _version_field_exact(version: str, *, allow_bare: bool) -> str | None:
+    version = version.strip()
+    if allow_bare:
+        try:
+            Version(version)
+        except InvalidVersion:
+            pass
+        else:
+            return version
+    try:
+        specifier = SpecifierSet(version)
+    except InvalidSpecifier:
+        return None
+    return _python_exact_version(specifier)
+
+
+def _dependency_version_field(value: object, *, allow_bare: bool) -> tuple[str | None, str | None]:
+    version = value.get("version") if isinstance(value, dict) else value
+    if not isinstance(version, str):
+        return None, None
+    specifier = version.strip() or None
+    # A version alongside a transport source does not prove a Python version pin.
+    if isinstance(value, dict) and any(
+        key in value for key in ("url", "git", "path", "file", "hg", "svn", "bzr")
+    ):
+        return specifier, None
+    exact = _version_field_exact(version, allow_bare=allow_bare)
+    return (None if exact is not None else specifier), exact
 
 
 @dataclass(frozen=True)
@@ -154,10 +198,7 @@ def _add_requirement_line(line: str, path: str, lineno: int, result: Declaration
     except Exception:  # noqa: BLE001 - never crash on odd requirements syntax
         result.unparsed.append(f"{path}:{lineno}: {line}")
         return
-    specs = list(req.specifier)
-    exact = None
-    if len(specs) == 1 and specs[0].operator == "==":
-        exact = specs[0].version
+    exact = _python_exact_version(req.specifier)
     result.declarations.append(
         DependencyDeclaration(
             name=canonical_dep_name(req.name),
@@ -190,17 +231,29 @@ class _TomlLineIndex:
         self._cursor: dict[str, int] = {}  # monotonic consumption per bucket
 
         section = ""
+        requirement_array_depth = 0
         for lineno, raw in enumerate(text.splitlines(), start=1):
             stripped = raw.strip()
             header = stripped.startswith("[") and stripped.endswith("]")
             if header:
                 section = self._normalize_header(stripped)
+                requirement_array_depth = 0
                 if section:
                     self._header_lines.setdefault(section, lineno)
                 continue
             if not section:
                 continue
             if section in ("project", "project.optional-dependencies"):
+                stripped = _toml_line_without_comment(stripped)
+                if not requirement_array_depth:
+                    key = _leading_key(stripped)
+                    if key is None or (section == "project" and key != "dependencies"):
+                        continue
+                    stripped = stripped.split("=", 1)[1].lstrip()
+                    if not stripped.startswith("["):
+                        continue
+                unquoted = _TOML_QUOTED_RE.sub("", stripped)
+                requirement_array_depth += unquoted.count("[") - unquoted.count("]")
                 for entry in _quoted_strings(stripped):
                     bucket = self._requirements.setdefault(section, {})
                     bucket.setdefault(entry, []).append(lineno)
@@ -246,13 +299,25 @@ class _TomlLineIndex:
         return self._header_lines.get(section, 1)
 
 
-_TOML_QUOTED_RE = re.compile(r'"([^"\\]+)"|\'([^\'\\]+)\'')
+_TOML_QUOTED_RE = re.compile(r'"(?:[^"\\]|\\.)*"|\'[^\']*\'')
+
+
+def _toml_line_without_comment(line: str) -> str:
+    unquoted = _TOML_QUOTED_RE.sub(lambda match: " " * len(match.group(0)), line)
+    comment = unquoted.find("#")
+    return line if comment < 0 else line[:comment]
 
 
 def _quoted_strings(line: str) -> list[str]:
     entries = []
     for match in _TOML_QUOTED_RE.finditer(line):
-        entries.append(match.group(1) if match.group(1) is not None else match.group(2))
+        # Match the decoded dependency string, including escaped marker quotes.
+        try:
+            value = tomllib.loads(f"value = {match.group(0)}")["value"]
+        except tomllib.TOMLDecodeError:
+            continue
+        if isinstance(value, str):
+            entries.append(value)
     return entries
 
 
@@ -315,14 +380,7 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     if isinstance(poetry_deps, dict):
         header = index.header_line("tool.poetry.dependencies")
         for name, value in poetry_deps.items():
-            version = value if isinstance(value, str) else value.get("version")
-            exact = None
-            specifier = None
-            if isinstance(version, str):
-                if _EXACT_VERSION_RE.match(version.strip()):
-                    exact = version.strip()
-                else:
-                    specifier = version.strip() or None
+            specifier, exact = _dependency_version_field(value, allow_bare=True)
             lineno = index.key_line("tool.poetry.dependencies", name, header)
             result.declarations.append(
                 DependencyDeclaration(
@@ -409,15 +467,7 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
         if not isinstance(table, dict):
             continue
         for name, value in table.items():
-            version = value if isinstance(value, str) else value.get("version")
-            exact = None
-            specifier = None
-            if isinstance(version, str):
-                spec = version.strip()
-                if spec.startswith("==") and _EXACT_VERSION_RE.match(spec[2:]):
-                    exact = spec[2:]
-                else:
-                    specifier = spec or None
+            specifier, exact = _dependency_version_field(value, allow_bare=False)
             lineno = index.key_line("pipfile.packages", name, header)
             result.declarations.append(
                 DependencyDeclaration(

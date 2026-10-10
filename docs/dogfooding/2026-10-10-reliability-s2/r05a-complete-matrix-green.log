@@ -1,0 +1,145 @@
+........................................................................ [ 56%]
+...............................................FFFF.....                 [100%]
+=================================== FAILURES ===================================
+__ test_repeated_identical_clause_remains_one_exact_constraint[requirements] ___
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'requirements'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    def test_repeated_identical_clause_remains_one_exact_constraint(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, "==2.5.1,==2.5.1")
+>       _assert_format_consumers(tmp_path, filename, line, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:329: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'requirements.txt', line = 2, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+>           assert declarations[0].exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version=None, source_file='requirements.txt', line=2).exact_version
+
+tests/unit/core/test_python_exact_versions.py:148: AssertionError
+_____ test_repeated_identical_clause_remains_one_exact_constraint[pep621] ______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pep621'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    def test_repeated_identical_clause_remains_one_exact_constraint(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, "==2.5.1,==2.5.1")
+>       _assert_format_consumers(tmp_path, filename, line, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:329: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 5, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+>           assert declarations[0].exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version=None, source_file='pyproject.toml', line=5).exact_version
+
+tests/unit/core/test_python_exact_versions.py:148: AssertionError
+_____ test_repeated_identical_clause_remains_one_exact_constraint[poetry] ______
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'poetry'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    def test_repeated_identical_clause_remains_one_exact_constraint(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, "==2.5.1,==2.5.1")
+>       _assert_format_consumers(tmp_path, filename, line, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:329: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'pyproject.toml', line = 4, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+>           assert declarations[0].exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1,==2.5.1', exact_version=None, source_file='pyproject.toml', line=4).exact_version
+
+tests/unit/core/test_python_exact_versions.py:148: AssertionError
+_____ test_repeated_identical_clause_remains_one_exact_constraint[pipfile] _____
+
+tmp_path = PosixPath('<test-tmp>')
+format_name = 'pipfile'
+
+    @pytest.mark.parametrize("format_name", ["requirements", "pep621", "poetry", "pipfile"])
+    def test_repeated_identical_clause_remains_one_exact_constraint(
+        tmp_path: Path, format_name: str
+    ) -> None:
+        filename, line = _write_format(tmp_path, format_name, "==2.5.1,==2.5.1")
+>       _assert_format_consumers(tmp_path, filename, line, "2.5.1")
+
+tests/unit/core/test_python_exact_versions.py:329: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+filename = 'Pipfile', line = 2, expected_exact = '2.5.1'
+
+    def _assert_format_consumers(
+        tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    ) -> None:
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        if expected_exact is None:
+            assert all(item.exact_version is None and not item.is_exact for item in declarations)
+        else:
+            assert len(declarations) == 1
+            assert declarations[0].name == "torch"
+            assert declarations[0].display_name == "torch"
+>           assert declarations[0].exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1,==2.5.1', exact_version=None, source_file='Pipfile', line=2).exact_version
+
+tests/unit/core/test_python_exact_versions.py:148: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_repeated_identical_clause_remains_one_exact_constraint[requirements]
+FAILED tests/unit/core/test_python_exact_versions.py::test_repeated_identical_clause_remains_one_exact_constraint[pep621]
+FAILED tests/unit/core/test_python_exact_versions.py::test_repeated_identical_clause_remains_one_exact_constraint[poetry]
+FAILED tests/unit/core/test_python_exact_versions.py::test_repeated_identical_clause_remains_one_exact_constraint[pipfile]
+4 failed, 124 passed in 5.81s

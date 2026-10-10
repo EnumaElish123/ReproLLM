@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R05-A (spec §12.2): distinguish Python exact versions from wildcard, range,
+  arbitrary-equality and transport declarations. Recognize supported local,
+  pre/post/dev and epoch versions in each format, including Poetry's bare
+  version fields; keep declaration, requirements-lock and audit findings in
+  agreement. Preserve physical TOML dependency lines with escaped markers.
+
 - R06-G: check the resolved project boundary before static content reads and
   cache reuse, including user profile overrides and inherited-name validation.
   Limit built-in resource reads to shipped names. Refuse external targets with

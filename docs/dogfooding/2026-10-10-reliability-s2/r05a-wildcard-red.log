@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_wildcard_does_not_prove_exact_version_lock_or_critical_pin ________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_wildcard_does_not_prove_exact_version_lock_or_critical_pin(tmp_path: Path) -> None:
+        (tmp_path / "requirements.txt").write_text("# input\n\ntorch==2.5.*\n")
+        context = AuditContext(tmp_path)
+        declarations = context.deps.declarations
+        assert len(declarations) == 1
+        declaration = declarations[0]
+        assert declaration.name == "torch"
+        assert declaration.source_file == "requirements.txt"
+        assert declaration.line == 3
+        assert declaration.specifier == "==2.5.*"
+>       assert declaration.exact_version is None
+E       AssertionError: assert '2.5.*' is None
+E        +  where '2.5.*' = DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.*', exact_version='2.5.*', source_file='requirements.txt', line=3).exact_version
+
+tests/unit/core/test_python_exact_versions.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_python_exact_versions.py::test_wildcard_does_not_prove_exact_version_lock_or_critical_pin
+1 failed in 0.33s
