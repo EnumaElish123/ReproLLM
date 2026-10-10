@@ -1,0 +1,708 @@
+{
+  "artifacts_are_synthetic": true,
+  "cases": [
+    {
+      "code_locations": [
+        "src/reprollm/core/manifest_scaffold.py:341",
+        "src/reprollm/core/manifest_scaffold.py:439",
+        "src/reprollm/core/manifest_scaffold.py:465"
+      ],
+      "elapsed_seconds": 0.478,
+      "exit_code": 2,
+      "initial_manifest_independently_validated": true,
+      "observation": {
+        "auxiliary_created": true,
+        "manifest_exists": false,
+        "old_bytes_preserved": false
+      },
+      "scenario": "Existing valid saved-project manifest; Chinese directory basename; init --force --profiles inference.",
+      "status": "STILL_REPRODUCES",
+      "task": "R01"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/lock/writer.py:92",
+        "src/reprollm/lock/resolver.py:69",
+        "src/reprollm/integrations/_resolution.py:43"
+      ],
+      "elapsed_seconds": 0.8001,
+      "exit_code": 0,
+      "observation": [
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "plain-key",
+          "section": "inference",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "prefixed-key",
+          "section": "inference",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "absolute-cache",
+          "section": "inference",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "nested-list",
+          "section": "inference",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "plain-key",
+          "section": "training",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "prefixed-key",
+          "section": "training",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "absolute-cache",
+          "section": "training",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "nested-list",
+          "section": "training",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "plain-key",
+          "section": "privacy",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "prefixed-key",
+          "section": "privacy",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "absolute-cache",
+          "section": "privacy",
+          "unsafe_value_persisted": true
+        },
+        {
+          "cli_exit": 0,
+          "diagnostic_repeats_value": false,
+          "old_lock_preserved": false,
+          "scenario": "nested-list",
+          "section": "privacy",
+          "unsafe_value_persisted": true
+        }
+      ],
+      "status": "STILL_REPRODUCES",
+      "task": "R02"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/bindings.py:50",
+        "src/reprollm/run/wrapper.py:85",
+        "src/reprollm/run/capture.py:98",
+        "src/reprollm/run/privacy.py:28"
+      ],
+      "elapsed_seconds": 0.0704,
+      "exit_code": 0,
+      "observation": {
+        "bound_structured_secret_persisted": true,
+        "child_exit": 0,
+        "config_snapshot_leaks": true,
+        "leaking_artifact_classes": [
+          "run.json",
+          "files/<sha256>"
+        ],
+        "run_json_leaks": true,
+        "warnings": []
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R02-R"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/diff/state.py:151",
+        "src/reprollm/diff/state.py:209",
+        "src/reprollm/diff/state.py:223"
+      ],
+      "elapsed_seconds": 0.217,
+      "exit_code": 0,
+      "observation": {
+        "high_gate_exit": 0,
+        "runs": [
+          {
+            "child_exit": 0,
+            "consumed": 0.9,
+            "effective_then_two_merges": [
+              0.1,
+              0.1,
+              0.1
+            ],
+            "ordered_observations": [
+              0.1,
+              0.9
+            ],
+            "roundtrip_then_merge": 0.1,
+            "side": "a"
+          },
+          {
+            "child_exit": 0,
+            "consumed": 0.1,
+            "effective_then_two_merges": [
+              0.1,
+              0.1,
+              0.1
+            ],
+            "ordered_observations": [
+              0.9,
+              0.1
+            ],
+            "roundtrip_then_merge": 0.1,
+            "side": "b"
+          }
+        ],
+        "temperature_diff_missing": true
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R03"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/run/wrapper.py:224",
+        "src/reprollm/core/envinfo.py:52"
+      ],
+      "elapsed_seconds": 0.2539,
+      "exit_code": 0,
+      "observation": {
+        "child_exit": 0,
+        "child_metadata": {
+          "torch": "0.0.123"
+        },
+        "environment_source_or_phase_fields": [],
+        "recorder_packages": {},
+        "warnings": []
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R04-A"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/run/wrapper.py:267",
+        "src/reprollm/run/wrapper.py:279",
+        "src/reprollm/core/bindings.py:105"
+      ],
+      "elapsed_seconds": 0.0653,
+      "exit_code": 0,
+      "observation": {
+        "captured_hash_matches_after_child": true,
+        "captured_hash_matches_initial": false,
+        "child_consumed": 0.1,
+        "child_exit": 0,
+        "effective_state_temperature": 0.9,
+        "observed_after_child": 0.9,
+        "warnings": []
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R04-B"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/deps.py:140",
+        "src/reprollm/core/deps.py:261",
+        "src/reprollm/core/deps.py:384"
+      ],
+      "elapsed_seconds": 0.0036,
+      "exit_code": 0,
+      "observation": [
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.*",
+              "is_exact": true,
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.*"
+            }
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "torch"
+              ],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "scenario": "requirements-wildcard",
+          "unparsed": []
+        },
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1+cu121",
+              "is_exact": true,
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1+cu121"
+            }
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "torch"
+              ],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "scenario": "requirements-local",
+          "unparsed": []
+        },
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.*",
+              "is_exact": true,
+              "line": 4,
+              "name": "torch",
+              "source_file": "pyproject.toml",
+              "specifier": "==2.5.*"
+            }
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "scenario": "pep621-wildcard",
+          "unparsed": []
+        },
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": null,
+              "is_exact": false,
+              "line": 2,
+              "name": "torch",
+              "source_file": "pyproject.toml",
+              "specifier": "2.5.1+cu121"
+            }
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "scenario": "poetry-local",
+          "unparsed": []
+        },
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": null,
+              "is_exact": false,
+              "line": 2,
+              "name": "torch",
+              "source_file": "pyproject.toml",
+              "specifier": "2.5.1rc1"
+            }
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "scenario": "poetry-pre",
+          "unparsed": []
+        },
+        {
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": null,
+              "is_exact": false,
+              "line": 2,
+              "name": "torch",
+              "source_file": "Pipfile",
+              "specifier": "==2.5.1+cu121"
+            }
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "scenario": "pipfile-local",
+          "unparsed": []
+        }
+      ],
+      "status": "STILL_REPRODUCES",
+      "task": "R05-A"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/deps.py:356",
+        "docs/plan/01_specification.md:803"
+      ],
+      "elapsed_seconds": 0.0009,
+      "exit_code": 0,
+      "observation": {
+        "current_parser": {
+          "declarations": [
+            {
+              "display_name": "python",
+              "exact_version": "3.11",
+              "is_exact": true,
+              "line": 1,
+              "name": "python",
+              "source_file": "environment.yml",
+              "specifier": null
+            },
+            {
+              "display_name": "torch",
+              "exact_version": "2.5",
+              "is_exact": true,
+              "line": 2,
+              "name": "torch",
+              "source_file": "environment.yml",
+              "specifier": null
+            },
+            {
+              "display_name": "torch",
+              "exact_version": null,
+              "is_exact": false,
+              "line": 3,
+              "name": "torch",
+              "source_file": "environment.yml",
+              "specifier": ""
+            },
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "is_exact": true,
+              "line": 4,
+              "name": "torch",
+              "source_file": "environment.yml",
+              "specifier": null
+            }
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "unparsed": []
+        },
+        "known_spec_conflict": "spec section 12.2 permits single-equals full-version pins; R05-S concrete decision required before R05-B"
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R05-B"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/deps.py:66",
+        "src/reprollm/rules/env.py:204"
+      ],
+      "elapsed_seconds": 0.0691,
+      "exit_code": 0,
+      "observation": {
+        "audit_exit": 0,
+        "candidate_paths": [
+          "pyproject.toml",
+          "zz_tools/pyproject.toml"
+        ],
+        "dependencies": {
+          "declarations": [],
+          "lockfiles": [],
+          "manifest_present": false,
+          "unparsed": []
+        },
+        "selected_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": null,
+                "note": "none of the manifest names exist",
+                "path": null,
+                "value": null
+              }
+            ],
+            "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+            "level": 0,
+            "message": "no dependency manifest found (expected pyproject.toml, requirements*.txt, environment.yml, uv.lock, poetry.lock, or Pipfile)",
+            "profile_origin": [],
+            "rule_id": "env.dependency_manifest_present",
+            "severity": "CRITICAL",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          },
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [],
+            "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+            "level": 0,
+            "message": "The required Python version is declared.",
+            "profile_origin": [],
+            "rule_id": "env.python_version_declared",
+            "severity": "PASS",
+            "severity_origin": "default",
+            "status": "pass",
+            "suppressed_reason": null
+          }
+        ]
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R06-A"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/scanner.py:157",
+        "src/reprollm/core/scanner.py:102"
+      ],
+      "elapsed_seconds": 0.0025,
+      "exit_code": 0,
+      "observation": {
+        "direct_absolute_path_reads_external": true,
+        "explicit_max_bytes_reads_external": true,
+        "external_content_open_count": 8,
+        "external_package_imported_as_declaration": true,
+        "external_python_import_scanned": true,
+        "warnings": []
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R06-G"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/deps.py:110",
+        "src/reprollm/core/deps.py:492",
+        "src/reprollm/core/deps.py:502"
+      ],
+      "elapsed_seconds": 0.0025,
+      "exit_code": 0,
+      "observation": {
+        "actual_root_packages": [],
+        "escape": {
+          "declarations": [
+            {
+              "display_name": "openai",
+              "exact_version": "1.51.0",
+              "is_exact": true,
+              "line": 1,
+              "name": "openai",
+              "source_file": "../external-requirements.txt",
+              "specifier": "==1.51.0"
+            }
+          ],
+          "lockfiles": [
+            {
+              "packages": [],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "unparsed": []
+        },
+        "expected_reachable_root_packages": [
+          "torch"
+        ],
+        "root_include_closure": {
+          "declarations": [
+            {
+              "display_name": "transformers",
+              "exact_version": "4.45.2",
+              "is_exact": true,
+              "line": 1,
+              "name": "transformers",
+              "source_file": "deps/requirements-unused.txt",
+              "specifier": "==4.45.2"
+            },
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "is_exact": true,
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/base.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "torch",
+                "transformers"
+              ],
+              "path": "deps/requirements-unused.txt"
+            },
+            {
+              "packages": [],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "unparsed": []
+        }
+      },
+      "status": "STILL_REPRODUCES",
+      "task": "R06-P"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/core/scanner.py:81",
+        "src/reprollm/core/scanner.py:113"
+      ],
+      "elapsed_seconds": 0.2706,
+      "exit_code": 0,
+      "observation": [
+        {
+          "business_candidate_selected": true,
+          "imports": [
+            "peft"
+          ],
+          "listing": "fallback",
+          "python_candidates_selected": 1,
+          "warnings": []
+        },
+        {
+          "business_candidate_selected": false,
+          "imports": [
+            "vllm"
+          ],
+          "listing": "git",
+          "python_candidates_selected": 500,
+          "warnings": [
+            "python file scan truncated to 500 of 502 files"
+          ]
+        }
+      ],
+      "status": "STILL_REPRODUCES",
+      "task": "R07-A"
+    },
+    {
+      "code_locations": [
+        "src/reprollm/cli/audit.py:112",
+        "src/reprollm/core/scanner.py:118"
+      ],
+      "elapsed_seconds": 0.6893,
+      "exit_code": 0,
+      "observation": [
+        {
+          "exit_code": 0,
+          "json_stdout_valid": null,
+          "mode": "default-text",
+          "stderr": "",
+          "stderr_discloses_truncation": false,
+          "stdout_discloses_truncation": false
+        },
+        {
+          "exit_code": 0,
+          "json_stdout_valid": true,
+          "mode": "default-json",
+          "stderr": "",
+          "stderr_discloses_truncation": false,
+          "stdout_discloses_truncation": false
+        },
+        {
+          "exit_code": 0,
+          "json_stdout_valid": true,
+          "mode": "verbose-json",
+          "stderr": "scan: python file scan truncated to 500 of 501 files",
+          "stderr_discloses_truncation": true,
+          "stdout_discloses_truncation": false
+        }
+      ],
+      "status": "STILL_REPRODUCES",
+      "task": "R07-B"
+    }
+  ],
+  "date": "2026-10-10",
+  "delegated_driver_case_elapsed_seconds": 2.4452,
+  "delegated_driver_command": [
+    "<locked-python>",
+    "<synthetic-baseline-driver>"
+  ],
+  "delegated_driver_exit_code": 0,
+  "environment": "Linux",
+  "gpu_used": false,
+  "head_change_review": {
+    "changed_product_paths": [],
+    "checked_paths": [
+      "src",
+      "tests",
+      "schemas",
+      "pyproject.toml",
+      "uv.lock"
+    ],
+    "command": [
+      "git",
+      "diff",
+      "--name-only",
+      "<review-head>",
+      "<source-head>",
+      "--",
+      "src",
+      "tests",
+      "schemas",
+      "pyproject.toml",
+      "uv.lock"
+    ],
+    "commits": [
+      {
+        "sha": "781366e89362a54d9036d3aed070fad169ba8204",
+        "subject": "docs(plan): add reliability execution plans and agent prompts"
+      },
+      {
+        "sha": "d7d9d63390335788e1804e0b5af87c6d64f319cd",
+        "subject": "docs(plan): refine reliability scope after code review (PLAN-REVISE)"
+      }
+    ],
+    "exit_code": 0,
+    "review_head": "590ee1739484bd21e21594e294e7ddf14bfd093f",
+    "source_head": "d7d9d63390335788e1804e0b5af87c6d64f319cd"
+  },
+  "heavy_packages_installed_or_imported": false,
+  "kind": "R00_current_baseline_reproductions",
+  "network_used": false,
+  "product_version": "0.6.1",
+  "python": "3.12.14",
+  "schema_version": 1,
+  "scope_note": "Minimum task-card reproductions establish the current defect baseline; planned repair acceptance matrices are not executed here. No raw secret canary, machine path, or disposable run directory is retained.",
+  "source_evidence_sha256": {
+    "delegated-driver": "dcece833c40fdc49936b4ded9d9a6decf7870693573a780c88a0078622b6b36b",
+    "delegated-original-results": "f4300f9428d6a9cbc07ad9ce380f1bd6bdf7a7e4a08595d952afbd711e164777",
+    "r01-original-result": "d36d29df4d1a355247a68f35690d52ef2226b00b69dd523d2b9e8159a1350fc5"
+  },
+  "source_head": "d7d9d63390335788e1804e0b5af87c6d64f319cd"
+}

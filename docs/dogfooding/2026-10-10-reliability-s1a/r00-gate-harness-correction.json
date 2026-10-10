@@ -1,0 +1,46 @@
+{
+  "correction": "Require an AST subtree anchored at the exact reported physical line to contain the exact HF ID literal. Do not change gold or product output.",
+  "initial_failed_gate": "baseline-initial-provenance-failure/summary.json",
+  "initial_full_report_and_manifest_digests_passed": true,
+  "initial_product_command_exits_all_zero": true,
+  "initial_product_commands": 45,
+  "kind": "independent_source_anchor_correction",
+  "old_expectation": "HF literal must be present on the detection anchor line itself.",
+  "proof": [
+    {
+      "hint": {
+        "line": 1063,
+        "path": "fastchat/model/model_adapter.py",
+        "value": "EleutherAI/pythia-160m"
+      },
+      "source_anchor_line": 1063,
+      "source_ast_node_type": "Assign",
+      "source_span": "tokenizer = AutoTokenizer.from_pretrained(\n            \"EleutherAI/pythia-160m\", revision=revision\n        )",
+      "value_is_present_in_anchored_expression": true
+    },
+    {
+      "hint": {
+        "line": 52,
+        "path": "fastchat/model/rwkv_model.py",
+        "value": "EleutherAI/pythia-160m"
+      },
+      "source_anchor_line": 52,
+      "source_ast_node_type": "Assign",
+      "source_span": "self.tokenizer = AutoTokenizer.from_pretrained(\n                \"EleutherAI/pythia-160m\", use_fast=True\n            )",
+      "value_is_present_in_anchored_expression": true
+    },
+    {
+      "hint": {
+        "line": 96,
+        "path": "fastchat/serve/monitor/dataset_release_scripts/lmsys_chat_1m/compute_stats.py",
+        "value": "lmsys/vicuna-7b-v1.5"
+      },
+      "source_anchor_line": 96,
+      "source_ast_node_type": "Assign",
+      "source_span": "tokenizer = transformers.AutoTokenizer.from_pretrained(\n    \"lmsys/vicuna-7b-v1.5\", use_fast=False\n)",
+      "value_is_present_in_anchored_expression": true
+    }
+  ],
+  "reviewed_contract": "HF hints record the physical start line of the AST source expression; multiline from_pretrained calls may put the literal on a later physical line. Complete reviewed hints and anchor lineno remain unchanged.",
+  "schema_version": 1
+}

@@ -1,0 +1,930 @@
+{
+  "commands": [
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "elapsed_seconds": 20.786285,
+      "expected_exit": 0,
+      "label": "L0-default",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9f53042ea0cb0550fdab6bb209c271ebf7bd41c2a4ddfa65b6044be1b78d16df",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "-v",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "elapsed_seconds": 20.306189,
+      "expected_exit": 0,
+      "label": "L0-verbose",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "da6306fc463667fce64b9d4a17b1d57648003613cf5bc320cc2b1061c1ae0f42",
+      "stdout_sha256": "363888f70aecc29943a248a8a4cd98fe2a20d748dea216753abd0481ac05cfbe",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.context import AuditContext; print(json.dumps(AuditContext(Path(sys.argv[2]),level=0).detection.hints.model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<pinned-sources>/lm-evaluation-harness"
+      ],
+      "cwd": "<pinned-sources>/lm-evaluation-harness",
+      "elapsed_seconds": 19.923041,
+      "expected_exit": 0,
+      "label": "hints",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4c6204543692307379ee0a4207e23fb6db8ce0aefa91af1bdb0d99d59b8d69ca",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<pinned-sources>/lm-evaluation-harness",
+        "<clone>"
+      ],
+      "cwd": "<implementation>",
+      "elapsed_seconds": 0.424543,
+      "expected_exit": 0,
+      "label": "clone",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "6038894cf3f60a554223398046c30d8e55eab0f52940fc0d33f33659d4f37492",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "b954108c9baaaa934b4ad842033b31a97ee30816"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 2.013237,
+      "expected_exit": 0,
+      "label": "checkout",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "7e8ae4af5b79397a8a7cbc4fca68670d274d5f84ed6619216f52bac0d9f28a88",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "git@github.com:EleutherAI/lm-evaluation-harness.git"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.03237,
+      "expected_exit": 0,
+      "label": "clone-origin",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "init",
+        "."
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 30.798051,
+      "expected_exit": 0,
+      "label": "init",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d6885f2eae97c56d93fead77fa91fab2c9e6e40cc33c6cbb99a4ee049c02fcc5",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 20.432627,
+      "expected_exit": 0,
+      "label": "L1-default",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cab19b8e6e885514ce1b008a01c233eaed07d7eddc738cf11365a2b34b7c0e29",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.yaml_io import load_manifest; print(json.dumps(load_manifest(Path(sys.argv[2])).model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<clone>/reprollm.yaml"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.218147,
+      "expected_exit": 0,
+      "label": "manifest-load",
+      "name": "lm-evaluation-harness",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0770c480633462c0d96c13bbe6c2ed75ef5ce18aa489f91764c48c4a6ad7bafe",
+      "target_sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "elapsed_seconds": 1.682802,
+      "expected_exit": 0,
+      "label": "L0-default",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fbc29c5c7309c42a0becb5b8e0b172d6022bf137a8148b73452ffc89f954585b",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "-v",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "elapsed_seconds": 1.685715,
+      "expected_exit": 0,
+      "label": "L0-verbose",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d5fed08acb34a24681ee9b447411eb85878a84d73be409cc9cfce13bb58bc406",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.context import AuditContext; print(json.dumps(AuditContext(Path(sys.argv[2]),level=0).detection.hints.model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<pinned-sources>/FastChat"
+      ],
+      "cwd": "<pinned-sources>/FastChat",
+      "elapsed_seconds": 1.466991,
+      "expected_exit": 0,
+      "label": "hints",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d10b098b7de90dd422ed4ab225edd57bb403c5b201789dfa80c9bd4e2b484d23",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<pinned-sources>/FastChat",
+        "<clone>"
+      ],
+      "cwd": "<implementation>",
+      "elapsed_seconds": 0.523455,
+      "expected_exit": 0,
+      "label": "clone",
+      "name": "FastChat",
+      "stderr_sha256": "175592fd1024f7a1f63115b87b2fd05184fa7c253833085ead4d0f2554411a71",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "587d5cfa1609a43d192cedb8441cac3c17db105d"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.164316,
+      "expected_exit": 0,
+      "label": "checkout",
+      "name": "FastChat",
+      "stderr_sha256": "f2cbd59d1f185d4aa621481ae6221ba7dc40a1f764eb510edb416e7b97a55fad",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/lm-sys/FastChat.git"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.030368,
+      "expected_exit": 0,
+      "label": "clone-origin",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "init",
+        "."
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 1.776699,
+      "expected_exit": 0,
+      "label": "init",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8ca7428187ef3b46653093e86030c50f3c1b135a6048e3876f423e71fba9f54c",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 1.675129,
+      "expected_exit": 0,
+      "label": "L1-default",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6d8cebb9c9167054ce586f00bdc0817a22864993827d5a4837f18117effae43d",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.yaml_io import load_manifest; print(json.dumps(load_manifest(Path(sys.argv[2])).model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<clone>/reprollm.yaml"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.231,
+      "expected_exit": 0,
+      "label": "manifest-load",
+      "name": "FastChat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "8a9625ca36b53fc406128ba0771719f22f6dbba5e6fc55e56980c7b07508bb3d",
+      "target_sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "elapsed_seconds": 2.319555,
+      "expected_exit": 0,
+      "label": "L0-default",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0cb9d171a9f1ca0f3efba89a198b5e63d1cc9f148c3487885d14369485d261a9",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "-v",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "elapsed_seconds": 2.319052,
+      "expected_exit": 0,
+      "label": "L0-verbose",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ca7d12debde496ab8a3f3726a2013a409be2f08b856282d7727ec8e3e155b63d",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.context import AuditContext; print(json.dumps(AuditContext(Path(sys.argv[2]),level=0).detection.hints.model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<pinned-sources>/LlamaFactory"
+      ],
+      "cwd": "<pinned-sources>/LlamaFactory",
+      "elapsed_seconds": 2.089777,
+      "expected_exit": 0,
+      "label": "hints",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "095ea7787a345dfc9379a4c7a8111515a74b2d68c2f2d7083950daecd100b897",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<pinned-sources>/LlamaFactory",
+        "<clone>"
+      ],
+      "cwd": "<implementation>",
+      "elapsed_seconds": 0.387569,
+      "expected_exit": 0,
+      "label": "clone",
+      "name": "LlamaFactory",
+      "stderr_sha256": "c1b63a4af5ee5b8b172213f8d44b1828a93c1e02023a77586885ddd8be226840",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.16165,
+      "expected_exit": 0,
+      "label": "checkout",
+      "name": "LlamaFactory",
+      "stderr_sha256": "588b6c68d250a087edd24ce963b15a8bd6415290dac9a99b84ae508ed1edd2f1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/hiyouga/LlamaFactory.git"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.028209,
+      "expected_exit": 0,
+      "label": "clone-origin",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "init",
+        "."
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 2.496762,
+      "expected_exit": 0,
+      "label": "init",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "112e1f487c5562e9fa76cc37839fc21904c5bfa577b5afdfd40535cb61544929",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 2.326193,
+      "expected_exit": 0,
+      "label": "L1-default",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cb0e2a0f2a5f5b7e1861943d11fda699db955f6144fa5e7b3f471881399eb83e",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.yaml_io import load_manifest; print(json.dumps(load_manifest(Path(sys.argv[2])).model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<clone>/reprollm.yaml"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.205728,
+      "expected_exit": 0,
+      "label": "manifest-load",
+      "name": "LlamaFactory",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ffc89332d3762937c32039115867bb766e2fb3d940bb8e985f1cbceaf15f3b2a",
+      "target_sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "elapsed_seconds": 1.788712,
+      "expected_exit": 0,
+      "label": "L0-default",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f5004c6b94a8cbf3221440d0583452b5913b24014992fffc2a06d0d7bfbba747",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "-v",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "elapsed_seconds": 1.768548,
+      "expected_exit": 0,
+      "label": "L0-verbose",
+      "name": "HarmBench",
+      "stderr_sha256": "bf1fbd0e44d8898ea0a130d97e555cf231dbde175a34ee72a4cecb534cad30eb",
+      "stdout_sha256": "6246b0188797836444411376e8368936a14eea9c29306e8e701984e945f6df7a",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.context import AuditContext; print(json.dumps(AuditContext(Path(sys.argv[2]),level=0).detection.hints.model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<pinned-sources>/HarmBench"
+      ],
+      "cwd": "<pinned-sources>/HarmBench",
+      "elapsed_seconds": 1.584777,
+      "expected_exit": 0,
+      "label": "hints",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f5773a516b03f94b7d2f8531174edaa4b49bcdd419f909c332e212f96dd0582e",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<pinned-sources>/HarmBench",
+        "<clone>"
+      ],
+      "cwd": "<implementation>",
+      "elapsed_seconds": 4.259679,
+      "expected_exit": 0,
+      "label": "clone",
+      "name": "HarmBench",
+      "stderr_sha256": "d3c6e372df7bbd14c7316745de75d81db451b383dc5669f657841f71cb2af842",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 2.640903,
+      "expected_exit": 0,
+      "label": "checkout",
+      "name": "HarmBench",
+      "stderr_sha256": "065c2d0fd610bde5c61d9149f3233092135ab70326e072e23922b07e81f9e2fd",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/centerforaisafety/HarmBench.git"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.031124,
+      "expected_exit": 0,
+      "label": "clone-origin",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "init",
+        "."
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 1.788485,
+      "expected_exit": 0,
+      "label": "init",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c35b09973be204b3ad6d14d8d73489dbd1a89d120ac6e2453d371a18a41e96f1",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 1.815939,
+      "expected_exit": 0,
+      "label": "L1-default",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1571aad903db542652514aa3e779aed88443d38ee102eb3e05e727f7b9590c81",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.yaml_io import load_manifest; print(json.dumps(load_manifest(Path(sys.argv[2])).model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<clone>/reprollm.yaml"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.209862,
+      "expected_exit": 0,
+      "label": "manifest-load",
+      "name": "HarmBench",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7b777c5f0fe65b3700044eec8b9f96742e98a204fe1bfba9a5b56a041c77c24e",
+      "target_sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "elapsed_seconds": 0.886031,
+      "expected_exit": 0,
+      "label": "L0-default",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a81b67cf00c72830ac797f66bdba5a4c39917704c37ca92ef5e1da5704372d95",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "-v",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "elapsed_seconds": 0.914663,
+      "expected_exit": 0,
+      "label": "L0-verbose",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "3ba6787cebc195541f36e9d0c87d66dc18173c05020e111edc3a39bf06e7c36a",
+      "stdout_sha256": "f5474a7e62ccb41f52268c1814a52f00b177e72b725c65a6a77abcdf9161ff84",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.context import AuditContext; print(json.dumps(AuditContext(Path(sys.argv[2]),level=0).detection.hints.model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<pinned-sources>/llm-dp-finetune"
+      ],
+      "cwd": "<pinned-sources>/llm-dp-finetune",
+      "elapsed_seconds": 0.690945,
+      "expected_exit": 0,
+      "label": "hints",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "35496a5d8a0cb773c862465688afbaa200b03d9c87497b36c3f15511336203a0",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<pinned-sources>/llm-dp-finetune",
+        "<clone>"
+      ],
+      "cwd": "<implementation>",
+      "elapsed_seconds": 0.156604,
+      "expected_exit": 0,
+      "label": "clone",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "6d14d48ca921d6c8ca76cdbc7a28c14bfd3540945f5cda9c14a78441e9b669bb",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.035319,
+      "expected_exit": 0,
+      "label": "checkout",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "b8adba9c296227f41dea5ef2c66060a2a4b8f566f412f63d7bc79a7fd4cae3de",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/jyhong836/llm-dp-finetune.git"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.028734,
+      "expected_exit": 0,
+      "label": "clone-origin",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "init",
+        "."
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.873699,
+      "expected_exit": 0,
+      "label": "init",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c08bb0fc7914fd27ce5fd62aaaf4aae313cdc096b924bcd84cbe97c607fb9388",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import sys; sys.path.insert(0, sys.argv.pop(1)); from reprollm.cli.main import cli; cli()",
+        "<evidence>/reviewed-code/src",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.888874,
+      "expected_exit": 0,
+      "label": "L1-default",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "55eec0e86b687432fac2d18cc49f2608c9f03e49dc3b794fe36063610fd193f3",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from reprollm.core.yaml_io import load_manifest; print(json.dumps(load_manifest(Path(sys.argv[2])).model_dump(mode='json'),ensure_ascii=False,sort_keys=True))",
+        "<evidence>/reviewed-code/src",
+        "<clone>/reprollm.yaml"
+      ],
+      "cwd": "<clone>",
+      "elapsed_seconds": 0.208812,
+      "expected_exit": 0,
+      "label": "manifest-load",
+      "name": "llm-dp-finetune",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "464f7b985632e6ea03fc4aa88b9bf20a8d90e01672d08ac2332c56640842177b",
+      "target_sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+    }
+  ],
+  "schema_version": 1
+}

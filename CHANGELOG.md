@@ -101,6 +101,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 
+- R00: retain the current reliability baseline, reproducible defect observations,
+  quality results and five-project validation inputs for the S1-A batch.
+
 - PLAN-REVISE: update the reliability execution package to v1.2 after code
   review. Add P0 run/capture redaction (R02-R), shared static-content read
   boundaries (R06-G), input-capture phases (R04-B), and the explicit dependency
