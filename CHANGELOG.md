@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R03: select the last explicit CLI binding, including project-rule aliases, and
+  preserve that effective value through State merges and JSON round-trips. Keep
+  every original observation and repeated-evidence multiplicity without growing
+  overlapping evidence. Audit, diff and export agree with the child; existing
+  consistency conflict and drift severity policies remain unchanged.
+
 - R02-R: preserve key context when capturing nested or bound secret values and
   quoted JSON/YAML/TOML text and comments. Apply PEM removal before keyed
   handling and omit ambiguous TOML patches safely. Protect records, snapshots,

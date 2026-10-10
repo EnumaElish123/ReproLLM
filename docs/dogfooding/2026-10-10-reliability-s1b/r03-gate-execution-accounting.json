@@ -1,0 +1,91 @@
+{
+  "all_actual_leaf_attempts_including_interrupted": 202,
+  "classification": "Validation environment and disposable setup: ENOSPC and aggregate timeout; no product child failure or gold delta.",
+  "complete_actual_exit_counts_across_attempts": {
+    "0": 196,
+    "1": 5
+  },
+  "completed_actual_leaf_commands_across_attempts": 201,
+  "counting": "The timed-out orchestration wrapper overlaps baseline leaves and is excluded from leaf counts and summed leaf time. Unknown interrupted checkout exit/time remains null. Only 200 complete successful qualified leaves enter qualification; the extra successful discarded clone and interrupted checkout remain separate actual attempts.",
+  "elapsed_seconds": {
+    "all_known_completed_actual_leaf_seconds": 418.716223,
+    "discarded_completed_clone_leaf_seconds": 6.880326,
+    "environment_cleanup_seconds": 60.822143,
+    "fresh_baseline_recovery_leaf_seconds": 15.456059,
+    "initial_completed_baseline_leaf_seconds": 152.408878,
+    "interrupted_checkout_child_seconds": null,
+    "qualified_baseline_leaf_subprocess_seconds": 160.984611,
+    "qualified_consumer_leaf_subprocess_seconds": 250.851286,
+    "qualified_leaf_subprocess_seconds": 411.835897,
+    "reused_completed_baseline_leaf_seconds": 145.528552,
+    "timed_out_nonleaf_wrapper_seconds": 240.096133
+  },
+  "fresh_completed_baseline_leaf_commands": 15,
+  "initial_completed_baseline_leaf_commands": 31,
+  "interrupted_leaf_attempts_without_exit_or_child_time": [
+    {
+      "actual_exit": null,
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+      ],
+      "elapsed_seconds": null,
+      "label": "checkout",
+      "name": "HarmBench",
+      "status": "Interrupted by parent wrapper; exit and child duration unavailable; excluded from qualified completed count."
+    }
+  ],
+  "qualified_baseline_comparisons": 180,
+  "qualified_baseline_leaf_commands": 45,
+  "qualified_comparisons": 678,
+  "qualified_consumer_comparisons": 498,
+  "qualified_consumer_leaf_commands": 155,
+  "qualified_exit_counts": {
+    "0": 195,
+    "1": 5
+  },
+  "qualified_leaf_commands": 200,
+  "retained_timed_out_nonleaf_wrapper_attempts": [
+    {
+      "actual_exit": null,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "<prior-evidence>/gate_a.py",
+        "--mode",
+        "current",
+        "--output",
+        "<evidence>/r03-qualified/full-L0-init-L1"
+      ],
+      "command_error": "TimeoutExpired",
+      "cwd": "<implementation>",
+      "elapsed_seconds": 240.096133,
+      "expected_exit": 0,
+      "label": "full-L0-init-L1-controlled-baseline",
+      "name": "portfolio",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "current: lm-evaluation-harness\ncurrent: FastChat\ncurrent: LlamaFactory\ncurrent: HarmBench\n",
+      "stdout_sha256": "21810448e1b963dc12785d5166cfd5ac478040009ee0dff65d13f3d23cbc30c7"
+    }
+  ],
+  "reused_initial_completed_baseline_leaf_commands": 30,
+  "schema_version": 1,
+  "successful_recovery_driver_invocation": {
+    "actual_exit": 0,
+    "argv": [
+      "<implementation>/.venv/bin/python",
+      "<evidence>/gate_a_resume.py",
+      "--mode",
+      "current",
+      "--resume-from",
+      "<evidence>/r03-qualified/full-L0-init-L1",
+      "--output",
+      "<evidence>/r03-baseline-recovered"
+    ],
+    "elapsed_seconds": null,
+    "timing": "The direct orchestration wall duration was not separately measured; complete leaf times are retained."
+  },
+  "unknown_interrupted_leaf_exit_count": 1
+}

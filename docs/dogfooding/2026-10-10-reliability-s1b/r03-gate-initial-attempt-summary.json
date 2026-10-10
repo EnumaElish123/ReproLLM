@@ -1,0 +1,65 @@
+{
+  "all_passed": false,
+  "baseline": {
+    "S1A_final_baseline": "834db1951d771c16c641a23c29a650bb8b075698",
+    "normalization": "Reuse complete controlled L0/init/L1 hashes and S1-A historical oracle; remove generated_at only, retaining reprollm_version.",
+    "reference": "docs/dogfooding/2026-10-10-reliability-s1a/r01-gate-a-summary.json",
+    "reference_sha256": "cf6bfde02a2a6f06a1c7b9d45a7e2d29427508ef9503e3b06e39346ecdfcadbb",
+    "source_product_inventory_sha256": "33bec7769e6f2c4aa0ea194064bafb17509dd0914b138dc328cd1fc6d4978e02"
+  },
+  "baseline_matrix_summary": null,
+  "candidate_product_inventory_sha256": "00af555641ebfa45e1b975f50b40a68c0b0159d02c26a6454ae9a9ddf28e9c76",
+  "command_count": 1,
+  "comparison_count": 0,
+  "completed": false,
+  "current_contract_files_sha256": {
+    "docs/plan/01_specification.md": "2c492b16a298a9536a4ab2e2066f8c8de346a2d10615b532f7f7a1e5d4723ea2",
+    "docs/plan/reliability-2026-10-03/01_Persistence_and_State.md": "12432b6a02a3e9351aa0a5653f9252eceef517f7b0dd11cb43e45bc95a90469b",
+    "val.md": "d19e741b1ddf50b6302f8e31635076de66c0a2197b975fe8ef44faf21c32a6f4"
+  },
+  "failed_checks": [
+    "harness_exception: Command '['<implementation>/.venv/bin/python', '<prior-evidence>/gate_a.py', '--mode', 'current', '--output', '<evidence>/r03-qualified/full-L0-init-L1']' timed out after 240 seconds"
+  ],
+  "prior_qualified_regression_reuse": {
+    "all_retained_document_digests_verified": true,
+    "commit_binding_reference": "docs/dogfooding/2026-10-10-reliability-s1b/r02r-gate-commit-binding.json",
+    "commit_binding_sha256": "33e0f2a815029440d8db006e9a60905efaa1b4aea9dc3ba188f5026b57d94b43",
+    "index_sha256": "ef806efc2c8fa28b05a54e5bdda6c529c73027439cf3c487f2ae94e8bb5a2395",
+    "new_cases": "Full five-project baseline, safe lock setup, actual argparse A/B and aliases, State mergers and roundtrip, diff/export and secret A/B consumers.",
+    "qualified_commit": "5e8e7844d55dd7c2971b81f4f9098a1d0409483a",
+    "qualified_product_inventory_sha256": "e4cf045b2a45f6d9e4b6ad134d13f7459007a989e586252cadf1a740ce0cb4dc",
+    "reused_cases": [
+      "seven lock rejection paths and prior-byte/diagnostic/temp checks",
+      "legacy freshness-only behavior",
+      "snapshot/capture output cross product and child exit 7"
+    ],
+    "schema_version": 1,
+    "source": "docs/dogfooding/2026-10-10-reliability-s1b/r02r-gate-evidence-index.json",
+    "summary_sha256": "66bcd02f9873c895a3fcc7a617c80b95c858a16413f68ffccd92653c0cd054e9",
+    "unchanged_safety_files_sha256": {
+      "src/reprollm/core/bindings.py": "5064d996eb5ed1098f601a34bf2eea05e69edead18acaab0b2f849244f9d649f",
+      "src/reprollm/core/persistence.py": "7e64d00fce007e04631d7c1751e4c43aa5bbadb350096e343c51a5b207f228c8",
+      "src/reprollm/core/redaction.py": "cd3c2cbfbb3f94d75cec04417693d6be6bcf4887ce1e275f4a6d2196a3fda74f",
+      "src/reprollm/lock/writer.py": "a657d5943d7f917b8138f62c46c4cd33b2d90290677b7cc05203b46c3711842a",
+      "src/reprollm/run/__init__.py": "0dbfa51ccd8aab76dbf440ab93176778d98240d40e35146724f9e3fcaeae72b4",
+      "src/reprollm/run/capture.py": "83581367c918603dee384d8fe844dcb034ebf81acd65b17878ddf18c3c5f95bf",
+      "src/reprollm/run/contextual_text.py": "de02403895c920c2be3fa675026349b43c6fb43287f905d1da0353fd3f33230e",
+      "src/reprollm/run/hardware.py": "9db8db2372e26dc97dbac1ef375dce275d93dfc00c9c43c3648f597e5fad0e5a",
+      "src/reprollm/run/preflight.py": "38e9ba9a39d2c3d4b0bd79ee0500bd6689780bc9dbff701e85799354ff8b8694",
+      "src/reprollm/run/privacy.py": "073ecbbd598e966f76c1d230e308af519577777385e73626df706828ae3a7cb8",
+      "src/reprollm/run/reader.py": "8a3aa30054e3fc15723dc696100027314144e3cbe6a792ab50b6c2105763ec89",
+      "src/reprollm/run/slurm.py": "0d4207bf4f2d1d772ea7326550129624b8edf8cc843a8095d11c677a7392adfd",
+      "src/reprollm/run/wrapper.py": "cbda79882f2c7b33f153fcc9a88b869d7b431f510bb66fc42f460ef3221f4375"
+    }
+  },
+  "product_bytes_unchanged_during_gate": false,
+  "qualification_reuse": null,
+  "resource_boundary": "Synthetic offline Gate A; no resource Gate B activation.",
+  "schema_version": 1,
+  "source_head": "5e8e7844d55dd7c2971b81f4f9098a1d0409483a",
+  "source_mode": "working_candidate",
+  "source_status": "M src/reprollm/diff/state.py",
+  "stage": "r03",
+  "summed_subprocess_seconds": 240.096133,
+  "targets": []
+}

@@ -1198,6 +1198,23 @@ class Leaf(BaseModel):
 
 Projections: `State.from_manifest(m)`, `State.from_lock(l)`, `State.from_run(r)`. `State.merge(manifest, lock, run)` applies precedence `run(cli) > run(config) > run(env) > lock > manifest > default` per leaf and keeps all alternatives in `leaf.alternatives` for consistency findings. `State.flatten() -> dict[str, Leaf]` with paths like `models.primary.revision`, `environment.packages.torch`, `files.configs/eval.yaml.sha256`.
 
+Repeated CLI bindings select the last explicit occurrence for their field,
+including mapped aliases, while the run record retains every observation in
+original argv order. Config/env same-source selection keeps its deterministic
+location/value ordering rather than inheriting CLI last-wins.
+
+A State primary is already selected: later merges must not promote its older CLI
+alternatives back into the effective value. Re-merging overlapping projections,
+including after State JSON round-trip, preserves that choice and bounds evidence
+multiplicity; genuinely repeated identical observations remain recorded. Across
+independently selected States, equal-rank primaries use the existing deterministic
+location/value tie rule, without inventing a shared argv timeline. Existing v1 run
+records recover CLI selection from their ordered observations without a schema
+or ordinal field change. Audit, diff and export consume the same effective State.
+
+Consistency checks still inspect every observation for conflicts with declarations;
+a final CLI value matching the manifest does not erase an earlier conflict.
+
 ---
 
 ## 18. Diff semantics (M6)

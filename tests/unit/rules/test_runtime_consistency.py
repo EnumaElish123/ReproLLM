@@ -90,7 +90,7 @@ def test_generation_reports_one_conflict_with_all_sources(tmp_path: Path) -> Non
     assert "generation.temperature: manifest 0.0" in found[0].message
     assert "config(configs/eval.yaml:sampling.temperature) 0.0" in found[0].message
     assert "cli(--temperature)" in found[0].message
-    assert [e.value for e in found[0].evidence] == [0.0, "0", "1.0", 0.0]
+    assert [e.value for e in found[0].evidence] == [0.0, "1.0", "0", 0.0]
     assert all(e.path == f".reprollm/runs/{RUN_ID}/run.json" for e in found[0].evidence[1:])
 
 

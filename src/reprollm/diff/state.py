@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -188,7 +188,7 @@ def observed_state(run: RunRecord) -> State:
     for field, leaves in observations.items():
         if field in values:
             leaves.append(values[field])
-        values[field] = _choose(leaves)
+        values[field] = _choose_observations(leaves)
     return from_flat(values)
 
 
@@ -206,18 +206,54 @@ def _evidence(leaf: Leaf) -> list[Leaf]:
     ]
 
 
-def _choose(leaves: list[Leaf]) -> Leaf:
-    candidates = [item for leaf in leaves for item in _evidence(leaf)]
-    # Same-rank observations have no specified winner; make their selection
-    # independent of mapping/observation order and retain every observation.
-    candidates.sort(
-        key=lambda leaf: (
-            -_rank(leaf),
-            leaf.detail or "",
-            json.dumps(leaf.value, sort_keys=True, ensure_ascii=False),
-        )
+def _order_key(leaf: Leaf) -> tuple[int, str, str]:
+    return (
+        -_rank(leaf),
+        leaf.detail or "",
+        json.dumps(leaf.value, sort_keys=True, ensure_ascii=False),
     )
-    return candidates[0].model_copy(update={"alternatives": candidates[1:]}, deep=True)
+
+
+def _identity(leaf: Leaf) -> str:
+    return json.dumps(
+        leaf.model_dump(mode="json", exclude={"alternatives"}),
+        sort_keys=True,
+        ensure_ascii=False,
+    )
+
+
+def _choose_observations(leaves: list[Leaf]) -> Leaf:
+    # Only this boundary retains the common argv timeline. Lower-priority
+    # config/env evidence may occur later in the list without overriding CLI.
+    cli = [index for index, leaf in enumerate(leaves) if _rank(leaf) == 9]
+    index = cli[-1] if cli else min(range(len(leaves)), key=lambda item: _order_key(leaves[item]))
+    alternatives = sorted(
+        (leaf for offset, leaf in enumerate(leaves) if offset != index), key=_order_key
+    )
+    return leaves[index].model_copy(update={"alternatives": alternatives}, deep=True)
+
+
+def _choose(leaves: list[Leaf]) -> Leaf:
+    # Each primary already represents its input's effective value. Reopening
+    # historical CLI alternatives here would undo argv last-wins selection.
+    selected = min(leaves, key=_order_key)
+    counts: Counter[str] = Counter()
+    evidence: dict[str, Leaf] = {}
+    for leaf in leaves:
+        group: Counter[str] = Counter()
+        for item in _evidence(leaf):
+            identity = _identity(item)
+            group[identity] += 1
+            evidence.setdefault(identity, item)
+        # Overlapping State projections must not duplicate earlier evidence;
+        # repeated identical observations within one projection remain intact.
+        counts |= group
+    counts[_identity(selected)] -= 1
+    alternatives = sorted(
+        (evidence[identity] for identity, count in counts.items() for _ in range(count)),
+        key=_order_key,
+    )
+    return selected.model_copy(update={"alternatives": alternatives}, deep=True)
 
 
 def merge(
