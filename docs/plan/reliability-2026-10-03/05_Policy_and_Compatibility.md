@@ -105,7 +105,7 @@
 
 - [x] 冲突明确登记，官方来源、日期、完整示例和负例可审阅。
 - [x] 具体 A/P+C 决定已记录；R05-B 引用该接受记录。
-- [ ] 没有将“完整版本”误写为完全相同的可安装产物。
+- [x] 没有将“完整版本”误写为完全相同的可安装产物。A/P+C规范与实现已于S2同步，见[交付报告](../../dogfooding/2026-10-10-reliability-s2/README.md)。
 
 建议提案提交：`docs(spec): clarify exact dependency and requirements lock semantics (R05-S)`。
 

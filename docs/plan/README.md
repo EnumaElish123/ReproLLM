@@ -14,7 +14,9 @@ run-persistence redaction, shared file-read boundaries, input-capture phases and
 an explicit dependency-specification prerequisite. Start at the
 [package index](reliability-2026-10-03/README.md), then read the
 [execution guide](reliability-2026-10-03/00_Execution_Guide.md) and the assigned
-Sprint/Session document. The first implementation session is **S1-A: R00 and R01**.
+Sprint/Session document. S1-A, S1-B and S2 are delivered. Read the
+[latest S2 report](../dogfooding/2026-10-10-reliability-s2/README.md); the next
+engineering session is **S3-A: R07-A and R07-B**, which remains unexecuted.
 
 - [Copyable agent prompts](reliability-2026-10-03/AGENT_PROMPTS.md)
 - [Task dependencies and gates](reliability-2026-10-03/00_Execution_Guide.md)
@@ -25,9 +27,10 @@ Sprint/Session document. The first implementation session is **S1-A: R00 and R01
 - [Policy and compatibility decisions](reliability-2026-10-03/05_Policy_and_Compatibility.md)
 - [Validation, adoption and application evidence](reliability-2026-10-03/06_Validation_and_Adoption.md)
 
-The package contains planned work. Importing it does not mark R00–R08, D01–D03
-or A01–A03 implemented, change the judge drift policy in Issue #9, or complete
-the pending resource gates. Resume from the assigned session and its actual
+The package combines delivered S1/S2 work with planned later tasks. Historical
+importing/revision reports do not establish implementation status. S2 does not
+change the judge drift policy in Issue #9 or complete the pending resource gates.
+Resume from the assigned session and its actual
 predecessor report, checking the current HEAD rather than resetting to the
 reviewed commit.
 

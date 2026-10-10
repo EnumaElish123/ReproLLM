@@ -1,6 +1,8 @@
 # Sprint 2：依赖版本、文件身份与引用关系
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 日期：2026-10-03 · 状态：COMPLETED（2026-10-10）
+
+交付：[S2-A](../../dogfooding/2026-10-10-reliability-s2/s2a-session.md)、[S2-B](../../dogfooding/2026-10-10-reliability-s2/s2b-session.md)、[后续scope/来源交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。具体任务提交、实际完整比较和已接受R05-S A/P+C均在报告中；R06-B与资源Gate B仍单独待决/blocked。
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -21,7 +23,7 @@ R06-G 不依赖版本解析和 include 图，放在 S2-A 首项，先阻断内�
 
 ## 2. 共同代码入口
 
-- `src/reprollm/core/deps.py`：`scan_dependencies`、格式 parser、`_collect_lockfiles`、`_requirements_all_pinned`、`_declares_from`。
+- `src/reprollm/core/deps.py`：`scan_dependencies`、格式 parser、`_collect_lockfiles`、`_requirements_all_pinned`、`_RequirementsGraph`（`_declares_from`已移除）。
 - `src/reprollm/core/scanner.py`：文件枚举与读取。
 - `src/reprollm/core/paths.py`：现有路径边界工具。
 - `src/reprollm/rules/env.py`：manifest / lock / Python 版本 / critical dependency 规则；尤其 `PythonVersionDeclaredRule._declared_where`。
@@ -49,9 +51,9 @@ R06-G 不依赖版本解析和 include 图，放在 S2-A 首项，先阻断内�
 | 显式 max_bytes、重复读取、已有缓存 | 不能绕过根边界或错误复用外部内容 |
 | 外部 sentinel 与 tracked 安全文件 | sentinel 字节未读取/写入；安全文件事实仍可评估 |
 
-- [ ] 公共入口和所有旁路读取均有消费者清单及回归。
-- [ ] full quality、security、五项目 L0 与受影响 init/L1/discover 离线 Gate A 完成。
-- [ ] 不把静态过滤、依赖 scope 或外部主动探测塞入本任务；它们分别属于 R07-A、R06-B 或后续设计。
+- [x] 公共入口和所有旁路读取均有消费者清单及回归。
+- [x] full quality、security、五项目 L0 与受影响 init/L1/discover 离线 Gate A 完成。
+- [x] 不把静态过滤、依赖 scope 或外部主动探测塞入本任务；它们分别属于 R07-A、R06-B 或后续设计。
 
 建议提交：`fix(scan): enforce project boundaries before content reads (R06-G)`。
 
@@ -90,10 +92,10 @@ requirements 路径用 `len(specs) == 1 and operator == '=='` 判定 exact，因
 uv run pytest -q tests/unit/core/test_deps.py tests/unit/rules/test_env.py
 ```
 
-- [ ] 独立的格式表驱动测试，不从 parser 输出自动生成期望。
-- [ ] wildcard 修正与合法 suffix 修正均覆盖消费端 finding 状态。
-- [ ] 断言 rule status / dependency 集合，不能只看默认 exit code；WARNING 未必触发失败退出。
-- [ ] 全质量门及 S2-A 的五项目 Gate A 有完整差异说明。
+- [x] 独立的格式表驱动测试，不从 parser 输出自动生成期望。
+- [x] wildcard 修正与合法 suffix 修正均覆盖消费端 finding 状态。
+- [x] 断言 rule status / dependency 集合，不能只看默认 exit code；WARNING 未必触发失败退出。
+- [x] 全质量门及 S2-A 的五项目 Gate A 有完整差异说明。
 
 建议提交：`fix(deps): distinguish exact Python versions from ranges (R05-A)`。
 
@@ -128,10 +130,10 @@ uv run pytest -q tests/unit/core/test_deps.py tests/unit/rules/test_env.py
 
 定向测试同 R05-A，必要时加 `tests/unit/core/test_scanner.py`。
 
-- [ ] 根 pyproject 覆盖用例失败回归通过。
-- [ ] 已支持声明 / lock 类型都有重复 basename 的测试。
-- [ ] 路径与物理行证据保留；选择函数消费者一致。
-- [ ] HarmBench 嵌套 requirements gold 未被 root-only 规则破坏。
+- [x] 根 pyproject 覆盖用例失败回归通过。
+- [x] 已支持声明 / lock 类型都有重复 basename 的测试。
+- [x] 路径身份与选择函数消费者一致；TOML/requirements物理行已验证，Conda/YAML沿用legacy entry index，physical-source-index另为具名UNASSIGNED backlog。
+- [x] HarmBench 嵌套 requirements gold 未被 root-only 规则破坏。
 
 建议提交：`fix(deps): preserve source identity for duplicate filenames (R06-A)`。
 
@@ -186,10 +188,10 @@ uv run pytest -q tests/unit/core/test_deps.py tests/unit/core/test_scanner.py te
 uv run pytest -q -m security
 ```
 
-- [ ] 越界读取由“从未调用外部读取”验证，不能只断言最终结果没显示外部包。
-- [ ] 合法内部 `..`、include 闭包与未引用 sibling 三者都测试。
-- [ ] exact 与 lock packages 使用同一图，source_file 均为根内相对路径。
-- [ ] 全质量门、S2-B 五项目 Gate A、文档和 CHANGELOG 完成。
+- [x] 越界读取由“从未调用外部读取”验证，不能只断言最终结果没显示外部包。
+- [x] 合法内部 `..`、include 闭包与未引用 sibling 三者都测试。
+- [x] exact 与 lock packages 使用同一图，source_file 均为根内相对路径。
+- [x] 全质量门、S2-B 五项目 Gate A、文档和 CHANGELOG 完成。
 
 建议提交：`fix(deps): constrain requirement includes and track their closure (R06-P)`。
 
@@ -211,7 +213,7 @@ uv run pytest -q -m security
 
 ### 实施步骤与验收
 
-前置：R05-S 已有具体决定记录，规范 §12.2、独立版本语义表和预期 finding/gold 差异明确；计划入库不视为已修订规范。当前规范仍写“单等号加完整版本”可精确固定，不能一边保留这句话一边修改测试期望。
+前置：R05-S 已有具体决定记录，规范 §12.2、独立版本语义表和预期 finding/gold 差异明确；计划入库不视为已修订规范。修订前规范写“单等号加完整版本”可精确固定。2026-10-10维护者已接受R05-S A/P+C，R05-B同步规范与实现，并保留旧断言修正的独立官方依据。
 
 1. 对照官方 Conda MatchSpec / 导出依赖格式，落实已接受的小型支持表及源码备注；Python 格式仅复用“exact / non-exact”的内部含义。
 2. 为单等号、双等号、合法构建形式、通配 / 区间、malformed 建立测试。
@@ -219,18 +221,20 @@ uv run pytest -q -m security
 4. 保留嵌套 `pip:` 列表走 Python requirement 解析的路径。
 5. 不 import Conda，不调用用户 Conda 环境，不增加 SAT 求解。
 
-- [ ] 来源链接、支持子集、错误输入行为写入文档。
-- [ ] `DependencyDeclaration.is_exact` 和消费端 finding 的期望一致。
-- [ ] 全质量门与 S2-B Gate A 完成；范围外语法进入 backlog。
+- [x] 来源链接、支持子集、错误输入行为写入文档。
+- [x] `DependencyDeclaration.is_exact` 和消费端 finding 的期望一致。
+- [x] 全质量门与 S2-B Gate A 完成；范围外语法进入 backlog。
 
 建议提交：`fix(deps): apply format-specific Conda pin semantics (R05-B)`。
 
 ## 7. Sprint 收尾与 scope 审议交接
 
-- [ ] S2-A / S2-B 各有完整 Gate A；不是分别只测几项目。
-- [ ] R06-G 的公共内容边界与 R06-P 的 include 图分别验收；R05-B 引用已接受的 R05-S 决定。
-- [ ] 对 HarmBench 的嵌套 alignment-handbook 精确 pin 保留独立来源说明；任何变化逐包解释。
-- [ ] 向 R06-B 提供已实现的完整路径候选和 requirements 图接口；不预先承诺跨项目 lock 覆盖。
-- [ ] 公共 API 或 dataclass 调整仅在必要范围；无重依赖与网络单测。
+- [x] S2-A / S2-B 各有完整 Gate A；不是分别只测几项目。
+- [x] R06-G 的公共内容边界与 R06-P 的 include 图分别验收；R05-B 引用已接受的 R05-S 决定。
+- [x] 对 HarmBench 的嵌套 alignment-handbook 精确 pin 保留独立来源说明；任何变化逐包解释。
+- [x] 向 R06-B 提供已实现的完整路径候选和 requirements 图接口；不预先承诺跨项目 lock 覆盖。
+- [x] 公共 API 或 dataclass 调整仅在必要范围；无重依赖与网络单测。
 
 依据：[core/deps.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/core/deps.py)、[rules/env.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/rules/env.py)、[PyPA version specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/)、[Conda package specification](https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html)、[Conda MatchSpec 官方 API 文档](https://docs.conda.io/projects/conda/en/stable/dev-guide/api/conda/models/match_spec/index.html)。外部规范在实施时核对当前官方内容并记录日期。
+
+来源行限定：R05-A/R06-A的受支持TOML/requirements来源有物理行断言；Conda/YAML现有字段仍保留entry index，实际物理行另列独立矩阵。该映射改进为具名UNASSIGNED YAML-physical-source-index backlog，不宣称本Sprint完成。
