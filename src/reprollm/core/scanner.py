@@ -11,11 +11,10 @@ from __future__ import annotations
 
 import fnmatch
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from reprollm.core import git as git_mod
 from reprollm.core.git import GitInfo
-from reprollm.core.hashing import is_text_file
 
 #: Files larger than this are never listed (spec §11).
 MAX_FILE_BYTES = 2 * 1024 * 1024
@@ -67,13 +66,53 @@ _LOCKFILE_NAMES = {
 }
 
 
+class ContentPathError(ValueError):
+    """A fixed, path-free reason that a static content path cannot be read."""
+
+
+def content_source_path(rel_path: str) -> str | None:
+    """A normalized, project-relative diagnostic source, without filesystem reads."""
+    if "\x00" in rel_path or Path(rel_path).is_absolute() or PureWindowsPath(rel_path).anchor:
+        return None
+    parts: list[str] = []
+    for part in Path(rel_path).parts:
+        if part == "..":
+            if not parts:
+                return None
+            parts.pop()
+        elif part != ".":
+            parts.append(part)
+    return Path(*parts).as_posix() if parts else None
+
+
+def resolve_content_path(root: Path, rel_path: str) -> Path:
+    """Resolve static content before opening it; internal ``..`` is permitted.
+
+    Read the resolved target to avoid following the input alias again. Any
+    resolved path component, including the final target, can still be replaced
+    after validation; this is not a descriptor-based filesystem sandbox.
+    """
+    if Path(rel_path).is_absolute() or PureWindowsPath(rel_path).anchor:
+        raise ContentPathError("absolute paths are not allowed")
+    if "\x00" in rel_path:
+        raise ContentPathError("invalid path")
+    try:
+        resolved_root = root.resolve()
+        target = (resolved_root / rel_path).resolve()
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise ContentPathError("cannot resolve path") from exc
+    if not target.is_relative_to(resolved_root):
+        raise ContentPathError("path resolves outside project root")
+    return target
+
+
 class RepoScanner:
     def __init__(self, root: Path, git: GitInfo) -> None:
         self.root = root
         self.git = git
         self.warnings: list[str] = []
         self._files: list[str] | None = None
-        self._text_cache: dict[str, str | None] = {}
+        self._text_cache: dict[str, tuple[Path, str | None]] = {}
         self._dirs: set[str] | None = None
 
     # --- listing -----------------------------------------------------------
@@ -102,13 +141,30 @@ class RepoScanner:
     def read_text(self, rel_path: str, max_bytes: int = MAX_READ_BYTES) -> str | None:
         """UTF-8 content up to ``max_bytes``; ``None`` for binary/missing/oversize.
 
-        Cached per path (only the default cap is cached).
+        The current resolved target is checked even on cache hits. Only the
+        default cap is cached, and retargeted aliases cannot reuse old text.
         """
+        try:
+            target = resolve_content_path(self.root, rel_path)
+        except ContentPathError as exc:
+            self._read_warning(rel_path, str(exc))
+            return None
+        try:
+            if not target.is_file():
+                self._read_warning(rel_path, "not a regular file")
+                return None
+            if target.stat().st_size > max_bytes:
+                return None
+        except OSError:
+            self._read_warning(rel_path, "cannot inspect file")
+            return None
         if max_bytes != MAX_READ_BYTES:
-            return self._read_text_uncached(rel_path, max_bytes)
-        if rel_path not in self._text_cache:
-            self._text_cache[rel_path] = self._read_text_uncached(rel_path, max_bytes)
-        return self._text_cache[rel_path]
+            return self._read_text_uncached(target, rel_path, max_bytes)
+        cached = self._text_cache.get(rel_path)
+        if cached is None or cached[0] != target:
+            cached = (target, self._read_text_uncached(target, rel_path, max_bytes))
+            self._text_cache[rel_path] = cached
+        return cached[1]
 
     def python_files(self) -> list[str]:
         """Python sources, capped at :data:`MAX_PYTHON_FILES` (excess recorded once)."""
@@ -154,19 +210,25 @@ class RepoScanner:
 
     # --- internals ---------------------------------------------------------
 
-    def _read_text_uncached(self, rel_path: str, max_bytes: int) -> str | None:
-        target = self.root / rel_path
+    def _read_text_uncached(self, target: Path, rel_path: str, max_bytes: int) -> str | None:
         try:
-            if not target.is_file() or target.stat().st_size > max_bytes:
-                return None
+            with target.open("rb") as stream:
+                data = stream.read(max_bytes + 1)
         except OSError:
+            self._read_warning(rel_path, "cannot read file")
             return None
-        if not is_text_file(target, max_bytes):
+        if len(data) > max_bytes or b"\x00" in data:
             return None
         try:
-            return target.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            return data.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+        except UnicodeDecodeError:
             return None
+
+    def _read_warning(self, rel_path: str, reason: str) -> None:
+        source = content_source_path(rel_path) or "repository content"
+        warning = f"{source}: {reason}; skipped"
+        if warning not in self.warnings:
+            self.warnings.append(warning)
 
     def _size_of(self, rel_path: str) -> int | None:
         target = self.root / rel_path

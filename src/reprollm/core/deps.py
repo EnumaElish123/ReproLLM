@@ -19,7 +19,7 @@ from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
 from reprollm.core._toml import tomllib
-from reprollm.core.scanner import RepoScanner
+from reprollm.core.scanner import RepoScanner, content_source_path
 
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
@@ -108,14 +108,25 @@ def _is_requirements_name(path: str) -> bool:
 
 
 def _parse_requirements(
-    path: str, scanner: RepoScanner, result: Declarations, seen: set[str], depth: int = 0
+    path: str,
+    scanner: RepoScanner,
+    result: Declarations,
+    seen: set[str],
+    depth: int = 0,
+    included_from: tuple[str, int] | None = None,
 ) -> None:
     if path in seen or depth > 10:
         return
     seen.add(path)
     text = scanner.read_text(path)
     if text is None:
-        result.unparsed.append(f"{path}:0: unreadable")
+        source = content_source_path(path)
+        if source is None and included_from is not None:
+            parent, include_line = included_from
+            parent_source = content_source_path(parent) or "requirements include"
+            result.unparsed.append(f"{parent_source}:{include_line}: include unreadable")
+        else:
+            result.unparsed.append(f"{source or 'requirements include'}:0: unreadable")
         return
     for lineno, raw in enumerate(text.splitlines(), start=1):
         line = raw.strip()
@@ -129,7 +140,7 @@ def _parse_requirements(
             target = parts[1].strip()
             base = Path(path).parent
             resolved = (base / target).as_posix() if not target.startswith("/") else target
-            _parse_requirements(resolved, scanner, result, seen, depth + 1)
+            _parse_requirements(resolved, scanner, result, seen, depth + 1, (path, lineno))
             continue
         if line.startswith("-") or " @ " in line:
             result.unparsed.append(f"{path}:{lineno}: {line}")

@@ -1006,6 +1006,22 @@ Generated from `.reprollm/project-rules.yaml` (§7). FAIL when the `field` is ab
 
 `reprollm/profiles/detect.py`. Input: `RepoScanner`. Output `DetectionResult`: `{profiles: [{profile, confidence: high|medium|low, evidence: [Evidence]}], hints: {providers: [...], hf_ids: [{value, path, line}], trust_remote_code: bool}}`.
 
+Static repository content readers MUST resolve the actual target and verify it is
+inside the project root before any content open, including explicit `max_bytes`
+reads and cache hits. Reject absolute inputs, targets outside the root, invalid
+paths and symlink loops with stable diagnostics containing only a safe project
+source. Internal symlinks and normalized internal `..` are allowed; evidence
+retains the repository-relative source alias. User profile overrides share this
+path boundary. File existence, Git state and forbidden-file facts remain visible
+even when content is refused; listing, binary, size and consumer budgets retain
+their existing contracts. Reads use the resolved target, but replacement of any
+resolved path component, including the final target, after validation can still
+race the open; this boundary does not claim a filesystem sandbox.
+Profile names, including inherited names, must satisfy the existing profile
+identifier grammar before constructing any file path. Built-in reads are limited
+to shipped profile names; invalid names produce a fixed diagnostic without
+echoing a path supplied as a name.
+
 Signals (Level 1 = deterministic, Level 2 = heuristic):
 
 | Signal | Source | Profile / hint | Confidence |

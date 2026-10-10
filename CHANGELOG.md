@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R06-G: check the resolved project boundary before static content reads and
+  cache reuse, including user profile overrides and inherited-name validation.
+  Limit built-in resource reads to shipped names. Refuse external targets with
+  safe diagnostics, keep internal symlinks and file/Git/security facts, and
+  enforce bounded text reads without changing dependency or detection policy.
+
 - R03: select the last explicit CLI binding, including project-rule aliases, and
   preserve that effective value through State merges and JSON round-trips. Keep
   every original observation and repeated-evidence multiplicity without growing

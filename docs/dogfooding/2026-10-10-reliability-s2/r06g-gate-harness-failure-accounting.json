@@ -1,0 +1,58 @@
+{
+  "actual_failed_leaf_commands": [
+    {
+      "actual_exit": 2,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/git",
+        "cli",
+        "<evidence>/r06g-qualified-corrected/monitors/lm-evaluation-harness-git-audit-verbose.json",
+        "[\"<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/outside/requirements.txt\", \"<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/outside/README.md\", \"<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/outside/config.yaml\", \"<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/outside/custom.yaml\", \"<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/outside/external.py\"]",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never",
+        "-v"
+      ],
+      "cwd": "<evidence>/r06g-qualified-corrected/fixtures/lm-evaluation-harness/git",
+      "elapsed_seconds": 0.566284,
+      "expected_exit": 0,
+      "label": "git-audit-verbose",
+      "name": "lm-evaluation-harness",
+      "stderr": "Usage: reprollm audit [OPTIONS] [path]\nTry 'reprollm audit --help' for help.\n╭─ Error ──────────────────────────────────────────────────────────────────────╮\n│ No such option: -v                                                           │\n╰──────────────────────────────────────────────────────────────────────────────╯\n",
+      "stderr_sha256": "a89a8344bb895cbe0a17fd3e63508636cf262277cfcb7b67bad4f0d2b6c65ea4",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "classification": "Validation harness serialization / CLI construction; source, gold, frozen oracle and product behavior unchanged",
+  "final_observer_exit_before_ui_requalification": 1,
+  "final_observer_requalification": "Ten source-reviewed init UI path checks only; original failed observer summary/comparisons retained, no product leaf rerun",
+  "initial_attempt_raw_files_preserved": true,
+  "initial_attempts": [
+    {
+      "evidence": "<evidence>/r06g-qualified",
+      "harness_sha256": "01aff22be337b2d4c559fb6e804106d19060e51c7c0cbe9c264b6375d4554140",
+      "orchestration_exit": 1,
+      "orchestration_wall_seconds": null,
+      "reason": "Strict JSON serialization of empty stderr bytes"
+    },
+    {
+      "evidence": "<evidence>/r06g-qualified-corrected",
+      "harness_sha256": "d9167f3025d5a273aa599d611d1c3dc5f590791eca2dc574ac1af9f90f347699",
+      "orchestration_exit": 1,
+      "orchestration_wall_seconds": null,
+      "reason": "Global -v placed after audit; fixture CLI rejected invalid command with exit2"
+    }
+  ],
+  "known_actual_leaf_commands": 196,
+  "qualified_successful_leaf_reuse": "Completed commands only; actual original bounded fixture state plus source/pins/DRIVER/gold bytes verified. The failed verbose CLI leaf is excluded from qualification and executed with corrected global argv.",
+  "schema_version": 1,
+  "unknown_interrupted_leaf_commands": 0
+}

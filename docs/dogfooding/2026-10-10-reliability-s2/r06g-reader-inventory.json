@@ -1,0 +1,122 @@
+{
+  "acceptance": {
+    "bounded_single_open_preserves_utf8_nul_and_universal_newlines": true,
+    "default_cache_and_explicit_limits_revalidated": true,
+    "external_sentinel_bytes_unchanged": true,
+    "focused_consumer_cases": 180,
+    "git_and_secret_file_facts_preserved": true,
+    "new_security_cases": 42,
+    "normalized_internal_parent_paths_and_alias_evidence_preserved": true,
+    "real_git_and_fallback_external_opens": 0,
+    "schema_or_dependency_changes": false
+  },
+  "baseline_commit": "e9ed0991089f50ce1b3369344dda87d8c0cbfa7c",
+  "evidence_ledger": "r06g-tdd.json",
+  "limits": {
+    "filesystem_races": "Validation covers the resolved target at check time. Replacement of any resolved path component including the final target after validation can still race the open; no descriptor sandbox is claimed.",
+    "same_target_cache": "Same resolved target retains the existing cached-content contract. Retargeted aliases are re-read; outside/unavailable/oversize current targets cannot return cached text."
+  },
+  "other_reader_classifications": [
+    {
+      "path": "src/reprollm/core/hashing.py",
+      "reason": "artifact/declared-input hashes and text helper; public scanner no longer uses an unguarded preliminary text open"
+    },
+    {
+      "path": "src/reprollm/core/configread.py",
+      "reason": "declared runtime bindings resolve through existing resolve_project_file; not static discovery"
+    },
+    {
+      "path": "src/reprollm/core/yaml_io.py",
+      "reason": "explicit command-owned manifest/lock/config artifact loading, not arbitrary static content scanning; no changes"
+    },
+    {
+      "path": "src/reprollm/core/rule_lifecycle.py",
+      "reason": "owned rule/archive artifact operations, not static content discovery; no changes"
+    },
+    {
+      "path": "src/reprollm/core/manifest_scaffold.py",
+      "reason": "trusted packaged templates and owned artifact writes, not project content discovery; no changes"
+    }
+  ],
+  "owned_files": [
+    "src/reprollm/core/scanner.py",
+    "src/reprollm/core/deps.py",
+    "src/reprollm/profiles/loader.py",
+    "tests/unit/core/test_scanner_boundaries.py",
+    "docs/plan/01_specification.md",
+    "CHANGELOG.md"
+  ],
+  "parallel_typed_rename": {
+    "change": "Included-file diagnostic variable renamed line to include_line during the consumer run to satisfy mypy; no runtime behavior change. The final boundary-security run and parent full quality validate the final bytes.",
+    "command": "final-focused-consumers"
+  },
+  "schema_version": 1,
+  "source_raw_document_sha256": "cbfabf6db9425779a5495698d8b4c1bd123179e665f9c949bbd30c0a9188eca6",
+  "source_sha256": {
+    "CHANGELOG.md": "881d606fe2d546be287538234553f9d7739f511b1c34e7d615c18a61f8b61f11",
+    "docs/plan/01_specification.md": "c89cb19130b5c859726e81a80605e2cdc69106330ac87ed350891d8d3f8e51e6",
+    "src/reprollm/core/deps.py": "98affee96359e342dc818964f1f09fc937a62e5480df4fbe30d74ea334466519",
+    "src/reprollm/core/scanner.py": "ed3e941b2fd460c9afef92ab20bd8297fc4dadedf7a99df5f861af5242f8b20b",
+    "src/reprollm/profiles/loader.py": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758",
+    "tests/unit/core/test_scanner_boundaries.py": "99cd6c9c2778bb5699c04cd7f0ab892b61737ff635f1a1bf6fb5b6919f4bc62e"
+  },
+  "static_content_readers": [
+    {
+      "boundary": "resolve_content_path before metadata, cache lookup and bounded target.open; default target-associated cache; explicit limits uncached",
+      "entry": "RepoScanner.read_text",
+      "path": "src/reprollm/core/scanner.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text; import/HF/endpoint/trainer facts only from readable content",
+      "entry": "scan_python",
+      "path": "src/reprollm/core/pyscan.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text; blocked unsafe include diagnostics use including file and physical line; include graph/attribution unchanged",
+      "entry": "_parse_requirements / _parse_pyproject / _parse_environment / _parse_pipfile / lockfile parsers / _requirements_all_pinned",
+      "path": "src/reprollm/core/deps.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text; directory/file-stem metadata remains distinct",
+      "entry": "_keyword_sources / _config_keys",
+      "path": "src/reprollm/profiles/detect.py"
+    },
+    {
+      "boundary": "existing ProfileName grammar before path construction; shared resolve_content_path before user-profile read_text; no new profile size cap",
+      "entry": "load_user / load_profile / resolve / inheritance_chain",
+      "path": "src/reprollm/profiles/loader.py"
+    },
+    {
+      "boundary": "existing ProfileName grammar and shipped-name allowlist before trusted package resource construction/read; inheritance names cannot traverse the package root",
+      "entry": "load_builtin / detection_signals via built-in fallback",
+      "path": "src/reprollm/profiles/loader.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text or scan_python; YAML nodes and shell arguments are never executed",
+      "entry": "task_mapping / cli_evidence / import_evidence",
+      "path": "src/reprollm/integrations/_static.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text; lm_eval and lighteval use shared static helpers",
+      "entry": "extract_task_hints",
+      "path": "src/reprollm/integrations/inspect_ai.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text; manifest/lock presence and SecretFilesIgnoredRule remain file facts",
+      "entry": "PythonVersionDeclaredRule._declared_where",
+      "path": "src/reprollm/rules/env.py"
+    },
+    {
+      "boundary": "RepoScanner.read_text explicit 64 KiB; existing independent resolved containment and target exclusions preserved",
+      "entry": "collect.take / _argparse_snippets",
+      "path": "src/reprollm/discover/collector.py"
+    }
+  ],
+  "status": "implementation_frozen_pending_root_full_quality_and_gate_a",
+  "task": "R06-G",
+  "test_harness_correction": {
+    "corrected_command": "profile-traversal-corrected-red",
+    "initial_command": "profile-traversal-red",
+    "reason": "Initial real-package relative path sometimes also resolved from the user-profile location, so inherited and CLI branches were already rejected by the user boundary. Corrected disposable package layout independently guarantees user override absence and tests the vulnerable builtin fallback; actual builtin/inheritance/CLI then fail before fix."
+  }
+}

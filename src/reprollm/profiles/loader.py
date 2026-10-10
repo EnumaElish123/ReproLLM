@@ -13,11 +13,27 @@ from importlib.resources import files
 from pathlib import Path
 
 import yaml
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from reprollm.core.errors import UserError
 from reprollm.core.registry import get_rule, known_rule_ids
-from reprollm.schemas.profile import AuditSeverity, DetectSignals, DriftSeverity, Profile
+from reprollm.core.scanner import ContentPathError, content_source_path, resolve_content_path
+from reprollm.schemas.profile import (
+    AuditSeverity,
+    DetectSignals,
+    DriftSeverity,
+    Profile,
+    ProfileName,
+)
+
+_PROFILE_NAME = TypeAdapter(ProfileName)
+
+
+def _check_profile_name(name: str) -> None:
+    try:
+        _PROFILE_NAME.validate_python(name)
+    except ValidationError as exc:
+        raise UserError("invalid profile name; use a name from `reprollm profiles list`") from exc
 
 
 class ResolvedProfiles:
@@ -52,10 +68,16 @@ def builtin_profile_names() -> list[str]:
 
 
 def user_profile_path(root: Path, name: str) -> Path:
+    _check_profile_name(name)
     return root / ".reprollm" / "profiles" / f"{name}.yaml"
 
 
 def load_builtin(name: str) -> Profile:
+    _check_profile_name(name)
+    names = builtin_profile_names()
+    if name not in names:
+        known = ", ".join(names)
+        raise UserError(f"unknown profile {name!r} (known profiles: {known})")
     resource = files("reprollm.profiles") / f"{name}.yaml"
     if not resource.is_file():
         known = ", ".join(builtin_profile_names())
@@ -64,11 +86,22 @@ def load_builtin(name: str) -> Profile:
 
 
 def load_user(root: Path, name: str) -> Profile:
-    path = user_profile_path(root, name)
+    _check_profile_name(name)
+    relative = f".reprollm/profiles/{name}.yaml"
+    source = content_source_path(relative) or "user profile"
+    try:
+        path = resolve_content_path(root, relative)
+    except ContentPathError as exc:
+        raise UserError(
+            f"cannot read user profile {source}: {exc}; keep profiles inside project root"
+        ) from exc
     try:
         text = path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise UserError(f"cannot read user profile {path}: {exc}") from exc
+    except (OSError, UnicodeDecodeError) as exc:
+        raise UserError(
+            f"cannot read user profile {source}: unreadable UTF-8 file; "
+            "check the file and permissions"
+        ) from exc
     return _parse_profile(text, name)
 
 
