@@ -1,0 +1,122 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____________________________ test_absolute_include _____________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_absolute_include(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        result, _, _, _ = _outside_case(tmp_path, monkeypatch, "absolute")
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=['requirements.txt:1: include absolute path'], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in ['requirements.txt:1: include absolute path']
+E        +  where ['requirements.txt:1: include absolute path'] = Declarations(declarations=[], unparsed=['requirements.txt:1: include absolute path'], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+________________________ test_outside_relative_include _________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_outside_relative_include(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        result, _, _, _ = _outside_case(tmp_path, monkeypatch, "relative")
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=['requirements.txt:1: include escapes project root'], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in ['requirements.txt:1: include escapes project root']
+E        +  where ['requirements.txt:1: include escapes project root'] = Declarations(declarations=[], unparsed=['requirements.txt:1: include escapes project root'], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+________ test_external_include_diagnostic_uses_including_file[relative] ________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+absolute = False
+
+    @pytest.mark.parametrize("absolute", [False, True], ids=["relative", "absolute"])
+    def test_external_include_diagnostic_uses_including_file(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, absolute: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        sentinel = tmp_path / "outside-requirements.txt"
+        sentinel.write_text("outside-canary==1.2.3\n")
+        reference = str(sentinel) if absolute else "../outside-requirements.txt"
+        (repo / "requirements.txt").write_text(f"-r {reference}\n")
+        opened: list[str] = []
+        original_open = Path.open
+    
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() == sentinel:
+                opened.append("sentinel")
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, GitInfo(is_repo=False))
+        result = scan_dependencies(scanner)
+        assert result.declarations == []
+        assert opened == []
+>       assert result.unparsed == ["requirements.txt:1: include unreadable"]
+E       AssertionError: assert ['requirement...project root'] == ['requirement...e unreadable']
+E         
+E         At index 0 diff: 'requirements.txt:1: include escapes project root' != 'requirements.txt:1: include unreadable'
+E         Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:147: AssertionError
+________ test_external_include_diagnostic_uses_including_file[absolute] ________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+absolute = True
+
+    @pytest.mark.parametrize("absolute", [False, True], ids=["relative", "absolute"])
+    def test_external_include_diagnostic_uses_including_file(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, absolute: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        sentinel = tmp_path / "outside-requirements.txt"
+        sentinel.write_text("outside-canary==1.2.3\n")
+        reference = str(sentinel) if absolute else "../outside-requirements.txt"
+        (repo / "requirements.txt").write_text(f"-r {reference}\n")
+        opened: list[str] = []
+        original_open = Path.open
+    
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() == sentinel:
+                opened.append("sentinel")
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, GitInfo(is_repo=False))
+        result = scan_dependencies(scanner)
+        assert result.declarations == []
+        assert opened == []
+>       assert result.unparsed == ["requirements.txt:1: include unreadable"]
+E       AssertionError: assert ['requirement...bsolute path'] == ['requirement...e unreadable']
+E         
+E         At index 0 diff: 'requirements.txt:1: include absolute path' != 'requirements.txt:1: include unreadable'
+E         Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:147: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_absolute_include - As...
+FAILED tests/unit/core/test_requirements_graph.py::test_outside_relative_include
+FAILED tests/unit/core/test_scanner_boundaries.py::test_external_include_diagnostic_uses_including_file[relative]
+FAILED tests/unit/core/test_scanner_boundaries.py::test_external_include_diagnostic_uses_including_file[absolute]
+4 failed in 0.51s

@@ -13,7 +13,7 @@ import json
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import yaml
 from packaging.requirements import Requirement
@@ -138,9 +138,8 @@ def scan_dependencies(scanner: RepoScanner) -> Declarations:
         qualified = _parse_pyproject(pyproject, scanner, result)
         pyproject_qualified = pyproject_qualified or qualified
 
-    seen_requirements: set[str] = set()
-    for path in requirements:
-        _parse_requirements(path, scanner, result, seen_requirements)
+    requirements_graph = _RequirementsGraph(scanner, result)
+    requirements_graph.parse(requirements)
 
     for environment in environments:
         _parse_environment(environment, scanner, result)
@@ -157,7 +156,7 @@ def scan_dependencies(scanner: RepoScanner) -> Declarations:
         or pipfiles
     )
 
-    _collect_lockfiles(scanner, result, requirements)
+    _collect_lockfiles(scanner, result, requirements, requirements_graph)
     return result
 
 
@@ -169,45 +168,190 @@ def _is_requirements_name(path: str) -> bool:
 # --- requirements*.txt ------------------------------------------------------
 
 
-def _parse_requirements(
-    path: str,
-    scanner: RepoScanner,
-    result: Declarations,
-    seen: set[str],
-    depth: int = 0,
-    included_from: tuple[str, int] | None = None,
-) -> None:
-    if path in seen or depth > 10:
-        return
-    seen.add(path)
-    text = scanner.read_text(path)
-    if text is None:
-        source = content_source_path(path)
-        if source is None and included_from is not None:
-            parent, include_line = included_from
-            parent_source = content_source_path(parent) or "requirements include"
-            result.unparsed.append(f"{parent_source}:{include_line}: include unreadable")
-        else:
-            result.unparsed.append(f"{source or 'requirements include'}:0: unreadable")
-        return
-    for lineno, raw in enumerate(text.splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
+_REQUIREMENTS_MAX_DEPTH = 10
+
+
+@dataclass(frozen=True)
+class _RequirementInclude:
+    line: int
+    target: str | None
+    error: str | None = None
+
+
+@dataclass(frozen=True)
+class _RequirementFile:
+    readable: bool
+    events: tuple[DependencyDeclaration | _RequirementInclude | str, ...] = ()
+
+
+@dataclass(frozen=True)
+class _RequirementsClosure:
+    complete: bool
+    sources: frozenset[str] = frozenset()
+    declarations: frozenset[DependencyDeclaration] = frozenset()
+
+    @property
+    def is_exact(self) -> bool:
+        return (
+            self.complete
+            and bool(self.declarations)
+            and all(declaration.is_exact for declaration in self.declarations)
+        )
+
+    @property
+    def packages(self) -> frozenset[str]:
+        return frozenset(declaration.name for declaration in self.declarations)
+
+
+def _requirement_include(line: str, source: str, lineno: int) -> _RequirementInclude | None:
+    parts = line.split(None, 1)
+    if parts[0] not in {"-r", "--requirement"}:
         if line.startswith("-r") or line.startswith("--requirement"):
-            parts = line.split(None, 1)
-            if len(parts) != 2:
-                result.unparsed.append(f"{path}:{lineno}: {line}")
+            return _RequirementInclude(lineno, None, "include unsupported syntax")
+        return None
+    if len(parts) != 2:
+        return _RequirementInclude(lineno, None, "include malformed")
+    target = parts[1].strip()
+    if "\x00" in target:
+        return _RequirementInclude(lineno, None, "include malformed")
+    if any(char in target for char in "\"'$`") or any(char.isspace() for char in target):
+        return _RequirementInclude(lineno, None, "include unsupported syntax")
+    if "://" in target:
+        return _RequirementInclude(lineno, None, "include unsupported syntax")
+    if Path(target).is_absolute() or PureWindowsPath(target).anchor:
+        return _RequirementInclude(lineno, None, "include unreadable")
+    normalized = content_source_path((Path(source).parent / target).as_posix())
+    if normalized is None:
+        return _RequirementInclude(lineno, None, "include unreadable")
+    return _RequirementInclude(lineno, normalized)
+
+
+class _RequirementsGraph:
+    """One captured parse graph; depth and active-stack results stay per root."""
+
+    def __init__(self, scanner: RepoScanner, result: Declarations) -> None:
+        self.scanner = scanner
+        self.result = result
+        self.nodes: dict[str, _RequirementFile] = {}
+        self.closures: dict[str, _RequirementsClosure] = {}
+        self._expanded_depth: dict[str, int] = {}
+        self._emitted_sources: set[str] = set()
+        self._diagnostics: set[str] = set(result.unparsed)
+
+    def parse(self, roots: list[str]) -> None:
+        for root in roots:
+            self._expand(root, 0, set())
+        for root in roots:
+            if not self.nodes[root].readable:
+                self._diagnostic(f"{root}:0: unreadable")
+            self.closures[root] = self._closure(root, 0, set(), {})
+
+    def _diagnostic(self, diagnostic: str) -> None:
+        if diagnostic not in self._diagnostics:
+            self._diagnostics.add(diagnostic)
+            self.result.unparsed.append(diagnostic)
+
+    def _node(self, source: str) -> _RequirementFile:
+        cached = self.nodes.get(source)
+        if cached is not None:
+            return cached
+        text = self.scanner.read_text(source)
+        if text is None:
+            node = _RequirementFile(False)
+        else:
+            events: list[DependencyDeclaration | _RequirementInclude | str] = []
+            include_targets: set[str] = set()
+            for lineno, raw in enumerate(text.splitlines(), 1):
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                include = _requirement_include(line, source, lineno)
+                if include is not None:
+                    if include.target is None or include.target not in include_targets:
+                        events.append(include)
+                    if include.target is not None:
+                        include_targets.add(include.target)
+                elif line.startswith("-") or " @ " in line:
+                    events.append(f"{source}:{lineno}: {line}")
+                else:
+                    parsed = Declarations()
+                    _add_requirement_line(line, source, lineno, parsed)
+                    events.extend(parsed.declarations)
+                    events.extend(parsed.unparsed)
+            node = _RequirementFile(True, tuple(events))
+        self.nodes[source] = node
+        return node
+
+    def _expand(self, source: str, depth: int, active: set[str]) -> None:
+        if source in active or depth > _REQUIREMENTS_MAX_DEPTH:
+            return
+        previous_depth = self._expanded_depth.get(source)
+        if previous_depth is not None and previous_depth <= depth:
+            return
+        self._expanded_depth[source] = depth
+        node = self._node(source)
+        first_encounter = source not in self._emitted_sources
+        self._emitted_sources.add(source)
+        active.add(source)
+        for event in node.events:
+            if isinstance(event, DependencyDeclaration):
+                if first_encounter:
+                    self.result.declarations.append(event)
+            elif isinstance(event, str):
+                if first_encounter:
+                    self._diagnostic(event)
+            elif event.target is not None:
+                self._expand(event.target, depth + 1, active)
+        active.remove(source)
+
+    def _closure(
+        self,
+        source: str,
+        depth: int,
+        active: set[str],
+        memo: dict[tuple[str, int], _RequirementsClosure],
+    ) -> _RequirementsClosure:
+        if source in active or depth > _REQUIREMENTS_MAX_DEPTH:
+            return _RequirementsClosure(False)
+        key = (source, _REQUIREMENTS_MAX_DEPTH - depth)
+        cached = memo.get(key)
+        if cached is not None:
+            return cached
+        node = self.nodes[source]
+        complete = node.readable
+        sources = {source}
+        declarations: set[DependencyDeclaration] = set()
+        active.add(source)
+        for event in node.events:
+            if isinstance(event, DependencyDeclaration):
+                declarations.add(event)
                 continue
-            target = parts[1].strip()
-            base = Path(path).parent
-            resolved = (base / target).as_posix() if not target.startswith("/") else target
-            _parse_requirements(resolved, scanner, result, seen, depth + 1, (path, lineno))
-            continue
-        if line.startswith("-") or " @ " in line:
-            result.unparsed.append(f"{path}:{lineno}: {line}")
-            continue
-        _add_requirement_line(line, path, lineno, result)
+            if isinstance(event, str):
+                complete = False
+                continue
+            reason = event.error
+            child: _RequirementsClosure | None = None
+            if event.target is not None:
+                if event.target in active:
+                    reason = "include cycle"
+                elif depth >= _REQUIREMENTS_MAX_DEPTH:
+                    reason = "include depth limit"
+                elif not self.nodes[event.target].readable:
+                    reason = "include unreadable"
+                else:
+                    child = self._closure(event.target, depth + 1, active, memo)
+                    if not child.complete:
+                        reason = "include incomplete"
+            if child is not None:
+                sources.update(child.sources)
+                declarations.update(child.declarations)
+            if reason is not None:
+                self._diagnostic(f"{source}:{event.line}: {reason}")
+                complete = False
+        active.remove(source)
+        closure = _RequirementsClosure(complete, frozenset(sources), frozenset(declarations))
+        memo[key] = closure
+        return closure
 
 
 def _add_requirement_line(line: str, path: str, lineno: int, result: Declarations) -> None:
@@ -506,7 +650,12 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
 # --- lockfiles --------------------------------------------------------------
 
 
-def _collect_lockfiles(scanner: RepoScanner, result: Declarations, requirements: list[str]) -> None:
+def _collect_lockfiles(
+    scanner: RepoScanner,
+    result: Declarations,
+    requirements: list[str],
+    graph: _RequirementsGraph,
+) -> None:
     files = scanner.files()
     basenames = _dependency_basenames(files)
 
@@ -525,13 +674,12 @@ def _collect_lockfiles(scanner: RepoScanner, result: Declarations, requirements:
         packages = _conda_lock_packages(scanner, path, result)
         result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
 
-    # A requirements file where every non-comment line pins with == is a lockfile.
+    # Qualification and packages use the same captured include closure.
     for path in requirements:
         if path in {lock.path for lock in result.lockfiles}:
             continue
-        if _requirements_all_pinned(path, scanner, result, set()):
-            names = {d.name for d in result.declarations if d.is_exact and _declares_from(d, path)}
-            result.lockfiles.append(Lockfile(path, frozenset(names)))
+        if _requirements_all_pinned(path, graph):
+            result.lockfiles.append(Lockfile(path, graph.closures[path].packages))
 
 
 def _lock_package_names(packages: list[object], path: str, result: Declarations) -> list[str]:
@@ -597,45 +745,5 @@ def _conda_lock_packages(scanner: RepoScanner, path: str, result: Declarations) 
     return _lock_package_names(packages, path, result)
 
 
-def _declares_from(decl: DependencyDeclaration, root_file: str) -> bool:
-    """A declaration belongs to a requirements tree rooted at ``root_file``
-    (directly or via ``-r`` includes). We conservatively attribute all
-    requirements-parsed declarations whose source lies in the same directory
-    subtree; precision loss is acceptable for lockfile package sets."""
-    return decl.source_file == root_file or decl.source_file.startswith(
-        Path(root_file).parent.as_posix().rstrip("/") + "/"
-    )
-
-
-def _requirements_all_pinned(
-    path: str, scanner: RepoScanner, result: Declarations, seen: set[str]
-) -> bool:
-    if path in seen:
-        return True
-    seen.add(path)
-    text = scanner.read_text(path)
-    if text is None:
-        return False
-    if any(entry.startswith(f"{path}:") for entry in result.unparsed):
-        return False
-    exact_lines = {(d.source_file, d.line) for d in result.declarations if d.is_exact}
-    has_lines = False
-    for lineno, raw in enumerate(text.splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.startswith("-r") or line.startswith("--requirement"):
-            has_lines = True
-            parts = line.split(None, 1)
-            if len(parts) != 2:
-                return False
-            target = parts[1].strip()
-            base = Path(path).parent
-            resolved = (base / target).as_posix() if not target.startswith("/") else target
-            if not _requirements_all_pinned(resolved, scanner, result, seen):
-                return False
-            continue
-        has_lines = True
-        if (path, lineno) not in exact_lines:
-            return False
-    return has_lines
+def _requirements_all_pinned(path: str, graph: _RequirementsGraph) -> bool:
+    return graph.closures[path].is_exact

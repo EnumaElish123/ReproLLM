@@ -1,0 +1,1054 @@
+{
+  "full_actual_results": {
+    "outside_open_attempts": [],
+    "results": [
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/base.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/base.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "torch"
+              ],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": []
+        },
+        "id": "reachable-only"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/base.txt",
+              "specifier": "==2.5.1"
+            },
+            {
+              "display_name": "numpy",
+              "exact_version": "2.1.2",
+              "line": 1,
+              "name": "numpy",
+              "source_file": "common.txt",
+              "specifier": "==2.1.2"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/base.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "numpy",
+                "torch"
+              ],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": []
+        },
+        "id": "internal-parent"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/a.txt",
+              "specifier": "==2.5.1"
+            },
+            {
+              "display_name": "numpy",
+              "exact_version": "2.1.2",
+              "line": 1,
+              "name": "numpy",
+              "source_file": "common.txt",
+              "specifier": "==2.1.2"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/a.txt",
+            "deps/b.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "numpy",
+                "torch"
+              ],
+              "path": "requirements.txt"
+            }
+          ],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": []
+        },
+        "id": "diamond-and-repeat"
+      },
+      {
+        "facts": {
+          "critical_findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as >=2.5",
+                  "path": "requirements.txt",
+                  "value": ">=2.5"
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "declarations": [
+            {
+              "display_name": "transformers",
+              "exact_version": "4.45.2",
+              "line": 1,
+              "name": "transformers",
+              "source_file": "requirements-unused.txt",
+              "specifier": "==4.45.2"
+            },
+            {
+              "display_name": "torch",
+              "exact_version": null,
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": ">=2.5"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements-unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [
+            {
+              "packages": [
+                "transformers"
+              ],
+              "path": "requirements-unused.txt"
+            }
+          ],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": []
+        },
+        "id": "nonexact-cannot-borrow-sibling"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "requirements.txt:2: include unreadable"
+          ]
+        },
+        "id": "escape-relative"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "requirements.txt:2: include unreadable"
+          ]
+        },
+        "id": "escape-absolute"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/alias.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [
+            "deps/alias.txt: path resolves outside project root; skipped"
+          ],
+          "unparsed": [
+            "requirements.txt:2: include unreadable"
+          ]
+        },
+        "id": "escape-symlink"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/a.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/a.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "deps/a.txt:2: include cycle",
+            "requirements.txt:1: include incomplete"
+          ]
+        },
+        "id": "cycle"
+      },
+      {
+        "facts": {
+          "critical_findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "declarations": [],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/a.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "deps/a.txt:1: include cycle",
+            "requirements.txt:1: include incomplete"
+          ]
+        },
+        "id": "empty-cycle"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [
+            "deps/missing.txt: not a regular file; skipped"
+          ],
+          "unparsed": [
+            "requirements.txt:2: include unreadable"
+          ]
+        },
+        "id": "missing"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "requirements.txt:2: include malformed"
+          ]
+        },
+        "id": "malformed-include"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "requirements.txt:2: --index-url https://example.invalid/simple"
+          ]
+        },
+        "id": "unsupported-option"
+      },
+      {
+        "facts": {
+          "critical_findings": [],
+          "declarations": [
+            {
+              "display_name": "torch",
+              "exact_version": "2.5.1",
+              "line": 1,
+              "name": "torch",
+              "source_file": "requirements.txt",
+              "specifier": "==2.5.1"
+            }
+          ],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "requirements.txt:2: not a requirement @@@"
+          ]
+        },
+        "id": "malformed-declaration"
+      },
+      {
+        "facts": {
+          "critical_findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "declarations": [],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": []
+        },
+        "id": "empty-comments"
+      },
+      {
+        "facts": {
+          "critical_findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "declarations": [],
+          "files": [
+            "README.md",
+            "common.txt",
+            "control.py",
+            "deps/d0.txt",
+            "deps/d1.txt",
+            "deps/d10.txt",
+            "deps/d11.txt",
+            "deps/d12.txt",
+            "deps/d2.txt",
+            "deps/d3.txt",
+            "deps/d4.txt",
+            "deps/d5.txt",
+            "deps/d6.txt",
+            "deps/d7.txt",
+            "deps/d8.txt",
+            "deps/d9.txt",
+            "deps/unused.txt",
+            "requirements.txt"
+          ],
+          "lockfiles": [],
+          "manifest_present": true,
+          "python_evidence": null,
+          "scanner_warnings": [],
+          "unparsed": [
+            "deps/d9.txt:1: include depth limit",
+            "deps/d8.txt:1: include incomplete",
+            "deps/d7.txt:1: include incomplete",
+            "deps/d6.txt:1: include incomplete",
+            "deps/d5.txt:1: include incomplete",
+            "deps/d4.txt:1: include incomplete",
+            "deps/d3.txt:1: include incomplete",
+            "deps/d2.txt:1: include incomplete",
+            "deps/d1.txt:1: include incomplete",
+            "deps/d0.txt:1: include incomplete",
+            "requirements.txt:1: include incomplete"
+          ]
+        },
+        "id": "depth-exhausted"
+      }
+    ]
+  },
+  "independent_cases": [
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": false,
+        "never_open_outside": true,
+        "root_lock_packages": [
+          "torch"
+        ],
+        "root_lock_qualified": true,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/base.txt": "torch==2.5.1\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "reachable-only",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": false,
+        "never_open_outside": true,
+        "root_lock_packages": [
+          "numpy",
+          "torch"
+        ],
+        "root_lock_qualified": true,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/base.txt": "torch==2.5.1\n-r ../common.txt\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "--requirement deps/base.txt\n"
+      },
+      "id": "internal-parent",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": false,
+        "never_open_outside": true,
+        "root_lock_packages": [
+          "numpy",
+          "torch"
+        ],
+        "root_lock_qualified": true,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/a.txt": "torch==2.5.1\n-r ../common.txt\n",
+        "deps/b.txt": "-r ../common.txt\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/a.txt\n-r deps/b.txt\n-r deps/a.txt\n"
+      },
+      "id": "diamond-and-repeat",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": false,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements-unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch>=2.5\n"
+      },
+      "id": "nonexact-cannot-borrow-sibling",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n-r ../outside/external.txt\n"
+      },
+      "id": "escape-relative",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n-r @OUTSIDE_ABSOLUTE@\n"
+      },
+      "id": "escape-absolute",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n-r deps/alias.txt\n"
+      },
+      "id": "escape-symlink",
+      "links": {
+        "deps/alias.txt": "@OUTSIDE_ABSOLUTE@"
+      },
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": true,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/a.txt": "torch==2.5.1\n-r ../requirements.txt\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/a.txt\n"
+      },
+      "id": "cycle",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/a.txt": "-r ../requirements.txt\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/a.txt\n"
+      },
+      "id": "empty-cycle",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n-r deps/missing.txt\n"
+      },
+      "id": "missing",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n-r\n"
+      },
+      "id": "malformed-include",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\n--index-url https://example.invalid/simple\n"
+      },
+      "id": "unsupported-option",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "torch==2.5.1\nnot a requirement @@@\n"
+      },
+      "id": "malformed-declaration",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": false,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "# no declarations\n\n"
+      },
+      "id": "empty-comments",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    },
+    {
+      "cli": false,
+      "expected": {
+        "diagnostic_required": true,
+        "never_open_outside": true,
+        "root_lock_packages": [],
+        "root_lock_qualified": false,
+        "unused_transformers_in_root_lock": false
+      },
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "control.py": "import torch\n",
+        "deps/d0.txt": "-r d1.txt\n",
+        "deps/d1.txt": "-r d2.txt\n",
+        "deps/d10.txt": "-r d11.txt\n",
+        "deps/d11.txt": "-r d12.txt\n",
+        "deps/d12.txt": "torch==2.5.1\n",
+        "deps/d2.txt": "-r d3.txt\n",
+        "deps/d3.txt": "-r d4.txt\n",
+        "deps/d4.txt": "-r d5.txt\n",
+        "deps/d5.txt": "-r d6.txt\n",
+        "deps/d6.txt": "-r d7.txt\n",
+        "deps/d7.txt": "-r d8.txt\n",
+        "deps/d8.txt": "-r d9.txt\n",
+        "deps/d9.txt": "-r d10.txt\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/d0.txt\n"
+      },
+      "id": "depth-exhausted",
+      "links": {},
+      "outside": {
+        "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+      }
+    }
+  ],
+  "outside_original_hashes": [
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "reachable-only"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "internal-parent"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "diamond-and-repeat"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "nonexact-cannot-borrow-sibling"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "escape-relative"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "escape-absolute"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "escape-symlink"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "cycle"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "empty-cycle"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "missing"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "malformed-include"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "unsupported-option"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "malformed-declaration"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "empty-comments"
+    },
+    {
+      "hashes": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "id": "depth-exhausted"
+    }
+  ],
+  "schema_version": 1,
+  "stage": "r06p",
+  "synthetic_child_fixture": true,
+  "target_original_pin": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+}

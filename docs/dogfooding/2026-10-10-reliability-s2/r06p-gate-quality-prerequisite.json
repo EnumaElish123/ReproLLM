@@ -1,0 +1,187 @@
+{
+  "records": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev"
+      ],
+      "elapsed_seconds": 0.031,
+      "exit_code": 0,
+      "log": "00.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "--version"
+      ],
+      "elapsed_seconds": 0.035,
+      "exit_code": 0,
+      "log": "01.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "--version"
+      ],
+      "elapsed_seconds": 0.454,
+      "exit_code": 0,
+      "log": "02.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85"
+      ],
+      "elapsed_seconds": 327.345,
+      "exit_code": 0,
+      "log": "03.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "elapsed_seconds": 0.192,
+      "exit_code": 0,
+      "log": "04.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "elapsed_seconds": 0.082,
+      "exit_code": 0,
+      "log": "05.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "elapsed_seconds": 0.086,
+      "exit_code": 0,
+      "log": "06.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "mypy",
+        "src/"
+      ],
+      "elapsed_seconds": 0.335,
+      "exit_code": 0,
+      "log": "07.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "elapsed_seconds": 14.035,
+      "exit_code": 0,
+      "log": "08.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.403,
+      "exit_code": 0,
+      "log": "09.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.432,
+      "exit_code": 0,
+      "log": "10.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 10.693,
+      "exit_code": 0,
+      "log": "11.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "elapsed_seconds": 11.622,
+      "exit_code": 0,
+      "log": "12.log"
+    },
+    {
+      "command": [
+        "reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<temporary-directory>"
+      ],
+      "elapsed_seconds": 0.504,
+      "exit_code": 0,
+      "same_bytes": true,
+      "schemas": [
+        "audit_report.schema.json",
+        "config.schema.json",
+        "diff_report.schema.json",
+        "discover_candidates.schema.json",
+        "lock.schema.json",
+        "manifest.schema.json",
+        "profile.schema.json",
+        "project_rules.schema.json",
+        "rule_archive.schema.json",
+        "run_record.schema.json"
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_file_sha256": "8b83f5391f6a9b0cf0d0eeb23b57cefeec9cc4b3380db35204db95780db8f66b"
+}

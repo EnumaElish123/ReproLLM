@@ -1,0 +1,197 @@
+.............FFFFF                                                       [100%]
+=================================== FAILURES ===================================
+_____________________________ test_chain_11_edges ______________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_chain_11_edges(tmp_path: Path) -> None:
+        _write(tmp_path, _chain(11))
+        result, scanner = _scan(tmp_path)
+        assert result.declarations == []
+>       assert _locks(result) == {}
+E       AssertionError: assert {'requirement...et({'torch'})} == {}
+E         
+E         Left contains 1 more item:
+E         {'requirements.txt': frozenset({'torch'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:301: AssertionError
+____________________ test_shared_budget_shallow_first[True] ____________________
+
+tmp_path = PosixPath('<test-tmp>')
+shallow_root_first = True
+
+    @pytest.mark.parametrize("shallow_root_first", [True, False])
+    def test_shared_budget_shallow_first(tmp_path: Path, shallow_root_first: bool) -> None:
+>       _shared_budget(tmp_path, short_edge_first=True, shallow_root_first=shallow_root_first)
+
+tests/unit/core/test_requirements_graph.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+short_edge_first = True, shallow_root_first = True
+
+    def _shared_budget(tmp_path: Path, *, short_edge_first: bool, shallow_root_first: bool) -> None:
+        long_root = "requirements-z-long.txt" if shallow_root_first else "requirements-a-long.txt"
+        shallow_root = (
+            "requirements-a-shallow.txt" if shallow_root_first else "requirements-z-shallow.txt"
+        )
+        edges = ["-r deps/shared.txt\n", "-r chain/n1.txt\n"]
+        if not short_edge_first:
+            edges.reverse()
+        files = {
+            long_root: "".join(edges),
+            shallow_root: "-r deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n",
+        }
+        for number in range(1, 9):
+            files[f"chain/n{number}.txt"] = f"-r n{number + 1}.txt\n"
+        files["chain/n9.txt"] = "-r ../deps/shared.txt\n"
+        _write(tmp_path, files)
+        result, scanner = _scan(tmp_path)
+>       assert _locks(result) == {shallow_root: frozenset({"torch", "numpy"})}
+E       AssertionError: assert {'requirement...y', 'torch'})} == {'requirement...y', 'torch'})}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'requirements-z-long.txt': frozenset({'torch', 'numpy'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:325: AssertionError
+___________________ test_shared_budget_shallow_first[False] ____________________
+
+tmp_path = PosixPath('<test-tmp>')
+shallow_root_first = False
+
+    @pytest.mark.parametrize("shallow_root_first", [True, False])
+    def test_shared_budget_shallow_first(tmp_path: Path, shallow_root_first: bool) -> None:
+>       _shared_budget(tmp_path, short_edge_first=True, shallow_root_first=shallow_root_first)
+
+tests/unit/core/test_requirements_graph.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+short_edge_first = True, shallow_root_first = False
+
+    def _shared_budget(tmp_path: Path, *, short_edge_first: bool, shallow_root_first: bool) -> None:
+        long_root = "requirements-z-long.txt" if shallow_root_first else "requirements-a-long.txt"
+        shallow_root = (
+            "requirements-a-shallow.txt" if shallow_root_first else "requirements-z-shallow.txt"
+        )
+        edges = ["-r deps/shared.txt\n", "-r chain/n1.txt\n"]
+        if not short_edge_first:
+            edges.reverse()
+        files = {
+            long_root: "".join(edges),
+            shallow_root: "-r deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n",
+        }
+        for number in range(1, 9):
+            files[f"chain/n{number}.txt"] = f"-r n{number + 1}.txt\n"
+        files["chain/n9.txt"] = "-r ../deps/shared.txt\n"
+        _write(tmp_path, files)
+        result, scanner = _scan(tmp_path)
+>       assert _locks(result) == {shallow_root: frozenset({"torch", "numpy"})}
+E       AssertionError: assert {'requirement...y', 'torch'})} == {'requirement...y', 'torch'})}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'requirements-a-long.txt': frozenset({'torch', 'numpy'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:325: AssertionError
+_____________________ test_shared_budget_long_first[True] ______________________
+
+tmp_path = PosixPath('<test-tmp>')
+shallow_root_first = True
+
+    @pytest.mark.parametrize("shallow_root_first", [True, False])
+    def test_shared_budget_long_first(tmp_path: Path, shallow_root_first: bool) -> None:
+>       _shared_budget(tmp_path, short_edge_first=False, shallow_root_first=shallow_root_first)
+
+tests/unit/core/test_requirements_graph.py:343: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+short_edge_first = False, shallow_root_first = True
+
+    def _shared_budget(tmp_path: Path, *, short_edge_first: bool, shallow_root_first: bool) -> None:
+        long_root = "requirements-z-long.txt" if shallow_root_first else "requirements-a-long.txt"
+        shallow_root = (
+            "requirements-a-shallow.txt" if shallow_root_first else "requirements-z-shallow.txt"
+        )
+        edges = ["-r deps/shared.txt\n", "-r chain/n1.txt\n"]
+        if not short_edge_first:
+            edges.reverse()
+        files = {
+            long_root: "".join(edges),
+            shallow_root: "-r deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n",
+        }
+        for number in range(1, 9):
+            files[f"chain/n{number}.txt"] = f"-r n{number + 1}.txt\n"
+        files["chain/n9.txt"] = "-r ../deps/shared.txt\n"
+        _write(tmp_path, files)
+        result, scanner = _scan(tmp_path)
+>       assert _locks(result) == {shallow_root: frozenset({"torch", "numpy"})}
+E       AssertionError: assert {'requirement...y', 'torch'})} == {'requirement...y', 'torch'})}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'requirements-z-long.txt': frozenset({'torch', 'numpy'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:325: AssertionError
+_____________________ test_shared_budget_long_first[False] _____________________
+
+tmp_path = PosixPath('<test-tmp>')
+shallow_root_first = False
+
+    @pytest.mark.parametrize("shallow_root_first", [True, False])
+    def test_shared_budget_long_first(tmp_path: Path, shallow_root_first: bool) -> None:
+>       _shared_budget(tmp_path, short_edge_first=False, shallow_root_first=shallow_root_first)
+
+tests/unit/core/test_requirements_graph.py:343: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('<test-tmp>')
+short_edge_first = False, shallow_root_first = False
+
+    def _shared_budget(tmp_path: Path, *, short_edge_first: bool, shallow_root_first: bool) -> None:
+        long_root = "requirements-z-long.txt" if shallow_root_first else "requirements-a-long.txt"
+        shallow_root = (
+            "requirements-a-shallow.txt" if shallow_root_first else "requirements-z-shallow.txt"
+        )
+        edges = ["-r deps/shared.txt\n", "-r chain/n1.txt\n"]
+        if not short_edge_first:
+            edges.reverse()
+        files = {
+            long_root: "".join(edges),
+            shallow_root: "-r deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n",
+        }
+        for number in range(1, 9):
+            files[f"chain/n{number}.txt"] = f"-r n{number + 1}.txt\n"
+        files["chain/n9.txt"] = "-r ../deps/shared.txt\n"
+        _write(tmp_path, files)
+        result, scanner = _scan(tmp_path)
+>       assert _locks(result) == {shallow_root: frozenset({"torch", "numpy"})}
+E       AssertionError: assert {'requirement...y', 'torch'})} == {'requirement...y', 'torch'})}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'requirements-a-long.txt': frozenset({'torch', 'numpy'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:325: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_chain_11_edges - Asse...
+FAILED tests/unit/core/test_requirements_graph.py::test_shared_budget_shallow_first[True]
+FAILED tests/unit/core/test_requirements_graph.py::test_shared_budget_shallow_first[False]
+FAILED tests/unit/core/test_requirements_graph.py::test_shared_budget_long_first[True]
+FAILED tests/unit/core/test_requirements_graph.py::test_shared_budget_long_first[False]
+5 failed, 13 passed in 0.65s

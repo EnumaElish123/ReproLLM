@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r ../outside/external.txt\n"
+        },
+        "id": "escape-relative",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "escape-relative",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/project"
+    }
+  ],
+  "schema_version": 1
+}

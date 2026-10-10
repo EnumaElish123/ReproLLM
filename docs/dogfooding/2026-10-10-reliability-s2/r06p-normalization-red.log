@@ -1,0 +1,47 @@
+.F.F.....                                                                [100%]
+=================================== FAILURES ===================================
+_______________________ test_normalized_internal_parent ________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_normalized_internal_parent(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "--requirement deps/base.txt\n",
+                "deps/base.txt": "torch==2.5.1\n-r ../common.txt\n",
+                "common.txt": "numpy==2.1.2\n",
+            },
+        )
+        result, scanner = _scan(tmp_path)
+>       assert _rows(result) == [("torch", "deps/base.txt", 1), ("numpy", "common.txt", 1)]
+E       AssertionError: assert [('torch', 'd...mmon.txt', 1)] == [('torch', 'd...mmon.txt', 1)]
+E         
+E         At index 1 diff: ('numpy', 'deps/../common.txt', 1) != ('numpy', 'common.txt', 1)
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:102: AssertionError
+________________________ test_repeated_normalized_edge _________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_repeated_normalized_edge(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n-r deps/../deps/base.txt\n",
+                "deps/base.txt": "torch==2.5.1\n",
+            },
+        )
+        result, scanner = _scan(tmp_path)
+>       assert _rows(result) == [("torch", "deps/base.txt", 1)]
+E       AssertionError: assert [('torch', 'd...base.txt', 1)] == [('torch', 'd...base.txt', 1)]
+E         
+E         Left contains one more item: ('torch', 'deps/../deps/base.txt', 1)
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:134: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_normalized_internal_parent
+FAILED tests/unit/core/test_requirements_graph.py::test_repeated_normalized_edge
+2 failed, 7 passed in 0.72s

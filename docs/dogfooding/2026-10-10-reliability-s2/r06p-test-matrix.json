@@ -1,0 +1,707 @@
+{
+  "bounded_include_grammar": {
+    "conservative_unsupported": [
+      "-rfile",
+      "--requirement=file",
+      "quoted target",
+      "expansion/constraints/hash/editable/index syntax"
+    ],
+    "status": "Implemented bounded choice documented in CHANGELOG; complete pip grammar not claimed.",
+    "supported": [
+      "-r target",
+      "--requirement target"
+    ]
+  },
+  "cases": [
+    {
+      "declarations": [
+        {
+          "line": 1,
+          "name": "torch",
+          "source_file": "deps/base.txt"
+        }
+      ],
+      "expanded_cases": 1,
+      "files": {
+        "deps/base.txt": "torch==2.5.1\n",
+        "deps/unused.txt": "transformers==4.45.2\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "root_referenced_child",
+      "locks": {
+        "requirements.txt": [
+          "torch"
+        ]
+      },
+      "root": "requirements.txt",
+      "test_function": "test_root_referenced_child",
+      "unreferenced_content_reads": 0
+    },
+    {
+      "expanded_cases": 1,
+      "files": {
+        "common.txt": "numpy==2.1.2\n",
+        "deps/base.txt": "torch==2.5.1\n-r ../common.txt\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "normalized_internal_parent",
+      "locks": {
+        "requirements.txt": [
+          "numpy",
+          "torch"
+        ]
+      },
+      "normalized_sources": [
+        "common.txt",
+        "deps/base.txt"
+      ],
+      "root": "requirements.txt",
+      "test_function": "test_normalized_internal_parent"
+    },
+    {
+      "expanded_cases": 1,
+      "files": {
+        "deps/base.txt": "torch>=2\n",
+        "deps/unused.txt": "torch==2.5.1\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "unreferenced_sibling_cannot_repair",
+      "locks": {},
+      "note": "unused.txt is not a separately discovered requirements root",
+      "root": "requirements.txt",
+      "test_function": "test_unreferenced_sibling_cannot_repair"
+    },
+    {
+      "declaration_occurrences": 1,
+      "expanded_cases": 1,
+      "files": {
+        "deps/base.txt": "torch==2.5.1\n",
+        "requirements.txt": "-r deps/base.txt\n-r deps/../deps/base.txt\n"
+      },
+      "id": "repeated_normalized_edge",
+      "locks": {
+        "requirements.txt": [
+          "torch"
+        ]
+      },
+      "read_requests_per_normalized_source": 1,
+      "root": "requirements.txt",
+      "test_function": "test_repeated_normalized_edge"
+    },
+    {
+      "cycle_diagnostics": 0,
+      "declaration_occurrences": 1,
+      "expanded_cases": 2,
+      "files": {
+        "deps/common.txt": "torch==2.5.1\n",
+        "deps/left.txt": "-r common.txt\n",
+        "deps/right.txt": "-r common.txt\n",
+        "requirements.txt": "-r deps/left.txt\n-r deps/right.txt\n"
+      },
+      "id": "diamond_shared_node",
+      "layered_fanout": {
+        "declaration_occurrences": 5,
+        "edge_count": 230,
+        "file_count": 51,
+        "leaf_files": [
+          "graph/l10-n0.txt",
+          "graph/l10-n1.txt",
+          "graph/l10-n2.txt",
+          "graph/l10-n3.txt",
+          "graph/l10-n4.txt"
+        ],
+        "levels": 10,
+        "locks": {
+          "requirements.txt": [
+            "torch"
+          ]
+        },
+        "naive_path_count": 9765625,
+        "note": "Layered shared nodes require finite closure reuse; parse cache alone does not bound qualification traversal.",
+        "root_depth": 0,
+        "width": 5
+      },
+      "locks": {
+        "requirements.txt": [
+          "torch"
+        ]
+      },
+      "read_requests_per_normalized_source": 1,
+      "root": "requirements.txt",
+      "test_function": "test_diamond_shared_node",
+      "variants": [
+        "diamond",
+        "layered_fanout"
+      ]
+    },
+    {
+      "diagnostic_source": {
+        "line": 1,
+        "path": "deps/a.txt",
+        "reason": "include cycle"
+      },
+      "expanded_cases": 1,
+      "files": {
+        "deps/a.txt": "-r ../requirements.txt\n",
+        "requirements.txt": "torch==2.5.1\n-r deps/a.txt\n"
+      },
+      "global_critical_pinned": true,
+      "id": "cycle_with_package",
+      "locks": {},
+      "root": "requirements.txt",
+      "test_function": "test_cycle_with_package"
+    },
+    {
+      "declarations": [],
+      "expanded_cases": 1,
+      "files": {
+        "deps/a.txt": "-r ../requirements.txt\n",
+        "requirements.txt": "-r deps/a.txt\n"
+      },
+      "id": "empty_cycle",
+      "locks": {},
+      "reason": "cycle and empty closure",
+      "root": "requirements.txt",
+      "test_function": "test_empty_cycle"
+    },
+    {
+      "declarations": [],
+      "expanded_cases": 1,
+      "files": {
+        "deps/a.txt": "# comment only\n",
+        "requirements.txt": "-r deps/a.txt\n"
+      },
+      "id": "empty_comment_child",
+      "locks": {},
+      "root": "requirements.txt",
+      "test_function": "test_empty_comment_child"
+    },
+    {
+      "diagnostic_source": {
+        "line": 2,
+        "path": "requirements.txt",
+        "reason": "include unreadable"
+      },
+      "expanded_cases": 1,
+      "files": {
+        "requirements.txt": "torch==2.5.1\n-r deps/missing.txt\n"
+      },
+      "id": "missing_child",
+      "locks": {},
+      "root": "requirements.txt",
+      "test_function": "test_missing_child"
+    },
+    {
+      "diagnostic_source": {
+        "line": 1,
+        "path": "requirements.txt",
+        "reason": "include unreadable"
+      },
+      "expanded_cases": 1,
+      "external_opens": 0,
+      "id": "absolute_include",
+      "input_kind": "synthetic absolute outside target",
+      "locks": {},
+      "raw_target_echo": false,
+      "root": "requirements.txt",
+      "test_function": "test_absolute_include"
+    },
+    {
+      "diagnostic_source": {
+        "line": 1,
+        "path": "requirements.txt",
+        "reason": "include unreadable"
+      },
+      "expanded_cases": 1,
+      "external_opens": 0,
+      "files": {
+        "requirements.txt": "-r ../external.txt\n"
+      },
+      "id": "outside_relative_include",
+      "locks": {},
+      "raw_target_echo": false,
+      "root": "requirements.txt",
+      "test_function": "test_outside_relative_include"
+    },
+    {
+      "diagnostic_source": {
+        "line": 1,
+        "path": "requirements.txt",
+        "reason": "include unreadable"
+      },
+      "expanded_cases": 1,
+      "external_opens": 0,
+      "files": {
+        "requirements.txt": "-r deps/linked.txt\n"
+      },
+      "id": "outside_symlink_include",
+      "locks": {},
+      "raw_target_echo": false,
+      "root": "requirements.txt",
+      "symlink_kind": "inside alias to synthetic outside target",
+      "test_function": "test_outside_symlink_include"
+    },
+    {
+      "diagnostic_source": {
+        "line": 0,
+        "path": "requirements.txt",
+        "reason": "unreadable"
+      },
+      "expanded_cases": 1,
+      "external_opens": 0,
+      "id": "outside_root_symlink",
+      "locks": {},
+      "raw_target_echo": false,
+      "root": "requirements.txt",
+      "symlink_kind": "root requirements alias to synthetic outside target",
+      "test_function": "test_outside_root_symlink"
+    },
+    {
+      "expanded_cases": 1,
+      "expected_include_base": "alias directory, not resolved target directory",
+      "files": {
+        "requirements.txt": "-r alias/base.txt\n"
+      },
+      "id": "legal_inside_source_alias",
+      "root": "requirements.txt",
+      "source_alias_retained": true,
+      "symlink_kind": "alias/base.txt to other inside source",
+      "test_function": "test_legal_inside_source_alias"
+    },
+    {
+      "diagnostic_source": {
+        "line": 1,
+        "path": "requirements.txt",
+        "reason": "include unreadable"
+      },
+      "expanded_cases": 1,
+      "failure": "Path.open PermissionError with synthetic unsafe error text",
+      "files": {
+        "requirements.txt": "-r deps/private.txt\n"
+      },
+      "id": "permission_failure",
+      "locks": {},
+      "raw_exception_echo": false,
+      "root": "requirements.txt",
+      "test_function": "test_permission_failure"
+    },
+    {
+      "existing_reader_cap_enforced": true,
+      "expanded_cases": 2,
+      "files": {
+        "requirements.txt": "-r deps/large.txt\n"
+      },
+      "id": "binary_or_oversized_child",
+      "locks": {},
+      "root": "requirements.txt",
+      "test_function": "test_binary_or_oversized_child",
+      "variants": [
+        "binary NUL",
+        "MAX_READ_BYTES + 1"
+      ]
+    },
+    {
+      "expanded_cases": 1,
+      "files": {
+        "deps/base.txt": "torch==2.5.1\nthis is not === a requirement!!!\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "child_malformed_line",
+      "include_diagnostic_source": {
+        "line": 1,
+        "path": "requirements.txt"
+      },
+      "locks": {},
+      "root": "requirements.txt",
+      "safe_legacy_diagnostic": "deps/base.txt:2: this is not === a requirement!!!",
+      "test_function": "test_child_malformed_line"
+    },
+    {
+      "expanded_cases": 5,
+      "files": {
+        "deps/base.txt": "torch==2.5.1\n-e .\n",
+        "requirements.txt": "-r deps/base.txt\n"
+      },
+      "id": "unsupported_child_directive",
+      "locks": {},
+      "root": "requirements.txt",
+      "safe_legacy_diagnostic": "deps/base.txt:2: -e .",
+      "test_function": "test_unsupported_child_directive",
+      "variants": [
+        "-e .",
+        "-r",
+        "-rbase.txt",
+        "--requirement=base.txt",
+        "-r \"base.txt\""
+      ]
+    },
+    {
+      "expanded_cases": 1,
+      "files": {
+        "requirements.txt": "torch==2.5.1\n-e .\n--index-url https://pypi.example\nart==6.2 # existing inline comment\ntenacity==8.2.2 # existing inline comment\ngit+https://example.invalid/repo.git\n"
+      },
+      "id": "safe_legacy_noninclude_bytes",
+      "locks": {},
+      "test_function": "test_safe_legacy_noninclude_bytes",
+      "unparsed": [
+        "requirements.txt:2: -e .",
+        "requirements.txt:3: --index-url https://pypi.example",
+        "requirements.txt:4: art==6.2 # existing inline comment",
+        "requirements.txt:5: tenacity==8.2.2 # existing inline comment",
+        "requirements.txt:6: git+https://example.invalid/repo.git"
+      ]
+    },
+    {
+      "expanded_cases": 2,
+      "files": {
+        "requirements-extra.txt": "torch==2.5.1\n",
+        "requirements.txt": "torch>=2\n"
+      },
+      "id": "independent_roots_keep_aggregate_scope",
+      "locks": {
+        "requirements-extra.txt": [
+          "torch"
+        ]
+      },
+      "note": "global critical-package rule and lock-presence may still pass; R06-B scope unchanged",
+      "same_directory_files": {
+        "deps/base.txt": "torch==2.5.1\n",
+        "deps/requirements-unused.txt": "transformers==4.45.2\n",
+        "deps/requirements.txt": "-r base.txt\n",
+        "requirements.txt": "torch>=2\n"
+      },
+      "same_directory_locks": {
+        "deps/requirements-unused.txt": [
+          "transformers"
+        ],
+        "deps/requirements.txt": [
+          "torch"
+        ]
+      },
+      "test_function": "test_independent_roots_keep_aggregate_scope",
+      "variants": [
+        "flat",
+        "same_directory"
+      ]
+    },
+    {
+      "expanded_cases": 1,
+      "id": "between_scan_retarget",
+      "note": "graph parse cache is scoped to one scan invocation",
+      "second_external_opens": 0,
+      "second_root_qualified": false,
+      "sequence": [
+        "scan with inside include alias",
+        "retarget alias to synthetic outside target",
+        "scan again with same RepoScanner"
+      ],
+      "test_function": "test_between_scan_retarget"
+    },
+    {
+      "expanded_cases": 1,
+      "failure_source": null,
+      "files": {
+        "deps/n1.txt": "-r n2.txt\n",
+        "deps/n10.txt": "torch==2.5.1\n",
+        "deps/n2.txt": "-r n3.txt\n",
+        "deps/n3.txt": "-r n4.txt\n",
+        "deps/n4.txt": "-r n5.txt\n",
+        "deps/n5.txt": "-r n6.txt\n",
+        "deps/n6.txt": "-r n7.txt\n",
+        "deps/n7.txt": "-r n8.txt\n",
+        "deps/n8.txt": "-r n9.txt\n",
+        "deps/n9.txt": "-r n10.txt\n",
+        "requirements.txt": "-r deps/n1.txt\n"
+      },
+      "id": "chain_10_edges",
+      "leaf_content_opens": 1,
+      "max_depth": 10,
+      "qualified": true,
+      "root": "requirements.txt",
+      "root_depth": 0,
+      "test_function": "test_chain_10_edges"
+    },
+    {
+      "expanded_cases": 1,
+      "failure_source": {
+        "line": 1,
+        "path": "deps/n10.txt",
+        "reason": "include depth limit"
+      },
+      "files": {
+        "deps/n1.txt": "-r n2.txt\n",
+        "deps/n10.txt": "-r n11.txt\n",
+        "deps/n11.txt": "torch==2.5.1\n",
+        "deps/n2.txt": "-r n3.txt\n",
+        "deps/n3.txt": "-r n4.txt\n",
+        "deps/n4.txt": "-r n5.txt\n",
+        "deps/n5.txt": "-r n6.txt\n",
+        "deps/n6.txt": "-r n7.txt\n",
+        "deps/n7.txt": "-r n8.txt\n",
+        "deps/n8.txt": "-r n9.txt\n",
+        "deps/n9.txt": "-r n10.txt\n",
+        "requirements.txt": "-r deps/n1.txt\n"
+      },
+      "id": "chain_11_edges",
+      "leaf_content_opens": 0,
+      "max_depth": 10,
+      "qualified": false,
+      "root": "requirements.txt",
+      "root_depth": 0,
+      "test_function": "test_chain_11_edges"
+    },
+    {
+      "expanded_cases": 2,
+      "id": "shared_budget_shallow_first",
+      "long_root_qualified": false,
+      "order": "shortcut before chain",
+      "parser_cache_poisoning": false,
+      "previously_cached_node_cannot_bypass_depth": true,
+      "root_order_variants": [
+        {
+          "declarations": [
+            {
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/shared.txt"
+            },
+            {
+              "line": 1,
+              "name": "numpy",
+              "source_file": "tail/terminal.txt"
+            }
+          ],
+          "deep_shared_depth": 10,
+          "deep_terminal_depth": 11,
+          "diagnostic_source": {
+            "line": 2,
+            "path": "deps/shared.txt",
+            "reason": "include depth limit"
+          },
+          "files": {
+            "chain/n1.txt": "-r n2.txt\n",
+            "chain/n2.txt": "-r n3.txt\n",
+            "chain/n3.txt": "-r n4.txt\n",
+            "chain/n4.txt": "-r n5.txt\n",
+            "chain/n5.txt": "-r n6.txt\n",
+            "chain/n6.txt": "-r n7.txt\n",
+            "chain/n7.txt": "-r n8.txt\n",
+            "chain/n8.txt": "-r n9.txt\n",
+            "chain/n9.txt": "-r ../deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "requirements-a-shallow.txt": "-r deps/shared.txt\n",
+            "requirements-z-long.txt": "-r deps/shared.txt\n-r chain/n1.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n"
+          },
+          "global_critical_pinned": true,
+          "global_lock_present": true,
+          "locks": {
+            "requirements-a-shallow.txt": [
+              "numpy",
+              "torch"
+            ]
+          },
+          "long_root": "requirements-z-long.txt",
+          "read_requests_per_normalized_source": 1,
+          "root_order": "shallow then long",
+          "shallow_root": "requirements-a-shallow.txt",
+          "shortcut_terminal_depth": 2
+        },
+        {
+          "declarations": [
+            {
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/shared.txt"
+            },
+            {
+              "line": 1,
+              "name": "numpy",
+              "source_file": "tail/terminal.txt"
+            }
+          ],
+          "deep_shared_depth": 10,
+          "deep_terminal_depth": 11,
+          "diagnostic_source": {
+            "line": 2,
+            "path": "deps/shared.txt",
+            "reason": "include depth limit"
+          },
+          "files": {
+            "chain/n1.txt": "-r n2.txt\n",
+            "chain/n2.txt": "-r n3.txt\n",
+            "chain/n3.txt": "-r n4.txt\n",
+            "chain/n4.txt": "-r n5.txt\n",
+            "chain/n5.txt": "-r n6.txt\n",
+            "chain/n6.txt": "-r n7.txt\n",
+            "chain/n7.txt": "-r n8.txt\n",
+            "chain/n8.txt": "-r n9.txt\n",
+            "chain/n9.txt": "-r ../deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "requirements-a-long.txt": "-r deps/shared.txt\n-r chain/n1.txt\n",
+            "requirements-z-shallow.txt": "-r deps/shared.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n"
+          },
+          "global_critical_pinned": true,
+          "global_lock_present": true,
+          "locks": {
+            "requirements-z-shallow.txt": [
+              "numpy",
+              "torch"
+            ]
+          },
+          "long_root": "requirements-a-long.txt",
+          "read_requests_per_normalized_source": 1,
+          "root_order": "long then shallow",
+          "shallow_root": "requirements-z-shallow.txt",
+          "shortcut_terminal_depth": 2
+        }
+      ],
+      "shallow_root_qualified": true,
+      "test_function": "test_shared_budget_shallow_first"
+    },
+    {
+      "expanded_cases": 2,
+      "id": "shared_budget_long_first",
+      "long_root_qualified": false,
+      "order": "chain before shortcut",
+      "parser_cache_poisoning": false,
+      "previously_cached_node_cannot_bypass_depth": true,
+      "root_order_variants": [
+        {
+          "declarations": [
+            {
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/shared.txt"
+            },
+            {
+              "line": 1,
+              "name": "numpy",
+              "source_file": "tail/terminal.txt"
+            }
+          ],
+          "deep_shared_depth": 10,
+          "deep_terminal_depth": 11,
+          "diagnostic_source": {
+            "line": 2,
+            "path": "deps/shared.txt",
+            "reason": "include depth limit"
+          },
+          "files": {
+            "chain/n1.txt": "-r n2.txt\n",
+            "chain/n2.txt": "-r n3.txt\n",
+            "chain/n3.txt": "-r n4.txt\n",
+            "chain/n4.txt": "-r n5.txt\n",
+            "chain/n5.txt": "-r n6.txt\n",
+            "chain/n6.txt": "-r n7.txt\n",
+            "chain/n7.txt": "-r n8.txt\n",
+            "chain/n8.txt": "-r n9.txt\n",
+            "chain/n9.txt": "-r ../deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "requirements-a-shallow.txt": "-r deps/shared.txt\n",
+            "requirements-z-long.txt": "-r chain/n1.txt\n-r deps/shared.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n"
+          },
+          "global_critical_pinned": true,
+          "global_lock_present": true,
+          "locks": {
+            "requirements-a-shallow.txt": [
+              "numpy",
+              "torch"
+            ]
+          },
+          "long_root": "requirements-z-long.txt",
+          "read_requests_per_normalized_source": 1,
+          "root_order": "shallow then long",
+          "shallow_root": "requirements-a-shallow.txt",
+          "shortcut_terminal_depth": 2
+        },
+        {
+          "declarations": [
+            {
+              "line": 1,
+              "name": "torch",
+              "source_file": "deps/shared.txt"
+            },
+            {
+              "line": 1,
+              "name": "numpy",
+              "source_file": "tail/terminal.txt"
+            }
+          ],
+          "deep_shared_depth": 10,
+          "deep_terminal_depth": 11,
+          "diagnostic_source": {
+            "line": 2,
+            "path": "deps/shared.txt",
+            "reason": "include depth limit"
+          },
+          "files": {
+            "chain/n1.txt": "-r n2.txt\n",
+            "chain/n2.txt": "-r n3.txt\n",
+            "chain/n3.txt": "-r n4.txt\n",
+            "chain/n4.txt": "-r n5.txt\n",
+            "chain/n5.txt": "-r n6.txt\n",
+            "chain/n6.txt": "-r n7.txt\n",
+            "chain/n7.txt": "-r n8.txt\n",
+            "chain/n8.txt": "-r n9.txt\n",
+            "chain/n9.txt": "-r ../deps/shared.txt\n",
+            "deps/shared.txt": "torch==2.5.1\n-r ../tail/terminal.txt\n",
+            "requirements-a-long.txt": "-r chain/n1.txt\n-r deps/shared.txt\n",
+            "requirements-z-shallow.txt": "-r deps/shared.txt\n",
+            "tail/terminal.txt": "numpy==2.1.2\n"
+          },
+          "global_critical_pinned": true,
+          "global_lock_present": true,
+          "locks": {
+            "requirements-z-shallow.txt": [
+              "numpy",
+              "torch"
+            ]
+          },
+          "long_root": "requirements-a-long.txt",
+          "read_requests_per_normalized_source": 1,
+          "root_order": "long then shallow",
+          "shallow_root": "requirements-z-shallow.txt",
+          "shortcut_terminal_depth": 2
+        }
+      ],
+      "shallow_root_qualified": true,
+      "test_function": "test_shared_budget_long_first"
+    }
+  ],
+  "diagnostic_reason_status": "Existing R06-G include unreadable preserved for absolute/escape rejection; new cycle/depth/malformed/unsupported/incomplete reasons fixed.",
+  "expanded_cases": 34,
+  "fixed_diagnostic_reasons": [
+    "include unreadable",
+    "include cycle",
+    "include depth limit",
+    "include malformed",
+    "include unsupported syntax",
+    "include incomplete"
+  ],
+  "forbidden": [
+    "No Conda semantics, broader dependency scope, solver/network/heavy dependencies, unrelated non-include parsing, schemas/engine/redaction/pin/snapshot changes."
+  ],
+  "graph_contract": "one graph per scan; parsed file cache shared; per-root active stack and depth; one RootClosure yields both qualification and packages",
+  "logical_cases": 25,
+  "schema_version": 1,
+  "source_baseline": "57b1384f748f09ae2af674e31f80ec868eea1972",
+  "source_sha256": {
+    "CHANGELOG.md": "73274c7f81b20b75e0a04ac63a3010f9df3123ac7fb5dab487377b0bffd6f243",
+    "src/reprollm/core/deps.py": "c9cdd4c0b0bf6cd8de1da398d33ab0d72fefd5c6c9924582a2719706dd397997",
+    "tests/unit/core/test_requirements_graph.py": "918698278b9ff512c3f179bf08114506d47a7aa3f0ffcc9fbcaaf1ebfdad1c1d"
+  },
+  "status": "implemented_frozen_focused_pass; root_full_quality_and_gate_pending",
+  "symlink_platform_contract": "Only symlink-creating cases skip on OSError/NotImplementedError, using existing scanner tests helper; portable cases remain on all CI platforms.",
+  "task": "R06-P",
+  "test_file": "tests/unit/core/test_requirements_graph.py",
+  "test_marker": "security",
+  "traversal_protection": {
+    "closure_memo": "per root and remaining depth, with active-stack and depth guards before reuse",
+    "global_diagnostics": "presentation only; cannot invalidate another root closure",
+    "no_new_budget_policy": true,
+    "parse_facts": "once per normalized source per scan invocation"
+  }
+}

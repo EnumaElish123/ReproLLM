@@ -1,0 +1,73 @@
+{
+  "baseline_commit": "57b1384f748f09ae2af674e31f80ec868eea1972",
+  "bounded_include_support": [
+    "whitespace-separated -r target",
+    "whitespace-separated --requirement target"
+  ],
+  "bounded_include_unsupported": [
+    "attached forms",
+    "quoted target",
+    "expansion",
+    "URL include target"
+  ],
+  "commit_push_ci": "PENDING_ROOT",
+  "dependencies_changed": false,
+  "engine_redaction_changed": false,
+  "existing_ast_blocks_preserved": 23,
+  "expanded_acceptance_cases": 34,
+  "final_focused": {
+    "argv": [
+      "uv",
+      "run",
+      "pytest",
+      "-q",
+      "tests/unit/core/test_requirements_graph.py",
+      "tests/unit/core/test_deps.py",
+      "tests/unit/core/test_dependency_paths.py",
+      "tests/unit/core/test_python_exact_versions.py",
+      "tests/unit/core/test_scanner.py",
+      "tests/unit/core/test_scanner_boundaries.py",
+      "tests/unit/rules/test_env.py"
+    ],
+    "log": "r06p-focused-compatible-final.log",
+    "passed": 310,
+    "pytest_seconds": 19.05,
+    "wrapper_seconds": 19.547785
+  },
+  "final_static_commands": [
+    "lint-compatible-final",
+    "format-compatible-final",
+    "mypy-compatible-final"
+  ],
+  "fresh_five_project_gate_a": "PENDING_ROOT",
+  "frozen_source_sha256": {
+    "CHANGELOG.md": "73274c7f81b20b75e0a04ac63a3010f9df3123ac7fb5dab487377b0bffd6f243",
+    "src/reprollm/core/deps.py": "c9cdd4c0b0bf6cd8de1da398d33ab0d72fefd5c6c9924582a2719706dd397997",
+    "tests/unit/core/test_requirements_graph.py": "918698278b9ff512c3f179bf08114506d47a7aa3f0ffcc9fbcaaf1ebfdad1c1d"
+  },
+  "full_quality": "PENDING_ROOT",
+  "git_file_facts_preserved": true,
+  "implementation": "One requirements graph per scan, parse/read once per normalized source path; first-encounter DFS declaration evidence once per source/line. Source aliases remain distinct provenance and include bases. Min-depth discovery and per-root remaining-depth closure memo preserve bounded reachability; active/depth guards precede reuse. Same closure determines nonempty all-exact qualification and package set.",
+  "independent_review": "Separate root-owned final review evidence; final 112 probes announced PASS, not copied into TDD count.",
+  "legacy_compatibility": "Preserve independent requirements root aggregation, safe non-include diagnostics, and committed R06-G fixed include unreadable on absolute/escape targets.",
+  "logical_acceptance_scenarios": 25,
+  "mypy_source_files": 122,
+  "risk_limits": [
+    "Static bounded requirements includes do not implement all pip syntax, solve packages, or decide cross-project lock ownership.",
+    "Different legal aliases can refer to one inode and are separate source paths/provenance; no once-per-inode promise.",
+    "Reuse existing R06-G boundary; concurrent replacement of any resolved component/final target after validation remains outside its guarantee."
+  ],
+  "schema_changed": false,
+  "schema_version": 1,
+  "snapshots_changed": false,
+  "spec_changed": false,
+  "status": "FROZEN_FOCUSED_GREEN_ROOT_GATES_PENDING",
+  "task": "R06-P",
+  "task_files": [
+    "src/reprollm/core/deps.py",
+    "tests/unit/core/test_requirements_graph.py",
+    "CHANGELOG.md"
+  ],
+  "tdd_command_count": 21,
+  "tracked_product_files_unchanged": 148
+}

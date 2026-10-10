@@ -1,0 +1,57 @@
+......FF....                                                             [100%]
+=================================== FAILURES ===================================
+___________________________ test_cycle_with_package ____________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_cycle_with_package(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "torch==2.5.1\n-r deps/a.txt\n",
+                "deps/a.txt": "-r ../requirements.txt\n",
+            },
+        )
+        result, scanner = _scan(tmp_path)
+        assert _rows(result) == [("torch", "requirements.txt", 1)]
+>       assert _locks(result) == {}
+E       AssertionError: assert {'requirement...et({'torch'})} == {}
+E         
+E         Left contains 1 more item:
+E         {'requirements.txt': frozenset({'torch'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:183: AssertionError
+_______________________________ test_empty_cycle _______________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_empty_cycle(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/a.txt\n",
+                "deps/a.txt": "-r ../requirements.txt\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert result.declarations == []
+        assert _locks(result) == {}
+>       _diagnostic(result, "deps/a.txt", 1, "include cycle")
+
+tests/unit/core/test_requirements_graph.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'deps/a.txt', line = 1, reason = 'include cycle'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'deps/a.txt:1: include cycle' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_cycle_with_package - ...
+FAILED tests/unit/core/test_requirements_graph.py::test_empty_cycle - Asserti...
+2 failed, 10 passed in 0.52s

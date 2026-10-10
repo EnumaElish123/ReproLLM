@@ -16,6 +16,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R06-P (spec §§12.2/13): normalize internal requirements includes and share
+  one captured graph for each root's exact-lock qualification and package set.
+  Keep source aliases, deduplicate physical declarations, and exclude unreferenced
+  siblings. Diagnose cycles, depth exhaustion and unreadable or escaping edges
+  at their include lines. Support spaced `-r target` / `--requirement target`;
+  report attached and quoted forms as unsupported with safe fixed reasons.
+  Preserve independent-root aggregation and existing safe non-include diagnostics.
+
 - R06-A (spec §12.2): retain every dependency and lockfile source when filenames
   repeat, ordering root files before other relative paths. Keep manifest
   qualification separate from selection and share that ordering with Python

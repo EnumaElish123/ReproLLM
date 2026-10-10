@@ -1,0 +1,82 @@
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+........................................................................ [ 69%]
+......................................FF................................ [ 92%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+________ test_external_include_diagnostic_uses_including_file[relative] ________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+absolute = False
+
+    @pytest.mark.parametrize("absolute", [False, True], ids=["relative", "absolute"])
+    def test_external_include_diagnostic_uses_including_file(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, absolute: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        sentinel = tmp_path / "outside-requirements.txt"
+        sentinel.write_text("outside-canary==1.2.3\n")
+        reference = str(sentinel) if absolute else "../outside-requirements.txt"
+        (repo / "requirements.txt").write_text(f"-r {reference}\n")
+        opened: list[str] = []
+        original_open = Path.open
+    
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() == sentinel:
+                opened.append("sentinel")
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, GitInfo(is_repo=False))
+        result = scan_dependencies(scanner)
+        assert result.declarations == []
+        assert opened == []
+>       assert result.unparsed == ["requirements.txt:1: include unreadable"]
+E       AssertionError: assert ['requirement...project root'] == ['requirement...e unreadable']
+E         
+E         At index 0 diff: 'requirements.txt:1: include escapes project root' != 'requirements.txt:1: include unreadable'
+E         Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:147: AssertionError
+________ test_external_include_diagnostic_uses_including_file[absolute] ________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+absolute = True
+
+    @pytest.mark.parametrize("absolute", [False, True], ids=["relative", "absolute"])
+    def test_external_include_diagnostic_uses_including_file(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, absolute: bool
+    ) -> None:
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        sentinel = tmp_path / "outside-requirements.txt"
+        sentinel.write_text("outside-canary==1.2.3\n")
+        reference = str(sentinel) if absolute else "../outside-requirements.txt"
+        (repo / "requirements.txt").write_text(f"-r {reference}\n")
+        opened: list[str] = []
+        original_open = Path.open
+    
+        def spy_open(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path.resolve() == sentinel:
+                opened.append("sentinel")
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "open", spy_open)
+        scanner = RepoScanner(repo, GitInfo(is_repo=False))
+        result = scan_dependencies(scanner)
+        assert result.declarations == []
+        assert opened == []
+>       assert result.unparsed == ["requirements.txt:1: include unreadable"]
+E       AssertionError: assert ['requirement...bsolute path'] == ['requirement...e unreadable']
+E         
+E         At index 0 diff: 'requirements.txt:1: include absolute path' != 'requirements.txt:1: include unreadable'
+E         Use -v to get more diff
+
+tests/unit/core/test_scanner_boundaries.py:147: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_scanner_boundaries.py::test_external_include_diagnostic_uses_including_file[relative]
+FAILED tests/unit/core/test_scanner_boundaries.py::test_external_include_diagnostic_uses_including_file[absolute]
+2 failed, 308 passed in 18.64s

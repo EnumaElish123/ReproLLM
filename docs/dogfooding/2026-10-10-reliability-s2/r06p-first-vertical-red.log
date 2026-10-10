@@ -1,0 +1,52 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___________ test_requirement_lock_contains_referenced_child_package ____________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_requirement_lock_contains_referenced_child_package(tmp_path: Path) -> None:
+        (tmp_path / "deps").mkdir()
+        (tmp_path / "requirements.txt").write_text("-r deps/base.txt\n")
+        (tmp_path / "deps" / "base.txt").write_text("torch==2.5.1\n")
+        (tmp_path / "deps" / "unused.txt").write_text("transformers==4.45.2\n")
+        result = scan_dependencies(RepoScanner(tmp_path, GitInfo(is_repo=False)))
+        assert [(item.name, item.source_file, item.line) for item in result.declarations] == [
+            ("torch", "deps/base.txt", 1)
+        ]
+        assert result.unparsed == []
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            ("requirements.txt", frozenset({"torch"}))
+        ]
+E       AssertionError: assert [('requiremen... frozenset())] == [('requiremen...t({'torch'}))]
+E         
+E         At index 0 diff: ('requirements.txt', frozenset()) != ('requirements.txt', frozenset({'torch'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:24: AssertionError
+_______ test_requirement_lock_cannot_borrow_an_independent_sibling_root ________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_requirement_lock_cannot_borrow_an_independent_sibling_root(tmp_path: Path) -> None:
+        (tmp_path / "deps").mkdir()
+        (tmp_path / "deps" / "requirements.txt").write_text("-r base.txt\n")
+        (tmp_path / "deps" / "base.txt").write_text("torch==2.5.1\n")
+        (tmp_path / "deps" / "requirements-unused.txt").write_text("transformers==4.45.2\n")
+        result = scan_dependencies(RepoScanner(tmp_path, GitInfo(is_repo=False)))
+        locks = {lock.path: lock.packages for lock in result.lockfiles}
+>       assert locks == {
+            "deps/requirements.txt": frozenset({"torch"}),
+            "deps/requirements-unused.txt": frozenset({"transformers"}),
+        }
+E       AssertionError: assert {'deps/requir...ansformers'})} == {'deps/requir...ansformers'})}
+E         
+E         Differing items:
+E         {'deps/requirements-unused.txt': frozenset({'torch', 'transformers'})} != {'deps/requirements-unused.txt': frozenset({'transformers'})}
+E         {'deps/requirements.txt': frozenset({'torch', 'transformers'})} != {'deps/requirements.txt': frozenset({'torch'})}
+E         Use -v to get more diff
+
+tests/unit/core/test_requirements_graph.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_requirement_lock_contains_referenced_child_package
+FAILED tests/unit/core/test_requirements_graph.py::test_requirement_lock_cannot_borrow_an_independent_sibling_root
+2 failed in 0.43s

@@ -1,0 +1,500 @@
+{
+  "entries": [
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": false,
+          "never_open_outside": true,
+          "root_lock_packages": [
+            "torch"
+          ],
+          "root_lock_qualified": true,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/base.txt": "torch==2.5.1\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "-r deps/base.txt\n"
+        },
+        "id": "reachable-only",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "reachable-only",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/reachable-only/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/reachable-only"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": false,
+          "never_open_outside": true,
+          "root_lock_packages": [
+            "numpy",
+            "torch"
+          ],
+          "root_lock_qualified": true,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/base.txt": "torch==2.5.1\n-r ../common.txt\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "--requirement deps/base.txt\n"
+        },
+        "id": "internal-parent",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "internal-parent",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/internal-parent/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/internal-parent"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": false,
+          "never_open_outside": true,
+          "root_lock_packages": [
+            "numpy",
+            "torch"
+          ],
+          "root_lock_qualified": true,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/a.txt": "torch==2.5.1\n-r ../common.txt\n",
+          "deps/b.txt": "-r ../common.txt\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "-r deps/a.txt\n-r deps/b.txt\n-r deps/a.txt\n"
+        },
+        "id": "diamond-and-repeat",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "diamond-and-repeat",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/diamond-and-repeat/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/diamond-and-repeat"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": false,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements-unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch>=2.5\n"
+        },
+        "id": "nonexact-cannot-borrow-sibling",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "nonexact-cannot-borrow-sibling",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/nonexact-cannot-borrow-sibling/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/nonexact-cannot-borrow-sibling"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r ../outside/external.txt\n"
+        },
+        "id": "escape-relative",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "escape-relative",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/escape-relative/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/escape-relative"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r @OUTSIDE_ABSOLUTE@\n"
+        },
+        "id": "escape-absolute",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "escape-absolute",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/escape-absolute/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/escape-absolute"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r deps/alias.txt\n"
+        },
+        "id": "escape-symlink",
+        "links": {
+          "deps/alias.txt": "@OUTSIDE_ABSOLUTE@"
+        },
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "escape-symlink",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/escape-symlink/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/escape-symlink"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/a.txt": "torch==2.5.1\n-r ../requirements.txt\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "-r deps/a.txt\n"
+        },
+        "id": "cycle",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "cycle",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/cycle/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/cycle"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/a.txt": "-r ../requirements.txt\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "-r deps/a.txt\n"
+        },
+        "id": "empty-cycle",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "empty-cycle",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/empty-cycle/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/empty-cycle"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r deps/missing.txt\n"
+        },
+        "id": "missing",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "missing",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/missing/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/missing"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n-r\n"
+        },
+        "id": "malformed-include",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "malformed-include",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/malformed-include/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/malformed-include"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\n--index-url https://example.invalid/simple\n"
+        },
+        "id": "unsupported-option",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "unsupported-option",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/unsupported-option/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/unsupported-option"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "torch==2.5.1\nnot a requirement @@@\n"
+        },
+        "id": "malformed-declaration",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "malformed-declaration",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/malformed-declaration/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/malformed-declaration"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": false,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "# no declarations\n\n"
+        },
+        "id": "empty-comments",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "empty-comments",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/empty-comments/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/empty-comments"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "diagnostic_required": true,
+          "never_open_outside": true,
+          "root_lock_packages": [],
+          "root_lock_qualified": false,
+          "unused_transformers_in_root_lock": false
+        },
+        "files": {
+          "common.txt": "numpy==2.1.2\n",
+          "control.py": "import torch\n",
+          "deps/d0.txt": "-r d1.txt\n",
+          "deps/d1.txt": "-r d2.txt\n",
+          "deps/d10.txt": "-r d11.txt\n",
+          "deps/d11.txt": "-r d12.txt\n",
+          "deps/d12.txt": "torch==2.5.1\n",
+          "deps/d2.txt": "-r d3.txt\n",
+          "deps/d3.txt": "-r d4.txt\n",
+          "deps/d4.txt": "-r d5.txt\n",
+          "deps/d5.txt": "-r d6.txt\n",
+          "deps/d6.txt": "-r d7.txt\n",
+          "deps/d7.txt": "-r d8.txt\n",
+          "deps/d8.txt": "-r d9.txt\n",
+          "deps/d9.txt": "-r d10.txt\n",
+          "deps/unused.txt": "transformers==4.45.2\n",
+          "requirements.txt": "-r deps/d0.txt\n"
+        },
+        "id": "depth-exhausted",
+        "links": {},
+        "outside": {
+          "external.txt": "openai==1.51.0 # S2_GRAPH_OUTSIDE_SENTINEL\n"
+        }
+      },
+      "id": "depth-exhausted",
+      "outside_paths": [
+        "<stage-evidence>/fixtures/HarmBench/outside/depth-exhausted/external.txt"
+      ],
+      "outside_sha256": {
+        "external.txt": "7ff64fd65750034953169282616f03f256b797b001d68b6c23c9d9820eb25d36"
+      },
+      "root": "<stage-evidence>/fixtures/HarmBench/depth-exhausted"
+    }
+  ],
+  "schema_version": 1
+}

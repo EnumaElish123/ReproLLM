@@ -1,0 +1,465 @@
+.........FFFF..FFFFFFFFF...F......                                       [100%]
+=================================== FAILURES ===================================
+______________________________ test_missing_child ______________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_missing_child(tmp_path: Path) -> None:
+        _write(tmp_path, {"requirements.txt": "torch==2.5.1\n-r deps/missing.txt\n"})
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "requirements.txt", 1)]
+        assert _locks(result) == {}
+>       _diagnostic(result, "requirements.txt", 2, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='requirements.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 2, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:2: include unreadable' in []
+E        +  where [] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='requirements.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+____________________________ test_absolute_include _____________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_absolute_include(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        result, _, _, _ = _outside_case(tmp_path, monkeypatch, "absolute")
+>       _diagnostic(result, "requirements.txt", 1, "include absolute path")
+
+tests/unit/core/test_requirements_graph.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include absolute path'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include absolute path' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+________________________ test_outside_relative_include _________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_outside_relative_include(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        result, _, _, _ = _outside_case(tmp_path, monkeypatch, "relative")
+>       _diagnostic(result, "requirements.txt", 1, "include escapes project root")
+
+tests/unit/core/test_requirements_graph.py:269: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include escapes project root'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include escapes project root' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+_________________________ test_outside_symlink_include _________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_outside_symlink_include(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        result, _, _, _ = _outside_case(tmp_path, monkeypatch, "child_symlink")
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+___________________________ test_permission_failure ____________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_permission_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/private.txt\n",
+                "deps/private.txt": "torch==2.5.1\n",
+            },
+        )
+        original = Path.open
+        private = tmp_path / "deps/private.txt"
+    
+        def denied(path: Path, *args: Any, **kwargs: Any) -> Any:
+            if path == private:
+                raise PermissionError(f"{private}: SYNTHETIC_UNSAFE_EXCEPTION_CANARY")
+            return original(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "open", denied)
+        result, scanner = _scan(tmp_path)
+        assert _locks(result) == {}
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:321: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+____________________ test_binary_or_oversized_child[binary] ____________________
+
+tmp_path = PosixPath('<test-tmp>')
+kind = 'binary'
+
+    @pytest.mark.parametrize("kind", ["binary", "oversized"])
+    def test_binary_or_oversized_child(tmp_path: Path, kind: str) -> None:
+        _write(tmp_path, {"requirements.txt": "-r deps/large.txt\n"})
+        (tmp_path / "deps").mkdir()
+        content = b"torch==2.5.1\x00\n" if kind == "binary" else b"x" * (MAX_READ_BYTES + 1)
+        (tmp_path / "deps/large.txt").write_bytes(content)
+        result, _ = _scan(tmp_path)
+        assert result.declarations == []
+        assert _locks(result) == {}
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:336: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+__________________ test_binary_or_oversized_child[oversized] ___________________
+
+tmp_path = PosixPath('<test-tmp>')
+kind = 'oversized'
+
+    @pytest.mark.parametrize("kind", ["binary", "oversized"])
+    def test_binary_or_oversized_child(tmp_path: Path, kind: str) -> None:
+        _write(tmp_path, {"requirements.txt": "-r deps/large.txt\n"})
+        (tmp_path / "deps").mkdir()
+        content = b"torch==2.5.1\x00\n" if kind == "binary" else b"x" * (MAX_READ_BYTES + 1)
+        (tmp_path / "deps/large.txt").write_bytes(content)
+        result, _ = _scan(tmp_path)
+        assert result.declarations == []
+        assert _locks(result) == {}
+>       _diagnostic(result, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:336: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+__________________________ test_child_malformed_line ___________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_child_malformed_line(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": "torch==2.5.1\nthis is not === a requirement!!!\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        assert "deps/base.txt:2: this is not === a requirement!!!" in result.unparsed
+>       _diagnostic(result, "requirements.txt", 1, "include incomplete")
+
+tests/unit/core/test_requirements_graph.py:351: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_versio...se.txt', line=1)], unparsed=['deps/base.txt:2: this is not === a requirement!!!'], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include incomplete'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include incomplete' in ['deps/base.txt:2: this is not === a requirement!!!']
+E        +  where ['deps/base.txt:2: this is not === a requirement!!!'] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_versio...se.txt', line=1)], unparsed=['deps/base.txt:2: this is not === a requirement!!!'], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+____________________ test_unsupported_child_directive[-e .] ____________________
+
+tmp_path = PosixPath('<test-tmp>')
+directive = '-e .'
+
+    @pytest.mark.parametrize(
+        "directive", ["-e .", "-r", "-rbase.txt", "--requirement=base.txt", '-r "base.txt"']
+    )
+    def test_unsupported_child_directive(tmp_path: Path, directive: str) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": f"torch==2.5.1\n{directive}\n",
+                "deps/base.txt.txt": "transformers==4.45.2\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        if directive == "-e .":
+            assert "deps/base.txt:2: -e ." in result.unparsed
+        elif directive == "-r":
+            _diagnostic(result, "deps/base.txt", 2, "include malformed")
+        else:
+            _diagnostic(result, "deps/base.txt", 2, "include unsupported syntax")
+>       _diagnostic(result, "requirements.txt", 1, "include incomplete")
+
+tests/unit/core/test_requirements_graph.py:375: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=['deps/base.txt:2: -e .'], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include incomplete'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include incomplete' in ['deps/base.txt:2: -e .']
+E        +  where ['deps/base.txt:2: -e .'] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=['deps/base.txt:2: -e .'], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+_____________________ test_unsupported_child_directive[-r] _____________________
+
+tmp_path = PosixPath('<test-tmp>')
+directive = '-r'
+
+    @pytest.mark.parametrize(
+        "directive", ["-e .", "-r", "-rbase.txt", "--requirement=base.txt", '-r "base.txt"']
+    )
+    def test_unsupported_child_directive(tmp_path: Path, directive: str) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": f"torch==2.5.1\n{directive}\n",
+                "deps/base.txt.txt": "transformers==4.45.2\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        if directive == "-e .":
+            assert "deps/base.txt:2: -e ." in result.unparsed
+        elif directive == "-r":
+>           _diagnostic(result, "deps/base.txt", 2, "include malformed")
+
+tests/unit/core/test_requirements_graph.py:372: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'deps/base.txt', line = 2, reason = 'include malformed'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'deps/base.txt:2: include malformed' in []
+E        +  where [] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+_________________ test_unsupported_child_directive[-rbase.txt] _________________
+
+tmp_path = PosixPath('<test-tmp>')
+directive = '-rbase.txt'
+
+    @pytest.mark.parametrize(
+        "directive", ["-e .", "-r", "-rbase.txt", "--requirement=base.txt", '-r "base.txt"']
+    )
+    def test_unsupported_child_directive(tmp_path: Path, directive: str) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": f"torch==2.5.1\n{directive}\n",
+                "deps/base.txt.txt": "transformers==4.45.2\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        if directive == "-e .":
+            assert "deps/base.txt:2: -e ." in result.unparsed
+        elif directive == "-r":
+            _diagnostic(result, "deps/base.txt", 2, "include malformed")
+        else:
+>           _diagnostic(result, "deps/base.txt", 2, "include unsupported syntax")
+
+tests/unit/core/test_requirements_graph.py:374: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'deps/base.txt', line = 2, reason = 'include unsupported syntax'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'deps/base.txt:2: include unsupported syntax' in []
+E        +  where [] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+___________ test_unsupported_child_directive[--requirement=base.txt] ___________
+
+tmp_path = PosixPath('<test-tmp>')
+directive = '--requirement=base.txt'
+
+    @pytest.mark.parametrize(
+        "directive", ["-e .", "-r", "-rbase.txt", "--requirement=base.txt", '-r "base.txt"']
+    )
+    def test_unsupported_child_directive(tmp_path: Path, directive: str) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": f"torch==2.5.1\n{directive}\n",
+                "deps/base.txt.txt": "transformers==4.45.2\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        if directive == "-e .":
+            assert "deps/base.txt:2: -e ." in result.unparsed
+        elif directive == "-r":
+            _diagnostic(result, "deps/base.txt", 2, "include malformed")
+        else:
+>           _diagnostic(result, "deps/base.txt", 2, "include unsupported syntax")
+
+tests/unit/core/test_requirements_graph.py:374: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'deps/base.txt', line = 2, reason = 'include unsupported syntax'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'deps/base.txt:2: include unsupported syntax' in []
+E        +  where [] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+_______________ test_unsupported_child_directive[-r "base.txt"] ________________
+
+tmp_path = PosixPath('<test-tmp>')
+directive = '-r "base.txt"'
+
+    @pytest.mark.parametrize(
+        "directive", ["-e .", "-r", "-rbase.txt", "--requirement=base.txt", '-r "base.txt"']
+    )
+    def test_unsupported_child_directive(tmp_path: Path, directive: str) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "-r deps/base.txt\n",
+                "deps/base.txt": f"torch==2.5.1\n{directive}\n",
+                "deps/base.txt.txt": "transformers==4.45.2\n",
+            },
+        )
+        result, _ = _scan(tmp_path)
+        assert _rows(result) == [("torch", "deps/base.txt", 1)]
+        assert _locks(result) == {}
+        if directive == "-e .":
+            assert "deps/base.txt:2: -e ." in result.unparsed
+        elif directive == "-r":
+            _diagnostic(result, "deps/base.txt", 2, "include malformed")
+        else:
+>           _diagnostic(result, "deps/base.txt", 2, "include unsupported syntax")
+
+tests/unit/core/test_requirements_graph.py:374: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'deps/base.txt', line = 2, reason = 'include unsupported syntax'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'deps/base.txt:2: include unsupported syntax' in []
+E        +  where [] = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.5.1', exact_version='2.5.1', source_file='deps/base.txt', line=1)], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+__________________________ test_between_scan_retarget __________________________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_between_scan_retarget(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        root = tmp_path / "project"
+        root.mkdir()
+        _write(
+            root,
+            {
+                "requirements.txt": "-r deps/alias.txt\n",
+                "deps/inside.txt": "torch==2.5.1\n",
+            },
+        )
+        alias = root / "deps/alias.txt"
+        _symlink(alias, root / "deps/inside.txt")
+        outside = tmp_path / "outside-sentinel-private.txt"
+        outside.write_text("openai==1.51.0 # SYNTHETIC_OUTSIDE_GRAPH_CANARY\n")
+        opened = _never_open(monkeypatch, outside)
+        scanner = CountingScanner(root)
+        first = scan_dependencies(scanner)
+        assert _locks(first) == {"requirements.txt": frozenset({"torch"})}
+        assert _rows(first) == [("torch", "deps/alias.txt", 1)]
+        alias.unlink()
+        _symlink(alias, outside)
+        second = scan_dependencies(scanner)
+        assert second.declarations == []
+        assert _locks(second) == {}
+>       _diagnostic(second, "requirements.txt", 1, "include unreadable")
+
+tests/unit/core/test_requirements_graph.py:445: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+result = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True)
+path = 'requirements.txt', line = 1, reason = 'include unreadable'
+
+    def _diagnostic(result: Declarations, path: str, line: int, reason: str) -> None:
+>       assert f"{path}:{line}: {reason}" in result.unparsed
+E       AssertionError: assert 'requirements.txt:1: include unreadable' in []
+E        +  where [] = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=True).unparsed
+
+tests/unit/core/test_requirements_graph.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_requirements_graph.py::test_missing_child - Asser...
+FAILED tests/unit/core/test_requirements_graph.py::test_absolute_include - As...
+FAILED tests/unit/core/test_requirements_graph.py::test_outside_relative_include
+FAILED tests/unit/core/test_requirements_graph.py::test_outside_symlink_include
+FAILED tests/unit/core/test_requirements_graph.py::test_permission_failure - ...
+FAILED tests/unit/core/test_requirements_graph.py::test_binary_or_oversized_child[binary]
+FAILED tests/unit/core/test_requirements_graph.py::test_binary_or_oversized_child[oversized]
+FAILED tests/unit/core/test_requirements_graph.py::test_child_malformed_line
+FAILED tests/unit/core/test_requirements_graph.py::test_unsupported_child_directive[-e .]
+FAILED tests/unit/core/test_requirements_graph.py::test_unsupported_child_directive[-r]
+FAILED tests/unit/core/test_requirements_graph.py::test_unsupported_child_directive[-rbase.txt]
+FAILED tests/unit/core/test_requirements_graph.py::test_unsupported_child_directive[--requirement=base.txt]
+FAILED tests/unit/core/test_requirements_graph.py::test_unsupported_child_directive[-r "base.txt"]
+FAILED tests/unit/core/test_requirements_graph.py::test_between_scan_retarget
+14 failed, 20 passed in 1.06s
