@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R01: validate the final init YAML before writes, replace the manifest atomically
+  after preparing missing auxiliary files, and preserve existing bytes and
+  permissions on failure. Reject symlinked owned output nodes. Invalid or unsafe
+  directory names use `experiment` with editing guidance; legal names retain
+  string semantics even when YAML would infer another type. Schema is unchanged.
+
 - UX3-T04: filter `runs list` by exact name, saved status, derived outcome and
   positive limit while preserving default table/JSON output. Add
   `diff --latest-successful [--name TEXT]` to compare the two newest completed

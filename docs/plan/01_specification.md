@@ -214,6 +214,27 @@ artifacts:
 
 `init` writes YAML text from `reprollm/cli/templates/manifest.yaml.j2` (comments preserved), not from a model dump. Detected profiles fill `experiment.profiles`. Fields listed in the union of selected profiles' `required_fields` are rendered with `# TODO` comments; detected literal HF ids (AST string constants passed to `from_pretrained`/`LLM(model=…)`) are pre-filled with `# detected: <file>:<line>`.
 
+Before writing any owned artifact, validate the final rendered YAML in memory
+with the same parser and Manifest model as `load_manifest` (R01). A legal directory
+basename becomes `project.name` with string semantics, including YAML implicit
+scalars such as `123` or `true`. If the basename fails the unchanged project-name
+schema or existing secret/machine-identity checks, use the fixed name `experiment`
+and print safe guidance to edit `project.name` in `reprollm.yaml`.
+
+Refuse existing `reprollm.yaml` without `--force`. Owned output nodes
+(`reprollm.yaml`, `.reprollm`, `.reprollm/config.yaml`, `.reprollm/project-rules.yaml`)
+must be regular files or, for `.reprollm`, a directory; reject symlinks (including
+dangling ones) before write-mode detection and again at the writer boundary.
+Prepare and sync a temporary manifest in the project directory, create only
+missing auxiliary files, then atomically replace the manifest last. Preserve
+existing auxiliary bytes and permissions; preserve the old manifest permission bits
+on successful `--force`. Validation and ordinary write/replace failures preserve
+existing artifact bytes and permissions, remove only artifacts created by that
+invocation, and remove its new auxiliary directory only when empty. Diagnostics
+identify safe owned locations and corrective actions without echoing YAML values
+or OS absolute paths. This guarantees ordinary-exception preservation, not a
+power-loss transaction across multiple files or concurrent-writer isolation.
+
 Task inventory and experiment selection are separate (UX2-T01, approved 2026-10-02).
 `init --list-tasks` lists the complete safe deterministic inventory, sorted and
 unique, one name per line, without writes even if a manifest already exists.

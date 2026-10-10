@@ -6,7 +6,13 @@ import pytest
 import yaml
 
 from reprollm.core.errors import UserError
-from reprollm.core.yaml_io import dump_yaml, load_lock, load_manifest, load_yaml
+from reprollm.core.yaml_io import (
+    dump_yaml,
+    load_lock,
+    load_manifest,
+    load_yaml,
+    parse_manifest_text,
+)
 from reprollm.schemas.manifest import Manifest
 
 
@@ -82,6 +88,31 @@ def test_load_manifest_valid(tmp_path: Path) -> None:
     )
     m = load_manifest(path)
     assert m.project.name == "p"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        'schema_version: 1\nproject: {name: "123"}\nexperiment: {profiles: []}\n',
+        "schema_version: 1\nproject: {name: p}\nexperiment: {profiles: []}\ngeneration: null\n",
+        "",
+        "null\n",
+        "- item\n",
+        "project: [\n",
+        "schema_version: 2\nproject: {name: p}\nexperiment: {profiles: []}\n",
+        "project: {name: true}\nexperiment: {profiles: []}\n",
+    ],
+)
+def test_manifest_text_validation_matches_file_validation(tmp_path: Path, text: str) -> None:
+    path = _write(tmp_path / "reprollm.yaml", text)
+    try:
+        expected = load_manifest(path)
+    except UserError as error:
+        with pytest.raises(UserError) as in_memory:
+            parse_manifest_text(text)
+        assert str(in_memory.value) == str(error).replace(str(path), "reprollm.yaml")
+    else:
+        assert parse_manifest_text(text) == expected
 
 
 def test_load_lock_rejects_newer_schema_with_upgrade_hint(tmp_path: Path) -> None:

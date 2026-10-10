@@ -27,16 +27,20 @@ def load_yaml(path: Path) -> dict[str, Any]:
         text = path.read_text(encoding="utf-8")
     except OSError as exc:
         raise UserError(f"cannot read {path}: {exc.strerror}") from exc
+    return _parse_yaml(text, path)
+
+
+def _parse_yaml(text: str, source: Path) -> dict[str, Any]:
     if not text.strip():
         return {}
     try:
         data = yaml.safe_load(text)
     except yaml.YAMLError as exc:
-        raise UserError(f"invalid YAML in {path}: {exc}") from exc
+        raise UserError(f"invalid YAML in {source}: {exc}") from exc
     if data is None:
         return {}
     if not isinstance(data, dict):
-        raise UserError(f"{path} must contain a YAML mapping, got {type(data).__name__}")
+        raise UserError(f"{source} must contain a YAML mapping, got {type(data).__name__}")
     return data
 
 
@@ -55,10 +59,20 @@ def dump_yaml(obj: BaseModel | dict[str, Any]) -> str:
 def load_manifest(path: Path) -> Manifest:
     """Load and validate ``reprollm.yaml``; validation errors become UserError (exit 2)."""
     data = load_yaml(path)
+    return _validate_manifest(data, path)
+
+
+def parse_manifest_text(text: str) -> Manifest:
+    """Validate rendered YAML with the same parser and model as :func:`load_manifest`."""
+    source = Path("reprollm.yaml")
+    return _validate_manifest(_parse_yaml(text, source), source)
+
+
+def _validate_manifest(data: dict[str, Any], source: Path) -> Manifest:
     try:
         return Manifest.model_validate(data)
     except ValidationError as exc:
-        raise UserError(f"invalid manifest {path}:\n{_format_validation_error(exc)}") from exc
+        raise UserError(f"invalid manifest {source}:\n{_format_validation_error(exc)}") from exc
 
 
 def load_lock(path: Path) -> Lock:

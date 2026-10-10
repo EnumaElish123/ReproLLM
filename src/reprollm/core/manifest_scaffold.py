@@ -11,24 +11,31 @@ from __future__ import annotations
 
 import getpass
 import json
+import os
 import socket
+import stat
+import tempfile
 import unicodedata
+from contextlib import suppress
 from dataclasses import dataclass, field
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
 import jinja2
+import yaml
+from pydantic import ValidationError
 
 from reprollm.core.context import AuditContext
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST
-from reprollm.core.yaml_io import load_manifest
+from reprollm.core.yaml_io import parse_manifest_text
 from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.profiles import loader
 from reprollm.profiles.policy import judge_only_exception
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.finding import DetectionResult
+from reprollm.schemas.manifest import Project
 
 #: Section order follows the manifest schema (spec §3).
 SECTION_ORDER = (
@@ -155,8 +162,16 @@ def _render_manifest(
         keep_trailing_newline=True,
     )
     template = environment.from_string(source)
+    try:
+        scalar = (
+            project_name
+            if yaml.safe_load(project_name) == project_name
+            else json.dumps(project_name)
+        )
+    except yaml.YAMLError:
+        scalar = json.dumps(project_name)
     rendered = template.render(
-        project_name=project_name,
+        project_name=scalar,
         profiles=profiles,
         detected_profiles=detected,
         sections=sections,
@@ -336,6 +351,7 @@ class InitPlan:
     other_detections: list[tuple[str, str, int]]
     task_names: list[str] = field(default_factory=list)
     task_sources: list[str] = field(default_factory=list)
+    project_name_defaulted: bool = False
 
 
 def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
@@ -366,6 +382,12 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
     task_names: set[str] = set()
     task_sources: set[str] = set()
     privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    try:
+        project_name = Project(name=root.name).name
+    except ValidationError:
+        project_name = "experiment"
+    if privacy.text(project_name)[1]:
+        project_name = "experiment"
     for integration, _evidence in detected_frameworks(ctx.fs, ctx.pyscan):
         names = integration.extract_task_hints(ctx.fs).task_names
         # Inventory is independent of selection. Never sanitize an identifier
@@ -381,7 +403,7 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
             task_names.update(safe_names)
             task_sources.add(integration.name)
     return InitPlan(
-        project_name=root.name,
+        project_name=project_name,
         profiles=profile_list,
         required_fields=required_fields,
         detection=detection,
@@ -389,6 +411,7 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
         other_detections=hf_ids if judge_only else hf_ids[1:],
         task_names=sorted(task_names),
         task_sources=sorted(task_sources),
+        project_name_defaulted=project_name != root.name,
     )
 
 
@@ -436,37 +459,101 @@ class ScaffoldResult:
     project_rules_written: bool
 
 
-def write_scaffold(root: Path, manifest_text: str, *, force: bool) -> ScaffoldResult:
-    """Write reprollm.yaml plus the dotdir files; dotdir files are never
-    overwritten, and a manifest that fails validation is removed again."""
-    manifest_path = root / MANIFEST
-    if manifest_path.exists() and not force:
+def check_scaffold_paths(root: Path, *, force: bool) -> None:
+    """Reject unsafe owned output nodes before detection or writes."""
+    for relative, directory in (
+        (MANIFEST, False),
+        (".reprollm", True),
+        (".reprollm/config.yaml", False),
+        (".reprollm/project-rules.yaml", False),
+    ):
+        try:
+            mode = (root / relative).lstat().st_mode
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            raise UserError(f"cannot inspect {relative}; check its permissions and retry") from exc
+        expected = stat.S_ISDIR(mode) if directory else stat.S_ISREG(mode)
+        if not expected:
+            raise UserError(
+                f"{relative} must be a regular {'directory' if directory else 'file'}; "
+                "move the existing node before running init"
+            )
+    if (root / MANIFEST).exists() and not force:
         raise UserError(
-            f"{manifest_path} already exists; pass --force to overwrite it "
+            "reprollm.yaml already exists; pass --force to overwrite it "
             "(files under .reprollm/ are never overwritten)"
         )
-    manifest_path.write_text(manifest_text, encoding="utf-8", newline="\n")
 
-    dotdir = root / ".reprollm"
-    dotdir.mkdir(parents=True, exist_ok=True)
-    config_path = dotdir / "config.yaml"
-    config_written = False
-    if not config_path.exists():
-        config_path.write_text(_config_template_text(), encoding="utf-8", newline="\n")
-        config_written = True
-    project_rules_path = dotdir / "project-rules.yaml"
-    project_rules_written = False
-    if not project_rules_path.exists():
-        project_rules_path.write_text(_PROJECT_RULES_TEMPLATE, encoding="utf-8", newline="\n")
-        project_rules_written = True
 
-    # The generated manifest must load; fail loudly and remove the broken file.
+def write_scaffold(root: Path, manifest_text: str, *, force: bool) -> ScaffoldResult:
+    """Validate first, prepare missing auxiliaries, then replace the manifest.
+
+    Roll back only files created by this call on ordinary failures. This is
+    not a transaction across files under power loss or concurrent writers.
+    """
+    check_scaffold_paths(root, force=force)
+    manifest_path = root / MANIFEST
     try:
-        load_manifest(manifest_path)
-    except UserError as exc:
-        manifest_path.unlink(missing_ok=True)
-        raise UserError(f"generated manifest failed validation (bug): {exc}") from exc
-    return ScaffoldResult(True, config_written, project_rules_written)
+        parse_manifest_text(manifest_text)
+        manifest_text.encode("utf-8")
+    except (UserError, UnicodeError) as exc:
+        raise UserError(
+            "reprollm.yaml failed validation; correct the init answers and retry"
+        ) from exc
+    dotdir = root / ".reprollm"
+    created: list[Path] = []
+    created_dotdir = False
+    temporary: Path | None = None
+    descriptor: int | None = None
+    try:
+        auxiliary = (
+            (dotdir / "config.yaml", _config_template_text()),
+            (dotdir / "project-rules.yaml", _PROJECT_RULES_TEMPLATE),
+        )
+        old_mode = stat.S_IMODE(manifest_path.stat().st_mode) if manifest_path.exists() else None
+        descriptor, name = tempfile.mkstemp(dir=root, prefix=".reprollm.yaml.", suffix=".tmp")
+        temporary = Path(name)
+        stream = os.fdopen(descriptor, "w", encoding="utf-8", newline="\n")
+        descriptor = None
+        with stream:
+            stream.write(manifest_text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        if old_mode is not None:
+            temporary.chmod(old_mode)
+        if not dotdir.exists():
+            dotdir.mkdir()
+            created_dotdir = True
+        for path, text in auxiliary:
+            if not path.exists():
+                with path.open("x", encoding="utf-8", newline="\n") as stream:
+                    # Track immediately: a failed write can leave a partial file.
+                    created.append(path)
+                    stream.write(text)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+        check_scaffold_paths(root, force=force)
+        os.replace(temporary, manifest_path)
+    except Exception as exc:
+        if descriptor is not None:
+            with suppress(OSError):
+                os.close(descriptor)
+        for path in reversed(created):
+            with suppress(OSError):
+                path.unlink()
+        if created_dotdir:
+            with suppress(OSError):
+                dotdir.rmdir()
+        if temporary is not None:
+            with suppress(OSError):
+                temporary.unlink(missing_ok=True)
+        if isinstance(exc, (OSError, UnicodeError)):
+            raise UserError(
+                "cannot create reprollm.yaml scaffold; check project permissions and retry"
+            ) from exc
+        raise
+    return ScaffoldResult(True, auxiliary[0][0] in created, auxiliary[1][0] in created)
 
 
 def parse_scalar(field_path: str, answer: str) -> Any:

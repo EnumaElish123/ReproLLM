@@ -14,6 +14,7 @@ import typer
 from reprollm.core.errors import UserError
 from reprollm.core.manifest_scaffold import (
     InitPlan,
+    check_scaffold_paths,
     parse_scalar,
     plan_init,
     render_manifest,
@@ -75,6 +76,8 @@ def init(
         raise UserError(
             "--list-tasks cannot be combined with --interactive, --task, --force or --profiles"
         )
+    if not list_tasks:
+        check_scaffold_paths(root, force=force)
 
     override = None
     if profiles is not None:
@@ -127,16 +130,19 @@ def init(
     manifest_text = render_manifest(plan, values, selected_tasks=selected)
     write_scaffold(root, manifest_text, force=force)
 
+    display_path = "reprollm.yaml" if plan.project_name_defaulted else str(root / "reprollm.yaml")
     if plan.profiles:
         typer.echo(
-            f"Created {root / 'reprollm.yaml'} (profiles: {', '.join(plan.profiles)}; "
+            f"Created {display_path} (profiles: {', '.join(plan.profiles)}; "
             f"{len(plan.required_fields)} required fields to fill)"
         )
     else:
         typer.echo(
-            f"Created {root / 'reprollm.yaml'} (no profiles detected; "
+            f"Created {display_path} (no profiles detected; "
             "pass --profiles or edit experiment.profiles)"
         )
+    if plan.project_name_defaulted:
+        typer.echo("Set project.name in reprollm.yaml; init used the safe default 'experiment'.")
     source = "selected" if override is not None else "detected"
     typer.echo(f"Applied {source} profiles: {', '.join(plan.profiles) or 'none'}.")
     typer.echo("Review experiment.profiles; use --profiles to select this experiment's profiles.")
