@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "independent_python_review.py"
+  ],
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "classification": "INDEPENDENT_PUBLIC_PYTHON_RULE_PAIRED_PROBE",
+  "elapsed_seconds": 0.011589,
+  "files": {
+    "pyproject.toml": "[project]\nname=\"root\"\ndependencies=[\"torch==2.5.1\"]\n",
+    "z_bad/pyproject.toml": "project=42\n"
+  },
+  "new_candidate_crash": true,
+  "rows": {
+    "baseline": {
+      "crash": false,
+      "evidence": null
+    },
+    "candidate": {
+      "crash": true,
+      "exception_type": "AttributeError",
+      "message": "'int' object has no attribute 'get'"
+    }
+  },
+  "schema_version": 1,
+  "source_sha256_after": {
+    "src/reprollm/core/deps.py": "b9d4ce05185116f0c236c76bbeec0d2c71f2d595869ba1e22ec4a15685f2ca69",
+    "src/reprollm/rules/env.py": "a2650b04362cd5453ecde8a8489fd526f1d262379d1d21c2eec44ad45e99b021"
+  },
+  "source_sha256_before": {
+    "src/reprollm/core/deps.py": "b9d4ce05185116f0c236c76bbeec0d2c71f2d595869ba1e22ec4a15685f2ca69",
+    "src/reprollm/rules/env.py": "a2650b04362cd5453ecde8a8489fd526f1d262379d1d21c2eec44ad45e99b021"
+  },
+  "source_unchanged": true,
+  "task": "R06-A"
+}

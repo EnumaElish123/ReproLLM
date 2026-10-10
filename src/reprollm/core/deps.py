@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -103,40 +104,57 @@ class Declarations:
     manifest_present: bool = False
 
 
+def dependency_file_paths(files: Iterable[str], *basenames: str) -> list[str]:
+    """Preserve every candidate, with root entries before deterministic paths."""
+    names = set(basenames)
+    return sorted(
+        (path for path in files if not names or Path(path).name in names),
+        key=lambda path: (len(Path(path).parts) > 1, path),
+    )
+
+
+def _dependency_basenames(files: Iterable[str]) -> dict[str, list[str]]:
+    candidates: dict[str, list[str]] = {}
+    for path in dependency_file_paths(files):
+        candidates.setdefault(Path(path).name, []).append(path)
+    return candidates
+
+
 def scan_dependencies(scanner: RepoScanner) -> Declarations:
     result = Declarations()
     files = scanner.files()
-    basenames = {Path(p).name: p for p in files}
+    basenames = _dependency_basenames(files)
 
-    pyproject = basenames.get("pyproject.toml")
+    pyprojects = basenames.get("pyproject.toml", [])
     requirements = sorted(p for p in files if _is_requirements_name(p))
-    environment = basenames.get("environment.yml") or basenames.get("environment.yaml")
-    pipfile = basenames.get("Pipfile")
+    environments = dependency_file_paths(files, "environment.yml", "environment.yaml")
+    pipfiles = basenames.get("Pipfile", [])
 
     # A pyproject.toml is only a dependency manifest when it carries a
     # [project] or [tool.poetry] table (spec §12.2, M2F-T03/F-04); parse it
     # once and reuse the qualification below.
     pyproject_qualified = False
-    if pyproject:
-        pyproject_qualified = _parse_pyproject(pyproject, scanner, result)
+    for pyproject in pyprojects:
+        qualified = _parse_pyproject(pyproject, scanner, result)
+        pyproject_qualified = pyproject_qualified or qualified
 
     seen_requirements: set[str] = set()
     for path in requirements:
         _parse_requirements(path, scanner, result, seen_requirements)
 
-    if environment:
+    for environment in environments:
         _parse_environment(environment, scanner, result)
 
-    if pipfile:
+    for pipfile in pipfiles:
         _parse_pipfile(pipfile, scanner, result)
 
     result.manifest_present = bool(
         pyproject_qualified
         or requirements
-        or environment
+        or environments
         or basenames.get("uv.lock")
         or basenames.get("poetry.lock")
-        or pipfile
+        or pipfiles
     )
 
     _collect_lockfiles(scanner, result, requirements)
@@ -346,9 +364,12 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     except tomllib.TOMLDecodeError as exc:
         result.unparsed.append(f"{path}:0: {exc}")
         return False
-    qualified = isinstance(doc.get("project"), dict) or isinstance(
-        (doc.get("tool") or {}).get("poetry"), dict
-    )
+    tool = doc.get("tool") or {}
+    if not isinstance(tool, dict):
+        result.unparsed.append(f"{path}:0: invalid tool table")
+        tool = {}
+    poetry = tool.get("poetry") or {}
+    qualified = isinstance(doc.get("project"), dict) or isinstance(tool.get("poetry"), dict)
     if not qualified:
         return False  # tool-only pyproject (e.g. [tool.ruff]) is not a manifest
 
@@ -375,7 +396,9 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
                             )
                             _add_requirement_line(entry, path, lineno, result)
 
-    poetry = (doc.get("tool") or {}).get("poetry") or {}
+    if not isinstance(poetry, dict):
+        result.unparsed.append(f"{path}:0: invalid poetry table")
+        poetry = {}
     poetry_deps = poetry.get("dependencies") or {}
     if isinstance(poetry_deps, dict):
         header = index.header_line("tool.poetry.dependencies")
@@ -413,7 +436,11 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
         return
     if not isinstance(doc, dict):
         return
-    for lineno, entry in enumerate(doc.get("dependencies") or [], start=1):
+    dependencies = doc.get("dependencies") or []
+    if not isinstance(dependencies, list):
+        result.unparsed.append(f"{path}:0: invalid dependencies collection")
+        return
+    for lineno, entry in enumerate(dependencies, start=1):
         if isinstance(entry, str):
             _add_conda_entry(entry, path, lineno, result)
         elif isinstance(entry, dict) and isinstance(entry.get("pip"), list):
@@ -481,24 +508,21 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
 
 def _collect_lockfiles(scanner: RepoScanner, result: Declarations, requirements: list[str]) -> None:
     files = scanner.files()
-    basenames = {Path(p).name: p for p in files}
+    basenames = _dependency_basenames(files)
 
     for name in ("uv.lock", "poetry.lock"):
-        path = basenames.get(name)
-        if path:
-            packages = _toml_lockfile_packages(scanner, path)
+        for path in basenames.get(name, []):
+            packages = _toml_lockfile_packages(scanner, path, result)
             result.lockfiles.append(
                 Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
             )
 
-    path = basenames.get("Pipfile.lock")
-    if path:
-        packages = _pipfile_lock_packages(scanner, path)
+    for path in basenames.get("Pipfile.lock", []):
+        packages = _pipfile_lock_packages(scanner, path, result)
         result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
 
-    path = basenames.get("conda-lock.yml")
-    if path:
-        packages = _conda_lock_packages(scanner, path)
+    for path in basenames.get("conda-lock.yml", []):
+        packages = _conda_lock_packages(scanner, path, result)
         result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
 
     # A requirements file where every non-comment line pins with == is a lockfile.
@@ -510,7 +534,21 @@ def _collect_lockfiles(scanner: RepoScanner, result: Declarations, requirements:
             result.lockfiles.append(Lockfile(path, frozenset(names)))
 
 
-def _toml_lockfile_packages(scanner: RepoScanner, path: str) -> list[str]:
+def _lock_package_names(packages: list[object], path: str, result: Declarations) -> list[str]:
+    names: list[str] = []
+    for package in packages:
+        if not isinstance(package, dict):
+            continue
+        name = package.get("name")
+        if isinstance(name, str):
+            if name:
+                names.append(name)
+        elif name is not None:
+            result.unparsed.append(f"{path}:0: invalid package name")
+    return names
+
+
+def _toml_lockfile_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
     text = scanner.read_text(path)
     if text is None:
         return []
@@ -519,16 +557,22 @@ def _toml_lockfile_packages(scanner: RepoScanner, path: str) -> list[str]:
     except tomllib.TOMLDecodeError:
         return []
     packages = doc.get("package") or []
-    return [p["name"] for p in packages if isinstance(p, dict) and p.get("name")]
+    if not isinstance(packages, list):
+        result.unparsed.append(f"{path}:0: invalid package collection")
+        return []
+    return _lock_package_names(packages, path, result)
 
 
-def _pipfile_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
+def _pipfile_lock_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
     text = scanner.read_text(path)
     if text is None:
         return []
     try:
         doc = json.loads(text)
     except json.JSONDecodeError:
+        return []
+    if not isinstance(doc, dict):
+        result.unparsed.append(f"{path}:0: invalid lock document")
         return []
     names: list[str] = []
     for section in ("default", "develop"):
@@ -538,7 +582,7 @@ def _pipfile_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
     return names
 
 
-def _conda_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
+def _conda_lock_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
     text = scanner.read_text(path)
     if text is None:
         return []
@@ -547,7 +591,10 @@ def _conda_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
     except yaml.YAMLError:
         return []
     packages = doc.get("package") or [] if isinstance(doc, dict) else []
-    return [p["name"] for p in packages if isinstance(p, dict) and p.get("name")]
+    if not isinstance(packages, list):
+        result.unparsed.append(f"{path}:0: invalid package collection")
+        return []
+    return _lock_package_names(packages, path, result)
 
 
 def _declares_from(decl: DependencyDeclaration, root_file: str) -> bool:

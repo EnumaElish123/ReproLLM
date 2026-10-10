@@ -1,0 +1,113 @@
+{
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "candidate_source_sha256": {
+    "CHANGELOG.md": "d213450bdf3e4973f04db563ff5cc6d3d75c90d169bf04a1d66c3b8b0e2831c0",
+    "docs/plan/01_specification.md": "c2883f30aaa1e91e3c093ff9e86a6ba26ae5de0ae81460347395ee2063555830",
+    "src/reprollm/core/deps.py": "39cecc9a4b00bef5f5ac7d2545a9c42dc5597e1379e32720e861f27ec0c5c7ff",
+    "src/reprollm/rules/env.py": "dbdda18bed81678b15ac2338d482f820fc6a11f1c8db577ccafc2271c0f75869",
+    "tests/unit/core/test_dependency_paths.py": "e2e84e66f506ae2739873beeab875b7a2c4eec0c7fb6fa66d434bcd57927fd6c"
+  },
+  "harness_preparation_corrections": [
+    "Temporary lock-name script creation had an escaped-quote SyntaxError and missing-script invocation, corrected before the actual 3-case product probe; not classified as product RED.",
+    "Initial Python malformed fixture A_bad sorts before the root in the frozen rule and had a preexisting crash; corrected to z_bad before establishing the actual newly reached branch regression."
+  ],
+  "independent_probe_total_cases": 32,
+  "independent_probes": {
+    "accepted_oracle": {
+      "cases": 21,
+      "elapsed_seconds": 0.174685,
+      "evidence": "r06a-review-accepted-oracle.json",
+      "sha256": "b6dfab0e49a765dbd5c06173ac93349584c7608830551eabe215e22b8da6a0bb"
+    },
+    "containers": {
+      "cases": 6,
+      "elapsed_seconds": 0.087551,
+      "evidence": "r06a-review-containers.json",
+      "sha256": "abfa80232a1f114035158a244d236866f68276b23390395fa378bfe1fd74aa60"
+    },
+    "lock_names": {
+      "cases": 3,
+      "elapsed_seconds": 0.039457,
+      "evidence": "r06a-review-lock-names.json",
+      "sha256": "788860e27b8a77681ebb2baba7e891921316bc737d9b3f3c9b7a2ea700192e61"
+    },
+    "python_project": {
+      "cases": 1,
+      "elapsed_seconds": 0.010944,
+      "evidence": "r06a-review-python-project.json",
+      "sha256": "fbce39bf00515b5199565265793b1ea62f14b111a811ebfd0f0e485e6fe5ce99"
+    },
+    "python_requires": {
+      "cases": 1,
+      "elapsed_seconds": 0.009423,
+      "evidence": "r06a-review-python-requires.json",
+      "sha256": "243420a7f2c6c85e12fc215cb01635ca377da5ff2bd6f4140b0090f8cd222077"
+    }
+  },
+  "independent_regression_evidence": [
+    {
+      "evidence": "r06a-review-containers-red.json",
+      "sha256": "61ef50ee2b7fa472fc619110f15abd854fcaf36562eca655ed176f0c67af9076"
+    },
+    {
+      "evidence": "r06a-review-lock-names-red.json",
+      "sha256": "ebb43ecf33c0f9af60aa2ace823dc6881904c759683856510b6e37c17bd52f09"
+    },
+    {
+      "evidence": "r06a-review-python-project-red.json",
+      "sha256": "3cfe10d2cfda4cb05366534c95767e6595cf624c79f1ca6d2dbf07684f40d2bf"
+    }
+  ],
+  "known_limits": [
+    "YAML declaration.line remains dependency-entry index; independent physical_source_line is separate, named backlog retained.",
+    "No new lock-to-environment ownership or root-only scope policy; R06-B remains separate.",
+    "No full TOML/YAML grammar, Conda solver, network/GPU/provider verification."
+  ],
+  "product_tree": {
+    "all_other_product_bytes_unchanged": 135,
+    "changed_files": [
+      "src/reprollm/core/deps.py",
+      "src/reprollm/rules/env.py"
+    ],
+    "tracked_files": 137
+  },
+  "repository_writes_by_reviewer": [],
+  "schema_version": 1,
+  "source_review_remaining_required_fixes": [],
+  "spec_review": {
+    "covered": [
+      "All supported source paths retained; root candidates precede nested paths deterministically.",
+      "Manifest qualification remains per-file; tool-only files do not qualify and cannot suppress valid nested projects.",
+      "Every standard lock retains its own source path and package evidence; malformed lock path remains with empty packages under the old presence contract.",
+      "Python declaration checks share path order and preserve format precedence and safe fallback.",
+      "R05-A exact helpers and TOML physical-line index stay byte-identical.",
+      "Requirements roots keep their lexical order, graph and package attribution helpers unchanged.",
+      "Conda version syntax and existing global pinning/scope rule remain unchanged.",
+      "Newly reachable malformed container/name/Python field failures have bounded guards, fixed safe diagnostics and owner RED/GREEN regressions."
+    ],
+    "result": "PASS"
+  },
+  "standards_review": {
+    "evidence": "Pure shared deterministic relative-path ordering; content reads remain behind RepoScanner; no new dependencies/schema/D41 writes; Python3.10-compatible source. Parent owns complete lint/type/full-quality validation.",
+    "result": "PASS"
+  },
+  "status": "PASS",
+  "task": "R06-A",
+  "unchanged_ast_source_blocks": {
+    "_TomlLineIndex": true,
+    "_add_conda_entry": true,
+    "_add_requirement_line": true,
+    "_declares_from": true,
+    "_dependency_version_field": true,
+    "_parse_requirements": true,
+    "_python_exact_version": true,
+    "_quoted_strings": true,
+    "_requirements_all_pinned": true,
+    "_toml_line_without_comment": true,
+    "_version_field_exact": true,
+    "rules.DependencyManifestPresentRule": true,
+    "rules.LlmCriticalDepsPinnedRule": true,
+    "rules.LockfilePresentRule": true
+  },
+  "validation_boundary": "No pytest/coverage was executed by this review; owner targeted tests and root full quality/Gate A are separately authoritative."
+}

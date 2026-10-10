@@ -1,0 +1,148 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "independent_lock_name_review.py"
+  ],
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "baseline_deps_sha256": "62fe8f756b923b2993e4ac69d6c7f991d0238bfb9f45e5dd0b94e3197c934df0",
+  "classification": "INDEPENDENT_PUBLIC_PAIRED_SCAN",
+  "elapsed_seconds": 0.039457,
+  "new_candidate_crashes": 0,
+  "rows": [
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          },
+          {
+            "packages": [],
+            "path": "A_bad/uv.lock"
+          }
+        ],
+        "unparsed": [
+          "A_bad/uv.lock:0: invalid package name"
+        ]
+      },
+      "case": "uv.lock",
+      "files": {
+        "A_bad/uv.lock": "[[package]]\nname=42\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": false
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "poetry.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "poetry.lock"
+          },
+          {
+            "packages": [],
+            "path": "A_bad/poetry.lock"
+          }
+        ],
+        "unparsed": [
+          "A_bad/poetry.lock:0: invalid package name"
+        ]
+      },
+      "case": "poetry.lock",
+      "files": {
+        "A_bad/poetry.lock": "[[package]]\nname=42\n",
+        "poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": false
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml"
+          },
+          {
+            "packages": [],
+            "path": "A_bad/conda-lock.yml"
+          }
+        ],
+        "unparsed": [
+          "A_bad/conda-lock.yml:0: invalid package name"
+        ]
+      },
+      "case": "conda-lock.yml",
+      "files": {
+        "A_bad/conda-lock.yml": "package:\n  - name: 42\n",
+        "conda-lock.yml": "package:\n  - name: torch\n"
+      },
+      "new_candidate_crash": false
+    }
+  ],
+  "schema_version": 1,
+  "source_sha256_after": {
+    "src/reprollm/core/deps.py": "39cecc9a4b00bef5f5ac7d2545a9c42dc5597e1379e32720e861f27ec0c5c7ff",
+    "src/reprollm/rules/env.py": "dbdda18bed81678b15ac2338d482f820fc6a11f1c8db577ccafc2271c0f75869",
+    "tests/unit/core/test_dependency_paths.py": "e2e84e66f506ae2739873beeab875b7a2c4eec0c7fb6fa66d434bcd57927fd6c"
+  },
+  "source_sha256_before": {
+    "src/reprollm/core/deps.py": "39cecc9a4b00bef5f5ac7d2545a9c42dc5597e1379e32720e861f27ec0c5c7ff",
+    "src/reprollm/rules/env.py": "dbdda18bed81678b15ac2338d482f820fc6a11f1c8db577ccafc2271c0f75869",
+    "tests/unit/core/test_dependency_paths.py": "e2e84e66f506ae2739873beeab875b7a2c4eec0c7fb6fa66d434bcd57927fd6c"
+  },
+  "source_unchanged": true,
+  "task": "R06-A"
+}

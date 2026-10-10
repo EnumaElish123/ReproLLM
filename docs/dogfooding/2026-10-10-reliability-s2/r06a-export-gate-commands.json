@@ -1,0 +1,325 @@
+{
+  "commands": [
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<evidence>/frozen-r06g-source/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/lm-evaluation-harness-oracle-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness",
+      "elapsed_seconds": 24.820817,
+      "expected_exit": 0,
+      "label": "oracle-export",
+      "name": "lm-evaluation-harness",
+      "source_mode": "frozen_historical_oracle",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "28d12b3989d4754f689bc6a3d99d5b23da29b9993dfeacabfb70e21a17899ce9"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/lm-evaluation-harness-candidate-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness",
+      "elapsed_seconds": 24.846271,
+      "expected_exit": 0,
+      "label": "candidate-export",
+      "name": "lm-evaluation-harness",
+      "source_mode": "working_candidate",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/lm-evaluation-harness/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "28d12b3989d4754f689bc6a3d99d5b23da29b9993dfeacabfb70e21a17899ce9"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<evidence>/frozen-r06g-source/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/FastChat-oracle-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat",
+      "elapsed_seconds": 1.865367,
+      "expected_exit": 0,
+      "label": "oracle-export",
+      "name": "FastChat",
+      "source_mode": "frozen_historical_oracle",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat/REPRODUCIBILITY.md (1 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "e0a7deb1c8525fcaec6b27fd011bdd538aa299c3a2743f4c636bb886dbffee5e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/FastChat-candidate-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat",
+      "elapsed_seconds": 1.764285,
+      "expected_exit": 0,
+      "label": "candidate-export",
+      "name": "FastChat",
+      "source_mode": "working_candidate",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/FastChat/REPRODUCIBILITY.md (1 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "e0a7deb1c8525fcaec6b27fd011bdd538aa299c3a2743f4c636bb886dbffee5e"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<evidence>/frozen-r06g-source/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/LlamaFactory-oracle-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory",
+      "elapsed_seconds": 2.565008,
+      "expected_exit": 0,
+      "label": "oracle-export",
+      "name": "LlamaFactory",
+      "source_mode": "frozen_historical_oracle",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory/REPRODUCIBILITY.md (1 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "237e23444bc6833780ae4bae594227df559f5698cf5bfdc4b72176b6de10afa0"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/LlamaFactory-candidate-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory",
+      "elapsed_seconds": 2.483047,
+      "expected_exit": 0,
+      "label": "candidate-export",
+      "name": "LlamaFactory",
+      "source_mode": "working_candidate",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/LlamaFactory/REPRODUCIBILITY.md (1 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "237e23444bc6833780ae4bae594227df559f5698cf5bfdc4b72176b6de10afa0"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<evidence>/frozen-r06g-source/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/HarmBench-oracle-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench",
+      "elapsed_seconds": 1.961352,
+      "expected_exit": 0,
+      "label": "oracle-export",
+      "name": "HarmBench",
+      "source_mode": "frozen_historical_oracle",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "fd396f61441467e6f57b19c71240012d3bd0164e4ef1e7f7f9d7efe7ae61457c"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/HarmBench-candidate-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench",
+      "elapsed_seconds": 1.847251,
+      "expected_exit": 0,
+      "label": "candidate-export",
+      "name": "HarmBench",
+      "source_mode": "working_candidate",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/HarmBench/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "fd396f61441467e6f57b19c71240012d3bd0164e4ef1e7f7f9d7efe7ae61457c"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<evidence>/frozen-r06g-source/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/llm-dp-finetune-oracle-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune",
+      "elapsed_seconds": 1.038141,
+      "expected_exit": 0,
+      "label": "oracle-export",
+      "name": "llm-dp-finetune",
+      "source_mode": "frozen_historical_oracle",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "c665f66409538fab02d912c30aa970d31234342a56d9a1aaeac0c700c20585a8"
+    },
+    {
+      "actual_exit": 0,
+      "argv": [
+        "<implementation>/.venv/bin/python",
+        "-B",
+        "-c",
+        "import json,sys\nfrom pathlib import Path\nsource,root,mode,monitor,forbidden=sys.argv[1:6]\nargs=sys.argv[6:];sys.path.insert(0,source)\nroot=Path(root);blocked={Path(p).resolve() for p in json.loads(forbidden)}\nevents=[]\ndef guard(event,args):\n if event=='socket.connect':raise RuntimeError('Offline S2 Gate A forbids network access')\n if event=='import' and str(args[0]).split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('Offline S2 Gate A forbids heavyweight imports')\n if event=='open' and isinstance(args[0],(str,bytes)):\n  try:p=Path(args[0].decode() if isinstance(args[0],bytes) else args[0]).resolve()\n  except (OSError,RuntimeError):return\n  if p in blocked:\n   events.append(p.name);raise RuntimeError('S2 forbidden outside content open attempted')\nsys.addaudithook(guard)\ntry:\n if mode=='cli':\n  sys.argv=['reprollm',*args]\n  from reprollm.cli.main import cli\n  cli()\n elif mode=='facts':\n  from reprollm.core.context import AuditContext\n  from reprollm.core.git import GitInfo\n  from reprollm.core.scanner import RepoScanner\n  ctx=AuditContext(root,level=0)\n  scanner=ctx.fs\n  direct={p:scanner.read_text(p) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml','.env.s2-boundary','broken.py','loop-a.py']}\n  explicit={p:scanner.read_text(p,max_bytes=64*1024) for p in ['requirements.txt','linked.py','links/README.md','links/config.yaml']}\n  invalid=[scanner.read_text(str(root/'safe.txt')),scanner.read_text(str(next(iter(blocked)))),scanner.read_text('../outside/requirements.txt')]\n  interior=scanner.read_text('links/../safe.txt')\n  cache=root/'cache-alias.txt';warm=scanner.read_text('cache-alias.txt');cache.unlink();cache.symlink_to(next(p for p in sorted(blocked) if p.name=='requirements.txt'))\n  swapped_default=scanner.read_text('cache-alias.txt');swapped_explicit=scanner.read_text('cache-alias.txt',max_bytes=64*1024)\n  deps=[vars(d) for d in ctx.deps.declarations];imports=[vars(d) for d in ctx.pyscan.imports];hints=ctx.detection.hints.model_dump(mode='json')\n  result={'direct':direct,'explicit':explicit,'invalid':invalid,'normalized_inside':interior,'internal_alias':scanner.read_text('safe-alias.txt'),'cache_warm':warm,'cache_after_swap':[swapped_default,swapped_explicit],'deps':deps,'imports':imports,'hints':hints,'files':scanner.files(),'warnings':scanner.warnings}\n  print(json.dumps(result,sort_keys=True))\n else:raise RuntimeError('Unknown monitored mode')\nfinally:\n Path(monitor).write_text(json.dumps({'schema_version':1,'outside_open_attempts':events,'no_network_or_heavy_target_imports':True},sort_keys=True)+'\\n')\n",
+        "<implementation>/src",
+        "<evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune",
+        "cli",
+        "<evidence>/r06a-export-qualified/monitors/llm-dp-finetune-candidate-export.json",
+        "[]",
+        "export",
+        "."
+      ],
+      "cwd": "<evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune",
+      "elapsed_seconds": 0.946681,
+      "expected_exit": 0,
+      "label": "candidate-export",
+      "name": "llm-dp-finetune",
+      "source_mode": "working_candidate",
+      "stderr": {
+        "encoding": "utf-8",
+        "text": ""
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": {
+        "encoding": "utf-8",
+        "text": "Wrote <evidence>/r06a-qualified/full-L0-init-L1/clones/llm-dp-finetune/REPRODUCIBILITY.md (0 models, no run) — commit this file with your paper artifact\n"
+      },
+      "stdout_sha256": "c665f66409538fab02d912c30aa970d31234342a56d9a1aaeac0c700c20585a8"
+    }
+  ],
+  "schema_version": 1
+}

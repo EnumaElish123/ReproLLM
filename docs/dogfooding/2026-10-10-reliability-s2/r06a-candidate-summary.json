@@ -1,0 +1,110 @@
+{
+  "backlog": [
+    {
+      "disposition": "Preserved in R06-A path identity task; no silent broader source-position migration.",
+      "finding": "Existing environment declaration line fields remain dependency-entry indices rather than physical YAML lines.",
+      "id": "R06-A-HANDOFF-CONDA-LINES"
+    }
+  ],
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "behavior": [
+    "Every supported same-name dependency and standard-lock source is retained, root-first then lexical within its candidate family.",
+    "Manifest qualification remains separate; tool-only pyprojects cannot hide valid root or nested projects.",
+    "Python rule uses the same ordering, preserves format precedence, records actual nested .python-version source and skips malformed project/requirement types before valid fallback.",
+    "Newly reached malformed containers or package-name types produce fixed source:0 diagnostics; valid root facts and existing lock identity/presence policy remain.",
+    "Requirements traversal stays lexical and preserves nested HarmBench-style exact post-release declarations and existing aggregate pinning."
+  ],
+  "final_focused_command_elapsed_seconds": 21.156751,
+  "final_focused_observed": "270 passed in 20.69s",
+  "final_validation_labels": [
+    "lint-freeze",
+    "mypy-freeze",
+    "focused-final",
+    "format-check-final"
+  ],
+  "focused_tests": 270,
+  "fresh_five_project_gate_a": "root pending",
+  "full_quality_gate": "root pending",
+  "independent_review": "r06a-final-independent-review.json",
+  "independent_review_sha256": "9a10d9a283b1476d4cd9e2865f8bcfaf8c44a4600730dc6daae1824d6dfcce9d",
+  "new_tests": 45,
+  "owned_files_sha256": {
+    "CHANGELOG.md": "d213450bdf3e4973f04db563ff5cc6d3d75c90d169bf04a1d66c3b8b0e2831c0",
+    "src/reprollm/core/deps.py": "39cecc9a4b00bef5f5ac7d2545a9c42dc5597e1379e32720e861f27ec0c5c7ff",
+    "src/reprollm/rules/env.py": "dbdda18bed81678b15ac2338d482f820fc6a11f1c8db577ccafc2271c0f75869",
+    "tests/unit/core/test_dependency_paths.py": "e2e84e66f506ae2739873beeab875b7a2c4eec0c7fb6fa66d434bcd57927fd6c"
+  },
+  "protected_product_file_count": 147,
+  "protected_product_files_all_unchanged": true,
+  "retained_development_commands": 19,
+  "retained_tdd": "r06a-tdd.json",
+  "retained_tdd_sha256": "6457d488ac1a0f5fe27eb7481098e0c2e86ac2e787906f1a9f9558b8dbf1485a",
+  "schema_version": 1,
+  "scope_limits": [
+    "No include graph or requirements-lock closure implementation",
+    "No Conda exact semantics or YAML physical-line migration",
+    "No lock-to-subproject ownership or root-only scanning",
+    "No schema, engine, redaction, dependency or golden snapshot changes",
+    "No GPU/network/API/resource Gate B validation"
+  ],
+  "source_raw_sha256": "5fd3595d359dc9190592e901c64b62af60373f2a595e6f5f021435559840f4bf",
+  "status": "FROZEN_FOCUSED_VALIDATION_PASS_FULL_GATE_PENDING",
+  "task": "R06-A",
+  "tdd_stages": [
+    {
+      "green": "root-tool-green",
+      "observed_green": "2 passed, 27 deselected",
+      "observed_red": "2 failed, 27 deselected",
+      "red": "root-tool-red"
+    },
+    {
+      "green": "matrix-green",
+      "observed_green": "29 passed",
+      "observed_red": "26 failed, 3 passed",
+      "red": "matrix-red"
+    },
+    {
+      "green": "malformed-containers-green",
+      "observed_green": "8 passed, 29 deselected",
+      "observed_red": "6 failed plus 2 failed",
+      "red": [
+        "malformed-containers-red",
+        "python-malformed-red"
+      ]
+    },
+    {
+      "green": "container-leaves-green",
+      "observed_green": "6 passed, 39 deselected",
+      "observed_red": "6 failed, 39 deselected",
+      "red": "container-leaves-red"
+    }
+  ],
+  "test_inventory": {
+    "empty_table_manifest_qualification_controls": 2,
+    "lock_package_name_types": 3,
+    "malformed_candidate_containers": 6,
+    "nonstring_python_requirement_fallback_sources": 3,
+    "original_path_acceptance_and_compatibility": 29,
+    "scalar_python_project_warning_and_fallback": 2
+  },
+  "unchanged_deps_function_and_class_bytes": {
+    "Declarations": true,
+    "DependencyDeclaration": true,
+    "Lockfile": true,
+    "_TomlLineIndex": true,
+    "_add_conda_entry": true,
+    "_add_requirement_line": true,
+    "_declares_from": true,
+    "_dependency_version_field": true,
+    "_is_requirements_name": true,
+    "_leading_key": true,
+    "_parse_pipfile": true,
+    "_parse_requirements": true,
+    "_python_exact_version": true,
+    "_quoted_strings": true,
+    "_requirements_all_pinned": true,
+    "_toml_line_without_comment": true,
+    "_version_field_exact": true,
+    "canonical_dep_name": true
+  }
+}

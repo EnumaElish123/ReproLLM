@@ -1,0 +1,182 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "independent_review.py"
+  ],
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "baseline_deps_sha256": "62fe8f756b923b2993e4ac69d6c7f991d0238bfb9f45e5dd0b94e3197c934df0",
+  "classification": "INDEPENDENT_PUBLIC_PAIRED_SCAN",
+  "elapsed_seconds": 0.085867,
+  "new_candidate_crashes": 6,
+  "rows": [
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [
+          {
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml"
+          }
+        ],
+        "locks": [],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "AttributeError",
+        "message": "'int' object has no attribute 'get'"
+      },
+      "case": "pyproject.toml",
+      "files": {
+        "A_bad/pyproject.toml": "tool = 42\n",
+        "pyproject.toml": "[project]\nname=\"root\"\ndependencies=[\"torch==2.5.1\"]\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [
+          {
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml"
+          }
+        ],
+        "locks": [],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "TypeError",
+        "message": "'int' object is not iterable"
+      },
+      "case": "environment.yml",
+      "files": {
+        "A_bad/environment.yml": "dependencies: 42\n",
+        "environment.yml": "dependencies:\n  - torch=2.5.1\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "TypeError",
+        "message": "'int' object is not iterable"
+      },
+      "case": "uv.lock",
+      "files": {
+        "A_bad/uv.lock": "package = 42\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "poetry.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "TypeError",
+        "message": "'int' object is not iterable"
+      },
+      "case": "poetry.lock",
+      "files": {
+        "A_bad/poetry.lock": "package = 42\n",
+        "poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "Pipfile.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "AttributeError",
+        "message": "'list' object has no attribute 'get'"
+      },
+      "case": "Pipfile.lock",
+      "files": {
+        "A_bad/Pipfile.lock": "[]\n",
+        "Pipfile.lock": "{\"default\":{\"torch\":{}},\"develop\":{}}\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "TypeError",
+        "message": "'int' object is not iterable"
+      },
+      "case": "conda-lock.yml",
+      "files": {
+        "A_bad/conda-lock.yml": "package: 42\n",
+        "conda-lock.yml": "package:\n  - name: torch\n"
+      },
+      "new_candidate_crash": true
+    }
+  ],
+  "schema_version": 1,
+  "source_sha256_after": {
+    "src/reprollm/core/deps.py": "b9d4ce05185116f0c236c76bbeec0d2c71f2d595869ba1e22ec4a15685f2ca69",
+    "src/reprollm/rules/env.py": "a2650b04362cd5453ecde8a8489fd526f1d262379d1d21c2eec44ad45e99b021",
+    "tests/unit/core/test_dependency_paths.py": "0d8f558c56147b6b5dd8d77531b1f261e1408e2d7f30dabe1dc23411de6de046"
+  },
+  "source_sha256_before": {
+    "src/reprollm/core/deps.py": "b9d4ce05185116f0c236c76bbeec0d2c71f2d595869ba1e22ec4a15685f2ca69",
+    "src/reprollm/rules/env.py": "a2650b04362cd5453ecde8a8489fd526f1d262379d1d21c2eec44ad45e99b021",
+    "tests/unit/core/test_dependency_paths.py": "0d8f558c56147b6b5dd8d77531b1f261e1408e2d7f30dabe1dc23411de6de046"
+  },
+  "source_unchanged": true,
+  "task": "R06-A"
+}

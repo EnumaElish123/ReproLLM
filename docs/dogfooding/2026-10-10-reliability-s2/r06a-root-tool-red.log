@@ -1,0 +1,44 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_root_project_survives_tool_only_pyproject[a_tools/pyproject.toml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+nested = 'a_tools/pyproject.toml'
+
+    @pytest.mark.parametrize("nested", ["a_tools/pyproject.toml", "zz_tools/pyproject.toml"])
+    def test_root_project_survives_tool_only_pyproject(tmp_path: Path, nested: str) -> None:
+        _write(tmp_path, "pyproject.toml", _declaration_text("pyproject.toml", "torch", "2.8.0"))
+        _write(tmp_path, nested, "[tool.ruff]\nline-length = 100\n")
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+        assert [(d.name, d.source_file, d.line) for d in result.declarations] == [
+            ("torch", "pyproject.toml", 4)
+        ]
+>       assert PythonVersionDeclaredRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.python_version_declared', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, sta...le, or a `python=3.x` entry in environment.yml.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:50: AssertionError
+___ test_root_project_survives_tool_only_pyproject[zz_tools/pyproject.toml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+nested = 'zz_tools/pyproject.toml'
+
+    @pytest.mark.parametrize("nested", ["a_tools/pyproject.toml", "zz_tools/pyproject.toml"])
+    def test_root_project_survives_tool_only_pyproject(tmp_path: Path, nested: str) -> None:
+        _write(tmp_path, "pyproject.toml", _declaration_text("pyproject.toml", "torch", "2.8.0"))
+        _write(tmp_path, nested, "[tool.ruff]\nline-length = 100\n")
+    
+        result = _scan(tmp_path)
+>       assert result.manifest_present
+E       assert False
+E        +  where False = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=False).manifest_present
+
+tests/unit/core/test_dependency_paths.py:46: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_dependency_paths.py::test_root_project_survives_tool_only_pyproject[a_tools/pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_root_project_survives_tool_only_pyproject[zz_tools/pyproject.toml]
+2 failed, 27 deselected in 0.80s

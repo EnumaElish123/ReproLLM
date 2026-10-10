@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from reprollm.core._toml import tomllib
 from reprollm.core.context import AuditContext
-from reprollm.core.deps import DependencyDeclaration, canonical_dep_name
+from reprollm.core.deps import (
+    DependencyDeclaration,
+    canonical_dep_name,
+    dependency_file_paths,
+)
 from reprollm.core.envinfo import LLM_CRITICAL_PACKAGES, installed_versions
 from reprollm.core.pyscan import ImportInfo
 from reprollm.core.redaction import is_forbidden_file
@@ -203,26 +205,25 @@ class PythonVersionDeclaredRule(Rule):
     @staticmethod
     def _declared_where(ctx: AuditContext) -> Evidence | None:
         scanner = ctx.fs
-        pyproject = next((p for p in scanner.files() if Path(p).name == "pyproject.toml"), None)
-        if pyproject is not None:
+        for pyproject in dependency_file_paths(scanner.files(), "pyproject.toml"):
             text = scanner.read_text(pyproject)
             if text is not None:
                 try:
                     doc = tomllib.loads(text)
-                    requires = (doc.get("project") or {}).get("requires-python")
-                    if requires:
+                    project = doc.get("project")
+                    requires = project.get("requires-python") if isinstance(project, dict) else None
+                    if isinstance(requires, str) and requires:
                         return Evidence(
                             kind="file", path=pyproject, note=f"requires-python {requires}"
                         )
                 except tomllib.TOMLDecodeError:
                     pass
-        if any(Path(p).name == ".python-version" for p in scanner.files()):
-            return Evidence(kind="file", path=".python-version", note=".python-version present")
-        env_yml = next(
-            (p for p in scanner.files() if Path(p).name in {"environment.yml", "environment.yaml"}),
-            None,
-        )
-        if env_yml is not None:
+        python_versions = dependency_file_paths(scanner.files(), ".python-version")
+        if python_versions:
+            return Evidence(kind="file", path=python_versions[0], note=".python-version present")
+        for env_yml in dependency_file_paths(
+            scanner.files(), "environment.yml", "environment.yaml"
+        ):
             text = scanner.read_text(env_yml)
             if text is not None and "python=" in text:
                 return Evidence(kind="file", path=env_yml, note="conda python= entry present")

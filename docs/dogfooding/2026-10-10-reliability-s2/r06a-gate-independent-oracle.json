@@ -1,0 +1,376 @@
+{
+  "approval_bindings": {
+    "accepted_patch_sha256": "280ef3d4b0085aae1dbee280c7eb29de4d2a26e94fda377b7f535f5dedaa126a",
+    "accepted_response": "接受 A/P+C，执行完整 S2（推荐）",
+    "decision": "docs/plan/reliability-2026-10-03/proposals/R05-S/decision.json",
+    "independent_source_provenance_sha256": "bbd37edb64e8dc96c3a28baf71710a1f112c6ad28e6ca8cfeecc6205340cf773",
+    "proposal_sha256": "055b7863e945f2a494879df47d10106d40c85207143f1b6bb713ecc9a5b431af"
+  },
+  "cases": [
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "pyproject.toml",
+          "zz_tools/pyproject.toml"
+        ],
+        "manifest_present": true,
+        "python_source": "pyproject.toml",
+        "selected_dependency": "torch",
+        "selected_source": "pyproject.toml"
+      },
+      "files": {
+        "pyproject.toml": "[project]\nname=\"bounded-s2\"\nrequires-python=\">=3.10\"\ndependencies=[\"torch==2.5.1\"]\n",
+        "zz_tools/pyproject.toml": "[tool.ruff]\nline-length=100\n"
+      },
+      "id": "pyproject_toml-root-vs-tool"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "pyproject.toml",
+          "zz_tools/pyproject.toml"
+        ],
+        "manifest_present": true,
+        "python_source": "pyproject.toml",
+        "selected_dependency": "torch",
+        "selected_source": "pyproject.toml"
+      },
+      "files": {
+        "pyproject.toml": "[project]\nname=\"bounded-s2\"\nrequires-python=\">=3.10\"\ndependencies=[\"torch==2.5.1\"]\n",
+        "zz_tools/pyproject.toml": "[project]\nname=\"nested-s2\"\nrequires-python=\">=3.12\"\ndependencies=[\"transformers==4.45.2\"]\n"
+      },
+      "id": "pyproject_toml-two-qualified"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/pyproject.toml"
+        ],
+        "manifest_present": true,
+        "python_source": "zz_tools/pyproject.toml",
+        "selected_dependency": "transformers",
+        "selected_source": "zz_tools/pyproject.toml"
+      },
+      "files": {
+        "zz_tools/pyproject.toml": "[project]\nname=\"nested-s2\"\nrequires-python=\">=3.12\"\ndependencies=[\"transformers==4.45.2\"]\n"
+      },
+      "id": "pyproject_toml-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "environment.yml",
+          "zz_tools/environment.yml"
+        ],
+        "manifest_present": true,
+        "python_source": "environment.yml",
+        "selected_dependency": "torch",
+        "selected_source": "environment.yml"
+      },
+      "files": {
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - python=3.11\n  - torch==2.5.1\n",
+        "zz_tools/environment.yml": "name: tools-only\ndependencies: []\n"
+      },
+      "id": "environment_yml-root-vs-tool"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "environment.yml",
+          "zz_tools/environment.yml"
+        ],
+        "manifest_present": true,
+        "python_source": "environment.yml",
+        "selected_dependency": "torch",
+        "selected_source": "environment.yml"
+      },
+      "files": {
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - python=3.11\n  - torch==2.5.1\n",
+        "zz_tools/environment.yml": "name: nested-s2\ndependencies:\n  - python=3.12\n  - transformers==4.45.2\n"
+      },
+      "id": "environment_yml-two-qualified"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/environment.yml"
+        ],
+        "manifest_present": true,
+        "python_source": "zz_tools/environment.yml",
+        "selected_dependency": "transformers",
+        "selected_source": "zz_tools/environment.yml"
+      },
+      "files": {
+        "zz_tools/environment.yml": "name: nested-s2\ndependencies:\n  - python=3.12\n  - transformers==4.45.2\n"
+      },
+      "id": "environment_yml-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "environment.yaml",
+          "zz_tools/environment.yaml"
+        ],
+        "manifest_present": true,
+        "python_source": "environment.yaml",
+        "selected_dependency": "torch",
+        "selected_source": "environment.yaml"
+      },
+      "files": {
+        "environment.yaml": "name: bounded-s2\ndependencies:\n  - python=3.11\n  - torch==2.5.1\n",
+        "zz_tools/environment.yaml": "name: tools-only\ndependencies: []\n"
+      },
+      "id": "environment_yaml-root-vs-tool"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "environment.yaml",
+          "zz_tools/environment.yaml"
+        ],
+        "manifest_present": true,
+        "python_source": "environment.yaml",
+        "selected_dependency": "torch",
+        "selected_source": "environment.yaml"
+      },
+      "files": {
+        "environment.yaml": "name: bounded-s2\ndependencies:\n  - python=3.11\n  - torch==2.5.1\n",
+        "zz_tools/environment.yaml": "name: nested-s2\ndependencies:\n  - python=3.12\n  - transformers==4.45.2\n"
+      },
+      "id": "environment_yaml-two-qualified"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/environment.yaml"
+        ],
+        "manifest_present": true,
+        "python_source": "zz_tools/environment.yaml",
+        "selected_dependency": "transformers",
+        "selected_source": "zz_tools/environment.yaml"
+      },
+      "files": {
+        "zz_tools/environment.yaml": "name: nested-s2\ndependencies:\n  - python=3.12\n  - transformers==4.45.2\n"
+      },
+      "id": "environment_yaml-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "Pipfile",
+          "zz_tools/Pipfile"
+        ],
+        "manifest_present": true,
+        "python_source": null,
+        "selected_dependency": "torch",
+        "selected_source": "Pipfile"
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch=\"==2.5.1\"\n",
+        "zz_tools/Pipfile": "[requires]\npython_version=\"3.12\"\n"
+      },
+      "id": "Pipfile-root-vs-tool"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "Pipfile",
+          "zz_tools/Pipfile"
+        ],
+        "manifest_present": true,
+        "python_source": null,
+        "selected_dependency": "torch",
+        "selected_source": "Pipfile"
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch=\"==2.5.1\"\n",
+        "zz_tools/Pipfile": "[packages]\ntransformers=\"==4.45.2\"\n"
+      },
+      "id": "Pipfile-two-qualified"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/Pipfile"
+        ],
+        "manifest_present": true,
+        "python_source": null,
+        "selected_dependency": "transformers",
+        "selected_source": "zz_tools/Pipfile"
+      },
+      "files": {
+        "zz_tools/Pipfile": "[packages]\ntransformers=\"==4.45.2\"\n"
+      },
+      "id": "Pipfile-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "pyproject.toml",
+          "zz_tools/pyproject.toml"
+        ],
+        "manifest_present": true,
+        "python_source": "zz_tools/pyproject.toml",
+        "selected_dependency": "transformers",
+        "selected_source": "zz_tools/pyproject.toml"
+      },
+      "files": {
+        "pyproject.toml": "[tool.ruff]\nline-length=100\n",
+        "zz_tools/pyproject.toml": "[project]\nname=\"nested-s2\"\nrequires-python=\">=3.12\"\ndependencies=[\"transformers==4.45.2\"]\n"
+      },
+      "id": "pyproject_toml-root-tool-nested-qualified"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "uv.lock",
+          "zz_tools/uv.lock"
+        ],
+        "selected_lock": "uv.lock",
+        "selected_lock_packages": [
+          "torch"
+        ]
+      },
+      "files": {
+        "uv.lock": "[[package]]\nname=\"torch\"\n",
+        "zz_tools/uv.lock": "[[package]]\nname=\"transformers\"\n"
+      },
+      "id": "uv_lock-root-first"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/uv.lock"
+        ],
+        "selected_lock": "zz_tools/uv.lock",
+        "selected_lock_packages": [
+          "transformers"
+        ]
+      },
+      "files": {
+        "zz_tools/uv.lock": "[[package]]\nname=\"transformers\"\n"
+      },
+      "id": "uv_lock-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "poetry.lock",
+          "zz_tools/poetry.lock"
+        ],
+        "selected_lock": "poetry.lock",
+        "selected_lock_packages": [
+          "torch"
+        ]
+      },
+      "files": {
+        "poetry.lock": "[[package]]\nname=\"torch\"\n",
+        "zz_tools/poetry.lock": "[[package]]\nname=\"transformers\"\n"
+      },
+      "id": "poetry_lock-root-first"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/poetry.lock"
+        ],
+        "selected_lock": "zz_tools/poetry.lock",
+        "selected_lock_packages": [
+          "transformers"
+        ]
+      },
+      "files": {
+        "zz_tools/poetry.lock": "[[package]]\nname=\"transformers\"\n"
+      },
+      "id": "poetry_lock-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "Pipfile.lock",
+          "zz_tools/Pipfile.lock"
+        ],
+        "selected_lock": "Pipfile.lock",
+        "selected_lock_packages": [
+          "torch"
+        ]
+      },
+      "files": {
+        "Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==2.5.1\"}},\"develop\":{}}\n",
+        "zz_tools/Pipfile.lock": "{\"default\":{\"transformers\":{\"version\":\"==4.45.2\"}},\"develop\":{}}\n"
+      },
+      "id": "Pipfile_lock-root-first"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/Pipfile.lock"
+        ],
+        "selected_lock": "zz_tools/Pipfile.lock",
+        "selected_lock_packages": [
+          "transformers"
+        ]
+      },
+      "files": {
+        "zz_tools/Pipfile.lock": "{\"default\":{\"transformers\":{\"version\":\"==4.45.2\"}},\"develop\":{}}\n"
+      },
+      "id": "Pipfile_lock-nested-only"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "candidate_paths": [
+          "conda-lock.yml",
+          "zz_tools/conda-lock.yml"
+        ],
+        "selected_lock": "conda-lock.yml",
+        "selected_lock_packages": [
+          "torch"
+        ]
+      },
+      "files": {
+        "conda-lock.yml": "package:\n  - name: torch\n",
+        "zz_tools/conda-lock.yml": "package:\n  - name: transformers\n"
+      },
+      "id": "conda-lock_yml-root-first"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "candidate_paths": [
+          "zz_tools/conda-lock.yml"
+        ],
+        "selected_lock": "zz_tools/conda-lock.yml",
+        "selected_lock_packages": [
+          "transformers"
+        ]
+      },
+      "files": {
+        "zz_tools/conda-lock.yml": "package:\n  - name: transformers\n"
+      },
+      "id": "conda-lock_yml-nested-only"
+    }
+  ],
+  "schema_version": 1,
+  "source": "Approved contract and independent literal fixtures, not candidate output",
+  "stage": "r06a"
+}

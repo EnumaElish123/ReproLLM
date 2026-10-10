@@ -1,0 +1,369 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[pyproject.toml-tool = 42\n-invalid tool table] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'pyproject.toml', malformed = 'tool = 42\n'
+reason = 'invalid tool table'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:138: in scan_dependencies
+    qualified = _parse_pyproject(pyproject, scanner, result)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'A_bad/pyproject.toml'
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='==2.8.0', exact_version='2.8.0', source_file='pyproject.toml', line=4)], unparsed=[], lockfiles=[], manifest_present=False)
+
+    def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> bool:
+        """Parse once; return True only when a ``[project]`` or ``[tool.poetry]``
+        table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
+        text = scanner.read_text(path)
+        if text is None:
+            result.unparsed.append(f"{path}:0: unreadable")
+            return False
+        try:
+            doc = tomllib.loads(text)
+        except tomllib.TOMLDecodeError as exc:
+            result.unparsed.append(f"{path}:0: {exc}")
+            return False
+        qualified = isinstance(doc.get("project"), dict) or isinstance(
+>           (doc.get("tool") or {}).get("poetry"), dict
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        )
+E       AttributeError: 'int' object has no attribute 'get'
+
+src/reprollm/core/deps.py:368: AttributeError
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[environment.yml-dependencies: 42\n-invalid dependencies collection] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yml', malformed = 'dependencies: 42\n'
+reason = 'invalid dependencies collection'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:146: in scan_dependencies
+    _parse_environment(environment, scanner, result)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = 'A_bad/environment.yml'
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+result = Declarations(declarations=[DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None,...None, exact_version='3.11', source_file='environment.yml', line=2)], unparsed=[], lockfiles=[], manifest_present=False)
+
+    def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
+        text = scanner.read_text(path)
+        if text is None:
+            result.unparsed.append(f"{path}:0: unreadable")
+            return
+        try:
+            doc = yaml.safe_load(text)
+        except yaml.YAMLError as exc:
+            result.unparsed.append(f"{path}:0: {exc}")
+            return
+        if not isinstance(doc, dict):
+            return
+>       for lineno, entry in enumerate(doc.get("dependencies") or [], start=1):
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'int' object is not iterable
+
+src/reprollm/core/deps.py:434: TypeError
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[uv.lock-package = 42\n-invalid package collection] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'uv.lock', malformed = 'package = 42\n'
+reason = 'invalid package collection'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:506: in _collect_lockfiles
+    packages = _toml_lockfile_packages(scanner, path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+path = 'A_bad/uv.lock'
+
+    def _toml_lockfile_packages(scanner: RepoScanner, path: str) -> list[str]:
+        text = scanner.read_text(path)
+        if text is None:
+            return []
+        try:
+            doc = tomllib.loads(text)
+        except tomllib.TOMLDecodeError:
+            return []
+        packages = doc.get("package") or []
+>       return [p["name"] for p in packages if isinstance(p, dict) and p.get("name")]
+                                   ^^^^^^^^
+E       TypeError: 'int' object is not iterable
+
+src/reprollm/core/deps.py:537: TypeError
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[poetry.lock-package = 42\n-invalid package collection] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'poetry.lock', malformed = 'package = 42\n'
+reason = 'invalid package collection'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:506: in _collect_lockfiles
+    packages = _toml_lockfile_packages(scanner, path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+path = 'A_bad/poetry.lock'
+
+    def _toml_lockfile_packages(scanner: RepoScanner, path: str) -> list[str]:
+        text = scanner.read_text(path)
+        if text is None:
+            return []
+        try:
+            doc = tomllib.loads(text)
+        except tomllib.TOMLDecodeError:
+            return []
+        packages = doc.get("package") or []
+>       return [p["name"] for p in packages if isinstance(p, dict) and p.get("name")]
+                                   ^^^^^^^^
+E       TypeError: 'int' object is not iterable
+
+src/reprollm/core/deps.py:537: TypeError
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[Pipfile.lock-[]\n-invalid lock document] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'Pipfile.lock', malformed = '[]\n', reason = 'invalid lock document'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:512: in _collect_lockfiles
+    packages = _pipfile_lock_packages(scanner, path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+path = 'A_bad/Pipfile.lock'
+
+    def _pipfile_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
+        text = scanner.read_text(path)
+        if text is None:
+            return []
+        try:
+            doc = json.loads(text)
+        except json.JSONDecodeError:
+            return []
+        names: list[str] = []
+        for section in ("default", "develop"):
+>           table = doc.get(section) or {}
+                    ^^^^^^^
+E           AttributeError: 'list' object has no attribute 'get'
+
+src/reprollm/core/deps.py:550: AttributeError
+_ test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[conda-lock.yml-package: 42\n-invalid package collection] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'conda-lock.yml', malformed = 'package: 42\n'
+reason = 'invalid package collection'
+
+    @pytest.mark.parametrize(
+        ("basename", "malformed", "reason"),
+        [
+            ("pyproject.toml", "tool = 42\n", "invalid tool table"),
+            ("environment.yml", "dependencies: 42\n", "invalid dependencies collection"),
+            ("uv.lock", "package = 42\n", "invalid package collection"),
+            ("poetry.lock", "package = 42\n", "invalid package collection"),
+            ("Pipfile.lock", "[]\n", "invalid lock document"),
+            ("conda-lock.yml", "package: 42\n", "invalid package collection"),
+        ],
+    )
+    def test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing(
+        tmp_path: Path, basename: str, malformed: str, reason: str
+    ) -> None:
+        if basename in {"pyproject.toml", "environment.yml"}:
+            root_text = _declaration_text(basename, "torch", "2.8.0")
+        else:
+            root_text = _lock_text(basename, "torch")
+        _write(tmp_path, basename, root_text)
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:516: in _collect_lockfiles
+    packages = _conda_lock_packages(scanner, path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scanner = <reprollm.core.scanner.RepoScanner object at <object>>
+path = 'A_bad/conda-lock.yml'
+
+    def _conda_lock_packages(scanner: RepoScanner, path: str) -> list[str]:
+        text = scanner.read_text(path)
+        if text is None:
+            return []
+        try:
+            doc = yaml.safe_load(text)
+        except yaml.YAMLError:
+            return []
+        packages = doc.get("package") or [] if isinstance(doc, dict) else []
+>       return [p["name"] for p in packages if isinstance(p, dict) and p.get("name")]
+                                   ^^^^^^^^
+E       TypeError: 'int' object is not iterable
+
+src/reprollm/core/deps.py:565: TypeError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[pyproject.toml-tool = 42\n-invalid tool table]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[environment.yml-dependencies: 42\n-invalid dependencies collection]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[uv.lock-package = 42\n-invalid package collection]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[poetry.lock-package = 42\n-invalid package collection]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[Pipfile.lock-[]\n-invalid lock document]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_malformed_candidate_keeps_root_facts_without_crashing[conda-lock.yml-package: 42\n-invalid package collection]
+6 failed, 29 deselected in 0.76s

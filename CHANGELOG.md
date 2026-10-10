@@ -16,6 +16,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R06-A (spec §12.2): retain every dependency and lockfile source when filenames
+  repeat, ordering root files before other relative paths. Keep manifest
+  qualification separate from selection and share that ordering with Python
+  declaration checks; preserve nested declarations and each lock's package evidence.
+  Skip malformed candidate containers with fixed source diagnostics while keeping
+  valid root facts and lockfile identities.
+
 - R05-A (spec §12.2): distinguish Python exact versions from wildcard, range,
   arbitrary-equality and transport declarations. Recognize supported local,
   pre/post/dev and epoch versions in each format, including Poetry's bare

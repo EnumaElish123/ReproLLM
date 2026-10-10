@@ -1,0 +1,640 @@
+FFFFFFFFFFFFFFFFFFF.FFFFFF..F                                            [100%]
+=================================== FAILURES ===================================
+____ test_root_project_survives_tool_only_pyproject[a_tools/pyproject.toml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+nested = 'a_tools/pyproject.toml'
+
+    @pytest.mark.parametrize("nested", ["a_tools/pyproject.toml", "zz_tools/pyproject.toml"])
+    def test_root_project_survives_tool_only_pyproject(tmp_path: Path, nested: str) -> None:
+        _write(tmp_path, "pyproject.toml", _declaration_text("pyproject.toml", "torch", "2.8.0"))
+        _write(tmp_path, nested, "[tool.ruff]\nline-length = 100\n")
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+        assert [(d.name, d.source_file, d.line) for d in result.declarations] == [
+            ("torch", "pyproject.toml", 4)
+        ]
+>       assert PythonVersionDeclaredRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.python_version_declared', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, sta...le, or a `python=3.x` entry in environment.yml.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:50: AssertionError
+___ test_root_project_survives_tool_only_pyproject[zz_tools/pyproject.toml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+nested = 'zz_tools/pyproject.toml'
+
+    @pytest.mark.parametrize("nested", ["a_tools/pyproject.toml", "zz_tools/pyproject.toml"])
+    def test_root_project_survives_tool_only_pyproject(tmp_path: Path, nested: str) -> None:
+        _write(tmp_path, "pyproject.toml", _declaration_text("pyproject.toml", "torch", "2.8.0"))
+        _write(tmp_path, nested, "[tool.ruff]\nline-length = 100\n")
+    
+        result = _scan(tmp_path)
+>       assert result.manifest_present
+E       assert False
+E        +  where False = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=False).manifest_present
+
+tests/unit/core/test_dependency_paths.py:46: AssertionError
+____ test_all_qualified_declarations_keep_full_source_paths[pyproject.toml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'pyproject.toml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_all_qualified_declarations_keep_full_source_paths(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", basename),
+            ("numpy", f"a_nested/{basename}"),
+        ]
+E       AssertionError: assert [('torch', 'pyproject.toml')] == [('torch', 'p...roject.toml')]
+E         
+E         Right contains one more item: ('numpy', 'a_nested/pyproject.toml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:62: AssertionError
+___ test_all_qualified_declarations_keep_full_source_paths[environment.yml] ____
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_all_qualified_declarations_keep_full_source_paths(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", basename),
+            ("numpy", f"a_nested/{basename}"),
+        ]
+E       AssertionError: assert [('torch', 'environment.yml')] == [('torch', 'e...ronment.yml')]
+E         
+E         Right contains one more item: ('numpy', 'a_nested/environment.yml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:62: AssertionError
+___ test_all_qualified_declarations_keep_full_source_paths[environment.yaml] ___
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yaml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_all_qualified_declarations_keep_full_source_paths(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", basename),
+            ("numpy", f"a_nested/{basename}"),
+        ]
+E       AssertionError: assert [('torch', 'e...onment.yaml')] == [('torch', 'e...onment.yaml')]
+E         
+E         Right contains one more item: ('numpy', 'a_nested/environment.yaml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:62: AssertionError
+_______ test_all_qualified_declarations_keep_full_source_paths[Pipfile] ________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'Pipfile'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_all_qualified_declarations_keep_full_source_paths(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", basename),
+            ("numpy", f"a_nested/{basename}"),
+        ]
+E       AssertionError: assert [('numpy', 'a...ted/Pipfile')] == [('torch', 'P...ted/Pipfile')]
+E         
+E         At index 0 diff: ('numpy', 'a_nested/Pipfile') != ('torch', 'Pipfile')
+E         Right contains one more item: ('numpy', 'a_nested/Pipfile')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:62: AssertionError
+_________ test_nested_only_candidates_remain_qualified[pyproject.toml] _________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'pyproject.toml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_nested_only_candidates_remain_qualified(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"z_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", f"a_nested/{basename}"),
+            ("numpy", f"z_nested/{basename}"),
+        ]
+E       AssertionError: assert [('numpy', 'z...roject.toml')] == [('torch', 'a...roject.toml')]
+E         
+E         At index 0 diff: ('numpy', 'z_nested/pyproject.toml') != ('torch', 'a_nested/pyproject.toml')
+E         Right contains one more item: ('numpy', 'z_nested/pyproject.toml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:78: AssertionError
+________ test_nested_only_candidates_remain_qualified[environment.yml] _________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_nested_only_candidates_remain_qualified(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"z_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", f"a_nested/{basename}"),
+            ("numpy", f"z_nested/{basename}"),
+        ]
+E       AssertionError: assert [('numpy', 'z...ronment.yml')] == [('torch', 'a...ronment.yml')]
+E         
+E         At index 0 diff: ('numpy', 'z_nested/environment.yml') != ('torch', 'a_nested/environment.yml')
+E         Right contains one more item: ('numpy', 'z_nested/environment.yml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:78: AssertionError
+________ test_nested_only_candidates_remain_qualified[environment.yaml] ________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yaml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_nested_only_candidates_remain_qualified(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"z_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", f"a_nested/{basename}"),
+            ("numpy", f"z_nested/{basename}"),
+        ]
+E       AssertionError: assert [('numpy', 'z...onment.yaml')] == [('torch', 'a...onment.yaml')]
+E         
+E         At index 0 diff: ('numpy', 'z_nested/environment.yaml') != ('torch', 'a_nested/environment.yaml')
+E         Right contains one more item: ('numpy', 'z_nested/environment.yaml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:78: AssertionError
+____________ test_nested_only_candidates_remain_qualified[Pipfile] _____________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'Pipfile'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", "environment.yml", "environment.yaml", "Pipfile"]
+    )
+    def test_nested_only_candidates_remain_qualified(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _declaration_text(basename, "torch", "2.8.0"))
+        _write(tmp_path, f"z_nested/{basename}", _declaration_text(basename, "numpy", "1.26.0"))
+    
+        result = _scan(tmp_path)
+        assert result.manifest_present
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", f"a_nested/{basename}"),
+            ("numpy", f"z_nested/{basename}"),
+        ]
+E       AssertionError: assert [('numpy', 'z...ted/Pipfile')] == [('torch', 'a...ted/Pipfile')]
+E         
+E         At index 0 diff: ('numpy', 'z_nested/Pipfile') != ('torch', 'a_nested/Pipfile')
+E         Right contains one more item: ('numpy', 'z_nested/Pipfile')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:78: AssertionError
+________ test_same_named_locks_keep_separate_package_evidence[uv.lock] _________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'uv.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_same_named_locks_keep_separate_package_evidence(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (basename, frozenset({"torch"})),
+            (f"a_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('uv.lock', ...t({'torch'}))] == [('uv.lock', ...t({'numpy'}))]
+E         
+E         Right contains one more item: ('a_nested/uv.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:98: AssertionError
+______ test_same_named_locks_keep_separate_package_evidence[poetry.lock] _______
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'poetry.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_same_named_locks_keep_separate_package_evidence(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (basename, frozenset({"torch"})),
+            (f"a_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('poetry.loc...t({'torch'}))] == [('poetry.loc...t({'numpy'}))]
+E         
+E         Right contains one more item: ('a_nested/poetry.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:98: AssertionError
+______ test_same_named_locks_keep_separate_package_evidence[Pipfile.lock] ______
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'Pipfile.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_same_named_locks_keep_separate_package_evidence(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (basename, frozenset({"torch"})),
+            (f"a_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('a_nested/P...t({'numpy'}))] == [('Pipfile.lo...t({'numpy'}))]
+E         
+E         At index 0 diff: ('a_nested/Pipfile.lock', frozenset({'numpy'})) != ('Pipfile.lock', frozenset({'torch'}))
+E         Right contains one more item: ('a_nested/Pipfile.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:98: AssertionError
+_____ test_same_named_locks_keep_separate_package_evidence[conda-lock.yml] _____
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'conda-lock.yml'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_same_named_locks_keep_separate_package_evidence(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (basename, frozenset({"torch"})),
+            (f"a_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('conda-lock...t({'torch'}))] == [('conda-lock...t({'numpy'}))]
+E         
+E         Right contains one more item: ('a_nested/conda-lock.yml', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:98: AssertionError
+______________ test_nested_only_locks_keep_every_source[uv.lock] _______________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'uv.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_nested_only_locks_keep_every_source(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "torch"))
+        _write(tmp_path, f"z_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (f"a_nested/{basename}", frozenset({"torch"})),
+            (f"z_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('z_nested/u...t({'numpy'}))] == [('a_nested/u...t({'numpy'}))]
+E         
+E         At index 0 diff: ('z_nested/uv.lock', frozenset({'numpy'})) != ('a_nested/uv.lock', frozenset({'torch'}))
+E         Right contains one more item: ('z_nested/uv.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:110: AssertionError
+____________ test_nested_only_locks_keep_every_source[poetry.lock] _____________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'poetry.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_nested_only_locks_keep_every_source(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "torch"))
+        _write(tmp_path, f"z_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (f"a_nested/{basename}", frozenset({"torch"})),
+            (f"z_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('z_nested/p...t({'numpy'}))] == [('a_nested/p...t({'numpy'}))]
+E         
+E         At index 0 diff: ('z_nested/poetry.lock', frozenset({'numpy'})) != ('a_nested/poetry.lock', frozenset({'torch'}))
+E         Right contains one more item: ('z_nested/poetry.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:110: AssertionError
+____________ test_nested_only_locks_keep_every_source[Pipfile.lock] ____________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'Pipfile.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_nested_only_locks_keep_every_source(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "torch"))
+        _write(tmp_path, f"z_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (f"a_nested/{basename}", frozenset({"torch"})),
+            (f"z_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('z_nested/P...t({'numpy'}))] == [('a_nested/P...t({'numpy'}))]
+E         
+E         At index 0 diff: ('z_nested/Pipfile.lock', frozenset({'numpy'})) != ('a_nested/Pipfile.lock', frozenset({'torch'}))
+E         Right contains one more item: ('z_nested/Pipfile.lock', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:110: AssertionError
+___________ test_nested_only_locks_keep_every_source[conda-lock.yml] ___________
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'conda-lock.yml'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_nested_only_locks_keep_every_source(tmp_path: Path, basename: str) -> None:
+        _write(tmp_path, f"a_nested/{basename}", _lock_text(basename, "torch"))
+        _write(tmp_path, f"z_nested/{basename}", _lock_text(basename, "numpy"))
+    
+        result = _scan(tmp_path)
+>       assert [(lock.path, lock.packages) for lock in result.lockfiles] == [
+            (f"a_nested/{basename}", frozenset({"torch"})),
+            (f"z_nested/{basename}", frozenset({"numpy"})),
+        ]
+E       AssertionError: assert [('z_nested/c...t({'numpy'}))] == [('a_nested/c...t({'numpy'}))]
+E         
+E         At index 0 diff: ('z_nested/conda-lock.yml', frozenset({'numpy'})) != ('a_nested/conda-lock.yml', frozenset({'torch'}))
+E         Right contains one more item: ('z_nested/conda-lock.yml', frozenset({'numpy'}))
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:110: AssertionError
+______ test_python_version_selection_prefers_root_source[pyproject.toml] _______
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'pyproject.toml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", ".python-version", "environment.yml", "environment.yaml"]
+    )
+    def test_python_version_selection_prefers_root_source(tmp_path: Path, basename: str) -> None:
+        content = (
+            "3.11\n" if basename == ".python-version" else _declaration_text(basename, "torch", "2.8.0")
+        )
+        _write(tmp_path, basename, content)
+        _write(tmp_path, f"a_nested/{basename}", content)
+    
+        ctx = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(ctx) == []
+        evidence = PythonVersionDeclaredRule._declared_where(ctx)
+        assert evidence is not None
+>       assert evidence.path == basename
+E       AssertionError: assert 'a_nested/pyproject.toml' == 'pyproject.toml'
+E         
+E         - pyproject.toml
+E         + a_nested/pyproject.toml
+E         ? +++++++++
+
+tests/unit/core/test_dependency_paths.py:130: AssertionError
+______ test_python_version_selection_prefers_root_source[environment.yml] ______
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", ".python-version", "environment.yml", "environment.yaml"]
+    )
+    def test_python_version_selection_prefers_root_source(tmp_path: Path, basename: str) -> None:
+        content = (
+            "3.11\n" if basename == ".python-version" else _declaration_text(basename, "torch", "2.8.0")
+        )
+        _write(tmp_path, basename, content)
+        _write(tmp_path, f"a_nested/{basename}", content)
+    
+        ctx = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(ctx) == []
+        evidence = PythonVersionDeclaredRule._declared_where(ctx)
+        assert evidence is not None
+>       assert evidence.path == basename
+E       AssertionError: assert 'a_nested/environment.yml' == 'environment.yml'
+E         
+E         - environment.yml
+E         + a_nested/environment.yml
+E         ? +++++++++
+
+tests/unit/core/test_dependency_paths.py:130: AssertionError
+_____ test_python_version_selection_prefers_root_source[environment.yaml] ______
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'environment.yaml'
+
+    @pytest.mark.parametrize(
+        "basename", ["pyproject.toml", ".python-version", "environment.yml", "environment.yaml"]
+    )
+    def test_python_version_selection_prefers_root_source(tmp_path: Path, basename: str) -> None:
+        content = (
+            "3.11\n" if basename == ".python-version" else _declaration_text(basename, "torch", "2.8.0")
+        )
+        _write(tmp_path, basename, content)
+        _write(tmp_path, f"a_nested/{basename}", content)
+    
+        ctx = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(ctx) == []
+        evidence = PythonVersionDeclaredRule._declared_where(ctx)
+        assert evidence is not None
+>       assert evidence.path == basename
+E       AssertionError: assert 'a_nested/environment.yaml' == 'environment.yaml'
+E         
+E         - environment.yaml
+E         + a_nested/environment.yaml
+E         ? +++++++++
+
+tests/unit/core/test_dependency_paths.py:130: AssertionError
+__________ test_python_nested_source_is_reported_with_its_actual_path __________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_python_nested_source_is_reported_with_its_actual_path(tmp_path: Path) -> None:
+        _write(tmp_path, "nested/.python-version", "3.11\n")
+        evidence = PythonVersionDeclaredRule._declared_where(AuditContext(tmp_path))
+        assert evidence is not None
+>       assert evidence.path == "nested/.python-version"
+E       AssertionError: assert '.python-version' == 'nested/.python-version'
+E         
+E         - nested/.python-version
+E         ? -------
+E         + .python-version
+
+tests/unit/core/test_dependency_paths.py:137: AssertionError
+_ test_nonqualifying_root_does_not_hide_qualified_nested_project[[tool.ruff]\nline-length = 100\n] _
+
+tmp_path = PosixPath('<test-tmp>')
+root_content = '[tool.ruff]\nline-length = 100\n'
+
+    @pytest.mark.parametrize("root_content", ["[tool.ruff]\nline-length = 100\n", "[project broken\n"])
+    def test_nonqualifying_root_does_not_hide_qualified_nested_project(
+        tmp_path: Path, root_content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", root_content)
+        _write(
+            tmp_path,
+            "nested/pyproject.toml",
+            _declaration_text("pyproject.toml", "torch", "2.8.0"),
+        )
+        result = _scan(tmp_path)
+>       assert result.manifest_present
+E       assert False
+E        +  where False = Declarations(declarations=[], unparsed=[], lockfiles=[], manifest_present=False).manifest_present
+
+tests/unit/core/test_dependency_paths.py:151: AssertionError
+_ test_nonqualifying_root_does_not_hide_qualified_nested_project[[project broken\n] _
+
+tmp_path = PosixPath('<test-tmp>')
+root_content = '[project broken\n'
+
+    @pytest.mark.parametrize("root_content", ["[tool.ruff]\nline-length = 100\n", "[project broken\n"])
+    def test_nonqualifying_root_does_not_hide_qualified_nested_project(
+        tmp_path: Path, root_content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", root_content)
+        _write(
+            tmp_path,
+            "nested/pyproject.toml",
+            _declaration_text("pyproject.toml", "torch", "2.8.0"),
+        )
+        result = _scan(tmp_path)
+>       assert result.manifest_present
+E       assert False
+E        +  where False = Declarations(declarations=[], unparsed=["pyproject.toml:0: Expected ']' at the end of a table declaration (at line 1, column 10)"], lockfiles=[], manifest_present=False).manifest_present
+
+tests/unit/core/test_dependency_paths.py:151: AssertionError
+_________ test_root_environment_alias_precedes_nested_other_extension __________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_root_environment_alias_precedes_nested_other_extension(tmp_path: Path) -> None:
+        _write(tmp_path, "environment.yaml", _declaration_text("environment.yaml", "torch", "2.8.0"))
+        _write(
+            tmp_path,
+            "a_nested/environment.yml",
+            _declaration_text("environment.yml", "numpy", "1.26.0"),
+        )
+        result = _scan(tmp_path)
+>       assert [(d.name, d.source_file) for d in result.declarations if d.name != "python"] == [
+            ("torch", "environment.yaml"),
+            ("numpy", "a_nested/environment.yml"),
+        ]
+E       AssertionError: assert [('numpy', 'a...ronment.yml')] == [('torch', 'e...ronment.yml')]
+E         
+E         At index 0 diff: ('numpy', 'a_nested/environment.yml') != ('torch', 'environment.yaml')
+E         Right contains one more item: ('numpy', 'a_nested/environment.yml')
+E         Use -v to get more diff
+
+tests/unit/core/test_dependency_paths.py:166: AssertionError
+__________ test_enumeration_order_does_not_change_complete_cli_report __________
+
+tmp_path = PosixPath('<test-tmp>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_enumeration_order_does_not_change_complete_cli_report(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", _declaration_text("pyproject.toml", "torch", "2.8.0"))
+        _write(
+            tmp_path,
+            "a_nested/pyproject.toml",
+            _declaration_text("pyproject.toml", "numpy", "1.26.0"),
+        )
+        _write(tmp_path, "zz_tools/pyproject.toml", "[tool.ruff]\nline-length = 100\n")
+        _write(tmp_path, "uv.lock", _lock_text("uv.lock", "torch"))
+        _write(tmp_path, "a_nested/uv.lock", _lock_text("uv.lock", "numpy"))
+        paths = sorted(
+            str(p.relative_to(tmp_path).as_posix()) for p in tmp_path.rglob("*") if p.is_file()
+        )
+        reports: list[str] = []
+        for ordered in [paths, list(reversed(paths)), paths[2:] + paths[:2]]:
+            monkeypatch.setattr(RepoScanner, "files", lambda self, selected=ordered: list(selected))
+            result = CliRunner().invoke(
+                app,
+                ["audit", str(tmp_path), "--level", "0", "--format", "json", "--fail-on", "never"],
+            )
+            assert result.exit_code == 0, result.output
+            report = json.loads(result.stdout)
+            report.pop("generated_at")
+            reports.append(json.dumps(report, sort_keys=True, ensure_ascii=False))
+>       assert reports[0] == reports[1] == reports[2]
+E       assert '{"documents"...target": "."}' == '{"documents"...target": "."}'
+E         
+E         Skipping 582 identical leading characters in diff, use -v to show
+E         - tegory": "env", "evidence": [{"expected": null, "field": null, "kind": "file", "line": null, "note": "no requires-python / .python-version / conda python= found", "path": null, "value": null}], "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.", "level": 0, "message": "no Python version requirement is declared", "profile_origin": [], "rule_id": "env.python_version_declared", "severity": "WARNING", "severity_origin": "default", "statu...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/unit/core/test_dependency_paths.py:229: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_dependency_paths.py::test_root_project_survives_tool_only_pyproject[a_tools/pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_root_project_survives_tool_only_pyproject[zz_tools/pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_all_qualified_declarations_keep_full_source_paths[pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_all_qualified_declarations_keep_full_source_paths[environment.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_all_qualified_declarations_keep_full_source_paths[environment.yaml]
+FAILED tests/unit/core/test_dependency_paths.py::test_all_qualified_declarations_keep_full_source_paths[Pipfile]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_candidates_remain_qualified[pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_candidates_remain_qualified[environment.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_candidates_remain_qualified[environment.yaml]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_candidates_remain_qualified[Pipfile]
+FAILED tests/unit/core/test_dependency_paths.py::test_same_named_locks_keep_separate_package_evidence[uv.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_same_named_locks_keep_separate_package_evidence[poetry.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_same_named_locks_keep_separate_package_evidence[Pipfile.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_same_named_locks_keep_separate_package_evidence[conda-lock.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_locks_keep_every_source[uv.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_locks_keep_every_source[poetry.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_locks_keep_every_source[Pipfile.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_nested_only_locks_keep_every_source[conda-lock.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_python_version_selection_prefers_root_source[pyproject.toml]
+FAILED tests/unit/core/test_dependency_paths.py::test_python_version_selection_prefers_root_source[environment.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_python_version_selection_prefers_root_source[environment.yaml]
+FAILED tests/unit/core/test_dependency_paths.py::test_python_nested_source_is_reported_with_its_actual_path
+FAILED tests/unit/core/test_dependency_paths.py::test_nonqualifying_root_does_not_hide_qualified_nested_project[[tool.ruff]\nline-length = 100\n]
+FAILED tests/unit/core/test_dependency_paths.py::test_nonqualifying_root_does_not_hide_qualified_nested_project[[project broken\n]
+FAILED tests/unit/core/test_dependency_paths.py::test_root_environment_alias_precedes_nested_other_extension
+FAILED tests/unit/core/test_dependency_paths.py::test_enumeration_order_does_not_change_complete_cli_report
+26 failed, 3 passed in 5.32s

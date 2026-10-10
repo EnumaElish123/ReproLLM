@@ -1,0 +1,202 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[uv.lock] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'uv.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "conda-lock.yml"])
+    def test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages(
+        tmp_path: Path, basename: str
+    ) -> None:
+        malformed = (
+            "package:\n  - name: 42\n" if basename == "conda-lock.yml" else "[[package]]\nname = 42\n"
+        )
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:517: in _collect_lockfiles
+    Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:517: in <genexpr>
+    Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
+                             ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 42
+
+    def canonical_dep_name(name: str) -> str:
+>       return canonicalize_name(_NAME_OVERRIDES.get(name.strip().lower(), name.strip()))
+                                                     ^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'strip'
+
+src/reprollm/core/deps.py:34: AttributeError
+_ test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[poetry.lock] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'poetry.lock'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "conda-lock.yml"])
+    def test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages(
+        tmp_path: Path, basename: str
+    ) -> None:
+        malformed = (
+            "package:\n  - name: 42\n" if basename == "conda-lock.yml" else "[[package]]\nname = 42\n"
+        )
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:517: in _collect_lockfiles
+    Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:517: in <genexpr>
+    Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
+                             ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 42
+
+    def canonical_dep_name(name: str) -> str:
+>       return canonicalize_name(_NAME_OVERRIDES.get(name.strip().lower(), name.strip()))
+                                                     ^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'strip'
+
+src/reprollm/core/deps.py:34: AttributeError
+_ test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[conda-lock.yml] _
+
+tmp_path = PosixPath('<test-tmp>')
+basename = 'conda-lock.yml'
+
+    @pytest.mark.parametrize("basename", ["uv.lock", "poetry.lock", "conda-lock.yml"])
+    def test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages(
+        tmp_path: Path, basename: str
+    ) -> None:
+        malformed = (
+            "package:\n  - name: 42\n" if basename == "conda-lock.yml" else "[[package]]\nname = 42\n"
+        )
+        _write(tmp_path, basename, _lock_text(basename, "torch"))
+        _write(tmp_path, f"A_bad/{basename}", malformed)
+    
+>       result = _scan(tmp_path)
+                 ^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/core/test_dependency_paths.py:26: in _scan
+    return scan_dependencies(RepoScanner(root, inspect_git(root)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:160: in scan_dependencies
+    _collect_lockfiles(scanner, result, requirements)
+src/reprollm/core/deps.py:526: in _collect_lockfiles
+    result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/deps.py:526: in <genexpr>
+    result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
+                                                     ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 42
+
+    def canonical_dep_name(name: str) -> str:
+>       return canonicalize_name(_NAME_OVERRIDES.get(name.strip().lower(), name.strip()))
+                                                     ^^^^^^^^^^
+E       AttributeError: 'int' object has no attribute 'strip'
+
+src/reprollm/core/deps.py:34: AttributeError
+______ test_nonstring_python_requirement_does_not_hide_valid_fallback[42] ______
+
+tmp_path = PosixPath('<test-tmp>')
+requires = '42'
+
+    @pytest.mark.parametrize("requires", ["42", '[">=3.10"]', '{version = ">=3.10"}'])
+    def test_nonstring_python_requirement_does_not_hide_valid_fallback(
+        tmp_path: Path, requires: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "root"\ndependencies = []\n')
+        _write(tmp_path, "z_bad/pyproject.toml", f"[project]\nrequires-python = {requires}\n")
+        _write(tmp_path, ".python-version", "3.11\n")
+        context = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(context) == []
+        evidence = PythonVersionDeclaredRule._declared_where(context)
+        assert evidence is not None
+>       assert evidence.path == ".python-version"
+E       AssertionError: assert 'z_bad/pyproject.toml' == '.python-version'
+E         
+E         - .python-version
+E         + z_bad/pyproject.toml
+
+tests/unit/core/test_dependency_paths.py:325: AssertionError
+__ test_nonstring_python_requirement_does_not_hide_valid_fallback[[">=3.10"]] __
+
+tmp_path = PosixPath('<test-tmp>')
+requires = '[">=3.10"]'
+
+    @pytest.mark.parametrize("requires", ["42", '[">=3.10"]', '{version = ">=3.10"}'])
+    def test_nonstring_python_requirement_does_not_hide_valid_fallback(
+        tmp_path: Path, requires: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "root"\ndependencies = []\n')
+        _write(tmp_path, "z_bad/pyproject.toml", f"[project]\nrequires-python = {requires}\n")
+        _write(tmp_path, ".python-version", "3.11\n")
+        context = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(context) == []
+        evidence = PythonVersionDeclaredRule._declared_where(context)
+        assert evidence is not None
+>       assert evidence.path == ".python-version"
+E       AssertionError: assert 'z_bad/pyproject.toml' == '.python-version'
+E         
+E         - .python-version
+E         + z_bad/pyproject.toml
+
+tests/unit/core/test_dependency_paths.py:325: AssertionError
+_ test_nonstring_python_requirement_does_not_hide_valid_fallback[{version = ">=3.10"}] _
+
+tmp_path = PosixPath('<test-tmp>')
+requires = '{version = ">=3.10"}'
+
+    @pytest.mark.parametrize("requires", ["42", '[">=3.10"]', '{version = ">=3.10"}'])
+    def test_nonstring_python_requirement_does_not_hide_valid_fallback(
+        tmp_path: Path, requires: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "root"\ndependencies = []\n')
+        _write(tmp_path, "z_bad/pyproject.toml", f"[project]\nrequires-python = {requires}\n")
+        _write(tmp_path, ".python-version", "3.11\n")
+        context = AuditContext(tmp_path)
+        assert PythonVersionDeclaredRule().check(context) == []
+        evidence = PythonVersionDeclaredRule._declared_where(context)
+        assert evidence is not None
+>       assert evidence.path == ".python-version"
+E       AssertionError: assert 'z_bad/pyproject.toml' == '.python-version'
+E         
+E         - .python-version
+E         + z_bad/pyproject.toml
+
+tests/unit/core/test_dependency_paths.py:325: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[uv.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[poetry.lock]
+FAILED tests/unit/core/test_dependency_paths.py::test_newly_retained_lock_package_name_type_does_not_crash_or_borrow_packages[conda-lock.yml]
+FAILED tests/unit/core/test_dependency_paths.py::test_nonstring_python_requirement_does_not_hide_valid_fallback[42]
+FAILED tests/unit/core/test_dependency_paths.py::test_nonstring_python_requirement_does_not_hide_valid_fallback[[">=3.10"]]
+FAILED tests/unit/core/test_dependency_paths.py::test_nonstring_python_requirement_does_not_hide_valid_fallback[{version = ">=3.10"}]
+6 failed, 39 deselected in 0.75s

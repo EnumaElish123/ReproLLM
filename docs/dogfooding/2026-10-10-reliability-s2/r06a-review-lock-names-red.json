@@ -1,0 +1,106 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "independent_lock_name_review.py"
+  ],
+  "baseline_commit": "f679570b657a1341778120e80a4cf895ed5281f0",
+  "baseline_deps_sha256": "62fe8f756b923b2993e4ac69d6c7f991d0238bfb9f45e5dd0b94e3197c934df0",
+  "classification": "INDEPENDENT_PUBLIC_PAIRED_SCAN",
+  "elapsed_seconds": 0.042302,
+  "new_candidate_crashes": 3,
+  "rows": [
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "AttributeError",
+        "message": "'int' object has no attribute 'strip'"
+      },
+      "case": "uv.lock",
+      "files": {
+        "A_bad/uv.lock": "[[package]]\nname=42\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "poetry.lock"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "AttributeError",
+        "message": "'int' object has no attribute 'strip'"
+      },
+      "case": "poetry.lock",
+      "files": {
+        "A_bad/poetry.lock": "[[package]]\nname=42\n",
+        "poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "new_candidate_crash": true
+    },
+    {
+      "baseline": {
+        "crash": false,
+        "declarations": [],
+        "locks": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml"
+          }
+        ],
+        "unparsed": []
+      },
+      "candidate": {
+        "crash": true,
+        "exception_type": "AttributeError",
+        "message": "'int' object has no attribute 'strip'"
+      },
+      "case": "conda-lock.yml",
+      "files": {
+        "A_bad/conda-lock.yml": "package:\n  - name: 42\n",
+        "conda-lock.yml": "package:\n  - name: torch\n"
+      },
+      "new_candidate_crash": true
+    }
+  ],
+  "schema_version": 1,
+  "source_sha256_after": {
+    "src/reprollm/core/deps.py": "038856c41fc16ee0f301b2048e87160693c4229882f2913eed727a65230dc468",
+    "src/reprollm/rules/env.py": "91a8f25c9ac431446b442af346fcb2187184519ebc41c550ffbc55f8aa73f97e",
+    "tests/unit/core/test_dependency_paths.py": "0d389ba6c7b78df83d250d38b0996ff84380feabd95c314653db2883f33f59bd"
+  },
+  "source_sha256_before": {
+    "src/reprollm/core/deps.py": "038856c41fc16ee0f301b2048e87160693c4229882f2913eed727a65230dc468",
+    "src/reprollm/rules/env.py": "91a8f25c9ac431446b442af346fcb2187184519ebc41c550ffbc55f8aa73f97e",
+    "tests/unit/core/test_dependency_paths.py": "0d389ba6c7b78df83d250d38b0996ff84380feabd95c314653db2883f33f59bd"
+  },
+  "source_unchanged": true,
+  "task": "R06-A"
+}

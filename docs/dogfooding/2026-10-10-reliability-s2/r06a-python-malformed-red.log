@@ -1,0 +1,84 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback[False] _
+
+tmp_path = PosixPath('<test-tmp>')
+fallback = False
+
+    @pytest.mark.parametrize("fallback", [False, True])
+    def test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback(
+        tmp_path: Path, fallback: bool
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "root"\ndependencies = []\n')
+        _write(tmp_path, "z_bad/pyproject.toml", "project = 42\n")
+        if fallback:
+            _write(tmp_path, ".python-version", "3.11\n")
+    
+>       findings = PythonVersionDeclaredRule().check(AuditContext(tmp_path))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/reprollm/rules/env.py:189: in check
+    found = self._declared_where(ctx)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctx = <reprollm.core.context.AuditContext object at <object>>
+
+    @staticmethod
+    def _declared_where(ctx: AuditContext) -> Evidence | None:
+        scanner = ctx.fs
+        for pyproject in dependency_file_paths(scanner.files(), "pyproject.toml"):
+            text = scanner.read_text(pyproject)
+            if text is not None:
+                try:
+                    doc = tomllib.loads(text)
+>                   requires = (doc.get("project") or {}).get("requires-python")
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   AttributeError: 'int' object has no attribute 'get'
+
+src/reprollm/rules/env.py:213: AttributeError
+_ test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback[True] _
+
+tmp_path = PosixPath('<test-tmp>')
+fallback = True
+
+    @pytest.mark.parametrize("fallback", [False, True])
+    def test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback(
+        tmp_path: Path, fallback: bool
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "root"\ndependencies = []\n')
+        _write(tmp_path, "z_bad/pyproject.toml", "project = 42\n")
+        if fallback:
+            _write(tmp_path, ".python-version", "3.11\n")
+    
+>       findings = PythonVersionDeclaredRule().check(AuditContext(tmp_path))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/core/test_dependency_paths.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/reprollm/rules/env.py:189: in check
+    found = self._declared_where(ctx)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctx = <reprollm.core.context.AuditContext object at <object>>
+
+    @staticmethod
+    def _declared_where(ctx: AuditContext) -> Evidence | None:
+        scanner = ctx.fs
+        for pyproject in dependency_file_paths(scanner.files(), "pyproject.toml"):
+            text = scanner.read_text(pyproject)
+            if text is not None:
+                try:
+                    doc = tomllib.loads(text)
+>                   requires = (doc.get("project") or {}).get("requires-python")
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   AttributeError: 'int' object has no attribute 'get'
+
+src/reprollm/rules/env.py:213: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_dependency_paths.py::test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback[False]
+FAILED tests/unit/core/test_dependency_paths.py::test_python_rule_skips_newly_retained_scalar_project_and_keeps_fallback[True]
+2 failed, 35 deselected in 0.50s
