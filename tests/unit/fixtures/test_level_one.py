@@ -32,6 +32,7 @@ EXPECTED_GAPS_FAILURES = {
     },
     "privacy_custom_params": {
         "code.remote_recorded",
+        "env.llm_critical_deps_pinned",
         "env.lockfile_present",
         "env.secret_files_ignored",
         "exec.profile_detection_mismatch",

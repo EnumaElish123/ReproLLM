@@ -27,8 +27,6 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
-_EXACT_VERSION_RE = re.compile(r"^\d+(\.\d+)*$")
-
 
 def canonical_dep_name(name: str) -> str:
     return canonicalize_name(_NAME_OVERRIDES.get(name.strip().lower(), name.strip()))
@@ -565,7 +563,12 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
 # --- environment.yml --------------------------------------------------------
 
 
-_CONDA_OPERATOR_RE = re.compile(r"[<>=!*/]")
+# Numeric MatchSpecs only (spec §12.2); Conda equality is separate from PEP 440.
+_CONDA_NAME_RE = re.compile(r"(?P<name>[A-Za-z0-9_.-]+)(?P<rest>.*)")
+_CONDA_VERSION_RE = re.compile(
+    r"(?P<operator>==?)(?P<version>[0-9]+(?:\.[0-9]+)*)(?:=(?P<build>[A-Za-z0-9._+\-]+))?"
+)
+_CONDA_RANGE_RE = re.compile(r"(?:>=|<=|!=|>|<|~=)[0-9]+(?:\.[0-9]+)*")
 
 
 def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
@@ -594,25 +597,27 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
 
 
 def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -> None:
-    operator_pos = len(entry)
-    for match in _CONDA_OPERATOR_RE.finditer(entry):
-        operator_pos = match.start()
-        break
-    head, rest = entry[:operator_pos].strip(), entry[operator_pos:].strip()
-    if not head:
-        result.unparsed.append(f"{path}:{lineno}: {entry}")
+    parsed = _CONDA_NAME_RE.fullmatch(entry.strip())
+    if parsed is None:
+        result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
         return
-    if not rest:
-        result.declarations.append(DependencyDeclaration(head, head, None, None, path, lineno))
+    head, rest = parsed.group("name"), parsed.group("rest")
+    # A channel or subdir prefix does not identify a package in the bounded subset.
+    if rest.startswith(("::", "/")):
+        result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
         return
-    if rest.startswith("="):
-        # name=ver (single '=') or name=ver=build both pin the version
-        version = rest.removeprefix("=").split("=", 1)[0].strip()
-        exact = version if _EXACT_VERSION_RE.match(version) else None
-        specifier = version if exact is None else None
-    else:
-        exact = None
-        specifier = rest
+    exact = None
+    specifier = rest or None
+    version = _CONDA_VERSION_RE.fullmatch(rest) if rest else None
+    if version is not None:
+        # Single '=' without a build is prefix matching; this is not Python grammar.
+        if version.group("operator") == "==" or version.group("build") is not None:
+            exact = version.group("version")
+    elif rest:
+        result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
+        # Only known numeric ranges retain legacy evidence; arbitrary text is unsafe.
+        if _CONDA_RANGE_RE.fullmatch(rest) is None:
+            specifier = "(unsupported conda declaration)"
     result.declarations.append(
         DependencyDeclaration(canonical_dep_name(head), head, specifier, exact, path, lineno)
     )

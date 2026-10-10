@@ -16,6 +16,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R05-B (spec §12.2, accepted R05-S C): treat single-equality Conda versions
+  without a build as prefixes. Recognize numeric double-equality versions and
+  supported export triples with literal ASCII builds; retain their original
+  version/build evidence without adding schema fields. Diagnose unsupported forms
+  conservatively and keep arbitrary unknown text out of public evidence. Preserve
+  embedded pip's Python semantics and existing YAML dependency-entry line indices.
+
 - R06-P (spec §§12.2/13): normalize internal requirements includes and share
   one captured graph for each root's exact-lock qualification and package set.
   Keep source aliases, deduplicate physical declarations, and exclude unreferenced

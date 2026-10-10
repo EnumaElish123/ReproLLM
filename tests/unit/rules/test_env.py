@@ -11,7 +11,7 @@ from reprollm.rules.env import (
     ReprollmInitializedRule,
     SecretFilesIgnoredRule,
 )
-from reprollm.schemas.finding import Severity
+from reprollm.schemas.finding import FindingStatus, Severity
 from tests.conftest import materialize_repo
 
 
@@ -65,9 +65,17 @@ def test_llm_deps_unpinned_vllm_on_hf_fixture(tmp_path: Path) -> None:
     assert "==" in findings[0].fix_hint
 
 
-def test_llm_deps_pass_when_exact(tmp_path: Path) -> None:
+def test_llm_deps_warn_when_conda_version_is_prefix(tmp_path: Path) -> None:
     repo = materialize_repo("privacy_custom_params", tmp_path)
-    assert LlmCriticalDepsPinnedRule().check(_ctx(repo)) == []
+    findings = LlmCriticalDepsPinnedRule().check(_ctx(repo))
+    assert len(findings) == 1
+    finding = findings[0]
+    assert finding.message.startswith("torch is used but not pinned")
+    assert finding.status == FindingStatus.FAIL
+    assert finding.severity == Severity.WARNING
+    assert finding.evidence[0].path == "environment.yml"
+    assert finding.evidence[0].line == 2
+    assert finding.evidence[0].value == "=2.8.0"
 
 
 def test_llm_deps_import_without_declaration(tmp_path: Path) -> None:

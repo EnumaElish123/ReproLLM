@@ -144,9 +144,9 @@ def test_environment_yml_conda_and_pip(tmp_path: Path) -> None:
         ),
     )
     decls = _scan(repo).declarations
-    assert _by_name(decls, "python")[0].is_exact  # python=3.11
+    assert not _by_name(decls, "python")[0].is_exact  # Single equality is prefix matching.
     torch = _by_name(decls, "torch")[0]  # pytorch → torch
-    assert torch.is_exact and torch.exact_version == "2.8.0"
+    assert not torch.is_exact and torch.exact_version is None
     assert _by_name(decls, "transformers")[0].is_exact
     assert not _by_name(decls, "pyyaml")[0].is_exact
 

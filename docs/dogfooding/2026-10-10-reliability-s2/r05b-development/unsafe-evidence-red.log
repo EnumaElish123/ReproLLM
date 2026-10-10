@@ -1,0 +1,92 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets[torch=2.5.1=<synthetic-machine-path>-<synthetic-machine-path>] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch=2.5.1=<synthetic-machine-path>'
+unsafe_marker = '<synthetic-machine-path>'
+
+    @pytest.mark.security
+    @pytest.mark.parametrize(
+        ("entry", "unsafe_marker"),
+        [
+            (
+                "torch=2.5.1=<synthetic-machine-path>",
+                "<synthetic-machine-path>",
+            ),
+            (
+                "torch=2.5.1=https://example.invalid/?api_key=<synthetic-secret>",
+                "<synthetic-secret>",
+            ),
+        ],
+    )
+    def test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets(
+        tmp_path: Path, entry: str, unsafe_marker: str
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0
+>       assert unsafe_marker not in result.stdout
+E       assert '<synthetic-machine-path>' not in '{\n  "schem...\n  ]\n}\n\n'
+E         
+E         '<synthetic-machine-path>' is contained here:
+E           : "=2.5.1=<synthetic-machine-path>",
+E                     "expected": null,
+E                     "note": "declared as =2.5.1=<synthetic-machine-path>"
+E                   }
+E                 ],...
+E         
+E         ...Full output truncated (178 lines hidden), use '-vv' to show
+
+tests/unit/core/test_conda_exact_versions.py:193: AssertionError
+_ test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets[torch=2.5.1=https://example.invalid/?api_key=<synthetic-secret>-<synthetic-secret>] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch=2.5.1=https://example.invalid/?api_key=<synthetic-secret>'
+unsafe_marker = '<synthetic-secret>'
+
+    @pytest.mark.security
+    @pytest.mark.parametrize(
+        ("entry", "unsafe_marker"),
+        [
+            (
+                "torch=2.5.1=<synthetic-machine-path>",
+                "<synthetic-machine-path>",
+            ),
+            (
+                "torch=2.5.1=https://example.invalid/?api_key=<synthetic-secret>",
+                "<synthetic-secret>",
+            ),
+        ],
+    )
+    def test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets(
+        tmp_path: Path, entry: str, unsafe_marker: str
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0
+>       assert unsafe_marker not in result.stdout
+E       assert 'SyntheticSe...CanaryABC123' not in '{\n  "schem...\n  ]\n}\n\n'
+E         
+E         '<synthetic-secret>' is contained here:
+E           /?api_key=<synthetic-secret>",
+E                     "expected": null,
+E                     "note": "declared as =2.5.1=https://example.invalid/?api_key=<synthetic-secret>"
+E                   }
+E                 ],...
+E         
+E         ...Full output truncated (178 lines hidden), use '-vv' to show
+
+tests/unit/core/test_conda_exact_versions.py:193: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_conda_exact_versions.py::test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets[torch=2.5.1=<synthetic-machine-path>-<synthetic-machine-path>]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets[torch=2.5.1=https://example.invalid/?api_key=<synthetic-secret>-<synthetic-secret>]
+2 failed in 0.72s

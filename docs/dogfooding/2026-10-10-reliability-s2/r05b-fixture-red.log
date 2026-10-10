@@ -1,0 +1,284 @@
+FF.F.F..FF                                                               [100%]
+=================================== FAILURES ===================================
+_________________________ test_audit_l0_json_snapshots _________________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe818782960>
+tmp_path = PosixPath('<test-tmp>/pytest-413/test_audit_l0_json_snapshots0')
+
+    def test_audit_l0_json_snapshots(monkeypatch, tmp_path: Path) -> None:
+        for name in L0_SNAPSHOT_FIXTURES:
+            repo = materialize_repo(name, tmp_path)
+            report = _invoke_audit_json(monkeypatch, repo)
+>           assert_json_snapshot(report, FIXTURES_ROOT / name / "expected" / "audit_L0.json")
+
+<repo>/tests/unit/cli/test_audit.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = {'schema_version': 1, 'reprollm_version': '0.6.1', 'generated_at': '2026-10-10T08:24:37Z', 'target': '.', ...}
+expected_path = PosixPath('<repo>/tests/fixtures/repos/privacy_custom_params/expected/audit_L0.json')
+ignore = ('generated_at', 'reprollm_version', 'resolved_at', 'observed_at')
+
+    def assert_json_snapshot(
+        actual: Any,
+        expected_path: Path,
+        ignore: Sequence[str] = SNAPSHOT_IGNORE,
+    ) -> None:
+        """Compare ``actual`` against a golden JSON file, ignoring volatile fields.
+    
+        Set ``REPROLLM_UPDATE_SNAPSHOTS=1`` to (re)write the golden file with the
+        *cleaned* actual value; review the diff before committing (AGENTS.md §6).
+        """
+        cleaned = _strip_ignored(actual, ignore)
+        if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+            expected_path.parent.mkdir(parents=True, exist_ok=True)
+            expected_path.write_text(
+                json.dumps(cleaned, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            return
+        if not expected_path.exists():
+            raise AssertionError(
+                f"snapshot missing: {expected_path} "
+                "(run once with REPROLLM_UPDATE_SNAPSHOTS=1 and review the result)"
+            )
+        expected = _strip_ignored(json.loads(expected_path.read_text(encoding="utf-8")), ignore)
+>       assert cleaned == expected, f"snapshot mismatch: {expected_path}"
+E       AssertionError: snapshot mismatch: <repo>/tests/fixtures/repos/privacy_custom_params/expected/audit_L0.json
+E       assert {'schema_vers... True}]}, ...} == {'documents':...'core']}, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'findings': [{'rule_id': 'env.secret_files_ignored', 'aliases': [], 'category': 'env', 'severity': 'CRITICAL', ...}, ...'INFO', ...}, {'rule_id': 'env.reprollm_initialized', 'aliases': [], 'category': 'env', 'severity': 'INFO', ...}, ...]} != {'findings': [{'aliases': [], 'category': 'env', 'evidence': [{'expected': None, 'field': None, 'kind': 'file', 'line'...e', 'evidence': [], 'fix_hint': 'Commit or stash your changes: `git add -A && git commit` or `git stash`.', ...}, ...]}
+E         {'summary': {'critical': 1, 'warn...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+<repo>/tests/conftest.py:289: AssertionError
+______________________ test_audit_text_snapshot_no_color _______________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe8175fa600>
+tmp_path = PosixPath('<test-tmp>/pytest-413/test_audit_text_snapshot_no_co0')
+
+    def test_audit_text_snapshot_no_color(monkeypatch, tmp_path: Path) -> None:
+        for name in TEXT_SNAPSHOT_FIXTURES:
+            repo = materialize_repo(name, tmp_path / name)
+            monkeypatch.chdir(repo)
+            result = runner.invoke(app, ["audit", ".", "--no-color", "--show-skipped"])
+            assert result.exit_code in (0, 1), result.output
+            text = result.output
+            assert text.startswith("ReproLLM audit · level 0 · profiles: core")
+            expected_path = FIXTURES_ROOT / name / "expected" / "audit_L0.txt"
+            import os
+    
+            if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+                expected_path.parent.mkdir(parents=True, exist_ok=True)
+                expected_path.write_text(text, encoding="utf-8")
+            else:
+                assert expected_path.exists()
+>               assert text == expected_path.read_text(encoding="utf-8")
+E               AssertionError: assert 'ReproLLM aud...vacy,safety\n' == 'ReproLLM aud...vacy,safety\n'
+E                 
+E                 Skipping 351 identical leading characters in diff, use -v to show
+E                   
+E                 - WARNING (1)
+E                 ?          ^
+E                 + WARNING (2)
+E                 ?          ^...
+E                 
+E                 ...Full output truncated (29 lines hidden), use '-vv' to show
+
+<repo>/tests/unit/cli/test_audit.py:103: AssertionError
+_ test_gaps_have_the_independently_reviewed_failure_set[privacy_custom_params] _
+
+tmp_path = PosixPath('<test-tmp>/pytest-413/test_gaps_have_the_independent0')
+name = 'privacy_custom_params'
+
+    @pytest.mark.parametrize("name", NAMES)
+    def test_gaps_have_the_independently_reviewed_failure_set(tmp_path: Path, name: str) -> None:
+        repo = materialize_repo(name, tmp_path, manifest="gaps")
+        report = audit_json(repo)
+        failures = {f["rule_id"] for f in report["findings"] if f["status"] == "fail"}
+>       assert failures == EXPECTED_GAPS_FAILURES[name]
+E       AssertionError: assert {'code.remote...ecorded', ...} == {'code.remote...eclared', ...}
+E         
+E         Extra items in the left set:
+E         'env.llm_critical_deps_pinned'
+E         Use -v to get more diff
+
+tests/unit/fixtures/test_level_one.py:67: AssertionError
+________ test_level_one_snapshot_and_schema[gaps-privacy_custom_params] ________
+
+tmp_path = PosixPath('<test-tmp>/pytest-413/test_level_one_snapshot_and_sc1')
+name = 'privacy_custom_params', variant = 'gaps'
+
+    @pytest.mark.parametrize("name", NAMES)
+    @pytest.mark.parametrize("variant", ["complete", "gaps"])
+    def test_level_one_snapshot_and_schema(tmp_path: Path, name: str, variant: str) -> None:
+        repo = materialize_repo(name, tmp_path, manifest=variant)
+        report = audit_json(repo)
+        schema = json.loads(
+            (Path(__file__).resolve().parents[3] / "schemas/audit_report.schema.json").read_text()
+        )
+        jsonschema.validate(report, schema)
+>       assert_json_snapshot(
+            report,
+            FIXTURES_ROOT / "repos" / name / "expected" / f"audit_L1_{variant}.json",
+        )
+
+tests/unit/fixtures/test_level_one.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = {'schema_version': 1, 'reprollm_version': '0.6.1', 'generated_at': '2026-10-10T08:24:40Z', 'target': '.', ...}
+expected_path = PosixPath('<repo>/tests/fixtures/repos/privacy_custom_params/expected/audit_L1_gaps.json')
+ignore = ('generated_at', 'reprollm_version', 'resolved_at', 'observed_at')
+
+    def assert_json_snapshot(
+        actual: Any,
+        expected_path: Path,
+        ignore: Sequence[str] = SNAPSHOT_IGNORE,
+    ) -> None:
+        """Compare ``actual`` against a golden JSON file, ignoring volatile fields.
+    
+        Set ``REPROLLM_UPDATE_SNAPSHOTS=1`` to (re)write the golden file with the
+        *cleaned* actual value; review the diff before committing (AGENTS.md §6).
+        """
+        cleaned = _strip_ignored(actual, ignore)
+        if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+            expected_path.parent.mkdir(parents=True, exist_ok=True)
+            expected_path.write_text(
+                json.dumps(cleaned, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            return
+        if not expected_path.exists():
+            raise AssertionError(
+                f"snapshot missing: {expected_path} "
+                "(run once with REPROLLM_UPDATE_SNAPSHOTS=1 and review the result)"
+            )
+        expected = _strip_ignored(json.loads(expected_path.read_text(encoding="utf-8")), ignore)
+>       assert cleaned == expected, f"snapshot mismatch: {expected_path}"
+E       AssertionError: snapshot mismatch: <repo>/tests/fixtures/repos/privacy_custom_params/expected/audit_L1_gaps.json
+E       assert {'schema_vers... True}]}, ...} == {'documents':...afety']}, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'findings': [{'rule_id': 'env.secret_files_ignored', 'aliases': [], 'category': 'env', 'severity': 'CRITICAL', ...}, ...'WARNING', ...}, {'rule_id': 'code.remote_recorded', 'aliases': [], 'category': 'code', 'severity': 'INFO', ...}, ...]} != {'findings': [{'aliases': [], 'category': 'env', 'evidence': [{'expected': None, 'field': None, 'kind': 'file', 'line'...ses': [], 'category': 'code', 'evidence': [], 'fix_hint': 'Run `git submodule update --init --recursive`.', ...}, ...]}
+E         {'summary': {'critical': 2, 'warn...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/conftest.py:289: AssertionError
+_____________________ test_audit_l2_project_rules_snapshot _____________________
+
+repo = PosixPath('<test-tmp>/pytest-413/test_audit_l2_project_rules_sn0/privacy_custom_params')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe8175f3800>
+
+    def test_audit_l2_project_rules_snapshot(repo: Path, monkeypatch) -> None:
+        import os
+    
+        # Fixed inputs for determinism: the pre-generated expected lock (already
+        # hashed against this manifest) plus hand-written rules with a pinned
+        # accepted_at. A live `lock` here would embed generated_at and make the
+        # documents.lock hash untestable.
+        fixture_root = (
+            Path(__file__).resolve().parents[2]
+            / "tests"
+            / "fixtures"
+            / "repos"
+            / "privacy_custom_params"
+            / "expected"
+        )
+        (repo / "reprollm.lock").write_text(
+            (fixture_root / "lock.yaml").read_text(encoding="utf-8"),
+            encoding="utf-8",
+            newline="\n",
+        )
+        (repo / ".reprollm").mkdir(exist_ok=True)
+        (repo / ".reprollm" / "project-rules.yaml").write_text(
+            """schema_version: 1
+    rules:
+    - id: project.alpha
+      field: custom.privacy_method.alpha
+      severity: CRITICAL
+      reason: controls noise scale
+      source: manual
+      accepted_at: 2026-09-28T00:00:00Z
+      bindings:
+        cli: null
+        config: configs/privacy.yaml:method.alpha
+        env: null
+    - id: project.delta
+      field: custom.privacy_method.delta
+      severity: WARNING
+      reason: shift
+      source: manual
+      accepted_at: 2026-09-28T00:00:00Z
+    """,
+            encoding="utf-8",
+            newline="\n",
+        )
+        monkeypatch.chdir(repo)
+        result = runner.invoke(app, ["audit", ".", "--format", "json", "--fail-on", "never"])
+        document = json.loads(result.output)
+        expected_path = (
+            Path(__file__).resolve().parents[2]
+            / "tests"
+            / "fixtures"
+            / "repos"
+            / "privacy_custom_params"
+            / "expected"
+            / "audit_L2_project_rules.json"
+        )
+        if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+            expected_path.write_text(
+                json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
+        else:
+            expected = json.loads(expected_path.read_text(encoding="utf-8"))
+            for volatile in ("generated_at", "reprollm_version"):
+                document.pop(volatile, None)
+                expected.pop(volatile, None)
+>           assert _canonical(document) == _canonical(expected), _delta(document, expected)
+E           AssertionError: canonical bytes differ at 2000 (lengths 27013/26900): actual=6c 6c 2c 22 6b 69 6e 64 22 3a 22 66 69 6c 65 22 2c 22 6c 69 6e 65 22 3a 32 2c 22 6e 6f 74 65 22 3a 22 64 65 63 6c 61 72 65 64 20 61 73 20 3d 32 expected=6c 6c 2c 22 6b 69 6e 64 22 3a 22 66 69 6c 65 22 2c 22 6c 69 6e 65 22 3a 6e 75 6c 6c 2c 22 6e 6f 74 65 22 3a 22 6e 6f 20 75 76 2e 6c 6f 63 6b 2f
+E           assert '{"documents"..."target":"."}' == '{"documents"..."target":"."}'
+E             
+E             Skipping 1990 identical leading characters in diff, use -v to show
+E             - e","line":null,"note":"no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements","path":null,"value":null}],"fix_hint":"Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.","level":2,"message":"no lockfile found and not every declared dependency is pinned with an exact version","profile_origin":[],"rule_id":"env.lockfile_present","severity":"WARNING","severity_origin":"default","status":"fail","suppressed_reason":nu...
+E             
+E             ...Full output truncated (2 lines hidden), use '-vv' to show
+
+<repo>/tests/integration/test_project_rules.py:266: AssertionError
+________________________ test_export_snapshots_with_run ________________________
+
+tmp_path = PosixPath('<test-tmp>/pytest-413/test_export_snapshots_with_run0')
+
+    def test_export_snapshots_with_run(tmp_path: Path) -> None:
+        for name in POSITIVE:
+            repo = _assemble(tmp_path, name)
+            result = runner.invoke(app, ["export", str(repo)])
+            assert result.exit_code == 0, (name, result.output)
+            generated = (repo / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
+            expected_path = FIXTURES / name / "expected" / "REPRODUCIBILITY.md"
+            if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+                expected_path.write_text(generated, encoding="utf-8")
+            else:
+>               assert generated == expected_path.read_text(encoding="utf-8"), name
+E               AssertionError: privacy_custom_params
+E               assert '# Reproducib...r artifact.\n' == '# Reproducib...r artifact.\n'
+E                 
+E                 Skipping 3643 identical leading characters in diff, use -v to show
+E                 - ritical · 3 warning ·
+E                 ?           ^
+E                 + ritical · 4 warning ·
+E                 ?           ^
+E                 - 3 info · 41 passed....
+E                 
+E                 ...Full output truncated (25 lines hidden), use '-vv' to show
+
+tests/unit/cli/test_export.py:89: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_audit.py::test_audit_l0_json_snapshots - Assertion...
+FAILED tests/unit/cli/test_audit.py::test_audit_text_snapshot_no_color - Asse...
+FAILED tests/unit/fixtures/test_level_one.py::test_gaps_have_the_independently_reviewed_failure_set[privacy_custom_params]
+FAILED tests/unit/fixtures/test_level_one.py::test_level_one_snapshot_and_schema[gaps-privacy_custom_params]
+FAILED tests/integration/test_project_rules.py::test_audit_l2_project_rules_snapshot
+FAILED tests/unit/cli/test_export.py::test_export_snapshots_with_run - Assert...
+6 failed, 4 passed, 34 deselected in 9.78s

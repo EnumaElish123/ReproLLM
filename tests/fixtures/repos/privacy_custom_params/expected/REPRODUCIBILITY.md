@@ -118,11 +118,12 @@ Audit scope: the current working tree and its available documents, including the
 latest valid run when available. This summary is computed at export time; it is
 not a separate audit of a selected historical run.
 
-2 critical · 3 warning ·
-3 info · 41 passed.
+2 critical · 4 warning ·
+3 info · 40 passed.
 
 - **CRITICAL** `env.secret_files_ignored`: 1 secret-bearing file(s) tracked or not gitignored: .env
 - **CRITICAL** `model.revision_pinned`: models.primary.revision is not resolved exactly
+- **WARNING** `env.llm_critical_deps_pinned`: torch is used but not pinned to an exact version (suggestion: torch==&lt;version&gt;)
 - **WARNING** `env.lockfile_present`: no lockfile found and not every declared dependency is pinned with an exact version
 - **WARNING** `model.chat_template_hashed`: models.primary.chat&#95;template.sha256 is not resolved exactly
 - **WARNING** `model.tokenizer_pinned`: models.primary.tokenizer.revision is not resolved exactly

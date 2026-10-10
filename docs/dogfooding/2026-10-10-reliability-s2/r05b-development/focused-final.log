@@ -1,0 +1,22 @@
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 80%]
+.......................................................F............     [100%]
+=================================== FAILURES ===================================
+________________________ test_llm_deps_pass_when_exact _________________________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_llm_deps_pass_when_exact(tmp_path: Path) -> None:
+        repo = materialize_repo("privacy_custom_params", tmp_path)
+>       assert LlmCriticalDepsPinnedRule().check(_ctx(repo)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_env.py:70: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_env.py::test_llm_deps_pass_when_exact - Assertio...
+1 failed, 355 passed in 17.88s

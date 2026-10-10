@@ -1,0 +1,282 @@
+{
+  "approval_bindings": {
+    "accepted_patch_sha256": "280ef3d4b0085aae1dbee280c7eb29de4d2a26e94fda377b7f535f5dedaa126a",
+    "accepted_response": "接受 A/P+C，执行完整 S2（推荐）",
+    "decision": "docs/plan/reliability-2026-10-03/proposals/R05-S/decision.json",
+    "independent_source_provenance_sha256": "bbd37edb64e8dc96c3a28baf71710a1f112c6ad28e6ca8cfeecc6205340cf773",
+    "proposal_sha256": "055b7863e945f2a494879df47d10106d40c85207143f1b6bb713ecc9a5b431af"
+  },
+  "cases": [
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5\"\n"
+      },
+      "id": "conda-prefix-short",
+      "raw_expression": "torch=2.5"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1\"\n"
+      },
+      "id": "conda-prefix-long",
+      "raw_expression": "torch=2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1\"\n"
+      },
+      "id": "conda-double",
+      "raw_expression": "torch==2.5.1"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=cuda12.1\"\n"
+      },
+      "id": "conda-export-build",
+      "raw_expression": "torch=2.5.1=cuda12.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1=py_0+cuda-12\"\n"
+      },
+      "id": "conda-double-build",
+      "raw_expression": "torch==2.5.1=py_0+cuda-12"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": "2.5.1",
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"pytorch==2.5.1\"\n"
+      },
+      "id": "conda-alias-pytorch",
+      "raw_expression": "pytorch==2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.*\"\n"
+      },
+      "id": "conda-wildcard-version",
+      "raw_expression": "torch==2.5.*"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=cuda*\"\n"
+      },
+      "id": "conda-wildcard-build",
+      "raw_expression": "torch=2.5.1=cuda*"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=\"\n"
+      },
+      "id": "conda-empty-build",
+      "raw_expression": "torch=2.5.1="
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"conda-forge::torch==2.5.1\"\n"
+      },
+      "id": "conda-channel",
+      "raw_expression": "conda-forge::torch==2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch[version='2.5.1']\"\n"
+      },
+      "id": "conda-bracket",
+      "raw_expression": "torch[version='2.5.1']"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch>=2.5\"\n"
+      },
+      "id": "conda-range",
+      "raw_expression": "torch>=2.5"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch>=2.5,<3\"\n"
+      },
+      "id": "conda-compound",
+      "raw_expression": "torch>=2.5,<3"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1rc1\"\n"
+      },
+      "id": "conda-suffix",
+      "raw_expression": "torch==2.5.1rc1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==1!2.5.1\"\n"
+      },
+      "id": "conda-epoch",
+      "raw_expression": "torch==1!2.5.1"
+    },
+    {
+      "cli": false,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 3,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=py_0=extra\"\n"
+      },
+      "id": "conda-extra-segment",
+      "raw_expression": "torch=2.5.1=py_0=extra"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": "2.5.1+cu121",
+        "physical_source_line": 4,
+        "source_file": "environment.yml",
+        "torch_warning": false
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - pip:\n      - \"torch==2.5.1+cu121\"\n"
+      },
+      "id": "conda-pip-local"
+    },
+    {
+      "cli": true,
+      "expected": {
+        "exact_version": null,
+        "physical_source_line": 4,
+        "source_file": "environment.yml",
+        "torch_warning": true
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "name: bounded-s2\ndependencies:\n  - pip:\n      - \"torch==2.5.*\"\n"
+      },
+      "id": "conda-pip-wildcard"
+    }
+  ],
+  "schema_version": 1,
+  "source": "Approved contract and independent literal fixtures, not candidate output",
+  "stage": "r05b"
+}

@@ -61,6 +61,30 @@
           "expected": null,
           "field": null,
           "kind": "file",
+          "line": 2,
+          "note": "declared as =2.8.0",
+          "path": "environment.yml",
+          "value": "=2.8.0"
+        }
+      ],
+      "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+      "level": 1,
+      "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
           "line": null,
           "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
           "path": null,
@@ -294,20 +318,6 @@
       "message": "A dependency manifest declares the Python environment.",
       "profile_origin": [],
       "rule_id": "env.dependency_manifest_present",
-      "severity": "PASS",
-      "severity_origin": "default",
-      "status": "pass",
-      "suppressed_reason": null
-    },
-    {
-      "aliases": [],
-      "category": "env",
-      "evidence": [],
-      "fix_hint": "Pin the package exactly (see the message for the suggested version).",
-      "level": 1,
-      "message": "Every LLM-critical dependency in use is pinned to an exact version.",
-      "profile_origin": [],
-      "rule_id": "env.llm_critical_deps_pinned",
       "severity": "PASS",
       "severity_origin": "default",
       "status": "pass",
@@ -1033,10 +1043,10 @@
   "summary": {
     "critical": 2,
     "info": 3,
-    "pass": 34,
+    "pass": 33,
     "skipped": 4,
     "suppressed": 0,
-    "warning": 2
+    "warning": 3
   },
   "target": "."
 }

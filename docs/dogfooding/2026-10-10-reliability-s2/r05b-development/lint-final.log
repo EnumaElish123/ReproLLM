@@ -1,0 +1,51 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/unit/core/test_conda_exact_versions.py:3:1
+   |
+ 1 |   """Accepted R05-S C Conda declaration and public consumer regressions (R05-B)."""
+ 2 |
+ 3 | / import json
+ 4 | | from pprint import pformat
+ 5 | | from pathlib import Path
+ 6 | |
+ 7 | | import pytest
+ 8 | | from typer.testing import CliRunner
+ 9 | |
+10 | | from reprollm.cli.main import app
+11 | | from reprollm.core.context import AuditContext
+12 | | from reprollm.rules.env import (
+13 | |     LlmCriticalDepsPinnedRule,
+14 | |     LockfilePresentRule,
+15 | |     PythonVersionDeclaredRule,
+16 | | )
+17 | | from reprollm.schemas.finding import FindingStatus, Severity
+   | |____________________________________________________________^
+help: Organize imports
+   |
+3  | import json
+4  + from pathlib import Path
+5  | from pprint import pformat
+   - from pathlib import Path
+6  |
+--------------------------------------------------------------------------------
+17 | from reprollm.schemas.finding import FindingStatus, Severity
+   -
+18 |
+   |
+
+F401 [*] `pprint.pformat` imported but unused
+ --> tests/unit/core/test_conda_exact_versions.py:4:20
+  |
+3 | import json
+4 | from pprint import pformat
+  |                    ^^^^^^^
+5 | from pathlib import Path
+  |
+help: Remove unused import: `pprint.pformat`
+  |
+3 | import json
+  - from pprint import pformat
+4 | from pathlib import Path
+  |
+
+Found 2 errors.
+[*] 2 fixable with the `--fix` option.

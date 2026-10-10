@@ -1,0 +1,1915 @@
+.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF........FFF.FF....             [100%]
+=================================== FAILURES ===================================
+_________ test_conda_support_matrix_and_public_consumers[prefix-major] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'prefix-major', entry = 'torch=2', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2' == None
+E            +  where '2' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[prefix-short] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'prefix-short', entry = 'torch=2.5', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5' == None
+E            +  where '2.5' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[prefix-long] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'prefix-long', entry = 'torch=2.5.1', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[double-major] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'double-major', entry = 'torch==2', expected_exact = '2'
+expected_name = 'torch', expected_specifier = '==2', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[double-short] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'double-short', entry = 'torch==2.5', expected_exact = '2.5'
+expected_name = 'torch', expected_specifier = '==2.5', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2.5'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+________ test_conda_support_matrix_and_public_consumers[double-release] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'double-release', entry = 'torch==2.5.1', expected_exact = '2.5.1'
+expected_name = 'torch', expected_specifier = '==2.5.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+____ test_conda_support_matrix_and_public_consumers[double-zero-components] ____
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'double-zero-components', entry = 'torch==02.05.1'
+expected_exact = '02.05.1', expected_name = 'torch'
+expected_specifier = '==02.05.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '02.05.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[export-build] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'export-build', entry = 'torch=2.5.1=cuda12.1'
+expected_exact = '2.5.1', expected_name = 'torch'
+expected_specifier = '=2.5.1=cuda12.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert None == '=2.5.1=cuda12.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).specifier
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_____ test_conda_support_matrix_and_public_consumers[double-export-build] ______
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'double-export-build', entry = 'torch==2.5.1=py_0+cuda-12'
+expected_exact = '2.5.1', expected_name = 'torch'
+expected_specifier = '==2.5.1=py_0+cuda-12', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[build-digits] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'build-digits', entry = 'torch=2.5.1=0', expected_exact = '2.5.1'
+expected_name = 'torch', expected_specifier = '=2.5.1=0', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert None == '=2.5.1=0'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).specifier
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+__ test_conda_support_matrix_and_public_consumers[build-all-literal-classes] ___
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'build-all-literal-classes', entry = 'torch=2.5.1=Aa0._+-'
+expected_exact = '2.5.1', expected_name = 'torch'
+expected_specifier = '=2.5.1=Aa0._+-', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert None == '=2.5.1=Aa0._+-'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).specifier
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[alias-prefix] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'alias-prefix', entry = 'pytorch=2.5.1', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='pytorch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[alias-exact] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'alias-exact', entry = 'pytorch==2.5.1', expected_exact = '2.5.1'
+expected_name = 'torch', expected_specifier = '==2.5.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='pytorch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[alias-build] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'alias-build', entry = 'PyTorch=2.5.1=cuda12.1'
+expected_exact = '2.5.1', expected_name = 'torch'
+expected_specifier = '=2.5.1=cuda12.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert None == '=2.5.1=cuda12.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='PyTorch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).specifier
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+__________ test_conda_support_matrix_and_public_consumers[alias-bare] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'alias-bare', entry = 'pytorch', expected_exact = None
+expected_name = 'torch', expected_specifier = None, diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+>           assert declaration.name == expected_name
+E           AssertionError: assert 'pytorch' == 'torch'
+E             
+E             - torch
+E             + pytorch
+E             ? ++
+
+tests/unit/core/test_conda_exact_versions.py:110: AssertionError
+_______ test_conda_support_matrix_and_public_consumers[outer-whitespace] _______
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'outer-whitespace', entry = '  torch==2.5.1  '
+expected_exact = '2.5.1', expected_name = 'torch'
+expected_specifier = '==2.5.1', diagnosed = False
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert None == '2.5.1'
+E            +  where None = DependencyDeclaration(name='torch', display_name='torch', specifier='', exact_version=None, source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+____________ test_conda_support_matrix_and_public_consumers[range] _____________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'range', entry = 'torch>=2.5', expected_exact = None
+expected_name = 'torch', expected_specifier = '>=2.5', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+            assert declaration.specifier == expected_specifier
+            assert declaration.source_file == "environment.yml"
+            # Preserve existing YAML entry indices; physical fixture line is independently 3.
+            assert declaration.line == 1
+>       assert ctx.deps.unparsed == (
+            ["environment.yml:1: unsupported conda declaration"] if diagnosed else []
+        )
+E       AssertionError: assert [] == ['environment... declaration']
+E         
+E         Right contains one more item: 'environment.yml:1: unsupported conda declaration'
+E         Use -v to get more diff
+
+tests/unit/core/test_conda_exact_versions.py:117: AssertionError
+___________ test_conda_support_matrix_and_public_consumers[compound] ___________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'compound', entry = 'torch>=2.5,<3', expected_exact = None
+expected_name = 'torch', expected_specifier = '>=2.5,<3', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+            assert declaration.specifier == expected_specifier
+            assert declaration.source_file == "environment.yml"
+            # Preserve existing YAML entry indices; physical fixture line is independently 3.
+            assert declaration.line == 1
+>       assert ctx.deps.unparsed == (
+            ["environment.yml:1: unsupported conda declaration"] if diagnosed else []
+        )
+E       AssertionError: assert [] == ['environment... declaration']
+E         
+E         Right contains one more item: 'environment.yml:1: unsupported conda declaration'
+E         Use -v to get more diff
+
+tests/unit/core/test_conda_exact_versions.py:117: AssertionError
+_______ test_conda_support_matrix_and_public_consumers[wildcard-version] _______
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'wildcard-version', entry = 'torch==2.5.*', expected_exact = None
+expected_name = 'torch', expected_specifier = '==2.5.*', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.*'
+E             
+E             - ==2.5.*
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+________ test_conda_support_matrix_and_public_consumers[wildcard-build] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'wildcard-build', entry = 'torch=2.5.1=cuda*', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1=cuda*', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+________ test_conda_support_matrix_and_public_consumers[empty-version] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'empty-version', entry = 'torch==', expected_exact = None
+expected_name = 'torch', expected_specifier = '==', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '=='
+E             
+E             - ==
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[empty-build] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'empty-build', entry = 'torch=2.5.1=', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1=', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+__________ test_conda_support_matrix_and_public_consumers[extra-part] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'extra-part', entry = 'torch=2.5.1=py_0=extra', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1=py_0=extra'
+diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_______ test_conda_support_matrix_and_public_consumers[triple-equality] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'triple-equality', entry = 'torch===2.5.1', expected_exact = None
+expected_name = 'torch', expected_specifier = '===2.5.1', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '===2.5.1'
+E             
+E             - ===2.5.1
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+__________ test_conda_support_matrix_and_public_consumers[suffix-pre] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'suffix-pre', entry = 'torch==2.5.1rc1', expected_exact = None
+expected_name = 'torch', expected_specifier = '==2.5.1rc1', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.1rc1'
+E             
+E             - ==2.5.1rc1
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[suffix-post] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'suffix-post', entry = 'torch==2.5.1.post1', expected_exact = None
+expected_name = 'torch', expected_specifier = '==2.5.1.post1', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.1.post1'
+E             
+E             - ==2.5.1.post1
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[suffix-local] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'suffix-local', entry = 'torch==2.5.1+cu121', expected_exact = None
+expected_name = 'torch', expected_specifier = '==2.5.1+cu121', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.1+cu121'
+E             
+E             - ==2.5.1+cu121
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+____________ test_conda_support_matrix_and_public_consumers[epoch] _____________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'epoch', entry = 'torch==1!2.5.1', expected_exact = None
+expected_name = 'torch', expected_specifier = '==1!2.5.1', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==1!2.5.1'
+E             
+E             - ==1!2.5.1
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_____ test_conda_support_matrix_and_public_consumers[trailing-version-dot] _____
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'trailing-version-dot', entry = 'torch==2.5.', expected_exact = None
+expected_name = 'torch', expected_specifier = '==2.5.', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.'
+E             
+E             - ==2.5.
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+___ test_conda_support_matrix_and_public_consumers[empty-version-component] ____
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'empty-version-component', entry = 'torch==2..5'
+expected_exact = None, expected_name = 'torch', expected_specifier = '==2..5'
+diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2..5'
+E             
+E             - ==2..5
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+________ test_conda_support_matrix_and_public_consumers[signed-version] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'signed-version', entry = 'torch==-2.5.1', expected_exact = None
+expected_name = 'torch', expected_specifier = '==-2.5.1', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==-2.5.1'
+E             
+E             - ==-2.5.1
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+_______ test_conda_support_matrix_and_public_consumers[unicode-version] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'unicode-version', entry = 'torch==２.５.１', expected_exact = None
+expected_name = 'torch', expected_specifier = '==２.５.１', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==２.５.１'
+E             
+E             - ==２.５.１
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+________ test_conda_support_matrix_and_public_consumers[unicode-build] _________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'unicode-build', entry = 'torch=2.5.1=cudá', expected_exact = None
+expected_name = 'torch', expected_specifier = '=2.5.1=cudá', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+_______ test_conda_support_matrix_and_public_consumers[space-in-version] _______
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'space-in-version', entry = 'torch==2.5.1 =py_0'
+expected_exact = None, expected_name = 'torch'
+expected_specifier = '==2.5.1 =py_0', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+>           assert declaration.specifier == expected_specifier
+E           AssertionError: assert '' == '==2.5.1 =py_0'
+E             
+E             - ==2.5.1 =py_0
+
+tests/unit/core/test_conda_exact_versions.py:113: AssertionError
+________ test_conda_support_matrix_and_public_consumers[slash-in-build] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'slash-in-build', entry = 'torch=2.5.1=linux/py_0'
+expected_exact = None, expected_name = 'torch'
+expected_specifier = '=2.5.1=linux/py_0', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+>           assert declaration.exact_version == expected_exact
+E           AssertionError: assert '2.5.1' == None
+E            +  where '2.5.1' = DependencyDeclaration(name='torch', display_name='torch', specifier=None, exact_version='2.5.1', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:111: AssertionError
+___________ test_conda_support_matrix_and_public_consumers[bracket] ____________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'bracket', entry = "torch[version='2.5.1']", expected_exact = None
+expected_name = 'torch', expected_specifier = "[version='2.5.1']"
+diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+>           assert declaration.name == expected_name
+E           AssertionError: assert 'torch[version' == 'torch'
+E             
+E             - torch
+E             + torch[version
+
+tests/unit/core/test_conda_exact_versions.py:110: AssertionError
+____________ test_conda_support_matrix_and_public_consumers[regex] _____________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'regex', entry = 'torch^2[.]5[.]1$', expected_exact = None
+expected_name = 'torch', expected_specifier = '^2[.]5[.]1$', diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+>           assert declaration.name == expected_name
+E           AssertionError: assert 'torch^2[.]5[.]1$' == 'torch'
+E             
+E             - torch
+E             + torch^2[.]5[.]1$
+
+tests/unit/core/test_conda_exact_versions.py:110: AssertionError
+___________ test_conda_support_matrix_and_public_consumers[channel] ____________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'channel', entry = 'conda-forge::torch==2.5.1', expected_exact = None
+expected_name = None, expected_specifier = None, diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+>       assert len(declarations) == (0 if expected_name is None else 1)
+E       AssertionError: assert 1 == 0
+E        +  where 1 = len([DependencyDeclaration(name='conda-forge::torch', display_name='conda-forge::torch', specifier='', exact_version=None, source_file='environment.yml', line=1)])
+
+tests/unit/core/test_conda_exact_versions.py:107: AssertionError
+________ test_conda_support_matrix_and_public_consumers[channel-subdir] ________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'channel-subdir', entry = 'conda-forge/linux-64::torch==2.5.1'
+expected_exact = None, expected_name = None, expected_specifier = None
+diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+>       assert len(declarations) == (0 if expected_name is None else 1)
+E       AssertionError: assert 1 == 0
+E        +  where 1 = len([DependencyDeclaration(name='conda-forge', display_name='conda-forge', specifier='/linux-64::torch==2.5.1', exact_version=None, source_file='environment.yml', line=1)])
+
+tests/unit/core/test_conda_exact_versions.py:107: AssertionError
+__________ test_conda_support_matrix_and_public_consumers[empty-name] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'empty-name', entry = '==2.5.1', expected_exact = None
+expected_name = None, expected_specifier = None, diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+            assert declaration.specifier == expected_specifier
+            assert declaration.source_file == "environment.yml"
+            # Preserve existing YAML entry indices; physical fixture line is independently 3.
+            assert declaration.line == 1
+>       assert ctx.deps.unparsed == (
+            ["environment.yml:1: unsupported conda declaration"] if diagnosed else []
+        )
+E       AssertionError: assert ['environment.yml:1: ==2.5.1'] == ['environment... declaration']
+E         
+E         At index 0 diff: 'environment.yml:1: ==2.5.1' != 'environment.yml:1: unsupported conda declaration'
+E         Use -v to get more diff
+
+tests/unit/core/test_conda_exact_versions.py:117: AssertionError
+_________ test_conda_support_matrix_and_public_consumers[empty-input] __________
+
+tmp_path = PosixPath('<test-tmp>')
+case_id = 'empty-input', entry = '', expected_exact = None, expected_name = None
+expected_specifier = None, diagnosed = True
+
+    @pytest.mark.parametrize(
+        ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
+        CONDA_CASES,
+        ids=[case[0] for case in CONDA_CASES],
+    )
+    def test_conda_support_matrix_and_public_consumers(
+        tmp_path: Path,
+        case_id: str,
+        entry: str,
+        expected_exact: str | None,
+        expected_name: str | None,
+        expected_specifier: str | None,
+        diagnosed: bool,
+    ) -> None:
+        # JSON quoting is valid YAML and avoids fixture quoting changing the input string.
+        (tmp_path / "environment.yml").write_text(
+            "name: synthetic\ndependencies:\n  - " + json.dumps(entry, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        ctx = AuditContext(tmp_path)
+        assert ctx.deps.manifest_present
+        assert ctx.deps.lockfiles == []
+        declarations = ctx.deps.declarations
+        assert len(declarations) == (0 if expected_name is None else 1)
+        if declarations:
+            declaration = declarations[0]
+            assert declaration.name == expected_name
+            assert declaration.exact_version == expected_exact
+            assert declaration.is_exact == (expected_exact is not None)
+            assert declaration.specifier == expected_specifier
+            assert declaration.source_file == "environment.yml"
+            # Preserve existing YAML entry indices; physical fixture line is independently 3.
+            assert declaration.line == 1
+>       assert ctx.deps.unparsed == (
+            ["environment.yml:1: unsupported conda declaration"] if diagnosed else []
+        )
+E       AssertionError: assert ['environment.yml:1: '] == ['environment... declaration']
+E         
+E         At index 0 diff: 'environment.yml:1: ' != 'environment.yml:1: unsupported conda declaration'
+E         Use -v to get more diff
+
+tests/unit/core/test_conda_exact_versions.py:117: AssertionError
+______________ test_python_prefix_is_declared_without_being_exact ______________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_python_prefix_is_declared_without_being_exact(tmp_path: Path) -> None:
+        (tmp_path / "environment.yml").write_text("dependencies:\n  - python=3.11\n")
+        ctx = AuditContext(tmp_path)
+        declaration = ctx.deps.declarations[0]
+        assert declaration.name == "python"
+>       assert declaration.exact_version is None
+E       AssertionError: assert '3.11' is None
+E        +  where '3.11' = DependencyDeclaration(name='python', display_name='python', specifier=None, exact_version='3.11', source_file='environment.yml', line=1).exact_version
+
+tests/unit/core/test_conda_exact_versions.py:163: AssertionError
+_ test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch=2.5.1-False] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch=2.5.1', exact = False
+
+    @pytest.mark.parametrize(
+        ("entry", "exact"),
+        [
+            ("torch=2.5.1", False),
+            ("torch==2.5.1", True),
+            ("torch=2.5.1=cuda12.1", True),
+            ("torch==2.5.1=py_0+cuda-12", True),
+            ("torch=2.5.1=cuda*", False),
+            ("conda-forge::torch==2.5.1", False),
+        ],
+    )
+    def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
+        tmp_path: Path, entry: str, exact: bool
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.stdout
+        findings = json.loads(result.stdout)["findings"]
+        selected = {"env.llm_critical_deps_pinned", "env.lockfile_present"}
+        by_rule = {finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected}
+        assert set(by_rule) == selected
+>       assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
+            FindingStatus.PASS.value if exact else FindingStatus.FAIL.value
+        )
+E       AssertionError: assert 'pass' == 'fail'
+E         
+E         - fail
+E         + pass
+
+tests/unit/core/test_conda_exact_versions.py:195: AssertionError
+_ test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch==2.5.1-True] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch==2.5.1', exact = True
+
+    @pytest.mark.parametrize(
+        ("entry", "exact"),
+        [
+            ("torch=2.5.1", False),
+            ("torch==2.5.1", True),
+            ("torch=2.5.1=cuda12.1", True),
+            ("torch==2.5.1=py_0+cuda-12", True),
+            ("torch=2.5.1=cuda*", False),
+            ("conda-forge::torch==2.5.1", False),
+        ],
+    )
+    def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
+        tmp_path: Path, entry: str, exact: bool
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.stdout
+        findings = json.loads(result.stdout)["findings"]
+        selected = {"env.llm_critical_deps_pinned", "env.lockfile_present"}
+        by_rule = {finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected}
+        assert set(by_rule) == selected
+>       assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
+            FindingStatus.PASS.value if exact else FindingStatus.FAIL.value
+        )
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests/unit/core/test_conda_exact_versions.py:195: AssertionError
+_ test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch==2.5.1=py_0+cuda-12-True] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch==2.5.1=py_0+cuda-12', exact = True
+
+    @pytest.mark.parametrize(
+        ("entry", "exact"),
+        [
+            ("torch=2.5.1", False),
+            ("torch==2.5.1", True),
+            ("torch=2.5.1=cuda12.1", True),
+            ("torch==2.5.1=py_0+cuda-12", True),
+            ("torch=2.5.1=cuda*", False),
+            ("conda-forge::torch==2.5.1", False),
+        ],
+    )
+    def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
+        tmp_path: Path, entry: str, exact: bool
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.stdout
+        findings = json.loads(result.stdout)["findings"]
+        selected = {"env.llm_critical_deps_pinned", "env.lockfile_present"}
+        by_rule = {finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected}
+        assert set(by_rule) == selected
+>       assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
+            FindingStatus.PASS.value if exact else FindingStatus.FAIL.value
+        )
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests/unit/core/test_conda_exact_versions.py:195: AssertionError
+_ test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch=2.5.1=cuda*-False] _
+
+tmp_path = PosixPath('<test-tmp>')
+entry = 'torch=2.5.1=cuda*', exact = False
+
+    @pytest.mark.parametrize(
+        ("entry", "exact"),
+        [
+            ("torch=2.5.1", False),
+            ("torch==2.5.1", True),
+            ("torch=2.5.1=cuda12.1", True),
+            ("torch==2.5.1=py_0+cuda-12", True),
+            ("torch=2.5.1=cuda*", False),
+            ("conda-forge::torch==2.5.1", False),
+        ],
+    )
+    def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
+        tmp_path: Path, entry: str, exact: bool
+    ) -> None:
+        (tmp_path / "environment.yml").write_text(
+            "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
+        )
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        result = CliRunner().invoke(
+            app, ["audit", str(tmp_path), "--format", "json", "--fail-on", "never"]
+        )
+        assert result.exit_code == 0, result.stdout
+        findings = json.loads(result.stdout)["findings"]
+        selected = {"env.llm_critical_deps_pinned", "env.lockfile_present"}
+        by_rule = {finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected}
+        assert set(by_rule) == selected
+>       assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
+            FindingStatus.PASS.value if exact else FindingStatus.FAIL.value
+        )
+E       AssertionError: assert 'pass' == 'fail'
+E         
+E         - fail
+E         + pass
+
+tests/unit/core/test_conda_exact_versions.py:195: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[prefix-major]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[prefix-short]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[prefix-long]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[double-major]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[double-short]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[double-release]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[double-zero-components]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[export-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[double-export-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[build-digits]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[build-all-literal-classes]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[alias-prefix]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[alias-exact]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[alias-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[alias-bare]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[outer-whitespace]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[range]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[compound]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[wildcard-version]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[wildcard-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[empty-version]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[empty-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[extra-part]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[triple-equality]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[suffix-pre]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[suffix-post]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[suffix-local]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[epoch]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[trailing-version-dot]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[empty-version-component]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[signed-version]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[unicode-version]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[unicode-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[space-in-version]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[slash-in-build]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[bracket]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[regex]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[channel]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[channel-subdir]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[empty-name]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_conda_support_matrix_and_public_consumers[empty-input]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_python_prefix_is_declared_without_being_exact
+FAILED tests/unit/core/test_conda_exact_versions.py::test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch=2.5.1-False]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch==2.5.1-True]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch==2.5.1=py_0+cuda-12-True]
+FAILED tests/unit/core/test_conda_exact_versions.py::test_real_audit_json_agrees_with_conda_version_and_lock_consumers[torch=2.5.1=cuda*-False]
+46 failed, 14 passed in 6.73s

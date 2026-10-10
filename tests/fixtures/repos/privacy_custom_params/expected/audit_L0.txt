@@ -5,7 +5,10 @@ CRITICAL (1)
       .env (matches a forbidden file pattern (§16.4))
       fix: Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).
 
-WARNING (1)
+WARNING (2)
+  ! env.llm_critical_deps_pinned      torch is used but not pinned to an exact version (suggestion: torch==<version>)
+      environment.yml (declared as =2.8.0)
+      fix: Pin torch exactly, e.g. `torch==<version>`.
   ! env.lockfile_present      no lockfile found and not every declared dependency is pinned with an exact version
       no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements
       fix: Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.
@@ -21,8 +24,8 @@ INFO (3)
       safety: medium confidence
       fix: Run `reprollm init` to create reprollm.yaml and .reprollm/.
 
-7 passed · 0 suppressed · 1 skipped
-Findings: FAIL (1 critical, 1 warning)
+6 passed · 0 suppressed · 1 skipped
+Findings: FAIL (1 critical, 2 warning)
 Result: exit 1 (--fail-on critical; findings reach the threshold)
 
 Detected profiles: privacy (medium), safety (medium) — run: reprollm init --profiles privacy,safety

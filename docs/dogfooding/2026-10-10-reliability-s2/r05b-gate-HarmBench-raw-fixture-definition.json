@@ -1,0 +1,381 @@
+{
+  "entries": [
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5\"\n"
+        },
+        "id": "conda-prefix-short",
+        "raw_expression": "torch=2.5"
+      },
+      "id": "conda-prefix-short",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-prefix-short"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1\"\n"
+        },
+        "id": "conda-prefix-long",
+        "raw_expression": "torch=2.5.1"
+      },
+      "id": "conda-prefix-long",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-prefix-long"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": "2.5.1",
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": false
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1\"\n"
+        },
+        "id": "conda-double",
+        "raw_expression": "torch==2.5.1"
+      },
+      "id": "conda-double",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-double"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": "2.5.1",
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": false
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=cuda12.1\"\n"
+        },
+        "id": "conda-export-build",
+        "raw_expression": "torch=2.5.1=cuda12.1"
+      },
+      "id": "conda-export-build",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-export-build"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": "2.5.1",
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": false
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1=py_0+cuda-12\"\n"
+        },
+        "id": "conda-double-build",
+        "raw_expression": "torch==2.5.1=py_0+cuda-12"
+      },
+      "id": "conda-double-build",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-double-build"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": "2.5.1",
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": false
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"pytorch==2.5.1\"\n"
+        },
+        "id": "conda-alias-pytorch",
+        "raw_expression": "pytorch==2.5.1"
+      },
+      "id": "conda-alias-pytorch",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-alias-pytorch"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.*\"\n"
+        },
+        "id": "conda-wildcard-version",
+        "raw_expression": "torch==2.5.*"
+      },
+      "id": "conda-wildcard-version",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-wildcard-version"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=cuda*\"\n"
+        },
+        "id": "conda-wildcard-build",
+        "raw_expression": "torch=2.5.1=cuda*"
+      },
+      "id": "conda-wildcard-build",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-wildcard-build"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=\"\n"
+        },
+        "id": "conda-empty-build",
+        "raw_expression": "torch=2.5.1="
+      },
+      "id": "conda-empty-build",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-empty-build"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"conda-forge::torch==2.5.1\"\n"
+        },
+        "id": "conda-channel",
+        "raw_expression": "conda-forge::torch==2.5.1"
+      },
+      "id": "conda-channel",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-channel"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch[version='2.5.1']\"\n"
+        },
+        "id": "conda-bracket",
+        "raw_expression": "torch[version='2.5.1']"
+      },
+      "id": "conda-bracket",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-bracket"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch>=2.5\"\n"
+        },
+        "id": "conda-range",
+        "raw_expression": "torch>=2.5"
+      },
+      "id": "conda-range",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-range"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch>=2.5,<3\"\n"
+        },
+        "id": "conda-compound",
+        "raw_expression": "torch>=2.5,<3"
+      },
+      "id": "conda-compound",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-compound"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==2.5.1rc1\"\n"
+        },
+        "id": "conda-suffix",
+        "raw_expression": "torch==2.5.1rc1"
+      },
+      "id": "conda-suffix",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-suffix"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch==1!2.5.1\"\n"
+        },
+        "id": "conda-epoch",
+        "raw_expression": "torch==1!2.5.1"
+      },
+      "id": "conda-epoch",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-epoch"
+    },
+    {
+      "case": {
+        "cli": false,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 3,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - \"torch=2.5.1=py_0=extra\"\n"
+        },
+        "id": "conda-extra-segment",
+        "raw_expression": "torch=2.5.1=py_0=extra"
+      },
+      "id": "conda-extra-segment",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-extra-segment"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": "2.5.1+cu121",
+          "physical_source_line": 4,
+          "source_file": "environment.yml",
+          "torch_warning": false
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - pip:\n      - \"torch==2.5.1+cu121\"\n"
+        },
+        "id": "conda-pip-local"
+      },
+      "id": "conda-pip-local",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-pip-local"
+    },
+    {
+      "case": {
+        "cli": true,
+        "expected": {
+          "exact_version": null,
+          "physical_source_line": 4,
+          "source_file": "environment.yml",
+          "torch_warning": true
+        },
+        "files": {
+          "control.py": "import torch\n",
+          "environment.yml": "name: bounded-s2\ndependencies:\n  - pip:\n      - \"torch==2.5.*\"\n"
+        },
+        "id": "conda-pip-wildcard"
+      },
+      "id": "conda-pip-wildcard",
+      "outside_paths": [],
+      "outside_sha256": {},
+      "root": "<stage-evidence>/fixtures/HarmBench/conda-pip-wildcard"
+    }
+  ],
+  "schema_version": 1
+}

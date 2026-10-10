@@ -1,0 +1,638 @@
+{
+  "accepted_scope": {
+    "accepted_patch_sha256": "280ef3d4b0085aae1dbee280c7eb29de4d2a26e94fda377b7f535f5dedaa126a",
+    "accepted_response": "接受 A/P+C，执行完整 S2（推荐）",
+    "decision": "docs/plan/reliability-2026-10-03/proposals/R05-S/decision.json",
+    "independent_source_provenance_sha256": "bbd37edb64e8dc96c3a28baf71710a1f112c6ad28e6ca8cfeecc6205340cf773",
+    "proposal_sha256": "055b7863e945f2a494879df47d10106d40c85207143f1b6bb713ecc9a5b431af"
+  },
+  "case_count_per_pin": 18,
+  "criteria_references": [
+    "docs/plan/01_specification.md §12.2 accepted C; persisted artifact privacy contract",
+    "AGENTS.md §3 no absolute paths, host/user identifiers, or secrets in artifacts",
+    "Root-approved R05-B public unsafe absolute/URL context-secret RED regressions and fixed-placeholder remedy",
+    "src/reprollm/core/deps.py:566-622 reviewed source matches this independently literal table",
+    "src/reprollm/rules/env.py:60-95,117-170 existing consumer/evidence contracts"
+  ],
+  "expected_actual_cli_cases_per_pin": 6,
+  "expected_cases": [
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "=2.5"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as =2.5",
+              "path": "environment.yml",
+              "value": "=2.5"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-prefix-short",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "=2.5.1"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as =2.5.1",
+              "path": "environment.yml",
+              "value": "=2.5.1"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-prefix-long",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "pass",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": "2.5.1",
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "==2.5.1"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [],
+      "id": "conda-double",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "pass",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": "2.5.1",
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "=2.5.1=cuda12.1"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [],
+      "id": "conda-export-build",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "pass",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": "2.5.1",
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "==2.5.1=py_0+cuda-12"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [],
+      "id": "conda-double-build",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "pass",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": "2.5.1",
+          "line": 1,
+          "name": "torch",
+          "raw_name": "pytorch",
+          "source_file": "environment.yml",
+          "specifier": "==2.5.1"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [],
+      "id": "conda-alias-pytorch",
+      "physical_source_line": 3,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-wildcard-version",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-wildcard-build",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-empty-build",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "imported",
+              "path": "control.py",
+              "value": null
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-channel",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-bracket",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": ">=2.5"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as >=2.5",
+              "path": "environment.yml",
+              "value": ">=2.5"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-range",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-compound",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-suffix",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-epoch",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": false,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "(unsupported conda declaration)"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as (unsupported conda declaration)",
+              "path": "environment.yml",
+              "value": "(unsupported conda declaration)"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-extra-segment",
+      "physical_source_line": 3,
+      "unparsed": [
+        "environment.yml:1: unsupported conda declaration"
+      ]
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "pass",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": "2.5.1+cu121",
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "==2.5.1+cu121"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [],
+      "id": "conda-pip-local",
+      "physical_source_line": 4,
+      "unparsed": []
+    },
+    {
+      "actual_cli_expected_rule_status": {
+        "env.llm_critical_deps_pinned": "fail",
+        "env.lockfile_present": "fail"
+      },
+      "cli": true,
+      "declarations": [
+        {
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "raw_name": "torch",
+          "source_file": "environment.yml",
+          "specifier": "==2.5.*"
+        }
+      ],
+      "full_critical_rule_evidence_projection": [
+        {
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as ==2.5.*",
+              "path": "environment.yml",
+              "value": "==2.5.*"
+            }
+          ],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "status": "fail"
+        }
+      ],
+      "id": "conda-pip-wildcard",
+      "physical_source_line": 4,
+      "unparsed": []
+    }
+  ],
+  "fixture_case_source_sha256": "cb4271c0438b1287d46d4e3a806f64379455fe1ff4d491d15ce1f5680c2defc2",
+  "helper_sha256": "99cc314f91819176d5ca7aaf70fbcd67b7bc3e1d7d5098a31ea3de5f7e705ff8",
+  "legacy_source_policy": "DependencyDeclaration.line remains dependency-entry index 1; physical YAML source is independently asserted at lines 3/4. No YAML lexer or schema change is claimed.",
+  "oracle_source": "Literal accepted R05-S C bounded MatchSpec grammar and existing persisted-artifact privacy boundary; no candidate output is read",
+  "product_commands_executed_when_prepared": 0,
+  "schema_version": 1,
+  "stage": "r05b",
+  "unknown_declaration_policy": "Unsupported unknown rest has the fixed safe placeholder; only the known bounded single numeric range keeps legacy raw evidence. Channel-qualified syntax produces a safe diagnostic without inventing a package identity. Supported numeric/build expressions retain original bounded specifier; embedded pip remains Python grammar."
+}

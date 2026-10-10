@@ -1,0 +1,48 @@
+{
+  "allowed_snapshot_paths": [
+    "tests/fixtures/repos/privacy_custom_params/expected/audit_L0.json",
+    "tests/fixtures/repos/privacy_custom_params/expected/audit_L0.txt",
+    "tests/fixtures/repos/privacy_custom_params/expected/audit_L1_gaps.json",
+    "tests/fixtures/repos/privacy_custom_params/expected/audit_L2_project_rules.json",
+    "tests/fixtures/repos/privacy_custom_params/expected/REPRODUCIBILITY.md"
+  ],
+  "allowed_test_expectation": "Add env.llm_critical_deps_pinned only to privacy_custom_params EXPECTED_GAPS_FAILURES in tests/unit/fixtures/test_level_one.py.",
+  "authority": "Accepted R05-S C; bounded single = without build is prefix, not exact.",
+  "canonical_name": "torch",
+  "complete_overlay_control": "requirements-lock.txt torch==2.8.0 remains an exact lock package; complete L1/L2 outcomes unchanged.",
+  "expected_delta": "Replace only this rule PASS with WARNING, keep remaining fields/findings byte-equivalent, apply existing severity/category/rule_id ordering, summary.warning +1 and summary.pass -1. L0 text and export markdown reflect the same single finding and counts.",
+  "expected_finding": {
+    "evidence": [
+      {
+        "expected": null,
+        "field": null,
+        "kind": "file",
+        "line": 2,
+        "note": "declared as =2.8.0",
+        "path": "environment.yml",
+        "value": "=2.8.0"
+      }
+    ],
+    "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+    "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+    "rule_id": "env.llm_critical_deps_pinned",
+    "severity": "WARNING",
+    "status": "fail"
+  },
+  "five_pinned_real_repository_gold": "No Conda declarations: no expected delta, gold unchanged.",
+  "input_source": "tests/fixtures/repos/privacy_custom_params/tree/environment.yml",
+  "input_source_sha256": "ef9c07a5915ff0de2449a8c37e9054e05956c0e3a9fafb9c9401e5dd791c2937",
+  "legacy_declaration_line": 2,
+  "literal_declaration": "pytorch=2.8.0",
+  "method": "Hand-edit independent expected literals after actual RED and review; do not regenerate snapshots from product output.",
+  "physical_source_line": 4,
+  "schema_version": 1,
+  "snapshot_before_sha256": {
+    "expected/REPRODUCIBILITY.md": "3083113bc11e60b90edd437ee27fe9bc83f71483f5ae7cff77254d152d767a67",
+    "expected/audit_L0.json": "0f22b312845c5ffb0bd1eb7c1f84289da508593b12fabfe55d9d32ddbb12cf26",
+    "expected/audit_L0.txt": "517b88e9429980281588a61fa490dd6e9177b0f876b5c4797426b508d4b1685f",
+    "expected/audit_L1_gaps.json": "c45e1147f041f5e07684483128efd492718e2a860f1f9adae95e1794cc1a2a98",
+    "expected/audit_L2_project_rules.json": "235ec4f6eb27a1bdc000d351ec4c61ce2f0604488d9b79d19e080c03a2b40e84"
+  },
+  "status": "INDEPENDENT_LITERAL_PROPOSAL_BEFORE_SNAPSHOT_EDITS"
+}
