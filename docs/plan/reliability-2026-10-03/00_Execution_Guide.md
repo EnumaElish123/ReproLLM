@@ -17,7 +17,7 @@ v1.2 补充审查基线：`781366e89362a54d9036d3aed070fad169ba8204`，产品代
 先读 00_Execution_Guide.md、该 Sprint 文件、AGENTS.md、架构决策、规格和 val.md。
 记录实际 HEAD 与工作区状态，核对任务是否已被后续提交修复；不要回退到审查 SHA。
 按任务卡先建立失败回归，再实施最小改动；保留现有工作，遵守任务禁区。
-每项任务记录独立提交、定向测试、完整质量检查和规格依据。
+每项任务记录独立提交、定向测试、最终会话完整质量检查的引用和规格依据。
 会话结束执行全部五项目 Gate A；里程碑或发布另执行适用 Gate B。
 只暂停需要决策或缺少资源的子任务，继续完成不受影响的任务。
 将命令、退出码、完整结果差异、资源状态和下一会话输入写入会话报告。
@@ -102,7 +102,9 @@ R06-P 保留第二轮的 include 图范围；v1.2 单列 R06-G 避免只修引�
 
 ## 6. 质量检查：每项代码任务与会话
 
-在仓库根执行，先检查实际命令是否仍适用：
+执行频率以 [验证流程优化](../validation-workflow-2026-10-13.md) 为准：每任务定向回归，
+会话最终输入上一次完整质量门；文稿/工具会话按该文档分类，不扩展产品任务范围。
+以下是完整质量门的内容，不要求每次任务提交前重复。在仓库根执行，先检查命令是否仍适用：
 
 ```bash
 git rev-parse HEAD
@@ -121,7 +123,7 @@ uv run python scripts/gen_cli_doc.py --check
 uv run python scripts/gen_quickstart.py --check
 ```
 
-先检查 coverage，再执行可能改动 coverage 数据的后续测试。`--locked` 失败需要调查，不能自动升级依赖掩盖失配。登记 slow marker 警告可作为独立小修复，但不把重型 slow 测试悄悄加入默认运行。
+先检查 coverage，再执行可能改动 coverage 数据的后续测试。`--locked` 失败需要调查，不能自动升级依赖掩盖失配。slow 性能预算在 nightly 显式运行，不加入普通 CI 的覆盖率测试。
 
 Schema freshness 必须生成到临时目录并比较完整集合与文件字节，避免先覆盖 tracked schemas 后失去差异：
 
@@ -142,13 +144,13 @@ with tempfile.TemporaryDirectory(prefix="reprollm-schema-") as temp:
 PY
 ```
 
-每项代码任务先写目标回归、后实现、再跑完整质量门；一项任务一个 Conventional Commit，注明任务号、规格段落和快照变化理由。不要添加仅复述实现、没有独立业务预期的测试。单纯文稿改动采用链接、生成文档和内容核验；不得虚称它验证了产品行为。
+每项代码任务先写目标回归、后实现、再跑定向检查；一项任务一个 Conventional Commit，注明任务号、规格段落和快照变化理由。各任务引用最终会话完整质量门，不能将中途定向通过当成会话验收。不要添加仅复述实现、没有独立业务预期的测试。单纯文稿改动采用链接、生成文档和内容核验；不得虚称它验证了产品行为。
 
-Linux 本地通过不能替代 CI 中的 Python 3.10 / 3.11 / 3.12、macOS、Windows 矩阵。Windows 按现有 `linux_only` 策略处理，不随意删测试。
+Linux 本地通过不能替代 CI 中的 Python 3.10 / 3.11 / 3.12、macOS、Windows 矩阵。Windows 同时排除 `slow` 和 `linux_only`，不随意删测试。
 
 在外部案例目录运行时，显式使用本轮 `.venv` 中的 ReproLLM 可执行文件；不要让 `uv run` 因 cwd 变化切换项目。执行所需本机绝对路径只保留在本机操作上下文，分享报告用逻辑变量和相对路径。
 
-## 7. Gate A：每次开发会话的五项目验证
+## 7. Gate A：每次产品开发会话的五项目验证
 
 `val.md` 是唯一 gold 来源；本表是定位快照，不授权修改 pins。
 
@@ -163,7 +165,7 @@ Linux 本地通过不能替代 CI 中的 Python 3.10 / 3.11 / 3.12、macOS、Win
 会话收尾步骤：
 
 1. 核对每个 checkout 的 SHA、origin、tracked / untracked 全部状态；必须是正确且干净的输入。
-2. 每个至少运行 `reprollm audit <checkout> --format json --fail-on never`。保留默认模式的 stdout / stderr；额外 `-v` 运行用于比较已有诊断。运行方式以当前 CLI help 为准。
+2. 每个至少运行一次新鲜 `reprollm audit <checkout> --format json --fail-on never`，保留 stdout / stderr。按[受影响扩展层](../validation-workflow-2026-10-13.md#4-gate-a基础层--受影响扩展层)选择额外文本、`-v` 或格式变体；完整诊断断言不省略。运行方式以当前 CLI help 为准。
 3. 本会话修改的每个非资源命令都在全部五项目执行。涉及 init、检测、manifest 或 L1 规则时，在各自一次性副本运行 init 和随后 L1 audit；主 checkout 保持干净。
 4. 比较完整规则状态、依赖集合、profiles、hints、路径、物理行号、扫描诊断、生成 manifest；摘要计数相同不足以通过。
 5. 记录命令、被测 ReproLLM SHA、目标 SHA、退出码、耗时、expected / actual 和所有差异。失败时区分无效输入、既有缺陷、新回归、预期语义变化。
@@ -180,7 +182,7 @@ Linux 本地通过不能替代 CI 中的 Python 3.10 / 3.11 / 3.12、macOS、Win
 |---|---|---|
 | 工作 | PLANNED / IN_PROGRESS / REVIEW_READY / IMPLEMENTED / VERIFIED / NOT_NEEDED | IMPLEMENTED 不等于本轮全部 gate 通过 |
 | 决策 | NOT_REQUIRED / PROPOSED / APPROVED / REJECTED | APPROVED 必须附具体决定，不用用户泛泛认可替代 |
-| 验证 | NOT_RUN / PASS / FAIL / BLOCKED | BLOCKED 必须列缺失输入及恢复步骤 |
+| 验证 | NOT_RUN / PASS / FAIL / BLOCKED / NOT_APPLICABLE | BLOCKED 列缺失输入及恢复步骤；NOT_APPLICABLE 按验证流程分类并说明理由，不是 PASS |
 
 `VERIFIED`：任务验收、质量门、适用 Gate A、必要审阅和 CI 都有本次证据。会话完成还须满足 AGENTS 对报告与推送的要求。资源 Gate B 单列；存在阻塞时，工程改动可以达到可审阅状态，但不能写“release-ready / 全部验证通过”。
 

@@ -213,9 +213,12 @@ compared, not only the summary counts above. The historical baseline is retained
 
 ## 8. Mandatory validation gates
 
-### Gate A — every development session
+### Gate A — every product development session
 
-Run after the normal test/lint/type/schema quality gate:
+Validation cadence, documentation/tool-only exceptions, affected variants and evidence reuse are
+defined in the [validation workflow](docs/plan/validation-workflow-2026-10-13.md). This document
+remains authoritative for pins, complete gold answers, resource gates and baseline changes.
+Run after the final session test/lint/type/schema quality gate, not after every task:
 
 1. Verify all five checkout SHAs and clean states using §2.
 2. Run every non-resource command changed in the session against all five repositories. At minimum,
@@ -226,6 +229,11 @@ Run after the normal test/lint/type/schema quality gate:
    diagnostics, and `init` output with §§3–7. Summary counts alone are insufficient.
 5. Record checkout SHA, exact command, exit status, elapsed time, expected result, actual result,
    and every delta in the session report.
+
+Keep full semantic comparisons while selecting only affected extra formats/templates/verbosity
+variants; explicit task acceptance cases remain required. The JSON comparison helper
+`scripts/compare_gold.py` does not replace checkout checks, hints/diagnostics not present in JSON,
+text comparisons, generated-file byte comparisons, or any applicable resource validation.
 
 Completion criterion: five valid target results, no crash, no silent skip, and no unexplained gold
 delta. A gold mismatch blocks completion until it is fixed or the independently rechecked gold is

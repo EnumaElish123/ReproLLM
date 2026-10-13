@@ -27,7 +27,12 @@ uv sync --dev          # creates .venv with a suitable Python (>= 3.10)
 
 ## Running the quality gate
 
-Run all of these before opening a PR; CI runs the same set:
+Run the full gate on final session inputs before opening a PR; use focused
+regressions during each task. The [validation workflow](docs/plan/validation-workflow-2026-10-13.md)
+defines cadence and explicit documentation/tool-only exceptions; the
+[execution guide §6](docs/plan/reliability-2026-10-03/00_Execution_Guide.md#6-质量检查每项代码任务与会话)
+includes coverage, redaction, security and generated-document checks in addition
+to this quick command reference:
 
 ```bash
 uv run pytest -q                             # full test suite, no network

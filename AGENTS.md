@@ -99,8 +99,8 @@ Every development session follows the plan documents in `docs/plan/`:
 
 1. **Scope comes from the assigned sprint/session doc**, selected through [`docs/plan/README.md`](docs/plan/README.md): implement its task IDs in order, honoring each task's acceptance criteria and the sprint's forbidden zone (§2). A session never invents, reorders into unrelated territory, or "improves" beyond the sprint list; anything found along the way that belongs to a later sprint goes to a backlog note, not into the diff.
 2. **Sessions per sprint**: by maintainer decision a sprint is delivered in two sessions (typically first half / second half of the task list); both follow this protocol, and the second session starts from the first session's report.
-3. **Per task**: write the tests implied by the acceptance criteria first, then implement, then run the full quality gate (`pytest`, `ruff`, `mypy`, schema freshness). One task = one commit with Conventional Commits (`feat(rules): add model.revision_pinned`, `fix(redaction): handle jwt with padding`, `test(fixtures): add dirty_tree repo`, `docs: …`, `chore: …`). The commit message cites the spec sections implemented, notes fixture/snapshot changes and why, and references the sprint task (e.g. "M2-T03").
-4. **Before pushing**: quality gate green **and** the §10 dogfooding run done; then push directly to `main` (the branch/issue/PR flow applies only when the maintainer explicitly asks for a reviewed change). Session reports list: tasks completed with commit hashes, dogfooding delta versus the last baseline, deviations from the sprint doc and why.
+3. **Per task**: write acceptance tests first, implement, then run focused regression and affected lint/type/security checks. Run the complete quality gate once on final session inputs, not after every task; follow the authoritative [validation workflow](docs/plan/validation-workflow-2026-10-13.md) for cadence, invalidation and documentation/tool-only exceptions. One task = one Conventional Commit. Cite its task ID and spec sections, and explain fixture/snapshot changes. Task commits are provisional until session acceptance.
+4. **Before pushing**: the applicable final quality gate is green **and** the applicable §10 dogfooding run is recorded; then push directly to `main` (the branch/issue/PR flow applies only when the maintainer explicitly asks for a reviewed change). Session reports list tasks and commit hashes, shared final validation evidence, dogfooding deltas, and deviations or not-applicable gates with reasons.
 5. Do not mix unrelated tasks in one commit, reformat unrelated files, or bump dependencies without being asked.
 6. If the spec is wrong or incomplete, open an issue labeled `spec` with a concrete proposal and stop that part of the work; implement the rest. If a sprint task seems to require violating a frozen decision (`D-nn`) or the sprint's forbidden zone, stop and report — never proceed silently.
 
@@ -115,7 +115,7 @@ Every development session follows the plan documents in `docs/plan/`:
 
 ## 9. What "done" means
 
-A task is done when: tests for its acceptance criteria (from the sprint doc) exist and pass; quality gate is green locally and in CI; fixture snapshots were updated deliberately (with the diff reviewed, not blind-regenerated); the CHANGELOG has an entry; the commit references its sprint task and spec sections; and — where the sprint doc requires it — the command has been run against one of the golden fixtures with the expected result pasted into the session report. A *session* is done when its tasks are done, the §10 dogfooding run is recorded, and `main` is pushed with CI green.
+A task is done when: its acceptance tests pass; it is covered by the applicable final session quality gate locally and in CI; snapshots were deliberately reviewed; CHANGELOG and commit references are present; and task-specific fixture checks are recorded. Tasks share final session evidence rather than rerunning identical full gates. A *session* is done when its tasks are done, applicable §10 gates (or justified exceptions under the validation workflow) are recorded, and `main` is pushed with CI green.
 
 ## 10. Standing five-project validation gate
 
@@ -126,8 +126,9 @@ gates, and baseline-update policy.
 
 Per session:
 
-1. Run Gate A against all five valid pinned checkouts; at minimum run Level 0 audit, plus every
-   non-resource command changed by the session.
+1. Select the session category and affected matrix using the [validation workflow](docs/plan/validation-workflow-2026-10-13.md).
+   Every product-code session runs Gate A on all five pinned checkouts: fresh Level 0 audit plus
+   affected non-resource commands. Documentation/tool-only exceptions must be explicit, never PASS.
 2. When the session completes a milestone or prepares a release, also run every Gate B scenario
    activated for that milestone. Real network resolution starts at M4; minimal inference/training,
    including a bounded local judge case, starts at M5; paired semantic diff starts at M6; and
@@ -139,7 +140,7 @@ Per session:
    gold answer; summary counts alone are insufficient. Record commands, target SHAs, exit statuses,
    elapsed times, expected/actual results, and every delta in the session report.
 
-A session is not complete if any target is missing, dirty, silently skipped, crashes, or has an
+When Gate A applies, a session is not complete if any target is missing, dirty, silently skipped, crashes, or has an
 unexplained gold delta. An unavailable GPU, credential, provider, or approved budget marks the
 affected resource gate **blocked**, never passed; complete and report every unaffected gate. Update
 a pinned commit or gold answer only in a dedicated reviewed change based on independent evidence,

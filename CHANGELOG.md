@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Development workflow
+
+- VOPT-02: use focused checks per task and one complete final session quality
+  gate; retain all five product-validation targets and full gold assertions with
+  affected extensions. Document explicit documentation/tool-only exceptions,
+  environment preflight and immutable baseline reuse; milestone/release resource
+  gates remain unchanged.
+
 ### Specification
 
 - UX2-S01 / UX2-T01: record maintainer approval of the six product workflow
