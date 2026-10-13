@@ -14,6 +14,11 @@
 
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
+R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
+提交 `110087b1e416c12c25253c07365944935e986470`，修复首次推送的 Windows CI 预算失败。
+最新本地质量门为 2,505 tests / 174 security tests；新源码的五项目 Gate A
+126 条全新命令、987 项完整比较及另列的 30 项独立核对全部通过。
+
 ## 执行文件与会话
 
 | 文件 | 工作范围 | 会话 |

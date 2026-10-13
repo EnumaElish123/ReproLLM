@@ -16,6 +16,10 @@
 S3-A记录见 [交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md) 和 [scope交接](../../dogfooding/2026-10-13-reliability-s3a/s3a-handoff.md)。
 R07-A：产品与本地验收已完成，提交 `41122934a9c3ea2fc7bbee22fe870c44ba549a2e`；R07-B：产品与本地验收已完成，提交 `0e3ff8f0543d66904f237be1f9e5446294cc1f6a`。
 对应完整本地Gate A：PASS（155 合格命令、157 实际执行、1,053 完整比较） / PASS（126 合格命令、127 实际执行、987 完整比较）。最终 main 五项 CI 由推送后实际 HEAD 核对，见会话最终回复与本地 `final-ci.json`。
+首次推送的 Windows CI 性能预算失败由 R07-A [追加修复](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
+`110087b1e416c12c25253c07365944935e986470` 处理。最新本地质量门为 2,505 tests、
+174 security tests；重新执行的 Gate A 为 126 条全新命令、987 项完整比较，
+另有 30 项独立 AST/诊断核对通过，原预算、gold 和 pins 未变。
 下一工程会话为S3-B；本次不完成R04-A/B、R07-C或D01。以下问题描述与实施步骤保留审查时的任务依据，不代表修复后问题仍存在。
 
 R04-A 接续 R03 的 State 合并合同；R04-B 是独立提交的输入证据任务，必须在 D01 正式验收之前完成。R07-A 接续 R06-G 的公共内容边界，不能以候选过滤替代安全读取。R07-C 的规则覆盖率政策、R04-S 的条件 schema 工作见 [05](05_Policy_and_Compatibility.md)，只在相应任务需要时激活；R04-S 可由 R04-A 或 R04-B 触发。会话容量不足时登记具名接续会话，D01 的依赖不因日程变化消失。

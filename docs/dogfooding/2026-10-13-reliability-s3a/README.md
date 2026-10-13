@@ -15,17 +15,28 @@ R07-B 的[具体 §13 修订已接受](../../plan/reliability-2026-10-03/proposa
 超过 Python 文件预算时，audit、init（含任务列出及交互）和 export 在默认 stderr
 显示一次实际解析数、候选数、选中数及上限，并说明信号可能位于未分析文件。
 选中后未解析的数量另列；stdout、持久化字段、规则结论和 fail-on 保持原合同。
-产品已冻结：150 文件，清单 SHA `c638f7145b3ce755ca1f320fd98209731bf9d3aad8300b80a2166347c9f70eef`。
+R07-B 阶段产品冻结：150 文件，清单 SHA `c638f7145b3ce755ca1f320fd98209731bf9d3aad8300b80a2166347c9f70eef`。
 首次完整 pytest 的 1 项旧诊断列表期望失败及 2,487 项通过结果完整保留；
 [仅测试兼容修正](r07b-compatibility-correction/index.json)后，失败项与原 44 项矩阵共 45 项通过。
 
-R07-B 提交：`0e3ff8f0543d66904f237be1f9e5446294cc1f6a`。最终质量门：14/14 PASS（security 163、mypy 123 文件），
+R07-B 提交：`0e3ff8f0543d66904f237be1f9e5446294cc1f6a`。该任务阶段质量门：14/14 PASS（security 163、mypy 123 文件），
 实际 tests：2,488；五项目 Gate A：PASS，
 实际命令/比较/退出/耗时：126 合格命令 / 127 实际执行 / 987 完整比较，退出分布 {"0": 125, "1": 1}，合格叶耗时 1003.796315 秒，全部实际叶耗时 1005.492108 秒。
 
 另有 30 项独立 AST/诊断核对通过。原七项 JSON oracle 别名错误完整保留，
 仅补执行一次冻结公开 serializer，与原 CLI 输出重新比较；LlamaFactory
 默认 fail-on 的 exit 1 符合 gold。获批的 LM 覆盖摘要以外，输出无未解释差异。
+
+首次推送 `fd8fe12` 的四项 CI 通过，Windows 审计性能测试为 11.8 秒，超过原 10 秒预算。
+[R07-A 性能跟进](r07a-perf-session.md)已追加提交
+`110087b1e416c12c25253c07365944935e986470`，保留原失败记录与预算。
+最新质量门 14/14 PASS：2,505 tests、174 security tests、mypy 123 文件，
+总覆盖率 93.64%，redaction statements/branches 100%。原两个开启 coverage 的
+性能测试均通过；正常产品审计单次为 8.348113 秒，Windows 实测由最终 CI 核对。
+新源码重新执行五项目 Gate A：实际=合格=126，无结果复用，987 项完整比较及
+另列的 30 项独立 AST/诊断核对通过；命令叶耗时 927.135519 秒。
+产品 150 文件清单为 `daad7e9aa7614a5bd73b54d7919c1e6bda11ae9cdcf5db1953e105f1607b4314`，
+[实际提交绑定](r07a-perf-gate-commit-binding.json)确认提交与验证字节完全一致。
 
 下一会话 S3-B 按 R04-A → R04-B 处理环境来源与输入时点。R07-C 的不完整覆盖规则政策
 尚未交付；历史 VAL-R01–R03 资源验证仍为 BLOCKED。推送及精确 HEAD 的五平台 CI

@@ -8,6 +8,11 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer-approved [validation workflow optimization](validation-workflow-2026-10-13.md)
+defines validation cadence for this package: focused checks per task, one complete final session
+quality gate, and five-project Gate A with affected extensions. Its VOPT-01–03 tasks are a scoped
+workflow supplement, not authorization to advance the product sprint or change gold answers.
+
 The current plan is the **2026-10-03 reliability execution package v1.2**,
 revised after code review at `781366e` at the maintainer's request. It adds
 run-persistence redaction, shared file-read boundaries, input-capture phases and
@@ -19,6 +24,10 @@ Sprint/Session document. S1-A, S1-B and S2 are delivered; S3-A
 [latest S3-A report](../dogfooding/2026-10-13-reliability-s3a/README.md) and
 [scope handoff](../dogfooding/2026-10-13-reliability-s3a/s3a-handoff.md); the
 next engineering session is **S3-B: R04-A → R04-B**, which remains unexecuted.
+The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
+is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
+174 security tests and a fresh five-project Gate A passed. Final five-job CI
+is checked against the actual pushed main HEAD in the session's final reply.
 
 - [Copyable agent prompts](reliability-2026-10-03/AGENT_PROMPTS.md)
 - [Task dependencies and gates](reliability-2026-10-03/00_Execution_Guide.md)

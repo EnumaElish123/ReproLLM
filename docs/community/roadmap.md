@@ -54,6 +54,11 @@ S3-A (R07-A → R07-B) is **产品与本地验收已完成**. Read its
 [report and handoff](../dogfooding/2026-10-13-reliability-s3a/README.md) before
 S3-B (R04-A → R04-B). These changes remain unreleased; pending policy/schema
 decisions and resource validations retain their separate requirements.
+The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
+at `110087b1e416c12c25253c07365944935e986470` addresses the initial Windows
+CI budget failure. Latest local validation passed 2,505 tests, 174 security
+tests and a fresh five-project Gate A; final five-job CI is verified against
+the actual pushed main HEAD in the session's final reply.
 
 The remaining [UX3 task](../plan/UX3_2026-10-02.md), T02, awaits the concrete
 policy/baseline amendment in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
