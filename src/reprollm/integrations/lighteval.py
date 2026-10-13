@@ -29,7 +29,7 @@ class LightEvalIntegration:
 
     def extract_task_hints(self, scanner: RepoScanner) -> TaskHints:
         task_names: list[str] = []
-        for path in scanner.files():
+        for path in scanner.analysis_files():
             if not path.endswith((".yaml", ".yml")):
                 continue
             data = task_mapping(scanner, path)

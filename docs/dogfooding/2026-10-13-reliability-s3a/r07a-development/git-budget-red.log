@@ -1,0 +1,27 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_git_venv_files_do_not_consume_business_python_budget ___________
+
+tmp_path = PosixPath('<test-tmp>')
+
+    def test_git_venv_files_do_not_consume_business_python_budget(tmp_path: Path) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", "train.py", "requirements.txt")
+        for index in range(501):
+            _write(tmp_path, f".venv/lib/f{index:04}.py", "import vllm\n")
+        _git(tmp_path, "add", "--", ".venv")
+    
+        context = AuditContext(tmp_path)
+>       assert context.fs.python_files() == ["train.py"]
+E       AssertionError: assert ['.venv/lib/f...0005.py', ...] == ['train.py']
+E         
+E         At index 0 diff: '.venv/lib/f0000.py' != 'train.py'
+E         Left contains 499 more items, first extra item: '.venv/lib/f0001.py'
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:30: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_git_venv_files_do_not_consume_business_python_budget
+1 failed in 1.69s

@@ -16,6 +16,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-A (spec §§11/13): apply shared static candidate exclusions before Python,
+  dependency, framework, profile and discovery budgets in Git and walk modes.
+  Exclude known generated directories and nested environments marked by
+  `pyvenv.cfg`, including internal links and explicit requirements/task paths;
+  preserve real nested research projects, bounded safe reads and independent
+  Git/security file facts. Diagnose uninspectable environment markers safely.
+
 - R06-G validation: construct external sentinel fixtures with fixed UTF-8 bytes
   so Windows newline conversion cannot invalidate the strict unchanged-byte check.
   Preserve every external-read guard and static consumer assertion.

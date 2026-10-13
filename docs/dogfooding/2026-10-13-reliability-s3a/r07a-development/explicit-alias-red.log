@@ -1,0 +1,108 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions[.venv] _
+
+tmp_path = PosixPath('<task-evidence>/explicit-alias-red-tmp/test_explicit_requirement_and_0')
+directory = '.venv'
+
+    @pytest.mark.parametrize("directory", [".venv", "marked_environment"])
+    def test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions(
+        tmp_path: Path, directory: str
+    ) -> None:
+        _write(tmp_path, "requirements.txt", f"-r {directory}/pins.txt\n")
+        _write(tmp_path, f"{directory}/pins.txt", "vllm==0.6.1\n")
+        _write(tmp_path, f"{directory}/task.yaml", "task: environment_canary\n")
+        if directory == "marked_environment":
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        context = AuditContext(tmp_path)
+        assert context.deps.manifest_present
+>       assert context.deps.declarations == []
+E       AssertionError: assert [DependencyDe...txt', line=1)] == []
+E         
+E         Left contains one more item: DependencyDeclaration(name='vllm', display_name='vllm', specifier='==0.6.1', exact_version='0.6.1', source_file='.venv/pins.txt', line=1)
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:120: AssertionError
+_ test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions[marked_environment] _
+
+tmp_path = PosixPath('<task-evidence>/explicit-alias-red-tmp/test_explicit_requirement_and_1')
+directory = 'marked_environment'
+
+    @pytest.mark.parametrize("directory", [".venv", "marked_environment"])
+    def test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions(
+        tmp_path: Path, directory: str
+    ) -> None:
+        _write(tmp_path, "requirements.txt", f"-r {directory}/pins.txt\n")
+        _write(tmp_path, f"{directory}/pins.txt", "vllm==0.6.1\n")
+        _write(tmp_path, f"{directory}/task.yaml", "task: environment_canary\n")
+        if directory == "marked_environment":
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        context = AuditContext(tmp_path)
+        assert context.deps.manifest_present
+>       assert context.deps.declarations == []
+E       AssertionError: assert [DependencyDe...txt', line=1)] == []
+E         
+E         Left contains one more item: DependencyDeclaration(name='vllm', display_name='vllm', specifier='==0.6.1', exact_version='0.6.1', source_file='marked_environment/pins.txt', line=1)
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:120: AssertionError
+___ test_internal_aliases_cannot_restore_excluded_environment_content[.venv] ___
+
+tmp_path = PosixPath('<task-evidence>/explicit-alias-red-tmp/test_internal_aliases_cannot_r0')
+directory = '.venv'
+
+    @pytest.mark.parametrize("directory", [".venv", "marked_environment"])
+    def test_internal_aliases_cannot_restore_excluded_environment_content(
+        tmp_path: Path, directory: str
+    ) -> None:
+        _write(tmp_path, "requirements.txt", "-r alias-pins.txt\n")
+        _write(tmp_path, f"{directory}/pins.txt", "vllm==0.6.1\n")
+        _write(tmp_path, f"{directory}/implementation.py", "import vllm\n")
+        if directory == "marked_environment":
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        try:
+            (tmp_path / "alias-pins.txt").symlink_to(tmp_path / directory / "pins.txt")
+            (tmp_path / "alias.py").symlink_to(tmp_path / directory / "implementation.py")
+        except (OSError, NotImplementedError) as exc:
+            pytest.skip(f"symlinks unavailable: {type(exc).__name__}")
+        context = AuditContext(tmp_path)
+>       assert context.deps.declarations == []
+E       AssertionError: assert [DependencyDe...txt', line=1)] == []
+E         
+E         Left contains one more item: DependencyDeclaration(name='vllm', display_name='vllm', specifier='==0.6.1', exact_version='0.6.1', source_file='alias-pins.txt', line=1)
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:141: AssertionError
+_ test_internal_aliases_cannot_restore_excluded_environment_content[marked_environment] _
+
+tmp_path = PosixPath('<task-evidence>/explicit-alias-red-tmp/test_internal_aliases_cannot_r1')
+directory = 'marked_environment'
+
+    @pytest.mark.parametrize("directory", [".venv", "marked_environment"])
+    def test_internal_aliases_cannot_restore_excluded_environment_content(
+        tmp_path: Path, directory: str
+    ) -> None:
+        _write(tmp_path, "requirements.txt", "-r alias-pins.txt\n")
+        _write(tmp_path, f"{directory}/pins.txt", "vllm==0.6.1\n")
+        _write(tmp_path, f"{directory}/implementation.py", "import vllm\n")
+        if directory == "marked_environment":
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        try:
+            (tmp_path / "alias-pins.txt").symlink_to(tmp_path / directory / "pins.txt")
+            (tmp_path / "alias.py").symlink_to(tmp_path / directory / "implementation.py")
+        except (OSError, NotImplementedError) as exc:
+            pytest.skip(f"symlinks unavailable: {type(exc).__name__}")
+        context = AuditContext(tmp_path)
+>       assert context.deps.declarations == []
+E       AssertionError: assert [DependencyDe...txt', line=1)] == []
+E         
+E         Left contains one more item: DependencyDeclaration(name='vllm', display_name='vllm', specifier='==0.6.1', exact_version='0.6.1', source_file='alias-pins.txt', line=1)
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions[.venv]
+FAILED tests/unit/core/test_analysis_candidates.py::test_explicit_requirement_and_task_paths_cannot_bypass_candidate_exclusions[marked_environment]
+FAILED tests/unit/core/test_analysis_candidates.py::test_internal_aliases_cannot_restore_excluded_environment_content[.venv]
+FAILED tests/unit/core/test_analysis_candidates.py::test_internal_aliases_cannot_restore_excluded_environment_content[marked_environment]
+4 failed in 0.37s

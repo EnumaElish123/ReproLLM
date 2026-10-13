@@ -67,7 +67,7 @@ class LmEvalIntegration:
 
     @staticmethod
     def _task_configs(scanner: RepoScanner) -> Iterator[tuple[str, dict[str, Node]]]:
-        for path in scanner.files():
+        for path in scanner.analysis_files():
             if not any(
                 path.startswith(directory) and path.endswith((".yaml", ".yml"))
                 for directory in _TASK_DIRS

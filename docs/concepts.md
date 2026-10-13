@@ -25,6 +25,29 @@ what was declared.
 
 The level is automatic; `--level` can only lower it.
 
+## Static analysis scope
+
+ReproLLM analyzes research files after excluding known environment and generated
+directories: `.venv`, `venv`, `node_modules`, VCS metadata, Python caches,
+`.tox`, `dist`, `build`, `.eggs`, and `*.egg-info`. Nested directories containing
+`pyvenv.cfg` are also excluded, even when they have an unusual name. Internal
+links into these directories do not restore their contents to the analysis.
+The directory selected as the audit root remains in scope; ordinary nested
+research projects, including `vendor` and `third_party`, remain eligible.
+
+These exclusions apply to code, dependency declarations, framework tasks,
+profile signals, and discovery input before their budgets are counted. Static
+Python analysis reads at most 500 eligible files, with a 512 KiB text limit per
+file. Discovery retains its separate 64 KiB file limit, 2,000 tree-entry limit,
+and configured character budget. Files larger than 2 MiB and `.reprollm/runs/`
+are outside repository analysis.
+
+Git state and security checks keep their existing file facts. A tracked
+`.env.local` inside an excluded environment can still fail the secret-file
+check, and adding environment files can still change Git's dirty or untracked
+state. Excluding those files from experiment detection does not hide these
+facts.
+
 ## Severity semantics
 
 - **CRITICAL** — the experiment's *identity* is ambiguous (which model, which

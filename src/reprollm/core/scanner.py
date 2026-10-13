@@ -4,7 +4,9 @@ Two listing modes: ``git ls-files --cached --others --exclude-standard -z``
 inside git repositories (respects ``.gitignore``), otherwise an ``os.walk``
 with a built-in ignore list. Both modes additionally drop ``.reprollm/runs/**``
 and files larger than 2 MiB. Results are sorted and cached; reads are cached
-per path.
+per path. Static analysis uses a separate candidate view with the same
+environment/generated-directory exclusions in both listing modes, while
+Git and security checks retain the existing file facts.
 """
 
 from __future__ import annotations
@@ -25,7 +27,7 @@ MAX_READ_BYTES = 512 * 1024
 #: Cap on Python files scanned (spec §13); beyond this files are skipped.
 MAX_PYTHON_FILES = 500
 
-#: Directory names always skipped when walking without git.
+#: Static candidate exclusions, also pruned by the fallback walker.
 SKIP_DIR_NAMES = {
     ".git",
     ".hg",
@@ -44,7 +46,7 @@ SKIP_DIR_NAMES = {
     "*.egg-info",
 }
 
-#: Virtualenv marker: any directory containing this is skipped while walking.
+#: Virtualenv marker: nested directories containing this are excluded.
 _VENV_MARKER = "pyvenv.cfg"
 
 #: Hard skip below the repository root regardless of listing mode.
@@ -112,6 +114,7 @@ class RepoScanner:
         self.git = git
         self.warnings: list[str] = []
         self._files: list[str] | None = None
+        self._analysis_files: list[str] | None = None
         self._text_cache: dict[str, tuple[Path, str | None]] = {}
         self._dirs: set[str] | None = None
 
@@ -131,6 +134,42 @@ class RepoScanner:
     def glob(self, pattern: str) -> list[str]:
         """Files whose full relative path matches ``pattern`` (fnmatch)."""
         return [p for p in self.files() if fnmatch.fnmatch(p, pattern)]
+
+    def analysis_files(self) -> list[str]:
+        """Static candidates, excluding environments and caches before any budget."""
+        if self._analysis_files is None:
+            self._analysis_files = [
+                path for path in self.files() if self.is_analysis_candidate(path)
+            ]
+        return list(self._analysis_files)
+
+    def is_analysis_candidate(self, rel_path: str) -> bool:
+        """Check a relative candidate, including explicit requirements children."""
+        source = content_source_path(rel_path)
+        if source is None or source.startswith(_HARD_SKIP_PREFIX):
+            return False
+        if any(self._skip_name(name) for name in Path(source).parts[:-1]):
+            return False
+        try:
+            target = resolve_content_path(self.root, source)
+            resolved_source = target.relative_to(self.root.resolve()).as_posix()
+        except ContentPathError:
+            # Keep unsafe aliases visible to the existing read boundary and its
+            # fixed diagnostics, without inspecting markers outside the root.
+            return True
+        if resolved_source.startswith(_HARD_SKIP_PREFIX):
+            return False
+        for candidate in dict.fromkeys((source, resolved_source)):
+            parent = Path()
+            for name in Path(candidate).parts[:-1]:
+                parent /= name
+                try:
+                    directory = resolve_content_path(self.root, parent.as_posix())
+                except ContentPathError:
+                    return False
+                if self._skip_dir(directory, name):
+                    return False
+        return True
 
     def exists(self, rel_path: str) -> bool:
         return (self.root / rel_path).is_file()
@@ -168,7 +207,7 @@ class RepoScanner:
 
     def python_files(self) -> list[str]:
         """Python sources, capped at :data:`MAX_PYTHON_FILES` (excess recorded once)."""
-        sources = [p for p in self.files() if p.endswith(".py")]
+        sources = [p for p in self.analysis_files() if p.endswith(".py")]
         if len(sources) > MAX_PYTHON_FILES:
             warning = f"python file scan truncated to {MAX_PYTHON_FILES} of {len(sources)} files"
             if warning not in self.warnings:  # repeated access must not duplicate (M2F-T07)
@@ -180,7 +219,7 @@ class RepoScanner:
         """``README*`` (case-insensitive) at the root and in first-level subdirs."""
         return sorted(
             path
-            for path in self.files()
+            for path in self.analysis_files()
             if len(path.split("/")) <= 2 and path.rsplit("/", 1)[-1].lower().startswith("readme")
         )
 
@@ -188,17 +227,17 @@ class RepoScanner:
         """YAML/JSON/TOML config files, excluding lockfiles and ``.reprollm/``."""
         return sorted(
             p
-            for p in self.files()
+            for p in self.analysis_files()
             if Path(p).suffix.lower() in _CONFIG_EXTENSIONS
             and Path(p).name.lower() not in _LOCKFILE_NAMES
             and not p.startswith(".reprollm/")
         )
 
     def dir_names(self) -> set[str]:
-        """All directory segment names in the listing, lowercased."""
+        """Static candidate directory names, including safe empty walk directories."""
         if self._dirs is None:
             names: set[str] = set()
-            for path in self.files():
+            for path in self.analysis_files():
                 parent = path.rsplit("/", 1)[0] if "/" in path else ""
                 while parent:
                     names.add(parent.rsplit("/", 1)[-1].lower())
@@ -255,15 +294,33 @@ class RepoScanner:
     def _walk_dirs(self) -> set[str]:
         names: set[str] = set()
         for dirpath, dirnames, _filenames in os.walk(self.root):
-            for name in dirnames:
-                if not self._skip_dir(Path(dirpath) / name, name):
-                    names.add(name.lower())
+            dirnames[:] = sorted(
+                name
+                for name in dirnames
+                if self.is_analysis_candidate(
+                    ((Path(dirpath) / name).relative_to(self.root) / "candidate").as_posix()
+                )
+            )
+            names.update(name.lower() for name in dirnames)
         return names
 
     @staticmethod
-    def _skip_dir(path: Path, name: str) -> bool:
+    def _skip_name(name: str) -> bool:
         if name in SKIP_DIR_NAMES and "*" not in name:
             return True
-        if any(fnmatch.fnmatch(name, p) for p in SKIP_DIR_NAMES if "*" in p):
+        return any(fnmatch.fnmatch(name, p) for p in SKIP_DIR_NAMES if "*" in p)
+
+    def _skip_dir(self, path: Path, name: str) -> bool:
+        if RepoScanner._skip_name(name):
             return True
-        return (path / _VENV_MARKER).exists()
+        try:
+            marker = path / _VENV_MARKER
+            return marker.is_symlink() or marker.exists()
+        except OSError:
+            # An uninspectable environment marker cannot grant scan eligibility.
+            try:
+                source = path.relative_to(self.root.resolve()).as_posix()
+            except (OSError, RuntimeError, ValueError):
+                source = "repository content"
+            self._read_warning(source, "cannot inspect environment marker")
+            return True

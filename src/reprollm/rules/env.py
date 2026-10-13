@@ -205,7 +205,7 @@ class PythonVersionDeclaredRule(Rule):
     @staticmethod
     def _declared_where(ctx: AuditContext) -> Evidence | None:
         scanner = ctx.fs
-        for pyproject in dependency_file_paths(scanner.files(), "pyproject.toml"):
+        for pyproject in dependency_file_paths(scanner.analysis_files(), "pyproject.toml"):
             text = scanner.read_text(pyproject)
             if text is not None:
                 try:
@@ -218,11 +218,11 @@ class PythonVersionDeclaredRule(Rule):
                         )
                 except tomllib.TOMLDecodeError:
                     pass
-        python_versions = dependency_file_paths(scanner.files(), ".python-version")
+        python_versions = dependency_file_paths(scanner.analysis_files(), ".python-version")
         if python_versions:
             return Evidence(kind="file", path=python_versions[0], note=".python-version present")
         for env_yml in dependency_file_paths(
-            scanner.files(), "environment.yml", "environment.yaml"
+            scanner.analysis_files(), "environment.yml", "environment.yaml"
         ):
             text = scanner.read_text(env_yml)
             if text is not None and "python=" in text:

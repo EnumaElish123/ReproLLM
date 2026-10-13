@@ -222,7 +222,7 @@ def _scan_keywords(
         if present_dirs:
             matched_concepts.add("directory:" + dir_aliases[0])
             representative = next(
-                (p for p in scanner.files() if p.split("/", 1)[0] in dir_aliases), ""
+                (p for p in scanner.analysis_files() if p.split("/", 1)[0] in dir_aliases), ""
             )
             profile_evidence.append(
                 Evidence(
@@ -266,7 +266,7 @@ def _keyword_sources(scanner: RepoScanner) -> list[KeywordSource]:
             sources.append(KeywordSource("config key", path, key))
     for name in sorted(scanner.dir_names()):
         sources.append(KeywordSource("directory name", "", name))
-    for path in scanner.files():
+    for path in scanner.analysis_files():
         stem = path.rsplit("/", 1)[-1].rsplit(".", 1)[0]
         sources.append(KeywordSource("file stem", path, stem))
     return sources

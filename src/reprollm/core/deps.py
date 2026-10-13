@@ -120,7 +120,7 @@ def _dependency_basenames(files: Iterable[str]) -> dict[str, list[str]]:
 
 def scan_dependencies(scanner: RepoScanner) -> Declarations:
     result = Declarations()
-    files = scanner.files()
+    files = scanner.analysis_files()
     basenames = _dependency_basenames(files)
 
     pyprojects = basenames.get("pyproject.toml", [])
@@ -253,7 +253,9 @@ class _RequirementsGraph:
         cached = self.nodes.get(source)
         if cached is not None:
             return cached
-        text = self.scanner.read_text(source)
+        text = (
+            self.scanner.read_text(source) if self.scanner.is_analysis_candidate(source) else None
+        )
         if text is None:
             node = _RequirementFile(False)
         else:
@@ -661,7 +663,7 @@ def _collect_lockfiles(
     requirements: list[str],
     graph: _RequirementsGraph,
 ) -> None:
-    files = scanner.files()
+    files = scanner.analysis_files()
     basenames = _dependency_basenames(files)
 
     for name in ("uv.lock", "poetry.lock"):

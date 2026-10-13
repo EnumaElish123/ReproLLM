@@ -29,6 +29,8 @@ def scalar_string(node: Node | None) -> str | None:
 
 
 def task_mapping(scanner: RepoScanner, path: str) -> dict[str, Node] | None:
+    if not scanner.is_analysis_candidate(path):
+        return None
     text = scanner.read_text(path)
     if text is None:
         return None
@@ -100,7 +102,7 @@ def cli_evidence(
     module: str | None = None,
 ) -> list[Evidence]:
     evidence: list[Evidence] = []
-    for path in scanner.files():
+    for path in scanner.analysis_files():
         if not (path.endswith(".sh") or PurePosixPath(path).name == "Makefile"):
             continue
         text = scanner.read_text(path)

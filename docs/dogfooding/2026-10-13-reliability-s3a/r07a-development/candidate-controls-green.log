@@ -1,0 +1,92 @@
+.................................................FF                      [100%]
+=================================== FAILURES ===================================
+___ test_audit_and_init_cli_ignore_environment_code_and_task_inventory[walk] ___
+
+tmp_path = PosixPath('<task-evidence>/candidate-controls-green-tmp/test_audit_and_init_cli_ignore0')
+git_mode = False
+
+    @pytest.mark.parametrize("git_mode", [False, True], ids=["walk", "git"])
+    def test_audit_and_init_cli_ignore_environment_code_and_task_inventory(
+        tmp_path: Path, git_mode: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        if git_mode:
+            _git(tmp_path, "init")
+            _git(tmp_path, "add", "--", ".")
+        runner = CliRunner()
+        before = runner.invoke(app, ["audit", str(tmp_path), "--format", "json"])
+        assert before.exit_code in (0, 1), before.output
+        expected_detection = json.loads(before.output)["profiles"]["detected"]
+        expected_inventory = runner.invoke(app, ["init", str(tmp_path), "--list-tasks"])
+        assert expected_inventory.exit_code == 0 and expected_inventory.output == "business\n"
+        for index in range(501):
+            _write(tmp_path, f".venv/lib/f{index:04}.py", "import vllm\nimport inspect_ai\n")
+        _write(tmp_path, ".venv/tasks/canary.yaml", "task: environment_canary\n")
+        _write(tmp_path, ".venv/README.md", "judge rubric differential privacy\n")
+        if git_mode:
+            _git(tmp_path, "add", "--", ".venv")
+        after = runner.invoke(app, ["audit", str(tmp_path), "--format", "json"])
+        assert after.exit_code in (0, 1), after.output
+        assert json.loads(after.output)["profiles"]["detected"] == expected_detection
+        inventory = runner.invoke(app, ["init", str(tmp_path), "--list-tasks"])
+        assert inventory.exit_code == 0 and inventory.output == expected_inventory.output
+        initialized = runner.invoke(app, ["init", str(tmp_path), "--task", "business"])
+        assert initialized.exit_code == 0, initialized.output
+        manifest = load_manifest(tmp_path / "reprollm.yaml")
+        assert manifest.experiment.profiles == ["evaluation"]
+        assert manifest.evaluation is not None
+        assert [item.name for item in manifest.evaluation.metrics] == ["business"]
+>       assert manifest.inference is None
+E       AssertionError: assert Inference(backend=None, version=None, mode=None, dtype=None, tensor_parallel_size=None, gpu_memory_utilization=None, quantization=None, max_model_len=None, kv_cache_dtype=None, params={}) is None
+E        +  where Inference(backend=None, version=None, mode=None, dtype=None, tensor_parallel_size=None, gpu_memory_utilization=None, quantization=None, max_model_len=None, kv_cache_dtype=None, params={}) = Manifest(schema_version=1, project=Project(name='test_audit_and_init_cli_ignore0', description=None, paper=None), expe...definitions=None, query_budget=None, judge=None), privacy=None, execution=None, bindings={}, custom={}, artifacts=None).inference
+
+tests/unit/core/test_analysis_candidates.py:326: AssertionError
+___ test_audit_and_init_cli_ignore_environment_code_and_task_inventory[git] ____
+
+tmp_path = PosixPath('<task-evidence>/candidate-controls-green-tmp/test_audit_and_init_cli_ignore1')
+git_mode = True
+
+    @pytest.mark.parametrize("git_mode", [False, True], ids=["walk", "git"])
+    def test_audit_and_init_cli_ignore_environment_code_and_task_inventory(
+        tmp_path: Path, git_mode: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        if git_mode:
+            _git(tmp_path, "init")
+            _git(tmp_path, "add", "--", ".")
+        runner = CliRunner()
+        before = runner.invoke(app, ["audit", str(tmp_path), "--format", "json"])
+        assert before.exit_code in (0, 1), before.output
+        expected_detection = json.loads(before.output)["profiles"]["detected"]
+        expected_inventory = runner.invoke(app, ["init", str(tmp_path), "--list-tasks"])
+        assert expected_inventory.exit_code == 0 and expected_inventory.output == "business\n"
+        for index in range(501):
+            _write(tmp_path, f".venv/lib/f{index:04}.py", "import vllm\nimport inspect_ai\n")
+        _write(tmp_path, ".venv/tasks/canary.yaml", "task: environment_canary\n")
+        _write(tmp_path, ".venv/README.md", "judge rubric differential privacy\n")
+        if git_mode:
+            _git(tmp_path, "add", "--", ".venv")
+        after = runner.invoke(app, ["audit", str(tmp_path), "--format", "json"])
+        assert after.exit_code in (0, 1), after.output
+        assert json.loads(after.output)["profiles"]["detected"] == expected_detection
+        inventory = runner.invoke(app, ["init", str(tmp_path), "--list-tasks"])
+        assert inventory.exit_code == 0 and inventory.output == expected_inventory.output
+        initialized = runner.invoke(app, ["init", str(tmp_path), "--task", "business"])
+        assert initialized.exit_code == 0, initialized.output
+        manifest = load_manifest(tmp_path / "reprollm.yaml")
+        assert manifest.experiment.profiles == ["evaluation"]
+        assert manifest.evaluation is not None
+        assert [item.name for item in manifest.evaluation.metrics] == ["business"]
+>       assert manifest.inference is None
+E       AssertionError: assert Inference(backend=None, version=None, mode=None, dtype=None, tensor_parallel_size=None, gpu_memory_utilization=None, quantization=None, max_model_len=None, kv_cache_dtype=None, params={}) is None
+E        +  where Inference(backend=None, version=None, mode=None, dtype=None, tensor_parallel_size=None, gpu_memory_utilization=None, quantization=None, max_model_len=None, kv_cache_dtype=None, params={}) = Manifest(schema_version=1, project=Project(name='test_audit_and_init_cli_ignore1', description=None, paper=None), expe...definitions=None, query_budget=None, judge=None), privacy=None, execution=None, bindings={}, custom={}, artifacts=None).inference
+
+tests/unit/core/test_analysis_candidates.py:326: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_audit_and_init_cli_ignore_environment_code_and_task_inventory[walk]
+FAILED tests/unit/core/test_analysis_candidates.py::test_audit_and_init_cli_ignore_environment_code_and_task_inventory[git]
+2 failed, 49 passed in 5.12s

@@ -1,0 +1,78 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_uninspectable_marker_skips_candidate_without_crashing_or_hiding_git_facts _
+
+tmp_path = PosixPath('<task-evidence>/marker-runs-red-tmp/test_uninspectable_marker_skip0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <object>>
+
+    def test_uninspectable_marker_skips_candidate_without_crashing_or_hiding_git_facts(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "restricted/implementation.py", "import vllm\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        original_exists = Path.exists
+    
+        def guarded_exists(path: Path) -> bool:
+            if path == tmp_path / "restricted/pyvenv.cfg":
+                raise PermissionError("synthetic inaccessible marker")
+            return original_exists(path)
+    
+        monkeypatch.setattr(Path, "exists", guarded_exists)
+        context = AuditContext(tmp_path)
+>       assert [item.module for item in context.pyscan.imports] == ["openai"]
+                                        ^^^^^^^^^^^^^^
+
+tests/unit/core/test_analysis_candidates.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/reprollm/core/context.py:102: in pyscan
+    self._pyscan = scan_python(self.fs)
+                   ^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/pyscan.py:61: in scan_python
+    for path in scanner.python_files():
+                ^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/scanner.py:190: in python_files
+    sources = [p for p in self.analysis_files() if p.endswith(".py")]
+                          ^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/scanner.py:139: in analysis_files
+    self._analysis_files = [path for path in self.files() if self.is_analysis_candidate(path)]
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/scanner.py:150: in is_analysis_candidate
+    if self._skip_dir(directory, name):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/core/scanner.py:289: in _skip_dir
+    return (path / _VENV_MARKER).exists()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('<task-evidence>/marker-runs-red-tmp/test_uninspectable_marker_skip0/restricted/pyvenv.cfg')
+
+    def guarded_exists(path: Path) -> bool:
+        if path == tmp_path / "restricted/pyvenv.cfg":
+>           raise PermissionError("synthetic inaccessible marker")
+E           PermissionError: synthetic inaccessible marker
+
+tests/unit/core/test_analysis_candidates.py:161: PermissionError
+__ test_run_directory_names_and_explicit_inputs_do_not_create_static_signals ___
+
+tmp_path = PosixPath('<task-evidence>/marker-runs-red-tmp/test_run_directory_names_and_e0')
+
+    def test_run_directory_names_and_explicit_inputs_do_not_create_static_signals(
+        tmp_path: Path,
+    ) -> None:
+        _write(tmp_path, "requirements.txt", "-r .reprollm/runs/one/pins.txt\n")
+        _write(tmp_path, ".reprollm/runs/one/pins.txt", "vllm==0.6.1\n")
+        (tmp_path / ".reprollm/runs/one/evaluation/privacy").mkdir(parents=True)
+        context = AuditContext(tmp_path)
+>       assert "evaluation" not in context.fs.dir_names()
+E       AssertionError: assert 'evaluation' not in {'.reprollm', 'evaluation', 'one', 'privacy', 'runs'}
+E        +  where {'.reprollm', 'evaluation', 'one', 'privacy', 'runs'} = dir_names()
+E        +    where dir_names = <reprollm.core.scanner.RepoScanner object at <object>>.dir_names
+E        +      where <reprollm.core.scanner.RepoScanner object at <object>> = <reprollm.core.context.AuditContext object at <object>>.fs
+
+tests/unit/core/test_analysis_candidates.py:177: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_uninspectable_marker_skips_candidate_without_crashing_or_hiding_git_facts
+FAILED tests/unit/core/test_analysis_candidates.py::test_run_directory_names_and_explicit_inputs_do_not_create_static_signals
+2 failed in 0.40s

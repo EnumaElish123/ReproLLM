@@ -1,0 +1,321 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[.venv-False] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign0')
+directory = '.venv', marker = False
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('vllm', '.v...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         At index 0 diff: ('vllm', '.venv/requirements.txt') != ('openai', 'requirements.txt')
+E         Left contains one more item: ('openai', 'requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[node_modules-False] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign1')
+directory = 'node_modules', marker = False
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('vllm', 'no...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         At index 0 diff: ('vllm', 'node_modules/requirements.txt') != ('openai', 'requirements.txt')
+E         Left contains one more item: ('openai', 'requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[__pycache__-False] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign2')
+directory = '__pycache__', marker = False
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('vllm', '__...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         At index 0 diff: ('vllm', '__pycache__/requirements.txt') != ('openai', 'requirements.txt')
+E         Left contains one more item: ('openai', 'requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[package.egg-info-False] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign3')
+directory = 'package.egg-info', marker = False
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('vllm', 'pa...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         At index 0 diff: ('vllm', 'package.egg-info/requirements.txt') != ('openai', 'requirements.txt')
+E         Left contains one more item: ('openai', 'requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[custom_environment-True] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign4')
+directory = 'custom_environment', marker = True
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('vllm', 'cu...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         At index 0 diff: ('vllm', 'custom_environment/requirements.txt') != ('openai', 'requirements.txt')
+E         Left contains one more item: ('openai', 'requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+_ test_excluded_environment_signals_do_not_enter_any_static_consumer[tasks/custom_environment-True] _
+
+tmp_path = PosixPath('<task-evidence>/static-consumers-red-tmp/test_excluded_environment_sign5')
+directory = 'tasks/custom_environment', marker = True
+
+    @pytest.mark.parametrize(
+        ("directory", "marker"),
+        [
+            (".venv", False),
+            ("node_modules", False),
+            ("__pycache__", False),
+            ("package.egg-info", False),
+            ("custom_environment", True),
+            ("tasks/custom_environment", True),
+        ],
+    )
+    def test_excluded_environment_signals_do_not_enter_any_static_consumer(
+        tmp_path: Path, directory: str, marker: bool
+    ) -> None:
+        _write(tmp_path, "train.py", "import openai\n")
+        _write(tmp_path, "requirements.txt", "openai==1.50.0\n")
+        _write(tmp_path, "README.md", "A research experiment.\n")
+        _write(tmp_path, "tasks/business.yaml", "task: business\ndataset_path: demo/corpus\n")
+        polluted = {
+            "README.md": "judge rubric differential privacy\n",
+            "requirements.txt": "vllm==0.6.1\n",
+            "uv.lock": '[[package]]\nname = "vllm"\nversion = "0.6.1"\n',
+            ".python-version": "9.9\n",
+            "judge_rubric.yaml": "task: environment_canary\njudge: rubric\nprivacy: epsilon\n",
+            "launch.sh": "lighteval --tasks environment_canary\n",
+            "evaluation/privacy/attack.py": "import vllm\nimport inspect_ai\n",
+            ".env.local": "SYNTHETIC_CANARY=value\n",
+        }
+        for relative, text in polluted.items():
+            _write(tmp_path, f"{directory}/{relative}", text)
+        if marker:
+            _write(tmp_path, f"{directory}/pyvenv.cfg", "home = synthetic\n")
+        _git(tmp_path, "init")
+        _git(tmp_path, "add", "--", ".")
+        _write(tmp_path, f"{directory}/untracked.txt", "new file fact\n")
+    
+        context = AuditContext(tmp_path)
+>       assert [(d.name, d.source_file) for d in context.deps.declarations] == [
+            ("openai", "requirements.txt")
+        ]
+E       AssertionError: assert [('openai', '...rements.txt')] == [('openai', '...rements.txt')]
+E         
+E         Left contains one more item: ('vllm', 'tasks/custom_environment/requirements.txt')
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:85: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[.venv-False]
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[node_modules-False]
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[__pycache__-False]
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[package.egg-info-False]
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[custom_environment-True]
+FAILED tests/unit/core/test_analysis_candidates.py::test_excluded_environment_signals_do_not_enter_any_static_consumer[tasks/custom_environment-True]
+6 failed in 1.01s

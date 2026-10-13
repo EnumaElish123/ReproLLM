@@ -152,7 +152,7 @@ def collect(root: Path, scanner: RepoScanner, config: DiscoverConfig) -> Payload
     payload = Payload()
     canonical_root = root.resolve()
     resolved: dict[str, str] = {}
-    for path in scanner.files():
+    for path in scanner.analysis_files():
         try:
             source = (root / path).resolve().relative_to(canonical_root).as_posix()
         except (OSError, ValueError, RuntimeError):

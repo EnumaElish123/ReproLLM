@@ -1,0 +1,173 @@
+{
+  "approval": "Parent confirmed interface design against explicitly authorized public scanner/static consumer/CLI seams.",
+  "baseline_commit": "798f064ca6704d3bc7b6adacb6f0608ebd7b436d",
+  "budgets": {
+    "README_depth": "root and first-level directories",
+    "configuration_extensions": [
+      ".json",
+      ".toml",
+      ".yaml",
+      ".yml"
+    ],
+    "default_text_read_bytes": 524288,
+    "detection_evidence_per_profile": 5,
+    "discover_characters": "existing DiscoverConfig.max_chars",
+    "discover_file_bytes": 65536,
+    "discover_tree_entries": 2000,
+    "framework_task_inventory": "all eligible paths; existing selection contract unchanged",
+    "python_candidates": 500,
+    "repository_file_bytes": 2097152,
+    "requirements_depth": 10
+  },
+  "consumer_inventory": [
+    {
+      "contract": "Keep existing Git/walk facts and hard size/run filters; no analysis exclusion.",
+      "module": "src/reprollm/core/scanner.py",
+      "public_behavior": "files/glob/exists/size",
+      "view": "file facts"
+    },
+    {
+      "contract": "Existing excluded directory segments and pyvenv.cfg; filter before consumer budgets.",
+      "module": "src/reprollm/core/scanner.py",
+      "public_behavior": "analysis_files/is_analysis_candidate",
+      "view": "static candidates"
+    },
+    {
+      "contract": "500 valid Python candidates; read cap512KiB and R06G containment unchanged.",
+      "module": "src/reprollm/core/scanner.py",
+      "public_behavior": "python_files",
+      "view": "static candidates"
+    },
+    {
+      "contract": "README depth<=1; config suffix/lock/.reprollm exclusions unchanged; safe empty dirs retained.",
+      "module": "src/reprollm/core/scanner.py",
+      "public_behavior": "readme_files/config_files/dir_names",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Uses python_files; retain SyntaxError/unreadable diagnostic and512KiB cap.",
+      "module": "src/reprollm/core/pyscan.py",
+      "public_behavior": "scan_python",
+      "view": "static candidates"
+    },
+    {
+      "contract": "All eligible paths, root-first identity and lexical requirements order unchanged; exclude env/cache input before parse.",
+      "module": "src/reprollm/core/deps.py",
+      "public_behavior": "scan_dependencies/_collect_lockfiles",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Explicit include child cannot bypass excluded candidates; root-local resolution/depth10/closure unchanged.",
+      "module": "src/reprollm/core/deps.py",
+      "public_behavior": "_RequirementsGraph._node",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Same candidate view as dependency inventory; no new rule/status policy.",
+      "module": "src/reprollm/rules/env.py",
+      "public_behavior": "PythonVersionDeclaredRule",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Keep scanner.files so tracked forbidden file remains CRITICAL even below excluded analysis directory.",
+      "module": "src/reprollm/rules/env.py",
+      "public_behavior": "SecretFilesIgnoredRule",
+      "view": "file facts"
+    },
+    {
+      "contract": "Unmodified files warmup and complete Git facts; no engine edits.",
+      "module": "src/reprollm/core/engine.py",
+      "public_behavior": "run_audit warmup",
+      "view": "file facts"
+    },
+    {
+      "contract": "Unmodified context Git state; cache/env additions may really change dirty/untracked findings.",
+      "module": "src/reprollm/rules/code.py",
+      "public_behavior": "code.no_untracked",
+      "view": "Git facts"
+    },
+    {
+      "contract": "AST,declarations,README/config keys,dir/file stems all derive candidates; evidence sorting/cap unchanged.",
+      "module": "src/reprollm/profiles/detect.py",
+      "public_behavior": "run_detection/_keyword_sources/_scan_keywords",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Shell/Makefile entry evidence and explicit task path use candidate eligibility; safe reads untouched.",
+      "module": "src/reprollm/integrations/_static.py",
+      "public_behavior": "cli_evidence/task_mapping/import_evidence",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Keep lm_eval/tasks and tasks prefixes; only eligible YAML candidates.",
+      "module": "src/reprollm/integrations/lm_eval.py",
+      "public_behavior": "_task_configs",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Only eligible YAML candidates; no parser expansion.",
+      "module": "src/reprollm/integrations/lighteval.py",
+      "public_behavior": "extract_task_hints",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Inherits python_files cap before inspect task parsing.",
+      "module": "src/reprollm/integrations/inspect_ai.py",
+      "public_behavior": "extract_task_hints",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Consumes filtered PyScanResult; no provider pattern changes.",
+      "module": "src/reprollm/integrations/providers.py",
+      "public_behavior": "detect_providers",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Candidate set precedes existing allowlist,size64KiB,char budget,tree2000; no model/network behavior.",
+      "module": "src/reprollm/discover/collector.py",
+      "public_behavior": "collect",
+      "view": "static candidates"
+    },
+    {
+      "contract": "Keep existence checks; unrelated to implicit repository analysis candidates.",
+      "module": "src/reprollm/rules/prompt.py and rules/eval_.py",
+      "public_behavior": "declared file exists",
+      "view": "explicit declared input facts"
+    },
+    {
+      "contract": "Unchanged runtime/artifact/model scope; not an implicit static consumer.",
+      "module": "src/reprollm/run/capture.py and lock/local_resolver.py",
+      "public_behavior": "explicit artifact/local-model traversal",
+      "view": "explicit user-declared inputs"
+    }
+  ],
+  "directory_exclusion_policy": "Reuse existing known excluded names and nested pyvenv.cfg markers; no new vendor/third_party blanket exclusion. Lexical and contained internal target paths cannot bypass exclusion; uninspectable markers skip safely with one fixed relative diagnostic.",
+  "explicit_configuration_boundary": "Built-in/project profiles and command configuration are explicit policy inputs with their existing R06-G guards, not research-file candidate enumeration.",
+  "non_resource_and_resource_status": "Root owns applicable five-project Gate A and CI; historical unavailable GPU/provider Gate B remains BLOCKED and is not passed by this task.",
+  "owned_candidate_hashes": {
+    "CHANGELOG.md": "829e8696c6d88f2a823dbeaa7b98617ec4827e798ece98b10f2e59964000f1b2",
+    "docs/concepts.md": "cbfaa1a9f587ca53263bee9f8c471b4654b6ba41d8b5127e3d6e5ba97d49a6dc",
+    "src/reprollm/core/deps.py": "4ee16a91c1b465b92f6a86288661b72a4d6d02435a91bf51ea4573c83a317624",
+    "src/reprollm/core/scanner.py": "aa277cdf53d00416a56ab207f8bea8f8c29578a2f7f28c31fef85941b5040cb7",
+    "src/reprollm/discover/collector.py": "a5aa014f5a7b0a2825f943b8c39a03c2e64ff58979eec400c6ff45cb9f24b061",
+    "src/reprollm/integrations/_static.py": "a0117409abfd75fc600f800d0b19fa7a7823c91b7b4070391cec68897eaba516",
+    "src/reprollm/integrations/lighteval.py": "95df8c6bab00004bd053b72bee32fae8e6a8887cca431dc5dae69a4c46947ace",
+    "src/reprollm/integrations/lm_eval.py": "48fa2327c9d5cb8a8e5a77d63941e67f8607fe693d24572c9839a70cce766cd3",
+    "src/reprollm/profiles/detect.py": "7f9e72d61e59abcac5819fc8b028c9ca30c06b8be96c334fb7df4109f9a2e403",
+    "src/reprollm/rules/env.py": "f81067ce106dda80c09b3ca686699d9c0cc27a2245bc69710ea77b6c36b64276",
+    "tests/unit/core/test_analysis_candidates.py": "39cc57ccecb88d75d1f48a5fc012020af706c3ec9d01965eeb70f2f2f3ffd9e2"
+  },
+  "protected_scope_proof": "candidate-protected-proof.json",
+  "qualification_snapshot_limit": "The candidate inventory is captured and cached per context. Internal aliases or markers changed after capture are not a concurrent-filesystem snapshot guarantee. Existing read-time resolved-root and retargeted-text-cache guards remain unchanged.",
+  "required_slices": [
+    "Git501venv budget",
+    "Known excluded directories and pyvenv marker parity",
+    "All static consumers and Git/security fact preservation",
+    "Explicit requirements includes and normalized internal alias targets",
+    "Boundary/size/read failure and deterministic public CLI controls"
+  ],
+  "schema_version": 1,
+  "scope": "R07-A only; no engine/redaction/schema/scope/default diagnostic policy changes.",
+  "status": "FROZEN_FOCUSED_AND_SCOPED_CHECKS_PASS_FULL_QUALITY_GATE_A_CI_PENDING",
+  "task": "R07-A"
+}
