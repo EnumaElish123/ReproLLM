@@ -20,6 +20,12 @@ R07-A 性能跟进提交：`110087b1e416c12c25253c07365944935e986470`。
 普通候选路径省去重复根解析与规范化；Windows 保留完整目标解析。
 原预算、公共内容读取边界、规范、gold、pins、schema 和依赖均未变。
 
+[CI 收尾](r07a-ci-followup.md)补充第二次 Windows 覆盖率超时与完整选择证明。
+并行 VOPT-01 提交 `ae9adbe` 修正 marker 合取，保留原 slow/nightly 预算；
+VOPT-02 另澄清 §22 T-09 与会话验收频率。R07-B 获批 §13 及产品源码不变。
+原两个无覆盖率性能测试在 Linux 通过；没有独立 Windows 无覆盖率性能 PASS。
+后续会话同时读取新的[验证流程](../../plan/validation-workflow-2026-10-13.md)。
+
 ## 下一工程会话：S3-B，R04-A → R04-B
 
 从实际当前HEAD和干净状态复核，不回退审查SHA；读取本交接、S2交接、

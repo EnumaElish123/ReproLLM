@@ -1,0 +1,74 @@
+{
+  "acceptance_interpretation": "Restoring the existing nightly selection is a quality-command contract repair. It does not establish a native Windows 10-second performance pass. Existing failures and actual future native results must remain distinct.",
+  "findings": [
+    {
+      "evidence": "M8-T04 requires slow performance tests in daily nightly, not per-PR. The performance test module states the same; the existing nightly runs tests/perf with -m slow without coverage.",
+      "id": "selection-contract",
+      "recommendation": "Keep the 10/15-second tests and nightly execution unchanged; combine Windows normal-quality selection as not slow and not linux_only.",
+      "severity": "material"
+    },
+    {
+      "documentation": "https://docs.pytest.org/en/stable/example/simple.html#how-to-change-command-line-options-defaults",
+      "evidence": "Committed pyproject defaults -m not slow; committed Windows main quality command appends -m not linux_only. Later conflicting CLI options replace the configured marker expression.",
+      "id": "option-precedence",
+      "severity": "material"
+    },
+    {
+      "documentation": "https://coverage.readthedocs.io/en/latest/howitworks.html#execution",
+      "evidence": "The reported 17.1-second failure occurs with coverage instrumentation. It is retained as a real failure for that execution mode and cannot be relabeled as native uninstrumented performance.",
+      "id": "instrumented-timing",
+      "severity": "measurement-limitation"
+    },
+    {
+      "documentation": "https://docs.python.org/3.12/library/os.html#os.lstat",
+      "evidence": "Current Windows candidates retain full canonical target resolution. Python Windows lstat follows non-name-surrogate reparse points, so returned regular metadata cannot prove that the original leaf has no such reparse point.",
+      "id": "windows-safe-boundary",
+      "severity": "security-constraint"
+    }
+  ],
+  "large_validation_executions": 0,
+  "minimal_followup_proposal": {
+    "description": "After existing full native target resolution and containment succeed, a strict single-component source whose resolved target parent equals the canonical root can return the same eligibility result directly. This only avoids empty parent-processing and relative-path reconstruction; it preserves all Windows native resolution calls.",
+    "guards_preserved": [
+      "Fresh explicit root capture",
+      "Absolute/Windows-anchor then NUL rejection order",
+      "Native full target canonicalization",
+      "Target containment",
+      "Nested source/target parent and marker handling for remaining cases",
+      "Fresh public content-read containment, including cache hits"
+    ],
+    "status": "DO_NOT_APPLY_WITHOUT_NATIVE_FEEDBACK",
+    "validation_required": [
+      "Native Windows same-fixture plain timing and separate profile",
+      "Full byte-equivalent JSON",
+      "Windows ordinary-leaf resolve count remains N",
+      "Aliases to excluded and external targets retain old behavior",
+      "No replacement of reparse proof by lstat metadata"
+    ]
+  },
+  "parent_reported_observation": {
+    "audit_budget_seconds": 10,
+    "candidate_boundary_failures_reported": false,
+    "ci_commit": "c3f843b3e5967452daf991ac95a5084dc65c1a2b",
+    "other_four_quality_jobs_passed": true,
+    "windows_audit_budget_elapsed_seconds_rounded": 17.1
+  },
+  "product_or_pytest_executions": 0,
+  "reviewed_commit": "c3f843b3e5967452daf991ac95a5084dc65c1a2b",
+  "reviewed_git_object_sha256": {
+    ".github/workflows/ci.yml": "b00cd4bc7e4a6755e5547e1cf196e6a610fc8c7c3346b9fea52590aa0b9d1504",
+    ".github/workflows/nightly.yml": "280be6efb5909db905e7ada37c711c0dd28b9f15a0425dd6d5be8d2bec39bf0d",
+    "docs/plan/M8_stabilization.md": "ed8ee6c1620135bf6e17a8182b1a4b3b2bb8791f9f722777c38d9c007ce5c785",
+    "pyproject.toml": "f1384f2aaff0176cb8189f7295973ad0ca78bd79bc457e8076ac829e2d90d97e",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "tests/perf/test_large_repo.py": "9350333a0c6110bc6b6351acf0e382912984965b10e42447a583bd7f5011ed78"
+  },
+  "schema_version": 1,
+  "source_or_repository_files_written": 0,
+  "task": "R07-A Windows coverage performance follow-up: read-only contract analysis",
+  "windows_cost_hypothesis": {
+    "confidence": "source-backed, not native-profiled",
+    "description": "The shared view checks every listed file; the large Git fixture includes 19,500 root data files in addition to 500 Python files and two metadata files. Windows performs full resolution per candidate. Native time attribution is unavailable from the reported CI assertion alone."
+  },
+  "working_tree_user_changes_used_as_evidence": false
+}

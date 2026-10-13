@@ -73,3 +73,7 @@ LM 单次受监控 text 为 36.415286 秒、对照 24.376493 秒；NeurIPS expor
 [开发记录](r07a-perf-development/index.json)、[性能记录](r07a-perf-performance/index.json)、
 [源码只读审查](r07a-perf-source-readonly-review.json)、
 [五项目摘要](r07a-perf-gate-summary.json)、[独立 30 项](r07a-perf-gate-boundary-AST-source-qualification.json)。
+
+后续 [CI 收尾](r07a-ci-followup.md)记录第二次实际 Windows 覆盖率超时与
+slow/nightly 选择修正；上文“等待 Windows CI”是本阶段的历史状态，
+普通 CI 结果不作为独立 Windows 无覆盖率性能通过证据。
