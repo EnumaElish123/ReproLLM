@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_analysis_snapshot_canonicalizes_root_once[1] _______________
+
+tmp_path = PosixPath('<BASE_TEMP_RED>/test_analysis_snapshot_canonic0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1d43611ee0>
+count = 1
+
+    @pytest.mark.parametrize("count", [1, 8])
+    def test_analysis_snapshot_canonicalizes_root_once(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+    ) -> None:
+        for index in range(count):
+            _write(tmp_path, f"business{index:02}.py", "import os\n")
+        context = AuditContext(tmp_path)
+        scanner = context.fs
+        original_resolve = Path.resolve
+        root_calls = 0
+    
+        def counted_resolve(path: Path, *args, **kwargs) -> Path:
+            nonlocal root_calls
+            if path == tmp_path:
+                root_calls += 1
+            return original_resolve(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "resolve", counted_resolve)
+        expected = [f"business{index:02}.py" for index in range(count)]
+        assert scanner.analysis_files() == expected
+        assert scanner.analysis_files() == scanner.python_files() == expected
+>       assert root_calls == 1
+E       assert 2 == 1
+
+tests/unit/core/test_analysis_candidates.py:374: AssertionError
+______________ test_analysis_snapshot_canonicalizes_root_once[8] _______________
+
+tmp_path = PosixPath('<BASE_TEMP_RED>/test_analysis_snapshot_canonic1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1d43613dd0>
+count = 8
+
+    @pytest.mark.parametrize("count", [1, 8])
+    def test_analysis_snapshot_canonicalizes_root_once(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+    ) -> None:
+        for index in range(count):
+            _write(tmp_path, f"business{index:02}.py", "import os\n")
+        context = AuditContext(tmp_path)
+        scanner = context.fs
+        original_resolve = Path.resolve
+        root_calls = 0
+    
+        def counted_resolve(path: Path, *args, **kwargs) -> Path:
+            nonlocal root_calls
+            if path == tmp_path:
+                root_calls += 1
+            return original_resolve(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "resolve", counted_resolve)
+        expected = [f"business{index:02}.py" for index in range(count)]
+        assert scanner.analysis_files() == expected
+        assert scanner.analysis_files() == scanner.python_files() == expected
+>       assert root_calls == 1
+E       assert 16 == 1
+
+tests/unit/core/test_analysis_candidates.py:374: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_analysis_snapshot_canonicalizes_root_once[1]
+FAILED tests/unit/core/test_analysis_candidates.py::test_analysis_snapshot_canonicalizes_root_once[8]
+2 failed in 0.56s

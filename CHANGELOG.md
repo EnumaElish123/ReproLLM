@@ -16,6 +16,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-A performance follow-up (spec §13): capture the canonical root once per
+  static candidate view, avoid repeated filename normalization and reuse POSIX
+  ordinary root-file eligibility. Windows, aliases, complex paths and failed
+  metadata checks retain full resolution; explicit candidates and content reads
+  keep fresh root checks.
+
 - R07-B (accepted spec §13): report Python file-budget coverage once on default
   stderr for audit, init including task listing and interactive planning, and
   export's current audit. Use actual AST parse successes and candidate, selected,

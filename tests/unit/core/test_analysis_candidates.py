@@ -1,12 +1,15 @@
 """R07-A static candidates preserve business analysis and repository facts."""
 
 import json
+import os
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app
+from reprollm.core import scanner as scanner_mod
 from reprollm.core.context import AuditContext
 from reprollm.core.proc import run_cmd
 from reprollm.core.yaml_io import load_manifest
@@ -348,3 +351,295 @@ def test_business_python_cap_and_text_limit_are_preserved(tmp_path: Path) -> Non
     assert context.fs.read_text("oversize.py") is None
     assert len(context.pyscan.imports) == 499
     assert context.detection.hints.backends == []
+
+
+@pytest.mark.parametrize("count", [1, 8])
+def test_analysis_snapshot_canonicalizes_root_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+) -> None:
+    for index in range(count):
+        _write(tmp_path, f"business{index:02}.py", "import os\n")
+    context = AuditContext(tmp_path)
+    scanner = context.fs
+    original_resolve = Path.resolve
+    root_calls = 0
+
+    def counted_resolve(path: Path, strict: bool = False) -> Path:
+        nonlocal root_calls
+        if path == tmp_path:
+            root_calls += 1
+        return original_resolve(path, strict=strict)
+
+    monkeypatch.setattr(Path, "resolve", counted_resolve)
+    expected = [f"business{index:02}.py" for index in range(count)]
+    assert scanner.analysis_files() == expected
+    assert scanner.analysis_files() == scanner.python_files() == expected
+    assert root_calls == 1
+    root_calls = 0
+    assert scanner.is_analysis_candidate("business00.py")
+    assert scanner.is_analysis_candidate("business00.py")
+    assert root_calls == 2
+    root_calls = 0
+    assert scanner.read_text("business00.py") == "import os\n"
+    assert scanner.read_text("business00.py") == "import os\n"
+    assert root_calls == 2
+
+
+@pytest.mark.security
+@pytest.mark.parametrize("error", [OSError, RuntimeError, ValueError])
+def test_failed_candidate_root_capture_keeps_read_boundary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, error: type[Exception]
+) -> None:
+    _write(tmp_path, "business.py", "import os\n")
+    scanner = AuditContext(tmp_path).fs
+    assert scanner.files() == ["business.py"]
+    original_resolve = Path.resolve
+    marker_calls = 0
+
+    def fail_root(path: Path, strict: bool = False) -> Path:
+        if path == tmp_path:
+            raise error("SyntheticRootResolveCanary")
+        return original_resolve(path, strict=strict)
+
+    def fail_marker(path: Path, name: str) -> bool:
+        nonlocal marker_calls
+        marker_calls += 1
+        raise AssertionError("An unresolved root must not permit marker inspection")
+
+    monkeypatch.setattr(Path, "resolve", fail_root)
+    monkeypatch.setattr(scanner, "_skip_dir", fail_marker)
+    assert scanner.analysis_files() == ["business.py"]
+    assert scanner.is_analysis_candidate("business.py")
+    assert not scanner.is_analysis_candidate(".venv/business.py")
+    assert not scanner.is_analysis_candidate(".reprollm/runs/business.py")
+    assert marker_calls == 0
+    assert scanner.read_text("business.py") is None
+    assert scanner.warnings == ["business.py: cannot resolve path; skipped"]
+    assert "SyntheticRootResolveCanary" not in "\n".join(scanner.warnings)
+
+
+@pytest.mark.parametrize("mode", ["view", "explicit"])
+def test_flat_candidates_do_not_repeat_path_normalization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: str
+) -> None:
+    names = ["business.py", "with space.py", "数据.py", ".hidden.py", "many...dots.py"]
+    for name in names:
+        _write(tmp_path, name, "import os\n")
+    scanner = AuditContext(tmp_path).fs
+    assert scanner.files() == sorted(names)
+    original_source_path = scanner_mod.content_source_path
+    normalized: list[str] = []
+
+    def count_normalization(raw: str) -> str | None:
+        normalized.append(raw)
+        return original_source_path(raw)
+
+    monkeypatch.setattr(scanner_mod, "content_source_path", count_normalization)
+    if mode == "view":
+        assert scanner.analysis_files() == sorted(names)
+    else:
+        assert all(scanner.is_analysis_candidate(name) for name in names)
+        assert scanner.is_analysis_candidate("...")
+    assert normalized == []
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    ("raw", "reason"),
+    [
+        ("C:relative.py", "absolute paths are not allowed"),
+        ("C:bar/x", "absolute paths are not allowed"),
+        (r"\\server\share\entry.py", "absolute paths are not allowed"),
+        ("bad\x00path", "invalid path"),
+        ("C:\x00payload", "absolute paths are not allowed"),
+    ],
+)
+def test_candidate_resolver_keeps_public_lexical_rejection_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, raw: str, reason: str
+) -> None:
+    resolve_calls = 0
+
+    def unexpected_resolve(path: Path, strict: bool = False) -> Path:
+        nonlocal resolve_calls
+        resolve_calls += 1
+        raise AssertionError("Invalid lexical paths must be rejected before resolution")
+
+    monkeypatch.setattr(Path, "resolve", unexpected_resolve)
+    with pytest.raises(scanner_mod.ContentPathError) as public:
+        scanner_mod.resolve_content_path(tmp_path, raw)
+    assert str(public.value) == reason
+    with pytest.raises(scanner_mod.ContentPathError) as candidate:
+        scanner_mod.RepoScanner._resolve_analysis_path(tmp_path, raw)
+    assert str(candidate.value) == reason
+    assert resolve_calls == 0
+
+
+@pytest.mark.security
+def test_nonflat_explicit_candidates_keep_native_source_normalization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scanner = AuditContext(tmp_path).fs
+    original_source_path = scanner_mod.content_source_path
+    normalized: list[str] = []
+
+    def count_normalization(raw: str) -> str | None:
+        normalized.append(raw)
+        return original_source_path(raw)
+
+    monkeypatch.setattr(scanner_mod, "content_source_path", count_normalization)
+    rejected = [
+        "",
+        ".",
+        "..",
+        "../outside",
+        "C:relative.py",
+        r"\\server\share\entry.py",
+        "bad\x00path",
+    ]
+    accepted = [
+        "normal//file.py",
+        "normal/../file.py",
+        "./normal/file.py",
+        r"normal\file.py",
+        "normal:file.py",
+        "foo/C:bar/x",
+    ]
+    for raw in rejected:
+        assert not scanner.is_analysis_candidate(raw), raw
+    for raw in accepted:
+        assert scanner.is_analysis_candidate(raw), raw
+    assert normalized == rejected + accepted
+
+
+@pytest.mark.parametrize("count", [1, 8])
+def test_flat_regular_candidates_reuse_canonical_leaf(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+) -> None:
+    names = [f"business{index:02}.py" for index in range(count)]
+    for name in names:
+        _write(tmp_path, name, "import os\n")
+    scanner = AuditContext(tmp_path).fs
+    assert scanner.files() == names
+    original_resolve = Path.resolve
+    root_calls = 0
+    leaf_calls: list[str] = []
+
+    def counted_resolve(path: Path, strict: bool = False) -> Path:
+        nonlocal root_calls
+        if path == tmp_path:
+            root_calls += 1
+        elif path.parent == tmp_path and path.name in names:
+            leaf_calls.append(path.name)
+        return original_resolve(path, strict=strict)
+
+    monkeypatch.setattr(Path, "resolve", counted_resolve)
+    assert scanner.analysis_files() == names
+    assert root_calls == 1
+    expected_view_calls = names if os.name == "nt" else []
+    assert leaf_calls == expected_view_calls
+    leaf_calls.clear()
+    root_calls = 0
+    assert scanner.is_analysis_candidate(names[0])
+    assert scanner.is_analysis_candidate(names[0])
+    assert root_calls == 2
+    expected_explicit_calls = [names[0], names[0]] if os.name == "nt" else []
+    assert leaf_calls == expected_explicit_calls
+
+
+@pytest.mark.security
+def test_flat_leaf_reparse_or_lstat_failure_uses_full_resolution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write(tmp_path, "business.py", "import os\n")
+    scanner = AuditContext(tmp_path).fs
+    leaf = tmp_path / "business.py"
+    original_lstat = Path.lstat
+    original_resolve = Path.resolve
+    mode: int | type[Exception] = 0x400
+    leaf_calls = 0
+    lstat_calls = 0
+
+    def guarded_lstat(path: Path) -> object:
+        nonlocal lstat_calls
+        if path != leaf:
+            return original_lstat(path)
+        lstat_calls += 1
+        if isinstance(mode, type):
+            raise mode("SyntheticLeafMetadataCanary")
+        result = original_lstat(path)
+        return SimpleNamespace(st_mode=result.st_mode, st_file_attributes=mode)
+
+    def counted_resolve(path: Path, strict: bool = False) -> Path:
+        nonlocal leaf_calls
+        if path == leaf:
+            leaf_calls += 1
+        return original_resolve(path, strict=strict)
+
+    monkeypatch.setattr(Path, "lstat", guarded_lstat)
+    monkeypatch.setattr(Path, "resolve", counted_resolve)
+    for case in [0x400, PermissionError, RuntimeError, ValueError]:
+        mode = case
+        leaf_calls = 0
+        lstat_calls = 0
+        assert scanner.is_analysis_candidate("business.py")
+        assert leaf_calls == 1
+        assert lstat_calls == (0 if os.name == "nt" else 1)
+    mode = 0
+    leaf_calls = 0
+    lstat_calls = 0
+    assert scanner.is_analysis_candidate("business.py")
+    assert leaf_calls == (1 if os.name == "nt" else 0)
+    assert lstat_calls == (0 if os.name == "nt" else 1)
+
+
+@pytest.mark.security
+def test_candidate_leaf_snapshot_keeps_retargeted_cached_reads_blocked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "project"
+    leaf = root / "business.py"
+    outside = tmp_path / "outside.py"
+    _write(root, "business.py", "import os\n")
+    outside.write_bytes(b"import vllm\n")
+    probe = root / "symlink-probe"
+    try:
+        probe.symlink_to(outside)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip(f"symlinks unavailable: {type(exc).__name__}")
+    probe.unlink()
+    scanner = AuditContext(root).fs
+    assert scanner.files() == ["business.py"]
+    assert scanner.read_text("business.py") == "import os\n"
+    original_lstat = Path.lstat
+    original_open = Path.open
+    retargeted = False
+    external_opens = 0
+
+    def retarget_after_lstat(path: Path) -> object:
+        nonlocal retargeted
+        result = original_lstat(path)
+        if path == leaf and not retargeted:
+            leaf.unlink()
+            leaf.symlink_to(outside)
+            retargeted = True
+        return result
+
+    def guarded_open(path: Path, *args: object, **kwargs: object) -> object:
+        nonlocal external_opens
+        if path == outside:
+            external_opens += 1
+            raise AssertionError("External contents must not be opened")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "lstat", retarget_after_lstat)
+    monkeypatch.setattr(Path, "open", guarded_open)
+    assert scanner.analysis_files() == ["business.py"]
+    if os.name == "nt":
+        assert not retargeted
+        leaf.unlink()
+        leaf.symlink_to(outside)
+    else:
+        assert retargeted
+    assert scanner.read_text("business.py") is None
+    assert scanner.warnings == ["business.py: path resolves outside project root; skipped"]
+    assert external_opens == 0

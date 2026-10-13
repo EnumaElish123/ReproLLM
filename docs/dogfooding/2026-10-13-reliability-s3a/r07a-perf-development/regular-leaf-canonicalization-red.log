@@ -1,0 +1,186 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_flat_regular_candidates_reuse_canonical_leaf[1] _____________
+
+tmp_path = PosixPath('<DEVELOPMENT>/regular-leaf-red-pytest/test_flat_regular_candidates_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb0fc3c1280>
+count = 1
+
+    @pytest.mark.parametrize("count", [1, 8])
+    def test_flat_regular_candidates_reuse_canonical_leaf(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+    ) -> None:
+        names = [f"business{index:02}.py" for index in range(count)]
+        for name in names:
+            _write(tmp_path, name, "import os\n")
+        scanner = AuditContext(tmp_path).fs
+        assert scanner.files() == names
+        original_resolve = Path.resolve
+        root_calls = 0
+        leaf_calls: list[str] = []
+    
+        def counted_resolve(path: Path, strict: bool = False) -> Path:
+            nonlocal root_calls
+            if path == tmp_path:
+                root_calls += 1
+            elif path.parent == tmp_path and path.name in names:
+                leaf_calls.append(path.name)
+            return original_resolve(path, strict=strict)
+    
+        monkeypatch.setattr(Path, "resolve", counted_resolve)
+        assert scanner.analysis_files() == names
+        assert root_calls == 1
+        expected_view_calls = names if os.name == "nt" else []
+>       assert leaf_calls == expected_view_calls
+E       AssertionError: assert ['business00.py'] == []
+E         
+E         Left contains one more item: 'business00.py'
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:539: AssertionError
+_____________ test_flat_regular_candidates_reuse_canonical_leaf[8] _____________
+
+tmp_path = PosixPath('<DEVELOPMENT>/regular-leaf-red-pytest/test_flat_regular_candidates_r1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb0fc3869f0>
+count = 8
+
+    @pytest.mark.parametrize("count", [1, 8])
+    def test_flat_regular_candidates_reuse_canonical_leaf(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, count: int
+    ) -> None:
+        names = [f"business{index:02}.py" for index in range(count)]
+        for name in names:
+            _write(tmp_path, name, "import os\n")
+        scanner = AuditContext(tmp_path).fs
+        assert scanner.files() == names
+        original_resolve = Path.resolve
+        root_calls = 0
+        leaf_calls: list[str] = []
+    
+        def counted_resolve(path: Path, strict: bool = False) -> Path:
+            nonlocal root_calls
+            if path == tmp_path:
+                root_calls += 1
+            elif path.parent == tmp_path and path.name in names:
+                leaf_calls.append(path.name)
+            return original_resolve(path, strict=strict)
+    
+        monkeypatch.setattr(Path, "resolve", counted_resolve)
+        assert scanner.analysis_files() == names
+        assert root_calls == 1
+        expected_view_calls = names if os.name == "nt" else []
+>       assert leaf_calls == expected_view_calls
+E       AssertionError: assert ['business00....ss05.py', ...] == []
+E         
+E         Left contains 8 more items, first extra item: 'business00.py'
+E         Use -v to get more diff
+
+tests/unit/core/test_analysis_candidates.py:539: AssertionError
+_________ test_flat_leaf_reparse_or_lstat_failure_uses_full_resolution _________
+
+tmp_path = PosixPath('<DEVELOPMENT>/regular-leaf-red-pytest/test_flat_leaf_reparse_or_lsta0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb0fc387b00>
+
+    @pytest.mark.security
+    def test_flat_leaf_reparse_or_lstat_failure_uses_full_resolution(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _write(tmp_path, "business.py", "import os\n")
+        scanner = AuditContext(tmp_path).fs
+        leaf = tmp_path / "business.py"
+        original_lstat = Path.lstat
+        original_resolve = Path.resolve
+        mode: int | type[Exception] = 0x400
+        leaf_calls = 0
+        lstat_calls = 0
+    
+        def guarded_lstat(path: Path) -> object:
+            nonlocal lstat_calls
+            if path != leaf:
+                return original_lstat(path)
+            lstat_calls += 1
+            if isinstance(mode, type):
+                raise mode("SyntheticLeafMetadataCanary")
+            result = original_lstat(path)
+            return SimpleNamespace(st_mode=result.st_mode, st_file_attributes=mode)
+    
+        def counted_resolve(path: Path, strict: bool = False) -> Path:
+            nonlocal leaf_calls
+            if path == leaf:
+                leaf_calls += 1
+            return original_resolve(path, strict=strict)
+    
+        monkeypatch.setattr(Path, "lstat", guarded_lstat)
+        monkeypatch.setattr(Path, "resolve", counted_resolve)
+        for case in [0x400, PermissionError, RuntimeError, ValueError]:
+            mode = case
+            leaf_calls = 0
+            lstat_calls = 0
+            assert scanner.is_analysis_candidate("business.py")
+            assert leaf_calls == 1
+>           assert lstat_calls == (0 if os.name == "nt" else 1)
+E           assert 0 == 1
+
+tests/unit/core/test_analysis_candidates.py:586: AssertionError
+______ test_candidate_leaf_snapshot_keeps_retargeted_cached_reads_blocked ______
+
+tmp_path = PosixPath('<DEVELOPMENT>/regular-leaf-red-pytest/test_candidate_leaf_snapshot_k0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb0fc386840>
+
+    @pytest.mark.security
+    def test_candidate_leaf_snapshot_keeps_retargeted_cached_reads_blocked(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        root = tmp_path / "project"
+        leaf = root / "business.py"
+        outside = tmp_path / "outside.py"
+        _write(root, "business.py", "import os\n")
+        outside.write_bytes(b"import vllm\n")
+        probe = root / "symlink-probe"
+        try:
+            probe.symlink_to(outside)
+        except (OSError, NotImplementedError) as exc:
+            pytest.skip(f"symlinks unavailable: {type(exc).__name__}")
+        probe.unlink()
+        scanner = AuditContext(root).fs
+        assert scanner.files() == ["business.py"]
+        assert scanner.read_text("business.py") == "import os\n"
+        original_lstat = Path.lstat
+        original_open = Path.open
+        retargeted = False
+        external_opens = 0
+    
+        def retarget_after_lstat(path: Path) -> object:
+            nonlocal retargeted
+            result = original_lstat(path)
+            if path == leaf and not retargeted:
+                leaf.unlink()
+                leaf.symlink_to(outside)
+                retargeted = True
+            return result
+    
+        def guarded_open(path: Path, *args: object, **kwargs: object) -> object:
+            nonlocal external_opens
+            if path == outside:
+                external_opens += 1
+                raise AssertionError("External contents must not be opened")
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Path, "lstat", retarget_after_lstat)
+        monkeypatch.setattr(Path, "open", guarded_open)
+        assert scanner.analysis_files() == ["business.py"]
+        if os.name == "nt":
+            assert not retargeted
+            leaf.unlink()
+            leaf.symlink_to(outside)
+        else:
+>           assert retargeted
+E           assert False
+
+tests/unit/core/test_analysis_candidates.py:642: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_analysis_candidates.py::test_flat_regular_candidates_reuse_canonical_leaf[1]
+FAILED tests/unit/core/test_analysis_candidates.py::test_flat_regular_candidates_reuse_canonical_leaf[8]
+FAILED tests/unit/core/test_analysis_candidates.py::test_flat_leaf_reparse_or_lstat_failure_uses_full_resolution
+FAILED tests/unit/core/test_analysis_candidates.py::test_candidate_leaf_snapshot_keeps_retargeted_cached_reads_blocked
+4 failed in 0.69s

@@ -1,0 +1,26 @@
+{
+  "baseline_commit": "fd8fe1244e5cd4f3fc4bec97947dc7f09693a2ff",
+  "implementation": [
+    "Capture canonical root once per cached candidate view; explicit checks capture it afresh.",
+    "Avoid repeated source normalization only for the strict single-component filename grammar; all other inputs use the original public normalizer.",
+    "Use string parents only for normalized POSIX sources without a colon; colon-containing sources retain native Path semantics.",
+    "Private fallback retains absolute/Windows-anchor rejection before NUL rejection, followed by full resolution and containment.",
+    "Only POSIX ordinary single-component root leaves with successful regular-file lstat and no reparse flag can return eligibility directly.",
+    "All Windows paths, aliases, nonregular leaves, complex sources and metadata errors retain full target/parent resolution and marker handling.",
+    "All 19 original read/path/file-fact/marker definitions are byte-identical; no marker or stat-result cache was added."
+  ],
+  "limitations": "Candidate snapshots are not atomic filesystem sandboxes. Fresh content reads keep the original boundary and block a leaf retargeted to an external target, including cache hits.",
+  "owned_file_sha256": {
+    "CHANGELOG.md": "8541d53e05a80674301f62c077fdfaff97a1bca592a9578ed6d4d993c9f849ec",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "tests/unit/core/test_analysis_candidates.py": "5353b26e70e7f54c96f03e71c719b2f5347724a4b16bba8db66078de4fa29ed7"
+  },
+  "performance_status": "Await root-owned quiet budget feedback and subsequent validation; no native Windows pass claimed here.",
+  "schema_version": 1,
+  "task": "R07-A performance follow-up",
+  "tests": {
+    "additional_cases": 17,
+    "focused_cases_passed": 70,
+    "original_cases": 53
+  }
+}

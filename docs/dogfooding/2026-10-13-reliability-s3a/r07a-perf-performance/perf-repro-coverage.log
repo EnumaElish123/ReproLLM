@@ -1,0 +1,18 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________________ test_large_repo_audit_budget _________________________
+<repository>/tests/perf/test_large_repo.py:46: in test_large_repo_audit_budget
+    assert elapsed < 10.0, f"audit took {elapsed:.1f}s on 20k files (budget 10s)"
+E   AssertionError: audit took 15.2s on 20k files (budget 10s)
+E   assert 15.171151652932167 < 10.0
+=============================== warnings summary ===============================
+tests/perf/test_large_repo.py:15
+  <repository>/tests/perf/test_large_repo.py:15: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    pytestmark = pytest.mark.slow
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 1 durations ==============================
+20.93s call     tests/perf/test_large_repo.py::test_large_repo_audit_budget
+=========================== short test summary info ============================
+FAILED tests/perf/test_large_repo.py::test_large_repo_audit_budget - Assertio...
+1 failed, 1 warning in 21.05s

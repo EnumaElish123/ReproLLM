@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import fnmatch
 import os
+import stat
 from pathlib import Path, PureWindowsPath
 
 from reprollm.core import git as git_mod
@@ -108,6 +109,16 @@ def resolve_content_path(root: Path, rel_path: str) -> Path:
     return target
 
 
+def _is_simple_analysis_filename(rel_path: str) -> bool:
+    return (
+        rel_path not in {"", ".", ".."}
+        and "/" not in rel_path
+        and "\\" not in rel_path
+        and ":" not in rel_path
+        and "\x00" not in rel_path
+    )
+
+
 class RepoScanner:
     def __init__(self, root: Path, git: GitInfo) -> None:
         self.root = root
@@ -138,21 +149,70 @@ class RepoScanner:
     def analysis_files(self) -> list[str]:
         """Static candidates, excluding environments and caches before any budget."""
         if self._analysis_files is None:
+            resolved_root = self._capture_analysis_root()
             self._analysis_files = [
-                path for path in self.files() if self.is_analysis_candidate(path)
+                path for path in self.files() if self._is_analysis_candidate(path, resolved_root)
             ]
         return list(self._analysis_files)
 
     def is_analysis_candidate(self, rel_path: str) -> bool:
-        """Check a relative candidate, including explicit requirements children."""
-        source = content_source_path(rel_path)
-        if source is None or source.startswith(_HARD_SKIP_PREFIX):
-            return False
-        if any(self._skip_name(name) for name in Path(source).parts[:-1]):
+        """Check an explicit relative candidate against the current root."""
+        return self._is_analysis_candidate(rel_path, self._capture_analysis_root())
+
+    def _capture_analysis_root(self) -> Path | None:
+        try:
+            return self.root.resolve()
+        except (OSError, RuntimeError, ValueError):
+            return None
+
+    @staticmethod
+    def _resolve_analysis_path(resolved_root: Path, rel_path: str) -> Path:
+        if not _is_simple_analysis_filename(rel_path):
+            if Path(rel_path).is_absolute() or PureWindowsPath(rel_path).anchor:
+                raise ContentPathError("absolute paths are not allowed")
+            if "\x00" in rel_path:
+                raise ContentPathError("invalid path")
+        try:
+            target = (resolved_root / rel_path).resolve()
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise ContentPathError("cannot resolve path") from exc
+        if not target.is_relative_to(resolved_root):
+            raise ContentPathError("path resolves outside project root")
+        return target
+
+    @staticmethod
+    def _is_regular_analysis_leaf(resolved_root: Path, source: str) -> bool:
+        # Windows lstat can follow non-name-surrogate reparse points, so only
+        # POSIX ordinary leaves can avoid canonicalizing the target again.
+        if os.name == "nt" or not _is_simple_analysis_filename(source):
             return False
         try:
-            target = resolve_content_path(self.root, source)
-            resolved_source = target.relative_to(self.root.resolve()).as_posix()
+            metadata = (resolved_root / source).lstat()
+        except (OSError, RuntimeError, ValueError):
+            return False
+        return stat.S_ISREG(metadata.st_mode) and not (
+            getattr(metadata, "st_file_attributes", 0)
+            & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+        )
+
+    def _is_analysis_candidate(self, rel_path: str, resolved_root: Path | None) -> bool:
+        source = (
+            rel_path if _is_simple_analysis_filename(rel_path) else content_source_path(rel_path)
+        )
+        if source is None or source.startswith(_HARD_SKIP_PREFIX):
+            return False
+        # Native Windows normalization can produce a drive anchor from an
+        # internal component, so retain Path's parent semantics for colons.
+        source_parents = Path(source).parts[:-1] if ":" in source else source.split("/")[:-1]
+        if any(self._skip_name(name) for name in source_parents):
+            return False
+        if resolved_root is None:
+            return True
+        if self._is_regular_analysis_leaf(resolved_root, source):
+            return True
+        try:
+            target = self._resolve_analysis_path(resolved_root, source)
+            resolved_source = target.relative_to(resolved_root).as_posix()
         except ContentPathError:
             # Keep unsafe aliases visible to the existing read boundary and its
             # fixed diagnostics, without inspecting markers outside the root.
@@ -161,10 +221,11 @@ class RepoScanner:
             return False
         for candidate in dict.fromkeys((source, resolved_source)):
             parent = Path()
-            for name in Path(candidate).parts[:-1]:
+            parents = Path(candidate).parts[:-1] if ":" in candidate else candidate.split("/")[:-1]
+            for name in parents:
                 parent /= name
                 try:
-                    directory = resolve_content_path(self.root, parent.as_posix())
+                    directory = self._resolve_analysis_path(resolved_root, parent.as_posix())
                 except ContentPathError:
                     return False
                 if self._skip_dir(directory, name):
