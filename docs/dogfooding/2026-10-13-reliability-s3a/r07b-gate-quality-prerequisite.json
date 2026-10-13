@@ -1,0 +1,195 @@
+{
+  "records": [
+    {
+      "command": [
+        "uv",
+        "sync",
+        "--locked",
+        "--dev"
+      ],
+      "elapsed_seconds": 0.034,
+      "exit_code": 0,
+      "log": "00.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "--version"
+      ],
+      "elapsed_seconds": 0.04,
+      "exit_code": 0,
+      "log": "01.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "reprollm",
+        "--version"
+      ],
+      "elapsed_seconds": 0.46,
+      "exit_code": 0,
+      "log": "02.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "--basetemp",
+        "<S3A-session>/quality-r07b-final/pytest-temp",
+        "-o",
+        "faulthandler_timeout=120",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85"
+      ],
+      "elapsed_seconds": 373.245,
+      "exit_code": 0,
+      "log": "03.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "elapsed_seconds": 0.186,
+      "exit_code": 0,
+      "log": "04.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "elapsed_seconds": 0.105,
+      "exit_code": 0,
+      "log": "05.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "elapsed_seconds": 0.099,
+      "exit_code": 0,
+      "log": "06.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "mypy",
+        "src/"
+      ],
+      "elapsed_seconds": 0.331,
+      "exit_code": 0,
+      "log": "07.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "--basetemp",
+        "<S3A-session>/quality-r07b-final/security-temp",
+        "-o",
+        "faulthandler_timeout=120",
+        "-m",
+        "security"
+      ],
+      "elapsed_seconds": 15.064,
+      "exit_code": 0,
+      "log": "08.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.408,
+      "exit_code": 0,
+      "log": "09.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 0.428,
+      "exit_code": 0,
+      "log": "10.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "elapsed_seconds": 10.571,
+      "exit_code": 0,
+      "log": "11.log"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "elapsed_seconds": 11.593,
+      "exit_code": 0,
+      "log": "12.log"
+    },
+    {
+      "command": [
+        "reprollm",
+        "schema",
+        "export",
+        "--out",
+        "<temporary-directory>"
+      ],
+      "elapsed_seconds": 0.5,
+      "exit_code": 0,
+      "same_bytes": true,
+      "schemas": [
+        "audit_report.schema.json",
+        "config.schema.json",
+        "diff_report.schema.json",
+        "discover_candidates.schema.json",
+        "lock.schema.json",
+        "manifest.schema.json",
+        "profile.schema.json",
+        "project_rules.schema.json",
+        "rule_archive.schema.json",
+        "run_record.schema.json"
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_file_sha256": "d57791257204603705787d27b375945731c4b4ef60b1e92e4cd462e21cd7c16f"
+}

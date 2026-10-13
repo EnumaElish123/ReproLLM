@@ -11,6 +11,7 @@ from typing import Annotated, Any
 
 import typer
 
+from reprollm.cli.scan_diagnostics import show_scan_diagnostics
 from reprollm.core.errors import UserError
 from reprollm.core.manifest_scaffold import (
     InitPlan,
@@ -68,7 +69,10 @@ def init(
         typer.Option("--list-tasks", help="List all safe task candidates without writing files."),
     ] = False,
 ) -> None:
-    """Create reprollm.yaml and .reprollm/ from detected experiment signals."""
+    """Create reprollm.yaml and .reprollm/ from detected experiment signals.
+
+    Reports Python file limits on stderr.
+    """
     root = path.resolve()
     if not root.is_dir():
         raise UserError(f"{path} is not an existing directory")
@@ -84,6 +88,7 @@ def init(
         override = [name.strip() for name in profiles.split(",") if name.strip()]
     plan = plan_init(root, profiles_override=override)
     if list_tasks:
+        show_scan_diagnostics(plan.diagnostics)
         for name in plan.task_names:
             typer.echo(name)
         return
@@ -128,6 +133,7 @@ def init(
         _prompt_required(plan, values)
 
     manifest_text = render_manifest(plan, values, selected_tasks=selected)
+    show_scan_diagnostics(plan.diagnostics)
     write_scaffold(root, manifest_text, force=force)
 
     display_path = "reprollm.yaml" if plan.project_name_defaulted else str(root / "reprollm.yaml")

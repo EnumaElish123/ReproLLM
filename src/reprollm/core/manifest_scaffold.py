@@ -352,6 +352,7 @@ class InitPlan:
     task_names: list[str] = field(default_factory=list)
     task_sources: list[str] = field(default_factory=list)
     project_name_defaulted: bool = False
+    diagnostics: list[str] = field(default_factory=list)
 
 
 def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
@@ -402,6 +403,7 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
         if safe_names:
             task_names.update(safe_names)
             task_sources.add(integration.name)
+    diagnostic = ctx.pyscan.file_limit_diagnostic()
     return InitPlan(
         project_name=project_name,
         profiles=profile_list,
@@ -412,6 +414,7 @@ def plan_init(root: Path, *, profiles_override: list[str] | None) -> InitPlan:
         task_names=sorted(task_names),
         task_sources=sorted(task_sources),
         project_name_defaulted=project_name != root.name,
+        diagnostics=[diagnostic] if diagnostic is not None else [],
     )
 
 

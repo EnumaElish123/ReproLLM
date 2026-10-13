@@ -267,6 +267,12 @@ def render(records: list[Step], work: Path) -> str:
         "Diff exit 1 means the requested drift threshold was reached. "
         "Exit 2 means an input or usage error; exit 3 means an internal error.",
         "",
+        "When a repository exceeds the Python file budget, audit, init and export "
+        "report the actual parsed and candidate counts on stderr. "
+        "Missing signals may occur in files that were not analysed. "
+        "JSON output stays readable as one document; the coverage message "
+        "does not change finding thresholds.",
+        "",
         "## Install and prepare a separate copy",
         "",
         "```bash",

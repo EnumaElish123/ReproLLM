@@ -10,6 +10,7 @@ from typing import Annotated
 
 import typer
 
+from reprollm.cli.scan_diagnostics import show_scan_diagnostics
 from reprollm.core.config import load_config
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
@@ -86,7 +87,10 @@ def audit(
     ] = False,
     no_color: Annotated[bool, typer.Option("--no-color", help="Plain ASCII output.")] = False,
 ) -> None:
-    """Audit a repository and print findings (exit 1 at/above --fail-on)."""
+    """Audit a repository and print findings (exit 1 at/above --fail-on).
+
+    Reports Python file limits on stderr.
+    """
     profile_list: list[str] | None = None
     if profiles is not None:
         profile_list = [name.strip() for name in profiles.split(",") if name.strip()]
@@ -109,11 +113,7 @@ def audit(
     )
     from reprollm.cli.main import STATE
 
-    for entry in diagnostics:
-        if entry.startswith("run: "):
-            typer.echo(f"warning: {entry}", err=True)
-        elif STATE["verbose"]:
-            typer.echo(f"scan: {entry}", err=True)
+    show_scan_diagnostics(diagnostics, verbose=STATE["verbose"], include_existing=True)
 
     exit_code = _exit_code(report, effective_fail_on)
     if format == OutputFormat.GITHUB:

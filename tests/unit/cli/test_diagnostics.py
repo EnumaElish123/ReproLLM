@@ -1,4 +1,4 @@
-"""M2F-T07: scan diagnostics surface under -v (F-08)."""
+"""Scan diagnostics: verbose details and R07-B default file-budget coverage."""
 
 import json
 from pathlib import Path
@@ -23,7 +23,11 @@ def test_truncation_diagnostic_collected(tmp_path: Path) -> None:
     repo = _many_python_repo(tmp_path, 501)
     diagnostics: list[str] = []
     run_audit(repo, diagnostics=diagnostics)
-    assert diagnostics == ["python file scan truncated to 500 of 501 files"]
+    assert diagnostics == [
+        "Python analysis incomplete: parsed 500 of 501 candidate files; "
+        "selected 500 (limit 500), omitted 1. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 500 of 501 files",
+    ]
 
 
 def test_diagnostic_reported_once_despite_repeated_access(tmp_path: Path) -> None:

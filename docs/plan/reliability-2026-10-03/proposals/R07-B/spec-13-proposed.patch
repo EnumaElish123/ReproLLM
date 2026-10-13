@@ -1,0 +1,42 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -1054,7 +1054,38 @@
+ | `retriev`, `rag`, `vector store`, `faiss`, `chroma` | same | `rag` (report only; not shipped) | same |
+ | `agent`, `tool call`, `tool_call`, `function calling` | same | `agent` (report only) | same |
+ 
+-Keyword matching is case-insensitive and **word-boundary based** (`\bkeyword\b`, with `-`/`_`/space treated as equivalent separators), never bare substring: "manager" MUST NOT match `agent`, "storage" MUST NOT match `rag`. Only README text, configuration **key names** (not values), directory names, and file stems are scanned. Highest confidence per profile wins. `init` includes `high` and `medium`. AST scanning caps: ≤ 500 `.py` files, ≤ 512 KiB each; files beyond caps are skipped with a warning in `-v`.
++Keyword matching is case-insensitive and **word-boundary based** (`\bkeyword\b`, with `-`/`_`/space treated as equivalent separators), never bare substring: "manager" MUST NOT match `agent`, "storage" MUST NOT match `rag`. Only README text, configuration **key names** (not values), directory names, and file stems are scanned. Highest confidence per profile wins. `init` includes `high` and `medium`. AST scanning caps remain ≤ 500 static-candidate `.py` files and ≤ 512 KiB per file.
++
++When the Python candidate count exceeds the active file-count limit, `audit`,
++`init` (including `--list-tasks` and interactive planning), and `export`'s embedded
++audit MUST emit one short default stderr coverage diagnostic. Candidates are the
++sorted `.py` paths remaining after shared static exclusions and existing listing
++hard limits. Selected is the number returned by the bounded Python selection;
++parsed counts only selected files for which `ast.parse` succeeds. Omitted is
++candidate minus selected. The active limit MUST be reported, not assumed to be
++500 or equated with successful parsing. The fixed diagnostic is:
++
++```text
++scan: Python analysis incomplete: parsed {parsed} of {candidate} candidate files; selected {selected} (limit {limit}), omitted {omitted}. Missing signals may be in unanalysed files.
++```
++
++If selected minus parsed is nonzero, insert `{selected_skips} selected files were
++not parsed.` before the last sentence. Size, unreadable/non-text and syntax-error
++skips reduce parsed; their causes MUST NOT be inferred as separate exact counts
++from an undifferentiated read failure. No such default summary is added when the
++candidate count is within the file-count limit. Existing per-file and other
++verbose diagnostics keep their existing visibility; init/export forward only
++the new coverage summary. `-v` MUST NOT repeat that summary or display the legacy
++file-truncation line for the same budget fact. Interactive replanning and repeated
++cached access MUST NOT repeat the same coverage summary within one command.
++
++The diagnostic contains only fixed text and integers. JSON stdout remains one
++unmodified JSON document; report files and exported Markdown gain no diagnostic
++fields or text. Internal coverage counts and CLI diagnostics do not add persisted
++schema fields, findings, severity/summary counts, rule-status changes or fail-on
++changes. This disclosure does not decide the separate R07-C policy for rule
++conclusions under incomplete coverage. Discover payload/snippet budgets remain
++independent under §20.2 and are not described as this Python file-count limit.
+ 
+ ---
+ 

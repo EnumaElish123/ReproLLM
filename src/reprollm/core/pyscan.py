@@ -13,6 +13,7 @@ import re
 import warnings
 from dataclasses import dataclass, field
 
+from reprollm.core import scanner as scanner_mod
 from reprollm.core.scanner import RepoScanner
 from reprollm.schemas.finding import HfIdHint
 
@@ -46,6 +47,24 @@ class PyScanResult:
     trust_remote_code: bool = False
     trainer_import: bool = False
     warnings: list[str] = field(default_factory=list)
+    python_candidate_count: int = 0
+    python_selected_count: int = 0
+    python_parsed_count: int = 0
+    python_file_limit: int = 0
+
+    def file_limit_diagnostic(self) -> str | None:
+        if self.python_candidate_count <= self.python_file_limit:
+            return None
+        omitted = self.python_candidate_count - self.python_selected_count
+        skipped = self.python_selected_count - self.python_parsed_count
+        skipped_text = f"{skipped} selected files were not parsed. " if skipped else ""
+        return (
+            f"Python analysis incomplete: parsed {self.python_parsed_count} of "
+            f"{self.python_candidate_count} candidate files; selected "
+            f"{self.python_selected_count} (limit {self.python_file_limit}), "
+            f"omitted {omitted}. {skipped_text}"
+            "Missing signals may be in unanalysed files."
+        )
 
     def module_names(self) -> set[str]:
         """Full dotted names plus their top-level segments."""
@@ -57,8 +76,15 @@ class PyScanResult:
 
 
 def scan_python(scanner: RepoScanner) -> PyScanResult:
-    result = PyScanResult()
-    for path in scanner.python_files():
+    candidate_count = sum(path.endswith(".py") for path in scanner.analysis_files())
+    file_limit = scanner_mod.MAX_PYTHON_FILES
+    selected = scanner.python_files()
+    result = PyScanResult(
+        python_candidate_count=candidate_count,
+        python_selected_count=len(selected),
+        python_file_limit=file_limit,
+    )
+    for path in selected:
         text = scanner.read_text(path)
         if text is None:
             result.warnings.append(f"{path}: unreadable or over the size cap; skipped")
@@ -72,7 +98,11 @@ def scan_python(scanner: RepoScanner) -> PyScanResult:
         except SyntaxError as exc:
             result.warnings.append(f"{path}:{exc.lineno or 0}: syntax error; skipped")
             continue
+        result.python_parsed_count += 1
         _scan_tree(tree, path, result)
+    diagnostic = result.file_limit_diagnostic()
+    if diagnostic is not None:
+        result.warnings.append(diagnostic)
     result.hf_ids.sort(key=lambda hint: (hint.path, hint.line, hint.value))
     result.imports.sort(key=lambda info: (info.path, info.line, info.module))
     result.endpoints.sort(key=lambda info: (info.path, info.line, info.provider))

@@ -112,7 +112,12 @@ revisions, unpinnable models, …) so reviewers see the honest state.
 ## How fast is audit on a huge repository?
 
 A 20,000-file repository audits in under 10 seconds (nightly performance
-gate). Python AST scanning caps at 500 files with a visible `-v` diagnostic.
+gate). Python AST scanning caps at 500 candidate files. When that file budget
+is exceeded, audit, init and export report actual parsed and candidate counts
+on stderr by default. A missing signal may be present in files that were not
+analysed. Selected files can also fail reading or parsing, so selected and
+parsed counts can differ; audit `-v` retains those detailed diagnostics.
+The coverage message does not change rule statuses or finding thresholds.
 
 ## Will a newer schema break my committed files?
 

@@ -43,6 +43,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 
  Audit a repository and print findings (exit 1 at/above --fail-on).
 
+ Reports Python file limits on stderr.
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to audit (default: .) [default: .]            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -79,6 +81,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
  Usage: reprollm init [OPTIONS] [path]
 
  Create reprollm.yaml and .reprollm/ from detected experiment signals.
+
+ Reports Python file limits on stderr.
 
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Directory to initialize (default: .) [default: .]        │
@@ -212,6 +216,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
  Usage: reprollm export [OPTIONS] [path]
 
  Write REPRODUCIBILITY.md from manifest + lock + the selected run.
+
+ Reports Python file limits on stderr.
 
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
 │   path      <path>  Repository to export (default: .) [default: .]           │

@@ -25,6 +25,11 @@ observations. The separately labelled audit summary still checks the current
 working tree, current declarations/lock and latest valid run when applicable.
 It is not a new validation of the selected historical run.
 
+If that current audit exceeds the Python file budget, export prints its
+actual parsed and candidate counts once on stderr. Signals may be missing
+from files that were not analysed. This message does not add fields or text
+to the exported Markdown and does not change audit rule conclusions.
+
 ## Usage
 
 ```console

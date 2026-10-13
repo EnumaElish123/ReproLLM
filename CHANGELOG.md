@@ -16,6 +16,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-B (accepted spec §13): report Python file-budget coverage once on default
+  stderr for audit, init including task listing and interactive planning, and
+  export's current audit. Use actual AST parse successes and candidate, selected,
+  active limit and omitted counts; explain selected read/parse skips when present.
+  Keep JSON, report files, exported Markdown, rule findings and fail-on thresholds
+  unchanged. Preserve detailed verbose diagnostics while suppressing duplicate
+  presentation of the same file cap; reject source-text summary impersonation.
+
 - R07-A (spec §§11/13): apply shared static candidate exclusions before Python,
   dependency, framework, profile and discovery budgets in Git and walk modes.
   Exclude known generated directories and nested environments marked by

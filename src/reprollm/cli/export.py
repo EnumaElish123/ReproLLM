@@ -10,6 +10,7 @@ from typing import Annotated
 import typer
 
 from reprollm import __version__
+from reprollm.cli.scan_diagnostics import show_scan_diagnostics
 from reprollm.core.engine import run_audit
 from reprollm.core.errors import UserError
 from reprollm.core.paths import LOCK, MANIFEST, find_root
@@ -87,7 +88,10 @@ def export(
         str, typer.Option("--template", help="Checklist mapping: default | neurips | acl | acm.")
     ] = "default",
 ) -> None:
-    """Write REPRODUCIBILITY.md from manifest + lock + the selected run."""
+    """Write REPRODUCIBILITY.md from manifest + lock + the selected run.
+
+    Reports Python file limits on stderr.
+    """
     if template not in ("default", "neurips", "acl", "acm"):
         raise typer.BadParameter(
             f"unknown template {template!r}; choose default, neurips, acl, or acm"
@@ -108,7 +112,9 @@ def export(
 
     from reprollm.export.exporter import build_input, render
 
-    audit_report = run_audit(root, target=".")
+    diagnostics: list[str] = []
+    audit_report = run_audit(root, target=".", diagnostics=diagnostics)
+    show_scan_diagnostics(diagnostics)
     data = build_input(
         manifest, lock, run_record, state, reprollm_version=__version__, audit_report=audit_report
     )

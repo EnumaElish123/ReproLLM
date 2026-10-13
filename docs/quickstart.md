@@ -4,6 +4,8 @@ This tour needs Python 3.10 or newer and Git. It runs a standard-library capture
 
 Commands below are executed in a disposable example by CI. JSON blocks are excerpts of actual reports; run IDs and elapsed seconds are replaced with placeholders. Audit exit 1 means findings reached the configured threshold (default: critical). Diff exit 1 means the requested drift threshold was reached. Exit 2 means an input or usage error; exit 3 means an internal error.
 
+When a repository exceeds the Python file budget, audit, init and export report the actual parsed and candidate counts on stderr. Missing signals may occur in files that were not analysed. JSON output stays readable as one document; the coverage message does not change finding thresholds.
+
 ## Install and prepare a separate copy
 
 ```bash

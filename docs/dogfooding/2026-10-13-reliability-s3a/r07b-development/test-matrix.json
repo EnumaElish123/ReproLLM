@@ -1,0 +1,210 @@
+{
+  "acceptance_binding": {
+    "decision_sha256": "db325df951d472e8c34a77c1fdf1dcaa15495aaf355b33a8f7df768f131fded1",
+    "normative_patch_sha256": "8df82d2da2745615895ae06881312984cdaa65ca95c65b388379284810da9542",
+    "proposal_sha256": "53edfb8206759b4be45bbe9b1c38aece3d16ac7c0e415a83b5f44ec4298296f7"
+  },
+  "cases": [
+    {
+      "parameters": [
+        {
+          "fields": "output",
+          "values": [
+            "text",
+            "json"
+          ]
+        }
+      ],
+      "test": "test_default_audit_discloses_501_business_files",
+      "variants": 2
+    },
+    {
+      "parameters": [
+        {
+          "fields": "count",
+          "values": [
+            499,
+            500,
+            501
+          ]
+        },
+        {
+          "fields": "mode",
+          "values": [
+            "text",
+            "json",
+            "verbose-json"
+          ]
+        }
+      ],
+      "test": "test_business_budget_boundary_and_verbose_dedup",
+      "variants": 9
+    },
+    {
+      "parameters": [
+        {
+          "fields": "count",
+          "values": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "test": "test_active_nondefault_budget_is_reported",
+      "variants": 3
+    },
+    {
+      "parameters": [
+        {
+          "fields": "cause",
+          "values": [
+            "size",
+            "read",
+            "syntax",
+            "nontext"
+          ]
+        },
+        {
+          "fields": "over_file_limit",
+          "values": [
+            false,
+            true
+          ]
+        }
+      ],
+      "test": "test_selected_skips_reduce_only_actual_parsed_count",
+      "variants": 8
+    },
+    {
+      "parameters": [],
+      "test": "test_combined_selected_skips_are_not_claimed_processed",
+      "variants": 1
+    },
+    {
+      "parameters": [
+        {
+          "fields": "failure",
+          "values": [
+            "syntax",
+            "external-read"
+          ]
+        }
+      ],
+      "test": "test_untrusted_warning_prefix_cannot_become_default_coverage",
+      "variants": 2
+    },
+    {
+      "parameters": [],
+      "test": "test_only_full_fixed_form_diagnostic_is_promoted",
+      "variants": 1
+    },
+    {
+      "parameters": [],
+      "test": "test_verbose_preserves_other_warnings_and_other_budget",
+      "variants": 1
+    },
+    {
+      "parameters": [
+        {
+          "fields": "command",
+          "values": [
+            "init",
+            "list-tasks",
+            "interactive"
+          ]
+        }
+      ],
+      "test": "test_init_consumers_disclose_once_after_final_plan",
+      "variants": 3
+    },
+    {
+      "parameters": [
+        {
+          "fields": "verbose",
+          "values": [
+            false,
+            true
+          ]
+        }
+      ],
+      "test": "test_export_preserves_complete_markdown_and_stdout",
+      "variants": 2
+    },
+    {
+      "parameters": [
+        {
+          "fields": "fail_on",
+          "values": [
+            null,
+            "never",
+            "critical",
+            "warning"
+          ]
+        }
+      ],
+      "test": "test_file_coverage_warning_does_not_change_findings_or_fail_on",
+      "variants": 4
+    },
+    {
+      "parameters": [],
+      "test": "test_audit_output_file_contains_only_original_json",
+      "variants": 1
+    },
+    {
+      "parameters": [],
+      "test": "test_static_exclusions_are_applied_before_coverage_counts",
+      "variants": 1
+    },
+    {
+      "parameters": [],
+      "test": "test_cached_access_preserves_one_coverage_fact",
+      "variants": 1
+    },
+    {
+      "parameters": [],
+      "test": "test_manually_constructed_old_scan_result_remains_usable",
+      "variants": 1
+    },
+    {
+      "parameters": [
+        {
+          "fields": "git_mode",
+          "values": [
+            false,
+            true
+          ]
+        }
+      ],
+      "test": "test_shared_candidate_counts_match_git_and_fallback_modes",
+      "variants": 2
+    },
+    {
+      "parameters": [],
+      "test": "test_listing_hard_size_limit_is_not_counted_as_file_budget_skip",
+      "variants": 1
+    },
+    {
+      "parameters": [],
+      "test": "test_github_annotations_keep_original_stdout",
+      "variants": 1
+    }
+  ],
+  "logical_tests": 18,
+  "parametrized_variants": 44,
+  "schema_version": 1,
+  "stages": [
+    "first 501 business-file default text/JSON tracers RED",
+    "minimal PyScanResult actual counts + strict CLI helper + audit GREEN",
+    "init/list-tasks/interactive/export consumers RED",
+    "minimal InitPlan + init/export wiring GREEN",
+    "full accepted boundary/count/skip/fail-on/stdout/fake-prefix matrix GREEN",
+    "accepted spec patch + generated CLI/quickstart docs + user docs",
+    "focused consumer tests, Ruff, mypy; freeze; root full quality and Gate A"
+  ],
+  "status": "DRAFT_NOT_APPLIED_NOT_EXECUTED",
+  "task": "R07-B",
+  "test_repository_target": "tests/unit/cli/test_scan_diagnostics.py",
+  "test_source_sha256": "4be05ea67fb6544f0b0d8114b1725b78bafc6ee4fb7686c60b2bda9859a3ef0f",
+  "verification": "AST syntax only; no product import, pytest, coverage or repository test/source mutation"
+}

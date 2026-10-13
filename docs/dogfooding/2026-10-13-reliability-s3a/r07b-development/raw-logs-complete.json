@@ -1,0 +1,126 @@
+{
+  "description": "Complete combined stdout/stderr of each actual development command; exact original raw byte SHA verified before portable path display; no truncation.",
+  "records": [
+    {
+      "byte_count": 19,
+      "complete_text": "1 file reformatted\n",
+      "encoding": "utf-8",
+      "label": "tests-format",
+      "original_bytes_sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127",
+      "original_log_filename": "tests-format.log"
+    },
+    {
+      "byte_count": 2802,
+      "complete_text": "FF                                                                       [100%]\n=================================== FAILURES ===================================\n________ test_default_audit_discloses_501_business_files[default-text] _________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-first-audit-red/test_default_audit_discloses_50')\noutput = 'text'\n\n    @pytest.mark.parametrize(\"output\", [\"text\", \"json\"], ids=[\"default-text\", \"default-json\"])\n    def test_default_audit_discloses_501_business_files(tmp_path: Path, output: str) -> None:\n        \"\"\"First vertical tracer: real files, exact default stderr and original stdout.\"\"\"\n        root = tmp_path / \"business\"\n        _business_files(root, 501)\n        (root / \"business_0500.py\").write_text(\"import vllm\\n\", encoding=\"utf-8\")\n        result = runner.invoke(app, [\"audit\", str(root), \"--format\", output, \"--fail-on\", \"never\"])\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(500, 501, 500, 500)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 500 of 501 candidate files; selected 500 (limit 500), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:60: AssertionError\n________ test_default_audit_discloses_501_business_files[default-json] _________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-first-audit-red/test_default_audit_discloses_51')\noutput = 'json'\n\n    @pytest.mark.parametrize(\"output\", [\"text\", \"json\"], ids=[\"default-text\", \"default-json\"])\n    def test_default_audit_discloses_501_business_files(tmp_path: Path, output: str) -> None:\n        \"\"\"First vertical tracer: real files, exact default stderr and original stdout.\"\"\"\n        root = tmp_path / \"business\"\n        _business_files(root, 501)\n        (root / \"business_0500.py\").write_text(\"import vllm\\n\", encoding=\"utf-8\")\n        result = runner.invoke(app, [\"audit\", str(root), \"--format\", output, \"--fail-on\", \"never\"])\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(500, 501, 500, 500)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 500 of 501 candidate files; selected 500 (limit 500), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:60: AssertionError\n=========================== short test summary info ============================\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_default_audit_discloses_501_business_files[default-text]\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_default_audit_discloses_501_business_files[default-json]\n2 failed in 1.57s\n",
+      "encoding": "utf-8",
+      "label": "first-audit-red",
+      "original_bytes_sha256": "8d2f7389ab60d1c0b3e1ac95c9db231a13d24814e26a73bf22caff18b94d4a4b",
+      "original_log_filename": "first-audit-red.log"
+    },
+    {
+      "byte_count": 98,
+      "complete_text": "..                                                                       [100%]\n2 passed in 1.44s\n",
+      "encoding": "utf-8",
+      "label": "first-audit-green",
+      "original_bytes_sha256": "12ebd56af50dd556b0d34d363cf2e41ae73267599ef4ae15344a291ecf6ee3ac",
+      "original_log_filename": "first-audit-green.log"
+    },
+    {
+      "byte_count": 7979,
+      "complete_text": "FFFFF                                                                    [100%]\n=================================== FAILURES ===================================\n___________ test_init_consumers_disclose_once_after_final_plan[init] ___________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-init-export-red/test_init_consumers_disclose_o0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f63b5d61a00>\ncommand = 'init'\n\n    @pytest.mark.parametrize(\"command\", [\"init\", \"list-tasks\", \"interactive\"])\n    def test_init_consumers_disclose_once_after_final_plan(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str\n    ) -> None:\n        monkeypatch.setattr(scanner_mod, \"MAX_PYTHON_FILES\", 2)\n        root = tmp_path / \"business\"\n        _business_files(root, 3)\n        args = [\"init\", str(root)]\n        if command == \"list-tasks\":\n            args.append(\"--list-tasks\")\n        elif command == \"interactive\":\n            args.append(\"--interactive\")\n        result = runner.invoke(app, args, input=\"evaluation\\n\" + \"\\n\" * 30)\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(2, 3, 2, 2)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 2 of 3 candidate files; selected 2 (limit 2), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:260: AssertionError\n________ test_init_consumers_disclose_once_after_final_plan[list-tasks] ________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-init-export-red/test_init_consumers_disclose_o1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f63b5b9a1b0>\ncommand = 'list-tasks'\n\n    @pytest.mark.parametrize(\"command\", [\"init\", \"list-tasks\", \"interactive\"])\n    def test_init_consumers_disclose_once_after_final_plan(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str\n    ) -> None:\n        monkeypatch.setattr(scanner_mod, \"MAX_PYTHON_FILES\", 2)\n        root = tmp_path / \"business\"\n        _business_files(root, 3)\n        args = [\"init\", str(root)]\n        if command == \"list-tasks\":\n            args.append(\"--list-tasks\")\n        elif command == \"interactive\":\n            args.append(\"--interactive\")\n        result = runner.invoke(app, args, input=\"evaluation\\n\" + \"\\n\" * 30)\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(2, 3, 2, 2)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 2 of 3 candidate files; selected 2 (limit 2), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:260: AssertionError\n_______ test_init_consumers_disclose_once_after_final_plan[interactive] ________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-init-export-red/test_init_consumers_disclose_o2')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f63b5d81730>\ncommand = 'interactive'\n\n    @pytest.mark.parametrize(\"command\", [\"init\", \"list-tasks\", \"interactive\"])\n    def test_init_consumers_disclose_once_after_final_plan(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str\n    ) -> None:\n        monkeypatch.setattr(scanner_mod, \"MAX_PYTHON_FILES\", 2)\n        root = tmp_path / \"business\"\n        _business_files(root, 3)\n        args = [\"init\", str(root)]\n        if command == \"list-tasks\":\n            args.append(\"--list-tasks\")\n        elif command == \"interactive\":\n            args.append(\"--interactive\")\n        result = runner.invoke(app, args, input=\"evaluation\\n\" + \"\\n\" * 30)\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(2, 3, 2, 2)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 2 of 3 candidate files; selected 2 (limit 2), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:260: AssertionError\n_________ test_export_preserves_complete_markdown_and_stdout[default] __________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-init-export-red/test_export_preserves_complete0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f63b5bfdbe0>\nverbose = False\n\n    @pytest.mark.parametrize(\"verbose\", [False, True], ids=[\"default\", \"verbose\"])\n    def test_export_preserves_complete_markdown_and_stdout(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, verbose: bool\n    ) -> None:\n        monkeypatch.setattr(scanner_mod, \"MAX_PYTHON_FILES\", 2)\n        root = tmp_path / \"business\"\n        _business_files(root, 2)\n        (root / \"reprollm.yaml\").write_text(\n            \"schema_version: 1\\nproject: {name: business}\\nexperiment: {profiles: [evaluation]}\\n\"\n        )\n        args = ([\"-v\"] if verbose else []) + [\"export\", str(root)]\n        control = runner.invoke(app, args)\n        assert control.exit_code == 0, control.output\n        assert control.stderr == \"\"\n        original = (root / \"REPRODUCIBILITY.md\").read_bytes()\n        (root / \"REPRODUCIBILITY.md\").unlink()\n        (root / \"business_0002.py\").write_text(\"value = 1\\n\")\n        result = runner.invoke(app, args)\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(2, 3, 2, 2)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 2 of 3 candidate files; selected 2 (limit 2), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:288: AssertionError\n_________ test_export_preserves_complete_markdown_and_stdout[verbose] __________\n\ntmp_path = PosixPath('<r07b-analysis>/pytest-init-export-red/test_export_preserves_complete1')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f63b5c24890>\nverbose = True\n\n    @pytest.mark.parametrize(\"verbose\", [False, True], ids=[\"default\", \"verbose\"])\n    def test_export_preserves_complete_markdown_and_stdout(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, verbose: bool\n    ) -> None:\n        monkeypatch.setattr(scanner_mod, \"MAX_PYTHON_FILES\", 2)\n        root = tmp_path / \"business\"\n        _business_files(root, 2)\n        (root / \"reprollm.yaml\").write_text(\n            \"schema_version: 1\\nproject: {name: business}\\nexperiment: {profiles: [evaluation]}\\n\"\n        )\n        args = ([\"-v\"] if verbose else []) + [\"export\", str(root)]\n        control = runner.invoke(app, args)\n        assert control.exit_code == 0, control.output\n        assert control.stderr == \"\"\n        original = (root / \"REPRODUCIBILITY.md\").read_bytes()\n        (root / \"REPRODUCIBILITY.md\").unlink()\n        (root / \"business_0002.py\").write_text(\"value = 1\\n\")\n        result = runner.invoke(app, args)\n        assert result.exit_code == 0, result.output\n>       assert result.stderr == _diagnostic(2, 3, 2, 2)\nE       AssertionError: assert '' == 'scan: Python...ysed files.\\n'\nE         \nE         - scan: Python analysis incomplete: parsed 2 of 3 candidate files; selected 2 (limit 2), omitted 1. Missing signals may be in unanalysed files.\n\ntests/unit/cli/test_scan_diagnostics.py:288: AssertionError\n=========================== short test summary info ============================\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_init_consumers_disclose_once_after_final_plan[init]\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_init_consumers_disclose_once_after_final_plan[list-tasks]\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_init_consumers_disclose_once_after_final_plan[interactive]\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_export_preserves_complete_markdown_and_stdout[default]\nFAILED tests/unit/cli/test_scan_diagnostics.py::test_export_preserves_complete_markdown_and_stdout[verbose]\n5 failed in 2.72s\n",
+      "encoding": "utf-8",
+      "label": "init-export-red",
+      "original_bytes_sha256": "20888d0450c3a6e44070c7fdd2a71e0dfb427f77648e40bd1dffe8c23552a6ec",
+      "original_log_filename": "init-export-red.log"
+    },
+    {
+      "byte_count": 98,
+      "complete_text": ".....                                                                    [100%]\n5 passed in 1.35s\n",
+      "encoding": "utf-8",
+      "label": "init-export-green",
+      "original_bytes_sha256": "ae2604274a833403d5a93d1b2dcea196bb9d11ba794c12f5c389cb0ec08875ba",
+      "original_log_filename": "init-export-green.log"
+    },
+    {
+      "byte_count": 100,
+      "complete_text": "............................................                             [100%]\n44 passed in 14.32s\n",
+      "encoding": "utf-8",
+      "label": "accepted-matrix",
+      "original_bytes_sha256": "62018aec45205cc31e2fd9539bad47705413bb3664e5218ed3ca75a7326da794",
+      "original_log_filename": "accepted-matrix.log"
+    },
+    {
+      "byte_count": 0,
+      "complete_text": "",
+      "encoding": "utf-8",
+      "label": "accepted-normative-patch-check",
+      "original_bytes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_log_filename": "accepted-normative-patch-check.log"
+    },
+    {
+      "byte_count": 0,
+      "complete_text": "",
+      "encoding": "utf-8",
+      "label": "accepted-normative-patch-apply",
+      "original_bytes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_log_filename": "accepted-normative-patch-apply.log"
+    },
+    {
+      "byte_count": 44,
+      "complete_text": "2 files reformatted, 6 files left unchanged\n",
+      "encoding": "utf-8",
+      "label": "owned-format",
+      "original_bytes_sha256": "b48c4474063548bd17582eec13a7f507a82fe0a65318719ce5a3fde2487c6f4a",
+      "original_log_filename": "owned-format.log"
+    },
+    {
+      "byte_count": 44,
+      "complete_text": "wrote <implementation>/docs/cli.md\n",
+      "encoding": "utf-8",
+      "label": "generate-cli-doc",
+      "original_bytes_sha256": "700409e8715e5d7e40f1eca97e3ca397d0d29fae475398706fda9531b84d2873",
+      "original_log_filename": "generate-cli-doc.log"
+    },
+    {
+      "byte_count": 51,
+      "complete_text": "wrote <implementation>/docs/quickstart.md\n",
+      "encoding": "utf-8",
+      "label": "generate-quickstart-doc",
+      "original_bytes_sha256": "a5da7c72953b04661fbebd76cba9412bba9d68626ac4425c7ecd5d75cff9d40f",
+      "original_log_filename": "generate-quickstart-doc.log"
+    },
+    {
+      "byte_count": 272,
+      "complete_text": "........................................................................ [ 34%]\n........................................................................ [ 69%]\n................................................................         [100%]\n208 passed in 121.48s (0:02:01)\n",
+      "encoding": "utf-8",
+      "label": "focused-consumers",
+      "original_bytes_sha256": "1844d40c0c0deeebf255c2a330584b673a63c63ff26fa5e4a13ddb0da8fb6d78",
+      "original_log_filename": "focused-consumers.log"
+    },
+    {
+      "byte_count": 19,
+      "complete_text": "All checks passed!\n",
+      "encoding": "utf-8",
+      "label": "ruff-check",
+      "original_bytes_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "original_log_filename": "ruff-check.log"
+    },
+    {
+      "byte_count": 26,
+      "complete_text": "8 files already formatted\n",
+      "encoding": "utf-8",
+      "label": "ruff-format-check",
+      "original_bytes_sha256": "8e93d18ae56550d4eef2feac77e6630617c7e169246e56e39c75d58b46167985",
+      "original_log_filename": "ruff-format-check.log"
+    },
+    {
+      "byte_count": 45,
+      "complete_text": "Success: no issues found in 123 source files\n",
+      "encoding": "utf-8",
+      "label": "mypy",
+      "original_bytes_sha256": "62f7c4c63dd61757257e3e6457752556858069091c5f9afd703f3e2aaee660f7",
+      "original_log_filename": "mypy.log"
+    }
+  ],
+  "schema_version": 1
+}
