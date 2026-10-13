@@ -16,6 +16,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- VOPT-01 (spec §22 T-09): preserve the default slow-test exclusion in the
+  Windows CI marker override; keep performance budgets in nightly and register
+  the slow marker. Coverage, security and platform checks remain unchanged.
+
 - R07-A performance follow-up (spec §13): capture the canonical root once per
   static candidate view, avoid repeated filename normalization and reuse POSIX
   ordinary root-file eligibility. Windows, aliases, complex paths and failed

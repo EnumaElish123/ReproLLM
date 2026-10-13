@@ -1580,7 +1580,7 @@ and unchanged. No threshold or presentation fields are added to AuditReport.
 - T-06 Redaction: §16.5.
 - T-07 CLI tests via `typer.testing.CliRunner`; JSON outputs validated against exported JSON Schemas.
 - T-08 Coverage gate: ≥ 85 % overall from M3 onward; `core/redaction.py` 100 % branches.
-- T-09 CI matrix: ubuntu-latest (py3.10, 3.11, 3.12), macos-latest (3.12), windows-latest (3.12, core unit tests only via marker `-m "not linux_only"`).
+- T-09 CI matrix: ubuntu-latest (py3.10, 3.11, 3.12), macos-latest (3.12), windows-latest (3.12, platform-safe tests via marker `-m "not slow and not linux_only"`). Regular CI excludes `slow` on every platform; nightly explicitly runs `tests/perf -m slow` without coverage instrumentation. Command-line marker overrides must preserve both the slow and platform exclusions. Coverage and security gates remain mandatory in regular CI.
 
 ---
 
