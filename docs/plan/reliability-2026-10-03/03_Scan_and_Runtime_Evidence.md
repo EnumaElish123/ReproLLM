@@ -1,6 +1,6 @@
 # Sprint 3：扫描范围与运行环境证据
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 日期：2026-10-03 · 状态：PARTIALLY_DELIVERED（S3-A：产品与本地验收已完成；S3-B：PLANNED）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -12,6 +12,11 @@
 |---|---|---|
 | S3-A | R07-A → R07-B | 一致的候选集、默认诊断、消费者清单、Gate A |
 | S3-B | R04-A → R04-B | 环境来源、输入采集时点、State / audit / export 消费修正、Gate A |
+
+S3-A记录见 [交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md) 和 [scope交接](../../dogfooding/2026-10-13-reliability-s3a/s3a-handoff.md)。
+R07-A：产品与本地验收已完成，提交 `41122934a9c3ea2fc7bbee22fe870c44ba549a2e`；R07-B：产品与本地验收已完成，提交 `0e3ff8f0543d66904f237be1f9e5446294cc1f6a`。
+对应完整本地Gate A：PASS（155 合格命令、157 实际执行、1,053 完整比较） / PASS（126 合格命令、127 实际执行、987 完整比较）。最终 main 五项 CI 由推送后实际 HEAD 核对，见会话最终回复与本地 `final-ci.json`。
+下一工程会话为S3-B；本次不完成R04-A/B、R07-C或D01。以下问题描述与实施步骤保留审查时的任务依据，不代表修复后问题仍存在。
 
 R04-A 接续 R03 的 State 合并合同；R04-B 是独立提交的输入证据任务，必须在 D01 正式验收之前完成。R07-A 接续 R06-G 的公共内容边界，不能以候选过滤替代安全读取。R07-C 的规则覆盖率政策、R04-S 的条件 schema 工作见 [05](05_Policy_and_Compatibility.md)，只在相应任务需要时激活；R04-S 可由 R04-A 或 R04-B 触发。会话容量不足时登记具名接续会话，D01 的依赖不因日程变化消失。
 
@@ -57,9 +62,9 @@ uv run pytest -q tests/unit/integrations/test_static_frameworks.py tests/unit/ru
 uv run pytest -q tests/unit/discover
 ```
 
-- [ ] 每个静态消费者都列入检查，没有绕过过滤的独立文件遍历。
-- [ ] 安全 / Git 规则仍使用合适事实视图。
-- [ ] 全质量门、五项目 L0 + 受影响 init / L1 Gate A 完成。
+- [x] 每个静态消费者都列入检查，没有绕过过滤的独立文件遍历。
+- [x] 安全 / Git 规则仍使用合适事实视图。
+- [x] 全质量门、五项目 L0 + 受影响 init / L1 Gate A 完成。
 
 建议提交：`fix(scan): filter analysis candidates before applying budgets (R07-A)`。
 
@@ -78,12 +83,12 @@ uv run pytest -q tests/unit/discover
 
 ### 验收
 
-- [ ] 499 / 500 / 501 个有效业务文件的边界行为明确，数量稳定；执行时沿用实际 cap 配置。
-- [ ] 默认文本、默认 JSON、verbose 三种输出都解释完整性边界。
-- [ ] stderr 中无绝对路径、敏感值或重复刷屏。
-- [ ] 固定 lm-eval 816 Python 文件的分析必须披露 500 截断；不虚称完整扫描。
-- [ ] 默认 fail-on 不变；因诊断新增引起的 gold 展示差异附规格依据。
-- [ ] 全质量门及 S3-A Gate A 完成；有必要的规格决定记录。
+- [x] 499 / 500 / 501 个有效业务文件的边界行为明确，数量稳定；执行时沿用实际 cap 配置。
+- [x] 默认文本、默认 JSON、verbose 三种输出都解释完整性边界。
+- [x] stderr 中无绝对路径、敏感值或重复刷屏。
+- [x] 固定 lm-eval 816 Python 文件的分析必须披露 500 截断；不虚称完整扫描。
+- [x] 默认 fail-on 不变；因诊断新增引起的 gold 展示差异附规格依据。
+- [x] 全质量门及 S3-A Gate A 完成；有必要的规格决定记录。
 
 建议提交：`fix(cli): disclose incomplete analysis in default output (R07-B)`。
 
@@ -193,9 +198,10 @@ uv run pytest -q tests/unit/cli/test_export.py tests/unit/cli/test_export_templa
 
 ## 5. Sprint 收尾与后续接口
 
-- [ ] 向 R07-C 交付各规则依赖的事实 / 扫描来源清单，不先全局调整 PASS。
+- [x] 向 R07-C 交付各规则依赖的事实 / 扫描来源清单，不先全局调整 PASS。
 - [ ] 向 D01 / A01-B 交付 R04-A 的环境来源与 R04-B 的输入阶段/变化合同，用于真实 recipe 的证据分层。
 - [ ] 若 R04-S 必须执行，记录最小阻塞字段及已完成补丁；其他 Sprint 正常推进。
-- [ ] S3-A / S3-B 各自保留全部五项目 Gate A 记录。
+- [x] S3-A保留全部五项目 Gate A 记录。
+- [ ] S3-B保留全部五项目 Gate A 记录。
 
 依据：[core/scanner.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/core/scanner.py)、[run/wrapper.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/run/wrapper.py)、[rules/consistency.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/rules/consistency.py)。

@@ -14,9 +14,11 @@ run-persistence redaction, shared file-read boundaries, input-capture phases and
 an explicit dependency-specification prerequisite. Start at the
 [package index](reliability-2026-10-03/README.md), then read the
 [execution guide](reliability-2026-10-03/00_Execution_Guide.md) and the assigned
-Sprint/Session document. S1-A, S1-B and S2 are delivered. Read the
-[latest S2 report](../dogfooding/2026-10-10-reliability-s2/README.md); the next
-engineering session is **S3-A: R07-A and R07-B**, which remains unexecuted.
+Sprint/Session document. S1-A, S1-B and S2 are delivered; S3-A
+(R07-A → R07-B) is **产品与本地验收已完成**. Read the
+[latest S3-A report](../dogfooding/2026-10-13-reliability-s3a/README.md) and
+[scope handoff](../dogfooding/2026-10-13-reliability-s3a/s3a-handoff.md); the
+next engineering session is **S3-B: R04-A → R04-B**, which remains unexecuted.
 
 - [Copyable agent prompts](reliability-2026-10-03/AGENT_PROMPTS.md)
 - [Task dependencies and gates](reliability-2026-10-03/00_Execution_Guide.md)
@@ -27,7 +29,8 @@ engineering session is **S3-A: R07-A and R07-B**, which remains unexecuted.
 - [Policy and compatibility decisions](reliability-2026-10-03/05_Policy_and_Compatibility.md)
 - [Validation, adoption and application evidence](reliability-2026-10-03/06_Validation_and_Adoption.md)
 
-The package combines delivered S1/S2 work with planned later tasks. Historical
+The package combines delivered S1/S2 work and the recorded S3-A status with
+planned later tasks. Historical
 importing/revision reports do not establish implementation status. S2 does not
 change the judge drift policy in Issue #9 or complete the pending resource gates.
 Resume from the assigned session and its actual

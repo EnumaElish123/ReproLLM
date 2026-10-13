@@ -4,15 +4,15 @@
 
 补充代码审查：`781366e89362a54d9036d3aed070fad169ba8204`。v1.2 经维护者要求纳入 run 脱敏、公共读取边界、输入采集时点和已知依赖规范冲突四项调整；当前版本替代 v1.1 作为执行方案。
 
-本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A、S1-B及S2已交付，后续任务保持待执行/待决；会话从实际 HEAD 复核，不回退到审查基线。
+本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A、S1-B及S2已交付；S3-A状态为 **产品与本地验收已完成**，后续任务保持待执行/待决。会话从实际 HEAD 复核，不回退到审查基线。
 
 ## 从这里开始
 
 1. 阅读 [统一执行总则](00_Execution_Guide.md) 以及仓库 [AGENTS.md](../../../AGENTS.md)、[架构决策](../00_architecture_and_decisions.md)、[规格](../01_specification.md)、[val.md](../../../val.md)。
 2. 从 [Agent 提示词](AGENT_PROMPTS.md) 复制与本次任务对应的启动指令。
-3. S1-A / S1-B已完成；最新交付为 [S2-A/S2-B报告](../../dogfooding/2026-10-10-reliability-s2/README.md)。下一工程会话为 **S3-A：R07-A → R07-B**，尚未执行。
+3. S1-A / S1-B及S2已完成；读取 [S3-A报告](../../dogfooding/2026-10-13-reliability-s3a/README.md) 和 [scope交接](../../dogfooding/2026-10-13-reliability-s3a/s3a-handoff.md)，核对R07-A/R07-B实际提交及完整本地Gate；最终 main 五项 CI 由推送后实际 HEAD 核对，见会话最终回复与本地 `final-ci.json`。下一工程会话为 **S3-B：R04-A → R04-B**，尚未执行。
 
-交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
+交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
 ## 执行文件与会话
 
@@ -30,7 +30,7 @@
 
 ## 本次修订任务：PLAN-REVISE
 
-维护者要求按代码审查建议优化方案并上传。本次只更新任务卡、优先级、依赖、验收及提示词，并执行文档检查、质量门和五项目 L0 Gate A。该历史修订当时未执行产品修复；当前S1/S2交付见上方报告。其他规范决定、D-41 审阅、Issue #9 和资源验收单独推进。
+维护者要求按代码审查建议优化方案并上传。本次只更新任务卡、优先级、依赖、验收及提示词，并执行文档检查、质量门和五项目 L0 Gate A。该历史修订当时未执行产品修复；当前S1/S2及S3-A状态见上方实际报告。其他规范决定、D-41 审阅、Issue #9 和资源验收单独推进。
 
 - R02-R 纳入 S1-B，以 P0 处理 run 结构化值及文本快照脱敏。
 - R06-G 放在 S2-A 第一项，在普通文件内容读取入口阻断根外访问；R06-P 保留 include 图职责。

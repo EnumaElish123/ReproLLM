@@ -49,9 +49,11 @@ is now v1.2, with four two-session engineering sprints plus policy and
 validation/adoption workstreams. The code-review revision adds run redaction,
 shared file-read boundaries, input-capture phases and an explicit Conda
 specification prerequisite. Its [agent prompts](../plan/reliability-2026-10-03/AGENT_PROMPTS.md)
-start implementation at S1-A (R00/R01). The package is committed planning work;
-its repairs remain planned, and pending policy/schema decisions retain their
-separate review requirements.
+retain the original session order. S1-A, S1-B and S2 are delivered on main;
+S3-A (R07-A → R07-B) is **产品与本地验收已完成**. Read its
+[report and handoff](../dogfooding/2026-10-13-reliability-s3a/README.md) before
+S3-B (R04-A → R04-B). These changes remain unreleased; pending policy/schema
+decisions and resource validations retain their separate requirements.
 
 The remaining [UX3 task](../plan/UX3_2026-10-02.md), T02, awaits the concrete
 policy/baseline amendment in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
