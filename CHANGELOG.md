@@ -14,6 +14,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   affected extensions. Document explicit documentation/tool-only exceptions,
   environment preflight and immutable baseline reuse; milestone/release resource
   gates remain unchanged.
+- VOPT-03: add a read-only complete JSON gold comparison script with safe
+  hash-referenced difference reports and explicit audit-metadata handling. It
+  neither creates gold answers nor replaces the complete Gate A workflow.
 
 ### Specification
 
