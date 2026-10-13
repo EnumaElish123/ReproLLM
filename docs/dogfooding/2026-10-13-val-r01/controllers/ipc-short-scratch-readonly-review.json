@@ -1,0 +1,69 @@
+{
+  "kind": "read_only_installed_vllm_ipc_path_review",
+  "observed_original_attempt": {
+    "elapsed_seconds": 39.316889,
+    "exit_code": 1,
+    "failure_kind": "ZMQ Unix IPC socket path exceeds reported 107-byte limit",
+    "not_claimed": "No model execution, OOM or successful native replay is inferred from this startup failure.",
+    "receipt_sha256": "7e79e49201f1fa682ad05d6a2478b4fff70f7c0d52489c0bfb2773deb6cf268e",
+    "stderr_sha256": "2c09c26fc82ab8d7657602e5b2364830da554fe294ecdd34d34528a3c789031b",
+    "stdout_sha256": "8ed804c8e30717cdea1d11c91e5d78779c352179d75e4418730210cd5943dd8b"
+  },
+  "pure_length_proof": {
+    "old_base_utf8_bytes": 76,
+    "old_logical_base": "original_task_root/tmp",
+    "old_socket_path_utf8_bytes": 113,
+    "reported_limit_bytes": 107,
+    "separator_bytes": 1,
+    "short_base_utf8_bytes": 47,
+    "short_logical_base": "resource_root/tmp/vr1",
+    "short_margin_bytes": 23,
+    "short_socket_path_utf8_bytes": 84,
+    "uri_prefix_excluded_from_sockaddr_path": true,
+    "uuid_string_utf8_bytes": 36
+  },
+  "recommended_minimal_wrapper": {
+    "attempt_identity": "Fresh independently prepared LM2 namespace with unique receipts; original LM failure remains preserved. Original four other cases retain fresh one-shot attempts.",
+    "changed_scope": "Process-local transport/scratch environment only; keep experimental configs, drivers, models, token limits, caps and gold unchanged.",
+    "reason": "Explicit RPC override prevents inherited VLLM_RPC_BASE_PATH from defeating TMPDIR and also avoids earlier process-local tempdir caching.",
+    "set_before_new_child_start": [
+      "TMPDIR=short_owned_scratch",
+      "VLLM_RPC_BASE_PATH=short_owned_scratch"
+    ],
+    "short_scratch_requirements": [
+      "Directory exists on approved resource volume",
+      "Owned by current authorized validation user and writable",
+      "Restrictive directory mode 0700",
+      "Keep path short as literal bytes; do not append the long case/namespace to the RPC base"
+    ]
+  },
+  "review_date": "2026-10-13",
+  "reviewer_execution": {
+    "GPU_children": 0,
+    "installed_vllm_imports": 0,
+    "network_requests": 0,
+    "product_commands": 0,
+    "project_tests": 0,
+    "socket_binds": 0,
+    "source_or_frozen_controller_edits": 0
+  },
+  "schema_version": 1,
+  "source_contract": [
+    {
+      "line": 141,
+      "meaning": "IPC address uses VLLM_RPC_BASE_PATH, slash and canonical UUID string.",
+      "path": "vllm/utils/network_utils.py"
+    },
+    {
+      "line": 553,
+      "meaning": "Explicit VLLM_RPC_BASE_PATH takes precedence over tempfile.gettempdir().",
+      "path": "vllm/envs.py"
+    }
+  ],
+  "sources": {
+    "vllm/envs.py": "34adae037709253e5a123873dbb3336aa7aa45dd96bab2b98bd4a74f11b7c45f",
+    "vllm/utils/network_utils.py": "da7453a23fd15bc6ffa5ef45419a08b5effdc2d8c535d34876d776e57d37e0e6",
+    "vllm/v1/engine/utils.py": "b545bcce8f4675fcca215f4b985186bb5b389a387e5dd447356e4655f26fdf32"
+  },
+  "vllm_distribution_version": "0.18.0"
+}

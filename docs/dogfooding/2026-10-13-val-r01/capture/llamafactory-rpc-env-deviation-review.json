@@ -1,0 +1,37 @@
+{
+  "CLI_reruns_by_reviewer": 0,
+  "actual_delta": {
+    "a": null,
+    "b": "<REDACTED:path>",
+    "path": "environment.env.VLLM_RPC_BASE_PATH",
+    "severity": "MEDIUM"
+  },
+  "approval_scope": "This receipt explains the observed delta and does not change gold, suppress its severity or rerun GPU.",
+  "case": "LlamaFactory",
+  "explanation": "Process-local vLLM RPC scratch override was added after the IPC initialization failure. The approved LoRA path enters native SFT Trainer and does not consume the vLLM engine RPC base. Preserve the MEDIUM environment delta; this is an operational harness deviation, additional to the declared learning-rate change.",
+  "native_gpu_runs_by_reviewer": 0,
+  "provenance_limit": "Do not claim byte-identical full A/B environment. Source review and real two-step training proof justify this specific deviation; no generic exemption for environment changes.",
+  "review_kind": "independent_read_only_operational_environment_delta",
+  "schema_version": 1,
+  "source_sha256": {
+    "src/llamafactory/cli.py": "d32b69e0b379718a9d0cf7bbf7032e6104f234cf53b13ad9e276a4a3fe7530d8",
+    "src/llamafactory/train/sft/workflow.py": "aaa1f92b66c4985fe1c1d47a6c28831a1cd0b107d77e3819c2ea174e37a1384b",
+    "src/llamafactory/train/tuner.py": "192ba6c81096ac5fcd075d44ef9e79296558fc935cd941fc38c038432fe00711",
+    "validation/train_entry.py": "c9520bc72fc0fd50ffd547e07da164f678f3ae3d8372053465f10a7be640c5b2"
+  },
+  "status": "PASS_WITH_EXPLAINED_DEVIATION",
+  "unchanged_facts": {
+    "native_argv_equal": true,
+    "native_exit_zero_both": true,
+    "only_captured_environment_value_delta": {
+      "VLLM_RPC_BASE_PATH": [
+        null,
+        "<REDACTED:path>"
+      ]
+    },
+    "packages_equal": true,
+    "pinned_native_source_bytes_equal": true,
+    "selected_source_has_no_rpc_variable_reference": true,
+    "two_real_optimizer_steps_both": true
+  }
+}

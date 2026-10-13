@@ -1,0 +1,328 @@
+{
+  "candidate_commit": "26c0b4a716b5b025058a3b1daabc64afdf1a022d",
+  "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+  "commands": [
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-c",
+        "import importlib.metadata,json,sys; print(json.dumps({\"python\":sys.version.split()[0],\"versions\":{name:importlib.metadata.version(name) for name in [\"reprollm\",\"pytest\",\"pytest-cov\",\"coverage\",\"ruff\",\"mypy\",\"pydantic\",\"typer\",\"PyYAML\"]}},sort_keys=True))"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.080316,
+      "exit_code": 0,
+      "label": "00-environment-versions",
+      "origin_check": {
+        "elapsed_seconds": 0.033218,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/00-environment-versions-origin.log"
+      },
+      "raw_private_log_sha256": "5f3b4bd0376c57d85bdec1dff05b353749381e4ba18a6adad6317228649602e3",
+      "retained_log": "raw/00-environment-versions.log",
+      "retained_log_sha256": "5f3b4bd0376c57d85bdec1dff05b353749381e4ba18a6adad6317228649602e3",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 11.913394,
+      "exit_code": 0,
+      "label": "01-quickstart-preflight",
+      "origin_check": {
+        "elapsed_seconds": 0.032683,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/01-quickstart-preflight-origin.log"
+      },
+      "raw_private_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "retained_log": "raw/01-quickstart-preflight.log",
+      "retained_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--basetemp=<QUALITY>/pytest-temp",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85",
+        "--tb=short"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 365.837433,
+      "exit_code": 0,
+      "label": "02-pytest-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.03181,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/02-pytest-coverage-origin.log"
+      },
+      "raw_private_log_sha256": "4d538cbe4be5b53a0cf2d23a172e4dd95e62a32bcf782ab86c5360fae184590b",
+      "retained_log": "raw/02-pytest-coverage.log",
+      "retained_log_sha256": "4d538cbe4be5b53a0cf2d23a172e4dd95e62a32bcf782ab86c5360fae184590b",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.1391,
+      "exit_code": 0,
+      "label": "03-redaction-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.029887,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/03-redaction-coverage-origin.log"
+      },
+      "raw_private_log_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1",
+      "retained_log": "raw/03-redaction-coverage.log",
+      "retained_log_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security",
+        "--basetemp=<QUALITY>/security-temp",
+        "--tb=short"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 13.834433,
+      "exit_code": 0,
+      "label": "04-security",
+      "origin_check": {
+        "elapsed_seconds": 0.03276,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/04-security-origin.log"
+      },
+      "raw_private_log_sha256": "d06418e633e6a5d71703a9da63ed821513113ffec38486b0dc8ba553d16ea2bf",
+      "retained_log": "raw/04-security.log",
+      "retained_log_sha256": "d06418e633e6a5d71703a9da63ed821513113ffec38486b0dc8ba553d16ea2bf",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/ruff",
+        "check",
+        "."
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.060027,
+      "exit_code": 0,
+      "label": "05-ruff-check",
+      "origin_check": {
+        "elapsed_seconds": 0.035021,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/05-ruff-check-origin.log"
+      },
+      "raw_private_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "retained_log": "raw/05-ruff-check.log",
+      "retained_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.069059,
+      "exit_code": 0,
+      "label": "06-ruff-format-check",
+      "origin_check": {
+        "elapsed_seconds": 0.031751,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/06-ruff-format-check-origin.log"
+      },
+      "raw_private_log_sha256": "74a39813e72c147b12b25ce96186929b8b45b95410014c03acf4025a0bb4ffb3",
+      "retained_log": "raw/06-ruff-format-check.log",
+      "retained_log_sha256": "74a39813e72c147b12b25ce96186929b8b45b95410014c03acf4025a0bb4ffb3",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/mypy",
+        "src/",
+        "scripts/compare_gold.py"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 6.507054,
+      "exit_code": 0,
+      "label": "07-mypy",
+      "origin_check": {
+        "elapsed_seconds": 0.034664,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/07-mypy-origin.log"
+      },
+      "raw_private_log_sha256": "cb50d8d25327d24ec9ba9212dc17f5055910cd556bb4d100186ef61ac407ae8e",
+      "retained_log": "raw/07-mypy.log",
+      "retained_log_sha256": "cb50d8d25327d24ec9ba9212dc17f5055910cd556bb4d100186ef61ac407ae8e",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.369199,
+      "exit_code": 0,
+      "label": "08-rules-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.033682,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/08-rules-documentation-origin.log"
+      },
+      "raw_private_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_log": "raw/08-rules-documentation.log",
+      "retained_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.408241,
+      "exit_code": 0,
+      "label": "09-profiles-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.029123,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/09-profiles-documentation-origin.log"
+      },
+      "raw_private_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_log": "raw/09-profiles-documentation.log",
+      "retained_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 10.663128,
+      "exit_code": 0,
+      "label": "10-cli-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.034458,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/10-cli-documentation-origin.log"
+      },
+      "raw_private_log_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c",
+      "retained_log": "raw/10-cli-documentation.log",
+      "retained_log_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "schema",
+        "export",
+        "--out",
+        "<QUALITY>/schema-export"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.489343,
+      "exit_code": 0,
+      "label": "11-schema-export",
+      "origin_check": {
+        "elapsed_seconds": 0.031417,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/11-schema-export-origin.log"
+      },
+      "raw_private_log_sha256": "18a20cf8af006172fc21a034572ea157f0909d815f6425aaabbaffb41af0319e",
+      "retained_log": "raw/11-schema-export.log",
+      "retained_log_sha256": "0a9d75ef0e5bdcd505d98842e0451e7f33efec529bcb5ec5284a996055555beb",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    },
+    {
+      "argv": [
+        "<CORE_ENV>/bin/python",
+        "-c",
+        "import hashlib,json,sys; from pathlib import Path; target=Path(sys.argv[1]); expected={p.relative_to(Path(\"schemas\")).as_posix():p.read_bytes() for p in Path(\"schemas\").rglob(\"*.json\")}; actual={p.relative_to(target).as_posix():p.read_bytes() for p in target.rglob(\"*.json\")}; equal=expected==actual; print(json.dumps({\"schema_version\":1,\"same_file_set_and_bytes\":equal,\"expected_sha256\":{k:hashlib.sha256(v).hexdigest() for k,v in expected.items()},\"actual_sha256\":{k:hashlib.sha256(v).hexdigest() for k,v in actual.items()}},sort_keys=True)); raise SystemExit(0 if equal else 1)",
+        "<QUALITY>/schema-export"
+      ],
+      "candidate_input_inventory_sha256": "226d273b78ad0dca733f9827c2102bc9a44aa7128c40d2b36056c8936a657d0c",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.031002,
+      "exit_code": 0,
+      "label": "12-schema-full-byte-comparison",
+      "origin_check": {
+        "elapsed_seconds": 0.02924,
+        "exit_code": 0,
+        "module_origin": "src/reprollm/__init__.py",
+        "raw_log_sha256": "5684c5db459476c83682aa129b792ded261d1f20047881c7c0b00a87253eca38",
+        "retained_log": "raw/12-schema-full-byte-comparison-origin.log"
+      },
+      "raw_private_log_sha256": "99752a7898550b964f3ae44a56f608c2902183bfcb1b6bd51444f8615fe8d332",
+      "retained_log": "raw/12-schema-full-byte-comparison.log",
+      "retained_log_sha256": "99752a7898550b964f3ae44a56f608c2902183bfcb1b6bd51444f8615fe8d332",
+      "retained_log_transformation": "Only known task-owned path prefixes replaced; raw private bytes and their hash retained."
+    }
+  ],
+  "git_compatibility_shim_sha256": "87a9309323f9e82d8721b7bd58cac0c1a8f08e44a4348fbf6d476854aa19b298",
+  "schema_version": 1,
+  "task": "VAL-R01 final quality prerequisite"
+}

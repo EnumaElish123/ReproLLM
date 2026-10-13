@@ -1,0 +1,70 @@
+{
+  "candidate_version": "0.6.1",
+  "checker_reports_only_under_tmp": true,
+  "fixed_candidate_head": "26c0b4a716b5b025058a3b1daabc64afdf1a022d",
+  "helper_sha256": "55dd1b79878c5a9d05322b1c01b4e2a947551d744cb25152ae5108f2baa929ac",
+  "independent_existing_tests": [
+    "tests/unit/cli/test_export_research_details.py:196 selected-old-run snapshot isolation",
+    "tests/unit/cli/test_export_research_details.py:165 observed/locked effective state",
+    "tests/unit/cli/test_export.py:127 current audit summary",
+    "tests/unit/cli/test_export_privacy_boundary.py redaction/relative values"
+  ],
+  "mapping": [
+    {
+      "evidence": "src/reprollm/diff/state.py:124/155/204/236; schemas defaults, existing state_flat gold225 fields; MetricSpec.params factory explicit at schemas/manifest.py:247",
+      "fields": "generation/inference/training/privacy/judge and A/B main parameter",
+      "source": "Independent projection of selected manifest + selected lock + recorded bindings; latest repeated CLI > config > env > other run > lock > manifest"
+    },
+    {
+      "evidence": "export/exporter.py:104/135/150/184/223",
+      "fields": "model/dataset/prompt core and research details; metric hashes and provenance",
+      "source": "Same effective selected flat leaves; short hash presentation with full hashes retained in input records"
+    },
+    {
+      "evidence": "export/exporter.py:306/318; default template Code/Environment/Hardware/Execution",
+      "fields": "code/env/hardware/command/run ID/timestamps/duration/status",
+      "source": "Selected run actual records; complete effective package/hardware rows checked; no currentB field substitution"
+    },
+    {
+      "evidence": "cli/export.py:111; exporter.py:327; spec19 current-tree audit paragraph",
+      "fields": "audit counts + complete ordered CRITICAL/WARNING messages + exact diagnostics",
+      "source": "Root saved current-tree/latest B audit JSON and independently prepared same-scope diagnostic bytes; this checks export preservation, not a new audit gold"
+    },
+    {
+      "evidence": "export/exporter.py:243; normative19; test_export_privacy_boundary",
+      "fields": "known limitations + bindings/source confidence + privacy",
+      "source": "Complete selected lock unresolved/unpinnable/not_computed and declared binding list; MD excludes machine paths/identities and obvious credentials"
+    },
+    {
+      "evidence": "spec5 original-byte hash semantics; default template absence of Files/Artifacts table",
+      "fields": "captured file hashes",
+      "source": "Original run.references and run.files hashes retained separately from captured snapshot SHA; default template does not render all files/artifact hashes"
+    }
+  ],
+  "normative_basis": [
+    {
+      "contract": "Selected run owns manifest/lock snapshots and observations; current declarations never replace them.",
+      "line": 1412,
+      "path": "docs/plan/01_specification.md",
+      "section": "19"
+    },
+    {
+      "contract": "Embedded audit is current working tree/latest valid run, separately labelled.",
+      "line": 1427,
+      "path": "docs/plan/01_specification.md",
+      "section": "19"
+    },
+    {
+      "contract": "Export every available captured state; this affected matrix is default A/B, unchanged templates excluded.",
+      "line": 253,
+      "path": "val.md",
+      "section": "8 M7 matrix"
+    }
+  ],
+  "privacy_and_output_policy": "Comparison rows retain complete input byte SHA and expected/actual SHA, not private field text. Root retains all original MD/streams/audit/run sources. Success stdout own output path compared exactly, not subject to blanket machine-path stripping.",
+  "receipt_schema": "schema_version1 argv/cwd/exit_code/elapsed_seconds/stdout_sha256/stderr_sha256",
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXPORT_EXECUTED_BY_THIS_AGENT",
+  "unresolved_known_boundary": "Selected run capture warnings are counted and hashed; default template has no generic run-warning section. This is not proof that corrupt captured file contents are faithful; upstream fidelity status stays separate.",
+  "upstream_fidelity_policy": "Mandatory status+evidence SHA. export_projection_passed cannot override upstream_fidelity_blocker. No full run/release/A01B acceptance assertion."
+}

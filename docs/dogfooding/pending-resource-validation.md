@@ -12,11 +12,23 @@ commands, independent gold and resource guards. This checklist does not change
 that baseline. Earlier successful executions remain historical evidence;
 unchecked items below are **blocked**, not fresh passes for 0.6.1.
 
+Updated 2026-10-13: [current-candidate resource replay](2026-10-13-val-r01/README.md)
+restored the reviewed inputs and completed Linux H2 plus ten native GPU A/B
+children at `26c0b4a716b5b025058a3b1daabc64afdf1a022d`. Linux H2 and
+LlamaFactory capture/diff are accepted; eight captures from the remaining four
+projects fail non-secret snapshot fidelity. All specified semantic leaves,
+self-diffs and independent native output checks pass, and default export
+projection is checked separately from the failed upstream captures. VAL-R01
+remains open for the existing path-redaction implementation follow-up. These
+are later-candidate results, not a promotion of the historical 0.6.1 release.
+Recovered judge inputs and configured credentials do not substitute for a
+fresh VAL-R02 bounded API run or VAL-R03 authorized-file success.
+
 | Tracking ID | Outstanding coverage | Blocker | Status |
 |---|---|---|---|
-| VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | Linux/GPU resource and access to the reviewed input bundles are not provisioned for replay | BLOCKED |
-| VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Exact approved entry/transport/fixed-answer/config bundle is only in the unavailable remote store | BLOCKED |
-| VAL-R03 | Successful authenticated HF gated-file resolution | Model-author access has not been granted for the selected Llama-2 repository | BLOCKED |
+| VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | Resources restored; Linux H2 and all ten native children pass, but eight captures fail source/config snapshot fidelity | BLOCKED — implementation follow-up |
+| VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Input bundle recovered; fresh provider/tariff/budget preflight and bounded real judge replay remain outstanding | BLOCKED |
+| VAL-R03 | Successful authenticated HF gated-file resolution | Successful model-author-authorized file access is still unverified by fresh authenticated replay | BLOCKED |
 
 ## VAL-R01 — Linux and five-project GPU replay
 
@@ -39,13 +51,14 @@ checking the resources provisioned for the new execution.
 
 **Close only when:**
 
-- [ ] Linux H2: offline/two-online/check/audit runs complete with the expected
+- [x] Linux H2 (2026-10-13 candidate): offline/two-online/check/audit runs complete with the expected
   revisions, file hashes, normalized lock equality and freshness results.
 - [ ] lm-evaluation-harness: real bounded inference, complete A/B capture and
   the required semantic leaf/severity match §8.3.
 - [ ] FastChat: real local answer generation and its A/B capture/diff pass.
-- [ ] LlamaFactory: real bounded LoRA updates, finite loss and its A/B
-  capture/diff pass.
+- [x] LlamaFactory (2026-10-13 candidate): real bounded LoRA updates, finite loss and its A/B
+  capture/diff pass. Its additional RPC scratch-variable MEDIUM delta is
+  independently explained; complete A/B environment byte identity is not claimed.
 - [ ] HarmBench: real target/classifier execution and its A/B capture/diff pass.
 - [ ] llm-dp-finetune: real DistilGPT2 privacy fine-tuning and its A/B
   capture/diff pass under the formal standard in §8.5.
@@ -53,6 +66,12 @@ checking the resources provisioned for the new execution.
   privacy and self-diff checks; all additional drift is explained. Preserve
   the prescribed MEDIUM DP leaf even when the config-file hash is HIGH.
 - [ ] Available captured states pass the applicable M7 export checks.
+
+All ten bounded native children and output checks now pass. The unchecked
+project items remain open because their captured source/config snapshots alter
+regexes, arithmetic or relative path syntax; correct original-byte hashes and
+semantic leaf diffs cannot close that fidelity failure. Detailed checks, all
+36 semantic changes, commands and timing are in the dated report above.
 
 Standard-library capture probes do not close these native execution items.
 The retired gated Llama-2 multi-GPU DP scenario remains additional coverage,

@@ -1,0 +1,106 @@
+{
+  "bounded_followup_regression_proposal": [
+    "Public stdlib run capture of Python division/integer division/f-string arithmetic and relative Path slash join; require source bytes and syntax remain intact.",
+    "Captured YAML GSM8K-style escaped numeric/currency regexes; preserve exact original non-secret scalars.",
+    "Paired true absolute POSIX/Windows/UNC/file-URI and supported-secret canaries must still be absent from every saved artifact.",
+    "Keep stop-token/glob controls, idempotence, bounded parsing and original child argv/exit semantics."
+  ],
+  "contract_sources": [
+    {
+      "lines": [
+        467,
+        469,
+        1182,
+        1185,
+        1191,
+        1212
+      ],
+      "meaning": "Safe non-secret scalar/source bytes retain meaning; original hashes and transformed copies are separate evidence.",
+      "path": "docs/plan/01_specification.md"
+    },
+    {
+      "lines": [
+        495,
+        500
+      ],
+      "meaning": "Snapshot fidelity is an independent assertion; correct raw hashes do not prove a correct snapshot.",
+      "path": "val.md"
+    },
+    {
+      "lines": [
+        46,
+        53
+      ],
+      "meaning": "Existing pending engineering follow-up for RunPrivacy punctuation/relative-source false positives.",
+      "path": "docs/plan/backlog.md"
+    }
+  ],
+  "findings": [
+    {
+      "absolute_cachepath_literal_exception_applies": false,
+      "case": "llm-dp-finetune",
+      "classification": "standalone slash and integer-division operators, f-string arithmetic, relative slash literal or Path division changed to path placeholders",
+      "fidelity_status": "FAIL",
+      "original_python_parse_valid": true,
+      "redacted_flag": true,
+      "relative_path": "src/llm_pft/models/language_model.py",
+      "saved_python_parse_valid": false,
+      "snapshot_bytes": 28970,
+      "snapshot_sha256": "00104faa97b4f7049e49a231dfaacd63c40b89cb2ee77f881d1bab4ff3b7d9cf",
+      "source_bytes": 28860,
+      "source_hash_matches_record": true,
+      "source_sha256": "b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896"
+    },
+    {
+      "absolute_cachepath_literal_exception_applies": false,
+      "case": "llm-dp-finetune",
+      "classification": "standalone slash and integer-division operators, f-string arithmetic, relative slash literal or Path division changed to path placeholders",
+      "fidelity_status": "FAIL",
+      "original_python_parse_valid": true,
+      "redacted_flag": true,
+      "relative_path": "validation/train_entry.py",
+      "saved_python_parse_valid": false,
+      "snapshot_bytes": 5685,
+      "snapshot_sha256": "bd92617560d4578b4f3fc367720c84788968d5aa139cf291447532c812ab0b5a",
+      "source_bytes": 5629,
+      "source_hash_matches_record": true,
+      "source_sha256": "21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a"
+    },
+    {
+      "affected_fields": [
+        "metric_list.0.regexes_to_ignore.1",
+        "metric_list.0.regexes_to_ignore.3",
+        "filter_list.0.filter.0.regex_pattern"
+      ],
+      "case": "lm-evaluation-harness",
+      "classification": "non-secret GSM8K metric/extraction regex values changed to path placeholders",
+      "fidelity_status": "FAIL",
+      "redacted_flag": true,
+      "relative_path": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+      "snapshot_bytes": 1039,
+      "snapshot_sha256": "a0c693c485c484008ddc3c8af48f2e39f9dbd86e3bf220c64ddf3db4ff8c447d",
+      "source_bytes": 1014,
+      "source_hash_matches_record": true,
+      "source_sha256": "82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833"
+    }
+  ],
+  "full_capture_pass": false,
+  "native_completed_zero": true,
+  "planning_disposition": {
+    "R04_B_and_D01_effect": "Input evidence and real recipe must not claim complete snapshot fidelity until this existing contract violation is fixed. Neither task is implemented by this resource validation.",
+    "R07_C_scope": false,
+    "category": "Existing run/privacy.py implementation defect; R02-R/M7 punctuation follow-up",
+    "new_policy_required": false,
+    "spec_gap": false,
+    "validation_scope": "Record current native/output/hash/binding facts and full-capture FAIL; continue unaffected checks, retain gold and all failed attempts. No product fix authorized in this batch."
+  },
+  "reviewer_execution": {
+    "GPU_children": 0,
+    "network": 0,
+    "product_changes": 0,
+    "raw_artifact_mutations": 0,
+    "source_redactor_used_as_gold": false
+  },
+  "schema_version": 1,
+  "status": "IMPLEMENTATION_FIDELITY_DEFECT_CONFIRMED"
+}
