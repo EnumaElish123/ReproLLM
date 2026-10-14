@@ -9,7 +9,7 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 |---|---|
 | 1.6 Baselines | {% for m in data.models %}models.{{ m.role }} = {{ m.id }} @ {{ m.revision }}{% if not loop.last %}; {% endif %}{% endfor %} |
 | 2.1–2.4 Hyperparameters / runs | {% if data.training %}Training section (method, lr, batch_size, epochs){% else %}*not covered* (no `training` section){% endif %}; repetitions: {{ data.evaluation.get("repetitions", "not declared") }} |
-| 2.5 Experimental protocol | `execution.command` (Execution section above); run record: {{ data.execution.get("run_id", "none") }} |
+| 2.5 Experimental protocol | `execution.command` and recorded input observations (Execution above); input consumption unverified; run record: {{ data.execution.get("run_id", "none") }} |
 | 3.1–3.3 Datasets / splits | {% for d in data.datasets %}datasets.{{ d.role }} = {{ d.id }} @ {{ d.revision }}, split: {{ d.get("split") or "not declared" }}{% if not loop.last %}; {% endif %}{% endfor %} |
 | 4.1–4.3 Evaluation metrics / protocol | Metrics: {{ data.metrics_summary }}; {% if data.metrics or data.evaluation_details %}Evaluation section above{% else %}*not covered* (no evaluation details){% endif %}; generation parameters above |
 | 5.1–5.2 Model checkpoints / LLMs | Identity table above (revision, pinnability, tokenizer, chat template) |
@@ -41,7 +41,7 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 |---|---|
 | Artifacts Available | Commit `reprollm.yaml`, `reprollm.lock`, `.reprollm/runs/` with this document |
 | Artifacts Evaluated – Reusable | This document covers all sections; checklists.md holds the full mapping |
-| Artifacts Evaluated – Functional | Run records under `.reprollm/runs/`; `reprollm diff <reported> <yours>` |
+| Artifacts Evaluated – Functional | Run records and input change checks above; input consumption unverified; `reprollm diff <reported> <yours>` |
 | Model artifact identity | Identity table above (exact revisions, pinnability) |
 | Software environment | Scoped recorder evidence in Environment above; child environment unverified; `reprollm.lock` `environment.packages` |
 | Documentation quality / ease of reuse | *not covered by ReproLLM* |

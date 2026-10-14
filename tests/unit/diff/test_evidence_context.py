@@ -5,7 +5,15 @@ from __future__ import annotations
 import pytest
 
 from reprollm.schemas.lock import Lock
-from reprollm.schemas.run_record import CommandInfo, RunEnvironment, RunRecord, RunStatus
+from reprollm.schemas.run_record import (
+    CommandInfo,
+    InputCapture,
+    Observation,
+    ObservationSource,
+    RunEnvironment,
+    RunRecord,
+    RunStatus,
+)
 from reprollm.schemas.state import State
 
 
@@ -55,6 +63,30 @@ def test_unregistered_producer_keeps_values_with_unknown_context(version: str) -
     assert leaf.value == "2.8.0"
     assert leaf.context is not None
     assert (leaf.context.subject, leaf.context.phase) == ("unknown", "unknown")
+
+
+@pytest.mark.parametrize(("producer", "schema"), [("0.7.0", 1), ("0.6.2", 2)])
+def test_incompatible_producer_schema_does_not_qualify_argv_or_env(
+    producer: str, schema: int
+) -> None:
+    data = record(producer).model_dump()
+    data["schema_version"] = schema
+    if schema == 2:
+        data["input_capture"] = InputCapture().model_dump()
+    run = RunRecord.model_validate(data)
+    run.bindings_observed = {
+        "generation.temperature": [
+            Observation(value=0.1, source=ObservationSource(type="cli", key="--temperature"))
+        ],
+        "custom.threads": [
+            Observation(value="2", source=ObservationSource(type="env", key="OMP_NUM_THREADS"))
+        ],
+    }
+    projected = State.from_run(run).flatten()
+    for path in ("generation.temperature", "custom.threads", "environment.python"):
+        context = projected[path].context
+        assert context is not None
+        assert (context.subject, context.phase) == ("unknown", "unknown")
 
 
 def test_lock_context_is_resolution_recorder_not_runtime_child() -> None:

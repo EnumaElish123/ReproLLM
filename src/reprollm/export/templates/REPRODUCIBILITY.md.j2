@@ -163,6 +163,16 @@ Hardware information was not captured.
 {% if data.has_run() %}
 Input observation phase: {{ data.input_evidence }}.
 
+{% if data.input_checks %}
+Input changes were checked after child completion. Unchanged bytes do not prove consumption.
+
+| Input | Before run | Before hash | After run | After hash | Change |
+|---|---|---|---|---|---|
+{% for check in data.input_checks -%}
+| {{ check.path | code }} | {{ check.before }} | {{ (check.before_sha256 or "not available") | code }} | {{ check.after }} | {{ (check.after_sha256 or "not available") | code }} | {{ check.change }} |
+{% endfor %}
+
+{% endif %}
 - command: {{ data.execution.command | code }}
 - run id: {{ data.execution.run_id | code }}
 - started: {{ data.execution.started_at }} · ended: {{ data.execution.ended_at }} · duration: {{ data.execution.duration_seconds }} s

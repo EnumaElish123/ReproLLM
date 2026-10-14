@@ -149,7 +149,15 @@ def _snapshots(run: RunRecord, run_dir: Path | None) -> tuple[Manifest | None, L
 
 def from_run(run: RunRecord, *, run_dir: Path | None = None) -> State:
     manifest, lock = _snapshots(run, run_dir)
-    return merge(manifest, lock, observed_state(run))
+    declared = from_manifest(manifest) if manifest is not None else None
+    locked = from_lock(lock) if lock is not None else None
+    if run.schema_version == 2:
+        for projected in (declared, locked):
+            if projected is not None:
+                for leaf in projected.flatten().values():
+                    if leaf.context is None:
+                        leaf.context = input_context(run, "file")
+    return merge(declared, locked, observed_state(run))
 
 
 def observed_state(run: RunRecord) -> State:

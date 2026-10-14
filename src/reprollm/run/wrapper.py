@@ -1,4 +1,4 @@
-"""Subprocess wrapper that records runtime truth (spec §5.1)."""
+"""Subprocess wrapper that preserves scoped runtime evidence (spec §5.1)."""
 
 from __future__ import annotations
 
@@ -20,24 +20,21 @@ from pathlib import Path
 from types import FrameType
 from typing import Any, Literal, TextIO
 
+import yaml
+
 from reprollm import __version__
 from reprollm.core import envinfo, proc
-from reprollm.core.bindings import observe
 from reprollm.core.errors import UserError
 from reprollm.core.git import inspect_git
 from reprollm.core.hashing import sha256_bytes
-from reprollm.core.paths import LOCK, MANIFEST, PROJECT_RULES, RUNS_DIR, resolve_project_file
+from reprollm.core.paths import MANIFEST, PROJECT_RULES, RUNS_DIR, resolve_project_file
 from reprollm.core.persistence import redact_keyed_values
 from reprollm.core.redaction import redact_env, redact_lines
-from reprollm.core.yaml_io import load_manifest, load_yaml
-from reprollm.run.capture import (
-    collect_outputs,
-    declared_files,
-    hash_and_snapshot,
-    resolve_argv_files,
-)
+from reprollm.core.yaml_io import parse_manifest_text
+from reprollm.run.capture import collect_outputs
 from reprollm.run.contextual_text import CaptureLineContext, shield_contextual_keys
 from reprollm.run.hardware import capture_hardware
+from reprollm.run.input_capture import capture_inputs, recheck_inputs
 from reprollm.run.privacy import RunPrivacy
 from reprollm.run.slurm import capture_scheduler
 from reprollm.schemas.manifest import Manifest
@@ -45,7 +42,7 @@ from reprollm.schemas.project_rules import ProjectRules
 from reprollm.schemas.run_record import (
     CodeInfo,
     CommandInfo,
-    DocumentRef,
+    InputCapture,
     RunEnvironment,
     RunRecord,
     RunStatus,
@@ -106,9 +103,12 @@ def _save_record(safe: RunRecord, run_dir: Path) -> None:
             temporary.unlink(missing_ok=True)
 
 
-def _safe_load(root: Path) -> tuple[Manifest | None, ProjectRules | None]:
+def _safe_load(
+    root: Path,
+) -> tuple[Manifest | None, ProjectRules | None, dict[str, bytes | None]]:
     manifest = None
     rules = None
+    document_data: dict[str, bytes | None] = {MANIFEST: None, PROJECT_RULES: None}
     for name in (MANIFEST, PROJECT_RULES):
         path = root / name
         if not path.exists() and not path.is_symlink():
@@ -117,15 +117,17 @@ def _safe_load(root: Path) -> tuple[Manifest | None, ProjectRules | None]:
         if resolved is None:
             raise UserError(f"{name} must be a readable file inside the repository")
         try:
+            data = resolved.read_bytes()
+            document_data[name] = data
             if name == MANIFEST:
-                manifest = load_manifest(resolved)
+                manifest = parse_manifest_text(data.decode("utf-8"))
             else:
-                rules = ProjectRules.model_validate(load_yaml(resolved))
-        except (UserError, ValueError) as exc:
+                rules = ProjectRules.model_validate(yaml.safe_load(data.decode("utf-8")) or {})
+        except (OSError, UserError, ValueError, yaml.YAMLError) as exc:
             raise UserError(
                 f"cannot load {name} ({type(exc).__name__}); validate its contents"
             ) from None
-    return manifest, rules
+    return manifest, rules, document_data
 
 
 def _tee(
@@ -220,41 +222,17 @@ def _capture_code(root: Path, run_dir: Path, privacy: RunPrivacy) -> CodeInfo:
     return code
 
 
-def _snapshot_document(
-    root: Path,
-    run_dir: Path,
-    name: str,
-    snapshot: str,
-    privacy: RunPrivacy,
-) -> DocumentRef | None:
-    source = root / name
-    if not source.exists() and not source.is_symlink():
-        return None
-    resolved = resolve_project_file(root, name)
-    if resolved is None:
-        raise UserError(f"{name} must remain inside the repository")
-    data = resolved.read_bytes()
-    safe = privacy.text(data.decode("utf-8"), manifest=name == MANIFEST)[0]
-    _destination(run_dir, snapshot).write_text(safe, encoding="utf-8", newline="")
-    return DocumentRef(path=name, sha256=sha256_bytes(data), snapshot=snapshot)
-
-
 def _collect(
     record: RunRecord,
     *,
     root: Path,
-    cwd: Path,
     run_dir: Path,
-    argv: Sequence[str],
     env: dict[str, str],
     hostname: str,
     privacy: RunPrivacy,
     manifest: Manifest | None,
-    project_rules: ProjectRules | None,
     env_capture: Literal["allowlist", "all"],
     extra_allowlist: Sequence[str],
-    snapshot: bool,
-    max_bytes: int,
 ) -> None:
     def field(name: str, capture: Callable[[], Any]) -> None:
         try:
@@ -279,31 +257,6 @@ def _collect(
     )
     field("hardware", capture_hardware)
     field("scheduler", lambda: capture_scheduler(env))
-    field("manifest", lambda: _snapshot_document(root, run_dir, MANIFEST, "manifest.yaml", privacy))
-    field("lock", lambda: _snapshot_document(root, run_dir, LOCK, "lock.yaml", privacy))
-    field(
-        "files",
-        lambda: hash_and_snapshot(
-            resolve_argv_files(argv, root, cwd) + declared_files(manifest, project_rules),
-            run_dir,
-            root=root,
-            snapshot=snapshot,
-            max_bytes=max_bytes,
-            warnings=record.warnings,
-            sanitize=privacy.text,
-        ),
-    )
-    field(
-        "bindings_observed",
-        lambda: observe(
-            manifest.bindings if manifest else {},
-            argv,
-            env,
-            root,
-            project_rules=project_rules,
-            warnings=record.warnings,
-        ),
-    )
     if manifest is not None and manifest.artifacts is not None:
         outputs = manifest.artifacts.outputs or []
         field("artifacts", lambda: collect_outputs(root, outputs))
@@ -333,7 +286,7 @@ def execute(
     run_dir = run_dir.resolve()
     if not run_dir.is_dir() or any(run_dir.iterdir()):
         raise UserError("run directory must be a new empty directory")
-    manifest, project_rules = _safe_load(root)
+    manifest, project_rules, document_data = _safe_load(root)
     hostname, username = socket.gethostname(), getpass.getuser()
     privacy = RunPrivacy(root, hostname=hostname, username=username)
     command, redactions = [], 0
@@ -351,6 +304,8 @@ def execute(
             f"cannot sanitize recorded command ({type(exc).__name__}); simplify command arguments"
         ) from None
     record = RunRecord(
+        schema_version=2,
+        input_capture=InputCapture(),
         reprollm_version=__version__,
         run_id=run_dir.name,
         name=name,
@@ -371,6 +326,24 @@ def execute(
             f"cannot write run.json ({type(exc).__name__}); check run directory permissions"
         ) from None
     env = dict(os.environ)
+    try:
+        capture_inputs(
+            record,
+            root=root,
+            cwd=cwd,
+            run_dir=run_dir,
+            argv=argv,
+            env=env,
+            privacy=privacy,
+            manifest=manifest,
+            project_rules=project_rules,
+            snapshot=snapshot,
+            max_bytes=max_bytes,
+            document_data=document_data,
+        )
+        _write_record(record, run_dir, privacy)
+    except Exception as exc:
+        record.warnings.append(f"input baseline capture failed ({type(exc).__name__})")
     child_env = {**env, "REPROLLM_RUN_ID": record.run_id, "REPROLLM_RUN_DIR": str(run_dir)}
     start = time.monotonic()
     output_warnings: list[str] = []
@@ -429,7 +402,16 @@ def execute(
             record.status = RunStatus.FAILED
             record.ended_at = _now()
             record.warnings.append(f"command start failed ({type(exc).__name__})")
-            _write_record(record, run_dir, privacy)
+            try:
+                _write_record(record, run_dir, privacy)
+            except Exception as error:
+                minimal = safe_base.model_copy(deep=True)
+                minimal.status = record.status
+                minimal.ended_at = record.ended_at
+                minimal.warnings.append(f"command start failed ({type(exc).__name__})")
+                minimal.warnings.append(f"capture finalization failed ({type(error).__name__})")
+                with suppress(Exception):
+                    _save_record(minimal, run_dir)
             raise UserError(
                 f"cannot start command ({type(exc).__name__}); check the executable and --cwd"
             ) from None
@@ -439,21 +421,20 @@ def execute(
     record.status = RunStatus.INTERRUPTED if record.exit_code < 0 else RunStatus.COMPLETED
     record.warnings.extend(sorted(output_warnings))
     try:
+        recheck_inputs(record, root=root)
+    except Exception as exc:
+        record.warnings.append(f"input final recheck failed ({type(exc).__name__})")
+    try:
         _collect(
             record,
             root=root,
-            cwd=cwd,
             run_dir=run_dir,
-            argv=argv,
             env=env,
             hostname=hostname,
             privacy=privacy,
             manifest=manifest,
-            project_rules=project_rules,
             env_capture=env_capture,
             extra_allowlist=extra_allowlist,
-            snapshot=snapshot,
-            max_bytes=max_bytes,
         )
     except Exception as exc:
         record.warnings.append(f"capture failed ({type(exc).__name__})")

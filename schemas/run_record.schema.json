@@ -241,6 +241,172 @@
       "title": "HardwareInfo",
       "type": "object"
     },
+    "InputCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_phase": {
+          "const": "pre_child",
+          "default": "pre_child",
+          "title": "Baseline Phase",
+          "type": "string"
+        },
+        "check_phase": {
+          "const": "post_child",
+          "default": "post_child",
+          "title": "Check Phase",
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/InputCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "consumption": {
+          "const": "unverified",
+          "default": "unverified",
+          "title": "Consumption",
+          "type": "string"
+        }
+      },
+      "title": "InputCapture",
+      "type": "object"
+    },
+    "InputCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "$ref": "#/$defs/InputFingerprint"
+        },
+        "before": {
+          "$ref": "#/$defs/InputFingerprint"
+        },
+        "change": {
+          "enum": [
+            "unchanged",
+            "changed",
+            "removed",
+            "created",
+            "unknown"
+          ],
+          "title": "Change",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "manifest",
+            "lock",
+            "argv",
+            "declared",
+            "binding"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "path": {
+          "pattern": "^(?![/\\\\])(?![A-Za-z]:)(?![\\s\\S]*\\\\)(?![\\s\\S]*(?:^|/)\\.\\.(?:/|$))(?=[\\s\\S]*\\S)[\\s\\S]+$",
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "origin",
+        "before",
+        "after",
+        "change"
+      ],
+      "title": "InputCheck",
+      "type": "object"
+    },
+    "InputFingerprint": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "sha256": {
+                "type": "null"
+              },
+              "size_bytes": {
+                "type": "null"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "present"
+              }
+            },
+            "required": [
+              "availability"
+            ]
+          },
+          "then": {
+            "properties": {
+              "sha256": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "size_bytes": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            },
+            "required": [
+              "sha256",
+              "size_bytes"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "availability": {
+          "enum": [
+            "present",
+            "missing",
+            "unavailable"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "size_bytes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size Bytes"
+        }
+      },
+      "required": [
+        "availability"
+      ],
+      "title": "InputFingerprint",
+      "type": "object"
+    },
     "Observation": {
       "additionalProperties": false,
       "properties": {
@@ -490,6 +656,39 @@
   },
   "$id": "https://reprollm.dev/schemas/run_record.schema.json",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "input_capture": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 2
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input_capture": {
+            "not": {
+              "type": "null"
+            }
+          }
+        },
+        "required": [
+          "input_capture"
+        ]
+      }
+    }
+  ],
   "description": "``.reprollm/runs/<run_id>/run.json`` (spec \u00a75).",
   "properties": {
     "artifacts": {
@@ -581,6 +780,17 @@
       ],
       "default": null
     },
+    "input_capture": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InputCapture"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "lock": {
       "anyOf": [
         {
@@ -635,8 +845,11 @@
       "default": null
     },
     "schema_version": {
-      "const": 1,
       "default": 1,
+      "enum": [
+        1,
+        2
+      ],
       "title": "Schema Version",
       "type": "integer"
     },

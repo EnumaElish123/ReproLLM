@@ -12,6 +12,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
+from reprollm.core.evidence import context_label, input_context, run_context
 from reprollm.core.paths import find_root
 from reprollm.run.reader import RunOutcome, filter_runs, list_runs, read_run
 from reprollm.schemas.run_record import RunStatus
@@ -90,23 +91,53 @@ def show(
     typer.echo(f"Command: {shlex.join(record.command.argv)}")
     typer.echo(f"Working directory: {record.command.cwd}")
     typer.echo(f"Code: {record.code.commit or 'unavailable'}; dirty={record.code.dirty}")
+    typer.echo("Child environment and input consumption are unverified.")
     if record.environment is not None:
         typer.echo(
-            f"Environment: {record.environment.platform}; Python {record.environment.python}"
+            f"Environment: {record.environment.platform} "
+            f"({context_label(run_context(record, 'environment.platform'))}); "
+            f"Python {record.environment.python} "
+            f"({context_label(run_context(record, 'environment.python'))})"
         )
         for package, version in sorted(record.environment.packages.items()):
-            typer.echo(f"  {package}: {version}")
+            typer.echo(
+                f"  {package}: {version} "
+                f"({context_label(run_context(record, f'environment.packages.{package}'))})"
+            )
+        typer.echo(
+            f"Inherited environment: {record.environment.env_capture} "
+            f"({context_label(run_context(record, 'environment.env_capture'))})"
+        )
     if record.hardware is not None:
-        typer.echo(f"GPU source: {record.hardware.source}")
+        typer.echo(
+            f"GPU source: {record.hardware.source} "
+            f"({context_label(run_context(record, 'hardware.source'))})"
+        )
         for gpu in record.hardware.gpus:
             typer.echo(f"  {gpu.index}: {gpu.name}, {gpu.memory_mib} MiB")
+    typer.echo(f"Input baseline: {context_label(input_context(record, 'file'))}")
+    if record.input_capture is not None:
+        typer.echo(
+            f"Input recheck phase: {record.input_capture.check_phase}; "
+            "child consumption unverified."
+        )
+        for check in record.input_capture.checks:
+            typer.echo(
+                f"Input check: {check.path}; change {check.change}; "
+                f"before {check.before.availability}; after {check.after.availability}"
+            )
     for file in record.files:
-        typer.echo(f"File: {file.path} {file.sha256}")
+        typer.echo(
+            f"File: {file.path} {file.sha256} ({context_label(input_context(record, 'file'))})"
+        )
     for field, observations in sorted(record.bindings_observed.items()):
         for observation in observations:
             source = observation.source
             location = f"{source.path}:" if source.path else ""
             value = json.dumps(observation.value, sort_keys=True, ensure_ascii=False)
-            typer.echo(f"Binding: {field} · {source.type}({location}{source.key}) = {value}")
+            typer.echo(
+                f"Binding: {field} · {source.type}({location}{source.key}) = {value} "
+                f"({context_label(input_context(record, source.type))})"
+            )
     for warning in record.warnings:
         typer.echo(f"Warning: {warning}")

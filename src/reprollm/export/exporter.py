@@ -368,6 +368,18 @@ def build_input(
             if run.schema_version == 1
             else "before child launch (input baseline)"
         )
+        if run.input_capture is not None:
+            data.input_checks = [
+                {
+                    "path": check.path,
+                    "before": check.before.availability,
+                    "before_sha256": check.before.sha256,
+                    "after": check.after.availability,
+                    "after_sha256": check.after.sha256,
+                    "change": check.change,
+                }
+                for check in sorted(run.input_capture.checks, key=lambda item: item.path)
+            ]
         data.limitations.extend(
             [
                 "Child Python and packages are unverified.",

@@ -9,8 +9,8 @@ from typing import Any
 
 import yaml
 
-from reprollm.core.configread import read_config_value
-from reprollm.core.paths import resolve_project_file
+from reprollm.core.configread import read_config_bytes, read_config_value
+from reprollm.core.paths import is_relative_project_path, resolve_project_file
 from reprollm.core.persistence import redact_keyed_values
 from reprollm.core.redaction import is_forbidden_file, is_secret_env_name, redact_lines, redact_text
 from reprollm.schemas.manifest import BindingSpec
@@ -68,6 +68,7 @@ def observe(
     *,
     project_rules: ProjectRules | None = None,
     warnings: list[str] | None = None,
+    config_data: Mapping[str, bytes | None] | None = None,
 ) -> dict[str, list[Observation]]:
     """Keep CLI occurrences in order; add every distinct declared config/env location."""
     warnings = warnings if warnings is not None else []
@@ -103,7 +104,13 @@ def observe(
                 )
         for location in sorted({spec.config for spec in specs if spec.config}):
             relative, separator, key = location.partition(":")
-            path = resolve_project_file(root, relative)
+            path = (
+                resolve_project_file(root, relative)
+                if config_data is None
+                else root / relative
+                if is_relative_project_path(relative)
+                else None
+            )
             if not separator or not key or path is None:
                 warnings.append(
                     f"binding {field}: config path/key unavailable or outside repository"
@@ -113,7 +120,16 @@ def observe(
                 warnings.append(f"binding {field}: forbidden config file was not observed")
                 continue
             try:
-                value = read_config_value(path, key)
+                if config_data is None:
+                    value = read_config_value(path, key)
+                else:
+                    original = config_data.get(relative)
+                    if original is None:
+                        warnings.append(
+                            f"binding {field}: original config unavailable or exceeds 2 MiB"
+                        )
+                        continue
+                    value = read_config_bytes(original, path.suffix, key)
             except KeyError:
                 warnings.append(f"binding {field}: config key not found")
                 continue

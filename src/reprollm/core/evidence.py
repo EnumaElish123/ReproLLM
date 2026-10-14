@@ -11,10 +11,34 @@ from reprollm.schemas.state import EvidenceContext
 # Run and lock were independently checked against their historical writers.
 # A declared producer contract is not authentication of a fork's implementation.
 RUN_PRODUCERS = frozenset(
-    {"0.1.1", "0.4.0", "0.5.0a1", "0.5.0", "0.5.1", "0.5.2", "0.5.3", "0.6.0", "0.6.1", "0.6.2"}
+    {
+        "0.1.1",
+        "0.4.0",
+        "0.5.0a1",
+        "0.5.0",
+        "0.5.1",
+        "0.5.2",
+        "0.5.3",
+        "0.6.0",
+        "0.6.1",
+        "0.6.2",
+        "0.7.0",
+    }
 )
 LOCK_PRODUCERS = frozenset(
-    {"0.1.1", "0.4.0", "0.5.0a1", "0.5.0", "0.5.1", "0.5.2", "0.5.3", "0.6.0", "0.6.1", "0.6.2"}
+    {
+        "0.1.1",
+        "0.4.0",
+        "0.5.0a1",
+        "0.5.0",
+        "0.5.1",
+        "0.5.2",
+        "0.5.3",
+        "0.6.0",
+        "0.6.1",
+        "0.6.2",
+        "0.7.0",
+    }
 )
 
 
@@ -22,8 +46,14 @@ def unknown_context() -> EvidenceContext:
     return EvidenceContext(subject="unknown", phase="unknown")
 
 
+def _known_run_contract(run: RunRecord) -> bool:
+    return run.reprollm_version in RUN_PRODUCERS and run.schema_version == (
+        2 if run.reprollm_version == "0.7.0" else 1
+    )
+
+
 def run_context(run: RunRecord, path: str) -> EvidenceContext:
-    if run.reprollm_version not in RUN_PRODUCERS:
+    if not _known_run_contract(run):
         return unknown_context()
     if path == "environment.python" or path.startswith("environment.packages."):
         return EvidenceContext(subject="recorder", phase="post_child")
@@ -50,8 +80,10 @@ def lock_context(lock: Lock, path: str) -> EvidenceContext:
 def input_context(run: RunRecord, kind: str = "config") -> EvidenceContext:
     """Legacy input bytes have no persisted baseline/consumption contract."""
     if kind == "config" or kind == "file":
-        return EvidenceContext(subject="input_file", phase="unknown")
-    if run.reprollm_version not in RUN_PRODUCERS:
+        return EvidenceContext(
+            subject="input_file", phase="pre_child" if run.schema_version == 2 else "unknown"
+        )
+    if not _known_run_contract(run):
         return unknown_context()
     subject: Literal["inherited_environment", "recorder"] = (
         "inherited_environment" if kind == "env" else "recorder"

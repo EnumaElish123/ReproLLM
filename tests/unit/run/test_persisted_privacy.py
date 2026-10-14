@@ -642,7 +642,10 @@ def test_toml_container_comments_and_serialized_keys_never_leak(
     folder = _folder(tmp_path, record)
     _assert_owned_safe(folder, SECRET)
     if unsafe_key:
-        assert any("capture failed" in warning for warning in record.warnings)
+        assert "input file snapshot unavailable" in record.warnings
+        captured = next(item for item in record.files if item.path == source.name)
+        assert captured.snapshot is None
+        assert captured.sha256 == "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
     else:
         assert record.warnings == []
         captured = next(item for item in record.files if item.path == source.name)

@@ -43,7 +43,10 @@ def test_three_sources_survive_projection_and_finding(tmp_path: Path) -> None:
     ]
     (finding,) = GenerationParamsRule().check(ctx)
     assert [item.value for item in finding.evidence] == [0.0, 1.0, 0.7]
-    assert finding.evidence[-1].note == "config(configs/eval.yaml:temperature)"
+    assert finding.evidence[-1].note == (
+        "config(configs/eval.yaml:temperature); unknown observation phase; "
+        "child consumption is unverified"
+    )
 
 
 def test_rules_use_state_even_when_raw_observations_are_absent(tmp_path: Path) -> None:

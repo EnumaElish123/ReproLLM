@@ -45,7 +45,7 @@ def _project(root: Path, version: int) -> tuple[str, Path, bytes]:
     return run_id, path, raw
 
 
-@pytest.mark.parametrize("version", [2, 3])
+@pytest.mark.parametrize("version", [3])
 @pytest.mark.parametrize("selected", [False, True])
 def test_export_future_run_is_safe_upgrade_error(
     tmp_path: Path,
@@ -76,7 +76,7 @@ def test_export_future_run_is_safe_upgrade_error(
     assert path.read_bytes() == raw
 
 
-@pytest.mark.parametrize("version", [2, 3])
+@pytest.mark.parametrize("version", [3])
 @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
 def test_future_version_guidance_survives_each_input_reader(
     tmp_path: Path, version: int, reader: str
@@ -97,7 +97,7 @@ def test_future_version_guidance_survives_each_input_reader(
     assert path.read_bytes() == raw
 
 
-@pytest.mark.parametrize("version", [2, 3])
+@pytest.mark.parametrize("version", [3])
 def test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record(
     tmp_path: Path, version: int
 ) -> None:

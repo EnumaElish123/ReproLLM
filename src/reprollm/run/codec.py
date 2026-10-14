@@ -25,7 +25,7 @@ def parse_run_record(raw: str) -> RunRecord:
         version = data.get("schema_version")
         if "schema_version" in data and type(version) is not int:
             raise RunRecordError("run.json schema_version must be an integer; inspect run.json")
-        if type(version) is int and version > 1:
+        if type(version) is int and version > 2:
             raise RunRecordError(
                 f"run.json uses newer schema_version {version}; upgrade ReproLLM before reading it"
             )

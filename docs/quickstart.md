@@ -317,7 +317,7 @@ reprollm diff <run-a> <run-b> --fail-on HIGH --format json
     {
       "a": 32,
       "b": 48,
-      "note": "a: input_file/unknown; child unverified; b: input_file/unknown; child unverified",
+      "note": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
       "path": "generation.max_tokens",
       "severity": "HIGH",
       "status": "changed"

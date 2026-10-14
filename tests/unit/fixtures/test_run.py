@@ -74,7 +74,8 @@ def test_locked_fixture_run_snapshot(
         "python",
         "hardware",
     )
-    assert_json_snapshot(actual, FIXTURES_ROOT / "repos/hf_vllm_eval/expected/run.json", ignore)
+    # Preserve run.json as the immutable legacy reader/State/export example.
+    assert_json_snapshot(actual, FIXTURES_ROOT / "repos/hf_vllm_eval/expected/run_v2.json", ignore)
 
     audited = CliRunner().invoke(app, ["audit", "--format", "json"])
     assert audited.exit_code == 1, audited.output
@@ -86,8 +87,10 @@ def test_locked_fixture_run_snapshot(
         1.0,
         0.0,
     ]
-    for name in ("exec.run_recorded", "consistency.env_vs_lock", "consistency.model_identity"):
+    for name in ("exec.run_recorded", "consistency.model_identity"):
         assert by_id[name]["status"] == "pass"
+    # Fixture lock producer 0.2.0 has no confirmed recorder-source contract.
+    assert by_id["consistency.env_vs_lock"]["status"] == "skipped"
     jsonschema.validate(report, json.loads((schema_dir / "audit_report.schema.json").read_text()))
     assert_json_snapshot(
         report, FIXTURES_ROOT / "repos/hf_vllm_eval/expected/audit_L2_after_run.json"

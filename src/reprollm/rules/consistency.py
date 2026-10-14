@@ -234,14 +234,25 @@ def _binding_finding(
     for observation in observations:
         kind, _, location = (observation.detail or "").partition(":")
         label = f"{kind}({location})"
-        parts.append(f"{label} {json.dumps(observation.value, ensure_ascii=False, sort_keys=True)}")
+        phase = observation.context.phase if observation.context is not None else "unknown"
+        scope = {
+            "pre_child": "recorded baseline before child launch",
+            "post_child": "recorded state after child completion",
+            "lock_resolution": "recorded during lock resolution",
+            "unknown": "unknown observation phase",
+        }[phase]
+        note = f"{label}; {scope}; child consumption is unverified"
+        parts.append(
+            f"{label} {json.dumps(observation.value, ensure_ascii=False, sort_keys=True)} "
+            f"({scope}; child consumption is unverified)"
+        )
         evidence.append(
             Evidence(
                 kind="run",
                 path=_run_path(ctx),
                 field=field,
                 value=observation.value,
-                note=label,
+                note=note,
             )
         )
     return _safe_finding(ctx, rule.finding(ctx, message=" · ".join(parts), evidence=evidence))
@@ -253,7 +264,10 @@ class GenerationParamsRule(Rule):
     category = "consistency"
     default_severity = Severity.CRITICAL
     min_level = 2
-    description = "Observed generation parameters agree with their manifest declarations."
+    description = (
+        "Recorded generation values agree with their manifest declarations; "
+        "child consumption is unverified."
+    )
     fix_hint = "Reconcile generation.* in reprollm.yaml with the declared runtime bindings."
 
     def applies(self, ctx: AuditContext) -> bool:
@@ -279,7 +293,10 @@ class ModelIdentityRule(Rule):
     category = "consistency"
     default_severity = Severity.CRITICAL
     min_level = 2
-    description = "Observed model identities agree with the manifest and lock."
+    description = (
+        "Recorded model identities agree with the manifest and lock; "
+        "child consumption is unverified."
+    )
     fix_hint = "Reconcile models.<role>.id and revision in reprollm.yaml and reprollm.lock."
 
     def applies(self, ctx: AuditContext) -> bool:
@@ -428,7 +445,10 @@ class CustomFieldsRule(Rule):
     min_level = 2
     # Failures take their severity from the accepted project rule (§12.12).
     default_severity = Severity.INFO
-    description = "Observed custom values agree with the manifest and accepted project rules."
+    description = (
+        "Recorded custom values agree with the manifest and accepted project rules; "
+        "child consumption is unverified."
+    )
     fix_hint = "Reconcile custom.* in reprollm.yaml with bindings in .reprollm/project-rules.yaml."
 
     def applies(self, ctx: AuditContext) -> bool:

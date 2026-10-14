@@ -363,6 +363,55 @@ def project_rules(severity: str = "WARNING") -> ProjectRules:
     )
 
 
+@pytest.mark.parametrize("version", [1, 2])
+@pytest.mark.parametrize("category", ["generation", "model", "custom"])
+def test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim(
+    tmp_path: Path, category: str, version: int
+) -> None:
+    if category == "generation":
+        field, value = "generation.temperature", 0.9
+        declared = manifest(generation={"temperature": 0.1})
+        rule, accepted = GenerationParamsRule(), None
+    elif category == "model":
+        field, value = "models.primary.id", "changed-model"
+        declared = manifest(models={"primary": {"provider": "other", "id": "declared-model"}})
+        rule, accepted = ModelIdentityRule(), None
+    else:
+        field, value = "custom.privacy.alpha", 0.9
+        declared = manifest(custom={"privacy": {"alpha": 0.1}})
+        rule, accepted = CustomFieldsRule(), project_rules()
+    fields: dict[str, Any] = {
+        "schema_version": version,
+        "reprollm_version": "0.7.0" if version == 2 else "0.1.1",
+        "bindings_observed": {
+            field: [observation(value, kind="config", key="value", path="config.json")]
+        },
+    }
+    if version == 2:
+        fingerprint = {"availability": "present", "sha256": "sha256:" + "1" * 64, "size_bytes": 20}
+        fields["input_capture"] = {
+            "checks": [
+                {
+                    "path": "config.json",
+                    "origin": "declared",
+                    "before": fingerprint,
+                    "after": fingerprint,
+                    "change": "unchanged",
+                }
+            ]
+        }
+    ctx = AuditContext(
+        tmp_path, level=2, manifest=declared, project_rules=accepted, runs=[run_record(**fields)]
+    )
+    found = rule.check(ctx)
+    assert len(found) == 1
+    assert found[0].severity == (Severity.WARNING if category == "custom" else Severity.CRITICAL)
+    expected_phase = "before child launch" if version == 2 else "unknown observation phase"
+    assert expected_phase in found[0].message
+    assert "child consumption is unverified" in found[0].message
+    assert expected_phase in found[0].evidence[-1 if category != "custom" else -2].note
+
+
 @pytest.mark.parametrize("severity", ["INFO", "WARNING", "CRITICAL"])
 def test_custom_fields_keep_project_severity_and_normalize(tmp_path: Path, severity: str) -> None:
     run = run_record(

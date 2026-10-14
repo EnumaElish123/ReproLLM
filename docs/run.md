@@ -89,10 +89,12 @@ Lock environment values similarly describe the recorder during lock resolution.
 Audit and export label these scopes; an empty recorder package map does not mean
 the child has no packages.
 
-The 0.6.2 compatibility bridge reads and writes run schema 1. Unknown newer
-versions produce upgrade guidance; run listing preserves its warning-and-skip
-behavior. Legacy config/file records have unknown input phase and cannot prove
-what the child consumed. Existing records are not rewritten automatically.
+The 0.7.0 writer saves run schema 2 and reads schemas 1 and 2. The frozen 0.6.2
+compatibility bridge reads and writes schema 1 and rejects schema 2 with upgrade
+guidance; listing warns and skips unsupported records. Upgrade readers before
+sharing new records. Unknown newer versions produce the same safe guidance.
+Legacy config/file records have unknown input phase and cannot prove what the
+child consumed. Existing records are not rewritten automatically.
 
 | Evidence | Recorded form |
 |---|---|
@@ -101,19 +103,27 @@ what the child consumed. Existing records are not rewritten automatically.
 | Environment | Python/OS, installed LLM-critical distribution versions, filtered environment variables, hashed hostname |
 | Hardware | CPU count; GPU names, memory, driver and hashed UUIDs when bounded `nvidia-smi` queries succeed |
 | Scheduler | Filtered SLURM, PBS and LSF variables when present |
-| Documents | Original manifest/lock hashes and redacted `manifest.yaml` / `lock.yaml` copies |
-| Inputs | Repository-contained argv and declared files: path, origin, size, original hash and optional redacted text snapshot |
-| Bindings | Every observation from explicitly declared CLI flags, YAML/JSON/TOML keys and environment variables |
+| Documents | Pre-child original manifest/lock hashes and redacted `manifest.yaml` / `lock.yaml` copies |
+| Inputs | Pre-child repository-contained argv and declared files: path, origin, size, original hash and optional redacted text snapshot |
+| Input checks | `input_capture`: pre-child and post-child availability, hashes and sizes with unchanged/changed/removed/created/unknown status; consumption stays unverified |
+| Bindings | Pre-child observations from explicitly declared CLI flags, YAML/JSON/TOML keys and inherited environment variables |
 | Outputs | Hashes and sizes for repository-contained files matching manifest `artifacts.outputs` globs |
 
-Most metadata, files and bindings are collected after the child exits. If a
-command changes its input files, their recorded hashes describe the final bytes.
+Schema-2 inputs and bindings are captured before launch. After the child exits,
+only those input paths are rechecked; final bytes never replace baseline hashes,
+copies or config values. Declared inputs missing before launch can be recorded as
+created; argv files that appear only afterward are not invented as pre-child
+inputs. Unavailable checks remain unknown. Recorder/host metadata and output
+hashes are collected after the child exits. An unchanged file does not prove the
+child consumed it. Only independent child, parser or request evidence supports
+such a claim.
 Unavailable GPU metadata is recorded as `source: unavailable`; it does not mean
 the experiment used no GPU. Capture failures become warnings without replacing
 the child's exit code. Always inspect `warnings` before relying on a record.
 
 A minimal `status: running` record is written before launch. Final records are
-written atomically. A normally terminated child has `status: completed` even
+written atomically. A second pre-launch write preserves the available input
+baseline before starting the child. A normally terminated child has `status: completed` even
 when its exit code is nonzero; check `exit_code` as well as status. A command
 that cannot start leaves `failed` evidence, and an interrupted child records
 `interrupted`. A machine crash can leave the initial `running` record.
@@ -211,6 +221,10 @@ names such as `.env` and private-key files are hash-only with `redacted: true`
 and `snapshot: null`. Binary files and text over the configured size limit are
 also hash-only. More than 200 inputs disables file snapshots with a warning.
 `--no-snapshot` disables `files[]` snapshots; manifest/lock document copies remain.
+Config bindings parse the same original baseline bytes, bounded at 2 MiB, even
+when snapshots are disabled or their independent size/count limits are exceeded.
+Forbidden, unreadable or oversized config inputs keep safe hash/change evidence
+where available and report missing observations; later values are not substituted.
 
 Manifest binding config paths have `origin: declared` under specification
 §5.1 R-04. Additional project-rule config paths have `origin: binding`; argv-only

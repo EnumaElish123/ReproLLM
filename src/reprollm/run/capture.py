@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import os
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 from reprollm.core.errors import UserError
-from reprollm.core.hashing import CHUNK_SIZE, sha256_file
+from reprollm.core.hashing import CHUNK_SIZE, sha256_bytes, sha256_file
 from reprollm.core.paths import is_relative_project_path, resolve_project_file
 from reprollm.core.redaction import is_forbidden_file, redact_text
 from reprollm.schemas.manifest import Manifest
@@ -104,6 +104,9 @@ def hash_and_snapshot(
     max_bytes: int,
     warnings: list[str] | None = None,
     sanitize: Callable[[str], tuple[str, int]] = redact_text,
+    on_read: Callable[[FileRef, str, int, bytes | None], None] | None = None,
+    capture_limit: Mapping[str, int] | None = None,
+    original_data: Mapping[str, bytes | None] | None = None,
 ) -> list[RunFileRef]:
     """Hash original bytes; snapshot only bounded, redacted UTF-8 text (§5.1 R-03)."""
     warnings = warnings if warnings is not None else []
@@ -126,15 +129,33 @@ def hash_and_snapshot(
     records = []
     for ref, path in sorted(valid, key=lambda item: item[0].path):
         forbidden = is_forbidden_file(ref.path) or is_forbidden_file(path.name)
+        retained_limit = (capture_limit or {}).get(ref.path, -1) if not forbidden else -1
+        read_limit = max(max_bytes if snapshot and not forbidden else -1, retained_limit)
         try:
-            digest, size, data = _read_file(path, max_bytes if snapshot and not forbidden else -1)
+            if original_data is not None and ref.path in original_data:
+                original = original_data[ref.path]
+                if original is None:
+                    warnings.append("original input bytes unavailable")
+                    continue
+                digest, size = sha256_bytes(original), len(original)
+                data = original if size <= read_limit else None
+            else:
+                digest, size, data = _read_file(path, read_limit)
         except OSError as exc:
             warnings.append(f"file {ref.path}: cannot read ({type(exc).__name__})")
             continue
+        if on_read is not None:
+            on_read(ref, digest, size, data if size <= retained_limit else None)
         record = RunFileRef(
             path=ref.path, sha256=digest, size_bytes=size, origin=ref.origin, redacted=forbidden
         )
-        if data is not None and b"\0" not in data:
+        if (
+            snapshot
+            and not forbidden
+            and size <= max_bytes
+            and data is not None
+            and b"\0" not in data
+        ):
             try:
                 text = data.decode("utf-8")
             except UnicodeDecodeError:

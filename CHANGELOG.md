@@ -32,6 +32,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R04-B (spec §§5, 15, 17–19): the local 0.7.0 minor transition writes run
+  schema 2 with pre-child manifest/lock and file baselines, bounded original-byte
+  config observations, and separate post-child change checks. Output hashes stay
+  post-child; audit, diff, runs and every export template qualify evidence without
+  claiming child consumption. Readers retain schema-1 compatibility without
+  rewriting records and reject newer schemas with upgrade guidance. Migration:
+  use the 0.6.2 reader bridge before sharing schema-2 records with older tools;
+  bridge readers warn/skip them in lists and reject explicit reads safely. Other
+  persisted schemas remain version 1; no release or package publication is made.
+
 - R04-A (spec §§4, 5, 12, 17–19): retain recorder and host observations with
   explicit subject/phase, qualify environment consistency and every export
   template, and preserve unknown child verification. The 0.6.2 compatibility

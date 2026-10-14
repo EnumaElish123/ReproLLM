@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 from reprollm.cli.main import app
 from reprollm.core.errors import UserError
 from reprollm.run import wrapper
-from reprollm.schemas.run_record import HardwareInfo
+from reprollm.schemas.run_record import HardwareInfo, RunRecord
 from tests.conftest import CmdStub
 
 runner = CliRunner()
@@ -186,3 +186,112 @@ def test_runs_corruption_missing_and_path_escape(tmp_path: Path) -> None:
         shown = runner.invoke(app, ["runs", "show", prefix, "--json"])
         assert isinstance(shown.exception, UserError)
         assert "secret-payload" not in str(shown.exception)
+
+
+@pytest.mark.parametrize(
+    ("schema_version", "producer", "python_scope", "host_scope", "env_scope", "input_phase"),
+    [
+        (
+            1,
+            "0.6.2",
+            "recorder/post_child",
+            "host/post_child",
+            "inherited_environment/pre_child",
+            "unknown",
+        ),
+        (
+            2,
+            "0.7.0",
+            "recorder/post_child",
+            "host/post_child",
+            "inherited_environment/pre_child",
+            "pre_child",
+        ),
+        (2, "custom-writer", "unknown/unknown", "unknown/unknown", "unknown/unknown", "pre_child"),
+    ],
+)
+def test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json(
+    tmp_path: Path,
+    schema_version: int,
+    producer: str,
+    python_scope: str,
+    host_scope: str,
+    env_scope: str,
+    input_phase: str,
+) -> None:
+    manifest(tmp_path)
+    data = {
+        "schema_version": schema_version,
+        "reprollm_version": producer,
+        "run_id": "20261014T000000Z-000001",
+        "status": "completed",
+        "exit_code": 0,
+        "command": {"argv": ["python", "child.py"], "cwd": "."},
+        "environment": {
+            "os": "fixture",
+            "platform": "linux",
+            "python": "3.11.9",
+            "hostname_sha256": "sha256:" + "a" * 64,
+            "packages": {"torch": "2.6.0"},
+            "env": {"OMP_NUM_THREADS": "2"},
+        },
+        "hardware": {"cpu_count": 2, "source": "nvidia_smi"},
+        "bindings_observed": {
+            "generation.temperature": [
+                {
+                    "value": 0.1,
+                    "source": {"type": "config", "path": "config.json", "key": "temperature"},
+                }
+            ],
+        },
+    }
+    if schema_version == 2:
+        data["input_capture"] = {
+            "baseline_phase": "pre_child",
+            "check_phase": "post_child",
+            "consumption": "unverified",
+            "checks": [
+                {
+                    "path": "config.json",
+                    "origin": "declared",
+                    "before": {
+                        "availability": "present",
+                        "sha256": "sha256:" + "1" * 64,
+                        "size_bytes": 21,
+                    },
+                    "after": {
+                        "availability": "present",
+                        "sha256": "sha256:" + "2" * 64,
+                        "size_bytes": 21,
+                    },
+                    "change": "changed",
+                }
+            ],
+        }
+    parsed = RunRecord.model_validate(data)
+    folder = tmp_path / ".reprollm/runs" / parsed.run_id
+    folder.mkdir(parents=True)
+    raw = parsed.model_dump_json(indent=2) + "\n"
+    saved = folder / "run.json"
+    saved.write_text(raw, encoding="utf-8", newline="")
+
+    result = runner.invoke(app, ["runs", "show", parsed.run_id])
+    assert result.exit_code == 0, result.output
+    assert f"Python 3.11.9 ({python_scope}; child unverified)" in result.stdout
+    assert f"torch: 2.6.0 ({python_scope}; child unverified)" in result.stdout
+    assert f"GPU source: nvidia_smi ({host_scope}; child unverified)" in result.stdout
+    assert f"Inherited environment: allowlist ({env_scope}; child unverified)" in result.stdout
+    assert f"Input baseline: input_file/{input_phase}; child unverified" in result.stdout
+    assert "Child environment and input consumption are unverified." in result.stdout
+    assert f"input_file/{input_phase}; child unverified" in result.stdout
+    if schema_version == 2:
+        assert "Input recheck phase: post_child; child consumption unverified." in result.stdout
+        assert (
+            "Input check: config.json; change changed; before present; after present"
+            in result.stdout
+        )
+    else:
+        assert "Input check:" not in result.stdout
+    shown = runner.invoke(app, ["runs", "show", parsed.run_id, "--json"])
+    assert shown.exit_code == 0 and shown.stdout == raw
+    assert saved.read_text(encoding="utf-8") == raw

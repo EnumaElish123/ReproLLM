@@ -114,7 +114,7 @@ def test_prompt_and_temperature_drift_from_real_captures(
         if not index:
             assert_json_snapshot(
                 captured,
-                EXPECTED / "run.json",
+                EXPECTED / "run_v2.json",
                 (
                     *SNAPSHOT_IGNORE,
                     "run_id",

@@ -48,6 +48,94 @@ def run_dir(root: Path, record: Any) -> Path:
     return root / ".reprollm/runs" / record.run_id
 
 
+def test_input_baseline_precedes_child_config_rewrite(tmp_path: Path) -> None:
+    """The child's witness is independent of the recorder's config observation."""
+    from reprollm.schemas.state import State
+
+    before = b'{"temperature": 0.1}\n'
+    after = b'{"temperature": 0.9}\n'
+    (tmp_path / "config.json").write_bytes(before)
+    (tmp_path / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: example}\nexperiment: {profiles: []}\n"
+        "execution: {config_files: [config.json]}\n"
+        "bindings:\n  generation.temperature: {config: 'config.json:temperature'}\n"
+        "artifacts: {outputs: [consumed.json]}\n"
+    )
+    record = execute(
+        tmp_path,
+        "import json; from pathlib import Path; "
+        "value=json.loads(Path('config.json').read_text())['temperature']; "
+        "Path('consumed.json').write_text(json.dumps({'temperature':value})); "
+        f"Path('config.json').write_bytes({after!r})",
+    )
+    assert record.exit_code == 0
+    assert json.loads((tmp_path / "consumed.json").read_text()) == {"temperature": 0.1}
+    assert (tmp_path / "config.json").read_bytes() == after
+    assert record.bindings_observed["generation.temperature"][0].value == 0.1
+    reference = next(item for item in record.files if item.path == "config.json")
+    assert reference.sha256 == "sha256:" + hashlib.sha256(before).hexdigest()
+    assert (run_dir(tmp_path, record) / reference.snapshot).read_bytes() == before
+    state = State.from_run(record, run_dir=run_dir(tmp_path, record))
+    assert state.flatten()["generation.temperature"].value == 0.1
+    assert [item.path for item in record.artifacts] == ["consumed.json"]
+
+
+def test_child_document_rewrites_keep_original_baselines_and_exit_seven(tmp_path: Path) -> None:
+    from reprollm.schemas.state import State
+
+    manifest = (
+        b"schema_version: 1\nproject: {name: example}\nexperiment: {profiles: []}\n"
+        b"generation: {temperature: 0.1}\n"
+        b"execution: {config_files: [config.json]}\n"
+        b"prompts: {system: {path: prompt.txt}}\n"
+        b"bindings: {generation.temperature: {config: 'config.json:temperature'}}\n"
+        b"artifacts: {outputs: [witness.json]}\n"
+    )
+    lock = (
+        "schema_version: 1\nreprollm_version: 0.6.2\n"
+        "generated_at: 2026-10-14T01:00:00Z\nresolution: {mode: offline}\n"
+        f"manifest_sha256: sha256:{hashlib.sha256(manifest).hexdigest()}\n"
+        "generation: {temperature: 0.1}\n"
+    ).encode()
+    before = {
+        "reprollm.yaml": manifest,
+        "reprollm.lock": lock,
+        "config.json": b'{"temperature": 0.1}\n',
+        "prompt.txt": b"baseline prompt\n",
+    }
+    for name, data in before.items():
+        (tmp_path / name).write_bytes(data)
+    record = execute(
+        tmp_path,
+        "import json,hashlib,sys; from pathlib import Path; "
+        "names=['reprollm.yaml','reprollm.lock','config.json','prompt.txt']; "
+        "witness={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in names}; "
+        "Path('witness.json').write_text(json.dumps(witness)); "
+        f"Path('reprollm.yaml').write_bytes({manifest.replace(b'0.1', b'0.9')!r}); "
+        f"Path('reprollm.lock').write_bytes({lock.replace(b'0.1', b'0.9')!r}); "
+        "Path('config.json').write_text('{\"temperature\": 0.9}'); "
+        "Path('prompt.txt').write_text('changed prompt'); sys.exit(7)",
+    )
+    assert record.exit_code == 7
+    assert json.loads((tmp_path / "witness.json").read_text()) == {
+        name: hashlib.sha256(data).hexdigest() for name, data in before.items()
+    }
+    assert record.input_capture is not None
+    assert {item.path: item.change for item in record.input_capture.checks} == {
+        name: "changed" for name in before
+    }
+    for reference in (record.manifest, record.lock):
+        assert reference is not None
+        assert reference.sha256 == "sha256:" + hashlib.sha256(before[reference.path]).hexdigest()
+        assert (run_dir(tmp_path, record) / reference.snapshot).read_bytes() == before[
+            reference.path
+        ]
+    state = State.from_run(record, run_dir=run_dir(tmp_path, record))
+    assert state.flatten()["generation.temperature"].value == 0.1
+    assert state.flatten()["generation.temperature"].context.phase == "pre_child"
+    assert [item.path for item in record.artifacts] == ["witness.json"]
+
+
 def test_child_environment_prewrite_and_nonzero_exit(tmp_path: Path) -> None:
     record = execute(
         tmp_path,
@@ -252,24 +340,27 @@ def test_final_record_write_retries_without_losing_child_result(
 ) -> None:
     replace = os.replace
     attempts = 0
+    failed_final = False
 
     def fail_once(source: Path, destination: Path) -> None:
-        nonlocal attempts
+        nonlocal attempts, failed_final
         attempts += 1
-        if attempts == 2:
+        status = json.loads(source.read_text())["status"]
+        if status == "completed" and not failed_final:
+            failed_final = True
             raise PermissionError("private-error-content")
         replace(source, destination)
 
     monkeypatch.setattr(wrapper.os, "replace", fail_once)
     record = execute(tmp_path, "import sys; sys.exit(5)")
-    assert attempts == 3 and record.exit_code == 5
+    assert failed_final and attempts == 4 and record.exit_code == 5
     saved = (run_dir(tmp_path, record) / "run.json").read_text()
     assert '"exit_code": 5' in saved and "PermissionError" in saved
     assert "private-error-content" not in saved
     assert not list(run_dir(tmp_path, record).glob("*.tmp"))
 
 
-def test_input_capture_and_outputs_are_collected_after_child(tmp_path: Path) -> None:
+def test_input_baseline_and_outputs_use_separate_phases(tmp_path: Path) -> None:
     (tmp_path / "reprollm.yaml").write_text(
         "schema_version: 1\nproject: {name: example}\nexperiment: {profiles: []}\n"
         "execution: {config_files: [config.json]}\nbindings:\n"
@@ -284,6 +375,11 @@ def test_input_capture_and_outputs_are_collected_after_child(tmp_path: Path) -> 
     assert [(x.path, x.size_bytes) for x in record.artifacts] == [("result.json", 11)]
     assert record.bindings_observed["generation.temperature"][0].value == 0.0
     assert record.files[0].path == "config.json" and record.files[0].snapshot is not None
+    assert record.schema_version == 2 and record.input_capture is not None
+    assert record.input_capture.consumption == "unverified"
+    check = next(item for item in record.input_capture.checks if item.path == "config.json")
+    assert check.change == "unchanged"
+    assert check.before.sha256 == check.after.sha256 == record.files[0].sha256
 
 
 def test_invalid_manifest_prevents_child_execution(tmp_path: Path) -> None:
@@ -291,3 +387,32 @@ def test_invalid_manifest_prevents_child_execution(tmp_path: Path) -> None:
     with pytest.raises(UserError, match="cannot load reprollm.yaml") as exc:
         execute(tmp_path, "raise RuntimeError('must not run')")
     assert "sensitive-payload" not in str(exc.value)
+
+
+def test_baseline_sanitizer_failure_does_not_hide_command_start_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original = wrapper.RunPrivacy.value
+
+    def fail_captured_inputs(self: Any, value: Any, keys: tuple[str, ...] = ()) -> Any:
+        if getattr(value, "input_capture", None) is not None and value.input_capture.checks:
+            raise ValueError("private-input-failure-canary")
+        return original(self, value, keys)
+
+    monkeypatch.setattr(wrapper.RunPrivacy, "value", fail_captured_inputs)
+    directory = wrapper.create_run_dir(tmp_path)
+    with pytest.raises(UserError, match="cannot start command") as failure:
+        wrapper.execute(
+            [str(tmp_path / "missing-child")],
+            root=tmp_path,
+            cwd=tmp_path,
+            run_dir=directory,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+    saved = json.loads((directory / "run.json").read_text())
+    assert saved["status"] == "failed" and saved["schema_version"] == 2
+    assert "private-input-failure-canary" not in str(failure.value)
+    assert "private-input-failure-canary" not in json.dumps(saved)

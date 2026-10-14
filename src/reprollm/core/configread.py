@@ -10,12 +10,23 @@ import yaml
 
 from reprollm.core._toml import tomllib
 
+MAX_CONFIG_BYTES = 2 * 1024 * 1024
+
 
 def read_config_value(path: Path, dotted_key: str) -> Any:
-    suffix = path.suffix.lower()
+    with path.open("rb") as handle:
+        data = handle.read(MAX_CONFIG_BYTES + 1)
+    return read_config_bytes(data, path.suffix, dotted_key)
+
+
+def read_config_bytes(data: bytes, suffix: str, dotted_key: str) -> Any:
+    """Parse original bounded bytes; a redacted copy is never a config source."""
+    if len(data) > MAX_CONFIG_BYTES:
+        raise ValueError("binding config exceeds 2 MiB")
+    suffix = suffix.lower()
     if suffix not in {".yaml", ".yml", ".json", ".toml"}:
         raise ValueError("binding config must use YAML, JSON or TOML")
-    text = path.read_text(encoding="utf-8")
+    text = data.decode("utf-8")
     if suffix == ".json":
         value = json.loads(text)
     elif suffix == ".toml":
