@@ -16,6 +16,7 @@ from reprollm.core.errors import UserError
 from reprollm.core.paths import LOCK, MANIFEST, find_root
 from reprollm.core.yaml_io import load_manifest, load_yaml
 from reprollm.diff.state import _snapshots, observed_state
+from reprollm.run.codec import read_run_record
 from reprollm.run.privacy import RunPrivacy
 from reprollm.schemas.lock import Lock
 from reprollm.schemas.run_record import RunRecord
@@ -30,12 +31,8 @@ def _latest_run(root: Path) -> RunRecord | None:
     runs = sorted(root.glob(LATEST_RUN_GLOB))
     if not runs:
         return None
-    import json
-
-    try:
-        return RunRecord.model_validate(json.loads(runs[-1].read_text(encoding="utf-8")))
-    except Exception as exc:  # noqa: BLE001 - report the exact broken record
-        raise UserError(f"cannot load {runs[-1]}: {exc}; fix or remove the run directory") from exc
+    record, _ = read_run_record(runs[-1])
+    return record
 
 
 def _load_lock(root: Path) -> Lock | None:
@@ -69,9 +66,7 @@ def _select_run(root: Path, requested: str | None) -> tuple[RunRecord | None, Pa
             candidates = ", ".join(p.parent.name for p in matches)
             raise UserError(f"run prefix {requested!r} is ambiguous: {candidates}")
         chosen = matches[-1]
-    import json
-
-    record = RunRecord.model_validate(json.loads(chosen.read_text(encoding="utf-8")))
+    record, _ = read_run_record(chosen)
     return record, chosen.parent
 
 

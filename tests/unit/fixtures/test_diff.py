@@ -194,7 +194,10 @@ def test_identical_and_patch_drift(
                 "a": "2.8.0",
                 "b": "2.8.1",
                 "severity": "MEDIUM",
-                "note": None,
+                "note": (
+                    "a: recorder/post_child; child unverified; "
+                    "b: recorder/post_child; child unverified"
+                ),
             }
         ]
         assert data["summary"]["highest"] == "MEDIUM"

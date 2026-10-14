@@ -49,6 +49,13 @@ class ExportInput:
     code: dict[str, Any] = field(default_factory=dict)
     environment: dict[str, Any] = field(default_factory=dict)
     hardware: dict[str, Any] = field(default_factory=dict)
+    environment_sources: dict[str, str] = field(default_factory=dict)
+    hardware_sources: dict[str, str] = field(default_factory=dict)
+    environment_evidence: str = "source and capture phase unknown"
+    hardware_evidence: str = "source and capture phase unknown"
+    inherited_environment_evidence: str = "not captured"
+    input_evidence: str = "not captured"
+    input_checks: list[dict[str, Any]] = field(default_factory=list)
     execution: dict[str, Any] = field(default_factory=dict)
     limitations: list[str] = field(default_factory=list)
     audit_summary: dict[str, int] = field(default_factory=dict)
@@ -169,6 +176,28 @@ def _section(flat: dict[str, Leaf], prefix: str) -> dict[str, Any]:
         for path, leaf in flat.items()
         if path.startswith(prefix + ".") and leaf.value is not None
     }
+
+
+def _context_scope(leaf: Leaf | None) -> str:
+    if leaf is None:
+        return "not captured"
+    context = leaf.context
+    if context is None:
+        return "source and capture phase unknown"
+    subject = {
+        "recorder": "recorder interpreter",
+        "host": "recorder host",
+        "inherited_environment": "recorder inherited environment",
+        "input_file": "input file",
+        "unknown": "unknown source",
+    }[context.subject]
+    phase = {
+        "pre_child": "before child launch",
+        "post_child": "after child completion",
+        "lock_resolution": "during lock resolution",
+        "unknown": "unknown capture phase",
+    }[context.phase]
+    return f"{subject}; {phase}"
 
 
 def _source(leaf: Leaf) -> str:
@@ -305,6 +334,25 @@ def build_input(
         code=dict(_section(flat, "code")),
         environment=dict(_section(flat, "environment")),
         hardware=dict(_section(flat, "hardware")),
+        environment_sources={
+            path.removeprefix("environment."): _context_scope(leaf)
+            for path, leaf in sorted(flat.items())
+            if path.startswith("environment.")
+        },
+        hardware_sources={
+            path.removeprefix("hardware."): _context_scope(leaf)
+            for path, leaf in sorted(flat.items())
+            if path.startswith("hardware.")
+        },
+        environment_evidence=_context_scope(
+            flat.get("environment.packages.python") or flat.get("environment.python")
+        ),
+        hardware_evidence=_context_scope(
+            flat.get("hardware.cpu_count")
+            or flat.get("hardware.source")
+            or flat.get("environment.platform")
+        ),
+        inherited_environment_evidence=_context_scope(flat.get("environment.env_capture")),
         execution={},
         limitations=_limitations(flat, lock, manifest),
         reprollm_version=reprollm_version,
@@ -315,6 +363,17 @@ def build_input(
         },
     )
     if run is not None:
+        data.input_evidence = (
+            "unknown (legacy run record)"
+            if run.schema_version == 1
+            else "before child launch (input baseline)"
+        )
+        data.limitations.extend(
+            [
+                "Child Python and packages are unverified.",
+                "Input consumption by the child is unverified.",
+            ]
+        )
         data.execution = {
             "command": " ".join(run.command.argv),
             "run_id": run.run_id,

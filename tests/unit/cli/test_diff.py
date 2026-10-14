@@ -195,7 +195,8 @@ def test_adjacent_manifest_optional_and_profile_override(tmp_path: Path) -> None
     report = json_report([a, b])
     assert report["summary"]["highest"] == "LOW"
     text = runner.invoke(app, ["diff", a, b]).stdout
-    assert text.endswith("No reproducibility-relevant drift detected.\n")
+    assert text.endswith("No reproducibility-relevant drift in recorded values.\n")
+    assert "Child environment and input consumption are unverified." in text
     for folder in ("a", "b"):
         (tmp_path / folder / "reprollm.yaml").unlink()
     assert json_report([a, b])["summary"]["highest"] == "HIGH"

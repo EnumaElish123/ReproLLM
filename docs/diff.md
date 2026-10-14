@@ -62,7 +62,11 @@ Here is what each kind of line means:
 
 The final verdict line summarizes: `HIGH` present → *not directly
 comparable*; `MEDIUM` → *results may differ; review the changes above*;
-only `LOW`/`NONE` → *no reproducibility-relevant drift detected*.
+only `LOW`/`NONE` → *no reproducibility-relevant drift in recorded values*.
+
+Recorded equality does not verify a child environment or actual input consumption.
+Environment and input notes identify their recorded subject and phase, including
+unknown legacy phases. Context alone adds no drift and changes no severity.
 
 Severity comes from the drift table (`drift_severity.yaml`), which profiles
 can override; see the rest of this guide for the full table and

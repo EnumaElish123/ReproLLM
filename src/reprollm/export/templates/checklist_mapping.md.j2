@@ -18,7 +18,7 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 | 5.5 Decoding parameters | Generation section above (temperature, top_p, max_tokens, stop, seed) |
 | 5.6 LLM judge | {% if data.has_judge %}Judge section above; model: models.{{ data.judge_model_ref }} = {{ data.judge_summary }}{% else %}*not covered* (no judge configuration){% endif %} |
 | 5.7 Attack/defense | {% if data.has_privacy %}Privacy section above; `privacy.threat_model`: {{ data.privacy.get("threat_model", "not declared") }}; `privacy.mechanism.name`: {{ data.privacy.get("mechanism.name", "not declared") }}{% else %}*not covered* (no privacy configuration){% endif %} |
-| 6.1–6.2 Software / versions | Environment section above; `env.llm_critical_deps_pinned` rule |
+| 6.1–6.2 Software / versions | Scoped recorder evidence in Environment above; child environment unverified; `env.llm_critical_deps_pinned` rule |
 | 6.3 Hardware / compute | Hardware section above |
 | 3.5, 6.4 Crowd-worker / stats | *not covered by ReproLLM* |
 {% elif venue == "acl" %}
@@ -27,7 +27,7 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 | Checklist area | ReproLLM evidence |
 |---|---|
 | B4 Research artifacts/code | Code section above (commit, branch, remote); run records under `.reprollm/runs/` |
-| B5 Computational reproducibility | Full pipeline: `init → lock → run → diff → export`; REPRODUCIBILITY.md is the output |
+| B5 Computational reproducibility | Recorded pipeline: `init → lock → run → diff → export`; child environment and input consumption unverified; REPRODUCIBILITY.md is the output |
 | B6 Data usage | Dataset table above (id, revision) |
 | B7 Experimental setup | Generation and Inference sections above{% if data.training %}; Training section above{% else %}; training *not covered*{% endif %} |
 | B9 Model / LLM details | Identity table above (revision, tokenizer, chat template) |
@@ -43,6 +43,6 @@ in [docs/checklists.md](https://github.com/EnumaElish123/ReproLLM/blob/main/docs
 | Artifacts Evaluated – Reusable | This document covers all sections; checklists.md holds the full mapping |
 | Artifacts Evaluated – Functional | Run records under `.reprollm/runs/`; `reprollm diff <reported> <yours>` |
 | Model artifact identity | Identity table above (exact revisions, pinnability) |
-| Software environment | Environment section above; `reprollm.lock` `environment.packages` |
+| Software environment | Scoped recorder evidence in Environment above; child environment unverified; `reprollm.lock` `environment.packages` |
 | Documentation quality / ease of reuse | *not covered by ReproLLM* |
 {% endif %}

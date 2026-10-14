@@ -11,6 +11,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from reprollm.core.errors import UserError
+from reprollm.core.evidence import input_context, lock_context, run_context
 from reprollm.core.paths import resolve_project_file
 from reprollm.core.yaml_io import load_lock, load_manifest
 from reprollm.schemas.lock import Lock, Provenance
@@ -115,6 +116,9 @@ def from_lock(lock: Lock) -> State:
             _project(getattr(lock.environment, field), f"environment.{field}", "lock", values)
         # Driver expectations and observed hardware must share the same paths.
         _project(lock.environment.gpu, "hardware", "lock", values)
+        for path, leaf in values.items():
+            if path.startswith(("environment.", "hardware.")):
+                leaf.context = lock_context(lock, path)
     for file in sorted(lock.files, key=lambda entry: entry.path):
         values[f"files.{file.path}.sha256"] = Leaf(
             value=file.sha256, source="lock", confidence="declared"
@@ -168,9 +172,15 @@ def observed_state(run: RunRecord) -> State:
             str(gpu.index): gpu.model_dump(mode="json") for gpu in run.hardware.gpus
         }
         _project(hardware, "hardware", "run", values)
+    for path, leaf in values.items():
+        if path.startswith(("environment.", "hardware.", "command.")):
+            leaf.context = run_context(run, path)
     for file in sorted(run.files, key=lambda entry: entry.path):
         values[f"files.{file.path}.sha256"] = Leaf(
-            value=file.sha256, source="run", confidence="observed"
+            value=file.sha256,
+            source="run",
+            confidence="observed",
+            context=input_context(run, "file"),
         )
     observations: dict[str, list[Leaf]] = defaultdict(list)
     for field, items in sorted(run.bindings_observed.items()):
@@ -183,6 +193,7 @@ def observed_state(run: RunRecord) -> State:
                     source="run",
                     confidence="observed",
                     detail=f"{source.type}:{location}{source.key}",
+                    context=input_context(run, source.type),
                 )
             )
     for field, leaves in observations.items():

@@ -1,0 +1,153 @@
+{
+  "artifacts": [
+    {
+      "path": "consumed.json",
+      "sha256": "sha256:681845f96a7c6ee99c743ad4513476d7ea8257ac8b42b3cf2f3c63e74cf6e342",
+      "size_bytes": 20
+    }
+  ],
+  "bindings_observed": {
+    "generation.temperature": [
+      {
+        "source": {
+          "key": "temperature",
+          "path": "config.json",
+          "type": "config"
+        },
+        "value": 0.1
+      }
+    ]
+  },
+  "code": {
+    "branch": null,
+    "commit": null,
+    "dirty": false,
+    "modified_count": 0,
+    "patch_file": null,
+    "patch_sha256": null,
+    "remote": null,
+    "untracked_count": 0
+  },
+  "command": {
+    "argv": [
+      "python",
+      "-c",
+      "import json; from pathlib import Path; value=json.loads(Path('config.json').read_text())['temperature']; Path('consumed.json').write_text(json.dumps({'temperature':value})); Path('config.json').write_bytes(b'{\"temperature\": 0.9}\\n')"
+    ],
+    "cwd": ".",
+    "redactions": 0
+  },
+  "duration_seconds": 0.035849,
+  "ended_at": "2026-10-14T01:43:35Z",
+  "environment": {
+    "env": {
+      "LANG": "C.UTF-8",
+      "LANGUAGE": "zh_CN:en_US:en",
+      "LC_ADDRESS": "en_US.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LC_CTYPE": "C.UTF-8",
+      "LC_IDENTIFICATION": "en_US.UTF-8",
+      "LC_MEASUREMENT": "en_US.UTF-8",
+      "LC_MONETARY": "en_US.UTF-8",
+      "LC_NAME": "en_US.UTF-8",
+      "LC_NUMERIC": "en_US.UTF-8",
+      "LC_PAPER": "en_US.UTF-8",
+      "LC_TELEPHONE": "en_US.UTF-8",
+      "LC_TIME": "en_US.UTF-8",
+      "PATH": "<REDACTED:path>",
+      "PYTHONPATH": "<REDACTED:path>"
+    },
+    "env_capture": "allowlist",
+    "hostname_sha256": "sha256:f425657b0cbb4d3ddeb17da50d1803267d9128276a66e7dc330eca6547879419",
+    "os": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "torch": "2.8.0"
+    },
+    "platform": "linux",
+    "python": "3.12.14"
+  },
+  "exit_code": 0,
+  "files": [
+    {
+      "origin": "declared",
+      "path": "config.json",
+      "redacted": false,
+      "sha256": "sha256:982ec472b5106189f2b02534a05e1c331daf2f03fd7eb37bd1255c7933079761",
+      "size_bytes": 21,
+      "snapshot": "files/982ec472b5106189f2b02534a05e1c331daf2f03fd7eb37bd1255c7933079761"
+    }
+  ],
+  "hardware": {
+    "cpu_count": 2,
+    "cuda_driver_max": null,
+    "driver": null,
+    "gpus": [],
+    "source": "unavailable"
+  },
+  "input_capture": {
+    "baseline_phase": "pre_child",
+    "check_phase": "post_child",
+    "checks": [
+      {
+        "after": {
+          "availability": "present",
+          "sha256": "sha256:0b4ccf99cb49bdec992023c19b5ded8ff85ae76ec409dd5eaa06035b75f137c0",
+          "size_bytes": 21
+        },
+        "before": {
+          "availability": "present",
+          "sha256": "sha256:982ec472b5106189f2b02534a05e1c331daf2f03fd7eb37bd1255c7933079761",
+          "size_bytes": 21
+        },
+        "change": "changed",
+        "origin": "declared",
+        "path": "config.json"
+      },
+      {
+        "after": {
+          "availability": "missing",
+          "sha256": null,
+          "size_bytes": null
+        },
+        "before": {
+          "availability": "missing",
+          "sha256": null,
+          "size_bytes": null
+        },
+        "change": "unchanged",
+        "origin": "lock",
+        "path": "reprollm.lock"
+      },
+      {
+        "after": {
+          "availability": "present",
+          "sha256": "sha256:eb443929bc20c639a0bdcc1701630d0b1cc76444a173231fd91363937538af58",
+          "size_bytes": 221
+        },
+        "before": {
+          "availability": "present",
+          "sha256": "sha256:eb443929bc20c639a0bdcc1701630d0b1cc76444a173231fd91363937538af58",
+          "size_bytes": 221
+        },
+        "change": "unchanged",
+        "origin": "manifest",
+        "path": "reprollm.yaml"
+      }
+    ],
+    "consumption": "unverified"
+  },
+  "lock": null,
+  "manifest": {
+    "path": "reprollm.yaml",
+    "sha256": "sha256:eb443929bc20c639a0bdcc1701630d0b1cc76444a173231fd91363937538af58",
+    "snapshot": "manifest.yaml"
+  },
+  "name": null,
+  "reprollm_version": "0.7.0",
+  "run_id": "20261014T014334Z-74e4c7",
+  "scheduler": null,
+  "schema_version": 2,
+  "started_at": "2026-10-14T01:43:34Z",
+  "status": "completed",
+  "warnings": []
+}

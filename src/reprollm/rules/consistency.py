@@ -330,8 +330,33 @@ class EnvVsLockRule(Rule):
     category = "consistency"
     default_severity = Severity.WARNING
     min_level = 2
-    description = "Runtime LLM-critical package versions agree with the lock."
-    fix_hint = "Use the environment.packages versions recorded in reprollm.lock and rerun."
+    description = (
+        "Recorder LLM-critical package metadata agrees with the lock; "
+        "the child environment is unverified."
+    )
+    fix_hint = (
+        "Reconcile recorder environment.packages with reprollm.lock; "
+        "verify the child environment separately."
+    )
+
+    @staticmethod
+    def _compatible(flat: dict[str, Leaf]) -> bool:
+        # Python anchors a captured package map even when it contains no leaves.
+        for source, phase in (("lock", "lock_resolution"), ("run", "post_child")):
+            python = _source(flat.get("environment.python"), source)
+            if python is None or python.context is None:
+                return False
+            if python.context.subject != "recorder" or python.context.phase != phase:
+                return False
+            for name in LLM_CRITICAL_PACKAGES:
+                package = _source(flat.get(f"environment.packages.{name}"), source)
+                if package is not None and (
+                    package.context is None
+                    or package.context.subject != "recorder"
+                    or package.context.phase != phase
+                ):
+                    return False
+        return True
 
     def applies(self, ctx: AuditContext) -> bool:
         return (
@@ -339,10 +364,14 @@ class EnvVsLockRule(Rule):
             and ctx.lock.environment is not None
             and ctx.latest_run is not None
             and ctx.latest_run.environment is not None
+            and self._compatible(_flat(ctx))
         )
 
     def skip_reason(self, ctx: AuditContext) -> str:
-        return "lock and latest-run environment.packages are required"
+        return (
+            "confirmed compatible recorder context for lock/latest-run environment.packages "
+            "is required; unknown or incompatible sources cannot verify the child environment"
+        )
 
     def check(self, ctx: AuditContext) -> list[Finding]:
         if not self.applies(ctx):
@@ -360,7 +389,10 @@ class EnvVsLockRule(Rule):
                     ctx,
                     self.finding(
                         ctx,
-                        message=f"{field}: {presence or 'run version differs from lock'}",
+                        message=(
+                            f"{field}: {presence or 'recorder version differs from lock'}; "
+                            "recorder metadata only; child environment unverified"
+                        ),
                         severity=Severity.INFO if presence else Severity.WARNING,
                         evidence=[
                             Evidence(kind="lock", path="reprollm.lock", field=field, value=before),

@@ -28,7 +28,11 @@ def _value(value: Any) -> str:
 
 
 def render_diff_text(report: DiffReport) -> str:
-    lines = [f"a: {report.a.kind} {report.a.ref}", f"b: {report.b.kind} {report.b.ref}"]
+    lines = [
+        f"a: {report.a.kind} {report.a.ref}",
+        f"b: {report.b.kind} {report.b.ref}",
+        "Child environment and input consumption are unverified.",
+    ]
     if report.filtered_below is not None:
         lines.append(f"Showing {report.filtered_below} and above; summary includes all changes.")
     grouped: dict[str, list[DiffChange]] = defaultdict(list)
@@ -49,5 +53,5 @@ def render_diff_text(report: DiffReport) -> str:
     elif highest in ("MEDIUM_HIGH", "MEDIUM"):
         verdict = prefix + "Results may differ; review the changes above."
     else:
-        verdict = "No reproducibility-relevant drift detected."
+        verdict = "No reproducibility-relevant drift in recorded values."
     return "\n".join([*lines, "", verdict]) + "\n"

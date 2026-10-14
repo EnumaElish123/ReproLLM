@@ -98,6 +98,47 @@ def test_export_without_run_states_so(tmp_path: Path) -> None:
     assert "`reprollm run -- <command>`" in document
 
 
+@pytest.mark.parametrize("template", [None, "neurips", "acl", "acm"])
+def test_every_export_template_qualifies_environment_and_legacy_inputs(
+    tmp_path: Path, template: str | None
+) -> None:
+    repo = _assemble(tmp_path, "hf_vllm_eval")
+    argv = ["export", str(repo)]
+    if template is not None:
+        argv.extend(["--template", template])
+    result = runner.invoke(app, argv)
+    assert result.exit_code == 0, result.output
+    document = (repo / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
+
+    assert "Child Python and packages are unverified." in document
+    assert "recorder interpreter; after child completion" in document
+    assert "recorder host; after child completion" in document
+    assert "recorder inherited environment; before child launch" in document
+    assert "Input observation phase: unknown (legacy run record)." in document
+    assert "Input consumption by the child is unverified." in document
+    # The frozen lock says 0.2.0, which has no confirmed producer contract.
+    assert "transformers: 4.57.0 (unknown source; unknown capture phase)" in document
+
+
+def test_export_preserves_unknown_environment_scope_without_inventing_child_facts(
+    tmp_path: Path,
+) -> None:
+    repo = _assemble(tmp_path, "hf_vllm_eval")
+    folder = next((repo / ".reprollm" / "runs").iterdir())
+    record = json.loads((folder / "run.json").read_bytes())
+    record["reprollm_version"] = "99.0.0"
+    (folder / "run.json").write_text(json.dumps(record), encoding="utf-8")
+
+    result = runner.invoke(app, ["export", str(repo)])
+    assert result.exit_code == 0, result.output
+    document = (repo / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
+    assert "Python evidence: unknown source; unknown capture phase." in document
+    assert "Inherited environment: unknown source; unknown capture phase." in document
+    assert "Child Python and packages are unverified." in document
+    assert "Input consumption by the child is unverified." in document
+    assert "3.12.14" in document
+
+
 def test_export_deterministic(tmp_path: Path) -> None:
     """Same *inputs* → byte-identical output (spec §19). The exported file
     itself must not be part of the input: remove it between runs, otherwise

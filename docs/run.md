@@ -79,6 +79,21 @@ normal runtime capture still records evidence using the rules below.
 
 ### What a real run records
 
+Python and package versions describe the ReproLLM recorder interpreter after
+the child finishes. OS, platform and hardware describe the recorder host at
+collection time; the hostname hash comes from its pre-launch hostname. Captured
+environment and scheduler values describe the inherited baseline copied before
+launch. These facts do not verify the child interpreter, its package inventory
+or subsequent environment changes, even if its command names the same Python.
+Lock environment values similarly describe the recorder during lock resolution.
+Audit and export label these scopes; an empty recorder package map does not mean
+the child has no packages.
+
+The 0.6.2 compatibility bridge reads and writes run schema 1. Unknown newer
+versions produce upgrade guidance; run listing preserves its warning-and-skip
+behavior. Legacy config/file records have unknown input phase and cannot prove
+what the child consumed. Existing records are not rewritten automatically.
+
 | Evidence | Recorded form |
 |---|---|
 | Execution | Redacted argv, relative working directory, optional name, UTC start/end, duration, status and child exit code |

@@ -8,6 +8,7 @@ from pathlib import Path
 from reprollm.core.errors import UserError
 from reprollm.core.paths import RUNS_DIR, resolve_project_file
 from reprollm.core.yaml_io import load_lock, load_manifest
+from reprollm.run.codec import RunRecordError, read_run_record
 from reprollm.run.reader import read_run
 from reprollm.schemas.diff_report import DiffSource
 from reprollm.schemas.run_record import RunRecord
@@ -60,7 +61,7 @@ def load_input(value: str, root: Path) -> DiffInput:
                 raise UserError("run directory must contain run.json inside that directory")
             path = contained
         if path.suffix == ".json":
-            record = RunRecord.model_validate_json(path.read_text(encoding="utf-8"))
+            record, _ = read_run_record(path)
             return DiffInput(
                 State.from_run(record, run_dir=path.parent),
                 DiffSource(kind="run", ref=_reference(path, root)),
@@ -76,6 +77,8 @@ def load_input(value: str, root: Path) -> DiffInput:
         return DiffInput(
             State.merge(manifest, lock), DiffSource(kind="lock", ref=_reference(path, root))
         )
+    except RunRecordError:
+        raise
     except (OSError, ValueError, UserError):
         raise UserError(
             "cannot load diff input or its snapshots; inspect run.json/reprollm.lock "

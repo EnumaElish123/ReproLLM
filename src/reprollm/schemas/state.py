@@ -12,6 +12,14 @@ from reprollm.schemas.manifest import Manifest
 from reprollm.schemas.run_record import RunRecord
 
 
+class EvidenceContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    subject: Literal["recorder", "host", "inherited_environment", "input_file", "unknown"]
+    phase: Literal["pre_child", "post_child", "lock_resolution", "unknown"]
+    verification: Literal["unverified"] = "unverified"
+
+
 class Leaf(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -19,6 +27,7 @@ class Leaf(BaseModel):
     source: Literal["manifest", "lock", "run", "working_tree", "default"]
     detail: str | None = None
     confidence: Literal["exact", "declared", "unresolved", "observed"]
+    context: EvidenceContext | None = None
     alternatives: list[Leaf] = Field(default_factory=list)
 
 

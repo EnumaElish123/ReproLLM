@@ -20,12 +20,23 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Specification
 
+- R04-S: accept the concrete recorder/host/inherited-environment contract,
+  internal typed State context and the run-specific schema-2 input-baseline
+  proposal. Stage compatibility through the local 0.6.2 reader bridge before
+  the 0.7.0 minor transition; other persisted schemas remain version 1.
+
 - UX2-S01 / UX2-T01: record maintainer approval of the six product workflow
   improvements. Separate complete framework task inventories from explicitly
   selected experiment tasks; retain the five pinned repositories and add
   source-derived expectations for zero, one and two selected tasks.
 
 ### Fixed
+
+- R04-A (spec §§4, 5, 12, 17–19): retain recorder and host observations with
+  explicit subject/phase, qualify environment consistency and every export
+  template, and preserve unknown child verification. The 0.6.2 compatibility
+  bridge keeps run schema 1 and gives safe upgrade guidance for newer records
+  in runs, diff and export, preserving old record bytes and child exit codes.
 
 - VOPT-01 (spec §22 T-09): preserve the default slow-test exclusion in the
   Windows CI marker override; keep performance budgets in nightly and register

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from reprollm import __version__
 from reprollm.core.bindings import values_equal
+from reprollm.core.evidence import context_label
 from reprollm.diff.severity import SEVERITIES, SeverityResolver
 from reprollm.schemas.diff_report import DiffChange, DiffReport, DiffSource, DiffSummary
 from reprollm.schemas.profile import DriftSeverity
@@ -68,6 +69,15 @@ def diff_states(a: State, b: State, resolver: SeverityResolver) -> DiffReport:
         for side, leaf in (("a", before), ("b", after)):
             if leaf is not None and _inconsistent(leaf):
                 notes.append(f"{side} has inconsistent sources (see audit)")
+            if leaf is not None and (
+                leaf.context is not None
+                or path.startswith(("environment.", "hardware.", "files."))
+                or (
+                    leaf.source == "run"
+                    and (leaf.detail or "").split(":", 1)[0] in {"cli", "config", "env"}
+                )
+            ):
+                notes.append(f"{side}: {context_label(leaf.context)}")
         changes.append(
             DiffChange(
                 path=path,

@@ -132,18 +132,27 @@ of fields without an observed value.
 
 ## Environment
 
+- Python evidence: {{ data.environment_evidence }}.
+- Inherited environment: {{ data.inherited_environment_evidence }}.
 - Python: {{ data.environment.get("packages.python", data.environment.get("python", "unknown")) }}
+{% if data.environment.get("platform") %}
+- Platform: {{ data.environment.get("platform") }} ({{ data.environment_sources.get("platform", "source and capture phase unknown") }})
+{% endif %}
+{% if data.environment.get("os") %}
+- OS: {{ data.environment.get("os") }} ({{ data.environment_sources.get("os", "source and capture phase unknown") }})
+{% endif %}
 {% for key, value in data.environment | dictsort if key.startswith("packages.") and key != "packages.python" -%}
-- {{ key.removeprefix("packages.") }}: {{ value }}
+- {{ key.removeprefix("packages.") }}: {{ value }} ({{ data.environment_sources.get(key, "source and capture phase unknown") }})
 {% endfor %}
 
 ## Hardware
 
+- Collector evidence: {{ data.hardware_evidence }}.
 {% if data.hardware %}
-| Field | Value |
-|---|---|
+| Field | Value | Evidence |
+|---|---|---|
 {% for key, value in data.hardware | dictsort -%}
-| {{ key }} | {{ value }} |
+| {{ key }} | {{ value }} | {{ data.hardware_sources.get(key, "source and capture phase unknown") }} |
 {% endfor %}
 {% else %}
 Hardware information was not captured.
@@ -152,6 +161,8 @@ Hardware information was not captured.
 ## Execution
 
 {% if data.has_run() %}
+Input observation phase: {{ data.input_evidence }}.
+
 - command: {{ data.execution.command | code }}
 - run id: {{ data.execution.run_id | code }}
 - started: {{ data.execution.started_at }} · ended: {{ data.execution.ended_at }} · duration: {{ data.execution.duration_seconds }} s

@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import pytest
+from typer.testing import CliRunner
 
+from reprollm.cli.main import app
 from reprollm.core.context import AuditContext
 from reprollm.core.hashing import sha256_file
+from reprollm.core.yaml_io import dump_yaml
 from reprollm.rules.consistency import (
     CustomFieldsRule,
     EnvVsLockRule,
@@ -22,6 +26,8 @@ from reprollm.schemas.lock import Lock
 from reprollm.schemas.manifest import Manifest
 from reprollm.schemas.project_rules import ProjectRules
 from reprollm.schemas.run_record import RunRecord
+from reprollm.schemas.state import EvidenceContext, State
+from tests.conftest import CmdStub
 
 NOW = datetime(2026, 10, 5, 9, 30, tzinfo=timezone.utc)
 RUN_ID = "20261005T093000Z-a1b2c3"
@@ -232,6 +238,86 @@ def environment(packages: dict[str, str], *, runtime: bool) -> dict:
     else:
         base.update(gpu={"source": "unavailable"})
     return base
+
+
+def test_unknown_environment_producer_does_not_pass_as_recorder_match(tmp_path: Path) -> None:
+    lock = lock_record(environment=environment({}, runtime=False))
+    run = run_record(
+        reprollm_version="99.0.0",
+        environment=environment({}, runtime=True),
+    )
+    ctx = AuditContext(tmp_path, level=2, lock=lock, runs=[run])
+    rule = EnvVsLockRule()
+
+    assert not rule.applies(ctx)
+    assert "recorder" in rule.skip_reason(ctx)
+    assert "unknown" in rule.skip_reason(ctx)
+    assert rule.check(ctx) == []
+
+
+@pytest.mark.parametrize("packages", [{}, {"torch": "0.0.123"}])
+@pytest.mark.parametrize("unknown", [None, "run", "lock"])
+def test_audit_environment_match_is_recorder_scoped_or_skipped(
+    tmp_path: Path, stub_run_cmd: CmdStub, packages: dict[str, str], unknown: str | None
+) -> None:
+    declared = manifest()
+    (tmp_path / "reprollm.yaml").write_text(dump_yaml(declared), encoding="utf-8")
+    lock = lock_record(
+        reprollm_version="99.0.0" if unknown == "lock" else "0.1.1",
+        environment=environment(packages, runtime=False),
+    )
+    (tmp_path / "reprollm.lock").write_text(dump_yaml(lock), encoding="utf-8")
+    run = run_record(
+        reprollm_version="99.0.0" if unknown == "run" else "0.1.1",
+        environment=environment(packages, runtime=True),
+    )
+    folder = tmp_path / ".reprollm" / "runs" / RUN_ID
+    folder.mkdir(parents=True)
+    (folder / "run.json").write_text(run.model_dump_json(), encoding="utf-8")
+    stub_run_cmd.on("git", returncode=128)
+    stub_run_cmd.on("nvidia-smi", returncode=1)
+
+    result = CliRunner().invoke(app, ["audit", str(tmp_path), "--level", "2", "--format", "json"])
+    assert result.exit_code in (0, 1), result.output
+    found = next(
+        item
+        for item in json.loads(result.stdout)["findings"]
+        if item["rule_id"] == "consistency.env_vs_lock"
+    )
+    assert found["status"] == ("pass" if unknown is None else "skipped")
+    assert "recorder" in found["message"].lower()
+    assert "unverified" in found["message"] if unknown is None else "unknown" in found["message"]
+
+
+@pytest.mark.parametrize(
+    ("source", "field", "subject", "phase"),
+    [
+        ("run", "environment.python", "recorder", "pre_child"),
+        ("lock", "environment.python", "recorder", "post_child"),
+        ("run", "environment.packages.torch", "host", "post_child"),
+        ("lock", "environment.packages.torch", "unknown", "unknown"),
+    ],
+)
+def test_incompatible_typed_environment_context_is_not_a_package_match(
+    tmp_path: Path, source: str, field: str, subject: str, phase: str
+) -> None:
+    lock = lock_record(environment=environment({"torch": "0.0.123"}, runtime=False))
+    run = run_record(environment=environment({"torch": "0.0.123"}, runtime=True))
+    ctx = AuditContext(tmp_path, level=2, lock=lock, runs=[run])
+    assert ctx.state is not None
+    flat = ctx.state.flatten()
+    primary = flat[field]
+    leaf = (
+        primary
+        if primary.source == source
+        else next(item for item in primary.alternatives if item.source == source)
+    )
+    leaf.context = EvidenceContext.model_validate({"subject": subject, "phase": phase})
+    ctx.state = State.from_flat(flat)
+
+    rule = EnvVsLockRule()
+    assert not rule.applies(ctx)
+    assert rule.check(ctx) == []
 
 
 def test_environment_compares_critical_packages_and_presence(tmp_path: Path) -> None:

@@ -8,10 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
-from pydantic import ValidationError
-
 from reprollm.core.errors import UserError
 from reprollm.core.paths import RUNS_DIR, resolve_project_file
+from reprollm.run.codec import RunRecordError, read_run_record
 from reprollm.schemas.run_record import RunRecord, RunStatus
 
 _RUN_ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[a-f0-9]{6}\Z")
@@ -66,12 +65,9 @@ def _read(root: Path, folder: Path) -> tuple[RunRecord, str]:
     if path is None:
         raise UserError(f"{relative} is missing or outside the repository")
     try:
-        raw = path.read_text(encoding="utf-8")
-        record = RunRecord.model_validate_json(raw)
-    except (OSError, ValueError, ValidationError) as exc:
-        raise UserError(
-            f"cannot read {relative} ({type(exc).__name__}); inspect run.json"
-        ) from None
+        record, raw = read_run_record(path)
+    except RunRecordError as exc:
+        raise UserError(f"{relative}: {exc}") from None
     if record.run_id != folder.name:
         raise UserError(f"{relative}: run_id must match its directory name")
     return record, raw

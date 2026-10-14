@@ -13,7 +13,7 @@
 - All paths persisted in artifacts are **POSIX-style, relative to the repository root**. Absolute paths and `..` segments are rejected in manifests.
 - All timestamps are ISO-8601 UTC with `Z` suffix, second precision: `2026-10-01T09:30:00Z`.
 - All hashes are lowercase hex SHA-256 of raw bytes, prefixed `sha256:` in YAML/JSON (`sha256:8fa2…`).
-- Every persisted document carries `schema_version: 1` (integer) and `reprollm_version: "<semver>"`.
+- Every persisted document carries integer `schema_version` and `reprollm_version: "<semver>"`. Starting with ReproLLM 0.7.0, new run records use version 2; all other document schemas remain version 1. Run readers accept legacy version 1 and current version 2; unknown newer versions require an upgrade.
 - YAML documents are written with 2-space indentation, keys in the order defined here (stable ordering is a requirement for reviewable diffs).
 - "Field path" means a dotted path into the manifest/ExperimentState, e.g. `models.primary.revision`. Role keys appear literally (`models.judge.id`); the wildcard `*` matches any single role.
 - Severities: `CRITICAL | WARNING | INFO | PASS` (audit); drift severities: `HIGH | MEDIUM_HIGH | MEDIUM | LOW | NONE` (diff).
@@ -369,6 +369,13 @@ resolution remains permitted. Changed endpoint declarations still stale the
 manifest hash (`consistency.lock_fresh`: WARNING); identity conflicts remain
 CRITICAL under their existing rules.
 
+Lock environment Python/packages are recorder metadata observed during lock
+resolution; platform/GPU describe that recorder's visible host. Metadata-based
+inference/metric versions also come from the resolving recorder, never a probed
+future child. These observations preserve their existing confidence semantics
+and do not attest to a future experiment's installed environment. The source
+registry for recognized producers is separate from run producer recognition.
+
 ### 4.4 LLM-critical package list
 
 `torch, transformers, tokenizers, datasets, accelerate, peft, trl, vllm, sglang, openai, anthropic, numpy, safetensors, deepspeed, flash_attn, xformers, bitsandbytes, sentencepiece, evaluate, lm_eval, lighteval, inspect_ai`. Constant `LLM_CRITICAL_PACKAGES` in `reprollm/core/envinfo.py`. Versions via `importlib.metadata`; never `import`.
@@ -407,6 +414,33 @@ freshness checks remain unchanged.
 ## 5. Run record schema — `.reprollm/runs/<run_id>/run.json`
 
 pydantic model `RunRecord` (`reprollm/schemas/run_record.py`).
+
+R04-S version transition: the 0.6.2 compatibility bridge writes/reads run
+schema 1 and rejects newer versions with upgrade guidance. Starting with 0.7.0,
+new run records use run-specific schema 2; readers accept schemas 1 and 2 and
+reject unknown newer versions before model validation. Other persisted
+document versions remain 1. No legacy record is rewritten automatically.
+The released 0.6.1 diagnostic limitations are documented separately; a later
+reader cannot retroactively change that binary. Upgrade it to at least the
+0.6.2 bridge before exchanging schema-2 records.
+
+Schema 2 adds a required `input_capture` object (including running/fallback
+records). Its `baseline_phase` is `pre_child`, `check_phase` is `post_child`,
+and `consumption` is `unverified`. `checks` is sorted by relative `path` and
+contains the frozen input candidates: manifest, lock, declared files and
+eligible argv files. Each entry contains `path`, `origin`, `before`, `after`
+and `change`. An input fingerprint contains `availability` (`present`,
+`missing`, `unavailable`), `sha256` and `size_bytes`; the last two are required
+only when present. `change` is `unchanged`, `changed`, `removed`, `created` or
+`unknown`. A missing fingerprint is not an unreadable/unsafe fingerprint.
+While the child is running or a final recheck fails, after availability and
+change remain unavailable/unknown. Matching fingerprints mean unchanged
+recorded bytes, not proof the child consumed the file. No after-only file is
+inserted into pre-child `files`, document references or config observations.
+For schema 1, no non-null `input_capture` is accepted; its input phases and
+consumption remain unknown/unverified. The producer version never proves
+what bytes an old child consumed.
+
 
 ```json
 {
@@ -453,16 +487,24 @@ pydantic model `RunRecord` (`reprollm/schemas/run_record.py`).
 
 - R-01 The child process runs via `subprocess.Popen(argv, cwd=…, env=os.environ | {REPROLLM_RUN_ID, REPROLLM_RUN_DIR})`, no shell. Signals: SIGINT/SIGTERM are forwarded; the record is written with `status: interrupted`.
 - R-02 `run.json` is written atomically (temp file + rename) **after** the child exits, and a minimal `run.json` with `status: running` is written before start so crashes leave evidence.
-- R-03 Files: each argv token (and each `--k=v` value part) that resolves to an existing regular file within the repository root is hashed. Files ≤ 1 MiB and detected as text (UTF-8 decodable, no NUL bytes) are snapshotted to `files/<sha256>` after redaction; others get `snapshot: null`. Forbidden names (§16.4) are never snapshotted (`redacted: true`).
-- R-04 Declared files (`execution.config_files`, `bindings.*.config` paths, prompt paths, `training.deepspeed.config`) are hashed with `origin: declared` even if not in argv.
+- R-03 Files: in schema 2, before child start, each argv token (and each `--k=v` value part) that resolves to an existing regular file within the repository root is hashed. Files ≤ 1 MiB and detected as text (UTF-8 decodable, no NUL bytes) are snapshotted to `files/<sha256>` after redaction; others get `snapshot: null`. Forbidden names (§16.4) are never snapshotted (`redacted: true`).
+- R-04 In schema 2, declared files are captured before child start (`execution.config_files`, `bindings.*.config` paths, prompt paths, `training.deepspeed.config`) are hashed with `origin: declared` even if not in argv.
 - R-05 Dirty tree: `git diff` (tracked files) is saved to `patch.diff` after redaction; untracked files are counted, not captured.
-- R-06 Environment: see §16.3.
+- R-06 Environment: see §16.3. Python/packages describe the recorder interpreter after child completion. OS/platform/hardware describe the recorder host at collector time; the hostname hash describes its pre-child hostname copy. Recorded env/scheduler values are the recorder's pre-child inherited baseline; they do not describe child-internal changes. Lock environment describes the lock recorder during resolution. All child environment verification remains unverified, including when argv names the same executable. Sources are recovered only from explicitly confirmed producer contracts; unrecognized producers have unknown context. Empty recorder packages never prove an empty child installation.
 - R-07 Hardware: `nvidia-smi --query-gpu=index,name,memory.total,uuid --format=csv,noheader,nounits` and `nvidia-smi --query-gpu=driver_version --format=csv,noheader`; CUDA driver max from `nvidia-smi` header line; absent binary → `source: unavailable`. GPU UUIDs are hashed.
 - R-08 Scheduler: all `SLURM_*` variables except those matching secret patterns (values recorded; they are not secrets). `PBS_*`/`LSB_*` recorded likewise.
-- R-09 Bindings: for each manifest/project-rule binding, observe every declared location (§15). All observations are recorded; comparison happens in audit.
+- R-09 Bindings: for each pre-child manifest/project-rule binding, observe every declared location before launch (§15). CLI and env describe the passed/inherited baseline, and config observations come from the same bounded original bytes used for input hashing. All observations retain their location and order; comparison happens in audit. No observation is an automatic child-consumption claim.
 - R-10 `cwd` is stored relative to the repository root; the record never contains absolute paths, local `file://` URIs, hostnames, or usernames.
 - R-11 `--capture-output` tees child stdout/stderr to `stdout.log`/`stderr.log` after redaction (line-buffered; redaction applied per line). Default off.
 - R-12 `--no-snapshot` disables file snapshots (hashes still recorded).
+- R-13 In schema 2, manifest/lock references and files describe the pre-child baseline. Recheck the frozen candidate set after child completion, streaming hashes and recording typed changed/missing/created/unavailable outcomes. Do not inspect unrelated files or alter child inputs. `artifacts.outputs` remains post-child. More than 200 eligible files disables file snapshots, not their hashes. The existing 1 MiB file snapshot limit and `--no-snapshot` semantics remain; manifest/lock copies keep their separate existing policy.
+- R-14 Config binding parsing uses at most 2 MiB of original UTF-8 bytes per config, independently of snapshot options. Larger/invalid/unsafe configs produce fixed diagnostics and no observation; a full streaming file hash is still retained when readable. Never parse the redacted copy as the original input.
+
+Input read, config observation, privacy-copy and final-recheck failures remain
+separate operations. Unknown final state is not reported as unchanged or
+removed. Capture failure never replaces a completed child's exit code;
+pre-child invalid manifest/project-rules validation still prevents launch.
+
 
 R02-R capture protection applies to new run records, manifest/lock copies,
 declared-file copies, patches and saved output before any temporary or final
@@ -1002,7 +1044,7 @@ declared value). No schema relaxation or new rule ID is introduced.
 | `consistency.file_hashes` | CRITICAL | lock | any file in `lock.prompts`/`lock.files` whose current working-tree sha256, or latest-run sha256, differs (one finding per file) |
 | `consistency.generation_params` | CRITICAL | latest run has `bindings_observed` for `generation.*` | any observed value ≠ manifest value (normalized §15.2); evidence lists all sources |
 | `consistency.model_identity` | CRITICAL | run observations for `models.*.id`/`revision` | observed ≠ lock/manifest |
-| `consistency.env_vs_lock` | WARNING | lock and latest run | any LLM-critical package version in run ≠ lock (one finding per package) |
+| `consistency.env_vs_lock` | WARNING | lock and latest run with confirmed compatible recorder context | any recorder LLM-critical package version in run ≠ lock (one finding per package); matching recorded versions yield a recorder-scoped PASS, never child verification; unknown/incompatible context yields SKIP with scope guidance |
 | `consistency.custom_fields` | (project rule) | project rules with bindings and run observations | observed ≠ manifest `custom.*` value |
 
 ### 12.13 `project.*` (M7)
@@ -1137,8 +1179,8 @@ selected. Do not infer metric implementation, aggregation or bindings from task 
 | Location | Observation |
 |---|---|
 | `cli: "--flag"` | scan argv for `--flag VALUE` (next token not starting with `-`) or `--flag=VALUE`; repeated → last wins but all recorded; present without value → `true`; absent → no observation |
-| `config: "path:dotted.key"` | load YAML/JSON/TOML by extension; traverse dotted key (list index as integer segment); missing → `warnings[]` entry, no observation |
-| `env: "VAR"` | `os.environ[VAR]`; if `VAR` matches secret-name rules (§16.1) the binding is refused with a warning |
+| `config: "path:dotted.key"` | before child start, load bounded original YAML/JSON/TOML bytes by extension; traverse dotted key (list index as integer segment); missing → `warnings[]` entry, no observation |
+| `env: "VAR"` | pre-child inherited `os.environ[VAR]`; if `VAR` matches secret-name rules (§16.1) the binding is refused with a warning |
 
 Before recording an observation, apply §16.2 with its binding field, actual
 source key, config traversal segments and enclosing data keys. Preserve context
@@ -1146,6 +1188,14 @@ for nested mappings, lists and a bound secret scalar. Source type/key/path descr
 than its secret value and retain their semantics. Typed presence records such
 as `{present: true}` are also retained. This contextual handling does not apply
 §16.1 environment-name classification to arbitrary experiment keys.
+
+Schema-2 config values are baseline observations, even if a child later
+rewrites the config. The end-of-run hash/check is separate evidence and cannot
+override those binding values. Schema-1 config observations retain their
+recorded values and precedence with unknown input phase; never upgrade them
+to consumed values. Existing generation/model/custom conflict rules continue
+to inspect all baseline/legacy observations against declarations; their messages
+identify baseline or unknown phase rather than asserting child consumption.
 
 ### 15.2 Normalization for comparison
 
@@ -1223,6 +1273,10 @@ it changes no persisted schema or other pattern class. See approved
 
 ### 16.3 Environment capture policy
 
+Values below are captured from the recorder environment copied before child
+launch. They are the inherited baseline, not a report of later child/launcher
+changes. This scope does not alter the allowlist or secret rules.
+
 Default `allowlist`: record **values** only for names that start with one of `CUDA_, NCCL_, TORCH_, PYTORCH_, OMP_, MKL_, TRANSFORMERS_, HF_HOME, HF_HUB_OFFLINE, HF_HUB_DISABLE, VLLM_, SLURM_, PBS_, LSB_, PYTHON, VIRTUAL_ENV, CONDA_, TOKENIZERS_PARALLELISM, WANDB_MODE, LD_LIBRARY_PATH, PATH, LANG, LC_, TZ` plus `config.run.extra_env_allowlist`. Name rules (§16.1) take precedence over the allowlist (`HF_TOKEN` is a secret even though it starts with `HF_`). Everything else is **omitted**. With `--env-capture all`: every name is recorded; secret names as `{present: true}`; other values pass through §16.2.
 
 ### 16.4 Forbidden file patterns
@@ -1250,7 +1304,19 @@ class Leaf(BaseModel):
         str | None
     )  # e.g. "cli:--temperature", "config:configs/eval.yaml:sampling.temperature", "hf_api"
     confidence: Literal["exact", "declared", "unresolved", "observed"]
+    context: EvidenceContext | None = None
 ```
+
+`EvidenceContext` has typed `subject` (`recorder`, `host`,
+`inherited_environment`, `input_file`, `unknown`), `phase` (`pre_child`,
+`post_child`, `lock_resolution`, `unknown`) and `verification: unverified`.
+It is internal provenance, not an experimental value or an additional drift
+leaf. Context survives State JSON round-trip, alternatives and repeated merge.
+Binding location remains in `detail`; warnings carry human diagnostics only.
+Environment context follows §5.1 R-06; new schema-2 config/file/document
+observations follow the input baseline, and legacy input phase stays unknown.
+An absent context on legacy/internal data never means child verified.
+
 
 Projections: `State.from_manifest(m)`, `State.from_lock(l)`, `State.from_run(r)`. `State.merge(manifest, lock, run)` applies precedence `run(cli) > run(config) > run(env) > lock > manifest > default` per leaf and keeps all alternatives in `leaf.alternatives` for consistency findings. `State.flatten() -> dict[str, Leaf]` with paths like `models.primary.revision`, `environment.packages.torch`, `files.configs/eval.yaml.sha256`.
 
@@ -1280,6 +1346,15 @@ Inputs: two of {run_id, path to `run.json`, path to `reprollm.lock`}. Each is pr
 ### 18.1 Algorithm
 
 Flatten both; for each path in the union: `same | changed | added | removed`. Severity from `drift_severity.yaml`: first matching pattern in file order wins; profile `drift_overrides` are prepended. Package versions (`environment.packages.*`, `inference.version`) are compared with `packaging.version`: differing major/minor → the listed severity; differing patch only → one level lower (min LOW). `code.commit` changed is reported as `MEDIUM` with note "code changed" unless `code.dirty` is true on either side (→ HIGH). Paths matching no pattern → `MEDIUM`.
+
+Equality means equality of recorded effective values within the stated
+evidence context. It does not verify a child environment or consumed input.
+Changed environment/input leaves include safe context notes using the existing
+`DiffChange.note` field. Context-only changes add no experimental drift and do
+not alter severity or fail-on. Diff text displays the scope even for an empty
+self-diff. Schema-1 input observations stay comparable as recorded values,
+with unknown-phase guidance; no post-child value from a new schema-2 check
+becomes a baseline parameter.
 
 ### 18.2 `drift_severity.yaml` (initial contents)
 
@@ -1423,6 +1498,15 @@ derive from effective State, including identity/hash tables; never bypass
 observations with a direct current-manifest/lock lookup. Source labels distinguish
 declared manifest values, locked confidence and observed run values. Preserve
 zero, false, nested maps/lists and absent-value honesty; compute no new measurements.
+
+Every current export template (default, neurips, acl, acm) labels recorder
+Python/packages, host hardware, inherited env and unverified child environment.
+Selected run documents/inputs are labeled pre-child baseline for schema 2 and
+unknown input phase for schema 1. Typed post-child checks are displayed
+separately with path, availability/change and hashes; they do not replace
+effective parameters. Known limitations explicitly retain unverified child
+consumption, even when checks are unchanged. Checklist references point to
+these scoped statements and never upgrade them to verified experiment facts.
 
 The existing Audit summary remains a current-working-tree audit using current
 declarations/lock and latest valid run when applicable. Label that scope explicitly;
@@ -1586,4 +1670,4 @@ and unchanged. No threshold or presentation fields are added to AuditReport.
 
 ## 23. JSON Schema export
 
-`reprollm schema export --out schemas/` writes: `manifest.schema.json`, `lock.schema.json`, `run_record.schema.json`, `profile.schema.json`, `project_rules.schema.json`, `config.schema.json`, `audit_report.schema.json`, `diff_report.schema.json`, `discover_candidates.schema.json`, and `rule_archive.schema.json` (ten documents). The archive schema is additive; the other nine documents retain their existing schemas. CI fails if the committed `schemas/` differ from a fresh export.
+`reprollm schema export --out schemas/` writes: `manifest.schema.json`, `lock.schema.json`, `run_record.schema.json`, `profile.schema.json`, `project_rules.schema.json`, `config.schema.json`, `audit_report.schema.json`, `diff_report.schema.json`, `discover_candidates.schema.json`, and `rule_archive.schema.json` (ten documents). R04-S upgrades only run_record.schema.json to support the run-specific version-1/version-2 contract; the other nine schema files retain their previous bytes. Conditional input_capture/fingerprint requirements are exported as JSON Schema; change/fingerprint equality is additionally checked by typed model validation. CI fails if the committed `schemas/` differ from a fresh export.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -59,7 +60,7 @@ def test_evaluation_and_judge_are_distinct_and_keep_implementation_evidence(
     assert "| repetitions | 3 | locked (declared) |" in document
     assert "| model&#95;ref | judge | locked (declared) |" in judge
     assert "| prompt&#95;ref | judge | locked (declared) |" in judge
-    assert "verified" not in document.lower()
+    assert re.search(r"\bverified\b", document.lower()) is None
     if not with_run:
         assert "No run record exists" in document
 
