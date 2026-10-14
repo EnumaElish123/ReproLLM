@@ -1,0 +1,508 @@
+"""Prepare or execute the reviewed 85-leaf offline S3-B Gate A.
+
+Default preparation makes a plan only. Product execution requires a byte-bound
+final quality/authorization receipt and a separately reviewed complete oracle.
+This script never writes pinned inputs or updates expected output.
+"""
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import importlib.util
+import json
+import math
+import os
+import re
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+HERE = Path(__file__).resolve().parent
+TASK = HERE.parent
+PINS = {
+    "lm-evaluation-harness": ("b954108c9baaaa934b4ad842033b31a97ee30816", "EleutherAI/lm-evaluation-harness"),
+    "FastChat": ("587d5cfa1609a43d192cedb8441cac3c17db105d", "lm-sys/FastChat"),
+    "LlamaFactory": ("673048c6a543cbbeaed5b8444b8223dc4e23c721", "hiyouga/LlamaFactory"),
+    "HarmBench": ("8e1604d1171fe8a48d8febecd22f600e462bdcdd", "centerforaisafety/HarmBench"),
+    "llm-dp-finetune": ("7f8b5dff4b92aae90ceccce3ec959b48307bed9e", "jyhong836/llm-dp-finetune"),
+}
+LABELS = ("L0", "facts", "lock-offline", "run-A", "L2-A", "run-B", "L2-B",
+          "pair-json", "self-json", "export-A-default", "export-B-default", "runs-list",
+          "runs-show-B", "pair-text", "export-B-neurips", "export-B-acl", "export-B-acm")
+INDEX_SHA = "06d04134b580257b5c63fc297a50f4635fba874e24f5176737b0b7655bc9cf80"
+SHIM_SHA = "87a9309323f9e82d8721b7bd58cac0c1a8f08e44a4348fbf6d476854aa19b298"
+REDACTION_MARKER = "<REDACTED:path>"
+CLI_SOURCE = r'''
+import os, sys
+from pathlib import Path
+
+def prohibit(event, args):
+    if event == "socket.connect":
+        raise RuntimeError("Offline Gate A forbids network")
+    if event == "import" and str(args[0]).split(".")[0] in {"torch","transformers","vllm","huggingface_hub","numpy"}:
+        raise RuntimeError("Offline Gate A forbids heavy imports")
+sys.addaudithook(prohibit)
+import reprollm
+if Path(reprollm.__file__).resolve() != Path(os.environ["R04_GATE_CANDIDATE"]) / "src/reprollm/__init__.py":
+    raise RuntimeError("Gate A module origin differs from qualified candidate")
+if reprollm.__version__ != os.environ["R04_GATE_VERSION"]:
+    raise RuntimeError("Gate A source version differs from final quality")
+from reprollm.cli.main import cli
+cli()
+'''
+CHILD_SOURCE = r'''
+"""Independent stdlib experiment; no ReproLLM imports or consumption hooks."""
+import argparse
+import importlib.metadata
+import json
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", required=True)
+parser.add_argument("--temperature", type=float)
+parser.add_argument("--rewrite", action="store_true")
+args = parser.parse_args()
+config = json.loads(Path(args.config).read_bytes())
+consumed = args.temperature if args.temperature is not None else config["temperature"]
+witness = {"schema_version": 1, "consumed_temperature": consumed,
+           "config_before": config, "torch_metadata": importlib.metadata.version("torch"),
+           "rewritten": args.rewrite}
+Path("r04-consumed.json").write_text(json.dumps(witness, sort_keys=True) + "\n", encoding="utf-8")
+print(json.dumps(witness, sort_keys=True), flush=True)
+if args.rewrite:
+    Path(args.config).write_bytes(b'{"temperature":0.9}\n')
+'''
+CONFIG_BEFORE = b'{"temperature":0.1}\n'
+CONFIG_AFTER = b'{"temperature":0.9}\n'
+PROFILE_SOURCE = b'''schema_version: 1\nname: validation\ndescription: Offline runtime evidence validation.\nextends: []\nrules: []\nrequired_fields: []\nseverity_overrides: {}\ndrift_overrides: {}\ndetect:\n  imports: []\n  dependencies: []\n  keywords: []\n  files: []\n'''
+MANIFEST_SOURCE = b'''schema_version: 1\nproject:\n  name: s3b-runtime-evidence\nexperiment:\n  profiles: [validation]\ngeneration:\n  temperature: 0.1\nexecution:\n  command: python r04-child.py --config r04-config.json\n  cwd: .\n  seed: 17\n  config_files: [r04-config.json]\nbindings:\n  generation.temperature:\n    cli: --temperature\n    config: r04-config.json:temperature\nartifacts:\n  outputs: [r04-consumed.json]\n'''
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def strict_json(raw: bytes) -> Any:
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+    def finite(value):
+        raise ValueError("non-finite JSON constant")
+    def finite_float(value):
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError("non-finite JSON number")
+        return result
+    return json.loads(raw.decode("utf-8", "strict"), object_pairs_hook=unique,
+                      parse_constant=finite, parse_float=finite_float)
+
+
+def write_json(path: Path, value: dict) -> None:
+    assert value["schema_version"] == 1
+    path.write_text(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def source_inventory(candidate: Path, files: dict[str, str]) -> None:
+    for relative, expected in files.items():
+        path = candidate / relative
+        assert not Path(relative).is_absolute() and ".." not in Path(relative).parts
+        assert path.is_file() and sha(path.read_bytes()) == expected, "Final QA input bytes changed"
+
+
+def cache_inventory(bundle: Path, preparation: Path) -> dict:
+    index_raw = (bundle / "index.json").read_bytes()
+    assert sha(index_raw) == INDEX_SHA, "Independent oracle index mismatch"
+    index = strict_json(index_raw)
+    prepared = strict_json(preparation.read_bytes())
+    assert prepared["schema_version"] == 1 and prepared["all_five_valid_clean"]
+    assert prepared["oracle_bundle_index_sha256"] == INDEX_SHA
+    expected_names = set(PINS)
+    assert len(prepared["targets"])==5 and {row["target"] for row in prepared["targets"]} == expected_names
+    for target in prepared["targets"]:
+        name = target["target"]
+        assert target["expected_sha"] == PINS[name][0]
+        assert len(target["expected_cache"])==2
+        assert {file["relative_file"] for file in target["expected_cache"]}=={f"expected-audit/{name}.json",f"expected-facts/{name}.json"}
+        for file in target["expected_cache"]:
+            rel = file["relative_file"]
+            raw = (bundle / rel).read_bytes()
+            assert sha(raw) == file["sha256"] == index["files_sha256"][rel]
+            assert strict_json(raw)["schema_version"] == 1
+    provenance_rel = "gate-a/oracle-and-environment-provenance.json"
+    assert sha((bundle / provenance_rel).read_bytes()) == index["files_sha256"][provenance_rel]
+    return {"schema_version":1,"index_sha256":INDEX_SHA,"preparation_sha256":sha(preparation.read_bytes()),
+            "expected_files":{file["relative_file"]:file["sha256"] for target in prepared["targets"] for file in target["expected_cache"]},
+            "provenance_sha256":sha((bundle/provenance_rel).read_bytes())}
+
+
+def prepare(args) -> int:
+    assert not args.output.exists(), "Refuse plan overwrite"
+    args.output.mkdir(parents=True)
+    inventory = cache_inventory(args.oracle_bundle, args.preparation)
+    plan = {"schema_version":1,"status":"PREPARED_NOT_RUN","candidate":"NOT_FINALIZED",
+            "product_commands_executed":0,"qa_executed":0,"gpu_api_calls":0,
+            "core_leaf_count":85,"leaves_per_pin":17,"labels":list(LABELS),
+            "supplementary_state_commands":10,"supplementary_state_labels":["state-A","state-B"],
+            "pins":{name:{"commit":pair[0],"public_upstream":pair[1]} for name,pair in PINS.items()},
+            "source_sha256":sha(Path(__file__).read_bytes()),"cached_oracles":inventory,
+            "mutation_scope":"New disposable local clones and owned child venv only; original pins and gold read-only.",
+            "overlay_visibility":"Controlled experiment files are ignored only in each disposable clone; original pinned checkouts are unchanged, experiment overlay is real.",
+            "expected_extensions":"Separate reviewed oracle callable must cover every leaf and return complete comparison proof, not current-output gold.",
+            "extension_oracle_status":"SOURCE_COMPLETE_AWAITING_EXTERNAL_REVIEW_AND_FINAL_QA",
+            "quality_inventory_serialization":"sha256(json.dumps(files,sort_keys=True,separators=(comma,colon)).encode()); full original file entries retained before normalization.",
+            "bridge_probes":"Separate from 85 core leaves; frozen 0.6.2 binary against actual writer2 and future3.",
+            "required_execution_authorization_fields":["execution_authorized","final_quality_pass","version","candidate_files_sha256","quality_receipt_sha256","quality_inputs_sha256","quality_input_inventory_sha256","runner_sha256","extension_oracle_sha256","oracle_review_sha256","harness_companion_files_sha256"],
+            "fixture": {"manifest_sha256":sha(MANIFEST_SOURCE),"profile_sha256":sha(PROFILE_SOURCE),
+                        "child_sha256":sha(CHILD_SOURCE.encode()),"config_before_sha256":sha(CONFIG_BEFORE),
+                        "config_after_sha256":sha(CONFIG_AFTER),"A_consumed":0.2,"B_consumed":0.1,
+                        "child_torch_metadata":"0.0.123","child_verification":"unverified"}}
+    write_json(args.output / "execution-plan.json", plan)
+    print(json.dumps({"status":"PREPARED_NOT_RUN","core_leaves":85,"product_commands_executed":0,"plan_sha256":sha((args.output/'execution-plan.json').read_bytes())}))
+    return 0
+
+
+class Gate:
+    def __init__(self, args, authorized: dict):
+        self.args, self.auth = args, authorized
+        self.out = args.output
+        self.records, self.checks = [], []
+        self.started = time.monotonic()
+        self.mapping = [(str(args.candidate),"<CANDIDATE>"),(str(self.out),"<GATE_OUT>"),
+                        (str(args.portfolio),"<PINNED_PORTFOLIO>"),(str(args.python.parent.parent),"<CORE_ENV>"),
+                        (str(HERE),"<GATE_HARNESS>"),(str(args.oracle_bundle),"<REVIEWED_ORACLE>"),
+                        (str(args.git_shim.parent),"<GIT_SHIM>")]
+        self.env = {key:value for key,value in os.environ.items() if key in {"SYSTEMROOT","WINDIR","LANG","LC_ALL","TZ"}}
+        self.env.update(PATH=str(args.git_shim.parent)+os.pathsep+str(args.python.parent)+os.pathsep+"/usr/bin:/bin",
+                        PYTHONPATH=str(args.candidate/'src')+os.pathsep+str(args.candidate),
+                        R04_GATE_CANDIDATE=str(args.candidate),R04_GATE_VERSION=authorized['version'],
+                        PYTHONUTF8="1",PYTHONIOENCODING="utf-8",NO_COLOR="1",COLUMNS="120",
+                        OMP_NUM_THREADS="1",HF_HUB_OFFLINE="1",TRANSFORMERS_OFFLINE="1",LANG="C.UTF-8",LC_ALL="C.UTF-8",TZ="UTC")
+        self.launcher = self.out / "harness/cli.py"
+        self.launcher.write_text(CLI_SOURCE,encoding="utf-8")
+        self.facts = self.out / "harness/collect_facts.py"
+        self.facts.write_bytes(args.facts_source.read_bytes())
+        self.control=self.out/'harness/control_facts.py';self.control.write_bytes((HERE/'control_facts.py').read_bytes())
+        self.state_probe=self.out/'harness/state_probe.py';self.state_probe.write_bytes((HERE/'state_probe.py').read_bytes())
+        spec = importlib.util.spec_from_file_location("reviewed_independent_s3b_oracle",args.extension_oracle)
+        assert spec and spec.loader
+        self.oracle = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.oracle)
+        assert callable(self.oracle.check_leaf)
+
+    def portable(self,value):
+        if isinstance(value,str):
+            for prefix,token in self.mapping:value=value.replace(prefix,token)
+            return value
+        if isinstance(value,list):return [self.portable(x) for x in value]
+        if isinstance(value,dict):return {key:self.portable(x) for key,x in value.items()}
+        return value
+
+    def flush(self):
+        write_json(self.out/'commands.json',self.portable({"schema_version":1,"commands":self.records}))
+        write_json(self.out/'checks.json',self.portable({"schema_version":1,"checks":self.checks}))
+
+    def check(self,name,label,ok,**proof):
+        self.checks.append({"target":name,"label":label,"passed":bool(ok),**proof})
+        self.flush()
+        if not ok:print("FAIL "+name+" "+label,flush=True)
+
+    def command(self,name,label,argv,cwd,kind="preparation",expected_exit=0):
+        source_inventory(self.args.candidate,self.auth['candidate_files_sha256'])
+        stem=f"{len(self.records)+1:03d}-{name}-{label}"
+        started=time.monotonic()
+        started_epoch=time.time()
+        timed_out=False
+        try:
+            result=subprocess.run(argv,cwd=cwd,env=self.env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                  timeout=300,check=False)
+            code,stdout,stderr=result.returncode,result.stdout,result.stderr
+        except subprocess.TimeoutExpired as exc:
+            timed_out=True;code=None;stdout=exc.stdout or b"";stderr=exc.stderr or b""
+        elapsed=round(time.monotonic()-started,6)
+        unicode_valid=True
+        for stream,raw in (("stdout",stdout),("stderr",stderr)):
+            try:raw.decode('utf-8','strict')
+            except UnicodeError:unicode_valid=False
+            (self.out/'raw'/f'{stem}.{stream}').write_bytes(raw)
+        record={"target":name,"label":label,"kind":kind,"argv":list(map(str,argv)),"cwd":str(cwd),
+                "exit_code":code,"expected_exit":expected_exit,"elapsed_seconds":elapsed,"started_epoch":started_epoch,"ended_epoch":time.time(),"timed_out":timed_out,
+                "full_utf8":unicode_valid,"stdout":f'raw/{stem}.stdout',"stderr":f'raw/{stem}.stderr',
+                "stdout_sha256":sha(stdout),"stderr_sha256":sha(stderr),"stdout_bytes":len(stdout),"stderr_bytes":len(stderr)}
+        self.records.append(record);self.flush()
+        self.check(name,label+"-exit-and-utf8",code==expected_exit and unicode_valid and not timed_out)
+        print(f"{kind} {name} {label} exit={code} seconds={elapsed}",flush=True)
+        return {"stdout":stdout,"stderr":stderr,"exit_code":code,"record":record}
+
+    def cli(self,name,label,argv,cwd,expected_exit=0):
+        return self.command(name,label,[str(self.args.python),str(self.launcher),*map(str,argv)],cwd,
+                            kind="fresh-product",expected_exit=expected_exit)
+
+    def pin(self,name,phase):
+        values=[]
+        for label,argv in [("head",['rev-parse','HEAD']),("origin",['remote','get-url','origin']),
+                           ("status",['status','--porcelain=v1','--untracked-files=all'])]:
+            r=self.command(name,f"pin-{phase}-{label}",['git','-C',str(self.args.portfolio/name),*argv],self.args.candidate)
+            values.append(r['stdout'].decode('utf-8','strict').strip())
+        commit,upstream=PINS[name]
+        valid=values[0]==commit and values[2]=='' and values[1].lower() in {('https://github.com/'+upstream+'.git').lower(), ('https://github.com/'+upstream).lower(), ('git@github.com:'+upstream+'.git').lower(), ('ssh://git@github.com/'+upstream+'.git').lower()}
+        self.check(name,'pin-'+phase+'-identity',valid,commit=values[0],origin_sha256=sha(values[1].encode()),clean=values[2]=='')
+        return {"target":name,"commit":values[0],"origin_sha256":sha(values[1].encode()),"clean":values[2]=='',"valid":valid}
+
+    def compare_base(self,name,label,result):
+        try:
+            actual=strict_json(result['stdout'])
+            valid=isinstance(actual,dict) and actual.get('schema_version')==1
+            if label=='L0':
+                valid=valid and actual.get('reprollm_version')==self.auth['version'] and bool(re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ',actual.get('generated_at','')))
+            expected_stderr=b''
+            if label=='L0' and name=='lm-evaluation-harness':
+                expected_stderr=b'scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n'
+            self.check(name,label+'-single-complete-json',valid and result['stderr']==expected_stderr,
+                       stderr_expected_sha256=sha(expected_stderr))
+            expected=self.args.oracle_bundle/('expected-audit' if label=='L0' else 'expected-facts')/(name+'.json')
+            actual_file=self.out/result['record']['stdout']
+            argv=[str(self.args.python),str(self.args.candidate/'scripts/compare_gold.py'),str(expected),str(actual_file)]
+            if label=='L0':argv.append('--audit-metadata')
+            compared=self.command(name,label+'-complete-comparison',argv,self.args.candidate,kind='comparison')
+            value=strict_json(compared['stdout'])
+            self.check(name,label+'-complete-fields-equal',compared['exit_code']==0 and compared['stderr']==b'' and value.get('status')=='PASS' and value.get('differences')==[],
+                       expected_sha256=sha(expected.read_bytes()),actual_sha256=sha(result['stdout']),comparison_ref=compared['record']['stdout'])
+        except (ValueError,UnicodeError,OSError,AssertionError,KeyError) as exc:
+            self.check(name,label+'-complete-comparison-failed',False,error_type=type(exc).__name__)
+
+    def qualify(self,name,label,result,fixture):
+        try:
+            proof=self.oracle.check_leaf(name,label,result,fixture,self.auth)
+            assert isinstance(proof,dict) and proof.get('schema_version')==1
+            assert proof.get('complete_output_checked') is True
+            assert isinstance(proof.get('checks'),list) and proof['checks']
+            assert proof.get('oracle_source') and proof.get('fields_or_bytes_covered')
+            write_json(self.out/'comparison'/f'{name}-{label}.json',self.portable(proof))
+            self.check(name,label+'-independent-full-oracle',all(x.get('passed') is True for x in proof['checks']),
+                       proof_ref=f'comparison/{name}-{label}.json',proof_sha256=sha((self.out/'comparison'/f'{name}-{label}.json').read_bytes()))
+        except Exception as exc:
+            self.check(name,label+'-oracle-failure',False,error_type=type(exc).__name__)
+
+    def clone(self,name):
+        dest=self.out/'clones'/name
+        for label,argv in [
+            ('clone',['git','clone','--no-hardlinks','--no-local',str(self.args.portfolio/name),str(dest)]),
+            ('detach',['git','-C',str(dest),'checkout','--detach',PINS[name][0]]),
+            ('origin',['git','-C',str(dest),'remote','set-url','origin','https://github.com/'+PINS[name][1]+'.git'])]:
+            r=self.command(name,label,argv,self.args.candidate)
+            assert r['exit_code']==0
+        (dest/'.reprollm/profiles').mkdir(parents=True,exist_ok=True)
+        (dest/'.reprollm/profiles/validation.yaml').write_bytes(PROFILE_SOURCE)
+        (dest/'reprollm.yaml').write_bytes(MANIFEST_SOURCE)
+        (dest/'r04-child.py').write_text(CHILD_SOURCE,encoding='utf-8')
+        (dest/'r04-config.json').write_bytes(CONFIG_BEFORE)
+        with (dest/'.git/info/exclude').open('a',encoding='utf-8') as stream:
+            stream.write('\n.reprollm/\n'
+                         'reprollm.yaml\nreprollm.lock\nr04-child.py\nr04-config.json\nr04-consumed.json\n')
+        # Explicit runtime/loader inputs remain available; ignored files do not
+        # silently enter the source-analysis candidate set or modify pin HEAD.
+        r=self.command(name,'overlay-git-status',['git','-C',str(dest),'status','--porcelain=v1','--untracked-files=all'],dest)
+        assert r['exit_code']==0 and r['stdout']==b''
+        child_env=self.out/'child-envs'/name
+        r=self.command(name,'child-venv',[str(self.args.python),'-m','venv','--without-pip',str(child_env)],dest)
+        assert r['exit_code']==0
+        child_python=child_env/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
+        metadata_code='import json,sysconfig;print(json.dumps({"schema_version":1,"purelib":sysconfig.get_path("purelib")}))'
+        r=self.command(name,'child-site',[str(child_python),'-c',metadata_code],dest)
+        assert r['exit_code']==0
+        site=Path(strict_json(r['stdout'])['purelib'])
+        site.relative_to(child_env)
+        fake=site/'torch-0.0.123.dist-info';fake.mkdir()
+        (fake/'METADATA').write_text('Metadata-Version: 2.1\nName: torch\nVersion: 0.0.123\n',encoding='utf-8')
+        metadata=self.command(name,'recorder-host-control-before',[str(self.args.python),str(self.control),str(self.args.candidate)],dest)
+        assert metadata['exit_code']==0
+        return {'root':dest,'child_python':child_python,'candidate':self.args.candidate,'config_after':CONFIG_AFTER,'pin_commit':PINS[name][0],'origin':'https://github.com/'+PINS[name][1]+'.git','metadata':strict_json(metadata['stdout']),'input_before':{'r04-config.json':CONFIG_BEFORE,'r04-child.py':CHILD_SOURCE.encode(),'reprollm.yaml':MANIFEST_SOURCE},'run_records':{},'witnesses':{},'artifacts':{},'oracle_bundle':self.args.oracle_bundle}
+
+    def capture_run(self,name,which,result,fixture):
+        root=fixture['root']
+        existing=fixture.setdefault('seen_ids',set())
+        paths=list(root.glob('.reprollm/runs/*/run.json'))
+        new=[p for p in paths if p.parent.name not in existing]
+        assert len(new)==1,'Each run must create exactly one new record'
+        path=new[0];raw=path.read_bytes();record=strict_json(raw)
+        assert record['run_id']==path.parent.name and record['schema_version']==2
+        if which=='B':
+            assert record['started_at']>fixture['run_records']['A']['started_at'], 'B must be unambiguously newer than A'
+        existing.add(record['run_id'])
+        fixture['run_records'][which]=record
+        fixture['artifacts']['run-'+which]=path
+        witness_raw=(root/'r04-consumed.json').read_bytes()
+        witness=strict_json(witness_raw)
+        assert witness=={'schema_version':1,'consumed_temperature':0.2 if which=='A' else 0.1,'config_before':{'temperature':0.1},'torch_metadata':'0.0.123','rewritten':which=='B'}
+        fixture['witnesses'][which]=witness
+        write_json(self.out/'artifacts'/f'{name}-witness-{which}.json',witness)
+        # Preserve all nested version-2 fields. No version stripping/model dump.
+        envelope={'schema_version':1,'run':record}
+        write_json(self.out/'artifacts'/f'{name}-run-{which}-envelope.json',envelope)
+        fixture['artifacts']['envelope-'+which]=self.out/'artifacts'/f'{name}-run-{which}-envelope.json'
+        fixture['record_raw_sha256_'+which]=sha(raw)
+        expected_bytes=CONFIG_AFTER if which=='B' else CONFIG_BEFORE
+        assert (root/'r04-config.json').read_bytes()==expected_bytes
+        metadata=self.command(name,'recorder-host-control-after-'+which,[str(self.args.python),str(self.control),str(self.args.candidate)],root)
+        assert metadata['exit_code']==0
+        fixture['metadata']=strict_json(metadata['stdout'])
+        self.qualify(name,'run-'+which,result,fixture)
+        state=self.command(name,'state-'+which,[str(self.args.python),str(self.state_probe),str(self.args.candidate),str(path)],root,kind='affected-consumer')
+        self.qualify(name,'state-'+which,state,fixture)
+
+    def pin_matrix(self,name):
+        target=self.args.portfolio/name
+        r=self.cli(name,'L0',['audit','.','--level','0','--format','json','--fail-on','never'],target)
+        self.compare_base(name,'L0',r)
+        r=self.command(name,'facts',[str(self.args.python),str(self.facts),str(self.args.candidate)],target,kind='fresh-product')
+        self.compare_base(name,'facts',r)
+        f=self.clone(name);root=f['root']
+        r=self.cli(name,'lock-offline',['lock','.','--offline'],root)
+        self.qualify(name,'lock-offline',r,f)
+        f['input_before']['reprollm.lock']=(root/'reprollm.lock').read_bytes()
+        base=[str(f['child_python']),'r04-child.py','--config','r04-config.json']
+        r=self.cli(name,'run-A',['run','--name','s3b-evidence-A','--capture-output','--',*base,'--temperature','0.1','--temperature','0.2'],root)
+        self.capture_run(name,'A',r,f)
+        r=self.cli(name,'L2-A',['audit','.','--format','json','--fail-on','never'],root)
+        f['artifacts']['audit-A']=self.out/r['record']['stdout'];self.qualify(name,'L2-A',r,f)
+        # Run ordering uses second-precision start times plus ID. Keep A/B
+        # strictly ordered without rewriting timestamps or random identifiers.
+        previous=datetime.fromisoformat(f['run_records']['A']['started_at'].replace('Z','+00:00')).timestamp()
+        wait_start=time.monotonic()
+        while time.time()<int(previous)+1:
+            assert time.monotonic()-wait_start<2, 'UTC clock could not establish A/B ordering'
+            time.sleep(0.05)
+        f['ordering_control']={'method':'wait for UTC second after A.started_at',
+                               'elapsed_seconds':round(time.monotonic()-wait_start,6)}
+        r=self.cli(name,'run-B',['run','--name','s3b-evidence-B','--capture-output','--',*base,'--rewrite'],root)
+        self.capture_run(name,'B',r,f)
+        r=self.cli(name,'L2-B',['audit','.','--format','json','--fail-on','never'],root)
+        f['artifacts']['audit-B']=self.out/r['record']['stdout'];self.qualify(name,'L2-B',r,f)
+        aid=f['run_records']['A']['run_id'];bid=f['run_records']['B']['run_id']
+        for label,args,exit_code in [('pair-json',['diff',aid,bid,'--format','json','--fail-on','HIGH'],1),
+                                     ('self-json',['diff',str(f['artifacts']['run-B']),str(f['artifacts']['run-B']),'--format','json','--fail-on','HIGH'],0),
+                                     ('pair-text',['--no-color','diff',aid,bid,'--fail-on','HIGH'],1)]:
+            r=self.cli(name,label,args,root,exit_code);self.qualify(name,label,r,f)
+        for which,venue in [('A','default'),('B','default'),('B','neurips'),('B','acl'),('B','acm')]:
+            label=f'export-{which}-{venue}';path=self.out/'artifacts'/f'{name}-{which}-{venue}.md'
+            r=self.cli(name,label,['export','.','--run',f['run_records'][which]['run_id'],'--template',venue,'--output',str(path)],root)
+            f['artifacts'][label]=path;self.qualify(name,label,r,f)
+        r=self.cli(name,'runs-list',['runs','list','--json'],root);self.qualify(name,'runs-list',r,f)
+        r=self.cli(name,'runs-show-B',['runs','show',bid],root);self.qualify(name,'runs-show-B',r,f)
+
+    def execute(self):
+        before={name:self.pin(name,'before') for name in PINS}
+        write_json(self.out/'pins-before.json',{'schema_version':1,'pins':list(before.values())})
+        for name in PINS:
+            try:
+                if not before[name]['valid']:continue
+                self.pin_matrix(name)
+            except Exception as exc:
+                self.check(name,'pin-matrix-incomplete',False,error_type=type(exc).__name__)
+        after={name:self.pin(name,'after') for name in PINS}
+        write_json(self.out/'pins-after.json',{'schema_version':1,'pins':list(after.values())})
+        for name in PINS:self.check(name,'pin-before-after-equal',before[name]==after[name])
+        source_inventory(self.args.candidate,self.auth['candidate_files_sha256'])
+        leaves=[r for r in self.records if r['kind']=='fresh-product']
+        coverage={name:sorted(r['label'] for r in leaves if r['target']==name) for name in PINS}
+        complete=all(labels==sorted(LABELS) for labels in coverage.values())
+        passed=complete and all(x['passed'] for x in self.checks)
+        summary={'schema_version':1,'status':'PASS' if passed else 'FAIL','all_passed':passed,
+                 'fresh_product_leaf_commands':len(leaves),'required_core_product_leaf_commands':85,
+                 'leaf_coverage':coverage,'checks':len(self.checks),'failed_checks':sum(not c['passed'] for c in self.checks),
+                 'affected_consumer_commands':sum(r['kind']=='affected-consumer' for r in self.records),
+                 'affected_consumer_seconds':round(sum(r['elapsed_seconds'] for r in self.records if r['kind']=='affected-consumer'),6),
+                 'product_seconds':round(sum(r['elapsed_seconds'] for r in leaves),6),'wall_seconds':round(time.monotonic()-self.started,6),
+                 'pins_valid_clean_before_after':all(row['valid'] for row in [*before.values(),*after.values()]),
+                 'candidate_inputs_unchanged':True,'runner_sha256':sha(Path(__file__).read_bytes()),
+                 'authorization_sha256':sha(self.args.authorization.read_bytes()),'quality_receipt_sha256':self.auth['quality_receipt_sha256'],
+                 'extension_oracle_sha256':self.auth['extension_oracle_sha256'],'resource_gpu_api_commands':0,
+                 'old_product_runs_reused':0,'old_gold_or_pins_updated':False,'bridge_probes':'SEPARATE_NOT_COUNTED',
+                 'raw_payload_retention':'One full stdout/stderr copy per command; complete run2 in one schema1 envelope per run.'}
+        write_json(self.out/'summary.json',summary)
+        return 0 if passed else 1
+
+
+def execute(args) -> int:
+    auth=strict_json(args.authorization.read_bytes())
+    assert auth['schema_version']==1 and auth['execution_authorized'] is True and auth['final_quality_pass'] is True
+    assert auth['runner_sha256']==sha(Path(__file__).read_bytes())
+    assert auth['quality_receipt_sha256']==sha(args.quality_receipt.read_bytes())
+    assert auth['quality_inputs_sha256']==sha(args.quality_inputs.read_bytes())
+    assert auth['extension_oracle_sha256']==sha(args.extension_oracle.read_bytes())
+    assert auth['harness_companion_files_sha256']=={filename:sha((HERE/filename).read_bytes()) for filename in ['control_facts.py','state_probe.py','oracle-analysis/qualified-consumer-oracle-final.json']}
+    assert auth['oracle_review_sha256']==sha(args.oracle_review.read_bytes())
+    oracle_review=strict_json(args.oracle_review.read_bytes())
+    assert oracle_review['schema_version']==1 and oracle_review['complete_85_leaf_oracle_reviewed'] is True
+    assert oracle_review['extension_oracle_sha256']==sha(args.extension_oracle.read_bytes())
+    assert set(oracle_review['pins'])==set(PINS)
+    assert all(oracle_review['pins'][name]==PINS[name][0] for name in PINS)
+    assert sorted(oracle_review['labels'])==sorted(LABELS) and len(oracle_review['labels'])==17
+    assert oracle_review['harness_companion_files_sha256']==auth['harness_companion_files_sha256']
+    quality=strict_json(args.quality_receipt.read_bytes())
+    assert quality['schema_version']==1 and (quality.get('all_passed') is True or quality.get('status')=='PASS')
+    quality_inputs=strict_json(args.quality_inputs.read_bytes())
+    assert quality_inputs['schema_version']==1
+    declared=quality_inputs.get('files_sha256',quality_inputs.get('files'))
+    assert isinstance(declared,dict) and declared
+    quality_files={path:(item['sha256'] if isinstance(item,dict) else item) for path,item in declared.items()}
+    assert quality_files==auth['candidate_files_sha256'], 'Authorized source set differs from actual final QA inputs'
+    inventory_hash=quality_inputs.get('inventory_sha256')
+    assert isinstance(inventory_hash,str) and len(inventory_hash)==64
+    recomputed_inventory_hash=sha(json.dumps(declared,sort_keys=True,separators=(',', ':')).encode())
+    assert inventory_hash==recomputed_inventory_hash, 'QA inventory content does not match its canonical digest'
+    assert inventory_hash==auth['quality_input_inventory_sha256']
+    quality_inventory=quality.get('candidate_input_inventory_sha256',quality.get('input_inventory_sha256',quality.get('inventory_sha256')))
+    assert quality_inventory==inventory_hash, 'Quality PASS receipt belongs to different input bytes'
+    assert auth['version']=='0.7.0', 'Final R04-B minor writer source required'
+    assert auth['candidate_files_sha256'] and any(p.startswith('src/') for p in auth['candidate_files_sha256'])
+    assert any(p.startswith('tests/') for p in auth['candidate_files_sha256'])
+    assert any(p.startswith('schemas/') for p in auth['candidate_files_sha256'])
+    source_inventory(args.candidate,auth['candidate_files_sha256'])
+    assert sha(args.git_shim.read_bytes())==SHIM_SHA
+    assert sha(args.facts_source.read_bytes())=="3fc111446cc13bf77dcc298118a8cab853ad4daaf67c3c304fb052194e5d3d60"
+    cache_inventory(args.oracle_bundle,args.preparation)
+    # The separately audited oracle may not import product modules/functions.
+    tree=ast.parse(args.extension_oracle.read_text(encoding='utf-8'))
+    for node in ast.walk(tree):
+        if isinstance(node,ast.Import):assert all(not n.name.startswith('reprollm') for n in node.names)
+        if isinstance(node,ast.ImportFrom):assert not (node.module or '').startswith('reprollm')
+    assert not args.output.exists(), 'Refuse previous execution overwrite'
+    args.output.mkdir(parents=True)
+    for sub in ['raw','harness','comparison','artifacts','clones','child-envs']:(args.output/sub).mkdir()
+    return Gate(args,auth).execute()
+
+
+def main() -> int:
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--execute',action='store_true')
+    parser.add_argument('--candidate',type=Path,default=TASK/'worktree')
+    parser.add_argument('--python',type=Path,default=Path('<CORE_ENV>/bin/python'))
+    parser.add_argument('--portfolio',type=Path,default=Path('<PINNED_PORTFOLIO>'))
+    parser.add_argument('--oracle-bundle',type=Path,default=Path('<IMMUTABLE_ORACLE>'))
+    parser.add_argument('--preparation',type=Path,default=TASK/'gate-a-preparation.json')
+    parser.add_argument('--facts-source',type=Path,default=Path('/tmp/reprollm-valr01-20261013/gate-plan/collect_facts.py'))
+    parser.add_argument('--git-shim',type=Path,default=Path('<GIT_SHIM>/git'))
+    parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--authorization',type=Path)
+    parser.add_argument('--quality-receipt',type=Path)
+    parser.add_argument('--quality-inputs',type=Path)
+    parser.add_argument('--extension-oracle',type=Path)
+    parser.add_argument('--oracle-review',type=Path)
+    args=parser.parse_args()
+    if args.execute:
+        assert all(getattr(args,x) is not None for x in ['authorization','quality_receipt','quality_inputs','extension_oracle','oracle_review'])
+        return execute(args)
+    return prepare(args)
+
+
+if __name__=='__main__':
+    raise SystemExit(main())

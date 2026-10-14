@@ -1,0 +1,141 @@
+
+=================================== FAILURES ===================================
+____________ test_export_future_run_is_safe_upgrade_error[False-2] _____________
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-434/test_export_future_run_is_safe0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f675c927560>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f675c927590>, version = 2
+selected = False
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("selected", [False, True])
+    def test_export_future_run_is_safe_upgrade_error(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+        version: int,
+        selected: bool,
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+        monkeypatch.chdir(tmp_path)
+        arguments = ["reprollm", "export"]
+        if selected:
+            arguments.extend(["--run", run_id])
+        monkeypatch.setattr("sys.argv", arguments)
+    
+        with pytest.raises(SystemExit) as failure:
+            cli()
+    
+        output = capsys.readouterr()
+>       assert failure.value.code == 2
+E       assert 3 == 2
+E        +  where 3 = SystemExit(3).code
+E        +    where SystemExit(3) = <ExceptionInfo SystemExit(3) tblen=2>.value
+
+<CANDIDATE>/tests/unit/run/test_codec.py:63: AssertionError
+____________ test_export_future_run_is_safe_upgrade_error[False-3] _____________
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-434/test_export_future_run_is_safe1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f675c981100>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f675c981d60>, version = 3
+selected = False
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("selected", [False, True])
+    def test_export_future_run_is_safe_upgrade_error(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+        version: int,
+        selected: bool,
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+        monkeypatch.chdir(tmp_path)
+        arguments = ["reprollm", "export"]
+        if selected:
+            arguments.extend(["--run", run_id])
+        monkeypatch.setattr("sys.argv", arguments)
+    
+        with pytest.raises(SystemExit) as failure:
+            cli()
+    
+        output = capsys.readouterr()
+>       assert failure.value.code == 2
+E       assert 3 == 2
+E        +  where 3 = SystemExit(3).code
+E        +    where SystemExit(3) = <ExceptionInfo SystemExit(3) tblen=2>.value
+
+<CANDIDATE>/tests/unit/run/test_codec.py:63: AssertionError
+_____________ test_export_future_run_is_safe_upgrade_error[True-2] _____________
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-434/test_export_future_run_is_safe2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f675c9d01a0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f675c9d0170>, version = 2
+selected = True
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("selected", [False, True])
+    def test_export_future_run_is_safe_upgrade_error(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+        version: int,
+        selected: bool,
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+        monkeypatch.chdir(tmp_path)
+        arguments = ["reprollm", "export"]
+        if selected:
+            arguments.extend(["--run", run_id])
+        monkeypatch.setattr("sys.argv", arguments)
+    
+        with pytest.raises(SystemExit) as failure:
+            cli()
+    
+        output = capsys.readouterr()
+>       assert failure.value.code == 2
+E       assert 3 == 2
+E        +  where 3 = SystemExit(3).code
+E        +    where SystemExit(3) = <ExceptionInfo SystemExit(3) tblen=2>.value
+
+<CANDIDATE>/tests/unit/run/test_codec.py:63: AssertionError
+_____________ test_export_future_run_is_safe_upgrade_error[True-3] _____________
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-434/test_export_future_run_is_safe3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f675c9619d0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7f675c960890>, version = 3
+selected = True
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("selected", [False, True])
+    def test_export_future_run_is_safe_upgrade_error(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+        version: int,
+        selected: bool,
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+        monkeypatch.chdir(tmp_path)
+        arguments = ["reprollm", "export"]
+        if selected:
+            arguments.extend(["--run", run_id])
+        monkeypatch.setattr("sys.argv", arguments)
+    
+        with pytest.raises(SystemExit) as failure:
+            cli()
+    
+        output = capsys.readouterr()
+>       assert failure.value.code == 2
+E       assert 3 == 2
+E        +  where 3 = SystemExit(3).code
+E        +    where SystemExit(3) = <ExceptionInfo SystemExit(3) tblen=2>.value
+
+<CANDIDATE>/tests/unit/run/test_codec.py:63: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_codec.py::test_export_future_run_is_safe_upgrade_error[False-2]
+FAILED tests/unit/run/test_codec.py::test_export_future_run_is_safe_upgrade_error[False-3]
+FAILED tests/unit/run/test_codec.py::test_export_future_run_is_safe_upgrade_error[True-2]
+FAILED tests/unit/run/test_codec.py::test_export_future_run_is_safe_upgrade_error[True-3]
+4 failed in 5.02s
+

@@ -1,0 +1,115 @@
+{
+  "approved_schema_patch_sha256": "388bc8957f379fca3ac6d6f3515bdec46f7d9a7d9dfbcd0e71568a115e4e7f48",
+  "capture_helper_extension": {
+    "actual_read_limit": "max(snapshot_buffer_limit_if_enabled_and_not_forbidden, capture_limits.get(relative_path,-1)), stillstream all bytesfororiginal hash; forbiddenfiles retainno parsebuffer",
+    "capture_limits": "capture_limits:Mapping[str,int]|None=None; only explicit configpath entries receive2MiB originalbyte retention. Other files retain at most snapshotlimit when allowed, otherwise no buffer",
+    "compatibility": "Newkwargs optional; existing directhash_and_snapshot callers maintainbehavior, originprecedence anddestinationcontainmentexceptions",
+    "failure_in_callback_data": "configured map initialized None; failures/over2MiB/forbidden remain None; observe cannot reopen paths",
+    "on_read": "on_read: Callable[[FileRef,str,int,bytes|None],None]|None = None, invoked once after originalread/hash and BEFORE sanitize/write",
+    "snapshot_write_gate": "snapshotenabled AND notforbidden AND total_original_size<=max_bytes AND UTF8/noNUL; presence of2MiB configbuffer alone must not enable oversized/disabled/201file snapshots"
+  },
+  "capture_source_before_B_sha256": "83581367c918603dee384d8fe844dcb034ebf81acd65b17878ddf18c3c5f95bf",
+  "coordinator_signature": {
+    "capture_inputs": "capture_inputs(record:RunRecord, *, root:Path,cwd:Path,run_dir:Path,argv:Sequence[str],env:Mapping[str,str],privacy:RunPrivacy,manifest:Manifest|None,project_rules:ProjectRules|None,snapshot:bool,max_bytes:int,document_data:Mapping[str,bytes|None]|None=None) -> None",
+    "document_data_reason": "Wrapper parses manifest/project rules from frozen originalbuffer; hashing/copy coordinator reuses provided manifestbytes rather than rereading a differentfile. Lock can be readonce by coordinator if wrapperdoesnotpreparse it. Optionalmapping contract must be explicit: missing cached bytes cannot fallback to post/current data.",
+    "recheck_inputs": "recheck_inputs(record:RunRecord, *, root:Path) -> None"
+  },
+  "critical_integration_agreements": [
+    "Rootobserve(config_data is notNone) must treatmissingkey/None asunavailable and neverresolve/reopen; None wholeconfig_data meansoldnoncoordinator callers ifretained",
+    "Samebyteshash/snapshot/configbind guaranteed by callbackbeforecopy andoriginalbuffer cache, not repeated pathloads",
+    "Providedmanifestmodel needsfrozenrawbytesfromwrapper toidentifyexactdeclarationbytebaseline; functioncannotinfer originalrawbytesfromPydantic dump",
+    "Ifhash_and_snapshot copyprivacy raises, baselinecallbackfacts/buffers andalreadyknownhashed refs remainpartialsafe evidence; coordinator marksunprocessedpaths unavailable rather than retry readingpost values",
+    "Documentcopies retain existing policy irrespectivefilesnapshotflag; failedcopymustnotfabricateDocumentRef(snapshot) but docInputCheckoriginalhash stillknown",
+    "BeforePopen record schema2 mustalready haveInputCapture(empty allowed), afterchecks unavailable/unknown; rootprewrite/minimalfallback retainsrequired object",
+    "No new output glob scan orchildconsume hook; originalrootpins/cache/GPU/API untouched"
+  ],
+  "fingerprint_availability": {
+    "change": "unavailable in eitherphase->unknown; missing/present->created; present/missing->removed; equalhashANDsize->unchanged (includingmissing/missing); elsechanged",
+    "missing": "confirmed absent safe relativecandidate; no known unsafe/dangling/permissionfailure conflated",
+    "present": "successful originalstreamhash/size; redactedcopyfailure doesnoterasealreadyknownfingerprint",
+    "unavailable": "invalid/escaping/symlinkloop/nonregular/unreadable or failed read. InputCheckhash andsize null"
+  },
+  "flow": [
+    "Freeze argv-existing references once plus declared_files(manifest, project_rules); retain validrelative missing/unreadable declaredpaths forchecks, ignore unsafe rawpaths with fixedwarnings",
+    "Manifest/lock checks useorigins manifest/lock; dedupefileorigins declared>binding>argv; checksoneperrelativepath sorted; docorigin winswhen samepath isalsodeclared withoutlosingexistingfileorigin",
+    "Build configpath->None map frommanifest andacceptedprojectrule binding locations; read/hash originaleachpath once; callback fills fingerprint and bounded originalbuffer before copyprivacy",
+    "Use sameoriginalbytesforrawhash/safe snapshot and frozenobserve(config_data=map). Never parse sanitizedcopies; no absolute paths/canaries in diagnostics",
+    "record.input_capture=InputCapture withpre_child/post_child/unverified; allafterfingerprints unavailable andchangeunknown untilpostchild. Set documentrefs/files/bindings onlyfrombefore successes",
+    "Post recheck onlypreviouschecks paths. Resolve targetroot before open eachphase; streamhashknowncandidate, computeapprovedchange relation, store no postobservedbindings ornewbeforefile/documentrefs",
+    "After inputrecheck root_collect stillcollects environment/hardware/scheduler andartifacts.outputs atpostchild. Preserve completedchildexit and fixedpartialfailure diagnostics"
+  ],
+  "ownership": {
+    "agent": [
+      "run/input_capture.py",
+      "run/capture.py",
+      "tests/unit/run/test_input_capture.py",
+      "tests/unit/run/test_capture.py as needed"
+    ],
+    "root": [
+      "run/wrapper.py",
+      "core/bindings.py",
+      "core/configread.py",
+      "schemas",
+      "State"
+    ]
+  },
+  "product_tests_GPU_API_executed": 0,
+  "schema_version": 1,
+  "status": "PREPARED_INTERFACE_NOT_PRODUCT_IMPLEMENTED_OR_TEST_EXECUTED",
+  "test_verticals": [
+    {
+      "expect": "prebinding0.1, originalprehash/snapshotpair, afterchangedhash0.9; consumptionunverified; pre refs unchanged",
+      "id": "IC01",
+      "literal": "config original0.1; after0.9",
+      "seam": "capture_inputs then recheck_inputs"
+    },
+    {
+      "expect": "one baseline contentopen perconfig; binding fromoriginal0.1, originalhash; neverreadsanitizedcopy/currentpath again",
+      "id": "IC02",
+      "literal": "oneconfigsourceoriginal contains0.1 andsecrets; sanitizedcopy differs safely",
+      "seam": "capture_inputs + source-open monitor"
+    },
+    {
+      "expect": "bindingstillobservable, hashesall201, originalbuffersonlyconfiguredpaths; doccopiesstillpreserved",
+      "id": "IC03",
+      "literal": "configured JSON less2MiB, nofilesnapshots",
+      "seam": "capture_inputs snapshotFalse/201files"
+    },
+    {
+      "expect": "configuredparsebound2MiB separatefromsnapshot1MiB; oversizedconfigsoriginalhashbutnoobservation; unconfiguredfilecannotretain2MiB",
+      "id": "IC04",
+      "literal": "1MiB exact/+1;2MiB exact/+1 config;2MiB unconfiguredregularfile",
+      "seam": "capturehelper originalread/sizepolicy"
+    },
+    {
+      "expect": "declared/lock created tracked, removed prompttracked; lateargv absent notinsertedinto frozenpreexistingargvset orbaselinefile",
+      "id": "IC05",
+      "literal": "missingdeclared config+lock thencreated; presentprompt removed; argv nonexistent initialfilecreatedlate",
+      "seam": "coordinator frozen candidate checkset"
+    },
+    {
+      "expect": "outsidecontentopens0, sentinelunchanged; safealiascheck unavailable+unknown; no falsemissing/unchanged",
+      "id": "IC06",
+      "literal": "internalalias swaps tooutsideafterpre; looping/dangling/unreadablepaths; deniedpostread",
+      "seam": "recheck boundary andfailures"
+    },
+    {
+      "expect": "oneoriginalread/check perpath, originprecedencecorrect, allbindinglocationsoriginalvalues; checks sorted unique",
+      "id": "IC07",
+      "literal": "sameconfigviaargv/declared/projectrule, samepath multiplebindings, docsalsodeclared",
+      "seam": "origin/dedup docs/config/files"
+    },
+    {
+      "expect": "safeoriginalfingerprint/availableconfigevidence preserved, snapshotomitted+fixedwarning; no rawexceptiontext/currentreread",
+      "id": "IC08",
+      "literal": "sanitize raisesonce afterhash/configbufferobtained",
+      "seam": "privacy-copy failure boundary"
+    },
+    {
+      "expect": "nativeconsumedreceiptindependent; before1/post9 checks; outputsafterchild, preservedexit, input_captureinrunningandminimalfallback",
+      "id": "IC09",
+      "literal": "realstdlibchild consumed0.1 thenrewrites0.9, exit7 orsignal/output",
+      "seam": "root wrapperintegration sharedbyroot"
+    }
+  ]
+}

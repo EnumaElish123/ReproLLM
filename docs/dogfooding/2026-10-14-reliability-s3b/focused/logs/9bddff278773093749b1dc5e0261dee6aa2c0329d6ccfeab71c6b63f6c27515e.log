@@ -1,0 +1,33 @@
+.................................F....................                   [100%]
+=================================== FAILURES ===================================
+________________________ test_export_snapshots_with_run ________________________
+
+tmp_path = PosixPath('<SESSION>/r04a-consumers/pytest-focused/test_export_snapshots_with_run0')
+
+    def test_export_snapshots_with_run(tmp_path: Path) -> None:
+        for name in POSITIVE:
+            repo = _assemble(tmp_path, name)
+            result = runner.invoke(app, ["export", str(repo)])
+            assert result.exit_code == 0, (name, result.output)
+            generated = (repo / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
+            expected_path = FIXTURES / name / "expected" / "REPRODUCIBILITY.md"
+            if os.environ.get("REPROLLM_UPDATE_SNAPSHOTS") == "1":
+                expected_path.write_text(generated, encoding="utf-8")
+            else:
+>               assert generated == expected_path.read_text(encoding="utf-8"), name
+E               AssertionError: hf_vllm_eval
+E               assert '# Reproducib...r artifact.\n' == '# Reproducib...r artifact.\n'
+E                 
+E                 Skipping 105 identical leading characters in diff, use -v to show
+E                 - oLLM) 0.6.1
+E                 ?           ^
+E                 + oLLM) 0.6.2
+E                 ?           ^
+E                   from the selected run's recorded observations and available manifest/lock snapshots....
+E                 
+E                 ...Full output truncated (142 lines hidden), use '-vv' to show
+
+tests/unit/cli/test_export.py:89: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_export.py::test_export_snapshots_with_run - Assert...
+1 failed, 53 passed in 6.86s

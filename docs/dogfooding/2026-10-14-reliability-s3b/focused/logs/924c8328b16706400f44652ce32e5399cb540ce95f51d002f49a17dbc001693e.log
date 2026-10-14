@@ -1,0 +1,132 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_missing_legacy_context_stays_unknown_in_changed_evidence[environment.python-None] _
+
+path = 'environment.python', detail = None
+
+    @pytest.mark.parametrize(
+        ("path", "detail"),
+        [
+            ("environment.python", None),
+            ("hardware.driver", None),
+            ("files.config.json.sha256", None),
+            ("generation.temperature", "config:config.json:temperature"),
+        ],
+    )
+    def test_missing_legacy_context_stays_unknown_in_changed_evidence(
+        path: str, detail: str | None
+    ) -> None:
+        before = State.from_flat(
+            {path: Leaf(value="1", source="run", confidence="observed", detail=detail)}
+        )
+        after = State.from_flat(
+            {path: Leaf(value="2", source="run", confidence="observed", detail=detail)}
+        )
+        report = diff_states(before, after, SeverityResolver())
+        assert len(report.changes) == 1
+>       assert report.changes[0].note == (
+            "a: unknown/unknown; child unverified; b: unknown/unknown; child unverified"
+        )
+E       AssertionError: assert None == 'a: unknown/unknown; child unverified; b: unknown/unknown; child unverified'
+E        +  where None = DiffChange(path='environment.python', status='changed', a='1', b='2', severity='MEDIUM', note=None).note
+
+tests/unit/diff/test_diff_evidence_notes.py:83: AssertionError
+_ test_missing_legacy_context_stays_unknown_in_changed_evidence[hardware.driver-None] _
+
+path = 'hardware.driver', detail = None
+
+    @pytest.mark.parametrize(
+        ("path", "detail"),
+        [
+            ("environment.python", None),
+            ("hardware.driver", None),
+            ("files.config.json.sha256", None),
+            ("generation.temperature", "config:config.json:temperature"),
+        ],
+    )
+    def test_missing_legacy_context_stays_unknown_in_changed_evidence(
+        path: str, detail: str | None
+    ) -> None:
+        before = State.from_flat(
+            {path: Leaf(value="1", source="run", confidence="observed", detail=detail)}
+        )
+        after = State.from_flat(
+            {path: Leaf(value="2", source="run", confidence="observed", detail=detail)}
+        )
+        report = diff_states(before, after, SeverityResolver())
+        assert len(report.changes) == 1
+>       assert report.changes[0].note == (
+            "a: unknown/unknown; child unverified; b: unknown/unknown; child unverified"
+        )
+E       AssertionError: assert None == 'a: unknown/unknown; child unverified; b: unknown/unknown; child unverified'
+E        +  where None = DiffChange(path='hardware.driver', status='changed', a='1', b='2', severity='LOW', note=None).note
+
+tests/unit/diff/test_diff_evidence_notes.py:83: AssertionError
+_ test_missing_legacy_context_stays_unknown_in_changed_evidence[files.config.json.sha256-None] _
+
+path = 'files.config.json.sha256', detail = None
+
+    @pytest.mark.parametrize(
+        ("path", "detail"),
+        [
+            ("environment.python", None),
+            ("hardware.driver", None),
+            ("files.config.json.sha256", None),
+            ("generation.temperature", "config:config.json:temperature"),
+        ],
+    )
+    def test_missing_legacy_context_stays_unknown_in_changed_evidence(
+        path: str, detail: str | None
+    ) -> None:
+        before = State.from_flat(
+            {path: Leaf(value="1", source="run", confidence="observed", detail=detail)}
+        )
+        after = State.from_flat(
+            {path: Leaf(value="2", source="run", confidence="observed", detail=detail)}
+        )
+        report = diff_states(before, after, SeverityResolver())
+        assert len(report.changes) == 1
+>       assert report.changes[0].note == (
+            "a: unknown/unknown; child unverified; b: unknown/unknown; child unverified"
+        )
+E       AssertionError: assert None == 'a: unknown/unknown; child unverified; b: unknown/unknown; child unverified'
+E        +  where None = DiffChange(path='files.config.json.sha256', status='changed', a='1', b='2', severity='HIGH', note=None).note
+
+tests/unit/diff/test_diff_evidence_notes.py:83: AssertionError
+_ test_missing_legacy_context_stays_unknown_in_changed_evidence[generation.temperature-config:config.json:temperature] _
+
+path = 'generation.temperature', detail = 'config:config.json:temperature'
+
+    @pytest.mark.parametrize(
+        ("path", "detail"),
+        [
+            ("environment.python", None),
+            ("hardware.driver", None),
+            ("files.config.json.sha256", None),
+            ("generation.temperature", "config:config.json:temperature"),
+        ],
+    )
+    def test_missing_legacy_context_stays_unknown_in_changed_evidence(
+        path: str, detail: str | None
+    ) -> None:
+        before = State.from_flat(
+            {path: Leaf(value="1", source="run", confidence="observed", detail=detail)}
+        )
+        after = State.from_flat(
+            {path: Leaf(value="2", source="run", confidence="observed", detail=detail)}
+        )
+        report = diff_states(before, after, SeverityResolver())
+        assert len(report.changes) == 1
+>       assert report.changes[0].note == (
+            "a: unknown/unknown; child unverified; b: unknown/unknown; child unverified"
+        )
+E       AssertionError: assert None == 'a: unknown/unknown; child unverified; b: unknown/unknown; child unverified'
+E        +  where None = DiffChange(path='generation.temperature', status='changed', a='1', b='2', severity='HIGH', note=None).note
+
+tests/unit/diff/test_diff_evidence_notes.py:83: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_missing_legacy_context_stays_unknown_in_changed_evidence[environment.python-None]
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_missing_legacy_context_stays_unknown_in_changed_evidence[hardware.driver-None]
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_missing_legacy_context_stays_unknown_in_changed_evidence[files.config.json.sha256-None]
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_missing_legacy_context_stays_unknown_in_changed_evidence[generation.temperature-config:config.json:temperature]
+4 failed in 0.28s

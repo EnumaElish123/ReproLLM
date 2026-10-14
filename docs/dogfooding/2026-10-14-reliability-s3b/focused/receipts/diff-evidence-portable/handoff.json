@@ -1,0 +1,100 @@
+{
+  "baseline_commit": "52ecc504b3795c46220f68ef24728e0666638df0",
+  "compatibility_failures_retained": {
+    "cli": {
+      "failed": 2,
+      "passed": 321
+    },
+    "semantic_fixtures": {
+      "failed": 4,
+      "passed": 0
+    }
+  },
+  "files_sha256": {
+    "src/reprollm/diff/differ.py": "b164c9e1905f877750df0d83a27dd71b7e4b960b04d85b0616684356962484d7",
+    "src/reprollm/reporters/diff_text.py": "7b49d3ea6005bb84c78d5322b31593fd468fcda1fb98aa6d2f198fec74b6b6d0",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_a_prompt_temperature.json": "e4abb3d4bc5a014205e70997d7310250f335f50a47640db069b6925f4ab01082",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_a_prompt_temperature.txt": "7b89146e6bd76a7ca9753bdcbcd4031f20baaf81744f1986c524154416355f75",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_b_revision.txt": "9d04a13a48b4925a72f295e1ac2c6af117e29c67f8346058959a7e8ad0ca4874",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_c_identical.txt": "36e91433de11fdf5b74268cf4d0b3b9a252196efe960d2dc766f661dfc9c86ab",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_d_torch_patch.json": "0811b9ec4270022a5b64c4ef4b023f118f72c7ec647c8f380fb97b72d1209ce0",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_d_torch_patch.txt": "c2daac181142ae3ad735f1c726af4758a17ad313893443ad1018bef7fdd1ebec",
+    "tests/unit/cli/snapshots/diff_lock.txt": "40e6fe90f1aff9e12044b3d11a302ba081074fe075618a93567e017df55b4752",
+    "tests/unit/cli/test_diff.py": "6986902d0bb89118218f48472458987117a1afc39110f15d225381ca5b6031b2",
+    "tests/unit/diff/test_diff_evidence_notes.py": "f7eacac78afd474e70dca0460555b415cc314d9a65600c6ce7492bf9b4e6002a",
+    "tests/unit/fixtures/test_diff.py": "91cfc305a6fcfde3e3b9af27a58a6a15ceac26846e4eb05b8587a453060bb252"
+  },
+  "fixture_json_note_deltas": {
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_a_prompt_temperature.json": {
+      "all_non_note_fields_equal": true,
+      "notes_changed": [
+        {
+          "after_note": "a: input_file/unknown; child unverified; b: input_file/unknown; child unverified",
+          "before_note": null,
+          "path": "files.prompts/system.txt.sha256"
+        },
+        {
+          "after_note": "a has inconsistent sources (see audit); a: recorder/pre_child; child unverified; b has inconsistent sources (see audit); b: recorder/pre_child; child unverified",
+          "before_note": "a has inconsistent sources (see audit); b has inconsistent sources (see audit)",
+          "path": "generation.temperature"
+        },
+        {
+          "after_note": "a: recorder/pre_child; child unverified; b: recorder/pre_child; child unverified",
+          "before_note": null,
+          "path": "command.argv"
+        }
+      ]
+    },
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_d_torch_patch.json": {
+      "all_non_note_fields_equal": true,
+      "notes_changed": [
+        {
+          "after_note": "a: recorder/post_child; child unverified; b: recorder/post_child; child unverified",
+          "before_note": null,
+          "path": "environment.packages.torch"
+        }
+      ]
+    }
+  },
+  "focused": {
+    "command_elapsed_seconds": 12.225417,
+    "count": 327,
+    "exit": 0,
+    "pytest_seconds": 11.81
+  },
+  "formatted_new_matrix": {
+    "command_elapsed_seconds": 0.716111,
+    "count": 15,
+    "exit": 0,
+    "pytest_seconds": 0.35
+  },
+  "full_quality": "NOT_RUN_BY_OWNER",
+  "gate_a": "NOT_RUN_BY_OWNER",
+  "gpu_api": "NOT_RUN",
+  "notes": [
+    "Context changes alone add no experimental drift.",
+    "Only existing DiffChange.note carries scope.",
+    "No severity, fail-on, sorting, or persisted DiffReport fields changed.",
+    "Unknown legacy input phase remains unknown.",
+    "Snapshot deltas were authored from the approved context contract, not regenerated from current output."
+  ],
+  "protected_functions_unchanged": {
+    "src/reprollm/diff/differ.py": {
+      "_inconsistent": true,
+      "_source": true,
+      "section_rank": true
+    },
+    "src/reprollm/reporters/diff_text.py": {
+      "_value": true
+    }
+  },
+  "schema_version": 1,
+  "scope": "diff evidence qualification",
+  "status": "FOCUSED_PASS_SOURCE_TEST_FROZEN",
+  "task": "R04-A",
+  "unchanged_fixture_files_sha256": {
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_b_revision.json": "94d7c23ea293b48ebe45884bf68b16d95857cd1fd6f254b887dff34426f780fa",
+    "tests/fixtures/repos/hf_vllm_eval/expected/diff_c_identical.json": "fc583061587ec6bb4e5598bc45472ac4ffb42acbc3b7277c762d3ca8338bf9f9",
+    "tests/fixtures/repos/hf_vllm_eval/expected/run.json": "532278d06bbf6080f4d59b947047b9267184a3cd42b1a38d1407a1ea874c049f"
+  }
+}

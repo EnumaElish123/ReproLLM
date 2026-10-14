@@ -1,0 +1,71 @@
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+........................................................................ [ 66%]
+......................F............F.................................... [ 89%]
+...................................                                      [100%]
+=================================== FAILURES ===================================
+___________________ test_lock_vs_lock_json_and_text_snapshot ___________________
+
+tmp_path = PosixPath('<DIFF_TASK>/temp-consumers-before/test_lock_vs_lock_json_and_tex0')
+
+    def test_lock_vs_lock_json_and_text_snapshot(tmp_path: Path) -> None:
+        a, b = lock_pair(tmp_path)
+        data = json_report([a, b])
+        assert data["a"] == {"kind": "lock", "ref": a}
+        assert data["b"] == {"kind": "lock", "ref": b}
+        assert data["summary"]["highest"] == "HIGH"
+        assert data["changes"] == [
+            {
+                "path": "models.primary.revision",
+                "status": "changed",
+                "a": "a" * 40,
+                "b": "b" * 40,
+                "severity": "HIGH",
+                "note": None,
+            }
+        ]
+        result = runner.invoke(app, ["--no-color", "diff", a, b])
+        assert result.exit_code == 0, result.output
+>       assert result.stdout == (Path(__file__).parent / "snapshots/diff_lock.txt").read_text(
+            encoding="utf-8"
+        )
+E       AssertionError: assert 'a: lock a/re...comparable.\n' == 'a: lock a/re...comparable.\n'
+E         
+E         Skipping 38 identical leading characters in diff, use -v to show
+E           ollm.lock
+E         + Child environment and input consumption are unverified.
+E           
+E           models
+E             models.primary.revision  aaaaaaaaaaaa → bbbbbbbbbbbb  [HIGH]
+E           
+E           Highest drift: HIGH (1 changes). These runs are not directly comparable.
+
+<WORKTREE>/tests/unit/cli/test_diff.py:84: AssertionError
+_____________ test_adjacent_manifest_optional_and_profile_override _____________
+
+tmp_path = PosixPath('<DIFF_TASK>/temp-consumers-before/test_adjacent_manifest_optiona0')
+
+    def test_adjacent_manifest_optional_and_profile_override(tmp_path: Path) -> None:
+        a, b = lock_pair(tmp_path)
+        for folder in ("a", "b"):
+            path = tmp_path / folder / "reprollm.yaml"
+            path.write_text(path.read_text().replace("[inference, evaluation]", "[custom_policy]"))
+        profiles = tmp_path / ".reprollm/profiles"
+        profiles.mkdir(parents=True)
+        (profiles / "custom_policy.yaml").write_text(
+            "schema_version: 1\nname: custom_policy\ndescription: test\n"
+            'drift_overrides: {"models.*.revision": LOW}\n'
+        )
+        report = json_report([a, b])
+        assert report["summary"]["highest"] == "LOW"
+        text = runner.invoke(app, ["diff", a, b]).stdout
+>       assert text.endswith("No reproducibility-relevant drift detected.\n")
+E       AssertionError: assert False
+E        +  where False = <built-in method endswith of str object at 0x4059f890>('No reproducibility-relevant drift detected.\n')
+E        +    where <built-in method endswith of str object at 0x4059f890> = 'a: lock a/reprollm.lock\nb: lock b/reprollm.lock\nChild environment and input consumption are unverified.\n\nmodels\n  models.primary.revision  aaaaaaaaaaaa → bbbbbbbbbbbb  [LOW]\n\nNo reproducibility-relevant drift in recorded values.\n'.endswith
+
+<WORKTREE>/tests/unit/cli/test_diff.py:198: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_diff.py::test_lock_vs_lock_json_and_text_snapshot
+FAILED tests/unit/cli/test_diff.py::test_adjacent_manifest_optional_and_profile_override
+2 failed, 321 passed in 9.70s

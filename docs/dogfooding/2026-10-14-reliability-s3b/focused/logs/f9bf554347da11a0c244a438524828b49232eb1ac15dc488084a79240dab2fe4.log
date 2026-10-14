@@ -1,0 +1,212 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_consumed_input_baseline_survives_state_and_every_export_template[None] __
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-real-red/test_consumed_input_baseline_s0')
+stub_run_cmd = CmdStub(calls=[('git', 'rev-parse', '--is-inside-work-tree'), ('nvidia-smi', '--query-gpu=index,name,memory.total,uuid...), CmdResult(returncode=128, stdout='', stderr='')), (('nvidia-smi',), CmdResult(returncode=1, stdout='', stderr=''))])
+template = None
+
+    @pytest.mark.parametrize("template", [None, "neurips", "acl", "acm"])
+    def test_consumed_input_baseline_survives_state_and_every_export_template(
+        tmp_path: Path, stub_run_cmd: CmdStub, template: str | None
+    ) -> None:
+        initial = b'{"temperature": 0.1}\n'
+        final = b'{"temperature": 0.9}\n'
+        (tmp_path / "config.json").write_bytes(initial)
+        (tmp_path / "reprollm.yaml").write_bytes(
+            b"schema_version: 1\nproject: {name: input-baseline}\nexperiment: {profiles: []}\n"
+            b"generation: {temperature: 0.1}\n"
+            b"bindings:\n  generation.temperature: {config: 'config.json:temperature'}\n"
+            b"execution: {config_files: [config.json]}\n"
+            b"artifacts: {outputs: [consumed.json]}\n"
+        )
+        stub_run_cmd.on("git", returncode=128)
+        stub_run_cmd.on("nvidia-smi", returncode=1)
+        code = (
+            "import json; from pathlib import Path; "
+            "value=json.loads(Path('config.json').read_bytes())['temperature']; "
+            "Path('consumed.json').write_text(json.dumps({'schema_version':1,'temperature':value})); "
+            "Path('config.json').write_bytes(b'{\"temperature\": 0.9}\\n')"
+        )
+        run_dir = create_run_dir(tmp_path)
+        record = execute(
+            [sys.executable, "-c", code],
+            root=tmp_path,
+            cwd=tmp_path,
+            run_dir=run_dir,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+    
+        assert record.exit_code == 0, record.warnings
+        assert json.loads((tmp_path / "consumed.json").read_bytes()) == {
+            "schema_version": 1,
+            "temperature": 0.1,
+        }
+        assert (tmp_path / "config.json").read_bytes() == final
+>       assert record.bindings_observed["generation.temperature"][0].value == 0.1
+E       AssertionError: assert 0.9 == 0.1
+E        +  where 0.9 = Observation(value=0.9, source=ObservationSource(type='config', key='temperature', path='config.json')).value
+
+tests/unit/run/test_input_export_evidence.py:59: AssertionError
+_ test_consumed_input_baseline_survives_state_and_every_export_template[neurips] _
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-real-red/test_consumed_input_baseline_s1')
+stub_run_cmd = CmdStub(calls=[('git', 'rev-parse', '--is-inside-work-tree'), ('nvidia-smi', '--query-gpu=index,name,memory.total,uuid...), CmdResult(returncode=128, stdout='', stderr='')), (('nvidia-smi',), CmdResult(returncode=1, stdout='', stderr=''))])
+template = 'neurips'
+
+    @pytest.mark.parametrize("template", [None, "neurips", "acl", "acm"])
+    def test_consumed_input_baseline_survives_state_and_every_export_template(
+        tmp_path: Path, stub_run_cmd: CmdStub, template: str | None
+    ) -> None:
+        initial = b'{"temperature": 0.1}\n'
+        final = b'{"temperature": 0.9}\n'
+        (tmp_path / "config.json").write_bytes(initial)
+        (tmp_path / "reprollm.yaml").write_bytes(
+            b"schema_version: 1\nproject: {name: input-baseline}\nexperiment: {profiles: []}\n"
+            b"generation: {temperature: 0.1}\n"
+            b"bindings:\n  generation.temperature: {config: 'config.json:temperature'}\n"
+            b"execution: {config_files: [config.json]}\n"
+            b"artifacts: {outputs: [consumed.json]}\n"
+        )
+        stub_run_cmd.on("git", returncode=128)
+        stub_run_cmd.on("nvidia-smi", returncode=1)
+        code = (
+            "import json; from pathlib import Path; "
+            "value=json.loads(Path('config.json').read_bytes())['temperature']; "
+            "Path('consumed.json').write_text(json.dumps({'schema_version':1,'temperature':value})); "
+            "Path('config.json').write_bytes(b'{\"temperature\": 0.9}\\n')"
+        )
+        run_dir = create_run_dir(tmp_path)
+        record = execute(
+            [sys.executable, "-c", code],
+            root=tmp_path,
+            cwd=tmp_path,
+            run_dir=run_dir,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+    
+        assert record.exit_code == 0, record.warnings
+        assert json.loads((tmp_path / "consumed.json").read_bytes()) == {
+            "schema_version": 1,
+            "temperature": 0.1,
+        }
+        assert (tmp_path / "config.json").read_bytes() == final
+>       assert record.bindings_observed["generation.temperature"][0].value == 0.1
+E       AssertionError: assert 0.9 == 0.1
+E        +  where 0.9 = Observation(value=0.9, source=ObservationSource(type='config', key='temperature', path='config.json')).value
+
+tests/unit/run/test_input_export_evidence.py:59: AssertionError
+__ test_consumed_input_baseline_survives_state_and_every_export_template[acl] __
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-real-red/test_consumed_input_baseline_s2')
+stub_run_cmd = CmdStub(calls=[('git', 'rev-parse', '--is-inside-work-tree'), ('nvidia-smi', '--query-gpu=index,name,memory.total,uuid...), CmdResult(returncode=128, stdout='', stderr='')), (('nvidia-smi',), CmdResult(returncode=1, stdout='', stderr=''))])
+template = 'acl'
+
+    @pytest.mark.parametrize("template", [None, "neurips", "acl", "acm"])
+    def test_consumed_input_baseline_survives_state_and_every_export_template(
+        tmp_path: Path, stub_run_cmd: CmdStub, template: str | None
+    ) -> None:
+        initial = b'{"temperature": 0.1}\n'
+        final = b'{"temperature": 0.9}\n'
+        (tmp_path / "config.json").write_bytes(initial)
+        (tmp_path / "reprollm.yaml").write_bytes(
+            b"schema_version: 1\nproject: {name: input-baseline}\nexperiment: {profiles: []}\n"
+            b"generation: {temperature: 0.1}\n"
+            b"bindings:\n  generation.temperature: {config: 'config.json:temperature'}\n"
+            b"execution: {config_files: [config.json]}\n"
+            b"artifacts: {outputs: [consumed.json]}\n"
+        )
+        stub_run_cmd.on("git", returncode=128)
+        stub_run_cmd.on("nvidia-smi", returncode=1)
+        code = (
+            "import json; from pathlib import Path; "
+            "value=json.loads(Path('config.json').read_bytes())['temperature']; "
+            "Path('consumed.json').write_text(json.dumps({'schema_version':1,'temperature':value})); "
+            "Path('config.json').write_bytes(b'{\"temperature\": 0.9}\\n')"
+        )
+        run_dir = create_run_dir(tmp_path)
+        record = execute(
+            [sys.executable, "-c", code],
+            root=tmp_path,
+            cwd=tmp_path,
+            run_dir=run_dir,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+    
+        assert record.exit_code == 0, record.warnings
+        assert json.loads((tmp_path / "consumed.json").read_bytes()) == {
+            "schema_version": 1,
+            "temperature": 0.1,
+        }
+        assert (tmp_path / "config.json").read_bytes() == final
+>       assert record.bindings_observed["generation.temperature"][0].value == 0.1
+E       AssertionError: assert 0.9 == 0.1
+E        +  where 0.9 = Observation(value=0.9, source=ObservationSource(type='config', key='temperature', path='config.json')).value
+
+tests/unit/run/test_input_export_evidence.py:59: AssertionError
+__ test_consumed_input_baseline_survives_state_and_every_export_template[acm] __
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-real-red/test_consumed_input_baseline_s3')
+stub_run_cmd = CmdStub(calls=[('git', 'rev-parse', '--is-inside-work-tree'), ('nvidia-smi', '--query-gpu=index,name,memory.total,uuid...), CmdResult(returncode=128, stdout='', stderr='')), (('nvidia-smi',), CmdResult(returncode=1, stdout='', stderr=''))])
+template = 'acm'
+
+    @pytest.mark.parametrize("template", [None, "neurips", "acl", "acm"])
+    def test_consumed_input_baseline_survives_state_and_every_export_template(
+        tmp_path: Path, stub_run_cmd: CmdStub, template: str | None
+    ) -> None:
+        initial = b'{"temperature": 0.1}\n'
+        final = b'{"temperature": 0.9}\n'
+        (tmp_path / "config.json").write_bytes(initial)
+        (tmp_path / "reprollm.yaml").write_bytes(
+            b"schema_version: 1\nproject: {name: input-baseline}\nexperiment: {profiles: []}\n"
+            b"generation: {temperature: 0.1}\n"
+            b"bindings:\n  generation.temperature: {config: 'config.json:temperature'}\n"
+            b"execution: {config_files: [config.json]}\n"
+            b"artifacts: {outputs: [consumed.json]}\n"
+        )
+        stub_run_cmd.on("git", returncode=128)
+        stub_run_cmd.on("nvidia-smi", returncode=1)
+        code = (
+            "import json; from pathlib import Path; "
+            "value=json.loads(Path('config.json').read_bytes())['temperature']; "
+            "Path('consumed.json').write_text(json.dumps({'schema_version':1,'temperature':value})); "
+            "Path('config.json').write_bytes(b'{\"temperature\": 0.9}\\n')"
+        )
+        run_dir = create_run_dir(tmp_path)
+        record = execute(
+            [sys.executable, "-c", code],
+            root=tmp_path,
+            cwd=tmp_path,
+            run_dir=run_dir,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+    
+        assert record.exit_code == 0, record.warnings
+        assert json.loads((tmp_path / "consumed.json").read_bytes()) == {
+            "schema_version": 1,
+            "temperature": 0.1,
+        }
+        assert (tmp_path / "config.json").read_bytes() == final
+>       assert record.bindings_observed["generation.temperature"][0].value == 0.1
+E       AssertionError: assert 0.9 == 0.1
+E        +  where 0.9 = Observation(value=0.9, source=ObservationSource(type='config', key='temperature', path='config.json')).value
+
+tests/unit/run/test_input_export_evidence.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_input_export_evidence.py::test_consumed_input_baseline_survives_state_and_every_export_template[None]
+FAILED tests/unit/run/test_input_export_evidence.py::test_consumed_input_baseline_survives_state_and_every_export_template[neurips]
+FAILED tests/unit/run/test_input_export_evidence.py::test_consumed_input_baseline_survives_state_and_every_export_template[acl]
+FAILED tests/unit/run/test_input_export_evidence.py::test_consumed_input_baseline_survives_state_and_every_export_template[acm]
+4 failed in 0.65s

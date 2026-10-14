@@ -1,0 +1,27 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_self_diff_compares_recorded_values_without_verifying_child ________
+
+    def test_self_diff_compares_recorded_values_without_verifying_child() -> None:
+        recorded = State.from_flat(
+            {
+                "run_id": Leaf(value="20261014T000000Z-aaaaaa", source="run", confidence="observed"),
+                "generation.temperature": Leaf(
+                    value=0.1,
+                    source="run",
+                    confidence="observed",
+                    detail="config:config.json:temperature",
+                    context=EvidenceContext(subject="input_file", phase="pre_child"),
+                ),
+            }
+        )
+        report = diff_states(recorded, recorded, SeverityResolver())
+        assert report.changes == [] and report.summary.same == 2
+        text = render_diff_text(report)
+>       assert "No reproducibility-relevant drift in recorded values." in text
+E       AssertionError: assert 'No reproducibility-relevant drift in recorded values.' in 'a: run 20261014T000000Z-aaaaaa\nb: run 20261014T000000Z-aaaaaa\n\nNo reproducibility-relevant drift detected.\n'
+
+tests/unit/diff/test_diff_evidence_notes.py:57: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_self_diff_compares_recorded_values_without_verifying_child
+1 failed in 0.23s

@@ -1,0 +1,195 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py",
+        "tests/unit/run/test_capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exec_seconds": 0.477425064,
+      "exit_code": 0,
+      "label": "first-collector-green",
+      "passed": 10,
+      "pytest_seconds": 0.28
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py::test_manifest_config_uses_preloader_bytes_without_reopening_document"
+      ],
+      "classification": "behavior_red",
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exec_seconds": 0.420888423,
+      "exit_code": 1,
+      "failed": 1,
+      "label": "manifest-preloader-reuse-red",
+      "observation": "Path.open called once for already preloaded manifest; expected zero source opens",
+      "pytest_seconds": 0.22
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py",
+        "tests/unit/run/test_capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exec_seconds": 0.498200605,
+      "exit_code": 0,
+      "label": "manifest-preloader-reuse-green",
+      "passed": 11,
+      "pytest_seconds": 0.3
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py",
+        "tests/unit/run/test_capture.py"
+      ],
+      "classification": "test_expected_copy_invalid",
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 1,
+      "failed": 1,
+      "label": "config-boundary-observer-correction",
+      "observation": "Existing contextual_text._LIMIT=1048576 rejects structured snapshot larger than 1MiB; original fingerprint and unavailable observation correctly retained; expected copy changed to false without product privacy edits",
+      "passed": 16,
+      "pytest_seconds": 2.11
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py",
+        "tests/unit/run/test_capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 0,
+      "label": "config-boundary-controls-green",
+      "passed": 17,
+      "pytest_seconds": 2.03
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "tests/unit/run/test_input_capture.py",
+        "tests/unit/run/test_capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 0,
+      "label": "final-owned-focused",
+      "passed": 21,
+      "pytest_seconds": 2.09,
+      "stdout": ".....................                                                    [100%]\n21 passed in 2.09s\n"
+    },
+    {
+      "argv": [
+        "ruff",
+        "check",
+        "src/reprollm/run/input_capture.py",
+        "src/reprollm/run/capture.py",
+        "tests/unit/run/test_input_capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "exit_code": 0,
+      "label": "owned-ruff",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "mypy",
+        "src/reprollm/run/input_capture.py",
+        "src/reprollm/run/capture.py"
+      ],
+      "cwd": "candidate-worktree",
+      "environment": {
+        "PYTHONPATH": "src"
+      },
+      "exit_code": 0,
+      "label": "owned-mypy",
+      "source_files_checked": 2,
+      "stdout": "Success: no issues found in 2 source files\n"
+    }
+  ],
+  "disclosures": [
+    "Initial missing-interface RED is independently retained; it did not execute a real child.",
+    "The document reuse RED executes public coordinator and detects a real second source open.",
+    "Boundary snapshot expectation was corrected against the unchanged contextual_text 1MiB policy; the original 16PASS/1FAIL observation is retained above.",
+    "Root separately observed an intermediate misplaced test-body NameError; test block was corrected before final focused run.",
+    "Focused evidence is not full quality, Gate A or GPU validation.",
+    "Tool output excerpts/counts are direct observations; incomplete original failure tracebacks are not claimed as full raw logs."
+  ],
+  "no_gpu_or_api_or_network": true,
+  "owned_files_sha256": {
+    "src/reprollm/run/capture.py": "c40a81eca1516795a528c033a53d34b1a2a2d6ad2afbedf9da495d54de3ef09d",
+    "src/reprollm/run/input_capture.py": "2a8b1d6a9fc63245d3f5900eca29dd774332095418758f2ae4c258b5f05352ad",
+    "tests/unit/run/test_input_capture.py": "5a6250cb26c76d0c1ab0b2e8349a26629b41df10457035008faa30fb9a04ebbc"
+  },
+  "schema_version": 1,
+  "scope": [
+    "pre-child input baseline",
+    "post-child frozen path recheck",
+    "original bytes shared by hashes/snapshot/binding",
+    "config 2MiB independent of snapshot policy",
+    "201 files fingerprints retained",
+    "missing/create/remove/change/unavailable distinctions",
+    "forbidden internal target hash-only",
+    "external and loop never-open",
+    "one privacy/read failure continues safe files"
+  ],
+  "source_commit": "a9a3942651901cc2450ec01b0881cd76140000bd",
+  "status": "OWNED_FOCUSED_PASS_NOT_SESSION_QUALIFICATION",
+  "task": "R04-B"
+}

@@ -1,0 +1,56 @@
+"""Only scratch helpers; never imports or executes the ReproLLM product."""
+from __future__ import annotations
+import ast
+import hashlib
+import importlib.util
+import json
+import tempfile
+from pathlib import Path
+
+here=Path(__file__).resolve().parent
+source=here/'run_gate.py'
+spec=importlib.util.spec_from_file_location('scratch_gate_helpers',source)
+assert spec and spec.loader
+module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+checks=[]
+def check(name,passed):
+    assert passed,name
+    checks.append({'name':name,'passed':True})
+check('exact17unique_labels',len(module.LABELS)==len(set(module.LABELS))==17)
+check('exact85unique_pin_leaves',len({(pin,label) for pin in module.PINS for label in module.LABELS})==85)
+for name,raw in [('duplicate',b'{"schema_version":1,"schema_version":1}'),('multiple',b'{} {}'),('nan',b'{"x":NaN}'),('overflow',b'{"x":1e999}'),('invalid-utf8',b'\xff')]:
+    caught=False
+    try:module.strict_json(raw)
+    except (ValueError,UnicodeError):caught=True
+    check('strict_json_reject_'+name,caught)
+check('single_json_preserves_types',module.strict_json(b'{"schema_version":1,"value":0.1}')=={'schema_version':1,'value':0.1})
+launch=ast.parse(module.CLI_SOURCE)
+check('real_console_entrypoint',any(isinstance(node,ast.ImportFrom) and node.module=='reprollm.cli.main' and [alias.name for alias in node.names]==['cli'] for node in ast.walk(launch)))
+check('launcher_dispatches_cli',any(isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='cli' for node in ast.walk(launch)))
+main_ast=ast.parse((Path('<CANDIDATE>')/'src/reprollm/cli/main.py').read_bytes())
+check('actual_source_defines_cli',any(isinstance(node,ast.FunctionDef) and node.name=='cli' for node in main_ast.body))
+bundle=Path('<IMMUTABLE_ORACLE>')
+preparation=here.parent/'gate-a-preparation.json'
+valid=module.cache_inventory(bundle,preparation)
+check('immutable10_expected_inputs',len(valid['expected_files'])==10)
+original=json.loads(preparation.read_bytes())
+with tempfile.TemporaryDirectory(prefix='pure-cache-',dir=here) as task:
+    for name,mutate in [('empty_cache',lambda j:j['targets'][0].update(expected_cache=[])),('duplicate_target',lambda j:j['targets'].append(j['targets'][0]))]:
+        changed=json.loads(json.dumps(original));mutate(changed)
+        path=Path(task)/(name+'.json');path.write_text(json.dumps(changed))
+        rejected=False
+        try:module.cache_inventory(bundle,path)
+        except AssertionError:rejected=True
+        check('cache_reject_'+name,rejected)
+check('literal_config_A_before',module.CONFIG_BEFORE==b'{"temperature":0.1}\n')
+check('literal_config_B_after',module.CONFIG_AFTER==b'{"temperature":0.9}\n')
+check('simple_fullcode_compile',compile(source.read_bytes(),str(source),'exec') is not None)
+value={'schema_version':1,'status':'PURE_HELPERS_PASS_GATE_NOT_RUN','checks':checks,
+       'runner_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+       'helper_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+       'product_imports':0,'product_gate_executions':0,'gpu_api_calls':0,
+       'changed_product_or_expected_files':False,'proof_scope':'Scratch helper syntax, strict JSON/cache rejection and source console entrypoint only; no product behavior qualification.'}
+p=here/'pure-selfcheck-final.json'
+assert not p.exists()
+p.write_text(json.dumps(value,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'checks':len(checks),'all_passed':True,'product_gate_executions':0,'receipt_sha256':hashlib.sha256(p.read_bytes()).hexdigest()}))

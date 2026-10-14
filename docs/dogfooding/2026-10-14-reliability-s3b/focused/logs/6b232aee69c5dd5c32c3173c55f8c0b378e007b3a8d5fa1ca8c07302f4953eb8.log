@@ -1,0 +1,214 @@
+FFFFFFFFF.                                                               [100%]
+=================================== FAILURES ===================================
+_____ test_provided_schema_version_is_an_integer_not_a_coerced_value[True] _____
+
+version = True
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+>       with pytest.raises(UserError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE UserError
+
+tests/unit/run/test_codec.py:173: Failed
+_____ test_provided_schema_version_is_an_integer_not_a_coerced_value[1.0] ______
+
+version = 1.0
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+>       with pytest.raises(UserError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE UserError
+
+tests/unit/run/test_codec.py:173: Failed
+____ test_provided_schema_version_is_an_integer_not_a_coerced_value[False] _____
+
+version = False
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+_____ test_provided_schema_version_is_an_integer_not_a_coerced_value[1.5] ______
+
+version = 1.5
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+______ test_provided_schema_version_is_an_integer_not_a_coerced_value[1] _______
+
+version = '1'
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+_ test_provided_schema_version_is_an_integer_not_a_coerced_value[S3B_PRIVATE_FUTURE_PAYLOAD] _
+
+version = 'S3B_PRIVATE_FUTURE_PAYLOAD'
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+_____ test_provided_schema_version_is_an_integer_not_a_coerced_value[None] _____
+
+version = None
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+___ test_provided_schema_version_is_an_integer_not_a_coerced_value[version7] ___
+
+version = []
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+___ test_provided_schema_version_is_an_integer_not_a_coerced_value[version8] ___
+
+version = {}
+
+    @pytest.mark.parametrize("version", [True, 1.0, False, 1.5, "1", CANARY, None, [], {}])
+    def test_provided_schema_version_is_an_integer_not_a_coerced_value(version: Any) -> None:
+        raw = json.dumps(
+            {
+                "schema_version": version,
+                "reprollm_version": "0.6.1",
+                "run_id": "20261014T000000Z-000001",
+                "status": "completed",
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        with pytest.raises(UserError) as failure:
+            parse_run_record(raw)
+>       assert "schema_version must be an integer" in str(failure.value)
+E       AssertionError: assert 'schema_version must be an integer' in 'cannot read run.json (ValidationError); inspect run.json'
+E        +  where 'cannot read run.json (ValidationError); inspect run.json' = str(RunRecordError('cannot read run.json (ValidationError); inspect run.json'))
+E        +    where RunRecordError('cannot read run.json (ValidationError); inspect run.json') = <ExceptionInfo RunRecordError('cannot read run.json (ValidationError); inspect run.json') tblen=2>.value
+
+tests/unit/run/test_codec.py:175: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[True]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[1.0]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[False]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[1.5]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[1]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[S3B_PRIVATE_FUTURE_PAYLOAD]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[None]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[version7]
+FAILED tests/unit/run/test_codec.py::test_provided_schema_version_is_an_integer_not_a_coerced_value[version8]
+9 failed, 1 passed, 17 deselected in 0.43s

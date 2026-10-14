@@ -158,11 +158,13 @@ uv run pytest -q tests/unit/diff/test_state.py tests/unit/rules/test_consistency
 uv run pytest -q tests/unit/cli/test_export.py tests/unit/cli/test_export_templates.py
 ```
 
-- [ ] 来源 / 时点合同有机器内部表达与面向用户的文档。
-- [ ] `consistency.env_vs_lock` 不再混淆 recorder 比较与 child 验证。
-- [ ] run.environment 保留有效宿主和 recorder 信息；未知的 child 事实明确未知。
-- [ ] 旧记录与退出码兼容；任何 schema 决定均有 D-39 / D-41 处理。
-- [ ] 全质量门、S3-B Gate A 与 export / diff 受影响命令回放完成。
+- [x] 来源 / 时点合同有机器内部表达与面向用户的文档。
+- [x] `consistency.env_vs_lock` 不再混淆 recorder 比较与 child 验证。
+- [x] run.environment 保留有效宿主和 recorder 信息；未知的 child 事实明确未知。
+- [x] 旧记录与退出码兼容；任何 schema 决定均有 D-39 / D-41 处理。
+- [x] 全质量门、S3-B Gate A 与 export / diff 受影响命令回放完成。
+
+本地共享验收依据：[S3-B报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。
 
 建议提交：`fix(run): qualify environment evidence by source and capture phase (R04-A)`。
 
@@ -197,18 +199,18 @@ uv run pytest -q tests/unit/cli/test_export.py tests/unit/cli/test_export_templa
 
 定向入口：`tests/unit/run/test_wrapper.py`、`tests/unit/run/test_capture.py`、`tests/unit/core/test_bindings.py`、State/consistency/diff/export 单测；以真实 stdlib child 的消费值为独立依据。
 
-- [ ] 时点与变更合同、故障矩阵、必要规范/兼容决定齐全。
-- [ ] full quality、五项目受影响 run/diff/export 离线 Gate A 和必要审阅完成。
-- [ ] D01 / A01-B 的证据映射包含观测阶段及消费证据；不得以仅有 post-run 快照宣布实际消费已证明。
+- [x] 时点与变更合同、故障矩阵、必要规范/兼容决定齐全。
+- [x] full quality、五项目受影响 run/diff/export 离线 Gate A 和必要审阅完成。
+- [x] D01 / A01-B 的证据映射包含观测阶段及消费证据；不得以仅有 post-run 快照宣布实际消费已证明。
 
 建议提交：`fix(run): distinguish input baselines from post-run changes (R04-B)`。
 
 ## 5. Sprint 收尾与后续接口
 
 - [x] 向 R07-C 交付各规则依赖的事实 / 扫描来源清单，不先全局调整 PASS。
-- [ ] 向 D01 / A01-B 交付 R04-A 的环境来源与 R04-B 的输入阶段/变化合同，用于真实 recipe 的证据分层。
-- [ ] 若 R04-S 必须执行，记录最小阻塞字段及已完成补丁；其他 Sprint 正常推进。
+- [x] 向 D01 / A01-B 交付 R04-A 的环境来源与 R04-B 的输入阶段/变化合同，用于真实 recipe 的证据分层，见[交接](../../dogfooding/2026-10-14-reliability-s3b/runtime-evidence-handoff.md)。
+- [x] R04-S 已明确接受并实施；run v2 最小字段与读取桥见[S3-B报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)，其他策略任务仍独立推进。
 - [x] S3-A保留全部五项目 Gate A 记录。
-- [ ] S3-B保留全部五项目 Gate A 记录。
+- [x] S3-B保留全部五项目 Gate A 记录。
 
 依据：[core/scanner.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/core/scanner.py)、[run/wrapper.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/run/wrapper.py)、[rules/consistency.py](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/rules/consistency.py)。

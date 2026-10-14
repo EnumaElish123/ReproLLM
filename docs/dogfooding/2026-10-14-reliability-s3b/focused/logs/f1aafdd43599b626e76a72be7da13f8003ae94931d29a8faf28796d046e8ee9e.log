@@ -1,0 +1,43 @@
+..................F................                                      [100%]
+=================================== FAILURES ===================================
+_ test_evaluation_and_judge_are_distinct_and_keep_implementation_evidence[True] _
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-448/test_evaluation_and_judge_are_1')
+with_run = True
+
+    @pytest.mark.parametrize("with_run", [False, True])
+    def test_evaluation_and_judge_are_distinct_and_keep_implementation_evidence(
+        tmp_path: Path, with_run: bool
+    ) -> None:
+        repo = _assemble(tmp_path, "openai_judge_eval", with_run=with_run)
+        result = CliRunner().invoke(app, ["export", str(repo)])
+        assert result.exit_code == 0, result.output
+        document = (repo / "REPRODUCIBILITY.md").read_text()
+        generation = document.split("### Generation parameters\n", 1)[1].split("### Inference", 1)[0]
+        judge = document.split("#### Judge\n", 1)[1].split("## Code", 1)[0]
+        assert f"`temperature`: {0.25 if with_run else 0.7}" in generation
+        assert "`max_tokens`: 512" in generation
+        assert "| params.temperature | 0.0 | locked (declared) |" in judge
+        assert "| params.max&#95;tokens | 16 | locked (declared) |" in judge
+        assert "| repetitions | 1 | locked (declared) |" in judge
+        assert "| win&#95;rate | judge.py | sha256:2e23ca201d95 |" in document
+        assert "| aggregation | mean | locked (declared) |" in document
+        assert "| repetitions | 3 | locked (declared) |" in document
+        assert "| model&#95;ref | judge | locked (declared) |" in judge
+        assert "| prompt&#95;ref | judge | locked (declared) |" in judge
+>       assert "verified" not in document.lower()
+E       AssertionError: assert 'verified' not in '# reproduci... artifact.\n'
+E         
+E         'verified' is contained here:
+E           ges are unverified.
+E         ?           ++++++++
+E           - input consumption by the child is unverified.
+E           
+E           ---...
+E         
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+tests/unit/cli/test_export_research_details.py:62: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_export_research_details.py::test_evaluation_and_judge_are_distinct_and_keep_implementation_evidence[True]
+1 failed, 34 passed in 6.38s

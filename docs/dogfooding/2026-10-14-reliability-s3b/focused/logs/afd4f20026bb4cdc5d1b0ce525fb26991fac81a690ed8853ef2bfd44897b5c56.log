@@ -1,0 +1,216 @@
+....FFFFFFFF.....                                                        [100%]
+=================================== FAILURES ===================================
+______ test_future_version_guidance_survives_each_input_reader[run-id-2] _______
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s0')
+version = 2, reader = 'run-id'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 2' in 'cannot read .reprollm/runs/20261014T000000Z-000001/run.json (ValidationError); inspect run.json'
+
+tests/unit/run/test_codec.py:92: AssertionError
+______ test_future_version_guidance_survives_each_input_reader[run-id-3] _______
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s1')
+version = 3, reader = 'run-id'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 3' in 'cannot read .reprollm/runs/20261014T000000Z-000001/run.json (ValidationError); inspect run.json'
+
+tests/unit/run/test_codec.py:92: AssertionError
+_____ test_future_version_guidance_survives_each_input_reader[diff-json-2] _____
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s2')
+version = 2, reader = 'diff-json'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 2' in 'cannot load diff input or its snapshots; inspect run.json/reprollm.lock and adjacent documents (schema_version 1)'
+
+tests/unit/run/test_codec.py:92: AssertionError
+_____ test_future_version_guidance_survives_each_input_reader[diff-json-3] _____
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s3')
+version = 3, reader = 'diff-json'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 3' in 'cannot load diff input or its snapshots; inspect run.json/reprollm.lock and adjacent documents (schema_version 1)'
+
+tests/unit/run/test_codec.py:92: AssertionError
+____ test_future_version_guidance_survives_each_input_reader[diff-folder-2] ____
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s4')
+version = 2, reader = 'diff-folder'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 2' in 'cannot load diff input or its snapshots; inspect run.json/reprollm.lock and adjacent documents (schema_version 1)'
+
+tests/unit/run/test_codec.py:92: AssertionError
+____ test_future_version_guidance_survives_each_input_reader[diff-folder-3] ____
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_future_version_guidance_s5')
+version = 3, reader = 'diff-folder'
+
+    @pytest.mark.parametrize("version", [2, 3])
+    @pytest.mark.parametrize("reader", ["run-id", "diff-json", "diff-folder"])
+    def test_future_version_guidance_survives_each_input_reader(
+        tmp_path: Path, version: int, reader: str
+    ) -> None:
+        run_id, path, raw = _project(tmp_path, version)
+    
+        with pytest.raises(UserError) as failure:
+            if reader == "run-id":
+                read_run(tmp_path, run_id)
+            else:
+                load_input(str(path if reader == "diff-json" else path.parent), tmp_path)
+    
+        message = str(failure.value)
+>       assert f"newer schema_version {version}" in message
+E       AssertionError: assert 'newer schema_version 3' in 'cannot load diff input or its snapshots; inspect run.json/reprollm.lock and adjacent documents (schema_version 1)'
+
+tests/unit/run/test_codec.py:92: AssertionError
+___ test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record[2] ___
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_listing_keeps_future_run_0')
+version = 2
+
+    @pytest.mark.parametrize("version", [2, 3])
+    def test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record(
+        tmp_path: Path, version: int
+    ) -> None:
+        _, future_path, future_raw = _project(tmp_path, version)
+        legacy_id = "20261014T000000Z-000000"
+        legacy = future_path.parent.parent / legacy_id
+        legacy.mkdir()
+        legacy_raw = json.dumps(
+            {
+                "schema_version": 1,
+                "reprollm_version": "0.6.1",
+                "run_id": legacy_id,
+                "status": "completed",
+                "exit_code": 0,
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        (legacy / "run.json").write_text(legacy_raw, encoding="utf-8")
+    
+        records, warnings = list_runs(tmp_path)
+    
+        assert [record.run_id for record in records] == [legacy_id]
+        assert len(warnings) == 1
+>       assert f"newer schema_version {version}" in warnings[0]
+E       AssertionError: assert 'newer schema_version 2' in 'cannot read .reprollm/runs/20261014T000000Z-000001/run.json (ValidationError); inspect run.json'
+
+tests/unit/run/test_codec.py:123: AssertionError
+___ test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record[3] ___
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-436/test_listing_keeps_future_run_1')
+version = 3
+
+    @pytest.mark.parametrize("version", [2, 3])
+    def test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record(
+        tmp_path: Path, version: int
+    ) -> None:
+        _, future_path, future_raw = _project(tmp_path, version)
+        legacy_id = "20261014T000000Z-000000"
+        legacy = future_path.parent.parent / legacy_id
+        legacy.mkdir()
+        legacy_raw = json.dumps(
+            {
+                "schema_version": 1,
+                "reprollm_version": "0.6.1",
+                "run_id": legacy_id,
+                "status": "completed",
+                "exit_code": 0,
+                "command": {"argv": ["python", "child.py"], "cwd": "."},
+            }
+        )
+        (legacy / "run.json").write_text(legacy_raw, encoding="utf-8")
+    
+        records, warnings = list_runs(tmp_path)
+    
+        assert [record.run_id for record in records] == [legacy_id]
+        assert len(warnings) == 1
+>       assert f"newer schema_version {version}" in warnings[0]
+E       AssertionError: assert 'newer schema_version 3' in 'cannot read .reprollm/runs/20261014T000000Z-000001/run.json (ValidationError); inspect run.json'
+
+tests/unit/run/test_codec.py:123: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[run-id-2]
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[run-id-3]
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[diff-json-2]
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[diff-json-3]
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[diff-folder-2]
+FAILED tests/unit/run/test_codec.py::test_future_version_guidance_survives_each_input_reader[diff-folder-3]
+FAILED tests/unit/run/test_codec.py::test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record[2]
+FAILED tests/unit/run/test_codec.py::test_listing_keeps_future_run_upgrade_warning_and_valid_legacy_record[3]
+8 failed, 9 passed in 4.02s

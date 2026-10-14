@@ -1,0 +1,15 @@
+# R04-B 输入协调器接口准备
+
+PREPARED：只读设计，未改产品，等待 R04-A commit 后主代理授权 B source。
+
+`capture_inputs` / `recheck_inputs` 按主代理signature mutaterecord。建议额外可选 `document_data` 接受 wrapper已解析manifest原字节；否则manifest被load一次后又read一次，无法证明声明模型与记录docref同一baseline。lock未预解析可由coordinator读一次。项目rules仅用来冻结declared/bindings，未经规范不新增origin。
+
+`hash_and_snapshot` 新on_read回调在_read_file完成后、sanitize/write前调用，携带FileRef、rawSHA、size与bounded原bytes。新增每path `capture_limits` 映射，只有配置路径获得2MiB buffer；普通文件只有现snapshotbuffer。真正snapshoteligibility另判snapshot/forbidden/size<=max_bytes/UTF8/noNUL；不能因为配置缓存大了而生成1.5MiB快照，或--no-snapshot/201文件时仍写copy。
+
+全configmap先设None，successcallback填原bytes，overlimit/forbidden/readfail留None。root observe传入该map后不得fallback reread；如果samepath有多binding，只解析同一原buffer，任意改写或安全copy不同字节不影响基线value。原hash指向原字节，copy失败也应保留已经知道的hash，而不是把前后字节混用。
+
+InputCheck availability按批准present/missing/unavailable：missing必须安全路径确实不存在；unsafe/outside/loop/nonregular/unreadable/失败read为unavailable。每pathsorteddedup，docorigin覆盖同path的check身份，普通文件保留declared>binding>argv。before保存成功原hash/size，after在启动前一律unavailable/unknown；post只复查冻结paths，不新扫目录、不把新argv文件加入pre集合。after-onlydeclared/lock可以created，但pre refs/bindings仍为空。
+
+文档copies始终沿用既有单独policy，--no-snapshot只关闭filecopies。output、recorder环境/hardware等仍由root post_collect。root创建schema2 running/minimal记录时input_capture不能为空；beforecapture失败可以partialcheck+warning但不能改已完成childexit或写unsafefallback。
+
+先做IC01一个publiccoordinator真实tempfile0.1→0.9 RED/GREEN，再加single-open原buffer控制和copy故障、2MiB与1MiB边界、201哈希、删/建/外部alias安全矩阵。真实stdlibchild+exit7/outputs/minimalfallback属于root wrapperintegration；我会提供coordinator入口与literalasserts，不修改wrapper/bindings/schema。完整9组验收设计与签名见input-capture-interface.json，均未执行。

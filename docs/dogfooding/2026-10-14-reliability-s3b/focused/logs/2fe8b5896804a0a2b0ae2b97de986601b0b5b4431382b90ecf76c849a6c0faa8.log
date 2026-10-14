@@ -1,0 +1,24 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_unknown_environment_producer_does_not_pass_as_recorder_match _______
+
+tmp_path = PosixPath('<SESSION>/r04a-consumers/pytest-unknown-red/test_unknown_environment_produ0')
+
+    def test_unknown_environment_producer_does_not_pass_as_recorder_match(tmp_path: Path) -> None:
+        lock = lock_record(environment=environment({}, runtime=False))
+        run = run_record(
+            reprollm_version="99.0.0",
+            environment=environment({}, runtime=True),
+        )
+        ctx = AuditContext(tmp_path, level=2, lock=lock, runs=[run])
+        rule = EnvVsLockRule()
+    
+>       assert not rule.applies(ctx)
+E       assert not True
+E        +  where True = applies(<reprollm.core.context.AuditContext object at 0x7f1463dcdee0>)
+E        +    where applies = <reprollm.rules.consistency.EnvVsLockRule object at 0x7f1462005340>.applies
+
+tests/unit/rules/test_runtime_consistency.py:246: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_runtime_consistency.py::test_unknown_environment_producer_does_not_pass_as_recorder_match
+1 failed in 0.36s

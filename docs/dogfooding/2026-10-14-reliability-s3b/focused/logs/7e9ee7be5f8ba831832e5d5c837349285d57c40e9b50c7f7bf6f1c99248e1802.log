@@ -1,0 +1,97 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_child_venv_metadata_does_not_become_verified_recorder_evidence ______
+
+tmp_path = PosixPath('<SESSION>/pytest-r04a-red/test_child_venv_metadata_does_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f33230e56a0>
+stub_run_cmd = CmdStub(calls=[], _rules=[(('git',), CmdResult(returncode=128, stdout='', stderr='')), (('nvidia-smi',), CmdResult(returncode=1, stdout='', stderr=''))])
+
+    def test_child_venv_metadata_does_not_become_verified_recorder_evidence(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        stub_run_cmd: CmdStub,
+    ) -> None:
+        child_env = tmp_path / "child-env"
+        venv.EnvBuilder(with_pip=False, symlinks=os.name != "nt").create(child_env)
+        if os.name == "nt":
+            child_python = child_env / "Scripts" / "python.exe"
+            site_packages = child_env / "Lib" / "site-packages"
+        else:
+            child_python = child_env / "bin" / "python"
+            site_packages = child_env / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}"
+            site_packages /= "site-packages"
+        dist_info = site_packages / "torch-0.0.123.dist-info"
+        dist_info.mkdir(parents=True)
+        (dist_info / "METADATA").write_bytes(
+            b"Metadata-Version: 2.1\nName: torch\nVersion: 0.0.123\n"
+        )
+    
+        root = tmp_path / "project"
+        root.mkdir()
+        (root / "reprollm.yaml").write_bytes(
+            b"schema_version: 1\nproject: {name: recorder-env}\nexperiment: {profiles: [core]}\n"
+        )
+        real_version = importlib.metadata.version
+        recorder_packages = {distribution_name(name) for name in LLM_CRITICAL_PACKAGES}
+    
+        def empty_recorder_metadata(name: str) -> str:
+            if name in recorder_packages:
+                raise importlib.metadata.PackageNotFoundError(name)
+            return real_version(name)
+    
+        monkeypatch.setattr(importlib.metadata, "version", empty_recorder_metadata)
+        stub_run_cmd.on("git", returncode=128)
+        stub_run_cmd.on("nvidia-smi", returncode=1)
+        child_code = (
+            "import importlib.metadata,importlib.util,json,pathlib; "
+            "pathlib.Path('witness.json').write_text(json.dumps({"
+            "'schema_version':1,'torch':importlib.metadata.version('torch'),"
+            "'torch_importable':importlib.util.find_spec('torch') is not None"
+            "}),encoding='utf-8')"
+        )
+        run_dir = create_run_dir(root)
+>       record = execute(
+            [str(child_python), "-c", child_code],
+            root=root,
+            cwd=root,
+            run_dir=run_dir,
+            capture_output=False,
+            env_capture="allowlist",
+            extra_allowlist=[],
+            snapshot=True,
+        )
+
+tests/unit/run/test_environment_evidence.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/reprollm/run/wrapper.py:336: in execute
+    manifest, project_rules = _safe_load(root)
+                              ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('<SESSION>/pytest-r04a-red/test_child_venv_metadata_does_0/project')
+
+    def _safe_load(root: Path) -> tuple[Manifest | None, ProjectRules | None]:
+        manifest = None
+        rules = None
+        for name in (MANIFEST, PROJECT_RULES):
+            path = root / name
+            if not path.exists() and not path.is_symlink():
+                continue
+            resolved = resolve_project_file(root, name)
+            if resolved is None:
+                raise UserError(f"{name} must be a readable file inside the repository")
+            try:
+                if name == MANIFEST:
+                    manifest = load_manifest(resolved)
+                else:
+                    rules = ProjectRules.model_validate(load_yaml(resolved))
+            except (UserError, ValueError) as exc:
+>               raise UserError(
+                    f"cannot load {name} ({type(exc).__name__}); validate its contents"
+                ) from None
+E               reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+
+src/reprollm/run/wrapper.py:125: UserError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_environment_evidence.py::test_child_venv_metadata_does_not_become_verified_recorder_evidence
+1 failed in 0.23s

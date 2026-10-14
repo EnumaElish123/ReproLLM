@@ -1,0 +1,20 @@
+import sys,os,importlib.abc
+from pathlib import Path
+class NoHeavy(importlib.abc.MetaPathFinder):
+ def find_spec(self,fullname,path=None,target=None):
+  if fullname.split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('heavy import forbidden')
+sys.meta_path.insert(0,NoHeavy())
+def prohibit(event,args):
+ if event in {'socket.connect','socket.connect_ex'}:raise RuntimeError('network forbidden')
+sys.addaudithook(prohibit)
+sys.path.insert(0,os.environ['COMPAT_CANDIDATE']+'/src')
+import reprollm
+assert Path(reprollm.__file__).resolve()==Path(os.environ['COMPAT_CANDIDATE'])/'src/reprollm/__init__.py'
+assert reprollm.__version__=='0.7.0'
+if sys.argv[1:] == ['--compat-origin']:
+ import hashlib,importlib.metadata,json
+ p=Path(reprollm.__file__).resolve()
+ print(json.dumps({'schema_version':1,'version':reprollm.__version__,'distribution_version':importlib.metadata.version('reprollm'),'origin':str(p),'origin_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'executable':sys.executable},sort_keys=True))
+else:
+ from reprollm.cli.main import cli
+ cli()

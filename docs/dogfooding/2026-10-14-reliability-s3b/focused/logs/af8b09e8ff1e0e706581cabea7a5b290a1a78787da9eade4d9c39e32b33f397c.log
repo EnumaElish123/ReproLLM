@@ -1,0 +1,39 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_changed_recorder_packages_keep_severity_and_report_capture_scope _____
+
+    def test_changed_recorder_packages_keep_severity_and_report_capture_scope() -> None:
+        before = State.from_flat(
+            {
+                "environment.packages.torch": Leaf(
+                    value="2.5.1",
+                    source="lock",
+                    confidence="declared",
+                    context=EvidenceContext(subject="recorder", phase="lock_resolution"),
+                )
+            }
+        )
+        after = State.from_flat(
+            {
+                "environment.packages.torch": Leaf(
+                    value="2.6.0",
+                    source="run",
+                    confidence="observed",
+                    context=EvidenceContext(subject="recorder", phase="post_child"),
+                )
+            }
+        )
+        report = diff_states(before, after, SeverityResolver())
+        assert len(report.changes) == 1
+        assert report.changes[0].severity == "MEDIUM_HIGH"
+>       assert report.changes[0].note == (
+            "a: recorder/lock_resolution; child unverified; "
+            "b: recorder/post_child; child unverified"
+        )
+E       AssertionError: assert None == 'a: recorder/lock_resolution; child unverified; b: recorder/post_child; child unverified'
+E        +  where None = DiffChange(path='environment.packages.torch', status='changed', a='2.5.1', b='2.6.0', severity='MEDIUM_HIGH', note=None).note
+
+tests/unit/diff/test_diff_evidence_notes.py:34: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/diff/test_diff_evidence_notes.py::test_changed_recorder_packages_keep_severity_and_report_capture_scope
+1 failed in 0.23s

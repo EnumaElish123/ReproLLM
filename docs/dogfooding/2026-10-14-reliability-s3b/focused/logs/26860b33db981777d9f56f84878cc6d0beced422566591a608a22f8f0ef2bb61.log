@@ -1,0 +1,310 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[1-0.6.2-recorder/post_child-host/post_child-inherited_environment/pre_child-unknown] _
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-460/test_runs_show_scopes_environm0')
+schema_version = 1, producer = '0.6.2', python_scope = 'recorder/post_child'
+host_scope = 'host/post_child', env_scope = 'inherited_environment/pre_child'
+input_phase = 'unknown'
+
+    @pytest.mark.parametrize(
+        ("schema_version", "producer", "python_scope", "host_scope", "env_scope", "input_phase"),
+        [
+            (
+                1,
+                "0.6.2",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "unknown",
+            ),
+            (
+                2,
+                "0.7.0",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "pre_child",
+            ),
+            (2, "custom-writer", "unknown/unknown", "unknown/unknown", "unknown/unknown", "pre_child"),
+        ],
+    )
+    def test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json(
+        tmp_path: Path,
+        schema_version: int,
+        producer: str,
+        python_scope: str,
+        host_scope: str,
+        env_scope: str,
+        input_phase: str,
+    ) -> None:
+        manifest(tmp_path)
+        data = {
+            "schema_version": schema_version,
+            "reprollm_version": producer,
+            "run_id": "20261014T000000Z-000001",
+            "status": "completed",
+            "exit_code": 0,
+            "command": {"argv": ["python", "child.py"], "cwd": "."},
+            "environment": {
+                "os": "fixture",
+                "platform": "linux",
+                "python": "3.11.9",
+                "hostname_sha256": "sha256:" + "a" * 64,
+                "packages": {"torch": "2.6.0"},
+                "env": {"OMP_NUM_THREADS": "2"},
+            },
+            "hardware": {"cpu_count": 2, "source": "nvidia_smi"},
+            "bindings_observed": {
+                "generation.temperature": [
+                    {
+                        "value": 0.1,
+                        "source": {"type": "config", "path": "config.json", "key": "temperature"},
+                    }
+                ],
+            },
+        }
+        if schema_version == 2:
+            data["input_capture"] = {
+                "baseline_phase": "pre_child",
+                "check_phase": "post_child",
+                "consumption": "unverified",
+                "checks": [
+                    {
+                        "path": "config.json",
+                        "origin": "declared",
+                        "before": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "1" * 64,
+                            "size_bytes": 21,
+                        },
+                        "after": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "2" * 64,
+                            "size_bytes": 21,
+                        },
+                        "change": "changed",
+                    }
+                ],
+            }
+        parsed = RunRecord.model_validate(data)
+        folder = tmp_path / ".reprollm/runs" / parsed.run_id
+        folder.mkdir(parents=True)
+        raw = parsed.model_dump_json(indent=2) + "\n"
+        saved = folder / "run.json"
+        saved.write_text(raw, encoding="utf-8", newline="")
+    
+        result = runner.invoke(app, ["runs", "show", parsed.run_id])
+        assert result.exit_code == 0, result.output
+>       assert f"Python 3.11.9 ({python_scope}; child unverified)" in result.stdout
+E       AssertionError: assert 'Python 3.11.9 (recorder/post_child; child unverified)' in 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n'
+E        +  where 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n' = <Result okay>.stdout
+
+<CANDIDATE>/tests/unit/cli/test_run.py:281: AssertionError
+_ test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[2-0.7.0-recorder/post_child-host/post_child-inherited_environment/pre_child-pre_child] _
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-460/test_runs_show_scopes_environm1')
+schema_version = 2, producer = '0.7.0', python_scope = 'recorder/post_child'
+host_scope = 'host/post_child', env_scope = 'inherited_environment/pre_child'
+input_phase = 'pre_child'
+
+    @pytest.mark.parametrize(
+        ("schema_version", "producer", "python_scope", "host_scope", "env_scope", "input_phase"),
+        [
+            (
+                1,
+                "0.6.2",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "unknown",
+            ),
+            (
+                2,
+                "0.7.0",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "pre_child",
+            ),
+            (2, "custom-writer", "unknown/unknown", "unknown/unknown", "unknown/unknown", "pre_child"),
+        ],
+    )
+    def test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json(
+        tmp_path: Path,
+        schema_version: int,
+        producer: str,
+        python_scope: str,
+        host_scope: str,
+        env_scope: str,
+        input_phase: str,
+    ) -> None:
+        manifest(tmp_path)
+        data = {
+            "schema_version": schema_version,
+            "reprollm_version": producer,
+            "run_id": "20261014T000000Z-000001",
+            "status": "completed",
+            "exit_code": 0,
+            "command": {"argv": ["python", "child.py"], "cwd": "."},
+            "environment": {
+                "os": "fixture",
+                "platform": "linux",
+                "python": "3.11.9",
+                "hostname_sha256": "sha256:" + "a" * 64,
+                "packages": {"torch": "2.6.0"},
+                "env": {"OMP_NUM_THREADS": "2"},
+            },
+            "hardware": {"cpu_count": 2, "source": "nvidia_smi"},
+            "bindings_observed": {
+                "generation.temperature": [
+                    {
+                        "value": 0.1,
+                        "source": {"type": "config", "path": "config.json", "key": "temperature"},
+                    }
+                ],
+            },
+        }
+        if schema_version == 2:
+            data["input_capture"] = {
+                "baseline_phase": "pre_child",
+                "check_phase": "post_child",
+                "consumption": "unverified",
+                "checks": [
+                    {
+                        "path": "config.json",
+                        "origin": "declared",
+                        "before": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "1" * 64,
+                            "size_bytes": 21,
+                        },
+                        "after": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "2" * 64,
+                            "size_bytes": 21,
+                        },
+                        "change": "changed",
+                    }
+                ],
+            }
+        parsed = RunRecord.model_validate(data)
+        folder = tmp_path / ".reprollm/runs" / parsed.run_id
+        folder.mkdir(parents=True)
+        raw = parsed.model_dump_json(indent=2) + "\n"
+        saved = folder / "run.json"
+        saved.write_text(raw, encoding="utf-8", newline="")
+    
+        result = runner.invoke(app, ["runs", "show", parsed.run_id])
+        assert result.exit_code == 0, result.output
+>       assert f"Python 3.11.9 ({python_scope}; child unverified)" in result.stdout
+E       AssertionError: assert 'Python 3.11.9 (recorder/post_child; child unverified)' in 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n'
+E        +  where 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n' = <Result okay>.stdout
+
+<CANDIDATE>/tests/unit/cli/test_run.py:281: AssertionError
+_ test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[2-custom-writer-unknown/unknown-unknown/unknown-unknown/unknown-pre_child] _
+
+tmp_path = PosixPath('<PYTEST_STORAGE>/pytest-460/test_runs_show_scopes_environm2')
+schema_version = 2, producer = 'custom-writer', python_scope = 'unknown/unknown'
+host_scope = 'unknown/unknown', env_scope = 'unknown/unknown'
+input_phase = 'pre_child'
+
+    @pytest.mark.parametrize(
+        ("schema_version", "producer", "python_scope", "host_scope", "env_scope", "input_phase"),
+        [
+            (
+                1,
+                "0.6.2",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "unknown",
+            ),
+            (
+                2,
+                "0.7.0",
+                "recorder/post_child",
+                "host/post_child",
+                "inherited_environment/pre_child",
+                "pre_child",
+            ),
+            (2, "custom-writer", "unknown/unknown", "unknown/unknown", "unknown/unknown", "pre_child"),
+        ],
+    )
+    def test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json(
+        tmp_path: Path,
+        schema_version: int,
+        producer: str,
+        python_scope: str,
+        host_scope: str,
+        env_scope: str,
+        input_phase: str,
+    ) -> None:
+        manifest(tmp_path)
+        data = {
+            "schema_version": schema_version,
+            "reprollm_version": producer,
+            "run_id": "20261014T000000Z-000001",
+            "status": "completed",
+            "exit_code": 0,
+            "command": {"argv": ["python", "child.py"], "cwd": "."},
+            "environment": {
+                "os": "fixture",
+                "platform": "linux",
+                "python": "3.11.9",
+                "hostname_sha256": "sha256:" + "a" * 64,
+                "packages": {"torch": "2.6.0"},
+                "env": {"OMP_NUM_THREADS": "2"},
+            },
+            "hardware": {"cpu_count": 2, "source": "nvidia_smi"},
+            "bindings_observed": {
+                "generation.temperature": [
+                    {
+                        "value": 0.1,
+                        "source": {"type": "config", "path": "config.json", "key": "temperature"},
+                    }
+                ],
+            },
+        }
+        if schema_version == 2:
+            data["input_capture"] = {
+                "baseline_phase": "pre_child",
+                "check_phase": "post_child",
+                "consumption": "unverified",
+                "checks": [
+                    {
+                        "path": "config.json",
+                        "origin": "declared",
+                        "before": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "1" * 64,
+                            "size_bytes": 21,
+                        },
+                        "after": {
+                            "availability": "present",
+                            "sha256": "sha256:" + "2" * 64,
+                            "size_bytes": 21,
+                        },
+                        "change": "changed",
+                    }
+                ],
+            }
+        parsed = RunRecord.model_validate(data)
+        folder = tmp_path / ".reprollm/runs" / parsed.run_id
+        folder.mkdir(parents=True)
+        raw = parsed.model_dump_json(indent=2) + "\n"
+        saved = folder / "run.json"
+        saved.write_text(raw, encoding="utf-8", newline="")
+    
+        result = runner.invoke(app, ["runs", "show", parsed.run_id])
+        assert result.exit_code == 0, result.output
+>       assert f"Python 3.11.9 ({python_scope}; child unverified)" in result.stdout
+E       AssertionError: assert 'Python 3.11.9 (unknown/unknown; child unverified)' in 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n'
+E        +  where 'Run 20261014T000000Z-000001\nStatus: completed; exit 0; 0.0 s\nCommand: python child.py\nWorking directory: .\nCode: ...1.9\n  torch: 2.6.0\nGPU source: nvidia_smi\nBinding: generation.temperature · config(config.json:temperature) = 0.1\n' = <Result okay>.stdout
+
+<CANDIDATE>/tests/unit/cli/test_run.py:281: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_run.py::test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[1-0.6.2-recorder/post_child-host/post_child-inherited_environment/pre_child-unknown]
+FAILED tests/unit/cli/test_run.py::test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[2-0.7.0-recorder/post_child-host/post_child-inherited_environment/pre_child-pre_child]
+FAILED tests/unit/cli/test_run.py::test_runs_show_scopes_environment_and_typed_input_checks_without_rewriting_json[2-custom-writer-unknown/unknown-unknown/unknown-unknown/unknown-pre_child]
+3 failed, 9 deselected in 0.55s

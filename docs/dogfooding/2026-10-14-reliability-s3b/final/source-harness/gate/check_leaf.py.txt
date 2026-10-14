@@ -1,0 +1,331 @@
+"""Independent complete oracle for the controlled offline S3-B experiment.
+
+Expected values come from fixed input bytes, an independently collected recorder/
+host metadata snapshot, and source-reviewed rule/template contracts. No product
+function creates expected values; actual output is never promoted to gold.
+"""
+from __future__ import annotations
+import copy,hashlib,html,json,math,re,shlex
+from datetime import datetime,timezone
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+import jinja2
+import jsonschema
+import yaml
+
+HERE=Path(__file__).resolve().parent
+ORACLE=HERE/'oracle-analysis/qualified-consumer-oracle-final.json'
+ORACLE_SHA='b75ca1750b3cd3c225ffcfed48f7be7c3fc889a3f5a4dbd7efc5591a16775ff6'
+SEVERITIES=['NONE','LOW','MEDIUM','MEDIUM_HIGH','HIGH']
+SECTIONS=['models','datasets','prompts','files','generation','inference','training','evaluation','privacy','custom','code','environment','hardware','command','execution']
+STATE_BRANCHES=['code','environment','hardware','models','datasets','prompts','files','generation','inference','training','evaluation','privacy','execution','custom','command']
+EXPECTED_ENV_PREFIXES=('OMP_','HF_HUB_OFFLINE','TRANSFORMERS_','PYTHON','LANG','LC_','TZ','PATH')
+GENERATION={key:(0.1 if key=='temperature' else None) for key in ['temperature','top_p','top_k','max_tokens','seed','do_sample','stop','repetition_penalty','n']}
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+fingerprint=lambda raw:{'availability':'present','sha256':'sha256:'+sha(raw),'size_bytes':len(raw)}
+
+
+def load(raw):
+    def unique(pairs):
+        result={}
+        for key,value in pairs:
+            if key in result:raise ValueError('duplicateJSONkey')
+            result[key]=value
+        return result
+    def finite(s):raise ValueError('nonfiniteJSON')
+    return json.loads(raw.decode('utf-8','strict'),object_pairs_hook=unique,parse_constant=finite)
+
+
+def equal(a,b):
+    if type(a) is not type(b):return False
+    if isinstance(a,dict):return a.keys()==b.keys() and all(equal(a[k],b[k]) for k in a)
+    if isinstance(a,list):return len(a)==len(b) and all(equal(x,y) for x,y in zip(a,b))
+    return a==b
+
+
+def phase(subject,when):return {'subject':subject,'phase':when,'verification':'unverified'}
+
+def leaf(value,source='run',detail=None,context=None):
+    return {'value':value,'source':source,'detail':detail,'confidence':'observed' if source=='run' else 'declared','context':context,'alternatives':[]}
+
+def context(path):
+    if path=='environment.python' or path.startswith('environment.packages.'):return phase('recorder','post_child')
+    if path=='environment.env_capture' or path.startswith('environment.env.'):return phase('inherited_environment','pre_child')
+    if path=='environment.hostname_sha256':return phase('host','pre_child')
+    if path.startswith(('environment.','hardware.')):return phase('host','post_child')
+    return phase('recorder','pre_child')
+
+
+def flatten_values(data,prefix=''):
+    result={}
+    if isinstance(data,dict):
+        for key,value in sorted(data.items()):result.update(flatten_values(value,prefix+'.'+key if prefix else key))
+    elif data is not None:result[prefix]=data
+    return result
+
+
+def expected_state(f,which):
+    """Case-specific uncached projection, including all evidence alternatives."""
+    record=f['run_records'][which];locked=f['validated_lock'];groups={}
+    def add(path,item):
+        if item['source'] in {'manifest','lock'} and item['context'] is None:item['context']=phase('input_file','pre_child')
+        groups.setdefault(path,[]).append(item)
+    for path,value in {'generation.temperature':0.1,'execution.command':'python r04-child.py --config r04-config.json','execution.cwd':'.','execution.seed':17,'execution.config_files':['r04-config.json']}.items():add(path,leaf(value,'manifest'))
+    add('generation.temperature',leaf(0.1,'lock'))
+    env=locked['environment']
+    lock_values=flatten_values({key:env[key] for key in ('python','platform','packages')},'environment')
+    lock_values.update(flatten_values(env['gpu'],'hardware'))
+    for path,value in lock_values.items():
+        subject='recorder' if path=='environment.python' or path.startswith('environment.packages.') else 'host'
+        add(path,leaf(value,'lock',context=phase(subject,'lock_resolution')))
+    for file in locked['files']:add('files.'+file['path']+'.sha256',leaf(file['sha256'],'lock'))
+    for section in ['code','environment','command','run_id','started_at','ended_at','duration_seconds']:
+        for path,value in flatten_values(record[section],section).items():
+            add(path,leaf(value,context=context(path) if path.startswith(('environment.','command.')) else None))
+    hardware={key:value for key,value in record['hardware'].items() if key!='gpus'}
+    hardware['gpus']={str(gpu['index']):gpu for gpu in record['hardware']['gpus']}
+    for path,value in flatten_values(hardware,'hardware').items():add(path,leaf(value,context=context(path)))
+    for file in record['files']:add('files.'+file['path']+'.sha256',leaf(file['sha256'],context=phase('input_file','pre_child')))
+    value=0.2 if which=='A' else 0.1
+    primary=leaf(value,detail='cli:--temperature' if which=='A' else 'config:r04-config.json:temperature',context=phase('recorder' if which=='A' else 'input_file','pre_child'))
+    if which=='A':primary['alternatives']=[leaf(0.1,detail='cli:--temperature',context=phase('recorder','pre_child')),leaf(0.1,detail='config:r04-config.json:temperature',context=phase('input_file','pre_child'))]
+    add('generation.temperature',primary)
+    def rank(x):return {'cli':9,'config':8,'env':7}.get((x['detail'] or '').split(':')[0],6) if x['source']=='run' else {'working_tree':5,'lock':4,'manifest':3,'default':1}[x['source']]
+    def order(x):return (-rank(x),x['detail'] or '',json.dumps(x['value'],sort_keys=True,ensure_ascii=False))
+    flat={}
+    for path,items in sorted(groups.items()):
+        chosen=min(items,key=order);other=[]
+        for item in items:
+            if item is not chosen:other.append({**item,'alternatives':[]})
+            other.extend(item['alternatives'])
+        flat[path]={**chosen,'alternatives':sorted(other,key=order)}
+    state={key:{} for key in STATE_BRANCHES}
+    state.update({key:None for key in ['run_id','started_at','ended_at','duration_seconds']},profiles=['validation'])
+    for path,item in flat.items():
+        parts=['files',path[6:-7],'sha256'] if path.startswith('files.') and path.endswith('.sha256') else path.split('.')
+        branch=state
+        for part in parts[:-1]:branch=branch.setdefault(part,{})
+        branch[parts[-1]]=item
+    return {'schema_version':1,'state':state,'flat':flat,'roundtrip_equal':True,'overlap_merge_equal':True}
+
+
+def full_diff(f,which_a='A',which_b='B'):
+    left=expected_state(f,which_a)['flat'];right=expected_state(f,which_b)['flat'];changes=[];same=0
+    for path in sorted(left.keys()|right.keys()):
+        before,after=left.get(path),right.get(path)
+        if before and after and before['value']==after['value']:same+=1;continue
+        a=before['value'] if before else None;b=after['value'] if after else None
+        severity='HIGH' if path=='generation.temperature' else 'NONE' if path in {'run_id','started_at','ended_at','duration_seconds','environment.hostname_sha256'} else 'MEDIUM'
+        notes=[]
+        for side,item in [('a',before),('b',after)]:
+            if item is None:continue
+            if any(other['value']!=item['value'] for other in item['alternatives']):notes.append(side+' has inconsistent sources (see audit)')
+            if item['context']:
+                c=item['context'];notes.append(f"{side}: {c['subject']}/{c['phase']}; child unverified")
+        changes.append({'path':path,'status':'added' if before is None else 'removed' if after is None else 'changed','a':a,'b':b,'severity':severity,'note':'; '.join(notes) or None})
+    def section(path):
+        head=path.split('.')[0];return (SECTIONS.index(head) if head in SECTIONS else len(SECTIONS),head)
+    changes.sort(key=lambda c:(-SEVERITIES.index(c['severity']),section(c['path']),c['path']))
+    counts={severity:sum(c['severity']==severity for c in changes) for severity in SEVERITIES}
+    highest=next((severity for severity in reversed(SEVERITIES) if counts[severity]),'NONE')
+    return {'schema_version':1,'reprollm_version':'0.7.0','a':{'kind':'run','ref':f['run_records'][which_a]['run_id']},'b':{'kind':'run','ref':f['run_records'][which_b]['run_id']},'changes':changes,'summary':{'counts':counts,'highest':highest,'same':same},'filtered_below':None}
+
+
+def diff_text(report):
+    lines=[f"a: run {report['a']['ref']}",f"b: run {report['b']['ref']}",'Child environment and input consumption are unverified.']
+    def value(v):
+        text=v if isinstance(v,str) else json.dumps(v,sort_keys=True,ensure_ascii=False)
+        text=text.replace('\n',r'\n').replace('\r',r'\r')
+        return re.sub(r'(?<![A-Za-z0-9])(?:sha256:)?[a-fA-F0-9]{40,64}(?![A-Za-z0-9])',lambda m:('sha256:' if m[0].startswith('sha256:') else '')+m[0].removeprefix('sha256:')[:12],text)
+    groups={}
+    for change in report['changes']:groups.setdefault(change['path'].split('.')[0],[]).append(change)
+    for section in sorted(groups,key=lambda s:(SECTIONS.index(s) if s in SECTIONS else len(SECTIONS),s)):
+        lines+=['',section]
+        for change in groups[section]:
+            lines.append(f"  {change['path']}  {value(change['a'])} → {value(change['b'])}  [{change['severity']}]")
+            if change['note']:lines.append('    '+change['note'])
+    severity=report['summary']['highest'];count=report['summary']['counts'][severity]
+    verdict=f'Highest drift: {severity} ({count} changes). These runs are not directly comparable.' if severity=='HIGH' else f'Highest drift: {severity} ({count} changes). Results may differ; review the changes above.' if severity in {'MEDIUM','MEDIUM_HIGH'} else 'No reproducibility-relevant drift in recorded values.'
+    return ('\n'.join(lines+['',verdict])+'\n').encode()
+
+
+def bind(document,values):
+    if isinstance(document,str):
+        for token,value in values.items():document=document.replace('${'+token+'}',value)
+        assert '${' not in document
+        return document
+    if isinstance(document,list):return [bind(item,values) for item in document]
+    if isinstance(document,dict):return {key:bind(item,values) for key,item in document.items()}
+    return document
+
+
+def audit_expected(name,which,f,timestamp):
+    raw=ORACLE.read_bytes();assert sha(raw)==ORACLE_SHA
+    template=load(raw)['complete_audit_templates'][name][which]
+    assert template['final_message_binding_pending'] is False
+    values={'FIXTURE.manifest_sha256':fingerprint(f['input_before']['reprollm.yaml'])['sha256'],
+            'FIXTURE.lock_sha256':fingerprint(f['input_before']['reprollm.lock'])['sha256'],
+            'AUDIT.generated_at':timestamp}
+    for case in f['run_records']:values[case+'.run_path']='.reprollm/runs/'+f['run_records'][case]['run_id']+'/run.json'
+    expected=bind(template['report_template'],values)
+    for finding in expected['findings']:
+        for package,version in f['metadata']['packages'].items():
+            finding['message']=finding['message'].replace(package+'==<version>',package+'=='+version)
+            finding['fix_hint']=finding['fix_hint'].replace(package+'==<version>',package+'=='+version)
+    return expected
+
+
+def timestamp_valid(value,result):
+    if not isinstance(value,str) or not re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ',value):return False
+    stamp=datetime.fromisoformat(value.replace('Z','+00:00')).timestamp()
+    return result['record']['started_epoch']-1<=stamp<=result['record']['ended_epoch']+1
+
+
+def check_leaf(name,label,result,f,auth):
+    checks=[]
+    def check(description,passed):checks.append({'name':description,'passed':bool(passed)})
+    check('exact_expected_exit',result['exit_code']==(1 if label in {'pair-json','pair-text'} else 0))
+    expected_stderr=b''
+    if name=='lm-evaluation-harness' and (label.startswith('L2-') or label.startswith('export-')):
+        expected_stderr=b'scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n'
+    check('full_exact_stderr',result['stderr']==expected_stderr)
+    if label=='lock-offline':
+        actual=yaml.safe_load((f['root']/'reprollm.lock').read_bytes())
+        check('lock_timestamp_bound',timestamp_valid(actual.get('generated_at'),result))
+        expected={'schema_version':1,'reprollm_version':'0.7.0','generated_at':actual['generated_at'],
+         'manifest_sha256':fingerprint(f['input_before']['reprollm.yaml'])['sha256'],'project_rules_sha256':None,
+         'resolution':{'mode':'offline'},'models':{},'datasets':{},'prompts':{},
+         'files':[{'path':'r04-config.json','sha256':fingerprint(f['input_before']['r04-config.json'])['sha256'],'size_bytes':len(f['input_before']['r04-config.json'])}],
+         'generation':GENERATION,'inference':None,'training':None,'evaluation':None,'privacy':None,
+         'environment':{'python':f['metadata']['python'],'platform':f['metadata']['platform'],'packages':f['metadata']['packages'],'gpu':f['metadata']['lock_gpu']}}
+        check('complete_lock_fields_equal',equal(actual,expected));f['validated_lock']=expected
+        check('complete_lock_stdout',result['stdout']==b'Wrote reprollm.lock\nResolved: 0 exact \xc2\xb7 0 declared \xc2\xb7 0 unresolved \xc2\xb7 0 unpinnable\n')
+    elif label in {'run-A','run-B'}:
+        case=label[-1];actual=f['run_records'][case];run_dir=f['artifacts'][label].parent
+        check('exact_run_schema2',type(actual.get('schema_version')) is int and actual['schema_version']==2)
+        schema=json.loads((f['candidate']/'schemas/run_record.schema.json').read_bytes())
+        try:jsonschema.validate(actual,schema);valid=True
+        except jsonschema.ValidationError:valid=False
+        check('complete_run_json_schema',valid)
+        check('started_timestamp_bound',timestamp_valid(actual.get('started_at'),result))
+        check('ended_timestamp_bound',timestamp_valid(actual.get('ended_at'),result))
+        check('nonnegative_bounded_monotonic_duration',type(actual.get('duration_seconds')) in {int,float} and math.isfinite(actual['duration_seconds']) and 0<=actual['duration_seconds']<=result['record']['elapsed_seconds'] and actual['ended_at']>=actual['started_at'])
+        check('run_id_is_bound_to_observer_created_directory',bool(re.fullmatch(r'\d{8}T\d{6}Z-[a-f0-9]{6}',actual['run_id'])) and actual['run_id']==run_dir.name)
+        witness=f['witnesses'][case];witness_raw=(json.dumps(witness,sort_keys=True)+'\n').encode()
+        argv=['python','r04-child.py','--config','r04-config.json']+(['--temperature','0.1','--temperature','0.2'] if case=='A' else ['--rewrite'])
+        origins={'r04-child.py':'argv','r04-config.json':'declared','reprollm.lock':'lock','reprollm.yaml':'manifest'}
+        input_checks=[]
+        for path,raw in sorted(f['input_before'].items()):
+            after=f['config_after'] if case=='B' and path=='r04-config.json' else raw
+            input_checks.append({'path':path,'origin':origins[path],'before':fingerprint(raw),'after':fingerprint(after),'change':'changed' if after!=raw else 'unchanged'})
+        environment={'os':f['metadata']['os'],'platform':f['metadata']['platform'],'python':f['metadata']['python'],
+         'hostname_sha256':f['metadata']['hostname_sha256'],'packages':f['metadata']['packages'],'env':f['metadata']['recorded_env'],'env_capture':'allowlist'}
+        bindings=[{'value':value,'source':{'type':'cli','key':'--temperature','path':None}} for value in ([0.1,0.2] if case=='A' else [])]
+        bindings.append({'value':0.1,'source':{'type':'config','key':'temperature','path':'r04-config.json'}})
+        expected={
+         'schema_version':2,'reprollm_version':'0.7.0','run_id':actual['run_id'],'name':'s3b-evidence-'+case,'status':'completed',
+         'started_at':actual['started_at'],'ended_at':actual['ended_at'],'duration_seconds':actual['duration_seconds'],'exit_code':0,
+         'command':{'argv':argv,'cwd':'.','redactions':0},
+         'code':{'commit':f['pin_commit'],'branch':'HEAD','dirty':False,'modified_count':0,'untracked_count':0,'remote':f['origin'],'patch_sha256':None,'patch_file':None},
+         'environment':environment,'hardware':f['metadata']['hardware'],'scheduler':None,
+         'manifest':{'path':'reprollm.yaml','sha256':fingerprint(f['input_before']['reprollm.yaml'])['sha256'],'snapshot':'manifest.yaml'},
+         'lock':{'path':'reprollm.lock','sha256':fingerprint(f['input_before']['reprollm.lock'])['sha256'],'snapshot':'lock.yaml'},
+         'files':[{'path':path,'origin':origins[path],'sha256':fingerprint(f['input_before'][path])['sha256'],'size_bytes':len(f['input_before'][path]),'snapshot':'files/'+sha(f['input_before'][path]),'redacted':False} for path in ['r04-child.py','r04-config.json']],
+         'bindings_observed':{'generation.temperature':bindings},
+         'artifacts':[{'path':'r04-consumed.json','sha256':'sha256:'+sha(witness_raw),'size_bytes':len(witness_raw)}],
+         'warnings':[],'input_capture':{'baseline_phase':'pre_child','check_phase':'post_child','consumption':'unverified','checks':input_checks}}
+        check('all_run_fields_equal_with_bound_dynamic_metadata',equal(actual,expected))
+        for path in ['r04-child.py','r04-config.json']:
+            check('snapshot_original_baseline_'+path,(run_dir/'files'/sha(f['input_before'][path])).read_bytes()==f['input_before'][path])
+        for source,target in [('reprollm.yaml','manifest.yaml'),('reprollm.lock','lock.yaml')]:check('document_baseline_'+source,(run_dir/target).read_bytes()==f['input_before'][source])
+        check('recorded_child_stdout_complete',(run_dir/'stdout.log').read_bytes()==witness_raw)
+        check('recorded_child_stderr_complete',(run_dir/'stderr.log').read_bytes()==b'')
+        stdout=witness_raw+f"Recorded run {actual['run_id']} (exit 0, {actual['duration_seconds']:.1f} s, 2 files hashed, {len(bindings)} bindings observed, 0 warnings) → .reprollm/runs/{actual['run_id']}\n".encode()
+        check('complete_run_stdout',result['stdout']==stdout)
+    elif label.startswith('state-'):
+        actual=load(result['stdout']);expected=expected_state(f,label[-1]);check('full_state_roundtrip_and_multiplicity',equal(actual,expected))
+    elif label in {'L2-A','L2-B'}:
+        actual=load(result['stdout']);check('audit_timestamp_bound',timestamp_valid(actual.get('generated_at'),result))
+        expected=audit_expected(name,label[-1],f,actual['generated_at']);check('complete_audit_findings_profiles_fields_equal',equal(actual,expected))
+        f.setdefault('expected_audits',{})[label[-1]]=expected
+    elif label in {'pair-json','self-json'}:
+        actual=load(result['stdout']);expected=full_diff(f,'B','B') if label=='self-json' else full_diff(f)
+        if label=='self-json':
+            reference='.reprollm/runs/'+f['run_records']['B']['run_id']+'/run.json'
+            expected['a']['ref']=reference;expected['b']['ref']=reference
+        check('complete_diff_json_all_changes_counts_same_paths_notes',equal(actual,expected))
+    elif label=='pair-text':check('complete_diff_text',result['stdout']==diff_text(full_diff(f)))
+    elif label=='runs-list':
+        expected=[{key:record[key] for key in ['run_id','started_at','status','exit_code','duration_seconds','name']}|{'dirty':False} for record in [f['run_records']['B'],f['run_records']['A']]]
+        check('complete_reader_list_json',equal(load(result['stdout']),expected))
+    elif label=='runs-show-B':check('complete_reader_show_text',result['stdout']==show_text(f['run_records']['B']))
+    elif label.startswith('export-'):
+        case=label.split('-')[1];venue=label.split('-')[2]
+        expected=expected_markdown(f,case,venue)
+        actual=f['artifacts'][label].read_bytes();check('complete_export_document_bytes_equal',actual==expected)
+        expected_stdout=f"Wrote {f['artifacts'][label]} (0 models, run {f['run_records'][case]['run_id']}) — commit this file with your paper artifact\n".encode()
+        check('complete_export_stdout',result['stdout']==expected_stdout)
+        check('baseline_consumption_unverified_explicit',b'Input consumption by the child is unverified.' in actual and b'Child Python and packages are unverified.' in actual)
+    else:raise ValueError('Unknown oracle leaf')
+    return {'schema_version':1,'complete_output_checked':True,'fields_or_bytes_covered':'All output fields/bytes; run dynamic metadata constrained independently and retained without stripping.',
+      'oracle_source':'Fixed20byte config/child/manifest literals, independently reviewed full rule oracle, recorder/host control and audited template literals; no current output gold.',
+      'oracle_sha256':ORACLE_SHA,'checks':checks}
+
+
+def show_text(record):
+    c=record['command'];e=record['environment'];h=record['hardware']
+    lines=[f"Run {record['run_id']} — {record['name']}",f"Status: completed; exit 0; {record['duration_seconds']:.1f} s",f"Command: {shlex.join(c['argv'])}",f"Working directory: {c['cwd']}",f"Code: {record['code']['commit']}; dirty=False",'Child environment and input consumption are unverified.',
+     f"Environment: {e['platform']} (host/post_child; child unverified); Python {e['python']} (recorder/post_child; child unverified)"]
+    for package,version in sorted(e['packages'].items()):lines.append(f'  {package}: {version} (recorder/post_child; child unverified)')
+    lines += ['Inherited environment: allowlist (inherited_environment/pre_child; child unverified)',f"GPU source: {h['source']} (host/post_child; child unverified)"]
+    for gpu in h['gpus']:lines.append(f"  {gpu['index']}: {gpu['name']}, {gpu['memory_mib']} MiB")
+    lines += ['Input baseline: input_file/pre_child; child unverified','Input recheck phase: post_child; child consumption unverified.']
+    for item in record['input_capture']['checks']:lines.append(f"Input check: {item['path']}; change {item['change']}; before {item['before']['availability']}; after {item['after']['availability']}")
+    for file in record['files']:lines.append(f"File: {file['path']} {file['sha256']} (input_file/pre_child; child unverified)")
+    lines.append('Binding: generation.temperature · config(r04-config.json:temperature) = 0.1 (input_file/pre_child; child unverified)')
+    return ('\n'.join(lines)+'\n').encode()
+
+
+class Code(str):pass
+
+def display(value):
+    if isinstance(value,Code):return str(value)
+    text=html.escape(str(value),quote=False)
+    for original,replacement in [('\\','\\\\'),('|','\\|'),('`','&#96;'),('[','&#91;'),(']','&#93;'),('*','&#42;'),('_','&#95;'),('~','&#126;'),('\r\n','<br>'),('\r','<br>'),('\n','<br>')]:text=text.replace(original,replacement)
+    return text
+
+def code(value):
+    text=str(value).replace('\n',' ').replace('\r',' ');assert '`' not in text
+    return Code('`'+text+'`')
+
+def expected_markdown(f,which,venue):
+    flat=expected_state(f,which)['flat'];record=f['run_records'][which]
+    sections={prefix:{path[len(prefix)+1:]:item['value'] for path,item in flat.items() if path.startswith(prefix+'.')} for prefix in ['generation','inference','training','evaluation','privacy','code','environment','hardware']}
+    scopes={}
+    for path,item in flat.items():
+        if not path.startswith(('environment.','hardware.')):continue
+        c=item['context'];subject={'recorder':'recorder interpreter','host':'recorder host','inherited_environment':'recorder inherited environment'}[c['subject']]
+        when={'post_child':'after child completion','pre_child':'before child launch','lock_resolution':'during lock resolution'}[c['phase']]
+        scopes[path]=subject+'; '+when
+    audit=f['expected_audits']['B'];limitations=[]
+    if f['validated_lock']['environment']['gpu']['source']=='unavailable':limitations.append('hardware: GPU information unavailable at lock time')
+    limitations += ['bindings: generation.temperature — runtime agreement is only checked when run records exist','Child Python and packages are unverified.','Input consumption by the child is unverified.']
+    data=SimpleNamespace(project_name='s3b-runtime-evidence',models=[],datasets=[],prompts=[],model_details=[],dataset_details=[],prompt_details=[],metrics=[],evaluation_details=[],judge_details=[],privacy_details=[],
+       **sections,environment_sources={p[12:]:v for p,v in scopes.items() if p.startswith('environment.')},hardware_sources={p[9:]:v for p,v in scopes.items() if p.startswith('hardware.')},
+       environment_evidence='recorder interpreter; after child completion',hardware_evidence='recorder host; after child completion',inherited_environment_evidence='recorder inherited environment; before child launch',
+       input_evidence='before child launch (input baseline)',input_checks=[{'path':x['path'],'before':x['before']['availability'],'before_sha256':x['before']['sha256'],'after':x['after']['availability'],'after_sha256':x['after']['sha256'],'change':x['change']} for x in record['input_capture']['checks']],
+       execution={'command':' '.join(record['command']['argv']),'run_id':record['run_id'],'started_at':datetime.fromisoformat(record['started_at'].replace('Z','+00:00')),'ended_at':datetime.fromisoformat(record['ended_at'].replace('Z','+00:00')),'duration_seconds':record['duration_seconds'],'exit_code':0,'status':'completed'},
+       limitations=limitations,audit_summary={k:audit['summary'][k] for k in ['critical','warning','info','pass']},audit_notable=[{'severity':item['severity'],'rule':item['rule_id'],'message':item['message']} for item in audit['findings'] if item['severity'] in {'CRITICAL','WARNING'}],
+       profiles=['validation'],reprollm_version='0.7.0',schema_versions={'manifest':1,'lock':1,'run_record':2},metrics_summary='not declared',adapter_summary='none',prompt_formats='not declared',has_judge=False,judge_model_ref='judge',judge_summary='unknown',has_privacy=False,has_run=lambda:True)
+    env=jinja2.Environment(undefined=jinja2.StrictUndefined,keep_trailing_newline=True,trim_blocks=True,lstrip_blocks=True,finalize=display)
+    env.filters['code']=code;env.filters['display']=lambda value:json.dumps(value,sort_keys=True,ensure_ascii=False) if isinstance(value,(dict,list)) else str(value)
+    templates=f['candidate']/'src/reprollm/export/templates'
+    inventory=load(ORACLE.read_bytes())['frozen_consumer_hashes']
+    for filename in ['REPRODUCIBILITY.md.j2','checklist_mapping.md.j2']:
+        rel='src/reprollm/export/templates/'+filename
+        wanted=inventory[rel]
+        assert sha((templates/filename).read_bytes())==wanted, 'Audited template bytes changed'
+    document=env.from_string((templates/'REPRODUCIBILITY.md.j2').read_text()).render(data=data).lstrip('\n')
+    if venue!='default':document+='\n'+env.from_string((templates/'checklist_mapping.md.j2').read_text()).render(data=data,venue=venue).lstrip('\n').rstrip('\n')+'\n'
+    return document.encode('utf-8')

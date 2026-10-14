@@ -1,0 +1,139 @@
+.F.F.F                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[generation-2] _
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-phase-green/test_binding_conflicts_identif1')
+category = 'generation', version = 2
+
+    @pytest.mark.parametrize("version", [1, 2])
+    @pytest.mark.parametrize("category", ["generation", "model", "custom"])
+    def test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim(
+        tmp_path: Path, category: str, version: int
+    ) -> None:
+        if category == "generation":
+            field, value = "generation.temperature", 0.9
+            declared = manifest(generation={"temperature": 0.1})
+            rule, accepted = GenerationParamsRule(), None
+        elif category == "model":
+            field, value = "models.primary.id", "changed-model"
+            declared = manifest(models={"primary": {"provider": "other", "id": "declared-model"}})
+            rule, accepted = ModelIdentityRule(), None
+        else:
+            field, value = "custom.privacy.alpha", 0.9
+            declared = manifest(custom={"privacy": {"alpha": 0.1}})
+            rule, accepted = CustomFieldsRule(), project_rules()
+        fields: dict[str, Any] = {
+            "schema_version": version,
+            "reprollm_version": "0.7.0" if version == 2 else "0.1.1",
+            "bindings_observed": {field: [observation(value, kind="config", key="value", path="config.json")]},
+        }
+        if version == 2:
+            fingerprint = {"availability": "present", "sha256": "sha256:" + "1" * 64, "size_bytes": 20}
+            fields["input_capture"] = {
+                "checks": [{"path": "config.json", "origin": "declared", "before": fingerprint,
+                            "after": fingerprint, "change": "unchanged"}]
+            }
+        ctx = AuditContext(tmp_path, level=2, manifest=declared, project_rules=accepted,
+                           runs=[run_record(**fields)])
+        found = rule.check(ctx)
+        assert len(found) == 1
+        assert found[0].severity == (Severity.WARNING if category == "custom" else Severity.CRITICAL)
+        expected_phase = "before child launch" if version == 2 else "unknown observation phase"
+>       assert expected_phase in found[0].message
+E       AssertionError: assert 'before child launch' in 'generation.temperature: manifest 0.1 · config(config.json:value) 0.9 (unknown observation phase; child consumption is unverified)'
+E        +  where 'generation.temperature: manifest 0.1 · config(config.json:value) 0.9 (unknown observation phase; child consumption is unverified)' = Finding(rule_id='consistency.generation_params', aliases=[], category='consistency', severity=<Severity.CRITICAL: 'CRI...prollm.yaml with the declared runtime bindings.', profile_origin=[], severity_origin='default', suppressed_reason=None).message
+
+tests/unit/rules/test_runtime_consistency.py:400: AssertionError
+_ test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[model-2] _
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-phase-green/test_binding_conflicts_identif3')
+category = 'model', version = 2
+
+    @pytest.mark.parametrize("version", [1, 2])
+    @pytest.mark.parametrize("category", ["generation", "model", "custom"])
+    def test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim(
+        tmp_path: Path, category: str, version: int
+    ) -> None:
+        if category == "generation":
+            field, value = "generation.temperature", 0.9
+            declared = manifest(generation={"temperature": 0.1})
+            rule, accepted = GenerationParamsRule(), None
+        elif category == "model":
+            field, value = "models.primary.id", "changed-model"
+            declared = manifest(models={"primary": {"provider": "other", "id": "declared-model"}})
+            rule, accepted = ModelIdentityRule(), None
+        else:
+            field, value = "custom.privacy.alpha", 0.9
+            declared = manifest(custom={"privacy": {"alpha": 0.1}})
+            rule, accepted = CustomFieldsRule(), project_rules()
+        fields: dict[str, Any] = {
+            "schema_version": version,
+            "reprollm_version": "0.7.0" if version == 2 else "0.1.1",
+            "bindings_observed": {field: [observation(value, kind="config", key="value", path="config.json")]},
+        }
+        if version == 2:
+            fingerprint = {"availability": "present", "sha256": "sha256:" + "1" * 64, "size_bytes": 20}
+            fields["input_capture"] = {
+                "checks": [{"path": "config.json", "origin": "declared", "before": fingerprint,
+                            "after": fingerprint, "change": "unchanged"}]
+            }
+        ctx = AuditContext(tmp_path, level=2, manifest=declared, project_rules=accepted,
+                           runs=[run_record(**fields)])
+        found = rule.check(ctx)
+        assert len(found) == 1
+        assert found[0].severity == (Severity.WARNING if category == "custom" else Severity.CRITICAL)
+        expected_phase = "before child launch" if version == 2 else "unknown observation phase"
+>       assert expected_phase in found[0].message
+E       assert 'before child launch' in 'models.primary.id: manifest "declared-model" · config(config.json:value) "changed-model" (unknown observation phase; child consumption is unverified)'
+E        +  where 'models.primary.id: manifest "declared-model" · config(config.json:value) "changed-model" (unknown observation phase; child consumption is unverified)' = Finding(rule_id='consistency.model_identity', aliases=[], category='consistency', severity=<Severity.CRITICAL: 'CRITIC...nd revision in reprollm.yaml and reprollm.lock.', profile_origin=[], severity_origin='default', suppressed_reason=None).message
+
+tests/unit/rules/test_runtime_consistency.py:400: AssertionError
+_ test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[custom-2] _
+
+tmp_path = PosixPath('<SESSION>/r04b-consumers/pytest-phase-green/test_binding_conflicts_identif5')
+category = 'custom', version = 2
+
+    @pytest.mark.parametrize("version", [1, 2])
+    @pytest.mark.parametrize("category", ["generation", "model", "custom"])
+    def test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim(
+        tmp_path: Path, category: str, version: int
+    ) -> None:
+        if category == "generation":
+            field, value = "generation.temperature", 0.9
+            declared = manifest(generation={"temperature": 0.1})
+            rule, accepted = GenerationParamsRule(), None
+        elif category == "model":
+            field, value = "models.primary.id", "changed-model"
+            declared = manifest(models={"primary": {"provider": "other", "id": "declared-model"}})
+            rule, accepted = ModelIdentityRule(), None
+        else:
+            field, value = "custom.privacy.alpha", 0.9
+            declared = manifest(custom={"privacy": {"alpha": 0.1}})
+            rule, accepted = CustomFieldsRule(), project_rules()
+        fields: dict[str, Any] = {
+            "schema_version": version,
+            "reprollm_version": "0.7.0" if version == 2 else "0.1.1",
+            "bindings_observed": {field: [observation(value, kind="config", key="value", path="config.json")]},
+        }
+        if version == 2:
+            fingerprint = {"availability": "present", "sha256": "sha256:" + "1" * 64, "size_bytes": 20}
+            fields["input_capture"] = {
+                "checks": [{"path": "config.json", "origin": "declared", "before": fingerprint,
+                            "after": fingerprint, "change": "unchanged"}]
+            }
+        ctx = AuditContext(tmp_path, level=2, manifest=declared, project_rules=accepted,
+                           runs=[run_record(**fields)])
+        found = rule.check(ctx)
+        assert len(found) == 1
+        assert found[0].severity == (Severity.WARNING if category == "custom" else Severity.CRITICAL)
+        expected_phase = "before child launch" if version == 2 else "unknown observation phase"
+>       assert expected_phase in found[0].message
+E       AssertionError: assert 'before child launch' in 'custom.privacy.alpha: manifest 0.1 · config(config.json:value) 0.9 (unknown observation phase; child consumption is unverified)'
+E        +  where 'custom.privacy.alpha: manifest 0.1 · config(config.json:value) 0.9 (unknown observation phase; child consumption is unverified)' = Finding(rule_id='consistency.custom_fields', aliases=[], category='consistency', severity=<Severity.WARNING: 'WARNING'... bindings in .reprollm/project-rules.yaml.', profile_origin=[], severity_origin='project_rule', suppressed_reason=None).message
+
+tests/unit/rules/test_runtime_consistency.py:400: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_runtime_consistency.py::test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[generation-2]
+FAILED tests/unit/rules/test_runtime_consistency.py::test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[model-2]
+FAILED tests/unit/rules/test_runtime_consistency.py::test_binding_conflicts_identify_baseline_or_unknown_phase_without_consumption_claim[custom-2]
+3 failed, 3 passed in 0.48s

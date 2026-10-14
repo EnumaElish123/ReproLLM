@@ -1,0 +1,60 @@
+"""Synthetic oracle rejection checks; zero product imports or executions."""
+import copy,hashlib,importlib.util,json,tempfile
+from pathlib import Path
+import yaml
+here=Path(__file__).resolve().parent
+spec=importlib.util.spec_from_file_location('pure_oracle',here/'check_leaf.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+spec=importlib.util.spec_from_file_location('pure_runner',here/'run_gate.py');r=importlib.util.module_from_spec(spec);spec.loader.exec_module(r)
+checks=[]
+def check(name,ok):assert ok,name;checks.append({'name':name,'passed':True})
+with tempfile.TemporaryDirectory(prefix='synthetic-checker-',dir=here) as owned:
+ root=Path(owned);candidate=here.parent/'worktree'
+ meta={'python':'3.12.14','platform':'linux','os':'Synthetic Linux','hostname_sha256':'sha256:'+'f'*64,'packages':{},'recorded_env':{'PATH':'<REDACTED:path>'},'lock_gpu':{'driver':None,'cuda_driver_max':None,'source':'unavailable'},'hardware':{'cpu_count':2,'gpus':[],'driver':None,'cuda_driver_max':None,'source':'unavailable'}}
+ f={'root':root,'candidate':candidate,'metadata':meta,'config_after':r.CONFIG_AFTER,'input_before':{'r04-child.py':r.CHILD_SOURCE.encode(),'r04-config.json':r.CONFIG_BEFORE,'reprollm.yaml':r.MANIFEST_SOURCE},'run_records':{},'witnesses':{},'artifacts':{},'pin_commit':r.PINS['FastChat'][0],'origin':'https://github.com/lm-sys/FastChat.git'}
+ lock={'schema_version':1,'reprollm_version':'0.7.0','generated_at':'2026-10-14T00:00:00Z','manifest_sha256':m.fingerprint(r.MANIFEST_SOURCE)['sha256'],'project_rules_sha256':None,'resolution':{'mode':'offline'},'models':{},'datasets':{},'prompts':{},'files':[{'path':'r04-config.json',**{k:v for k,v in m.fingerprint(r.CONFIG_BEFORE).items() if k!='availability'}}],'generation':m.GENERATION,'inference':None,'training':None,'evaluation':None,'privacy':None,'environment':{'python':meta['python'],'platform':'linux','packages':{},'gpu':meta['lock_gpu']}}
+ lock_raw=yaml.safe_dump(lock,sort_keys=False).encode();f['input_before']['reprollm.lock']=lock_raw;f['validated_lock']=lock
+ epoch=1791936000.0
+ for which in ['A','B']:
+  rid='20261014T00000'+('0' if which=='A' else '1')+'Z-'+('aaaaaa' if which=='A' else 'bbbbbb')
+  folder=root/rid;folder.mkdir();(folder/'files').mkdir()
+  raw_inputs=f['input_before'];origins={'r04-child.py':'argv','r04-config.json':'declared','reprollm.yaml':'manifest','reprollm.lock':'lock'}
+  inputchecks=[{'path':path,'origin':origins[path],'before':m.fingerprint(data),'after':m.fingerprint(r.CONFIG_AFTER if which=='B' and path=='r04-config.json' else data),'change':'changed' if which=='B' and path=='r04-config.json' else 'unchanged'} for path,data in sorted(raw_inputs.items())]
+  binding=[{'value':value,'source':{'type':'cli','key':'--temperature','path':None}} for value in ([0.1,0.2] if which=='A' else [])]+[{'value':0.1,'source':{'type':'config','key':'temperature','path':'r04-config.json'}}]
+  witness={'schema_version':1,'consumed_temperature':0.2 if which=='A' else 0.1,'config_before':{'temperature':0.1},'torch_metadata':'0.0.123','rewritten':which=='B'};wr=(json.dumps(witness,sort_keys=True)+'\n').encode()
+  timestamp='2026-10-14T00:00:0'+('0' if which=='A' else '1')+'Z'
+  record={'schema_version':2,'reprollm_version':'0.7.0','run_id':rid,'name':'s3b-evidence-'+which,'status':'completed','started_at':timestamp,'ended_at':timestamp,'duration_seconds':0.1,'exit_code':0,
+   'command':{'argv':['python','r04-child.py','--config','r04-config.json']+(['--temperature','0.1','--temperature','0.2'] if which=='A' else ['--rewrite']),'cwd':'.','redactions':0},
+   'code':{'commit':f['pin_commit'],'branch':'HEAD','dirty':False,'modified_count':0,'untracked_count':0,'remote':f['origin'],'patch_sha256':None,'patch_file':None},
+   'environment':{key:meta[key] for key in ['os','platform','python','hostname_sha256','packages']}|{'env':meta['recorded_env'],'env_capture':'allowlist'},'hardware':meta['hardware'],'scheduler':None,
+   'manifest':{'path':'reprollm.yaml','sha256':m.fingerprint(r.MANIFEST_SOURCE)['sha256'],'snapshot':'manifest.yaml'},'lock':{'path':'reprollm.lock','sha256':m.fingerprint(lock_raw)['sha256'],'snapshot':'lock.yaml'},
+   'files':[{'path':path,'origin':origins[path],'sha256':m.fingerprint(raw_inputs[path])['sha256'],'size_bytes':len(raw_inputs[path]),'snapshot':'files/'+m.sha(raw_inputs[path]),'redacted':False} for path in ['r04-child.py','r04-config.json']],
+   'bindings_observed':{'generation.temperature':binding},'artifacts':[{'path':'r04-consumed.json','sha256':'sha256:'+m.sha(wr),'size_bytes':len(wr)}],'warnings':[],
+   'input_capture':{'baseline_phase':'pre_child','check_phase':'post_child','consumption':'unverified','checks':inputchecks}}
+  f['run_records'][which]=record;f['witnesses'][which]=witness;f['artifacts']['run-'+which]=folder/'run.json'
+  (folder/'run.json').write_text(json.dumps(record));(folder/'stdout.log').write_bytes(wr);(folder/'stderr.log').write_bytes(b'');(folder/'manifest.yaml').write_bytes(r.MANIFEST_SOURCE);(folder/'lock.yaml').write_bytes(lock_raw)
+  for path in ['r04-child.py','r04-config.json']:(folder/'files'/m.sha(raw_inputs[path])).write_bytes(raw_inputs[path])
+  stdout=wr+f'Recorded run {rid} (exit 0, 0.1 s, 2 files hashed, {len(binding)} bindings observed, 0 warnings) → .reprollm/runs/{rid}\n'.encode()
+  result={'stdout':stdout,'stderr':b'','exit_code':0,'record':{'started_epoch':epoch+(which=='B'),'ended_epoch':epoch+(which=='B')+1,'elapsed_seconds':1.0}}
+  proof=m.check_leaf('FastChat','run-'+which,result,f,{'version':'0.7.0'})
+  check('synthetic_full_run_'+which,all(item['passed'] for item in proof['checks']))
+ # Mutation controls prove the checker enforces original baseline and scope.
+ original=copy.deepcopy(f['run_records']['B'])
+ for name,mutate in [('post_value_as_baseline',lambda d:d['bindings_observed']['generation.temperature'][0].update(value=0.9)),('drop_schema2',lambda d:d.update(schema_version=1)),('fake_verified',lambda d:d['input_capture'].update(consumption='verified')),('duration_outside_controller',lambda d:d.update(duration_seconds=9.0)),('drop_frozen_file',lambda d:d['files'].pop()),('unknown_field',lambda d:d.update(fake_field='unsupported'))]:
+  value=copy.deepcopy(original);mutate(value);f['run_records']['B']=value
+  proof=m.check_leaf('FastChat','run-B',result,f,{'version':'0.7.0'});check('reject_'+name,any(not item['passed'] for item in proof['checks']))
+ f['run_records']['B']=original
+ state=m.expected_state(f,'A');check('last_cli_literal_primary',state['flat']['generation.temperature']['value']==0.2)
+ check('captured_declaration_context',state['flat']['execution.seed']['context']==m.phase('input_file','pre_child'))
+ diff=m.full_diff(f);check('exact_temperature_high',next(c for c in diff['changes'] if c['path']=='generation.temperature')['severity']=='HIGH')
+ check('self_only_recorded_equality',m.full_diff(f,'B','B')['changes']==[])
+ for name in r.PINS:
+  for which in ['A','B']:
+   audit=m.audit_expected(name,which,f,'2026-10-14T00:00:01Z')
+   check('complete_34_rules_'+name+'_'+which,len({x['rule_id'] for x in audit['findings']})==34 and audit['profiles']['declared']==['validation'])
+ f['expected_audits']={'B':m.audit_expected('FastChat','B',f,'2026-10-14T00:00:01Z')}
+ for venue in ['default','neurips','acl','acm']:
+  document=m.expected_markdown(f,'B',venue)
+  check('complete_source_template_'+venue,b'Child Python and packages are unverified.' in document and b'Input consumption by the child is unverified.' in document and b'run record 2' in document)
+receipt={'schema_version':1,'status':'PURE_SYNTHETIC_ORACLE_CHECKS_PASS_GATE_NOT_RUN','checks':checks,'product_imports':0,'product_executions':0,'gpu_api_calls':0,'checker_sha256':m.sha((here/'check_leaf.py').read_bytes()),'runner_sha256':m.sha((here/'run_gate.py').read_bytes()),'helper_sha256':m.sha(Path(__file__).read_bytes()),'scope':'Source/literal synthetic oracle rejection checks only, not product validation.'}
+p=here/'checker-selfcheck-final.json';assert not p.exists();p.write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+print(json.dumps({'checks':len(checks),'passed':True,'receipt_sha256':m.sha(p.read_bytes()),'products':0}))

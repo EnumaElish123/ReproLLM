@@ -1,6 +1,6 @@
 # R04-S / S3-B 验证计划
 
-**状态：PROPOSED；以下计划全部 NOT_RUN。** 本文不批准 schema、规则语义或版本发布，不将计划写成 PASS。当前旧读者的17叶实际观察仅引用[既有兼容证据](compatibility-observed.json)，不重复执行，也不冒充未来 bridge/minor 的验收。
+**历史状态：形成提案时 PROPOSED，表内 NOT_RUN / 待执行描述均为当时计划。** 维护者已于 2026-10-14 接受具体 R04-S；产品和本地共享验收已完成，实际记录以[S3-B报告](../../../../dogfooding/2026-10-14-reliability-s3b/README.md)为准。原计划保留供追溯，不作为当前实际PASS数据。本文不批准版本发布；旧读者的17叶观察仍只引用[历史兼容证据](compatibility-observed.json)，不冒充本轮冻结bridge/minor验收。
 
 依据：[S3任务卡 §§4–5](../../03_Scan_and_Runtime_Evidence.md)、[执行总则](../../00_Execution_Guide.md)、[验证频率](../../../validation-workflow-2026-10-13.md)、[规范 §§5/15/17/19/22/23](../../../01_specification.md)、[val.md](../../../../../val.md)及[兼容性方案](compatibility.md)。分析基线为 `52ecc504b3795c46220f68ef24728e0666638df0`。
 

@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "evidence": "hash_and_snapshot hashes original bytes and invokes on_read before privacy; callback gives original bounded buffer to observe(config_data).",
+      "name": "one_raw_input_read_supplies_hash_snapshot_and_config",
+      "passed": true
+    },
+    {
+      "evidence": "document_data mapping retains explicit None; original_data path entries suppress a new file read and reuse original bytes when present.",
+      "name": "document_original_bytes_reused_without_later_substitution",
+      "passed": true
+    },
+    {
+      "evidence": "recheck_inputs iterates existing InputCapture.checks only; before, record.files, document refs and observations stay unchanged.",
+      "name": "post_checks_only_frozen_paths_no_baseline_overwrite",
+      "passed": true
+    },
+    {
+      "evidence": "Capture disables snapshot flag before independently hashing every unique reference; document copying remains a separate policy.",
+      "name": "201_valid_files_keep_all_hashes_disable_file_snapshots",
+      "passed": true
+    },
+    {
+      "evidence": "forbidden predicate checks both names, sets read_limit/retained_limit=-1, and callback receivesNone; forbidden remains hash-only/redacted.",
+      "name": "forbidden_alias_or_resolved_basename_has_no_retained_buffer",
+      "passed": true
+    },
+    {
+      "evidence": "Each ref uses a separate guarded hash_and_snapshot; callback fingerprint survives failure and safe hash-only ref is retained.",
+      "name": "single_file_privacy_failure_does_not_abort_other_files",
+      "passed": true
+    },
+    {
+      "evidence": "recheck fingerprints then selects change conservatively; unavailable produces unknown, not unchanged.",
+      "name": "changed_missing_created_unavailable_typed_relationship",
+      "passed": true
+    }
+  ],
+  "files_sha256": {
+    "src/reprollm/run/capture.py": "c40a81eca1516795a528c033a53d34b1a2a2d6ad2afbedf9da495d54de3ef09d",
+    "src/reprollm/run/input_capture.py": "2a8b1d6a9fc63245d3f5900eca29dd774332095418758f2ae4c258b5f05352ad"
+  },
+  "gate_runs": 0,
+  "gpu_api_calls": 0,
+  "limits": [
+    "Source review only; no execution/fault injection/atomic filesystem guarantee.",
+    "Final wrapper coordination, codec integration and schema freshness remain root/owner validation."
+  ],
+  "product_imports": 0,
+  "product_tests": 0,
+  "schema_version": 1,
+  "scope": "ApprovedR13/R14 input coordinator and capture adapters",
+  "source_changed": false,
+  "status": "READ_ONLY_SOURCE_REVIEW_PASS"
+}

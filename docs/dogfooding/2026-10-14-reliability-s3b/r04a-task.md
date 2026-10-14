@@ -1,7 +1,9 @@
 # S3-B / R04-A：来源说明与 0.6.2 读取桥
 
-状态：IMPLEMENTED，任务提交暂定；会话最终质量门、五项目 Gate A 和 CI 尚待
-R04-B 最终输入共同验收。本记录不宣称 S3-B、VAL-R01 或发布验证已完成。
+状态：本地共享验收通过。任务提交 `a9a3942651901cc2450ec01b0881cd76140000bd`；
+最终质量门、五项目 Gate A、冻结桥实装兼容证据共同覆盖 R04-A / R04-B，见
+[会话报告](README.md)。推送后的精确 main HEAD CI 由最终回复核对。
+本记录不宣称 VAL-R01 或发布验证完成。
 
 R04-S 的具体规范、run/State schema patch 和两阶段版本方案已于 2026-10-14
 得到维护者明确接受，见[提案](../../plan/reliability-2026-10-03/proposals/R04-S/R04-S_runtime_evidence.md)。

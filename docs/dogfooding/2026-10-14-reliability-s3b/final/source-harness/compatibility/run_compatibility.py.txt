@@ -1,0 +1,277 @@
+"""Prepare or explicitly authorize offline run-format compatibility probes.
+
+The installed bridge console script runs with PYTHONPATH/PYTHONHOME absent.
+No candidate code is imported while preparing this harness. Outputs are immutable.
+"""
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import json
+import os
+import re
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import time
+import zipfile
+
+PREPARED_COMMIT = "bd5a5570efe36aca30ab7eb80da324c56baebef9"
+BRIDGE_COMMIT = "a9a3942651901cc2450ec01b0881cd76140000bd"
+WHEEL_SHA = "3132cfdddb8abe75129e0c1bd44d2e40cc147a52f6a58fd15d6f4eecf83c2480"
+BASE = Path(__file__).resolve().parent.parent
+CHILD = b'''import argparse, json\nfrom pathlib import Path\np=argparse.ArgumentParser()\np.add_argument("--rewrite",action="store_true")\na=p.parse_args()\nvalue=json.loads(Path("config.json").read_bytes())["temperature"]\nprint(json.dumps({"schema_version":1,"consumed_temperature":value},sort_keys=True))\nif a.rewrite:\n    Path("config.json").write_bytes(b'{"temperature":0.9}\\n')\n'''
+BEFORE = b'{"temperature":0.1}\n'
+AFTER = b'{"temperature":0.9}\n'
+MANIFEST = b'''schema_version: 1\nproject: {name: compatibility}\nexperiment: {profiles: []}\nexecution: {config_files: [config.json]}\nbindings:\n  generation.temperature: {config: 'config.json:temperature'}\n'''
+CANDIDATE_LAUNCHER = '''import sys,os,importlib.abc\nfrom pathlib import Path\nclass NoHeavy(importlib.abc.MetaPathFinder):\n def find_spec(self,fullname,path=None,target=None):\n  if fullname.split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:raise RuntimeError('heavy import forbidden')\nsys.meta_path.insert(0,NoHeavy())\ndef prohibit(event,args):\n if event in {'socket.connect','socket.connect_ex'}:raise RuntimeError('network forbidden')\nsys.addaudithook(prohibit)\nsys.path.insert(0,os.environ['COMPAT_CANDIDATE']+'/src')\nimport reprollm\nassert Path(reprollm.__file__).resolve()==Path(os.environ['COMPAT_CANDIDATE'])/'src/reprollm/__init__.py'\nassert reprollm.__version__=='0.7.0'\nif sys.argv[1:] == ['--compat-origin']:\n import hashlib,importlib.metadata,json\n p=Path(reprollm.__file__).resolve()\n print(json.dumps({'schema_version':1,'version':reprollm.__version__,'distribution_version':importlib.metadata.version('reprollm'),'origin':str(p),'origin_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'executable':sys.executable},sort_keys=True))\nelse:\n from reprollm.cli.main import cli\n cli()\n'''
+ORIGIN = '''import hashlib,importlib.metadata,json,reprollm,sys\nfrom pathlib import Path\np=Path(reprollm.__file__).resolve()\nprint(json.dumps({'schema_version':1,'version':reprollm.__version__,'distribution_version':importlib.metadata.version('reprollm'),'origin':str(p),'origin_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'executable':sys.executable},sort_keys=True))\n'''
+BRIDGE_LABELS = ["list-text", "list-json", "show-text", "show-json", "diff-files-json", "diff-directories-text", "export-explicit", "export-latest"]
+NEW_LABELS = ["read-legacy-v1", "read-new-v2", "future-v3-show", "future-v3-list", "future-v3-diff", "future-v3-export-explicit", "future-v3-export-latest"]
+
+
+def digest(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def strict_json(raw: bytes):
+    def unique(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate JSON key")
+            out[key] = value
+        return out
+    return json.loads(raw.decode("utf-8", "strict"), object_pairs_hook=unique)
+
+
+def emit(path: Path, value: dict) -> None:
+    if path.exists():
+        raise RuntimeError("Refuse evidence overwrite")
+    path.write_text(json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False)+"\n", encoding="utf-8")
+
+
+def tree(root: Path) -> dict[str, str]:
+    return {path.relative_to(root).as_posix(): digest(path.read_bytes()) for path in sorted(root.rglob("*")) if path.is_file() and "__pycache__" not in path.parts}
+
+
+def inventory(candidate: Path, files: dict) -> None:
+    for relative, expected in files.items():
+        expected = expected["sha256"] if isinstance(expected, dict) else expected
+        if digest((candidate / relative).read_bytes()) != expected:
+            raise RuntimeError("Qualified candidate changed")
+
+
+def bridge_payload(args) -> dict:
+    frozen = strict_json(args.freeze.read_bytes())
+    assert frozen["schema_version"] == 1 and frozen["commit"] == BRIDGE_COMMIT
+    assert frozen["version"] == "0.6.2" and frozen["schema_writer"] == 1
+    assert digest(args.wheel.read_bytes()) == frozen["wheel_sha256"] == WHEEL_SHA
+    site = args.bridge / "lib/python3.12/site-packages"
+    with zipfile.ZipFile(args.wheel) as wheel:
+        for relative, sha in frozen["source_payload_sha256"].items():
+            assert digest(wheel.read(relative)) == sha
+            assert digest((site / relative).read_bytes()) == sha
+        metadata = wheel.read("reprollm-0.6.2.dist-info/METADATA").decode("utf-8")
+        assert "\nVersion: 0.6.2\n" in metadata
+    assert (args.bridge / "bin/reprollm").read_text().startswith("#!"+str(args.bridge / "bin/python")+"\n")
+    return {"schema_version":1,"version":"0.6.2","commit":BRIDGE_COMMIT,"wheel_sha256":WHEEL_SHA,"installed_payload_matches_frozen_source":True,"payload_files":len(frozen["source_payload_sha256"]),"console_sha256":digest((args.bridge / "bin/reprollm").read_bytes())}
+
+
+def prepare(args) -> int:
+    bridge = bridge_payload(args)
+    assert not args.output.exists(), "Refuse existing output namespace"
+    args.output.mkdir(parents=True)
+    emit(args.output / "plan.json", {"schema_version":1,"status":"PREPARED_NOT_RUN","product_commands_executed":0,"candidate_commit":args.candidate_commit or "PENDING_FINAL_QA_COMMIT","prepared_from_commit":PREPARED_COMMIT,"candidate_version":"0.7.0","bridge":bridge,"bridge_surfaces":BRIDGE_LABELS,"new_reader_surfaces":NEW_LABELS,"writers":"one frozen bridge schema1 and one final candidate schema2 real stdlib child","resources":{"network":0,"gpu_compute":0,"heavy_imports":0,"install":0},"execution_requires":"Explicit final QA authorization with exact source/file/quality hashes; use a new output namespace."})
+    return 0
+
+
+class Run:
+    def __init__(self, args, auth):
+        self.args, self.auth = args, auth
+        self.records, self.checks = [], []
+        self.env = {key: value for key, value in os.environ.items() if key in {"SYSTEMROOT", "WINDIR"}}
+        self.env.update(PATH=str(args.bridge / "bin")+":/usr/bin:/bin", LANG="C.UTF-8", LC_ALL="C.UTF-8", TZ="UTC", PYTHONUTF8="1", PYTHONIOENCODING="utf-8", NO_COLOR="1", COLUMNS="120", HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", OMP_NUM_THREADS="1")
+        assert "PYTHONPATH" not in self.env and "PYTHONHOME" not in self.env
+        self.launcher = args.output / "harness/candidate_cli.py"
+        self.launcher.write_text(CANDIDATE_LAUNCHER, encoding="utf-8")
+        self.candidate_env = {**self.env, "COMPAT_CANDIDATE":str(args.candidate)}
+        self.mapping = [(str(args.output), "<COMPAT_OUT>"), (str(args.candidate), "<CANDIDATE>"), (str(args.bridge), "<FROZEN_BRIDGE>"), (str(args.python.parent.parent), "<CANDIDATE_ENV>")]
+
+    def portable(self, value):
+        if isinstance(value, str):
+            for old, new in self.mapping:
+                value = value.replace(old, new)
+            return value
+        if isinstance(value, list):
+            return [self.portable(item) for item in value]
+        if isinstance(value, dict):
+            return {key:self.portable(item) for key,item in value.items()}
+        return value
+
+    def check(self, name, ok):
+        self.checks.append({"name":name, "passed":bool(ok)})
+
+    def command(self, label, argv, cwd, expected, candidate=False, kind="reader"):
+        inventory(self.args.candidate, self.auth["candidate_files_sha256"])
+        assert not any(row["label"] == label for row in self.records)
+        start = time.monotonic(); started = time.time()
+        unknown = False
+        try:
+            result = subprocess.run(argv, cwd=cwd, env=self.candidate_env if candidate else self.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120, check=False)
+            code, out, err = result.returncode, result.stdout, result.stderr
+        except subprocess.TimeoutExpired as exc:
+            code, out, err, unknown = None, exc.stdout or b"", exc.stderr or b"", True
+        elapsed = round(time.monotonic()-start, 6)
+        stem = f"{len(self.records)+1:02d}-{label}"
+        for stream, raw in [("stdout",out),("stderr",err)]:
+            (self.args.output / "raw" / (stem+"."+stream)).write_bytes(raw)
+        row = {"label":label,"kind":kind,"argv":list(map(str,argv)),"cwd":str(cwd),"expected_exit":expected,"exit_code":code,"unknown":unknown,"elapsed_seconds":elapsed,"started_epoch":started,"ended_epoch":time.time(),"stdout":"raw/"+stem+".stdout","stderr":"raw/"+stem+".stderr","stdout_sha256":digest(out),"stderr_sha256":digest(err),"stdout_bytes":len(out),"stderr_bytes":len(err)}
+        self.records.append(row)
+        emit(self.args.output / "ledger" / (stem+".json"), self.portable({"schema_version":1,"command":row}))
+        self.check(label+"-exit", code == expected and not unknown)
+        out.decode("utf-8", "strict"); err.decode("utf-8", "strict")
+        inventory(self.args.candidate, self.auth["candidate_files_sha256"])
+        return code, out, err
+
+    def cli(self, label, argv, cwd, expected=0, candidate=False, kind="reader"):
+        prefix = [str(self.args.python),str(self.launcher)] if candidate else [str(self.args.bridge / "bin/reprollm")]
+        return self.command(label, prefix+list(map(str,argv)), cwd, expected, candidate, kind)
+
+    def writer(self, label, candidate):
+        root = self.args.output / label
+        root.mkdir()
+        (root / "reprollm.yaml").write_bytes(MANIFEST)
+        (root / "config.json").write_bytes(BEFORE)
+        (root / "child.py").write_bytes(CHILD)
+        child = self.args.python if candidate else self.args.bridge / "bin/python"
+        args = ["run","--name",label,"--capture-output","--",str(child),"child.py"]+(["--rewrite"] if candidate else [])
+        _, out, err = self.cli(label,args,root,candidate=candidate,kind="writer")
+        self.check(label+"-child-witness", b'"consumed_temperature": 0.1' in out and b'"schema_version": 1' in out)
+        paths = list(root.glob(".reprollm/runs/*/run.json")); assert len(paths) == 1
+        record = strict_json(paths[0].read_bytes())
+        version = 2 if candidate else 1
+        self.check(label+"-actual-format", record["schema_version"] == version and record["reprollm_version"] == ("0.7.0" if candidate else "0.6.2") and record["status"] == "completed" and record["exit_code"] == 0 and record["warnings"] == [] and err == b"")
+        self.check(label+"-original-input", (root / "config.json").read_bytes() == (AFTER if candidate else BEFORE))
+        self.check(label+"-recorded-binding",record["bindings_observed"]["generation.temperature"][0]["value"] == 0.1)
+        if candidate:
+            capture = record["input_capture"]
+            check = next(item for item in capture["checks"] if item["path"] == "config.json")
+            self.check(label+"-baseline-v2",capture["baseline_phase"] == "pre_child" and capture["check_phase"] == "post_child" and capture["consumption"] == "unverified" and check["before"] == {"availability":"present","sha256":"sha256:"+digest(BEFORE),"size_bytes":len(BEFORE)} and check["after"] == {"availability":"present","sha256":"sha256:"+digest(AFTER),"size_bytes":len(AFTER)} and check["change"] == "changed")
+        return root, paths[0], record
+
+    def upgrade(self, label, args, root, expected=2, candidate=False, warning=False):
+        _, out, err = self.cli(label,args,root,expected,candidate)
+        text = err.decode("utf-8")
+        version = 3 if candidate else 2
+        self.check(label+"-upgrade-guidance", f"newer schema_version {version}" in text and "upgrade ReproLLM" in text and "Traceback" not in text and "internal error" not in text)
+        if warning:
+            self.check(label+"-warning-not-error",text.startswith("warning: ") and "error: " not in text)
+        else:
+            self.check(label+"-exact-upgrade-stderr",text.startswith("error: ") and text.endswith("upgrade ReproLLM before reading it\n") and len(text.splitlines()) == 1)
+            self.check(label+"-no-partial-output",out == b"")
+
+    def execute(self):
+        _, head, err = self.command("candidate-head",["git","-C",str(self.args.candidate),"rev-parse","HEAD"],self.args.output,0,kind="source")
+        assert head.decode("ascii").strip() == self.auth["candidate_commit"] and err == b"", "Candidate commit differs from authorization"
+        _, out, err = self.command("bridge-installed-origin",[str(self.args.bridge / "bin/python"),"-I","-c",ORIGIN],self.args.output,0,kind="origin")
+        origin = strict_json(out)
+        self.check("bridge-independent-installed-origin", origin["version"] == origin["distribution_version"] == "0.6.2" and Path(origin["origin"]).resolve().is_relative_to((self.args.bridge / "lib/python3.12/site-packages").resolve()) and origin["origin_sha256"] == self.auth["bridge_init_sha256"] and err == b"")
+        emit(self.args.output / "bridge-origin.json", self.portable(origin))
+        _, out, err = self.command("candidate-source-origin",[str(self.args.python),str(self.launcher),"--compat-origin"],self.args.output,0,candidate=True,kind="origin")
+        current_origin = strict_json(out)
+        self.check("candidate-qualified-source-origin",current_origin["version"] == current_origin["distribution_version"] == "0.7.0" and Path(current_origin["origin"]).resolve() == self.args.candidate / "src/reprollm/__init__.py" and current_origin["origin_sha256"] == self.auth["candidate_files_sha256"]["src/reprollm/__init__.py"] and err == b"")
+        emit(self.args.output / "candidate-origin.json",self.portable(current_origin))
+        legacy, old_path, old = self.writer("legacy-writer-v1",False)
+        new, new_path, current = self.writer("candidate-writer-v2",True)
+        preserved = {"legacy":tree(legacy), "new":tree(new)}
+        rid=current["run_id"]
+        self.upgrade("list-text",["runs","list"],new,0,warning=True)
+        self.upgrade("list-json",["runs","list","--json"],new,0,warning=True)
+        self.check("bridge-list-json-empty",strict_json((self.args.output / self.records[-1]["stdout"]).read_bytes()) == [])
+        self.upgrade("show-text",["runs","show",rid],new)
+        self.upgrade("show-json",["runs","show",rid,"--json"],new)
+        self.upgrade("diff-files-json",["diff",new_path,new_path,"--format","json"],new)
+        self.upgrade("diff-directories-text",["diff",new_path.parent,new_path.parent],new)
+        self.upgrade("export-explicit",["export",".","--run",rid,"--output",str(self.args.output / "bridge-explicit.md")],new)
+        self.upgrade("export-latest",["export",".","--output",str(self.args.output / "bridge-latest.md")],new)
+        for label, root, path, record in [("read-legacy-v1",legacy,old_path,old),("read-new-v2",new,new_path,current)]:
+            _, stdout, stderr=self.cli(label,["runs","show",record["run_id"],"--json"],root,candidate=True)
+            self.check(label+"-saved-byte-equality", stdout == path.read_bytes() and stderr == b"")
+        future=self.args.output / "future-reader-v3";shutil.copytree(new,future)
+        future_id="20990101T000000Z-fad003"
+        future_dir=future / ".reprollm/runs" / future_id
+        shutil.copytree(new_path.parent,future_dir)
+        altered={**current,"schema_version":3,"run_id":future_id,"started_at":"2099-01-01T00:00:00Z"}
+        (future_dir / "run.json").write_bytes((json.dumps(altered,sort_keys=True,indent=2)+"\n").encode())
+        self.check("future-fixture-is-synthetic",strict_json((future_dir / "run.json").read_bytes())["schema_version"] == 3)
+        future_before=tree(future)
+        self.upgrade("future-v3-show",["runs","show",future_id,"--json"],future,candidate=True)
+        self.upgrade("future-v3-list",["runs","list","--json"],future,0,candidate=True,warning=True)
+        listed=strict_json((self.args.output / self.records[-1]["stdout"]).read_bytes())
+        expected_row={key:current[key] for key in ["run_id","started_at","status","exit_code","duration_seconds","name"]}
+        expected_row["dirty"] = False
+        self.check("future-list-preserves-supported-v2",listed == [expected_row])
+        self.upgrade("future-v3-diff",["diff",future_dir,future_dir,"--format","json"],future,candidate=True)
+        self.upgrade("future-v3-export-explicit",["export",".","--run",future_id,"--output",str(self.args.output / "future-explicit.md")],future,candidate=True)
+        self.upgrade("future-v3-export-latest",["export",".","--output",str(self.args.output / "future-latest.md")],future,candidate=True)
+        self.check("all-original-record-and-source-bytes-preserved",preserved == {"legacy":tree(legacy),"new":tree(new)} and future_before == tree(future))
+        self.check("rejected-exports-create-no-documents",not any((self.args.output / name).exists() for name in ["bridge-explicit.md","bridge-latest.md","future-explicit.md","future-latest.md"]))
+        emit(self.args.output / "preservation.json",{"schema_version":1,"before":preserved,"after":{"legacy":tree(legacy),"new":tree(new)},"future_before":future_before,"future_after":tree(future)})
+        emit(self.args.output / "commands.json",self.portable({"schema_version":1,"commands":self.records}))
+        emit(self.args.output / "checks.json",{"schema_version":1,"checks":self.checks})
+        passed=all(item["passed"] for item in self.checks)
+        emit(self.args.output / "summary.json",{"schema_version":1,"status":"PASS" if passed else "FAIL","all_passed":passed,"candidate_commit":self.auth["candidate_commit"],"bridge_commit":BRIDGE_COMMIT,"bridge_surfaces":8,"new_reader_surfaces":7,"actual_product_commands":sum(item["kind"] in {"writer","reader"} for item in self.records),"unknown_commands":sum(item["unknown"] for item in self.records),"product_seconds":round(sum(item["elapsed_seconds"] for item in self.records if item["kind"] in {"writer","reader"}),6),"retry":0,"source_unchanged":True,"bridge_payload_unchanged":bridge_payload(self.args)["installed_payload_matches_frozen_source"],"gpu_compute":0,"network_requested":0,"new_gold_created":False})
+        return 0 if passed else 1
+
+
+def execute(args) -> int:
+    auth=strict_json(args.authorization.read_bytes())
+    assert auth["schema_version"] == 1 and auth["execution_authorized"] is True and auth["final_quality_pass"] is True
+    assert args.candidate_commit and re.fullmatch(r"[0-9a-f]{40}", args.candidate_commit)
+    assert auth["candidate_commit"] == args.candidate_commit and auth["runner_sha256"] == digest(Path(__file__).read_bytes())
+    assert auth["quality_receipt_sha256"] == digest(args.quality_receipt.read_bytes()) and auth["quality_inputs_sha256"] == digest(args.quality_inputs.read_bytes())
+    qa=strict_json(args.quality_receipt.read_bytes());inputs=strict_json(args.quality_inputs.read_bytes())
+    assert qa.get("all_passed") is True or qa.get("status") == "PASS"
+    files=inputs.get("files_sha256",inputs.get("files"))
+    actual={path:(value["sha256"] if isinstance(value,dict) else value) for path,value in files.items()}
+    assert actual == auth["candidate_files_sha256"]
+    assert inputs["inventory_sha256"] == digest(json.dumps(files,sort_keys=True,separators=(",",":")).encode()) == auth["quality_input_inventory_sha256"]
+    assert qa.get("candidate_input_inventory_sha256",qa.get("input_inventory_sha256",qa.get("inventory_sha256"))) == inputs["inventory_sha256"]
+    assert bridge_payload(args)["wheel_sha256"] == WHEEL_SHA
+    assert auth["bridge_init_sha256"] == strict_json(args.freeze.read_bytes())["source_payload_sha256"]["reprollm/__init__.py"]
+    assert not args.output.exists(), "Refuse previous execution overwrite"
+    inventory(args.candidate,auth["candidate_files_sha256"])
+    args.output.mkdir(parents=True)
+    for name in ["raw","ledger","harness"]:(args.output / name).mkdir()
+    runner=Run(args,auth)
+    try:
+        return runner.execute()
+    except Exception as error:
+        emit(args.output / "failure.json",{"schema_version":1,"status":"FAIL","error_type":type(error).__name__,"raw_retained":True,"retry":0,"completed_commands":len(runner.records)})
+        return 1
+
+
+def main() -> int:
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--execute",action="store_true")
+    parser.add_argument("--candidate",type=Path,default=BASE / "worktree")
+    parser.add_argument("--candidate-commit",help="Exact commit covered by final QA; required for execution")
+    parser.add_argument("--python",type=Path,default=Path("<CORE_ENV>/bin/python"))
+    parser.add_argument("--bridge",type=Path,default=BASE / "bridge-env")
+    parser.add_argument("--wheel",type=Path,default=BASE / "bridge-wheel/reprollm-0.6.2-py3-none-any.whl")
+    parser.add_argument("--freeze",type=Path,default=BASE / "bridge-freeze.json")
+    parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--authorization",type=Path)
+    parser.add_argument("--quality-receipt",type=Path)
+    parser.add_argument("--quality-inputs",type=Path)
+    args=parser.parse_args()
+    if not args.execute:return prepare(args)
+    assert args.authorization and args.quality_receipt and args.quality_inputs
+    return execute(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

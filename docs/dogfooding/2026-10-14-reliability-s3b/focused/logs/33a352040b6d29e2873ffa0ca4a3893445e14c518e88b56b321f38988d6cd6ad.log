@@ -1,0 +1,17 @@
+........................................................................ [ 28%]
+....................................................F................... [ 57%]
+........................................................................ [ 86%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+______ test_toml_container_comments_and_serialized_keys_never_leak[True] _______
+tests/unit/run/test_persisted_privacy.py:645: in test_toml_container_comments_and_serialized_keys_never_leak
+    assert any("capture failed" in warning for warning in record.warnings)
+E   assert False
+E    +  where False = any(<generator object test_toml_container_comments_and_serialized_keys_never_leak.<locals>.<genexpr> at 0x7f989a648c70>)
+----------------------------- Captured stdout call -----------------------------
+{"settings": {"api_key": "syntheticPlainCanaryABC123", "nested": [{"password": "syntheticPlainCanaryABC123"}], "max_tokens": 32, "TOKENIZERS_PARALLELISM": false, "model": "Qwen/Qwen3-32B", "cache": "cache/models", "glob": "outputs/**/*.json", "stop": "</s>"}}
+----------------------------- Captured stderr call -----------------------------
+{"settings": {"api_key": "syntheticPlainCanaryABC123", "nested": [{"password": "syntheticPlainCanaryABC123"}], "max_tokens": 32, "TOKENIZERS_PARALLELISM": false, "model": "Qwen/Qwen3-32B", "cache": "cache/models", "glob": "outputs/**/*.json", "stop": "</s>"}}
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_persisted_privacy.py::test_toml_container_comments_and_serialized_keys_never_leak[True]
+1 failed, 249 passed in 8.19s

@@ -1,0 +1,1052 @@
+{
+  "rows": [
+    {
+      "after_sha256": "dcdc4765271658e1241fc79a77fcc3184d95b3b1ff477c6f7633e5d48d0779a8",
+      "before_sha256": "c84915ccd52cda495e15dc5e5311abb67881776ce74a9c81be5f6b778eebf4af",
+      "changes": [
+        {
+          "after": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+          "before": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
+          "path": "/findings/9/fix_hint"
+        },
+        {
+          "after": "confirmed compatible recorder context for lock/latest-run environment.packages is required; unknown or incompatible sources cannot verify the child environment",
+          "before": "lock and latest-run environment.packages are required",
+          "path": "/findings/9/message"
+        }
+      ],
+      "path": "hf_vllm_eval/expected/audit_L2.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "fc003902ec550894b92fe84a7b1d91f6afe9eda61297ece0a9ffaf6f5d38ed2b",
+      "before_sha256": "7969bbac65d5950ef21f832f2196336e885cc7b8e9a9d09f36e4d41aed9d52c8",
+      "changes": [
+        {
+          "after": "cli(--temperature); recorded baseline before child launch; child consumption is unverified",
+          "before": "cli(--temperature)",
+          "path": "/findings/0/evidence/1/note"
+        },
+        {
+          "after": "config(configs/eval.yaml:sampling.temperature); recorded baseline before child launch; child consumption is unverified",
+          "before": "config(configs/eval.yaml:sampling.temperature)",
+          "path": "/findings/0/evidence/2/note"
+        },
+        {
+          "after": "generation.temperature: manifest 0.0 · cli(--temperature) 1.0 (recorded baseline before child launch; child consumption is unverified) · config(configs/eval.yaml:sampling.temperature) 0.0 (recorded baseline before child launch; child consumption is unverified)",
+          "before": "generation.temperature: manifest 0.0 · cli(--temperature) 1.0 · config(configs/eval.yaml:sampling.temperature) 0.0",
+          "path": "/findings/0/message"
+        },
+        {
+          "after": "consistency",
+          "before": "code",
+          "path": "/findings/10/category"
+        },
+        {
+          "after": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+          "before": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+          "path": "/findings/10/fix_hint"
+        },
+        {
+          "after": "confirmed compatible recorder context for lock/latest-run environment.packages is required; unknown or incompatible sources cannot verify the child environment",
+          "before": "Tracked files have no uncommitted modifications.",
+          "path": "/findings/10/message"
+        },
+        {
+          "after": "consistency.env_vs_lock",
+          "before": "code.clean_tree",
+          "path": "/findings/10/rule_id"
+        },
+        {
+          "after": "INFO",
+          "before": "PASS",
+          "path": "/findings/10/severity"
+        },
+        {
+          "after": "skipped",
+          "before": "pass",
+          "path": "/findings/10/status"
+        },
+        {
+          "after": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+          "before": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+          "path": "/findings/11/fix_hint"
+        },
+        {
+          "after": "Tracked files have no uncommitted modifications.",
+          "before": "HEAD points at a committed revision (no unborn branch).",
+          "path": "/findings/11/message"
+        },
+        {
+          "after": "code.clean_tree",
+          "before": "code.git_commit",
+          "path": "/findings/11/rule_id"
+        },
+        {
+          "after": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+          "before": "Run `git init` and commit the experiment code so its state is recorded.",
+          "path": "/findings/12/fix_hint"
+        },
+        {
+          "after": "HEAD points at a committed revision (no unborn branch).",
+          "before": "The experiment code lives in a git repository.",
+          "path": "/findings/12/message"
+        },
+        {
+          "after": "code.git_commit",
+          "before": "code.git_repo",
+          "path": "/findings/12/rule_id"
+        },
+        {
+          "after": "code",
+          "before": "env",
+          "path": "/findings/13/category"
+        },
+        {
+          "after": "Run `git init` and commit the experiment code so its state is recorded.",
+          "before": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+          "path": "/findings/13/fix_hint"
+        },
+        {
+          "after": "The experiment code lives in a git repository.",
+          "before": "A dependency manifest declares the Python environment.",
+          "path": "/findings/13/message"
+        },
+        {
+          "after": "code.git_repo",
+          "before": "env.dependency_manifest_present",
+          "path": "/findings/13/rule_id"
+        },
+        {
+          "after": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+          "before": "Pin the package exactly (see the message for the suggested version).",
+          "path": "/findings/14/fix_hint"
+        },
+        {
+          "after": "A dependency manifest declares the Python environment.",
+          "before": "Every LLM-critical dependency in use is pinned to an exact version.",
+          "path": "/findings/14/message"
+        },
+        {
+          "after": "env.dependency_manifest_present",
+          "before": "env.llm_critical_deps_pinned",
+          "path": "/findings/14/rule_id"
+        },
+        {
+          "after": "Pin the package exactly (see the message for the suggested version).",
+          "before": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "path": "/findings/15/fix_hint"
+        },
+        {
+          "after": "Every LLM-critical dependency in use is pinned to an exact version.",
+          "before": "A lockfile (or fully pinned requirements) records exact versions.",
+          "path": "/findings/15/message"
+        },
+        {
+          "after": "env.llm_critical_deps_pinned",
+          "before": "env.lockfile_present",
+          "path": "/findings/15/rule_id"
+        },
+        {
+          "after": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "before": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+          "path": "/findings/16/fix_hint"
+        },
+        {
+          "after": "A lockfile (or fully pinned requirements) records exact versions.",
+          "before": "The required Python version is declared.",
+          "path": "/findings/16/message"
+        },
+        {
+          "after": "env.lockfile_present",
+          "before": "env.python_version_declared",
+          "path": "/findings/16/rule_id"
+        },
+        {
+          "after": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+          "before": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "path": "/findings/17/fix_hint"
+        },
+        {
+          "after": "The required Python version is declared.",
+          "before": "Secret-bearing files are not present or are gitignored.",
+          "path": "/findings/17/message"
+        },
+        {
+          "after": "env.python_version_declared",
+          "before": "env.secret_files_ignored",
+          "path": "/findings/17/rule_id"
+        },
+        {
+          "after": "env",
+          "before": "exec",
+          "path": "/findings/18/category"
+        },
+        {
+          "after": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "before": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+          "path": "/findings/18/fix_hint"
+        },
+        {
+          "after": "Secret-bearing files are not present or are gitignored.",
+          "before": "The command that reproduces the experiment is declared.",
+          "path": "/findings/18/message"
+        },
+        {
+          "after": "env.secret_files_ignored",
+          "before": "exec.command_declared",
+          "path": "/findings/18/rule_id"
+        },
+        {
+          "after": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+          "before": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "path": "/findings/19/fix_hint"
+        },
+        {
+          "after": "The command that reproduces the experiment is declared.",
+          "before": "Declared profiles and detected signals agree.",
+          "path": "/findings/19/message"
+        },
+        {
+          "after": "exec.command_declared",
+          "before": "exec.profile_detection_mismatch",
+          "path": "/findings/19/rule_id"
+        },
+        {
+          "after": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "before": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+          "path": "/findings/20/fix_hint"
+        },
+        {
+          "after": "Declared profiles and detected signals agree.",
+          "before": "At least one run record captures what actually executed.",
+          "path": "/findings/20/message"
+        },
+        {
+          "after": "exec.profile_detection_mismatch",
+          "before": "exec.run_recorded",
+          "path": "/findings/20/rule_id"
+        },
+        {
+          "after": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+          "before": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+          "path": "/findings/21/fix_hint"
+        },
+        {
+          "after": "At least one run record captures what actually executed.",
+          "before": "A random seed is declared somewhere (execution/generation/training).",
+          "path": "/findings/21/message"
+        },
+        {
+          "after": "exec.run_recorded",
+          "before": "exec.seed_declared",
+          "path": "/findings/21/rule_id"
+        },
+        {
+          "after": "exec",
+          "before": "model",
+          "path": "/findings/22/category"
+        },
+        {
+          "after": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+          "before": "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock.",
+          "path": "/findings/22/fix_hint"
+        },
+        {
+          "after": "A random seed is declared somewhere (execution/generation/training).",
+          "before": "Every Hugging Face or local model has a chat-template hash or recorded absence.",
+          "path": "/findings/22/message"
+        },
+        {
+          "after": "exec.seed_declared",
+          "before": "model.chat_template_hashed",
+          "path": "/findings/22/rule_id"
+        },
+        {
+          "after_length": 0,
+          "before_length": 1,
+          "path": "/findings/23/evidence"
+        },
+        {
+          "after": "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock.",
+          "before": "Set models.primary.dtype in reprollm.yaml.",
+          "path": "/findings/23/fix_hint"
+        },
+        {
+          "after": "Every Hugging Face or local model has a chat-template hash or recorded absence.",
+          "before": "models.primary.dtype is declared",
+          "path": "/findings/23/message"
+        },
+        {
+          "after": "model.chat_template_hashed",
+          "before": "model.dtype_declared",
+          "path": "/findings/23/rule_id"
+        },
+        {
+          "after": "models.primary.dtype",
+          "before": "models.primary.id",
+          "path": "/findings/24/evidence/0/field"
+        },
+        {
+          "after": "Set models.primary.dtype in reprollm.yaml.",
+          "before": "Set models.primary.id in reprollm.yaml.",
+          "path": "/findings/24/fix_hint"
+        },
+        {
+          "after": "models.primary.dtype is declared",
+          "before": "models.primary.id is declared",
+          "path": "/findings/24/message"
+        },
+        {
+          "after": "model.dtype_declared",
+          "before": "model.primary_declared",
+          "path": "/findings/24/rule_id"
+        },
+        {
+          "after": "models.primary.id",
+          "before": "models.primary.provider",
+          "path": "/findings/25/evidence/0/field"
+        },
+        {
+          "after": "Set models.primary.id in reprollm.yaml.",
+          "before": "Set models.primary.provider in reprollm.yaml.",
+          "path": "/findings/25/fix_hint"
+        },
+        {
+          "after": "models.primary.id is declared",
+          "before": "models.primary.provider is a known provider",
+          "path": "/findings/25/message"
+        },
+        {
+          "after": "model.primary_declared",
+          "before": "model.provider_known",
+          "path": "/findings/25/rule_id"
+        },
+        {
+          "after": "models.primary.provider",
+          "before": "models.primary.quantization",
+          "path": "/findings/26/evidence/0/field"
+        },
+        {
+          "after": "Set models.primary.provider in reprollm.yaml.",
+          "before": "Set models.primary.quantization in reprollm.yaml.",
+          "path": "/findings/26/fix_hint"
+        },
+        {
+          "after": "models.primary.provider is a known provider",
+          "before": "models.primary.quantization is declared",
+          "path": "/findings/26/message"
+        },
+        {
+          "after": "model.provider_known",
+          "before": "model.quantization_declared",
+          "path": "/findings/26/rule_id"
+        },
+        {
+          "after_length": 1,
+          "before_length": 0,
+          "path": "/findings/27/evidence"
+        },
+        {
+          "after": "Set models.primary.quantization in reprollm.yaml.",
+          "before": "Run `reprollm lock` with network access (set HF_TOKEN for gated models), or set models.<role>.revision to a commit SHA.",
+          "path": "/findings/27/fix_hint"
+        },
+        {
+          "after": "models.primary.quantization is declared",
+          "before": "Every model has a resolved identity or an explicit API pinnability record.",
+          "path": "/findings/27/message"
+        },
+        {
+          "after": "model.quantization_declared",
+          "before": "model.revision_pinned",
+          "path": "/findings/27/rule_id"
+        },
+        {
+          "after": "Run `reprollm lock` with network access (set HF_TOKEN for gated models), or set models.<role>.revision to a commit SHA.",
+          "before": "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock.",
+          "path": "/findings/28/fix_hint"
+        },
+        {
+          "after": "Every model has a resolved identity or an explicit API pinnability record.",
+          "before": "Every Hugging Face model has an exact tokenizer revision.",
+          "path": "/findings/28/message"
+        },
+        {
+          "after": "model.revision_pinned",
+          "before": "model.tokenizer_pinned",
+          "path": "/findings/28/rule_id"
+        },
+        {
+          "after": "model",
+          "before": "dataset",
+          "path": "/findings/29/category"
+        },
+        {
+          "after_length": 0,
+          "before_length": 1,
+          "path": "/findings/29/evidence"
+        },
+        {
+          "after": "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock.",
+          "before": "Set datasets in reprollm.yaml.",
+          "path": "/findings/29/fix_hint"
+        },
+        {
+          "after": "Every Hugging Face model has an exact tokenizer revision.",
+          "before": "datasets is declared",
+          "path": "/findings/29/message"
+        },
+        {
+          "after": "model.tokenizer_pinned",
+          "before": "dataset.declared",
+          "path": "/findings/29/rule_id"
+        },
+        {
+          "after": "datasets",
+          "before": "datasets.eval.preprocessing",
+          "path": "/findings/30/evidence/0/field"
+        },
+        {
+          "after": "Set datasets in reprollm.yaml.",
+          "before": "Set datasets.eval.preprocessing in reprollm.yaml.",
+          "path": "/findings/30/fix_hint"
+        },
+        {
+          "after": "datasets is declared",
+          "before": "datasets.eval.preprocessing is declared",
+          "path": "/findings/30/message"
+        },
+        {
+          "after": "dataset.declared",
+          "before": "dataset.preprocessing_declared",
+          "path": "/findings/30/rule_id"
+        },
+        {
+          "after_length": 1,
+          "before_length": 0,
+          "path": "/findings/31/evidence"
+        },
+        {
+          "after": "Set datasets.eval.preprocessing in reprollm.yaml.",
+          "before": "Run `reprollm lock` to resolve datasets.<role>.revision in reprollm.lock.",
+          "path": "/findings/31/fix_hint"
+        },
+        {
+          "after": "datasets.eval.preprocessing is declared",
+          "before": "Every Hugging Face dataset has an exact resolved revision.",
+          "path": "/findings/31/message"
+        },
+        {
+          "after": "dataset.preprocessing_declared",
+          "before": "dataset.revision_pinned",
+          "path": "/findings/31/rule_id"
+        },
+        {
+          "after_length": 0,
+          "before_length": 1,
+          "path": "/findings/32/evidence"
+        },
+        {
+          "after": "Run `reprollm lock` to resolve datasets.<role>.revision in reprollm.lock.",
+          "before": "Set datasets.eval.sampling.seed in reprollm.yaml.",
+          "path": "/findings/32/fix_hint"
+        },
+        {
+          "after": "Every Hugging Face dataset has an exact resolved revision.",
+          "before": "datasets.eval.sampling.seed is declared",
+          "path": "/findings/32/message"
+        },
+        {
+          "after": "dataset.revision_pinned",
+          "before": "dataset.sampling_seed_declared",
+          "path": "/findings/32/rule_id"
+        },
+        {
+          "after": "datasets.eval.sampling.seed",
+          "before": "datasets.eval.split",
+          "path": "/findings/33/evidence/0/field"
+        },
+        {
+          "after": "Set datasets.eval.sampling.seed in reprollm.yaml.",
+          "before": "Set datasets.eval.split in reprollm.yaml.",
+          "path": "/findings/33/fix_hint"
+        },
+        {
+          "after": "datasets.eval.sampling.seed is declared",
+          "before": "datasets.eval.split is declared",
+          "path": "/findings/33/message"
+        },
+        {
+          "after": "dataset.sampling_seed_declared",
+          "before": "dataset.split_declared",
+          "path": "/findings/33/rule_id"
+        },
+        {
+          "after": "datasets.eval.split",
+          "before": "datasets.eval.subset",
+          "path": "/findings/34/evidence/0/field"
+        },
+        {
+          "after": "Set datasets.eval.split in reprollm.yaml.",
+          "before": "Set datasets.eval.subset in reprollm.yaml.",
+          "path": "/findings/34/fix_hint"
+        },
+        {
+          "after": "datasets.eval.split is declared",
+          "before": "datasets.eval.subset is declared",
+          "path": "/findings/34/message"
+        },
+        {
+          "after": "dataset.split_declared",
+          "before": "dataset.subset_declared",
+          "path": "/findings/34/rule_id"
+        },
+        {
+          "after": "dataset",
+          "before": "gen",
+          "path": "/findings/35/category"
+        },
+        {
+          "after": "datasets.eval.subset",
+          "before": "inference.dtype",
+          "path": "/findings/35/evidence/0/field"
+        },
+        {
+          "after": "Set datasets.eval.subset in reprollm.yaml.",
+          "before": "Set inference.dtype in reprollm.yaml.",
+          "path": "/findings/35/fix_hint"
+        },
+        {
+          "after": "datasets.eval.subset is declared",
+          "before": "inference.dtype is declared",
+          "path": "/findings/35/message"
+        },
+        {
+          "after": "dataset.subset_declared",
+          "before": "gen.backend_config_declared",
+          "path": "/findings/35/rule_id"
+        },
+        {
+          "after": "inference.dtype",
+          "before": "inference.gpu_memory_utilization",
+          "path": "/findings/36/evidence/0/field"
+        },
+        {
+          "after": "Set inference.dtype in reprollm.yaml.",
+          "before": "Set inference.gpu_memory_utilization in reprollm.yaml.",
+          "path": "/findings/36/fix_hint"
+        },
+        {
+          "after": "inference.dtype is declared",
+          "before": "inference.gpu_memory_utilization is declared",
+          "path": "/findings/36/message"
+        },
+        {
+          "after": "inference.gpu_memory_utilization",
+          "before": "inference.quantization",
+          "path": "/findings/37/evidence/0/field"
+        },
+        {
+          "after": "Set inference.gpu_memory_utilization in reprollm.yaml.",
+          "before": "Set inference.quantization in reprollm.yaml.",
+          "path": "/findings/37/fix_hint"
+        },
+        {
+          "after": "inference.gpu_memory_utilization is declared",
+          "before": "inference.quantization is declared",
+          "path": "/findings/37/message"
+        },
+        {
+          "after": "inference.quantization",
+          "before": "inference.tensor_parallel_size",
+          "path": "/findings/38/evidence/0/field"
+        },
+        {
+          "after": "Set inference.quantization in reprollm.yaml.",
+          "before": "Set inference.tensor_parallel_size in reprollm.yaml.",
+          "path": "/findings/38/fix_hint"
+        },
+        {
+          "after": "inference.quantization is declared",
+          "before": "inference.tensor_parallel_size is declared",
+          "path": "/findings/38/message"
+        },
+        {
+          "after": "inference.tensor_parallel_size",
+          "before": "inference.backend",
+          "path": "/findings/39/evidence/0/field"
+        },
+        {
+          "after": "Set inference.tensor_parallel_size in reprollm.yaml.",
+          "before": "Set inference.backend in reprollm.yaml.",
+          "path": "/findings/39/fix_hint"
+        },
+        {
+          "after": "inference.tensor_parallel_size is declared",
+          "before": "inference.backend is declared",
+          "path": "/findings/39/message"
+        },
+        {
+          "after": "gen.backend_config_declared",
+          "before": "gen.backend_declared",
+          "path": "/findings/39/rule_id"
+        },
+        {
+          "after_length": 1,
+          "before_length": 0,
+          "path": "/findings/40/evidence"
+        },
+        {
+          "after": "Set inference.backend in reprollm.yaml.",
+          "before": "Set generation.temperature, generation.top_p and generation.max_tokens in reprollm.yaml.",
+          "path": "/findings/40/fix_hint"
+        },
+        {
+          "after": "inference.backend is declared",
+          "before": "Generation temperature, top_p and max_tokens are declared.",
+          "path": "/findings/40/message"
+        },
+        {
+          "after": "gen.backend_declared",
+          "before": "gen.params_declared",
+          "path": "/findings/40/rule_id"
+        },
+        {
+          "after_length": 0,
+          "before_length": 1,
+          "path": "/findings/41/evidence"
+        },
+        {
+          "after": "Set generation.temperature, generation.top_p and generation.max_tokens in reprollm.yaml.",
+          "before": "Set generation.stop in reprollm.yaml.",
+          "path": "/findings/41/fix_hint"
+        },
+        {
+          "after": "Generation temperature, top_p and max_tokens are declared.",
+          "before": "generation.stop is declared",
+          "path": "/findings/41/message"
+        },
+        {
+          "after": "gen.params_declared",
+          "before": "gen.stop_declared",
+          "path": "/findings/41/rule_id"
+        },
+        {
+          "after": "gen",
+          "before": "prompt",
+          "path": "/findings/42/category"
+        },
+        {
+          "after": "generation.stop",
+          "before": "prompts",
+          "path": "/findings/42/evidence/0/field"
+        },
+        {
+          "after": "Set generation.stop in reprollm.yaml.",
+          "before": "Set prompts in reprollm.yaml.",
+          "path": "/findings/42/fix_hint"
+        },
+        {
+          "after": "generation.stop is declared",
+          "before": "prompts is declared",
+          "path": "/findings/42/message"
+        },
+        {
+          "after": "gen.stop_declared",
+          "before": "prompt.declared",
+          "path": "/findings/42/rule_id"
+        },
+        {
+          "after_length": 1,
+          "before_length": 0,
+          "path": "/findings/43/evidence"
+        },
+        {
+          "after": "Set prompts in reprollm.yaml.",
+          "before": "Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.",
+          "path": "/findings/43/fix_hint"
+        },
+        {
+          "after": "prompts is declared",
+          "before": "Few-shot configuration is explicitly declared.",
+          "path": "/findings/43/message"
+        },
+        {
+          "after": "prompt.declared",
+          "before": "prompt.few_shot_declared",
+          "path": "/findings/43/rule_id"
+        },
+        {
+          "after_length": 0,
+          "before_length": 2,
+          "path": "/findings/44/evidence"
+        },
+        {
+          "after": "Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.",
+          "before": "Set prompts.system.path to an existing file in reprollm.yaml.",
+          "path": "/findings/44/fix_hint"
+        },
+        {
+          "after": "Few-shot configuration is explicitly declared.",
+          "before": "prompts.system.path: referenced file exists",
+          "path": "/findings/44/message"
+        },
+        {
+          "after": "prompt.few_shot_declared",
+          "before": "prompt.file_exists",
+          "path": "/findings/44/rule_id"
+        },
+        {
+          "after_length": 2,
+          "before_length": 0,
+          "path": "/findings/45/evidence"
+        },
+        {
+          "after": "Set prompts.system.path to an existing file in reprollm.yaml.",
+          "before": "Run `reprollm lock` to hash prompts.<role> in reprollm.lock.",
+          "path": "/findings/45/fix_hint"
+        },
+        {
+          "after": "prompts.system.path: referenced file exists",
+          "before": "Every prompt role has a recorded content hash.",
+          "path": "/findings/45/message"
+        },
+        {
+          "after": "prompt.file_exists",
+          "before": "prompt.hashed",
+          "path": "/findings/45/rule_id"
+        },
+        {
+          "after": "prompt",
+          "before": "eval",
+          "path": "/findings/46/category"
+        },
+        {
+          "after_length": 0,
+          "before_length": 1,
+          "path": "/findings/46/evidence"
+        },
+        {
+          "after": "Run `reprollm lock` to hash prompts.<role> in reprollm.lock.",
+          "before": "Set evaluation.aggregation in reprollm.yaml.",
+          "path": "/findings/46/fix_hint"
+        },
+        {
+          "after": "Every prompt role has a recorded content hash.",
+          "before": "evaluation.aggregation is declared",
+          "path": "/findings/46/message"
+        },
+        {
+          "after": "prompt.hashed",
+          "before": "eval.aggregation_declared",
+          "path": "/findings/46/rule_id"
+        },
+        {
+          "after_length": 1,
+          "before_length": 2,
+          "path": "/findings/47/evidence"
+        },
+        {
+          "after": "Set evaluation.aggregation in reprollm.yaml.",
+          "before": "Set evaluation.metrics.0.implementation to an existing relative file or pkg==version in reprollm.yaml.",
+          "path": "/findings/47/fix_hint"
+        },
+        {
+          "after": "evaluation.aggregation is declared",
+          "before": "evaluation.metrics.0.implementation: referenced file exists",
+          "path": "/findings/47/message"
+        },
+        {
+          "after": "eval.aggregation_declared",
+          "before": "eval.metric_implementation_referenced",
+          "path": "/findings/47/rule_id"
+        },
+        {
+          "after_length": 2,
+          "before_length": 1,
+          "path": "/findings/48/evidence"
+        },
+        {
+          "after": "Set evaluation.metrics.0.implementation to an existing relative file or pkg==version in reprollm.yaml.",
+          "before": "Set evaluation.metrics in reprollm.yaml.",
+          "path": "/findings/48/fix_hint"
+        },
+        {
+          "after": "evaluation.metrics.0.implementation: referenced file exists",
+          "before": "evaluation.metrics is declared",
+          "path": "/findings/48/message"
+        },
+        {
+          "after": "eval.metric_implementation_referenced",
+          "before": "eval.metrics_declared",
+          "path": "/findings/48/rule_id"
+        },
+        {
+          "after": "evaluation.metrics",
+          "before": "evaluation.repetitions",
+          "path": "/findings/49/evidence/0/field"
+        },
+        {
+          "after": "Set evaluation.metrics in reprollm.yaml.",
+          "before": "Set evaluation.repetitions in reprollm.yaml.",
+          "path": "/findings/49/fix_hint"
+        },
+        {
+          "after": "evaluation.metrics is declared",
+          "before": "evaluation.repetitions is declared",
+          "path": "/findings/49/message"
+        },
+        {
+          "after": "eval.metrics_declared",
+          "before": "eval.repetitions_declared",
+          "path": "/findings/49/rule_id"
+        },
+        {
+          "after": "eval",
+          "before": "consistency",
+          "path": "/findings/50/category"
+        },
+        {
+          "after_length": 1,
+          "before_length": 0,
+          "path": "/findings/50/evidence"
+        },
+        {
+          "after": "Set evaluation.repetitions in reprollm.yaml.",
+          "before": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
+          "path": "/findings/50/fix_hint"
+        },
+        {
+          "after": "evaluation.repetitions is declared",
+          "before": "Runtime LLM-critical package versions agree with the lock.",
+          "path": "/findings/50/message"
+        },
+        {
+          "after": "eval.repetitions_declared",
+          "before": "consistency.env_vs_lock",
+          "path": "/findings/50/rule_id"
+        },
+        {
+          "after": "Recorded model identities agree with the manifest and lock; child consumption is unverified.",
+          "before": "Observed model identities agree with the manifest and lock.",
+          "path": "/findings/53/message"
+        },
+        {
+          "after": 43,
+          "before": 44,
+          "path": "/summary/pass"
+        },
+        {
+          "after": 7,
+          "before": 6,
+          "path": "/summary/skipped"
+        }
+      ],
+      "path": "hf_vllm_eval/expected/audit_L2_after_run.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "131bfdb08a683d95b3d2ec85f11708087ac264535ae1410ffa5208e9961d2113",
+      "before_sha256": "e4abb3d4bc5a014205e70997d7310250f335f50a47640db069b6925f4ab01082",
+      "changes": [
+        {
+          "after": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
+          "before": null,
+          "path": "/changes/0/note"
+        },
+        {
+          "after": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
+          "before": "a: input_file/unknown; child unverified; b: input_file/unknown; child unverified",
+          "path": "/changes/1/note"
+        },
+        {
+          "after": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
+          "before": null,
+          "path": "/changes/3/note"
+        }
+      ],
+      "path": "hf_vllm_eval/expected/diff_a_prompt_temperature.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "d784659a501b13fa73643f30566b3e4a3d2c72e7b845ccfb432a82f6471cfb48",
+      "before_sha256": "7b89146e6bd76a7ca9753bdcbcd4031f20baaf81744f1986c524154416355f75",
+      "changes": [],
+      "path": "hf_vllm_eval/expected/diff_a_prompt_temperature.txt",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "1e156fc1470bba56de330c003aadf1144a1c496d9226dfdf3643448a1dd5a7a6",
+      "before_sha256": "1e156fc1470bba56de330c003aadf1144a1c496d9226dfdf3643448a1dd5a7a6",
+      "changes": [],
+      "path": "hf_vllm_eval/expected/lock.yaml",
+      "same_bytes": true
+    },
+    {
+      "after_sha256": "c6a5d64732c65a708204a9c39cfcf11b3c5096cf0e67dc45acf3f76022dc2d7e",
+      "before_sha256": "532278d06bbf6080f4d59b947047b9267184a3cd42b1a38d1407a1ea874c049f",
+      "changes": [
+        {
+          "added": true,
+          "after": {
+            "baseline_phase": "pre_child",
+            "check_phase": "post_child",
+            "checks": [
+              {
+                "after": {
+                  "availability": "present",
+                  "sha256": "sha256:6403ccd2e879b6087ee5118e03cb0a282110d307fd5206fd11c5814a537923d4",
+                  "size_bytes": 204
+                },
+                "before": {
+                  "availability": "present",
+                  "sha256": "sha256:6403ccd2e879b6087ee5118e03cb0a282110d307fd5206fd11c5814a537923d4",
+                  "size_bytes": 204
+                },
+                "change": "unchanged",
+                "origin": "declared",
+                "path": "configs/eval.yaml"
+              },
+              {
+                "after": {
+                  "availability": "present",
+                  "sha256": "sha256:1012fd0edf9e8ecd0aef9107beb1817f8fb0e0be689245a0be34efd80e88add9",
+                  "size_bytes": 162
+                },
+                "before": {
+                  "availability": "present",
+                  "sha256": "sha256:1012fd0edf9e8ecd0aef9107beb1817f8fb0e0be689245a0be34efd80e88add9",
+                  "size_bytes": 162
+                },
+                "change": "unchanged",
+                "origin": "declared",
+                "path": "prompts/system.txt"
+              },
+              {
+                "after": {
+                  "availability": "present",
+                  "sha256": "sha256:1e156fc1470bba56de330c003aadf1144a1c496d9226dfdf3643448a1dd5a7a6",
+                  "size_bytes": 3027
+                },
+                "before": {
+                  "availability": "present",
+                  "sha256": "sha256:1e156fc1470bba56de330c003aadf1144a1c496d9226dfdf3643448a1dd5a7a6",
+                  "size_bytes": 3027
+                },
+                "change": "unchanged",
+                "origin": "lock",
+                "path": "reprollm.lock"
+              },
+              {
+                "after": {
+                  "availability": "present",
+                  "sha256": "sha256:e48ce55c71f7afa15b43eb35b6f6342cc8599b3e41d2a87c5691bb78295764c4",
+                  "size_bytes": 1263
+                },
+                "before": {
+                  "availability": "present",
+                  "sha256": "sha256:e48ce55c71f7afa15b43eb35b6f6342cc8599b3e41d2a87c5691bb78295764c4",
+                  "size_bytes": 1263
+                },
+                "change": "unchanged",
+                "origin": "manifest",
+                "path": "reprollm.yaml"
+              }
+            ],
+            "consumption": "unverified"
+          },
+          "before": null,
+          "path": "/input_capture",
+          "removed": false
+        },
+        {
+          "after": 2,
+          "before": 1,
+          "path": "/schema_version"
+        }
+      ],
+      "path": "hf_vllm_eval/expected/run_v2.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "79441b6060b9dd2d9057b2bd44857ba6a34e7992c6b9c44b14c70be0d7bac28c",
+      "before_sha256": "f8c06429c2a842605c55db43eb7e5847b3abee5fde874c652cfd6526f6e707b7",
+      "changes": [
+        {
+          "after": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+          "before": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
+          "path": "/findings/21/fix_hint"
+        },
+        {
+          "after": "confirmed compatible recorder context for lock/latest-run environment.packages is required; unknown or incompatible sources cannot verify the child environment",
+          "before": "lock and latest-run environment.packages are required",
+          "path": "/findings/21/message"
+        }
+      ],
+      "path": "openai_judge_eval/expected/audit_L2.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "ca0a8f690df93543ff7d61a6dcc53a20883d86c4bbaeb3751599d44cf9d2aa60",
+      "before_sha256": "ca0a8f690df93543ff7d61a6dcc53a20883d86c4bbaeb3751599d44cf9d2aa60",
+      "changes": [],
+      "path": "openai_judge_eval/expected/lock.yaml",
+      "same_bytes": true
+    },
+    {
+      "after_sha256": "e8d91d23dee6b7f5c70ce2c6df49b8cef4ecd869d087623cfe7149b842d4995d",
+      "before_sha256": "06cdf6e48073a7167b6caf5ac98ff3767f2e32d5304f807adc68ba08f34a53d3",
+      "changes": [
+        {
+          "after": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+          "before": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
+          "path": "/findings/12/fix_hint"
+        },
+        {
+          "after": "confirmed compatible recorder context for lock/latest-run environment.packages is required; unknown or incompatible sources cannot verify the child environment",
+          "before": "lock and latest-run environment.packages are required",
+          "path": "/findings/12/message"
+        }
+      ],
+      "path": "privacy_custom_params/expected/audit_L2.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "b45e1a9688491892bed4ef395239202ddabfde56016c28984fd4bb89a3e8b4df",
+      "before_sha256": "debdce0b5835c701e4535d3014b28ecd3934f9063da8cbf56cc1ba7968f71378",
+      "changes": [
+        {
+          "after": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+          "before": "Use the environment.packages versions recorded in reprollm.lock and rerun.",
+          "path": "/findings/17/fix_hint"
+        },
+        {
+          "after": "confirmed compatible recorder context for lock/latest-run environment.packages is required; unknown or incompatible sources cannot verify the child environment",
+          "before": "lock and latest-run environment.packages are required",
+          "path": "/findings/17/message"
+        },
+        {
+          "after": "2026-10-14T03:48:50Z",
+          "before": "2026-09-28T07:16:28Z",
+          "path": "/generated_at"
+        },
+        {
+          "after": "0.7.0",
+          "before": "0.4.0",
+          "path": "/reprollm_version"
+        }
+      ],
+      "path": "privacy_custom_params/expected/audit_L2_project_rules.json",
+      "same_bytes": false
+    },
+    {
+      "after_sha256": "3c7ce039c904deb9a3c1f8ccf5aa049f5ab7670c988a755950ea2948e4cb3c77",
+      "before_sha256": "3c7ce039c904deb9a3c1f8ccf5aa049f5ab7670c988a755950ea2948e4cb3c77",
+      "changes": [],
+      "path": "privacy_custom_params/expected/lock.yaml",
+      "same_bytes": true
+    }
+  ],
+  "schema_version": 1
+}
