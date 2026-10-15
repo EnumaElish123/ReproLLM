@@ -1,6 +1,6 @@
 # Roadmap and delivery status
 
-Updated 2026-10-03. Status is based on recorded releases and validated changes;
+Updated 2026-10-15. Status is based on recorded releases and validated changes;
 historical sprint dates are planning records, not a statement of availability.
 The [changelog](../../CHANGELOG.md) identifies release contents. Documentation
 on main can describe options not yet included in the published package.
@@ -9,6 +9,11 @@ on main can describe options not yet included in the published package.
 
 The latest recorded package release is **0.6.1**. Install with
 `python -m pip install reprollm` and check `reprollm --version`.
+The public package metadata was checked again on 2026-10-15. Main currently
+uses local development version **0.7.0** and run schema 2. The staged 0.6.2
+reader bridge and 0.7.0 changes have not been published. Use a built candidate
+wheel for these features; [distribution validation](../distribution.md) checks
+the actual installed artifact independently of a source checkout.
 
 | Capability | Release evidence |
 |---|---|
@@ -52,11 +57,16 @@ specification prerequisite. Its [agent prompts](../plan/reliability-2026-10-03/A
 retain the original session order. S1-A, S1-B and S2 are delivered on main;
 S3-A (R07-A → R07-B) is **产品与本地验收已完成**. Read its
 [report and handoff](../dogfooding/2026-10-13-reliability-s3a/README.md) before
-S3-B (R04-A → R04-B). These changes remain unreleased; pending policy/schema
+the recorded [S3-B delivery](../dogfooding/2026-10-14-reliability-s3b/README.md).
+S3-B (R04-A → R04-B) is delivered with scoped environment evidence and pre-child
+input capture. S4-A supplies the [bounded GSM8K recipe](../../examples/lm_eval_replay/README.md)
+and [candidate-wheel validation entry](../distribution.md); its actual validation
+results are recorded in the session report. D03's release workflow gate is the
+next engineering task. These changes remain unreleased; pending policy
 decisions and resource validations retain their separate requirements.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 at `110087b1e416c12c25253c07365944935e986470` addresses the initial Windows
-CI budget failure. Latest local validation passed 2,505 tests, 174 security
+CI budget failure. That follow-up's local validation passed 2,505 tests, 174 security
 tests and a fresh five-project Gate A; final five-job CI is verified against
 the actual pushed main HEAD in the session's final reply.
 
@@ -81,9 +91,13 @@ These are unscheduled proposals, not promises for the next release.
 ## Pending validation
 
 [VAL-R01, VAL-R02 and VAL-R03](../dogfooding/pending-resource-validation.md)
-remain blocked on Linux/GPU resources, the formal judge input bundle and
-successful HF gated-file access respectively. They describe fresh acceptance
-coverage, not unimplemented features. Historical successes remain historical;
+retain separate acceptance requirements. The
+[2026-10-13 native replay](../dogfooding/2026-10-13-val-r01/README.md) executed all
+ten GPU children but left VAL-R01 blocked on snapshot fidelity. S4-A repairs the
+observed capture defects and validates its own lm-eval recipe; the full other-project
+native matrix still requires fresh acceptance. VAL-R02's formal paid judge and
+VAL-R03's authenticated gated-file access are not established by these offline
+or lm-eval checks. Historical successes remain historical;
 the [five-project baseline](../../val.md) governs resumption and release gates.
 
 ## Good first issues

@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- D02: validate one prebuilt wheel in a fresh external environment using the
+  shared offline walkthrough, explicit interpreter selection and package-data
+  commands. Record wheel hashes, optional build-manifest source association,
+  isolation evidence and semantic assertions; reject wrong target versions and
+  missing package data. Clarify published versus local development availability
+  without changing the package version, maturity classifier or release workflow.
+
 - VOPT-02: use focused checks per task and one complete final session quality
   gate; retain all five product-validation targets and full gold assertions with
   affected extensions. Document explicit documentation/tool-only exceptions,

@@ -15,12 +15,23 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+OFFLINE_CLI = """
+import sys
+def deny_network(event, args):
+    if event in {'socket.connect', 'socket.getaddrinfo'}:
+        raise RuntimeError('The offline walkthrough forbids network access')
+sys.addaudithook(deny_network)
+from reprollm.cli.main import cli
+cli()
+"""
 
 
 @dataclass(frozen=True)
@@ -32,16 +43,24 @@ class Step:
     exit_code: int
     elapsed_seconds: float
     report_json: str = ""
+    executable: str = ""
+    raw_stdout: str | None = None
+    raw_stderr: str | None = None
 
 
-def _env() -> dict[str, str]:
+class CommandError(RuntimeError):
+    def __init__(self, step: Step) -> None:
+        self.step = step
+        super().__init__(f"reprollm {' '.join(step.command)} failed: {step.stderr}")
+
+
+def _env(python: Path | None = None) -> dict[str, str]:
     # Child commands need executable lookup and platform temp locations, not
     # credentials inherited from a developer's interactive shell.
     # getpass needs these on Windows, where pwd is absent. Runtime privacy
     # uses this identity to remove usernames from captured artifacts.
     names = (
         "PATH",
-        "PYTHONPATH",
         "SystemRoot",
         "WINDIR",
         "PATHEXT",
@@ -54,7 +73,7 @@ def _env() -> dict[str, str]:
         "USERNAME",
     )
     env = {name: os.environ[name] for name in names if name in os.environ}
-    env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+    env["PATH"] = str((python or Path(sys.executable)).parent) + os.pathsep + env.get("PATH", "")
     env.update(
         {
             "COLUMNS": "80",
@@ -64,6 +83,7 @@ def _env() -> dict[str, str]:
             "NO_COLOR": "1",
             "PYTHONIOENCODING": "utf-8",
             "PYTHONUTF8": "1",
+            "PYTHONNOUSERSITE": "1",
             "GIT_CONFIG_GLOBAL": os.devnull,
             "GIT_CONFIG_NOSYSTEM": "1",
         }
@@ -71,14 +91,22 @@ def _env() -> dict[str, str]:
     return env
 
 
-def _run(args: list[str], cwd: Path, title: str = "") -> Step:
-    command = [sys.executable, "-c", "from reprollm.cli.main import cli; cli()", *args]
+def _run(
+    args: list[str],
+    cwd: Path,
+    title: str = "",
+    *,
+    python: Path | None = None,
+    on_step: Callable[[Step], None] | None = None,
+) -> Step:
+    executable = str(python or Path(sys.executable))
+    command = [executable, "-I", "-c", OFFLINE_CLI, *args]
     started = time.monotonic()
-    result = subprocess.run(command, cwd=cwd, capture_output=True, encoding="utf-8", env=_env())
-    if result.returncode not in (0, 1):
-        raise RuntimeError(f"reprollm {' '.join(args)} failed: {result.stderr}")
+    result = subprocess.run(
+        command, cwd=cwd, capture_output=True, encoding="utf-8", env=_env(python)
+    )
     report = result.stdout if "--format" in args and "json" in args else ""
-    return Step(
+    step = Step(
         title,
         args,
         result.stdout.rstrip(),
@@ -86,7 +114,15 @@ def _run(args: list[str], cwd: Path, title: str = "") -> Step:
         result.returncode,
         time.monotonic() - started,
         report,
+        executable,
+        result.stdout,
+        result.stderr,
     )
+    if on_step is not None:
+        on_step(step)
+    if result.returncode not in (0, 1):
+        raise CommandError(step)
+    return step
 
 
 def _git(work: Path, *args: str) -> None:
@@ -154,7 +190,13 @@ def _fill(work: Path, max_tokens: int) -> None:
     )
 
 
-def _capture(work: Path, label: str) -> tuple[Step, str]:
+def _capture(
+    work: Path,
+    label: str,
+    *,
+    python: Path | None = None,
+    on_step: Callable[[Step], None] | None = None,
+) -> tuple[Step, str]:
     before = set(work.glob(".reprollm/runs/*/run.json"))
     step = _run(
         [
@@ -170,6 +212,8 @@ def _capture(work: Path, label: str) -> tuple[Step, str]:
         ],
         work,
         f"Capture {label} (standard-library probe)",
+        python=python,
+        on_step=on_step,
     )
     created = set(work.glob(".reprollm/runs/*/run.json")) - before
     if len(created) != 1:
@@ -177,60 +221,60 @@ def _capture(work: Path, label: str) -> tuple[Step, str]:
     return step, created.pop().parent.name
 
 
-def run_workflow(work: Path) -> list[Step]:
+def run_workflow(
+    work: Path,
+    *,
+    python: Path | None = None,
+    on_step: Callable[[Step], None] | None = None,
+) -> list[Step]:
+    run = partial(_run, python=python, on_step=on_step)
     prepare(work)
     records = [
-        _run(
+        run(
             ["audit", ".", "--no-color", "--format", "json"],
             work,
             "Audit before initialization: Level 0",
         )
     ]
-    records.append(_run(["init", "."], work, "Create a scaffold"))
+    records.append(run(["init", "."], work, "Create a scaffold"))
     records.append(
-        _run(
-            ["audit", ".", "--no-color", "--format", "json"], work, "Inspect the scaffold: Level 1"
-        )
+        run(["audit", ".", "--no-color", "--format", "json"], work, "Inspect the scaffold: Level 1")
     )
     _fill(work, 32)
     records.append(
-        _run(
+        run(
             ["audit", ".", "--no-color", "--format", "json"],
             work,
             "Audit the filled declaration: Level 1",
         )
     )
-    records.append(_run(["lock", ".", "--offline"], work, "Hash inputs without network resolution"))
-    records.append(_run(["lock", ".", "--check"], work, "Check manifest and rule freshness"))
+    records.append(run(["lock", ".", "--offline"], work, "Hash inputs without network resolution"))
+    records.append(run(["lock", ".", "--check"], work, "Check manifest and rule freshness"))
     _git(work, "add", "-A")
     _git(work, "commit", "-qm", "Declare capture a")
-    step, run_a = _capture(work, "capture-a")
+    step, run_a = _capture(work, "capture-a", python=python, on_step=on_step)
     records.append(step)
     _fill(work, 48)
-    records.append(
-        _run(["lock", ".", "--offline"], work, "Record the intentional parameter change")
-    )
+    records.append(run(["lock", ".", "--offline"], work, "Record the intentional parameter change"))
     _git(work, "add", "-A")
     _git(work, "commit", "-qm", "Declare capture b")
     # Latest-run selection sorts second-resolution IDs. Keep the two examples
     # in distinct seconds, as a person following the guide would naturally do.
     while time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()) == run_a.split("-", 1)[0]:
         time.sleep(0.05)
-    step, run_b = _capture(work, "capture-b")
+    step, run_b = _capture(work, "capture-b", python=python, on_step=on_step)
     records.append(step)
     records.append(
-        _run(
-            ["audit", ".", "--no-color", "--format", "json"], work, "Audit captured state: Level 2"
-        )
+        run(["audit", ".", "--no-color", "--format", "json"], work, "Audit captured state: Level 2")
     )
     records.append(
-        _run(
+        run(
             ["diff", run_a, run_b, "--fail-on", "HIGH", "--format", "json"],
             work,
             "Explain the drift",
         )
     )
-    records.append(_run(["export", ".", "--run", run_b], work, "Export the selected capture"))
+    records.append(run(["export", ".", "--run", run_b], work, "Export the selected capture"))
     return records
 
 
@@ -253,6 +297,10 @@ def _excerpt(step: Step) -> str:
 
 
 def render(records: list[Step], work: Path) -> str:
+    version_text = (ROOT / "src/reprollm/__init__.py").read_text(encoding="utf-8")
+    version = re.search(r'^__version__ = "([^"]+)"', version_text, re.MULTILINE)
+    if version is None:
+        raise RuntimeError("source version is missing")
     body = [
         "# Quick start",
         "",
@@ -272,6 +320,21 @@ def render(records: list[Step], work: Path) -> str:
         "Missing signals may occur in files that were not analysed. "
         "JSON output stays readable as one document; the coverage message "
         "does not change finding thresholds.",
+        "",
+        "The installation below starts with the published package. These output excerpts "
+        "are generated from main, whose unreleased features and run format may differ. "
+        "See the single [delivery-status source](community/roadmap.md) for availability. "
+        "To reproduce main's features, first build the candidate wheel using the "
+        "[distribution instructions](distribution.md), then replace the package installation "
+        "below with the following command, using the actual path to that wheel:",
+        "",
+        "```bash",
+        f"python -m pip install dist/reprollm-{version.group(1)}-py3-none-any.whl",
+        "```",
+        "",
+        "The distribution validator installs that supplied wheel into its own fresh environment "
+        "and runs this same walkthrough. Source-generated examples alone do not establish "
+        "that a candidate wheel passed.",
         "",
         "## Install and prepare a separate copy",
         "",

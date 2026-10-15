@@ -6,6 +6,14 @@ Commands below are executed in a disposable example by CI. JSON blocks are excer
 
 When a repository exceeds the Python file budget, audit, init and export report the actual parsed and candidate counts on stderr. Missing signals may occur in files that were not analysed. JSON output stays readable as one document; the coverage message does not change finding thresholds.
 
+The installation below starts with the published package. These output excerpts are generated from main, whose unreleased features and run format may differ. See the single [delivery-status source](community/roadmap.md) for availability. To reproduce main's features, first build the candidate wheel using the [distribution instructions](distribution.md), then replace the package installation below with the following command, using the actual path to that wheel:
+
+```bash
+python -m pip install dist/reprollm-0.7.0-py3-none-any.whl
+```
+
+The distribution validator installs that supplied wheel into its own fresh environment and runs this same walkthrough. Source-generated examples alone do not establish that a candidate wheel passed.
+
 ## Install and prepare a separate copy
 
 ```bash
