@@ -93,7 +93,13 @@ jobs:
         run: |
           for example in examples/*/; do
             uv run reprollm audit "$example" --level 1 --fail-on never --format json > /dev/null
-            uv run reprollm lock --check "$example"
+            if [ "$example" = "examples/lm_eval_replay/" ]; then
+              # This recipe creates its lock in a disposable pinned-framework checkout.
+              # Its offline L1/L2 capture checks run in the complete test suite above.
+              test ! -e "${example}reprollm.lock"
+            else
+              uv run reprollm lock --check "$example"
+            fi
           done
 
       - name: Generated documentation freshness

@@ -73,13 +73,17 @@ def main() -> None:
     index.write_text(
         "# ReproLLM examples\n\n"
         "Example research repositories generated from the test fixtures.\n"
-        "Each contains a completed `reprollm.yaml` and a reviewed historical lock.\n"
+        "The three fixture-derived examples contain a completed `reprollm.yaml` "
+        "and a reviewed historical lock.\n"
         "Use `audit --level 1` and `lock --check` to inspect them. Copy an example "
         "outside this checkout before editing it or generating artifacts. "
         "Running its model script requires its own dependencies and resources.\n\n"
         "The [quick start](../docs/quickstart.md) exercises capture, diff and export "
         "with only the Python standard library.\n\n"
         + "\n".join(f"- [{n}](./{n}/) — {d}" for n, d in NOTES.items())
+        + "\n- [lm_eval_replay](./lm_eval_replay/) — Native GSM8K A/B recipe with "
+        "separate static, standard-library and GPU validation. Its lock is generated "
+        "in a disposable pinned-framework checkout; follow its README before running."
         + "\n\nRegenerate with `uv run python scripts/refresh_examples.py`.\n",
         encoding="utf-8",
     )

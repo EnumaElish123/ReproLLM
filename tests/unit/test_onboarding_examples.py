@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -48,6 +49,11 @@ def test_refresh_preserves_reviewed_locks_and_exports(tmp_path: Path, monkeypatc
     }
     for name, content in preserved.items():
         (example / name).write_bytes(content)
+    native = examples / "lm_eval_replay"
+    shutil.copytree(ROOT / "examples/lm_eval_replay", native)
+    native_inputs = {
+        path.relative_to(native): path.read_bytes() for path in native.rglob("*") if path.is_file()
+    }
     monkeypatch.setattr(refresh_examples, "EXAMPLES", examples)
 
     refresh_examples.main()
@@ -55,6 +61,11 @@ def test_refresh_preserves_reviewed_locks_and_exports(tmp_path: Path, monkeypatc
 
     for name, content in preserved.items():
         assert (example / name).read_bytes() == content
+    assert {
+        path.relative_to(native): path.read_bytes() for path in native.rglob("*") if path.is_file()
+    } == native_inputs
+    assert not (native / "reprollm.lock").exists()
+    assert "[lm_eval_replay](./lm_eval_replay/)" in (examples / "README.md").read_text()
 
 
 def test_quickstart_covers_real_levels_and_resource_free_workflow(tmp_path: Path) -> None:
