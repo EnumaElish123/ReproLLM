@@ -1,0 +1,23 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_isolated_walkthrough_preserves_utf8_mode_and_non_ascii_output ______
+tests/unit/test_distribution.py:144: in test_isolated_walkthrough_preserves_utf8_mode_and_non_ascii_output
+    assert json.loads(step.stdout) == {"utf8_mode": 1, "text": "café — 训练"}
+E   AssertionError: assert {'utf8_mode':...: 'café — 训练'} == {'utf8_mode':...: 'café — 训练'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     {'utf8_mode': 0} != {'utf8_mode': 1}
+E     Use -v to get more diff
+____ test_windows_reader_keeps_stderr_instead_of_losing_an_undecodable_pipe ____
+tests/unit/test_distribution.py:180: in test_windows_reader_keeps_stderr_instead_of_losing_an_undecodable_pipe
+    step = gen_quickstart._run(["--version"], tmp_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/gen_quickstart.py:113: in _run
+    result.stderr.rstrip(),
+    ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'rstrip'
+=========================== short test summary info ============================
+FAILED tests/unit/test_distribution.py::test_isolated_walkthrough_preserves_utf8_mode_and_non_ascii_output
+FAILED tests/unit/test_distribution.py::test_windows_reader_keeps_stderr_instead_of_losing_an_undecodable_pipe
+2 failed, 26 deselected in 0.22s

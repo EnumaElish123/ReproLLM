@@ -12,9 +12,15 @@
 |---|---|---|
 | D01 | `d32645ada35ca31f20ccaaf017832739cdada70b` | 可运行 GSM8K recipe、独立输入预期、三层验证，以及必要的输入快照保真修复 |
 | D02 | `b86c014cf9f15f1efddb6902979dcc6ddf79be9f` | 同一候选 wheel 的独立安装验收入口、来源绑定、成功/失败案例与版本文档 |
+| D01 CI 补充 | `707d5778470e558d35b2b558c612c0559ed51da5` | 明确 native recipe 的运行时锁合同，保留所有示例审计及旧例锁检查 |
+| D02 Windows 补充 | `13830addfd19389d61ec0256e728bbf4b57ab02a` | 隔离子进程显式 UTF-8，实际输出与 reader 回归 |
 
-以上任务共享一次最终质量门和五项目 Gate A。候选源码为 D02 提交；之后仅补
-报告、证据和计划进度，按验证工作流的纯报告例外不重复产品验证。
+D01/D02 产品以 b86 候选的共享质量门、五项目 Gate A 和同一 wheel/真实 GPU
+证据验收。首推 CI 发现示例接线和 Windows 工具编码问题，随后仅修改 CI、
+验证工具、相关测试与生成索引，并重新完成全部质量门及 D02 实装正反例。
+最新完整门为 **2,692 tests / 205 security / 93.83% / 21 命令 PASS**，详见
+[CI 反馈与修复](ci-followup.md)。产品与原生证据保留准确的 b86 来源；509 个
+受保护输入和 141 个 wheel payload 另有字节守卫，不将旧资源执行改称新 SHA。
 
 ## D01：声明、实际命令和消费证据
 
@@ -90,9 +96,9 @@ AST 确认的除法运算符区间，普通 argv/config 不获得代码豁免；
 Alpha classifier 和历史 Beta 里程碑名称不作成熟度决定，独立 Action `@v1`
 也不因本仓库更新而自动变化。详细安装区别见 [分发说明](../../distribution.md)。
 
-## 最终共享质量门与五项目 Gate A
+## 产品候选共享质量门与五项目 Gate A
 
-最终候选输入库存 SHA
+产品验收候选 b86 的输入库存 SHA
 `96f9f205fda9b6202401b2b73b02d69a0aad71427d478e60f36e3a0670ba886d`。
 24 条最终命令和 24 次解释器/包来源检查均 PASS；检查累计 515.559727s，
 完整门墙钟 518.777930s。输入文件与验证器前后字节不变。
@@ -159,6 +165,7 @@ RuntimeError，当前入口会失败退出，但未统一形成 JSON 失败摘�
 - [独立完整性与隐私复核](portable-final-1-review.json)及[主执行者复核](root-evidence-review.json)。初次扫描记录保留，最终残留均经合成安全语料或正则常量证明，无未知凭据或本机身份。
 - [实际版本和构建关联](version-evidence.json)。
 - [原生 GPU 三层与完整消费证据](native/evidence-index.json)及[独立 A/B 产物核对](root-native-artifact-review.json)：126 个索引 payload、577,342 字节；16 个产品运行文件保持原始字节。索引 SHA `81edf1764e5e14928a20e6e95aa6cbecf73e9c6d590c6952f2971bac8ff86470`。
+- [首推 CI 失败、两项修复及最新完整门](ci-validation/evidence-index.json)：381 个逻辑来源、175 份完整 payload，详见 [CI 跟进](ci-followup.md)。
 
 根 JSON 均带 schema_version；原始无版本 JSON 流与 source scripts 保留为 inert
 `.txt`，不修改原业务正文。逻辑来源索引同时记录原始 SHA/字节数、便携 SHA/

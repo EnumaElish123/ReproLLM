@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "AuditConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "fail_on": {
+          "default": "critical",
+          "enum": [
+            "critical",
+            "warning",
+            "never"
+          ],
+          "title": "Fail On",
+          "type": "string"
+        },
+        "ignore": {
+          "items": {
+            "$ref": "#/$defs/AuditIgnoreEntry"
+          },
+          "title": "Ignore",
+          "type": "array"
+        },
+        "show_passed": {
+          "default": false,
+          "title": "Show Passed",
+          "type": "boolean"
+        }
+      },
+      "title": "AuditConfig",
+      "type": "object"
+    },
+    "AuditIgnoreEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "rule": {
+          "title": "Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule",
+        "reason"
+      ],
+      "title": "AuditIgnoreEntry",
+      "type": "object"
+    },
+    "DiscoverConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "api_key_env": {
+          "default": "REPROLLM_LLM_API_KEY",
+          "title": "Api Key Env",
+          "type": "string"
+        },
+        "base_url_env": {
+          "default": "REPROLLM_LLM_BASE_URL",
+          "title": "Base Url Env",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "exclude": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exclude"
+        },
+        "include": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Include"
+        },
+        "max_chars": {
+          "default": 60000,
+          "minimum": 1,
+          "title": "Max Chars",
+          "type": "integer"
+        },
+        "model_env": {
+          "default": "REPROLLM_LLM_MODEL",
+          "title": "Model Env",
+          "type": "string"
+        }
+      },
+      "title": "DiscoverConfig",
+      "type": "object"
+    },
+    "RunConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_output": {
+          "default": false,
+          "title": "Capture Output",
+          "type": "boolean"
+        },
+        "env_capture": {
+          "default": "allowlist",
+          "enum": [
+            "allowlist",
+            "all"
+          ],
+          "title": "Env Capture",
+          "type": "string"
+        },
+        "extra_env_allowlist": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Extra Env Allowlist",
+          "type": "array"
+        },
+        "snapshot_max_bytes": {
+          "default": 1048576,
+          "minimum": 1,
+          "title": "Snapshot Max Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "RunConfig",
+      "type": "object"
+    }
+  },
+  "$id": "https://reprollm.dev/schemas/config.schema.json",
+  "additionalProperties": false,
+  "description": "``.reprollm/config.yaml``.",
+  "properties": {
+    "audit": {
+      "$ref": "#/$defs/AuditConfig"
+    },
+    "discover": {
+      "$ref": "#/$defs/DiscoverConfig"
+    },
+    "run": {
+      "$ref": "#/$defs/RunConfig"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "title": "Config",
+  "type": "object"
+}

@@ -1,0 +1,83 @@
+"""Exercise the real examples workflow body with controlled command boundaries."""
+import argparse
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import yaml
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--phase', required=True)
+args = parser.parse_args()
+root = Path('<CANDIDATE>')
+out = Path(__file__).parent
+workflow = (root / '.github/workflows/ci.yml').read_bytes()
+steps = yaml.safe_load(workflow)['jobs']['quality']['steps']
+body = next(step['run'] for step in steps if step.get('name') == 'Examples stay valid')
+legacy = ['hf_vllm_eval', 'openai_judge_eval', 'privacy_custom_params']
+scenarios = [
+    ('healthy', 0), ('legacy-missing-lock', 1), ('legacy-stale-lock', 1),
+    ('unknown-missing-lock', 1), ('audit-error', 2), ('unexpected-native-lock', 1),
+]
+stub = '''import json, os, sys
+from pathlib import Path
+command = sys.argv[1:]
+with open(os.environ['WORKFLOW_CALLS'], 'a') as output:
+    output.write(json.dumps(command) + '\\n')
+assert command[:2] == ['run', 'reprollm']
+if command[2] == 'audit':
+    path = Path(command[3])
+    raise SystemExit(2 if (path / 'FAIL_AUDIT').exists() else 0)
+assert command[2:4] == ['lock', '--check']
+lock = Path(command[4]) / 'reprollm.lock'
+raise SystemExit(0 if lock.exists() and lock.read_text() == 'fresh' else 1)
+'''
+records = []
+for name, expected in scenarios:
+    with tempfile.TemporaryDirectory(prefix='s4a-example-ci-') as temporary:
+        folder = Path(temporary)
+        for example in legacy + ['lm_eval_replay']:
+            (folder / 'examples' / example).mkdir(parents=True)
+        for example in legacy:
+            (folder / 'examples' / example / 'reprollm.lock').write_text('fresh')
+        native = folder / 'examples/lm_eval_replay'
+        if name == 'legacy-missing-lock':
+            (folder / 'examples/hf_vllm_eval/reprollm.lock').unlink()
+        if name == 'legacy-stale-lock':
+            (folder / 'examples/hf_vllm_eval/reprollm.lock').write_text('stale')
+        if name == 'unknown-missing-lock':
+            (folder / 'examples/zz_unknown').mkdir()
+        if name == 'audit-error':
+            (native / 'FAIL_AUDIT').touch()
+        if name == 'unexpected-native-lock':
+            (native / 'reprollm.lock').write_text('fresh')
+        binaries = folder / 'bin'
+        binaries.mkdir()
+        executable = binaries / 'uv'
+        executable.write_text('#!' + sys.executable + '\n' + stub)
+        executable.chmod(0o755)
+        calls = folder / 'calls.jsonl'
+        env = {'PATH': str(binaries) + os.pathsep + os.environ['PATH'], 'WORKFLOW_CALLS': str(calls)}
+        result = subprocess.run(['bash', '-e', '-c', body], cwd=folder, env=env, capture_output=True)
+        invoked = [json.loads(line) for line in calls.read_text().splitlines()]
+        actual_audits = [row[3] for row in invoked if row[2] == 'audit']
+        actual_locks = [row[4] for row in invoked if row[2] == 'lock']
+        checks = [result.returncode == expected]
+        if name == 'healthy':
+            checks += [actual_audits == ['examples/' + n + '/' for n in sorted(legacy + ['lm_eval_replay'])],
+                       actual_locks == ['examples/' + n + '/' for n in sorted(legacy)]]
+        records.append({'scenario': name, 'expected_exit': expected, 'actual_exit': result.returncode,
+                        'passed': all(checks), 'commands': invoked,
+                        'stdout_sha256': hashlib.sha256(result.stdout).hexdigest(),
+                        'stderr_sha256': hashlib.sha256(result.stderr).hexdigest()})
+receipt = {'schema_version': 1, 'phase': args.phase, 'status': 'PASS' if all(r['passed'] for r in records) else 'RED',
+           'workflow_sha256': hashlib.sha256(workflow).hexdigest(), 'step_body_sha256': hashlib.sha256(body.encode()).hexdigest(),
+           'scope': 'Actual trusted workflow body, controlled CLI boundary; full real CLI integration recorded separately',
+           'records': records}
+(out / ('workflow-' + args.phase + '.json')).write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
+print(json.dumps({'status': receipt['status'], 'results': [(r['scenario'], r['passed']) for r in records]}))
+raise SystemExit(0 if receipt['status'] == 'PASS' else 1)

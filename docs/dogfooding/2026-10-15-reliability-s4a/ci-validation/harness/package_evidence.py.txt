@@ -1,0 +1,218 @@
+"""Package CI-only final quality and wiring evidence without rerunning products."""
+from __future__ import annotations
+import getpass
+import hashlib
+import html
+import json
+import re
+import shutil
+import socket
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+BASE = Path('<SESSION>')
+QUALITY = BASE / 'quality-ci-followup/final-2'
+CI = BASE / 'ci-followup'
+ROOT = BASE / 'worktree'
+OUT = BASE / 'quality-ci-followup/portable-final-2'
+sha = lambda raw: hashlib.sha256(raw).hexdigest()
+
+
+def main():
+    summary = json.loads((QUALITY / 'summary.json').read_bytes())
+    assert summary['all_passed'] and summary['command_count'] == 21
+    assert summary['product_gate_a_status'] == 'NOT_APPLICABLE_CI_ONLY'
+    assert summary['resource_commands_executed'] == 0
+    identity = json.loads((QUALITY / 'product-input-identity.json').read_bytes())
+    assert identity['all_protected_file_sets_and_bytes_identical']
+    assert identity['current_quality_commit'] == summary['candidate_commit']
+    assert not OUT.exists(), 'Never overwrite evidence'
+    for command in json.loads((QUALITY / 'commands.json').read_bytes())['commands']:
+        for row in [command, command['origin_check']]:
+            assert sha((QUALITY / row['raw_log']).read_bytes()) == row['raw_log_sha256']
+    distribution = json.loads((QUALITY / 'distribution.json').read_bytes())
+    assert distribution['status'] == 'PASS' and len(distribution['commands']) == 26
+    for row in distribution['commands']:
+        for stream in ['stdout','stderr']:
+            assert sha((QUALITY/'private-distribution'/row[stream+'_artifact']).read_bytes()) == row[stream+'_sha256']
+    for stream in ['stdout','stderr']:
+        assert sha((QUALITY/'private-distribution'/('installation.'+stream+'.txt')).read_bytes()) == distribution['installation'][stream+'_sha256']
+    assert sha((QUALITY/'private-distribution/import-probe.json').read_bytes()) == distribution['imports']['probe_sha256']
+    aborted = BASE / 'quality-ci-followup/final-1'
+    assert json.loads((aborted/'summary.json').read_bytes())['all_passed'] is False
+    assert json.loads((aborted/'attempt-status.json').read_bytes())['status'] == 'ABORTED_AFTER_NEW_CI_FAILURE'
+    for command in json.loads((aborted/'commands.json').read_bytes())['commands']:
+        for row in [command,command['origin_check']]:
+            assert sha((aborted/row['raw_log']).read_bytes()) == row['raw_log_sha256']
+    for name, prefix in [('reproduction.json',''), ('tool-error-reproduction.json','tool-error-')]:
+        receipt = json.loads((CI / name).read_bytes())
+        for row in receipt['records']:
+            for stream in ['stdout','stderr']:
+                assert sha((CI / (prefix + row['label'] + '.' + stream + '.txt')).read_bytes()) == row[stream + '_sha256']
+    real = json.loads((CI / 'real-step.json').read_bytes())
+    for stream in ['stdout','stderr']:
+        assert sha((CI / ('real-step.' + stream + '.txt')).read_bytes()) == real[stream + '_sha256']
+    assert real['workflow_sha256'] == sha((ROOT / '.github/workflows/ci.yml').read_bytes())
+    green = json.loads((CI / 'workflow-green.json').read_bytes())
+    assert green['status'] == 'PASS' and len(green['records']) == 6
+    assert green['workflow_sha256'] == real['workflow_sha256']
+    assert green['step_body_sha256'] == real['step_body_sha256']
+    for phase in ['red', 'green']:
+        for row in json.loads((CI / ('workflow-' + phase + '.json')).read_bytes())['records']:
+            assert row['stdout_sha256'] == sha(b'') and row['stderr_sha256'] == sha(b'')
+
+    negatives = BASE / 'distribution-ci-followup-negatives'
+    negative = json.loads((negatives/'receipt.json').read_bytes())
+    assert negative['status'] == 'PASS' and negative['validator_source_commit'] == summary['candidate_commit']
+    assert negative['source_commit'] == identity['prior_product_candidate']
+    assert negative['validator_sha256'] == sha((ROOT/'scripts/validate_distribution.py').read_bytes())
+    assert negative['walkthrough_sha256'] == sha((ROOT/'scripts/gen_quickstart.py').read_bytes())
+    for row in negative['results']:
+        assert row['passed']
+        assert sha((negatives/row['summary']).read_bytes()) == row['summary_sha256']
+        assert sha((negatives/row['stderr']).read_bytes()) == row['stderr_sha256']
+        result = json.loads((negatives/row['summary']).read_bytes())
+        rawdir = negatives / (row['scenario'] + '-raw')
+        for command in result.get('commands', []):
+            for stream in ['stdout','stderr']:
+                assert sha((rawdir/command[stream+'_artifact']).read_bytes()) == command[stream+'_sha256']
+        if isinstance(result.get('installation'), dict):
+            for stream in ['stdout','stderr']:
+                assert sha((rawdir/('installation.'+stream+'.txt')).read_bytes()) == result['installation'][stream+'_sha256']
+        if isinstance(result.get('imports'), dict):
+            assert sha((rawdir/'import-probe.json').read_bytes()) == result['imports']['probe_sha256']
+    focused = json.loads((BASE/'d02-windows-focused-receipt.json').read_bytes())
+    assert focused['validator_source_commit'] == summary['candidate_commit']
+    for row in focused['records']:
+        assert sha((BASE/row['log']).read_bytes()) == row['sha256']
+    for relative, expected in focused['sources'].items():
+        assert sha((ROOT/relative).read_bytes()) == expected
+    sources = {}
+    def add(file, logical):
+        assert file.is_file() and not file.is_symlink() and logical not in sources
+        sources[logical] = file
+    for file in sorted(QUALITY.glob('*.json')):
+        add(file, 'quality/' + file.name)
+    for filename in ['pytest-report.xml', 'coverage.xml']:
+        add(QUALITY / filename, 'quality/' + filename)
+    for folder in ['raw', 'schema-export', 'private-distribution']:
+        for file in sorted((QUALITY / folder).rglob('*')):
+            if file.is_file() and '__pycache__' not in file.parts:
+                add(file, 'quality/' + file.relative_to(QUALITY).as_posix())
+    for file in sorted(aborted.glob('*.json')):
+        add(file, 'aborted/final-1/' + file.name)
+    add(aborted/'harness-run_quality.py', 'aborted/final-1/harness-run_quality.py')
+    for file in sorted((aborted/'raw').iterdir()):
+        if file.is_file():
+            add(file, 'aborted/final-1/raw/' + file.name)
+    for file in sorted(CI.iterdir()):
+        if file.is_file():
+            add(file, 'wiring/' + file.name)
+    for file in sorted(negatives.rglob('*')):
+        if file.is_file() and '__pycache__' not in file.parts and file.suffix not in {'.whl','.pyc'}:
+            add(file, 'distribution-negatives/' + file.relative_to(negatives).as_posix())
+    for name in ['d02-windows-focused-receipt.json', 'd02-windows-red.log',
+                 'd02-windows-targeted-green.log', 'd02-windows-focused-green.log',
+                 'run_distribution_ci_followup_negatives.py', 'distribution-ci-followup-negatives.log']:
+        add(BASE/name, 'windows-tool-development/' + name)
+    for name in identity['authorized_tool_only_paths']:
+        add(ROOT / name, 'changed-inputs/' + name)
+    add(Path(__file__), 'harness/package_evidence.py')
+    add(BASE / 'quality-ci-followup/run_quality.py', 'harness/run_quality.py')
+
+    replacements = [
+        (str(ROOT / '.venv'), '<CANDIDATE_ENV>'),
+        (str(ROOT), '<CANDIDATE>'),
+        (str(QUALITY), '<QUALITY>'),
+        (str(CI), '<CI_FOLLOWUP>'),
+        (str(BASE), '<SESSION>'),
+        ('<GIT_SHIM>', '<GIT_SHIM>'),
+        ('<SOURCE_REPOSITORY>', '<SOURCE_REPOSITORY>'),
+        ('/tmp/pytest-of-' + getpass.getuser(), '<PYTEST_TEMP>'),
+        (str(Path.home()), '<HOME>'),
+    ]
+    uv = shutil.which('uv')
+    if uv:
+        replacements.append((uv, '<UV>'))
+    temporary_roots = set()
+    for logical, file in sources.items():
+        if logical.startswith(('quality/private-distribution/','distribution-negatives/')):
+            temporary_roots.update(re.findall(r'/tmp/reprollm-wheel-[a-zA-Z0-9_-]+', file.read_text(encoding='utf-8')))
+    for number, root in enumerate(sorted(temporary_roots)):
+        replacements.append((root, '<DISTRIBUTION_TEMP_' + str(number+1) + '>'))
+    replacements.sort(key=lambda row: -len(row[0]))
+    identities = {getpass.getuser(), socket.gethostname()}
+    payloads = {}
+    for logical, file in sources.items():
+        raw = file.read_bytes()
+        text = raw.decode('utf-8', 'strict')
+        xml = logical.endswith('.xml')
+        for source, target in replacements:
+            text = text.replace(source, html.escape(target, quote=True) if xml else target)
+        marker = html.escape('<LOCAL_IDENTITY>') if xml else '<LOCAL_IDENTITY>'
+        for value in identities:
+            text = re.sub(r'(?<!\w)' + re.escape(value) + r'(?!\w)', marker, text)
+        for source, _ in replacements:
+            assert source not in text
+        if xml:
+            ET.fromstring(text)
+        payloads[logical] = (raw, text.encode())
+    OUT.mkdir(parents=True)
+    physical, references, stored = {}, {}, {}
+    for logical, (raw, payload) in payloads.items():
+        digest = sha(payload)
+        target = logical + '.txt' if logical.endswith('.py') else logical
+        if target.endswith('.json'):
+            obj = json.loads(payload)
+            if not isinstance(obj, dict) or type(obj.get('schema_version')) is not int:
+                target += '.txt'
+        if digest not in stored:
+            dst = OUT / target
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(payload)
+            stored[digest] = target
+            physical[target] = {'sha256': digest, 'bytes': len(payload)}
+        references[logical] = {
+            'content': stored[digest], 'source_sha256': sha(raw), 'source_bytes': len(raw),
+            'portable_sha256': digest, 'portable_bytes': len(payload), 'normalization_applied': raw != payload,
+        }
+    prior_references = []
+    for name in ['validation/evidence-index.json','native/evidence-index.json']:
+        relative = 'docs/dogfooding/2026-10-15-reliability-s4a/' + name
+        path = ROOT/relative
+        prior_references.append({'repository_path':relative,'sha256':sha(path.read_bytes()),
+                                 'retention':'Reference only; original package not duplicated in this tool-only supplement.'})
+    index = {
+        'schema_version': 1,
+        'task': 'S4-A CI/tool follow-up for examples loop and Windows isolated Python encoding',
+        'candidate_commit': summary['candidate_commit'],
+        'prior_product_candidate': summary['prior_product_candidate'],
+        'status': 'PASS',
+        'product_gate_a': 'NOT_APPLICABLE_CI_ONLY',
+        'resource_gate_b': 'NOT_APPLICABLE_CI_ONLY',
+        'wheel_build': 'NOT_REBUILT_UNCHANGED_PRODUCT_INPUTS',
+        'wheel_installation': 'FRESH_WITH_UPDATED_VALIDATION_TOOL_AND_ORIGINAL_B86_ARTIFACT',
+        'quality_command_count': 21,
+        'normative_quality_command_count': 20,
+        'additional_distribution_command_count': 1,
+        'aborted_attempt_preserved': 'final-1 ABORTED_AFTER_NEW_CI_FAILURE is not acceptance',
+        'protected_input_count': identity['protected_input_count'],
+        'source_file_count': len(references),
+        'physical_file_count': len(physical),
+        'total_portable_bytes': sum(row['bytes'] for row in physical.values()),
+        'normalization': 'Complete UTF-8 payloads retained; only known local path/identity replacement, XML labels escaped. Full original and portable hashes/lengths retained; byte duplicates stored once. Synthetic security-test IDs remain as original fixture evidence.',
+        'excluded': ['test temporary trees', 'coverage binary database', 'environments', 'original product wheel/Gate A/native evidence already archived separately'],
+        'prior_product_evidence': prior_references,
+        'sources': references,
+        'files': physical,
+    }
+    (OUT / 'evidence-index.json').write_text(json.dumps(index, indent=2, sort_keys=True) + '\n')
+    for name, item in physical.items():
+        data = (OUT / name).read_bytes()
+        assert sha(data) == item['sha256'] and len(data) == item['bytes']
+    assert len({row['sha256'] for row in physical.values()}) == len(physical)
+    assert all(row['content'] in physical for row in references.values())
+    print(json.dumps({'status':'PASS','source_files':len(references),'physical_files':len(physical),'bytes':index['total_portable_bytes'],'index_sha256':sha((OUT/'evidence-index.json').read_bytes())}))
+
+if __name__ == '__main__':
+    main()

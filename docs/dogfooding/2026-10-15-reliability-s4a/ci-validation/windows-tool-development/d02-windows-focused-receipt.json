@@ -1,0 +1,47 @@
+{
+  "checks": {
+    "format": "PASS",
+    "mypy_scripts": "PASS",
+    "ruff": "PASS"
+  },
+  "commands": {
+    "boundary": "PATH=<reviewed-git-shim>:$PATH .venv/bin/python -m pytest -q tests/unit/test_distribution.py -k 'isolated_walkthrough_preserves_utf8 or windows_reader_keeps_stderr' --tb=short",
+    "combined": "PATH=<reviewed-git-shim>:$PATH .venv/bin/python -m pytest -q tests/unit/test_distribution.py tests/unit/test_generated_docs.py tests/unit/test_onboarding_examples.py --tb=short"
+  },
+  "diagnosis": {
+    "fix": "Pass -X utf8 alongside -I in all three isolated Python entry points.",
+    "local_reproduction": "Real child under C.UTF-8 default yields utf8_mode0 with isolated Python; CP1252 stderr plus Windows text-reader behavior reproduces the exact None.rstrip failure.",
+    "observed_ci": "Six public Windows annotations report NoneType.rstrip; full private reader-thread logs unavailable.",
+    "preserved": "No None-to-empty fallback; full stdout/stderr and source isolation retained.",
+    "real_windows_confirmation": "Pending final exact-HEAD CI; local simulation is not a substitute."
+  },
+  "records": [
+    {
+      "exit_code": 1,
+      "log": "d02-windows-red.log",
+      "result": "2 failed,26 deselected; UTF-8 mode0 and exact None.rstrip reader failure",
+      "sha256": "bdf87db6d05b9b1bdeccb067e2cc809c21bcd9c8f5a2651da057e4d5df082570"
+    },
+    {
+      "exit_code": 0,
+      "log": "d02-windows-targeted-green.log",
+      "result": "2 passed,26 deselected; UTF-8 mode1 and full non-ASCII stderr retained",
+      "sha256": "2a38620d9f17bbbcadf2f5d803da112ae7537e892330a94c64737bfb27301ff6"
+    },
+    {
+      "exit_code": 0,
+      "log": "d02-windows-focused-green.log",
+      "result": "51 passed including source quickstart freshness and onboarding",
+      "sha256": "cadb1cd51f788290a53d14217858123f781f7b47931edafe454f714198c285fb"
+    }
+  ],
+  "schema_version": 1,
+  "sources": {
+    "scripts/gen_quickstart.py": "2caed7207bc36644c6ccb0222511bd909703220e75d8d982a7d2e8cf3135069b",
+    "scripts/validate_distribution.py": "afe12d7aa2a7a4966ce2ef43b0b25189ae31b789510cc448de1710e326b76a83",
+    "tests/unit/test_distribution.py": "44e57a000c93f1fd9dc355af690fbe212f43ac5241498db90d574e48f7a8dfda"
+  },
+  "task": "D02-CI-followup",
+  "validator_source_commit": "13830addfd19389d61ec0256e728bbf4b57ab02a",
+  "wheel_source_commit": "b86c014cf9f15f1efddb6902979dcc6ddf79be9f"
+}

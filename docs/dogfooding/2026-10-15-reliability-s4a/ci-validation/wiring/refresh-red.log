@@ -1,0 +1,51 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_refresh_preserves_reviewed_locks_and_exports _______________
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-494/test_refresh_preserves_reviewe0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff7da0bae40>
+
+    def test_refresh_preserves_reviewed_locks_and_exports(tmp_path: Path, monkeypatch) -> None:
+        examples = tmp_path / "examples"
+        example = examples / "hf_vllm_eval"
+        example.mkdir(parents=True)
+        preserved = {
+            "reprollm.lock": b"reviewed online lock\n",
+            "REPRODUCIBILITY.acl.md": b"reviewed export\n",
+        }
+        for name, content in preserved.items():
+            (example / name).write_bytes(content)
+        native = examples / "lm_eval_replay"
+        shutil.copytree(ROOT / "examples/lm_eval_replay", native)
+        native_inputs = {
+            path.relative_to(native): path.read_bytes() for path in native.rglob("*") if path.is_file()
+        }
+        monkeypatch.setattr(refresh_examples, "EXAMPLES", examples)
+    
+        refresh_examples.main()
+        refresh_examples.main()
+    
+        for name, content in preserved.items():
+            assert (example / name).read_bytes() == content
+        assert {
+            path.relative_to(native): path.read_bytes() for path in native.rglob("*") if path.is_file()
+        } == native_inputs
+        assert not (native / "reprollm.lock").exists()
+>       assert "[lm_eval_replay](./lm_eval_replay/)" in (examples / "README.md").read_text()
+E       assert '[lm_eval_replay](./lm_eval_replay/)' in "# ReproLLM examples\n\nExample research repositories generated from the test fixtures.\nEach contains a completed `re...re's planted fake .env is omitted from this example.\n\nRegenerate with `uv run python scripts/refresh_examples.py`.\n"
+E        +  where "# ReproLLM examples\n\nExample research repositories generated from the test fixtures.\nEach contains a completed `re...re's planted fake .env is omitted from this example.\n\nRegenerate with `uv run python scripts/refresh_examples.py`.\n" = read_text()
+E        +    where read_text = (PosixPath('<PYTEST_TEMP>/pytest-494/test_refresh_preserves_reviewe0/examples') / 'README.md').read_text
+
+tests/unit/test_onboarding_examples.py:68: AssertionError
+----------------------------- Captured stdout call -----------------------------
+refreshed hf_vllm_eval
+refreshed openai_judge_eval
+refreshed privacy_custom_params
+index written
+refreshed hf_vllm_eval
+refreshed openai_judge_eval
+refreshed privacy_custom_params
+index written
+=========================== short test summary info ============================
+FAILED tests/unit/test_onboarding_examples.py::test_refresh_preserves_reviewed_locks_and_exports
+1 failed in 0.16s

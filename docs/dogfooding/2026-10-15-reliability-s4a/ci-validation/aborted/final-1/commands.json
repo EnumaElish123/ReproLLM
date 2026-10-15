@@ -1,0 +1,84 @@
+{
+  "candidate_commit": "707d5778470e558d35b2b558c612c0559ed51da5",
+  "candidate_input_inventory_sha256": "1c0e0c5c14c62b0c944e401f89a9c1baa9d4d00c3f9a1fbdf6bf1827ce214331",
+  "commands": [
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "\nimport importlib.metadata, json, re, subprocess, sys, tomllib\nfrom pathlib import Path\n\nnames = [\n    \"reprollm\",\n    \"pytest\",\n    \"pytest-cov\",\n    \"coverage\",\n    \"ruff\",\n    \"mypy\",\n    \"pydantic\",\n    \"typer\",\n    \"PyYAML\",\n    \"respx\",\n    \"jsonschema\",\n]\nversions = {name: importlib.metadata.version(name) for name in names}\nnormalize = lambda name: re.sub(r\"[-_.]+\", \"-\", name).lower()\nlock = tomllib.loads(Path(\"uv.lock\").read_text())\npins = {normalize(p[\"name\"]): p[\"version\"] for p in lock[\"package\"] if \"version\" in p}\nassert versions[\"reprollm\"] == \"0.7.0\"\nassert all(versions[name] == pins[normalize(name)] for name in names if name != \"reprollm\"), (\n    \"locked tool version mismatch\"\n)\ngit = (\n    subprocess.run([\"git\", \"--version\"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()\n)\nuv = (\n    subprocess.run([sys.argv[1], \"--version\"], check=True, stdout=subprocess.PIPE)\n    .stdout.decode()\n    .strip()\n)\nprint(\n    json.dumps(\n        {\n            \"schema_version\": 1,\n            \"python\": sys.version.split()[0],\n            \"versions\": versions,\n            \"git\": git,\n            \"uv\": uv,\n            \"tool_versions_match_uv_lock\": True,\n        },\n        sort_keys=True,\n    )\n)\n",
+        "<UV>"
+      ],
+      "candidate_input_inventory_sha256": "1c0e0c5c14c62b0c944e401f89a9c1baa9d4d00c3f9a1fbdf6bf1827ce214331",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.181592,
+      "exit_code": 0,
+      "label": "00-environment-versions",
+      "origin_check": {
+        "elapsed_seconds": 0.077388,
+        "exit_code": 0,
+        "raw_log": "raw/00-environment-versions-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/00-environment-versions.log",
+      "raw_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154",
+      "shareable_log": "logs/00-environment-versions.log",
+      "shareable_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "1c0e0c5c14c62b0c944e401f89a9c1baa9d4d00c3f9a1fbdf6bf1827ce214331",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 11.618893,
+      "exit_code": 0,
+      "label": "01-quickstart-preflight",
+      "origin_check": {
+        "elapsed_seconds": 0.073101,
+        "exit_code": 0,
+        "raw_log": "raw/01-quickstart-preflight-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/01-quickstart-preflight.log",
+      "raw_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "shareable_log": "logs/01-quickstart-preflight.log",
+      "shareable_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--basetemp=<QUALITY>/pytest-temp",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<QUALITY>/coverage.xml",
+        "--cov-report=json:<QUALITY>/coverage.json",
+        "--cov-fail-under=85",
+        "--tb=short",
+        "--junit-xml=<QUALITY>/pytest-report.xml"
+      ],
+      "candidate_input_inventory_sha256": "1c0e0c5c14c62b0c944e401f89a9c1baa9d4d00c3f9a1fbdf6bf1827ce214331",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 339.984033,
+      "exit_code": 2,
+      "label": "02-pytest-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.076985,
+        "exit_code": 0,
+        "raw_log": "raw/02-pytest-coverage-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/02-pytest-coverage.log",
+      "raw_log_sha256": "9dc960235ccb98ea39cd7917d914ed67cbab672f2649257f1f27344619f630c7",
+      "shareable_log": "logs/02-pytest-coverage.log",
+      "shareable_log_sha256": "7d61334c0f646c925f787aabdb5ba7e6dec3c4bb40f19cc2f34ef58f1d956b71"
+    }
+  ],
+  "schema_version": 1,
+  "task": "S4-A CI-only example-loop follow-up final quality"
+}

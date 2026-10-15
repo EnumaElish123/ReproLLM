@@ -1,0 +1,61 @@
+profile: finetuning
+source:  built-in
+description: Fine-tuning experiments (method, hyperparameters, adapters).
+extends: core
+chain:  finetuning → core
+
+rules (42):
+  rule                              level  default         override  effective       origin
+  code.clean_tree                   0      WARNING         -         WARNING         default
+  code.git_commit                   0      CRITICAL        -         CRITICAL        default
+  code.git_repo                     0      CRITICAL        -         CRITICAL        default
+  code.no_untracked                 0      WARNING         -         WARNING         default
+  code.remote_recorded              0      INFO            -         INFO            default
+  code.submodules_initialized       0      WARNING         -         WARNING         default
+  consistency.custom_fields         2      (project rule)  -         (project rule)  project_rule
+  consistency.env_vs_lock           2      WARNING         -         WARNING         default
+  consistency.file_hashes           2      CRITICAL        -         CRITICAL        default
+  consistency.generation_params     2      CRITICAL        -         CRITICAL        default
+  consistency.lock_fresh            2      WARNING         -         WARNING         default
+  consistency.model_identity        2      CRITICAL        -         CRITICAL        default
+  dataset.declared                  1      INFO            CRITICAL  CRITICAL        profile:finetuning
+  dataset.local_files_hashed        2      CRITICAL        -         CRITICAL        default
+  dataset.preprocessing_declared    1      WARNING         -         WARNING         default
+  dataset.revision_pinned           2      WARNING         -         WARNING         default
+  dataset.split_declared            1      WARNING         -         WARNING         default
+  env.dependency_manifest_present   0      CRITICAL        -         CRITICAL        default
+  env.llm_critical_deps_pinned      0      WARNING         -         WARNING         default
+  env.lockfile_present              0      WARNING         -         WARNING         default
+  env.python_version_declared       0      WARNING         -         WARNING         default
+  env.reprollm_initialized          0      INFO            -         INFO            default
+  env.secret_files_ignored          0      CRITICAL        -         CRITICAL        default
+  exec.command_declared             1      WARNING         -         WARNING         default
+  exec.profile_detection_mismatch   1      INFO            -         INFO            default
+  exec.run_recorded                 1      INFO            -         INFO            default
+  exec.seed_declared                1      WARNING         CRITICAL  CRITICAL        profile:finetuning
+  gen.backend_version_locked        2      WARNING         -         WARNING         default
+  model.adapter_declared            1      WARNING         -         WARNING         default
+  model.dtype_declared              1      WARNING         -         WARNING         default
+  model.primary_declared            1      CRITICAL        -         CRITICAL        default
+  model.provider_known              1      WARNING         -         WARNING         default
+  model.revision_pinned             2      CRITICAL        -         CRITICAL        default
+  model.tokenizer_pinned            2      WARNING         -         WARNING         default
+  model.trust_remote_code_declared  1      WARNING         -         WARNING         default
+  prompt.file_exists                1      CRITICAL        -         CRITICAL        default
+  prompt.hashed                     2      WARNING         -         WARNING         default
+  train.hyperparameters_declared    1      CRITICAL        -         CRITICAL        default
+  train.lora_config_complete        1      CRITICAL        -         CRITICAL        default
+  train.method_declared             1      WARNING         -         WARNING         default
+  train.optimizer_declared          1      WARNING         -         WARNING         default
+  train.precision_declared          1      WARNING         -         WARNING         default
+
+required fields:
+  project.name
+  models.primary.id
+  training.method
+  training.learning_rate
+  datasets.train.id
+
+severity overrides:
+  dataset.declared: CRITICAL
+  exec.seed_declared: CRITICAL
