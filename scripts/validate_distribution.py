@@ -240,6 +240,8 @@ def _install(
     command = [
         str(python),
         "-I",
+        "-X",
+        "utf8",
         "-m",
         "pip",
         "install",
@@ -302,7 +304,7 @@ print(json.dumps({'module': str(Path(reprollm.__file__).resolve()),
          for item in importlib.metadata.distributions()), key=lambda item: item['name'])}))
 """
     result = subprocess.run(
-        [str(python), "-I", "-c", code],
+        [str(python), "-I", "-X", "utf8", "-c", code],
         cwd=cwd,
         env=gen_quickstart._env(python),
         capture_output=True,

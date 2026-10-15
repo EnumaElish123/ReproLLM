@@ -100,7 +100,8 @@ def _run(
     on_step: Callable[[Step], None] | None = None,
 ) -> Step:
     executable = str(python or Path(sys.executable))
-    command = [executable, "-I", "-c", OFFLINE_CLI, *args]
+    # Isolated Python ignores PYTHONUTF8; keep Windows pipes in the parent decoder's encoding.
+    command = [executable, "-I", "-X", "utf8", "-c", OFFLINE_CLI, *args]
     started = time.monotonic()
     result = subprocess.run(
         command, cwd=cwd, capture_output=True, encoding="utf-8", env=_env(python)

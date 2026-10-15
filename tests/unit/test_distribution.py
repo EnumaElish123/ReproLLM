@@ -121,11 +121,69 @@ def test_quickstart_selects_explicit_interpreter_and_removes_source_injection(
     monkeypatch.setattr(gen_quickstart.subprocess, "run", run)
     step = gen_quickstart._run(["--version"], tmp_path, python=python)
     command, kwargs = calls[0]
-    assert command[:3] == [str(python), "-I", "-c"]
+    assert command[:5] == [str(python), "-I", "-X", "utf8", "-c"]
     assert step.executable == str(python)
     assert kwargs["env"]["PATH"].split(os.pathsep)[0] == str(python.parent)
     assert kwargs["env"]["PYTHONNOUSERSITE"] == "1"
     assert not {"PYTHONPATH", "PYTHONHOME", "HF_TOKEN"} & kwargs["env"].keys()
+
+
+def test_isolated_walkthrough_preserves_utf8_mode_and_non_ascii_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    environment = gen_quickstart._env()
+    environment["LC_ALL"] = "C.UTF-8"
+    monkeypatch.setattr(gen_quickstart, "_env", lambda python=None: environment)
+    monkeypatch.setattr(
+        gen_quickstart,
+        "OFFLINE_CLI",
+        "import json, sys; print(json.dumps({'utf8_mode': sys.flags.utf8_mode, "
+        "'text': 'café — 训练'}, ensure_ascii=False))",
+    )
+    step = gen_quickstart._run(["--version"], tmp_path)
+    assert json.loads(step.stdout) == {"utf8_mode": 1, "text": "café — 训练"}
+    assert step.raw_stdout == step.stdout + "\n"
+    assert step.stderr == "" and step.raw_stderr == ""
+
+
+def test_windows_reader_keeps_stderr_instead_of_losing_an_undecodable_pipe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    environment = gen_quickstart._env()
+    environment["LC_ALL"] = "C.UTF-8"
+    monkeypatch.setattr(gen_quickstart, "_env", lambda python=None: environment)
+    monkeypatch.setattr(
+        gen_quickstart,
+        "OFFLINE_CLI",
+        "import sys\n"
+        "if not sys.flags.utf8_mode:\n"
+        "    sys.stderr.reconfigure(encoding='cp1252')\n"
+        "print('stdout retained')\n"
+        "print('diagnostic — café', file=sys.stderr)\n",
+    )
+    real_run = subprocess.run
+
+    def windows_reader(command, **kwargs):
+        # Windows reader threads leave None when decoding the pipe fails.
+        # Capture real child bytes so its selected UTF-8 mode controls this edge.
+        kwargs.pop("encoding")
+        result = real_run(command, **kwargs)
+        try:
+            stderr = result.stderr.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+        except UnicodeDecodeError:
+            stderr = None
+        return subprocess.CompletedProcess(
+            command,
+            result.returncode,
+            result.stdout.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n"),
+            stderr,
+        )
+
+    monkeypatch.setattr(gen_quickstart.subprocess, "run", windows_reader)
+    step = gen_quickstart._run(["--version"], tmp_path)
+    assert step.stdout == "stdout retained"
+    assert step.stderr == "diagnostic — café"
+    assert step.raw_stderr == "diagnostic — café\n"
 
 
 def test_offline_walkthrough_blocks_socket_connection_before_product_import(tmp_path: Path) -> None:
