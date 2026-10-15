@@ -32,6 +32,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- D01 (spec §§5, 15–19): restore the reviewed bounded GSM8K cap 32→48
+  recipe with matching model/data revisions, actual config bindings, independent
+  consumption evidence and offline regressions, including a post-consumption
+  config rewrite. Preserve GSM8K regex escapes, instruction tokens and relative
+  template suffixes in snapshots; recognize parsed division operators only in
+  Python file capture while retaining path/secret protection. Native acceptance
+  is recorded separately from the stdlib probe and other resource gates.
+
 - R04-B (spec §§5, 15, 17–19): the local 0.7.0 minor transition writes run
   schema 2 with pre-child manifest/lock and file baselines, bounded original-byte
   config observations, and separate post-child change checks. Output hashes stay

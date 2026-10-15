@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import stat
 from collections.abc import Mapping, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Literal
 
@@ -173,7 +174,11 @@ def capture_inputs(
                     snapshot=snapshot,
                     max_bytes=max_bytes,
                     warnings=record.warnings,
-                    sanitize=privacy.text,
+                    sanitize=(
+                        partial(privacy.text, python_source=True)
+                        if ref.path.endswith(".py")
+                        else privacy.text
+                    ),
                     on_read=retain,
                     capture_limit=capture_limits,
                     original_data=original_documents,

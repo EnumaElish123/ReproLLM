@@ -80,6 +80,58 @@ def test_input_baseline_precedes_child_config_rewrite(tmp_path: Path) -> None:
     assert [item.path for item in record.artifacts] == ["consumed.json"]
 
 
+@pytest.mark.security
+def test_snapshot_keeps_executable_source_and_regex_while_removing_private_values(
+    tmp_path: Path,
+) -> None:
+    import ast
+
+    import yaml
+
+    from tests.conftest import FIXTURES_ROOT
+
+    source = (FIXTURES_ROOT / "secrets/run_source_fidelity.py.txt").read_bytes()
+    regex = b'patterns: ["\\\\$", "\\\\.", "(\\\\-?[0-9.,]+)"]\n'
+    unsafe = (
+        b"# cache=/private-owner/cache unc=\\\\private-server\\share\\file\n"
+        b"# token=hf_01234567890123456789\n"
+    )
+    (tmp_path / "entry.py").write_bytes(source + unsafe)
+    (tmp_path / "task.yaml").write_bytes(regex)
+    (tmp_path / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: fidelity}\nexperiment: {profiles: []}\n"
+        "execution: {config_files: [entry.py, task.yaml]}\n"
+    )
+    record = wrapper.execute(
+        [sys.executable, "entry.py"],
+        root=tmp_path,
+        cwd=tmp_path,
+        run_dir=wrapper.create_run_dir(tmp_path),
+        capture_output=True,
+        env_capture="allowlist",
+        extra_allowlist=[],
+        snapshot=True,
+    )
+    assert record.exit_code == 0
+    folder = run_dir(tmp_path, record)
+    refs = {item.path: item for item in record.files}
+    saved_source = (folder / refs["entry.py"].snapshot).read_bytes()
+    assert saved_source == source + (
+        b"# cache=<REDACTED:path> unc=<REDACTED:path>\n# token=<REDACTED:huggingface>\n"
+    )
+    ast.parse(saved_source)
+    assert (folder / refs["task.yaml"].snapshot).read_bytes() == regex
+    assert yaml.safe_load(regex)["patterns"] == [r"\$", r"\.", r"(\-?[0-9.,]+)"]
+    assert refs["entry.py"].sha256 == "sha256:" + hashlib.sha256(source + unsafe).hexdigest()
+    assert refs["entry.py"].redacted and not refs["task.yaml"].redacted
+    assert (folder / "stdout.log").read_text() == "source consumed\n"
+    for artifact in folder.rglob("*"):
+        if artifact.is_file():
+            data = artifact.read_bytes()
+            for canary in (b"private-owner", b"private-server", b"hf_01234567890123456789"):
+                assert canary not in data
+
+
 def test_child_document_rewrites_keep_original_baselines_and_exit_seven(tmp_path: Path) -> None:
     from reprollm.schemas.state import State
 

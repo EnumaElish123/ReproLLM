@@ -117,3 +117,118 @@ def test_idempotent_on_its_own_output(privacy: RunPrivacy, tmp_path: Path) -> No
     second, count = privacy.text(first)
     assert second == first
     assert count == 0
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value",
+    [
+        "ratio = count / total\nsteps = count // 2\n",
+        'message = f"rate {count / total}"\n',
+        'target = Path("outputs") / "result.json"\nseparator = "/"\n',
+        r'pattern: "\\$|\\.|(\\-?[0-9.,]+)"',
+        r'pattern = r"\d+\.\d+"',
+    ],
+)
+def test_source_operators_and_regex_escapes_survive(privacy: RunPrivacy, value: str) -> None:
+    assert privacy.text(value) == (value, 0)
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value",
+    [
+        r"\\private-server\share\file",
+        "//private-server/share/file",
+        "file:///private-owner/file",
+        "file://private-server/share/file",
+        r"C:\private-owner\file",
+        "/private-owner/file",
+    ],
+)
+def test_paths_remain_private_when_next_to_source_operators(
+    privacy: RunPrivacy, value: str
+) -> None:
+    text = f'ratio = count / total\ncache = "{value}"\n'
+    safe, count = privacy.text(text)
+    assert "ratio = count / total\n" in safe
+    assert "private-server" not in safe and "private-owner" not in safe
+    assert count == 1
+    assert privacy.text(safe) == (safe, 0)
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value",
+    [
+        "ratio = count /2\nsteps = count //2\n",
+        "ratio = count /(total + 1)\n",
+        'message = f"rate {count /2}"\n',
+        "分母 = 2\nratio = 分母 /2\n",
+        "count /=2\nsteps //=2\n",
+        "ratio = (count  # /private-owner/cache\n /2)\n",
+    ],
+)
+def test_python_snapshot_preserves_parsed_division_only(privacy: RunPrivacy, value: str) -> None:
+    expected = value.replace("/private-owner/cache", "<REDACTED:path>")
+    assert privacy.text(value, python_source=True)[0] == expected
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value", ["///private-owner/cache", "//private-owner", "\\\\private-server\\"]
+)
+def test_repeated_path_separators_do_not_leak(privacy: RunPrivacy, value: str) -> None:
+    safe, count = privacy.text(value)
+    assert safe == "<REDACTED:path>" and count == 1
+
+
+@pytest.mark.security
+def test_python_strings_and_non_source_values_remain_private(privacy: RunPrivacy) -> None:
+    value = 'ratio = count /2\ncache = "/private-owner/cache"\n'
+    safe = privacy.text(value, python_source=True)[0]
+    assert safe == 'ratio = count /2\ncache = "<REDACTED:path>"\n'
+    assert privacy.text("count /private-owner/cache")[0] == "count <REDACTED:path>"
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value",
+    [
+        'path = f"data/{args.bench_name}/question.jsonl"\n',
+        'path = f"data/{args.bench_name}/model_answer/{args.model_id}.jsonl"\n',
+        '"""Save {save_dir}/test_cases.json and {save_dir}/method_config.json."""\n',
+        'prompt = "[INST] question [/INST]"\n',
+    ],
+)
+def test_native_template_suffixes_and_instruction_tokens_survive(
+    privacy: RunPrivacy, value: str
+) -> None:
+    assert privacy.text(value, python_source=True) == (value, 0)
+    assert privacy.text(value) == (value, 0)
+
+
+@pytest.mark.security
+def test_instruction_token_exception_does_not_hide_other_bracketed_paths(
+    privacy: RunPrivacy,
+) -> None:
+    value = "[/INST] [/private-owner/cache] }/private-owner/cache"
+    assert privacy.text(value)[0] == "[/INST] [<REDACTED:path>] }<REDACTED:path>"
+
+
+@pytest.mark.security
+def test_absolute_template_paths_remain_private_and_idempotent(privacy: RunPrivacy) -> None:
+    value = 'value = f"/private-owner/cache/{name}/suffix"\n'
+    safe, count = privacy.text(value, python_source=True)
+    assert "private-owner" not in safe and count > 0
+    assert privacy.text(safe, python_source=True) == (safe, 0)
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "value", [r"\\-private-server\share\file", r"\\$private-server\share\file"]
+)
+def test_unc_server_punctuation_does_not_create_a_privacy_bypass(
+    privacy: RunPrivacy, value: str
+) -> None:
+    assert privacy.text(value) == ("<REDACTED:path>", 1)
