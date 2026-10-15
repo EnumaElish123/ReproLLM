@@ -61,8 +61,9 @@ the recorded [S3-B delivery](../dogfooding/2026-10-14-reliability-s3b/README.md)
 S3-B (R04-A → R04-B) is delivered with scoped environment evidence and pre-child
 input capture. S4-A supplies the [bounded GSM8K recipe](../../examples/lm_eval_replay/README.md)
 and [candidate-wheel validation entry](../distribution.md); its actual validation
-results are recorded in the session report. D03's release workflow gate is the
-next engineering task. These changes remain unreleased; pending policy
+results are recorded in the
+[S4-A session report](../dogfooding/2026-10-15-reliability-s4a/README.md).
+D03's release workflow gate is the next engineering task. These changes remain unreleased; pending policy
 decisions and resource validations retain their separate requirements.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 at `110087b1e416c12c25253c07365944935e986470` addresses the initial Windows

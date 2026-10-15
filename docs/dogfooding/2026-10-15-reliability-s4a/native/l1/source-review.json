@@ -1,0 +1,38 @@
+{
+  "files": [
+    {
+      "path": "lm_eval/config/evaluate_config.py",
+      "pinned_git_bytes_equal": true,
+      "sha256": "ea8bae4e5a9ed355970ea9559181c383ec819b8da89b8f68480d7531b4010918"
+    },
+    {
+      "path": "lm_eval/_cli/run.py",
+      "pinned_git_bytes_equal": true,
+      "sha256": "59245f533c514cf448f6f5614d8a7cb388d69acdae47e8fc3f8defc82dfa2746"
+    },
+    {
+      "path": "lm_eval/models/vllm_causallms.py",
+      "pinned_git_bytes_equal": true,
+      "sha256": "a8552f4e522175f422ad2229813a8a725c0504ad7b8e758c504e3e09911e5c89"
+    },
+    {
+      "path": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+      "pinned_git_bytes_equal": true,
+      "sha256": "82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833"
+    },
+    {
+      "path": "lm_eval/api/metrics.py",
+      "pinned_git_bytes_equal": true,
+      "sha256": "f4794761c3f53fc036336e79c65dca355ea26a8d4cb00b27155ea2ab4846dbb2"
+    }
+  ],
+  "framework_pin": "b954108c9baaaa934b4ad842033b31a97ee30816",
+  "schema_version": 1,
+  "source_findings": [
+    "EvaluatorConfig.from_config loads YAML then applies _configure and scalar seed42 expands to all four generator seeds.",
+    "_cli/run.py passes cfg.seed[0:4] to random/numpy/torch/fewshot seeds.",
+    "vllm_causallms.py carries pretrained/revision/tokenizer_revision to real backend and tokenizer; gen_kwargs max_gen_toks flows to SamplingParams max_tokens after prompt truncation check.",
+    "Pinned gsm8k task uses main/test with train fewshot, exact_match mean and two extraction filters.",
+    "No chat template application flag is set; lock template hash is intent metadata only."
+  ]
+}

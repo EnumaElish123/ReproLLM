@@ -1,0 +1,116 @@
+"""Archive completed S4-A receipts once per portable payload; no product execution."""
+from __future__ import annotations
+import argparse,getpass,hashlib,html,json,re,shutil,socket
+from pathlib import Path
+
+BASE=Path('<SESSION>')
+ORACLE=Path('<IMMUTABLE_BASE_ORACLE>')
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--quality',type=Path,required=True);p.add_argument('--gate',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ quality=json.loads((a.quality/'summary.json').read_text());gate=json.loads((a.gate/'summary.json').read_text())
+ assert quality['all_passed'] and gate['all_passed'], 'No passing bundle from incomplete gates'
+ assert not a.out.exists(),'Never overwrite prior published evidence'
+ mappings=[(str(BASE/'worktree/.venv'),'<CANDIDATE_ENV>'),(str(BASE/'worktree'),'<CANDIDATE>'),(str(a.quality),'<QUALITY>'),(str(a.gate),'<GATE>'),(str(ORACLE),'<IMMUTABLE_BASE_ORACLE>'),(str(BASE),'<SESSION>'),('<HISTORICAL_S3B>','<HISTORICAL_S3B>'),('<HISTORICAL_VAL_R01>','<HISTORICAL_VAL_R01>'),('<REVIEWED_S1A>','<REVIEWED_S1A>'),('<REVIEWED_S3A>','<REVIEWED_S3A>'),('<GIT_COMPATIBILITY>','<GIT_COMPATIBILITY>'),('<SOURCE_REPOSITORY>','<SOURCE_REPOSITORY>'),('<PINNED_PORTFOLIO>','<PINNED_PORTFOLIO>'),('<RESOURCE_VOLUME>','<RESOURCE_VOLUME>'),(str(Path.home()),'<HOME>')]
+ uv=shutil.which('uv')
+ if uv:mappings.append((uv,'<UV>'))
+ mappings.sort(key=lambda row:-len(row[0]));identities=[s for s in [getpass.getuser(),socket.gethostname()] if s]
+ def portable(text,xml=False):
+  for source,target in mappings:text=text.replace(source,html.escape(target,quote=True) if xml else target)
+  identity_marker=html.escape('<LOCAL_IDENTITY>') if xml else '<LOCAL_IDENTITY>'
+  for identity in identities:text=re.sub(r'(?<!\w)'+re.escape(identity)+r'(?!\w)',identity_marker,text)
+  return text
+ sources={}
+ def add(file,logical):
+  assert file.is_file() and not file.is_symlink()
+  assert logical not in sources and not Path(logical).is_absolute() and '..' not in Path(logical).parts
+  sources[logical]=file
+ # The command ledgers bind the actual full streams before any normalization.
+ for row in json.loads((a.quality/'commands.json').read_text())['commands']:
+  for entry in [row,row['origin_check']]:assert sha((a.quality/entry['raw_log']).read_bytes())==entry['raw_log_sha256']
+ for row in json.loads((a.gate/'commands.json').read_text())['commands']:
+  for stream in ['stdout','stderr']:assert sha((a.gate/row[stream]).read_bytes())==row[stream+'_sha256']
+ distribution=json.loads((a.quality/'distribution.json').read_text())
+ assert distribution['status']=='PASS'
+ for row in distribution['commands']:
+  for stream in ['stdout','stderr']:
+   assert sha((a.quality/'private-distribution'/row[stream+'_artifact']).read_bytes())==row[stream+'_sha256']
+ for stream in ['stdout','stderr']:
+  assert sha((a.quality/'private-distribution'/('installation.'+stream+'.txt')).read_bytes())==distribution['installation'][stream+'_sha256']
+ assert sha((a.quality/'private-distribution/import-probe.json').read_bytes())==distribution['imports']['probe_sha256']
+ for root,label in [(a.quality,'quality'),(a.gate,'gate')]:
+  for f in sorted(root.glob('*.json')):add(f,label+'/'+f.name)
+  if label=='quality':
+   add(root/'pytest-report.xml',label+'/pytest-report.xml')
+   add(root/'coverage.xml',label+'/coverage.xml')
+  for sub in (['raw','private-distribution','schema-export'] if label=='quality' else ['raw','comparison','artifacts','harness']):
+   folder=root/sub
+   if folder.exists():
+    for f in sorted(folder.rglob('*')):
+     if f.is_file() and '__pycache__' not in f.parts:add(f,label+'/'+f.relative_to(root).as_posix())
+ # Raw run records/snapshots are captured once. The runner's record envelopes
+ # are retained too, with content deduplication rather than hidden field removal.
+ for f in sorted((a.gate/'clones').glob('*/.reprollm/runs/**/*')):
+  if f.is_file():add(f,'gate/captures/'+f.relative_to(a.gate/'clones').as_posix())
+ negatives=BASE/'distribution-negatives'
+ if negatives.exists():
+  for f in sorted(negatives.rglob('*')):
+   if f.is_file() and '__pycache__' not in f.parts and f.suffix not in ['.whl','.pyc']:
+    add(f,'distribution-negatives/'+f.relative_to(negatives).as_posix())
+ for dirname in ['expected-audit','expected-facts']:
+  for f in sorted((ORACLE/dirname).glob('*.json')):add(f,'expected/base/'+dirname+'/'+f.name)
+ for name in ['index.json','independent-review.json','oracle-plan.json','gate-a/oracle-and-environment-provenance.json']:
+  add(ORACLE/name,'expected/base/'+name)
+ for f in sorted((BASE/'gate').rglob('*')):
+  if f.is_file() and '__pycache__' not in f.parts and f.suffix in ['.py','.json']:add(f,'harness/gate/'+f.relative_to(BASE/'gate').as_posix())
+ add(BASE/'quality/run_quality.py','harness/run_quality.py')
+ add(BASE/'authorize_gate.py','harness/authorize_gate.py')
+ add(Path(__file__),'harness/package_s4a.py')
+ for name in ['runtime-wheelhouse.json','runtime-requirements.txt']:
+  add(BASE/name,'preparation/'+name)
+ for name in ['d02-focused-receipt.json','d02-focused-history.json','d02-red.log','d02-first-green-attempt.log','d02-green.log','d02-focused.log','d02-final-focused.log','d02-review-focused.log','run_distribution_negatives.py','distribution-negatives.log']:
+  add(BASE/name,'distribution-development/'+name)
+ for f in sorted((BASE/'privacy-review').glob('*')):
+  if f.is_file() and 'private' not in f.name:add(f,'privacy/'+f.name)
+ for attempt in ['original-source-capture','original-source-capture-final']:
+  for f in sorted((BASE/'privacy-review'/attempt).glob('.reprollm/runs/**/*')):
+   if f.is_file():add(f,'privacy/'+attempt+'/'+f.relative_to(BASE/'privacy-review'/attempt).as_posix())
+ # Distribution uses disposable random roots; these exact observed roots are
+ # infrastructure paths, not user experiment fields. Keep a deterministic map.
+ distribution_roots=set()
+ for logical,file in sources.items():
+  if logical.startswith(('quality/private-distribution/','distribution-negatives/')):
+   distribution_roots.update(re.findall(r'/tmp/reprollm-wheel-[a-zA-Z0-9_-]+',file.read_text(encoding='utf-8')))
+ for number,source in enumerate(sorted(distribution_roots)):
+  mappings.append((source,f'<DISTRIBUTION_TEMP_{number+1}>'))
+ mappings.sort(key=lambda row:-len(row[0]))
+ # Validate text decoding and private-prefix removal before creating the bundle.
+ payloads={}
+ for logical,file in sources.items():
+  raw=file.read_bytes();payload=portable(raw.decode('utf-8','strict'),xml=logical.endswith('.xml')).encode()
+  for source,_ in mappings:
+   assert source.encode() not in payload, 'Unnormalized known private path: '+logical
+  payloads[logical]=(raw,payload)
+ a.out.mkdir(parents=True)
+ stored={};records={};physical={} 
+ for logical,file in sources.items():
+  raw,payload=payloads[logical];digest=sha(payload)
+  # Source scripts are inert review archives. Non-schema machine JSON stays a
+  # raw text stream; no version key is invented inside the original payload.
+  target=logical+'.txt' if logical.endswith('.py') else logical
+  if target.endswith('.json'):
+   doc=json.loads(payload)
+   if not isinstance(doc,dict) or type(doc.get('schema_version')) is not int:target+='.txt'
+  if digest not in stored:
+   dst=a.out/target;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(payload);stored[digest]=target
+   physical[target]={'sha256':digest,'bytes':len(payload)}
+  records[logical]={'content':stored[digest],'source_sha256':sha(raw),'source_bytes':len(raw),'portable_sha256':digest,'portable_bytes':len(payload),'normalization_applied':raw!=payload}
+ index={'schema_version':1,'task':'S4-A D01/D02 final shared QA and five-project Gate A','candidate_commit':quality['candidate_commit'],'status':'PASS','normalization':'Complete UTF-8 payloads; only known machine path/identity substitutions. Every original raw SHA and portable SHA is retained; semantic records are never projected/trimmed. Duplicate portable bytes have one physical file and all source references.','source_file_count':len(records),'physical_file_count':len(physical),'total_portable_bytes':sum(row['bytes'] for row in physical.values()),'sources':records,'files':physical,'excluded':['binary wheels and environments','native framework repository trees','coverage binary database and temporary pytest trees','repeated portable copies of raw output','generated __pycache__ entries in copied walkthroughs'],'resource_scope':'This bundle does not close historical VAL-R01; D01 native evidence is separate. D02 deliberate negative cases preserve their expected FAIL results without recasting them as product successes.'}
+ (a.out/'evidence-index.json').write_text(json.dumps(index,indent=2,sort_keys=True)+'\n')
+ # Validate the complete stored inventory and every reference after writing.
+ for path,item in physical.items():assert sha((a.out/path).read_bytes())==item['sha256']
+ assert all(row['content'] in physical for row in records.values())
+ print(json.dumps({'status':'PASS','source_files':len(records),'physical_files':len(physical),'bytes':index['total_portable_bytes'],'index_sha256':sha((a.out/'evidence-index.json').read_bytes())}))
+
+if __name__=='__main__':main()

@@ -1,0 +1,60 @@
+--- archived-verify_export_v2.py
++++ verify_export_run2.py
+@@ -208,7 +208,7 @@
+     for relative,expected in binding['files_sha256'].items():
+         assert digest((implementation/relative).read_bytes())==expected,'Candidate source byte binding changed'
+     source_root=args.project_root.resolve();run_dir=source_root/'.reprollm/runs'/args.run_id
+-    run_bytes=(run_dir/'run.json').read_bytes();run=json.loads(run_bytes);assert run['schema_version']==1 and run['run_id']==args.run_id
++    run_bytes=(run_dir/'run.json').read_bytes();run=json.loads(run_bytes);assert run['schema_version']==2 and run['run_id']==args.run_id
+     documents={};document_hashes={}
+     for name in ['manifest','lock']:
+         ref=run.get(name);assert ref and re.fullmatch(r'sha256:[a-f0-9]{64}',ref['sha256'])
+@@ -285,8 +285,10 @@
+     env=section(document,'Environment');check('selected-run-python','- Python: '+str(run['environment'].get('packages',{}).get('python',run['environment']['python'])) in literal(env),True)
+     for package,version in sorted(run['environment']['packages'].items()):
+         if package!='python':check('selected-run-package-'+package,'- '+package+': '+str(version) in literal(env),True)
+-    expected_env=[['Python',str(value('environment.packages.python') or value('environment.python') or 'unknown')]]
+-    expected_env.extend([[p[len('environment.packages.'):],str(l['value'])] for p,l in sorted(flat.items()) if p.startswith('environment.packages.') and p!='environment.packages.python'])
++    expected_env=[['Python evidence','recorder interpreter; after child completion.'],['Inherited environment','recorder inherited environment; before child launch.'],['Python',str(value('environment.packages.python') or value('environment.python') or 'unknown')]]
++    for field,label in [('platform','Platform'),('os','OS')]:
++        if value('environment.'+field):expected_env.append([label,str(value('environment.'+field))+' (recorder host; after child completion)'])
++    expected_env.extend([[p[len('environment.packages.'):],str(l['value'])+' (recorder interpreter; after child completion)'] for p,l in sorted(flat.items()) if p.startswith('environment.packages.') and p!='environment.packages.python'])
+     actual_env=[literal(line[2:]).split(': ',1) for line in env.splitlines() if line.startswith('- ')]
+     check('complete-selected-effective-environment-package-rows',actual_env,expected_env)
+     code=literal(section(document,'Code'))
+@@ -301,8 +303,17 @@
+     started=str(datetime.datetime.fromisoformat(run['started_at'].replace('Z','+00:00')))
+     ended=str(datetime.datetime.fromisoformat(run['ended_at'].replace('Z','+00:00')))
+     check('selected-run-times-duration','- started: '+started+' · ended: '+ended+' · duration: '+str(float(run['duration_seconds']))+' s' in execution,True)
+-    wanted_hardware=[[p[len('hardware.'):],str(l['value'])] for p,l in sorted(flat.items()) if p.startswith('hardware.')]
++    wanted_hardware=[[p[len('hardware.'):],str(l['value']),'recorder host; after child completion'] for p,l in sorted(flat.items()) if p.startswith('hardware.')]
+     check('complete-selected-hardware-rows',[r for r in table(section(document,'Hardware')) if r[0]!='Field'],wanted_hardware)
++    check('hardware-context-scope','- Collector evidence: recorder host; after child completion.' in section(document,'Hardware'),True)
++    capture=run['input_capture']
++    check('run2-input-phases',[capture['baseline_phase'],capture['check_phase'],capture['consumption']],['pre_child','post_child','unverified'])
++    check('run2-baseline-explanation','Input observation phase: before child launch (input baseline).' in execution,True)
++    check('run2-consumption-limit','Input changes were checked after child completion. Unchanged bytes do not prove consumption.' in execution,True)
++    expected_inputs=[]
++    for item in sorted(capture['checks'],key=lambda x:x['path']):
++        expected_inputs.append(['`'+item['path']+'`',item['before']['availability'],'`'+item['before']['sha256']+'`',item['after']['availability'],'`'+item['after']['sha256']+'`',item['change']])
++    check('complete-run2-input-change-table',[r for r in table(section(document,'Execution')) if r[0]!='Input'],expected_inputs)
+     audit_bytes=args.audit_json.read_bytes();audit=json.loads(audit_bytes);summary=audit['summary'];assert 'pass' in summary and 'pass_' not in summary
+     audit_text=literal(section(document,'Audit summary'));check('full-current-audit-counts',all(x in audit_text for x in [str(summary['critical'])+' critical',str(summary['warning'])+' warning',str(summary['info'])+' info',str(summary['pass'])+' passed']),True)
+     expected_notable=['- **'+f['severity']+'** `'+f['rule_id']+'`: '+f['message'] for f in audit['findings'] if f['severity'] in ['CRITICAL','WARNING']]
+@@ -322,6 +333,7 @@
+         if item.get('content_fingerprint',{}).get('status')=='not_computed':complete_limits.append('datasets.'+role+': content fingerprint not computed')
+     if ((documents['lock'].get('environment') or {}).get('gpu') or {}).get('source')=='unavailable':complete_limits.append('hardware: GPU information unavailable at lock time')
+     if documents['manifest'].get('bindings'):complete_limits.append('bindings: '+', '.join(sorted(documents['manifest']['bindings']))+' — runtime agreement is only checked when run records exist')
++    complete_limits.extend(['Child Python and packages are unverified.','Input consumption by the child is unverified.'])
+     check('complete-selected-known-limitations',[literal(line[2:]) for line in section(document,'Known limitations').splitlines() if line.startswith('- ')],list(dict.fromkeys(complete_limits)))
+     for role,item in sorted(documents['lock'].get('datasets',{}).items()):
+         if item.get('content_fingerprint',{}).get('status')=='not_computed':check('dataset-fingerprint-limitation-'+role,'datasets.'+role+': content fingerprint not computed' in limitations,True)
+@@ -348,7 +360,7 @@
+     file_sources=[]
+     for f in run.get('files',[]):
+         path=Path(f['path']);assert not path.is_absolute() and '..' not in path.parts and re.fullmatch(r'sha256:[a-f0-9]{64}',f['sha256'])
+-        record={'relative_path':f['path'],'original_source_sha256_reference':f['sha256'],'original_size_bytes':f['size_bytes'],'effective_hash_source':'run','default_template_displays_file_hash_table':False}
++        record={'relative_path':f['path'],'original_source_sha256_reference':f['sha256'],'original_size_bytes':f['size_bytes'],'effective_hash_source':'run','default_template_displays_file_hash_table':True}
+         if f.get('snapshot'):
+             snapshot=Path(f['snapshot']);assert not snapshot.is_absolute() and '..' not in snapshot.parts
+             owned=(run_dir/snapshot).resolve();assert owned.is_relative_to(run_dir.resolve())

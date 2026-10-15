@@ -1,0 +1,222 @@
+{
+  "accepted_R07B_decision_sha256": "db325df951d472e8c34a77c1fdf1dcaa15495aaf355b33a8f7df768f131fded1",
+  "accepted_R07B_patch_sha256": "8df82d2da2745615895ae06881312984cdaa65ca95c65b388379284810da9542",
+  "candidate_commit": "26c0b4a716b5b025058a3b1daabc64afdf1a022d",
+  "changed_product_commands": [],
+  "frozen_source_inventory_sha256": "a676a0d86dfb4a0743a35d342400a200ae53bbbf15c91404697837b9274f4ba0",
+  "gate_a_product_commands_executed": 0,
+  "historical_expected_inventory_sha256": "b98ff6124f5b56f1d1f5e4b76e3f6ed28996833a5c41678c96a9f633d4a48d3d",
+  "planned_json_compare_commands": 10,
+  "planned_product_leaf_commands": 10,
+  "product_leaf_plan": [
+    {
+      "additional_checks": [
+        "Exactly one UTF-8 JSON document",
+        "Valid AuditReport, current version independently recorded, UTC generated_at",
+        "Full stderr exact bytes",
+        "SHA/origin/tracked+untracked clean before and after"
+      ],
+      "argv": [
+        "CORE_ENV/bin/reprollm",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "compare_argv": [
+        "CORE_ENV/bin/python",
+        "CANDIDATE/scripts/compare_gold.py",
+        "REVIEWED_S1A_BASELINE/PROJECT-L0-default.stdout",
+        "ACTUAL/PROJECT-L0.stdout",
+        "--audit-metadata"
+      ],
+      "expected_exit": 0,
+      "label": "L0-json",
+      "per_project_count": 1
+    },
+    {
+      "additional_checks": [
+        "Full detection/profiles/evidence/hints/path/line/import/dependency declarations/framework evidence",
+        "Complete sorted static diagnostics including legacy and accepted coverage",
+        "Empty stderr",
+        "No network/heavy imports",
+        "Candidate source-module origin verified before collection"
+      ],
+      "argv": [
+        "CORE_ENV/bin/python",
+        "TASK_GATE_PLAN/collect_facts.py",
+        "CANDIDATE"
+      ],
+      "compare_argv": [
+        "CORE_ENV/bin/python",
+        "CANDIDATE/scripts/compare_gold.py",
+        "TASK_GATE_PLAN/PROJECT-expected-facts.json",
+        "ACTUAL/PROJECT-facts.stdout"
+      ],
+      "expected_exit": 0,
+      "label": "static-facts",
+      "per_project_count": 1
+    }
+  ],
+  "quality_prerequisite": "Fresh candidate quality session currently running; do not run Gate A until summary all_passed=true and exact input inventory remains unchanged. Prior VOPT2527/174 is historical current-source support, not this new run.",
+  "reason": "Historical resource replay without product code changes and without release activation. Pending checklist requires quality then all-five base Gate A. No unaffected init/L1/list-tasks/template/discover/verbosity Cartesian expansions.",
+  "resources_executed": 0,
+  "retained_oracle_provenance_sha256": "6e223808ac2f39cb03cfed7d4d5e28064690226ec3332b018b2e62b957671d3a",
+  "review_boundary": "Expected facts are derived only from independently reviewed old immutable artifacts and the explicitly accepted normative diagnostic overlay; no current output becomes expected.",
+  "schema_version": 1,
+  "source_tree_oracle_sha256": "65ca244e5d6ecf2da8b736763c45595784270d9779e52a5fbb11ec24722a196f",
+  "status": "PREPARED_NOT_EXECUTED",
+  "targets": [
+    {
+      "default_stderr_utf8": "",
+      "diagnostics_source": "Complete UX3 source-reviewed verbose diagnostic entries; preserve legacy raw cap and add only accepted R07-B coverage summary.",
+      "expected_audit": {
+        "logical_input": "REVIEWED_S1A_BASELINE/FastChat-L0-default.stdout",
+        "normalized_business_equal_to_independent_expected": true,
+        "raw_sha256": "0e2a9fc3459a5d6e2d830bb6186b3b451d4d17655bbdcc83141b4c099b5410c6",
+        "reviewed_source_commit": "b00f06c683652aa33c7036d2f89109917f05e64c",
+        "semantic_source": "docs/dogfooding/ux3-2026-10-03/FastChat-complete-comparisons.json",
+        "semantic_source_sha256": "c72bc1f9db5c1a3bd50db4aa8335fa82dff61e1fb53a06bd26824b66e45013be"
+      },
+      "expected_facts": {
+        "file": "FastChat-expected-facts.json",
+        "frozen_source_commit": "798f064",
+        "original_artifact": "REVIEWED_S3A_PERF/raw/FastChat-public-frozen.stdout",
+        "original_frozen_public_artifact_sha256": "bc2690300abf5845cbb0c665a92a2bded9d7baeccb232dd48edfc0f43bfdd673",
+        "selected_full_fields": [
+          "hints",
+          "profiles",
+          "python_paths",
+          "analysis_files",
+          "imports",
+          "declarations",
+          "frameworks"
+        ],
+        "sha256": "4a66505d5234d7c5a7c4b89835c1d9c3593b5e585f43fe7a6ddaf9939fa0ed9c"
+      },
+      "name": "FastChat"
+    },
+    {
+      "default_stderr_utf8": "",
+      "diagnostics_source": "Complete UX3 source-reviewed verbose diagnostic entries; preserve legacy raw cap and add only accepted R07-B coverage summary.",
+      "expected_audit": {
+        "logical_input": "REVIEWED_S1A_BASELINE/HarmBench-L0-default.stdout",
+        "normalized_business_equal_to_independent_expected": true,
+        "raw_sha256": "0ea6c8018eb6bafea47e107a7fb7c4a1de8c7a2518747ccb53042cd9d4c04ca8",
+        "reviewed_source_commit": "b00f06c683652aa33c7036d2f89109917f05e64c",
+        "semantic_source": "docs/dogfooding/ux3-2026-10-03/HarmBench-complete-comparisons.json",
+        "semantic_source_sha256": "a6a8036c4ff1694dd3d0095657ee34be1f349f79b40471b45074b712d50d8c8a"
+      },
+      "expected_facts": {
+        "file": "HarmBench-expected-facts.json",
+        "frozen_source_commit": "798f064",
+        "original_artifact": "REVIEWED_S3A_PERF/raw/HarmBench-public-frozen.stdout",
+        "original_frozen_public_artifact_sha256": "8f2ec7f2221e45d263e108a6e159fc0ca064e7b5db3d5eaf11d4b4be236d6e02",
+        "selected_full_fields": [
+          "hints",
+          "profiles",
+          "python_paths",
+          "analysis_files",
+          "imports",
+          "declarations",
+          "frameworks"
+        ],
+        "sha256": "b75ea4a8ef3fe641c80ce4e45a8d72589322b91f2dc55c6c611474c7c6145689"
+      },
+      "name": "HarmBench"
+    },
+    {
+      "default_stderr_utf8": "",
+      "diagnostics_source": "Complete UX3 source-reviewed verbose diagnostic entries; preserve legacy raw cap and add only accepted R07-B coverage summary.",
+      "expected_audit": {
+        "logical_input": "REVIEWED_S1A_BASELINE/LlamaFactory-L0-default.stdout",
+        "normalized_business_equal_to_independent_expected": true,
+        "raw_sha256": "34b19372a9fec49f59f2bf7e370a1f4685f4dc715211ab4df2ec3c0f8502b38e",
+        "reviewed_source_commit": "b00f06c683652aa33c7036d2f89109917f05e64c",
+        "semantic_source": "docs/dogfooding/ux3-2026-10-03/LlamaFactory-complete-comparisons.json",
+        "semantic_source_sha256": "472d7d25189cb5e602bdbd913cb3997a12dd6d993e9534e4fc41cef5323be57c"
+      },
+      "expected_facts": {
+        "file": "LlamaFactory-expected-facts.json",
+        "frozen_source_commit": "798f064",
+        "original_artifact": "REVIEWED_S3A_PERF/raw/LlamaFactory-public-frozen.stdout",
+        "original_frozen_public_artifact_sha256": "b97d7983396e1b0e052004f532f02a14ace73756aa8f40d59d3618e1e0389bc2",
+        "selected_full_fields": [
+          "hints",
+          "profiles",
+          "python_paths",
+          "analysis_files",
+          "imports",
+          "declarations",
+          "frameworks"
+        ],
+        "sha256": "c9ee52d91407c670b7b9836e4ec99cb73c57bdc611b2ce2b9cfce6507b5521be"
+      },
+      "name": "LlamaFactory"
+    },
+    {
+      "default_stderr_utf8": "",
+      "diagnostics_source": "Complete UX3 source-reviewed verbose diagnostic entries; preserve legacy raw cap and add only accepted R07-B coverage summary.",
+      "expected_audit": {
+        "logical_input": "REVIEWED_S1A_BASELINE/llm-dp-finetune-L0-default.stdout",
+        "normalized_business_equal_to_independent_expected": true,
+        "raw_sha256": "7f253f5ed2ca88465ed3e3b14cbbb3d1329e8a5732fd863a7645876103190860",
+        "reviewed_source_commit": "b00f06c683652aa33c7036d2f89109917f05e64c",
+        "semantic_source": "docs/dogfooding/ux3-2026-10-03/llm-dp-finetune-complete-comparisons.json",
+        "semantic_source_sha256": "c88648af54af99a987dad79377b181694f221a47e38c047b46c0e00fb4ca7453"
+      },
+      "expected_facts": {
+        "file": "llm-dp-finetune-expected-facts.json",
+        "frozen_source_commit": "798f064",
+        "original_artifact": "REVIEWED_S3A_PERF/raw/llm-dp-finetune-public-frozen.stdout",
+        "original_frozen_public_artifact_sha256": "2deeef0da128119088f5c8fe0cd17072a8b8d527685b662c6dfb0d069251dd4e",
+        "selected_full_fields": [
+          "hints",
+          "profiles",
+          "python_paths",
+          "analysis_files",
+          "imports",
+          "declarations",
+          "frameworks"
+        ],
+        "sha256": "9c5a49f448f337843d355abe2d26e985be58c518218e8f02192265568352ae66"
+      },
+      "name": "llm-dp-finetune"
+    },
+    {
+      "default_stderr_utf8": "scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n",
+      "diagnostics_source": "Complete UX3 source-reviewed verbose diagnostic entries; preserve legacy raw cap and add only accepted R07-B coverage summary.",
+      "expected_audit": {
+        "logical_input": "REVIEWED_S1A_BASELINE/lm-evaluation-harness-L0-default.stdout",
+        "normalized_business_equal_to_independent_expected": true,
+        "raw_sha256": "ffc11d2a6fb55fad4b85c52c1be44c396aa32280f07808ec0539e93312d53708",
+        "reviewed_source_commit": "b00f06c683652aa33c7036d2f89109917f05e64c",
+        "semantic_source": "docs/dogfooding/ux3-2026-10-03/lm-evaluation-harness-complete-comparisons.json",
+        "semantic_source_sha256": "e3a2bd897e3d484a4ad622ffa38f120e7e321f5175797be5febf445505d42df0"
+      },
+      "expected_facts": {
+        "file": "lm-evaluation-harness-expected-facts.json",
+        "frozen_source_commit": "798f064",
+        "original_artifact": "REVIEWED_S3A_PERF/raw/lm-evaluation-harness-public-frozen.stdout",
+        "original_frozen_public_artifact_sha256": "124e66324eaf7ed64810ac1264c8388f574e1f761b4b1868207e3c1b2e3e6680",
+        "selected_full_fields": [
+          "hints",
+          "profiles",
+          "python_paths",
+          "analysis_files",
+          "imports",
+          "declarations",
+          "frameworks"
+        ],
+        "sha256": "f1faf0362ea7b99a74de20f4ad4dd10a5b4876eeb6e5467be0235115faf226c9"
+      },
+      "name": "lm-evaluation-harness"
+    }
+  ],
+  "task": "VAL-R01 resource replay prerequisite: minimal fresh Gate A",
+  "unexecuted_fact_collector_sha256": "3fc111446cc13bf77dcc298118a8cab853ad4daaf67c3c304fb052194e5d3d60"
+}

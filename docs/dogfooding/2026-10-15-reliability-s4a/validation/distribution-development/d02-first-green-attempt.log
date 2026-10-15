@@ -1,0 +1,24 @@
+...........F.F.                                                          [100%]
+=================================== FAILURES ===================================
+_______________ test_walkthrough_acceptance_checks_real_records ________________
+tests/unit/test_distribution.py:138: in test_walkthrough_acceptance_checks_real_records
+    checks = validate_distribution.verify_walkthrough(records, work)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/validate_distribution.py:112: in verify_walkthrough
+    check("command_exit_codes", [step.exit_code for step in records] == [
+scripts/validate_distribution.py:105: in check
+    _require(passed, name)
+scripts/validate_distribution.py:46: in _require
+    raise ValidationFailure(name)
+E   scripts.validate_distribution.ValidationFailure: command_exit_codes
+______________ test_high_summary_does_not_hide_wrong_target_leaf _______________
+tests/unit/test_distribution.py:159: in test_high_summary_does_not_hide_wrong_target_leaf
+    with pytest.raises(validate_distribution.ValidationFailure, match="semantic_cap_drift"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'semantic_cap_drift'
+E     Actual message: 'command_exit_codes'
+=========================== short test summary info ============================
+FAILED tests/unit/test_distribution.py::test_walkthrough_acceptance_checks_real_records
+FAILED tests/unit/test_distribution.py::test_high_summary_does_not_hide_wrong_target_leaf
+2 failed, 13 passed in 11.67s

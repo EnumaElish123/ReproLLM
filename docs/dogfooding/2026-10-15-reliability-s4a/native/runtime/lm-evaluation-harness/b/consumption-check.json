@@ -1,0 +1,84 @@
+{
+  "chat_template_applied": false,
+  "claim_limit": "native effective config and saved requests plus immutable cache identity; recorder alone does not attest child consumption",
+  "dataset": {
+    "fewshot_split": "train",
+    "id": "openai/gsm8k",
+    "revision": "740312add88f781978c0658806c59bc2815b9866",
+    "subset": "main",
+    "test_split": "test"
+  },
+  "effective_generation": {
+    "do_sample": false,
+    "max_gen_toks": 48,
+    "temperature": 0.0,
+    "top_p": 1.0
+  },
+  "effective_model_args": {
+    "dtype": "bfloat16",
+    "enforce_eager": true,
+    "gpu_memory_utilization": 0.12,
+    "max_model_len": 4096,
+    "max_num_seqs": 8,
+    "pretrained": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "seed": 42,
+    "tensor_parallel_size": 1,
+    "tokenizer_revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "fewshot": 5,
+  "filter_list": [
+    {
+      "filter": [
+        {
+          "function": "regex",
+          "regex_pattern": "#### (\\-?[0-9\\.\\,]+)"
+        },
+        {
+          "function": "take_first"
+        }
+      ],
+      "name": "strict-match"
+    },
+    {
+      "filter": [
+        {
+          "function": "regex",
+          "group_select": -1,
+          "regex_pattern": "(-?[$0-9.,]{2,})|(-?[0-9]+)"
+        },
+        {
+          "function": "take_first"
+        }
+      ],
+      "name": "flexible-extract"
+    }
+  ],
+  "four_seeds": [
+    42,
+    42,
+    42,
+    42
+  ],
+  "metric_list": [
+    {
+      "aggregation": "mean",
+      "higher_is_better": true,
+      "ignore_case": true,
+      "ignore_punctuation": false,
+      "metric": "exact_match",
+      "regexes_to_ignore": [
+        ",",
+        "\\$",
+        "(?s).*#### ",
+        "\\.$"
+      ]
+    }
+  ],
+  "native_git_description": "d41e5a87",
+  "native_result_sha256": "d21d3bc7bc09af849402563c9616746b60d1b905cf01ac20cc384637444358a5",
+  "schema_version": 1,
+  "source_commit": "d41e5a872ed8a5131a50315f8b5ec1b758762042",
+  "status": "PASS",
+  "variant": "b"
+}

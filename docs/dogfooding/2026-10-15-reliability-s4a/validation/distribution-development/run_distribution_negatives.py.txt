@@ -1,0 +1,160 @@
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import io
+import json
+import os
+import subprocess
+import sys
+import time
+import zipfile
+from pathlib import Path
+
+
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--wheel', type=Path, required=True)
+    parser.add_argument('--manifest', type=Path, required=True)
+    parser.add_argument('--worktree', type=Path, required=True)
+    parser.add_argument('--wheelhouse', type=Path, required=True)
+    parser.add_argument('--out', type=Path, required=True)
+    args = parser.parse_args()
+    args.out.mkdir(parents=True, exist_ok=False)
+    candidate_sha = digest(args.wheel)
+    manifest = json.loads(args.manifest.read_text())
+    source_commit = manifest['source_commit']
+    missing_name = 'reprollm/export/templates/REPRODUCIBILITY.md.j2'
+    mutated = args.out / 'missing-template' / args.wheel.name
+    mutated.parent.mkdir()
+    with zipfile.ZipFile(args.wheel) as source, zipfile.ZipFile(mutated, 'w') as target:
+        assert missing_name in source.namelist()
+        for info in source.infolist():
+            if info.filename == missing_name:
+                continue
+            content = source.read(info.filename)
+            if info.filename.endswith('.dist-info/RECORD'):
+                rows = list(csv.reader(io.StringIO(content.decode('utf-8'))))
+                buffer = io.StringIO(newline='')
+                csv.writer(buffer, lineterminator='\n').writerows(
+                    row for row in rows if row[0] != missing_name
+                )
+                content = buffer.getvalue().encode('utf-8')
+            target.writestr(info, content)
+    changed_manifest = json.loads(args.manifest.read_text())
+    for item in changed_manifest['artifacts']:
+        if item['filename'] == args.wheel.name:
+            item['sha256'] = '0' * 64
+    bad_manifest = args.out / 'wrong-hash-manifest.json'
+    bad_manifest.write_text(json.dumps(changed_manifest, indent=2) + '\n')
+    poison = args.out / 'poison'
+    package = poison / 'reprollm'
+    package.mkdir(parents=True)
+    marker = args.out / 'source-was-imported'
+    (package / '__init__.py').write_text(
+        f"from pathlib import Path\nPath({str(marker)!r}).write_text('imported')\n"
+        "raise AssertionError('D02_SOURCE_INJECTION_CANARY')\n"
+    )
+    environment = os.environ.copy()
+    environment['PATH'] = '<GIT_COMPATIBILITY>' + os.pathsep + environment.get('PATH', '')
+    results = []
+    started = time.monotonic()
+
+    def run(label: str, wheel: Path, options: list[str], *, injected: bool = False) -> dict:
+        result_path = args.out / f'{label}.json'
+        command = [sys.executable, str(args.worktree / 'scripts/validate_distribution.py'),
+                   '--wheel', str(wheel), '--no-index', '--find-links', str(args.wheelhouse),
+                   '--raw-output-dir', str(args.out / f'{label}-raw'),
+                   '--output', str(result_path), *options]
+        env = environment.copy()
+        if injected:
+            env['PYTHONPATH'] = str(poison) + os.pathsep + str(args.worktree / 'src')
+        before = time.monotonic()
+        process = subprocess.run(command, cwd=args.worktree, env=env, capture_output=True)
+        (args.out / f'{label}.stderr.txt').write_bytes(process.stderr)
+        result = json.loads(result_path.read_text())
+        assert process.stdout == result_path.read_bytes(), 'stdout differs from persisted summary'
+        record = {'scenario': label, 'command': command, 'exit_code': process.returncode,
+                  'elapsed_seconds': round(time.monotonic() - before, 6),
+                  'summary': result_path.name, 'summary_sha256': digest(result_path),
+                  'stderr': f'{label}.stderr.txt',
+                  'stderr_sha256': hashlib.sha256(process.stderr).hexdigest(),
+                  'actual_status': result['status'], 'failure': result.get('failure'),
+                  'commands_executed': len(result['commands']), 'checks': [],
+                  'blocked_before_installation': 'installation' not in result,
+                  'import_evidence': result.get('imports'),
+                  'product_commands': []}
+        healthy_exits = [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0] + [0] * 14
+        for index, step in enumerate(result['commands']):
+            expected = 3 if label == 'missing-template' and index == 11 else healthy_exits[index]
+            record['product_commands'].append({'command': step['command'],
+                'expected_exit_code': expected, 'actual_exit_code': step['exit_code'],
+                'healthy_exit_code': healthy_exits[index],
+                'passed': expected == step['exit_code']})
+        if injected:
+            record['environment_overrides'] = {'PYTHONPATH': ['<poison>', '<candidate-source>/src']}
+            record['poison_fixture_sha256'] = digest(package / '__init__.py')
+            record['poison_fixture_executed'] = marker.exists()
+        results.append(record)
+        return result
+
+    version = run('wrong-version', args.wheel, ['--expected-version', '0.0.0'])
+    results[-1]['checks'] = [version.get('failure') == 'wheel_target_version',
+                             not version['commands'], 'installation' not in version]
+    hashed = run('wrong-hash', args.wheel, ['--build-manifest', str(bad_manifest)])
+    results[-1]['checks'] = [hashed.get('failure') == 'build_manifest_wheel',
+                             not hashed['commands'], 'installation' not in hashed]
+    tag = run('wrong-tag', args.wheel, ['--expected-tag', 'v0.0.0'])
+    results[-1]['checks'] = [tag.get('failure') == 'wheel_target_version',
+                             not tag['commands'], 'installation' not in tag]
+    missing = run('missing-template', mutated, ['--expected-version', manifest['version']])
+    missing_last = missing['commands'][-1] if missing['commands'] else {}
+    results[-1]['checks'] = [missing.get('failure') == 'installed_command',
+                             missing.get('imports', {}).get('isolated') is True,
+                             missing.get('imports', {}).get('console_entrypoint_exit_code') == 0,
+                             len(missing['commands']) == 12,
+                             missing_last.get('command', [None])[0] == 'export',
+                             missing_last.get('exit_code') == 3,
+                             missing['provenance']['status'] == 'UNCONFIRMED']
+    injection = run('source-injection', args.wheel,
+                    ['--build-manifest', str(args.manifest), '--expected-version', manifest['version'],
+                     '--expected-tag', f"v{manifest['version']}"], injected=True)
+    results[-1]['checks'] = [injection['status'] == 'PASS', len(injection['commands']) == 26,
+                             len(injection['checks']) == 13,
+                             all(check['passed'] for check in injection['checks']),
+                             injection.get('imports', {}).get('isolated') is True, not marker.exists(),
+                             injection['provenance']['source_commit'] == source_commit]
+    for record in results:
+        record['expected_exit_code'] = 0 if record['scenario'] == 'source-injection' else 1
+        record['expected_status'] = 'PASS' if record['scenario'] == 'source-injection' else 'FAIL'
+        record['expected_failure'] = {
+            'wrong-version': 'wheel_target_version', 'wrong-tag': 'wheel_target_version',
+            'wrong-hash': 'build_manifest_wheel', 'missing-template': 'installed_command',
+            'source-injection': None,
+        }[record['scenario']]
+        record['checks'].append(record['exit_code'] == record['expected_exit_code'])
+        record['checks'].append(all(command['passed'] for command in record['product_commands']))
+        record['passed'] = all(record['checks'])
+    unchanged = digest(args.wheel) == candidate_sha
+    summary = {'schema_version': 1, 'task': 'D02', 'source_commit': source_commit,
+               'candidate_filename': args.wheel.name, 'candidate_sha256': candidate_sha,
+               'original_candidate_unchanged': unchanged,
+               'derived_fault': {'removed': missing_name, 'wheel_sha256': digest(mutated),
+                                 'record_row_removed': True, 'source_provenance': 'UNCONFIRMED'},
+               'results': results, 'elapsed_seconds': round(time.monotonic() - started, 6),
+               'status': 'PASS' if unchanged and all(row['passed'] for row in results) else 'FAIL'}
+    (args.out / 'receipt.json').write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
+    print(json.dumps({key: summary[key] for key in ('status', 'candidate_sha256', 'elapsed_seconds')}))
+    for row in results:
+        print(json.dumps({key: row[key] for key in ('scenario', 'exit_code', 'actual_status', 'failure',
+                                                 'commands_executed', 'passed')}))
+    return 0 if summary['status'] == 'PASS' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

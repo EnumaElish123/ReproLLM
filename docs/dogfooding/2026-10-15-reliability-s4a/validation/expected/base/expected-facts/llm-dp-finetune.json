@@ -1,0 +1,832 @@
+{
+  "analysis_files": [
+    ".gitignore",
+    "CITATION.bib",
+    "CODE_OF_CONDUCT.md",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "configs/fine-tune/deepspeed_stage2.json",
+    "configs/fine-tune/deepspeed_stage3.json",
+    "configs/fine-tune/echr-llama-7b-dp4.yml",
+    "configs/fine-tune/echr-llama2-7b-dp8.yml",
+    "configs/fine-tune/echr-llama2-7b-scrubbed.yml",
+    "configs/fine-tune/echr-llama2-7b-undefended.yml",
+    "configs/fine-tune/echr-llama3-8b-Inst-dp8.yml",
+    "configs/fine-tune/echr-llama3-8b-Inst-undefended.yml",
+    "configs/fine-tune/echr_1k-llama2-7b-dp8.yml",
+    "configs/fine-tune/enron-llama2-7b-dp.yml",
+    "configs/fine-tune/enron-llama2-7b-scrubbed.yml",
+    "data/echr/__init__.py",
+    "data/echr/echr.py",
+    "data/enron/enron.py",
+    "fine_tune.py",
+    "requirements.txt",
+    "setup.cfg",
+    "setup.py",
+    "src/__init__.py",
+    "src/global_configs.py",
+    "src/llm_pft/__init__.py",
+    "src/llm_pft/arguments/__init__.py",
+    "src/llm_pft/arguments/attack_args.py",
+    "src/llm_pft/arguments/config_args.py",
+    "src/llm_pft/arguments/dataset_args.py",
+    "src/llm_pft/arguments/env_args.py",
+    "src/llm_pft/arguments/evaluation_args.py",
+    "src/llm_pft/arguments/model_args.py",
+    "src/llm_pft/arguments/ner_args.py",
+    "src/llm_pft/arguments/outdir_args.py",
+    "src/llm_pft/arguments/privacy_args.py",
+    "src/llm_pft/arguments/sampling_args.py",
+    "src/llm_pft/arguments/trainer_args.py",
+    "src/llm_pft/dataset/__init__.py",
+    "src/llm_pft/dataset/dataset.py",
+    "src/llm_pft/dataset/dataset_factory.py",
+    "src/llm_pft/dataset/generated_dataset.py",
+    "src/llm_pft/dataset/real_dataset.py",
+    "src/llm_pft/global_configs.py",
+    "src/llm_pft/local_configs.py",
+    "src/llm_pft/models/__init__.py",
+    "src/llm_pft/models/gpt2.py",
+    "src/llm_pft/models/language_model.py",
+    "src/llm_pft/models/llama2.py",
+    "src/llm_pft/models/model_factory.py",
+    "src/llm_pft/ner/__init__.py",
+    "src/llm_pft/ner/fill_masks.py",
+    "src/llm_pft/ner/flair_tagger.py",
+    "src/llm_pft/ner/pii_results.py",
+    "src/llm_pft/ner/tagger.py",
+    "src/llm_pft/ner/tagger_factory.py",
+    "src/llm_pft/utils/__init__.py",
+    "src/llm_pft/utils/callbacks.py",
+    "src/llm_pft/utils/output.py",
+    "src/llm_pft/utils/python_helper.py",
+    "src/llm_pft/utils/random.py",
+    "src/llm_pft/utils/set_ops.py",
+    "src/llm_pft/utils/web.py",
+    "src/local_configs.py"
+  ],
+  "declarations": [
+    {
+      "display_name": "torch",
+      "exact_version": null,
+      "line": 1,
+      "name": "torch",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "transformers",
+      "exact_version": null,
+      "line": 2,
+      "name": "transformers",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "tqdm",
+      "exact_version": null,
+      "line": 3,
+      "name": "tqdm",
+      "source_file": "requirements.txt",
+      "specifier": null
+    }
+  ],
+  "diagnostics": [
+    "requirements.txt:4: git+https://github.com/flairNLP/flair"
+  ],
+  "frameworks": [],
+  "hints": {
+    "adapter": true,
+    "backends": [],
+    "datasets": true,
+    "hf_ids": [],
+    "providers": [],
+    "trust_remote_code": true
+  },
+  "imports": [
+    {
+      "line": 4,
+      "module": "typing",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 6,
+      "module": "datasets",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 7,
+      "module": "pandas",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 8,
+      "module": "datasets",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 10,
+      "module": "llm_pft.arguments.ner_args",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 11,
+      "module": "llm_pft.ner.pii_results",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 12,
+      "module": "llm_pft.ner.tagger",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 13,
+      "module": "llm_pft.ner.tagger_factory",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 14,
+      "module": "llm_pft.utils.output",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 15,
+      "module": "llm_pft.utils.random",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 17,
+      "module": "dataclasses",
+      "path": "data/echr/echr.py"
+    },
+    {
+      "line": 4,
+      "module": "typing",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 6,
+      "module": "datasets",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 7,
+      "module": "pandas",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 8,
+      "module": "datasets",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 10,
+      "module": "llm_pft.arguments.ner_args",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 11,
+      "module": "llm_pft.ner.pii_results",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 12,
+      "module": "llm_pft.ner.tagger",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 13,
+      "module": "llm_pft.ner.tagger_factory",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 14,
+      "module": "llm_pft.utils.output",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 15,
+      "module": "llm_pft.utils.random",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 17,
+      "module": "dataclasses",
+      "path": "data/enron/enron.py"
+    },
+    {
+      "line": 3,
+      "module": "torch",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 8,
+      "module": "pprint",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 10,
+      "module": "transformers",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 12,
+      "module": "llm_pft.arguments.config_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 13,
+      "module": "llm_pft.arguments.dataset_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 14,
+      "module": "llm_pft.arguments.env_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 15,
+      "module": "llm_pft.arguments.model_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 16,
+      "module": "llm_pft.arguments.ner_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 17,
+      "module": "llm_pft.arguments.outdir_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 18,
+      "module": "llm_pft.arguments.privacy_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 19,
+      "module": "llm_pft.arguments.sampling_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 20,
+      "module": "llm_pft.arguments.trainer_args",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 21,
+      "module": "llm_pft.dataset.real_dataset",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 22,
+      "module": "llm_pft.models.language_model",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 23,
+      "module": "llm_pft.models.model_factory",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 24,
+      "module": "llm_pft.dataset.dataset_factory",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 25,
+      "module": "llm_pft.utils.output",
+      "path": "fine_tune.py"
+    },
+    {
+      "line": 1,
+      "module": "setuptools",
+      "path": "setup.py"
+    },
+    {
+      "line": 1,
+      "module": "dataclasses",
+      "path": "src/global_configs.py"
+    },
+    {
+      "line": 3,
+      "module": "src.utils.output",
+      "path": "src/global_configs.py"
+    },
+    {
+      "line": 6,
+      "module": "src.local_configs",
+      "path": "src/global_configs.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/attack_args.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "src/llm_pft/arguments/attack_args.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/config_args.py"
+    },
+    {
+      "line": 6,
+      "module": "yaml",
+      "path": "src/llm_pft/arguments/config_args.py"
+    },
+    {
+      "line": 4,
+      "module": "hashlib",
+      "path": "src/llm_pft/arguments/dataset_args.py"
+    },
+    {
+      "line": 5,
+      "module": "copy",
+      "path": "src/llm_pft/arguments/dataset_args.py"
+    },
+    {
+      "line": 6,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/dataset_args.py"
+    },
+    {
+      "line": 8,
+      "module": "random",
+      "path": "src/llm_pft/arguments/dataset_args.py"
+    },
+    {
+      "line": 3,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/env_args.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/evaluation_args.py"
+    },
+    {
+      "line": 4,
+      "module": "hashlib",
+      "path": "src/llm_pft/arguments/model_args.py"
+    },
+    {
+      "line": 5,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/model_args.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/ner_args.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "src/llm_pft/arguments/outdir_args.py"
+    },
+    {
+      "line": 5,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/outdir_args.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/privacy_args.py"
+    },
+    {
+      "line": 4,
+      "module": "hashlib",
+      "path": "src/llm_pft/arguments/sampling_args.py"
+    },
+    {
+      "line": 5,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/sampling_args.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "src/llm_pft/arguments/trainer_args.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "src/llm_pft/arguments/trainer_args.py"
+    },
+    {
+      "line": 7,
+      "module": "transformers",
+      "path": "src/llm_pft/arguments/trainer_args.py"
+    },
+    {
+      "line": 4,
+      "module": "abc",
+      "path": "src/llm_pft/dataset/dataset.py"
+    },
+    {
+      "line": 6,
+      "module": "tqdm",
+      "path": "src/llm_pft/dataset/dataset.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "src/llm_pft/dataset/generated_dataset.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "src/llm_pft/dataset/real_dataset.py"
+    },
+    {
+      "line": 4,
+      "module": "copy",
+      "path": "src/llm_pft/dataset/real_dataset.py"
+    },
+    {
+      "line": 6,
+      "module": "datasets",
+      "path": "src/llm_pft/dataset/real_dataset.py"
+    },
+    {
+      "line": 3,
+      "module": "dataclasses",
+      "path": "src/llm_pft/global_configs.py"
+    },
+    {
+      "line": 1,
+      "module": "dataclasses",
+      "path": "src/llm_pft/local_configs.py"
+    },
+    {
+      "line": 4,
+      "module": "transformers",
+      "path": "src/llm_pft/models/gpt2.py"
+    },
+    {
+      "line": 4,
+      "module": "abc",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 5,
+      "module": "dataclasses",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 6,
+      "module": "typing",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 9,
+      "module": "numpy",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 10,
+      "module": "torch",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 11,
+      "module": "tqdm",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 12,
+      "module": "transformers",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 14,
+      "module": "transformers.optimization",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 101,
+      "module": "peft.peft_model",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 132,
+      "module": "peft",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 142,
+      "module": "peft",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 440,
+      "module": "fastDP",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 554,
+      "module": "fastDP",
+      "path": "src/llm_pft/models/language_model.py"
+    },
+    {
+      "line": 4,
+      "module": "transformers",
+      "path": "src/llm_pft/models/llama2.py"
+    },
+    {
+      "line": 4,
+      "module": "copy",
+      "path": "src/llm_pft/ner/fill_masks.py"
+    },
+    {
+      "line": 5,
+      "module": "transformers",
+      "path": "src/llm_pft/ner/fill_masks.py"
+    },
+    {
+      "line": 4,
+      "module": "typing",
+      "path": "src/llm_pft/ner/flair_tagger.py"
+    },
+    {
+      "line": 6,
+      "module": "flair",
+      "path": "src/llm_pft/ner/flair_tagger.py"
+    },
+    {
+      "line": 7,
+      "module": "torch",
+      "path": "src/llm_pft/ner/flair_tagger.py"
+    },
+    {
+      "line": 8,
+      "module": "flair.data",
+      "path": "src/llm_pft/ner/flair_tagger.py"
+    },
+    {
+      "line": 9,
+      "module": "flair.models",
+      "path": "src/llm_pft/ner/flair_tagger.py"
+    },
+    {
+      "line": 4,
+      "module": "json",
+      "path": "src/llm_pft/ner/pii_results.py"
+    },
+    {
+      "line": 5,
+      "module": "os",
+      "path": "src/llm_pft/ner/pii_results.py"
+    },
+    {
+      "line": 6,
+      "module": "dataclasses",
+      "path": "src/llm_pft/ner/pii_results.py"
+    },
+    {
+      "line": 7,
+      "module": "typing",
+      "path": "src/llm_pft/ner/pii_results.py"
+    },
+    {
+      "line": 4,
+      "module": "abc",
+      "path": "src/llm_pft/ner/tagger.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "src/llm_pft/ner/tagger.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "src/llm_pft/utils/callbacks.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "src/llm_pft/utils/callbacks.py"
+    },
+    {
+      "line": 7,
+      "module": "transformers",
+      "path": "src/llm_pft/utils/callbacks.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "src/llm_pft/utils/output.py"
+    },
+    {
+      "line": 1,
+      "module": "enum",
+      "path": "src/llm_pft/utils/python_helper.py"
+    },
+    {
+      "line": 3,
+      "module": "hashlib",
+      "path": "src/llm_pft/utils/python_helper.py"
+    },
+    {
+      "line": 6,
+      "module": "numpy",
+      "path": "src/llm_pft/utils/python_helper.py"
+    },
+    {
+      "line": 7,
+      "module": "json",
+      "path": "src/llm_pft/utils/python_helper.py"
+    },
+    {
+      "line": 9,
+      "module": "torch",
+      "path": "src/llm_pft/utils/python_helper.py"
+    },
+    {
+      "line": 4,
+      "module": "random",
+      "path": "src/llm_pft/utils/random.py"
+    },
+    {
+      "line": 4,
+      "module": "numpy",
+      "path": "src/llm_pft/utils/set_ops.py"
+    },
+    {
+      "line": 5,
+      "module": "matplotlib",
+      "path": "src/llm_pft/utils/set_ops.py"
+    },
+    {
+      "line": 6,
+      "module": "torch.utils",
+      "path": "src/llm_pft/utils/set_ops.py"
+    },
+    {
+      "line": 4,
+      "module": "hashlib",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 5,
+      "module": "os",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 6,
+      "module": "tempfile",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 7,
+      "module": "zipfile",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 8,
+      "module": "urllib.parse",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 10,
+      "module": "requests",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 11,
+      "module": "tqdm",
+      "path": "src/llm_pft/utils/web.py"
+    },
+    {
+      "line": 1,
+      "module": "dataclasses",
+      "path": "src/local_configs.py"
+    }
+  ],
+  "profiles": [
+    {
+      "confidence": "high",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 10,
+          "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+          "path": "fine_tune.py",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 101,
+          "note": "import peft",
+          "path": "src/llm_pft/models/language_model.py",
+          "value": null
+        }
+      ],
+      "profile": "finetuning",
+      "shipped": true
+    },
+    {
+      "confidence": "medium",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'differential privacy' in readme text",
+          "path": "README.md",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'epsilon' in config key",
+          "path": "configs/fine-tune/echr-llama-7b-dp4.yml",
+          "value": null
+        }
+      ],
+      "profile": "privacy",
+      "shipped": true
+    },
+    {
+      "confidence": "low",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'red team' in readme text",
+          "path": "README.md",
+          "value": null
+        }
+      ],
+      "profile": "safety",
+      "shipped": true
+    }
+  ],
+  "python_paths": [
+    "data/echr/__init__.py",
+    "data/echr/echr.py",
+    "data/enron/enron.py",
+    "fine_tune.py",
+    "setup.py",
+    "src/__init__.py",
+    "src/global_configs.py",
+    "src/llm_pft/__init__.py",
+    "src/llm_pft/arguments/__init__.py",
+    "src/llm_pft/arguments/attack_args.py",
+    "src/llm_pft/arguments/config_args.py",
+    "src/llm_pft/arguments/dataset_args.py",
+    "src/llm_pft/arguments/env_args.py",
+    "src/llm_pft/arguments/evaluation_args.py",
+    "src/llm_pft/arguments/model_args.py",
+    "src/llm_pft/arguments/ner_args.py",
+    "src/llm_pft/arguments/outdir_args.py",
+    "src/llm_pft/arguments/privacy_args.py",
+    "src/llm_pft/arguments/sampling_args.py",
+    "src/llm_pft/arguments/trainer_args.py",
+    "src/llm_pft/dataset/__init__.py",
+    "src/llm_pft/dataset/dataset.py",
+    "src/llm_pft/dataset/dataset_factory.py",
+    "src/llm_pft/dataset/generated_dataset.py",
+    "src/llm_pft/dataset/real_dataset.py",
+    "src/llm_pft/global_configs.py",
+    "src/llm_pft/local_configs.py",
+    "src/llm_pft/models/__init__.py",
+    "src/llm_pft/models/gpt2.py",
+    "src/llm_pft/models/language_model.py",
+    "src/llm_pft/models/llama2.py",
+    "src/llm_pft/models/model_factory.py",
+    "src/llm_pft/ner/__init__.py",
+    "src/llm_pft/ner/fill_masks.py",
+    "src/llm_pft/ner/flair_tagger.py",
+    "src/llm_pft/ner/pii_results.py",
+    "src/llm_pft/ner/tagger.py",
+    "src/llm_pft/ner/tagger_factory.py",
+    "src/llm_pft/utils/__init__.py",
+    "src/llm_pft/utils/callbacks.py",
+    "src/llm_pft/utils/output.py",
+    "src/llm_pft/utils/python_helper.py",
+    "src/llm_pft/utils/random.py",
+    "src/llm_pft/utils/set_ops.py",
+    "src/llm_pft/utils/web.py",
+    "src/local_configs.py"
+  ],
+  "schema_version": 1
+}

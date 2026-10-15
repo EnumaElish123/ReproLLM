@@ -24,9 +24,17 @@ are later-candidate results, not a promotion of the historical 0.6.1 release.
 Recovered judge inputs and configured credentials do not substitute for a
 fresh VAL-R02 bounded API run or VAL-R03 authorized-file success.
 
+Updated 2026-10-15: [S4-A D01/D02](2026-10-15-reliability-s4a/README.md), candidate
+`b86c014cf9f15f1efddb6902979dcc6ddf79be9f`, repairs the observed source snapshot
+fidelity defects. Ten original failing input files now retain exact bytes in a
+fresh public-CLI capture. The formal lm-eval A/B GPU recipe passes complete
+capture, consumption, diff and export acceptance using the candidate wheel.
+The other four native projects have not been rerun on these product bytes;
+their historical evidence does not establish current release readiness.
+
 | Tracking ID | Outstanding coverage | Blocker | Status |
 |---|---|---|---|
-| VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | Resources restored; Linux H2 and all ten native children pass, but eight captures fail source/config snapshot fidelity | BLOCKED — implementation follow-up |
+| VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | S4-A fixes observed source fidelity and accepts fresh lm-eval A/B; the other four native projects still need current-candidate acceptance | BLOCKED — remaining native matrix |
 | VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Input bundle recovered; fresh provider/tariff/budget preflight and bounded real judge replay remain outstanding | BLOCKED |
 | VAL-R03 | Successful authenticated HF gated-file resolution | Successful model-author-authorized file access is still unverified by fresh authenticated replay | BLOCKED |
 
@@ -53,8 +61,9 @@ checking the resources provisioned for the new execution.
 
 - [x] Linux H2 (2026-10-13 candidate): offline/two-online/check/audit runs complete with the expected
   revisions, file hashes, normalized lock equality and freshness results.
-- [ ] lm-evaluation-harness: real bounded inference, complete A/B capture and
-  the required semantic leaf/severity match §8.3.
+- [x] lm-evaluation-harness (2026-10-15 S4-A candidate): real bounded inference,
+  complete A/B capture, source fidelity, independent consumption/output checks,
+  required semantic leaf/severity and selected-run exports match §8.3.
 - [ ] FastChat: real local answer generation and its A/B capture/diff pass.
 - [x] LlamaFactory (2026-10-13 candidate): real bounded LoRA updates, finite loss and its A/B
   capture/diff pass. Its additional RPC scratch-variable MEDIUM delta is
@@ -67,11 +76,13 @@ checking the resources provisioned for the new execution.
   the prescribed MEDIUM DP leaf even when the config-file hash is HIGH.
 - [ ] Available captured states pass the applicable M7 export checks.
 
-All ten bounded native children and output checks now pass. The unchecked
-project items remain open because their captured source/config snapshots alter
-regexes, arithmetic or relative path syntax; correct original-byte hashes and
-semantic leaf diffs cannot close that fidelity failure. Detailed checks, all
-36 semantic changes, commands and timing are in the dated report above.
+The 2026-10-13 report records ten successful native children, independent output
+checks and all 36 semantic changes, with the original snapshot fidelity failures
+preserved. S4-A fixes the observed defects and reaccepts the formal lm-eval pair.
+Remaining project items need fresh native capture and consumer verification;
+the ten-file CPU fidelity regression alone cannot promote their older runs.
+LlamaFactory and Linux H2 checkmarks above remain explicitly dated evidence,
+not complete release coverage for the new candidate.
 
 Standard-library capture probes do not close these native execution items.
 The retired gated Llama-2 multi-GPU DP scenario remains additional coverage,

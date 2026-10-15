@@ -1,0 +1,51 @@
+{
+  "attempts": [
+    {
+      "original_log": "d02-red.log",
+      "phase": "acceptance RED",
+      "raw_retained": true,
+      "result": "1 collection error: validator entry did not exist"
+    },
+    {
+      "original_log": "d02-first-green-attempt.log",
+      "phase": "first implementation iteration",
+      "raw_retained": true,
+      "result": "2 failed, 13 passed: Level-2 audit exit expectation was corrected from 0 to its documented critical-finding exit 1"
+    },
+    {
+      "evidence_kind": "Observed tool-output summary; redirected d02-green.log was subsequently overwritten by the 23-pass run",
+      "original_raw_sha256": null,
+      "phase": "second implementation iteration",
+      "raw_retained": false,
+      "result": "2 failed, 13 passed: assertion initially looked for execution.exit_code; RunRecord has root exit_code. Corrected before green evidence."
+    },
+    {
+      "original_log": "d02-green.log",
+      "phase": "green dedicated",
+      "raw_retained": true,
+      "result": "23 passed"
+    },
+    {
+      "original_log": "d02-focused.log",
+      "phase": "combined regression",
+      "raw_retained": true,
+      "result": "38 passed"
+    },
+    {
+      "original_log": "d02-final-focused.log",
+      "phase": "combined regression with isolation/evidence tests",
+      "raw_retained": true,
+      "result": "48 passed"
+    },
+    {
+      "original_log": "d02-review-focused.log",
+      "phase": "final review regression",
+      "raw_retained": true,
+      "result": "26 passed; missing generation max_tokens fails even with the same value and field in an unrelated section"
+    }
+  ],
+  "kind": "development-test-history",
+  "schema_version": 1,
+  "scope": "Pre-commit focused development iterations; final candidate evidence is separate. Test counts overlap and must not be added.",
+  "task": "D02"
+}

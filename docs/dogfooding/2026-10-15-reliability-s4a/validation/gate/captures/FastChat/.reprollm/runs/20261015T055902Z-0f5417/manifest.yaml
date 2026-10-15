@@ -1,0 +1,18 @@
+schema_version: 1
+project:
+  name: s4a-privacy-evidence
+experiment:
+  profiles: [validation]
+generation:
+  temperature: 0.1
+execution:
+  command: python r04-child.py --config r04-config.json
+  cwd: .
+  seed: 17
+  config_files: [r04-config.json]
+bindings:
+  generation.temperature:
+    cli: --temperature
+    config: r04-config.json:temperature
+artifacts:
+  outputs: [r04-consumed.json]

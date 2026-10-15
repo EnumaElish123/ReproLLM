@@ -1,0 +1,63 @@
+{
+  "commands": {
+    "combined": "PATH=<reviewed-git-shim>:$PATH .venv/bin/python -m pytest -q tests/unit/test_distribution.py tests/unit/test_onboarding_examples.py tests/unit/test_generated_docs.py --tb=short",
+    "final_focused": "PATH=<reviewed-git-shim>:$PATH .venv/bin/python -m pytest -q tests/unit/test_distribution.py --tb=short",
+    "format": ".venv/bin/ruff format --check scripts/gen_quickstart.py scripts/validate_distribution.py tests/unit/test_distribution.py",
+    "mypy": ".venv/bin/mypy scripts/validate_distribution.py scripts/gen_quickstart.py",
+    "ruff": ".venv/bin/ruff check scripts/gen_quickstart.py scripts/validate_distribution.py tests/unit/test_distribution.py"
+  },
+  "final_check_status": {
+    "format": "PASS",
+    "mypy_scripts": "PASS",
+    "ruff": "PASS"
+  },
+  "final_sources": {
+    "docs/quickstart.md": "70f21aed187650116398c6abd33229e9346ef7cf065042ed2cfee9d4ab9cfc76",
+    "scripts/gen_quickstart.py": "009360ff1b68901f7a7fabe40b29cc220f922a02471047cd5ef5a22d84c714e1",
+    "scripts/validate_distribution.py": "e77e1d723ea55fa7de41ba91ee4141db8837e5dd2d7398bf67a1d6024927454f",
+    "tests/unit/test_distribution.py": "19c086e79a113efa47f23257faf2aa829b8c20b2e85d0bceadf6c0714d022f80"
+  },
+  "focused_commands": [
+    {
+      "exit_code": 2,
+      "log": "d02-red.log",
+      "result": "pytest collection fails before new validator implementation",
+      "sha256": "32f7ebd6e86fb8b4a8fcc6448509f91ef01b0cdd63bb126a2255e35e605612a9"
+    },
+    {
+      "exit_code": 1,
+      "log": "d02-first-green-attempt.log",
+      "result": "implementation iteration; corrected exit expectations",
+      "sha256": "d331137b462b8dbed8a3abdd32ff36f4fda5d378ca749cf058e2beee6fbb0d5e"
+    },
+    {
+      "exit_code": 0,
+      "log": "d02-focused.log",
+      "result": "38 passed",
+      "sha256": "4fb5161a35b6ce0cda838a07faee8c93ee757d3f1d12b93d2e7f0d9f05d93529"
+    },
+    {
+      "exit_code": 0,
+      "log": "d02-final-focused.log",
+      "result": "48 passed",
+      "sha256": "ff1266cd82d3d77c87e2dd91e8396d781c607290408d7771fa3a8423c388c40e"
+    },
+    {
+      "exit_code": 0,
+      "log": "d02-review-focused.log",
+      "result": "26 passed including section-specific export negative",
+      "sha256": "2419bf7fbe93d6eb0bae27d8fa710efe27fbf3c21c8ddc6be170fb3eb15f341d"
+    }
+  ],
+  "handoff": [
+    {
+      "behavior": "shared quickstart raises RuntimeError; validator exits nonzero and remains fail-closed, but no safe JSON summary is emitted",
+      "scope_decision": "maintain frozen S4-A candidate; add catch and regression with D03 robustness work",
+      "status": "FOLLOWUP",
+      "task": "D03",
+      "topic": "structured summary for anomalous successful CLI without a unique run.json"
+    }
+  ],
+  "schema_version": 1,
+  "task": "D02"
+}

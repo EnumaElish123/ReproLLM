@@ -1,0 +1,119 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-15T05:52:05Z'
+manifest_sha256: sha256:4dc64da17cc7fbc4448474ae47c744c32180baa02263ac22975a002d7ab9d731
+project_rules_sha256: sha256:b1d7ca26dd0049763c8bdef140731364f25224d652f4d4cf4b6fd65b5bb377de
+resolution:
+  mode: offline
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-32B
+    pinnability: exact
+    revision:
+      value: null
+      source: offline
+      confidence: unresolved
+      resolved_at: null
+      note: offline mode; run reprollm lock with network access
+    observed_at: null
+    tokenizer:
+      id: Qwen/Qwen3-32B
+      revision:
+        value: null
+        source: offline
+        confidence: unresolved
+        resolved_at: null
+        note: offline mode; run reprollm lock with network access
+    chat_template:
+      sha256:
+        value: null
+        source: offline
+        confidence: unresolved
+        resolved_at: null
+        note: offline mode; run reprollm lock with network access
+      status: present
+    config_sha256:
+      value: null
+      source: offline
+      confidence: unresolved
+      resolved_at: null
+      note: offline mode; run reprollm lock with network access
+    adapter: null
+    local: null
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: null
+datasets:
+  eval:
+    provider: huggingface
+    id: cais/mmlu
+    revision:
+      value: null
+      source: offline
+      confidence: unresolved
+      resolved_at: null
+      note: offline mode; run reprollm lock with network access
+    subset: abstract_algebra
+    split: test
+    content_fingerprint:
+      status: not_computed
+    files: null
+prompts:
+  system:
+    path: prompts/system.txt
+    sha256: sha256:1012fd0edf9e8ecd0aef9107beb1817f8fb0e0be689245a0be34efd80e88add9
+    size_bytes: 162
+    text_sha256: null
+files:
+- path: configs/capture.json
+  sha256: sha256:fab3df86f6352eebdd68a28b6f8a4d0962ef625cfa7fb6cff809866aa22510bd
+  size_bytes: 71
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  top_k: null
+  max_tokens: 32
+  seed: 42
+  do_sample: null
+  stop: []
+  repetition_penalty: null
+  n: null
+inference:
+  backend: vllm
+  version:
+    value: null
+    source: importlib_metadata
+    confidence: unresolved
+    resolved_at: null
+    note: 'distribution not installed: vllm'
+  mode: null
+  dtype: bfloat16
+  tensor_parallel_size: 2
+  gpu_memory_utilization: 0.9
+  quantization: none
+  max_model_len: null
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation:
+  metrics:
+  - name: accuracy
+    implementation: eval.py
+    implementation_sha256: sha256:2ac2a4b8f5fe2b4f91dbfef5fe2d3d3d829909bed21e4164e06607ab646cd792
+    implementation_version: null
+  aggregation: mean
+  repetitions: 1
+  thresholds: null
+  definitions: null
+  query_budget: null
+  judge: null
+privacy: null
+environment:
+  python: 3.12.14
+  platform: linux
+  packages: {}
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.2'
+    source: nvidia_smi

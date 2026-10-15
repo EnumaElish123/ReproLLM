@@ -1,0 +1,16 @@
+"""Affected State consumer; supplementary to the85 CLI leaves."""
+from __future__ import annotations
+import json,sys
+from pathlib import Path
+import reprollm
+assert Path(reprollm.__file__).resolve()==Path(sys.argv[1])/'src/reprollm/__init__.py'
+from reprollm.run.codec import read_run_record
+from reprollm.schemas.state import State
+path=Path(sys.argv[2]);record,_=read_run_record(path)
+state=State.from_run(record,run_dir=path.parent)
+restored=State.model_validate_json(state.model_dump_json())
+remerged=State.merge(state,state)
+print(json.dumps({'schema_version':1,'state':state.model_dump(mode='json'),
+ 'flat':{k:v.model_dump(mode='json') for k,v in state.flatten().items()},
+ 'roundtrip_equal':restored.model_dump_json()==state.model_dump_json(),
+ 'overlap_merge_equal':remerged.model_dump_json()==state.model_dump_json()},sort_keys=True,ensure_ascii=False))

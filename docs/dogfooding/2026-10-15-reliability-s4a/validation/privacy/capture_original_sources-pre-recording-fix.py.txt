@@ -1,0 +1,36 @@
+"""Fresh CPU-only public capture of the ten original VAL-R01 failed source inputs."""
+import ast,hashlib,json,os,subprocess,sys,time
+from pathlib import Path
+import yaml
+
+HERE=Path(__file__).resolve().parent
+ROOT=Path('<CANDIDATE>')
+SOURCES=Path('<RESOURCE_VOLUME>/replays/val-r01-20261013-26c0b4a/cases')
+FILES={'lm-evaluation-harness':['lm_eval/tasks/gsm8k/gsm8k.yaml'],'llm-dp-finetune':['src/llm_pft/models/language_model.py','validation/train_entry.py'],'HarmBench':['baselines/direct_request/direct_request.py','baselines/model_utils.py','eval_utils.py','validation/pipeline.py'],'FastChat':['fastchat/conversation.py','fastchat/llm_judge/gen_model_answer.py','validation/answer_entry.py']}
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+case=HERE/'original-source-capture';case.mkdir(exist_ok=False)
+inputs={}
+for name,paths in FILES.items():
+ for rel in paths:
+  raw=(SOURCES/name/rel).read_bytes(); target='inputs/'+name+'/'+rel
+  output=case/target;output.parent.mkdir(parents=True,exist_ok=True);output.write_bytes(raw);inputs[target]=raw
+manifest={'schema_version':1,'project':{'name':'source-fidelity-regression'},'experiment':{'profiles':[]},'execution':{'config_files':sorted(inputs)}}
+(case/'reprollm.yaml').write_text(yaml.safe_dump(manifest,sort_keys=False))
+env={k:v for k,v in os.environ.items() if k in ['PATH','HOME','LANG','LC_ALL']}
+env.update(CUDA_VISIBLE_DEVICES='',PYTHONPATH=str(ROOT/'src'),HF_HUB_OFFLINE='1',HF_DATASETS_OFFLINE='1')
+argv=[str(ROOT/'.venv/bin/reprollm'),'run','--name','d01-original-source-fidelity','--capture-output','--',str(ROOT/'.venv/bin/python'),'-c','print("source capture probe complete")']
+start=time.monotonic();r=subprocess.run(argv,cwd=case,env=env,capture_output=True,timeout=120)
+(HERE/'original-source-capture.stdout').write_bytes(r.stdout);(HERE/'original-source-capture.stderr').write_bytes(r.stderr)
+checks=[];paths=list(case.glob('.reprollm/runs/*/run.json'));assert len(paths)==1
+record=json.loads(paths[0].read_bytes());run=paths[0].parent
+refs={row['path']:row for row in record['files']}
+for name,raw in inputs.items():
+ item=refs[name];snapshot=(run/item['snapshot']).read_bytes();equal=snapshot==raw
+ row={'path':name,'source_sha256':sha(raw),'snapshot_sha256':sha(snapshot),'source_bytes':len(raw),'equal_original_bytes':equal,'hash_size_match':item['sha256']=='sha256:'+sha(raw) and item['size_bytes']==len(raw),'redacted':item['redacted']}
+ if name.endswith('.py'):
+  try:ast.parse(snapshot);row['syntax_valid']=True
+  except SyntaxError:row['syntax_valid']=False
+ checks.append(row)
+d={'schema_version':1,'status':'PASS' if r.returncode==0 and all(row['equal_original_bytes'] and row['hash_size_match'] and row.get('syntax_valid',True) for row in checks) else 'FAIL','exit_code':r.returncode,'elapsed_seconds':round(time.monotonic()-start,6),'argv':['<CANDIDATE_ENV>/bin/reprollm',*argv[1:7],'<CANDIDATE_ENV>/bin/python',*argv[8:]],'checks':checks,'run_schema_version':record['schema_version'],'run_warnings':record['warnings'],'stdout_sha256':sha(r.stdout),'stderr_sha256':sha(r.stderr),'source_modules':{rel:sha((ROOT/rel).read_bytes()) for rel in ['src/reprollm/run/privacy.py','src/reprollm/run/input_capture.py']},'native_original_children':0,'gpu_compute':0,'network':0,'meaning':'Fresh public stdlib capture of original source bytes. Does not requalify old native snapshots or close full VAL-R01.'}
+(HERE/'original-source-capture-review.json').write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
+print(json.dumps(d));raise SystemExit(0 if d['status']=='PASS' else 1)

@@ -1,0 +1,34 @@
+
+"""Independent stdlib experiment; no ReproLLM imports or consumption hooks."""
+import argparse
+import importlib.metadata
+import json
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", required=True)
+parser.add_argument("--temperature", type=float)
+parser.add_argument("--rewrite", action="store_true")
+args = parser.parse_args()
+config = json.loads(Path(args.config).read_bytes())
+consumed = args.temperature if args.temperature is not None else config["temperature"]
+witness = {"schema_version": 1, "consumed_temperature": consumed,
+           "config_before": config, "torch_metadata": importlib.metadata.version("torch"),
+           "rewritten": args.rewrite}
+# Benign slash syntax and source regex are part of the independent input oracle.
+ratio = 8 / 2
+quotient = 8 // 3
+ratio_label = f"ratio={8 / 2}"
+relative_path = Path("validation") / "eval.yaml"
+regex_dollar = r"\$"
+regex_dot = r"\."
+regex_number = r"(-?[$0-9.,]{2,})|(-?[0-9]+)"
+# api_key=<REDACTED:generic_kv>
+# local_path=<REDACTED:path>
+# windows=<REDACTED:path>
+# unc=<REDACTED:path>
+# uri=<REDACTED:path>
+Path("r04-consumed.json").write_text(json.dumps(witness, sort_keys=True) + "\n", encoding="utf-8")
+print(json.dumps(witness, sort_keys=True), flush=True)
+if args.rewrite:
+    Path(args.config).write_bytes(b'{"temperature":0.9}\n')

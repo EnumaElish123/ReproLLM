@@ -26,8 +26,12 @@ Sprint/Session document. S1-A, S1-B and S2 are delivered; S3-A
 S3-B (R04-A → R04-B) has also passed product and local acceptance; read its
 [session report](../dogfooding/2026-10-14-reliability-s3b/README.md) and
 [runtime evidence handoff](../dogfooding/2026-10-14-reliability-s3b/runtime-evidence-handoff.md).
-The next engineering session is **S4-A: D01 → D02**. The existing VAL-R01 snapshot
-fidelity blocker remains open and must not be inferred closed from this offline session.
+S4-A (D01 → D02) has passed product and local acceptance; read its
+[session report](../dogfooding/2026-10-15-reliability-s4a/README.md) for the real
+lm-eval A/B replay, snapshot fidelity repair, installed-wheel success/failure
+matrix and final shared gates. The next engineering session is **S4-B: D03**.
+The other four native project scenarios still need acceptance on the current
+candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI
@@ -42,7 +46,7 @@ is checked against the actual pushed main HEAD in the session's final reply.
 - [Policy and compatibility decisions](reliability-2026-10-03/05_Policy_and_Compatibility.md)
 - [Validation, adoption and application evidence](reliability-2026-10-03/06_Validation_and_Adoption.md)
 
-The package combines delivered S1/S2 work and the recorded S3-A/S3-B status with
+The package combines delivered S1/S2 work and the recorded S3-A/S3-B/S4-A status with
 planned later tasks. Historical
 importing/revision reports do not establish implementation status. S2 does not
 change the judge drift policy in Issue #9 or complete the pending resource gates.

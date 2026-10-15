@@ -1,0 +1,60 @@
+"""Source-reviewed S4-A init/preflight checks; no product implementation imports."""
+from __future__ import annotations
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+DIAGNOSTIC = b'scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n'
+PREFLIGHT = '''Run preflight (command not executed)
+Working directory: .
+Snapshots: enabled
+Output capture: enabled
+Environment policy: allowlist
+Files:
+  r04-child.py [argv]: snapshot eligible
+  r04-config.json [declared]: snapshot eligible
+Bindings:
+  generation.temperature
+    cli --temperature: missing
+    config r04-config.json:temperature: located
+Required environment:
+  none
+Unbound declarations:
+  none
+Lock: fresh
+Advisory only: no bound values are displayed; unbound declarations use a fixed scope.
+Remote revisions, artifact hashes, dependencies, hardware and provider access are not revalidated.
+Environment presence does not verify credentials or guarantee command success.
+Files and bindings can change after this preview; actual evidence is collected by `reprollm run`.
+No run ID, directory or files created; no subprocess or network calls made.
+'''.encode()
+
+
+def init_and_l1(gate,name,root):
+    expected = json.loads((HERE/'init-oracle'/f'{name}-complete.json').read_text())
+    manifest = root/'reprollm.yaml'
+    result = gate.cli(name,'init',['init','.'],root)
+    wanted_stderr = DIAGNOSTIC if name=='lm-evaluation-harness' else b''
+    gate.check(name,'init-complete-text',result['stdout'].decode().replace(str(root),'<clone>')==expected['init_stdout'] and result['stderr']==wanted_stderr)
+    for relative,key in [('reprollm.yaml','manifest_text'),('.reprollm/config.yaml','config_text'),('.reprollm/project-rules.yaml','project_rules_text')]:
+        raw=(root/relative).read_bytes()
+        gate.check(name,'init-byte-'+key,raw==expected[key].encode())
+        (gate.out/'artifacts'/f'{name}-initial-{Path(relative).name}').write_bytes(raw)
+    result = gate.cli(name,'L1',['audit','.','--format','json','--fail-on','never'],root)
+    actual = json.loads(result['stdout'])
+    gate.check(name,'L1-level-and-diagnostic',actual.get('level')==1 and result['stderr']==wanted_stderr)
+    compared = gate.command(name,'L1-complete-comparison',[str(gate.args.python),str(gate.args.candidate/'scripts/compare_gold.py'),str(HERE/'init-oracle'/f'{name}-L1.json'),str(gate.out/result['record']['stdout']),'--audit-metadata'],gate.args.candidate,kind='comparison')
+    report=json.loads(compared['stdout'])
+    gate.check(name,'L1-complete-findings-profiles-evidence',compared['exit_code']==0 and compared['stderr']==b'' and report.get('status')=='PASS' and report.get('differences')==[])
+    # These three files were created by this call in an owned disposable clone.
+    # The next phase installs the independently reviewed controlled experiment.
+    manifest.unlink()
+    (root/'.reprollm/config.yaml').unlink()
+    (root/'.reprollm/project-rules.yaml').unlink()
+
+
+def dry_run(gate,name,root,base):
+    before={p.relative_to(root).as_posix():p.read_bytes() for p in (root/'.reprollm').rglob('*') if p.is_file()}
+    result=gate.cli(name,'run-dry',['run','--dry-run','--capture-output','--',*base],root)
+    after={p.relative_to(root).as_posix():p.read_bytes() for p in (root/'.reprollm').rglob('*') if p.is_file()}
+    gate.check(name,'preflight-complete-bytes-and-no-writes',result['stdout']==PREFLIGHT and result['stderr']==b'' and before==after and not (root/'r04-consumed.json').exists())

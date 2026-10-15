@@ -1,0 +1,39 @@
+"""Bind root's reviewed Gate A authorization to completed final QA bytes."""
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+
+base = Path('<SESSION>')
+gate = base / 'gate'
+quality = base / 'quality/final-1'
+sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+summary = json.loads((quality / 'summary.json').read_text())
+inputs = json.loads((quality / 'inputs-before.json').read_text())
+assert summary['all_passed'] is True
+assert summary['candidate_commit'] == 'b86c014cf9f15f1efddb6902979dcc6ddf79be9f'
+assert summary['inputs_byte_identical_before_after'] is True
+assert summary['orchestrator_unchanged'] is True
+spec = importlib.util.spec_from_file_location('reviewed_gate', gate / 'run_gate.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+authorization = {
+    'schema_version': 1,
+    'execution_authorized': True,
+    'authorization_basis': 'Root explicitly authorized exact-candidate final QA and automatic reviewed Gate A after PASS.',
+    'final_quality_pass': True,
+    'candidate_commit': summary['candidate_commit'],
+    'version': '0.7.0',
+    'runner_sha256': sha(gate / 'run_gate.py'),
+    'quality_receipt_sha256': sha(quality / 'summary.json'),
+    'quality_inputs_sha256': sha(quality / 'inputs-before.json'),
+    'extension_oracle_sha256': sha(gate / 'check_leaf.py'),
+    'harness_companion_files_sha256': {name: sha(gate / name) for name in module.COMPANION_FILES},
+    'oracle_review_sha256': sha(gate / 'oracle-review.json'),
+    'candidate_files_sha256': {name: value['sha256'] for name, value in inputs['files'].items()},
+    'quality_input_inventory_sha256': inputs['inventory_sha256'],
+}
+output = gate / 'authorization.json'
+assert not output.exists()
+output.write_text(json.dumps(authorization, indent=2, sort_keys=True) + '\n')
+print(json.dumps({'status': 'AUTHORIZED_FROM_FINAL_QA_PASS', 'authorization_sha256': sha(output), 'candidate_commit': summary['candidate_commit']}))
