@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- A02 (spec §§1, 5, 17–19): prepare local trial task cards, candidate installation
+  guidance, an empty feedback template and a draft invitation. Separate material
+  readiness from real independent trials, issue closure and sustained adoption;
+  no invitation is sent and resource gates remain blocked.
+
 - A01-B (spec §§4–5, 15–19, 22): share an offline stdlib replay with two
   isolated installations of the same verified wheel, independent consumption
   receipts, exact snapshot hashes, complete A/B drift, post-consumption mutation
