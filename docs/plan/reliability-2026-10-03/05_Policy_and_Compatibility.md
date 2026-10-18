@@ -35,25 +35,28 @@
 
 ### 当前合同与推荐改动
 
-2026-10-18：[具体提案、当前行为复现及未应用补丁](proposals/R08-A/R08-A_direct_judge_params.md)
-已准备供审阅，决定仍为 PROPOSED。默认表/规格/gold 实际文件未应用这些行为变更；
-P-B 需引用后续具体决定。
+2026-10-18：维护者明确接受方案 A，见[具体决定](proposals/R08-A/decision.json)。
+默认表/规格已按窄范围实施，gold 仅增加面向新比较的 §8.4.1；
+验收及资源状态见 [P-B 报告](../../dogfooding/2026-10-18-r08a/README.md)。
+[原提案、旧政策复现及补丁快照](proposals/R08-A/R08-A_direct_judge_params.md)保留当时状态。
 
 入口：`src/reprollm/diff/drift_severity.yaml`、`src/reprollm/diff/severity.py`、`src/reprollm/profiles/llm_judge.yaml`、`judge_only.yaml`、`tests/unit/diff/test_severity.py`、`tests/unit/cli/test_diff.py`。
 
-当前 `*` 只匹配一个路径 segment，first-match 生效，profile overrides 在默认表前。`evaluation.judge.*` 不匹配 `evaluation.judge.params.max_tokens`，后者落到默认 MEDIUM。这与 Issue #9 的待审议范围一致。
+实施前 `*` 只匹配一个路径 segment，first-match 生效，profile overrides 在默认表前。
+`evaluation.judge.*` 不匹配 `evaluation.judge.params.max_tokens`，后者曾落到默认 MEDIUM。
+方案 A 保留这些匹配/覆盖规则，仅补直接 params 叶子的默认 HIGH 行。
 
-推荐仅在默认表较宽的 judge 行前加入：
+已按批准仅在默认表较宽的 judge 行前加入：
 
 ```yaml
 - { path: "evaluation.judge.params.*", severity: HIGH }
 ```
 
-该行是拟修改内容，不代表当前已生效。保留现有单段 wildcard 语义和 built-in profiles；不在父 profile 塞入新的宽泛 override，以免覆盖用户子 profile 的精确 LOW / NONE 设置。
+该行已生效。保留现有单段 wildcard 语义和 built-in profiles；不在父 profile 塞入新的宽泛 override，以免覆盖用户子 profile 的精确 LOW / NONE 设置。
 
 ### 修改前 / 后验收表
 
-| 路径 / 场景 | 当前默认 | 提案通过后的默认 |
+| 路径 / 场景 | 实施前默认 | 方案 A 实施后的默认 |
 |---|---|---|
 | `evaluation.judge.params.max_tokens` | MEDIUM | HIGH |
 | `evaluation.judge.params.temperature` | MEDIUM | HIGH |

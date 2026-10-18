@@ -1356,6 +1356,13 @@ self-diff. Schema-1 input observations stay comparable as recorded values,
 with unknown-phase guidance; no post-child value from a new schema-2 check
 becomes a baseline parameter.
 
+Direct `evaluation.judge.params.*` leaves use HIGH for changed, added and removed
+values. Each `*` matches exactly one dotted segment; deeper parameter paths and
+unrelated privacy/training paths retain their existing policies. Profile overrides
+remain before defaults in first-match order, including explicit LOW/NONE. A direct
+judge-parameter change alone can therefore make explicit `--fail-on HIGH` exit 1;
+omitting `--fail-on` still reports without a drift-triggered nonzero exit.
+
 ### 18.2 `drift_severity.yaml` (initial contents)
 
 ```yaml
@@ -1387,6 +1394,7 @@ rules:
   - { path: "inference.max_model_len",             severity: MEDIUM }
   - { path: "inference.gpu_memory_utilization",    severity: LOW }
   - { path: "training.*",                          severity: HIGH }
+  - { path: "evaluation.judge.params.*",           severity: HIGH }
   - { path: "evaluation.judge.*",                  severity: HIGH }
   - { path: "evaluation.metrics",                  severity: HIGH }
   - { path: "evaluation.definitions.*",            severity: HIGH }

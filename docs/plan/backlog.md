@@ -24,15 +24,17 @@ passed. The [review bundle](ux-2026-10-02-proposals/README.md) retains historica
 proposals, not pending product decisions. The [UX3 delivery report](../dogfooding/2026-10-03-ux3-readiness.md)
 records T01/T03/T04: delivery-status alignment, read-only run preflight and run
 filtering/recent-successful comparison. These are implemented on main, unreleased;
-T02's concrete policy amendment remains pending as described below.
+T02's accepted narrow policy amendment is implemented as R08-A, described below.
 
 ## Rules & detection
 
 - P1 rule polish: `gen.stop_declared` / `prompt.few_shot_declared` negative
   corpora from real repositories (M3 risk table leftovers).
-- Nested judge-parameter drift currently MEDIUM under the one-segment wildcard
-  policy (val §8.4 gap); UX3-T02's narrow default-row and prospective gold amendment
-  awaits maintainer confirmation in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
+- Direct judge-parameter drift: R08-A is implemented on main, unreleased, after
+  [explicit acceptance of option A](reliability-2026-10-03/proposals/R08-A/decision.json).
+  Direct params leaves default to HIGH; deeper paths and historical MEDIUM
+  evidence retain their contracts. See the [P-B report](../dogfooding/2026-10-18-r08a/README.md).
+  The broader privacy/training free-parameter policy remains a separate R08-B proposal.
 
 ## Features (post-Beta by decision)
 

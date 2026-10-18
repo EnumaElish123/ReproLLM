@@ -73,6 +73,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R08-A (spec §18): classify changed, added and removed direct
+  `evaluation.judge.params.*` leaves as HIGH by default. Explicit
+  `--fail-on HIGH` can now exit 1 for that leaf alone; exact LOW/NONE
+  profile overrides, single-segment matching and deeper/privacy/training
+  policies are unchanged. Preserve historical diff evidence and apply the
+  separately reviewed prospective judge gold supplement to new replays only.
+
 - D03 / D02 handoff: return a safe JSON distribution failure when a command exits
   zero without producing one unique run record, preserving command receipts
   without exposing the private exception message or machine paths.

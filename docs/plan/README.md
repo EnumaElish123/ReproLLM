@@ -43,6 +43,11 @@ of these resources, continue with the [A02 local trial materials](../trials/a02-
 [A03 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md), then
 P-A's concrete policy proposals. Actual independent trials remain PENDING;
 application form checks and any submission are separate from local drafting.
+The maintainer accepted R08-A option A on 2026-10-18. Its direct judge-param
+HIGH default is implemented, unreleased; read the
+[P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
+[specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
+Other policy proposals and resource gates remain independent.
 The other four native project scenarios still need acceptance on the current
 candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

@@ -98,7 +98,7 @@ with the package. These are default judgments about experiment comparability:
 
 | Severity | Typical fields | Verdict |
 |---|---|---|
-| HIGH | model/data identity, prompts, generation, training, privacy | These runs are not directly comparable. |
+| HIGH | model/data identity, prompts, generation, direct judge params, training, privacy | These runs are not directly comparable. |
 | MEDIUM_HIGH | critical package major/minor versions, preprocessing, evaluation settings | Results may differ; review the changes above. |
 | MEDIUM | dtype, parallelism, Python, GPU model, clean commit changes | Results may differ; review the changes above. |
 | LOW | branch name, GPU driver, GPU memory utilization | No reproducibility-relevant drift detected. |
@@ -113,6 +113,20 @@ First matching table entry wins; an unmatched field defaults to MEDIUM. `*`
 matches one dotted field segment. For `files.*.sha256`, it matches the complete
 file path, including slashes and dots. A changed `code.commit` is MEDIUM when both
 trees are clean and HIGH if either was dirty. The note identifies the dirty side.
+
+On main (unreleased, R08-A), changed, added and removed direct judge parameter
+leaves such as `evaluation.judge.params.max_tokens` and `.temperature` default
+to HIGH. An explicit `--fail-on HIGH` therefore exits 1 for that leaf alone;
+omitting `--fail-on` still reports without a drift-triggered nonzero exit.
+Exact LOW/NONE profile overrides retain priority. The new pattern matches one
+segment only: `evaluation.judge.params.nested.x` and unrelated privacy/training
+paths keep their existing policies.
+
+Existing run records and archived diff reports are never rewritten. Comparing
+supported historical runs again uses the current policy and can now report a
+direct judge leaf as HIGH, while the archived report remains MEDIUM. Record the
+tool commit as well as its version when comparing policy results. A HIGH config
+hash is a separate change and does not prove the judge leaf's classification.
 
 For `environment.packages.*` and `inference.version`, differing major or minor
 versions use the matched table severity. Patch or finer changes lower it by one

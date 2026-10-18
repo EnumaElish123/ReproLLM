@@ -1,9 +1,16 @@
 {
-  "accepted_patch_sha256": null,
-  "current_policy": "direct judge params MEDIUM unless an existing explicit override matches",
+  "accepted_option": "A",
+  "accepted_patch_sha256": {
+    "changelog-proposed.patch": "1604d145bbb87cd1be439720fa2b3d8b3c1a29f1a7ecb1de0c6e9a06d11c4f4f",
+    "default-proposed.patch": "b7558f36d744c1f3155f83a0da76c2b90ad04ff0a587dbda0694f262c11b1773",
+    "gold-amendment-proposed.patch": "459563995bf15f15dac73ebb08cc8a4e0f012c78788e3857b67fcbc28b8bcab6",
+    "spec-proposed.patch": "0533cf132d536c1ad6f3b0c2a61ee60e3648409150757e61acc951314e3b77db",
+    "tests-proposed.patch": "16a7ba9b2f85de12f1938cdc748bc9a495a1ba141ef2dace1ea235a7e00a2e88"
+  },
+  "current_policy": "direct evaluation.judge.params.* leaves HIGH by default; existing first-match profile overrides remain prior to defaults",
   "date": "2026-10-18",
-  "decision_date": null,
-  "decision_source": null,
+  "decision_date": "2026-10-18",
+  "decision_source": "maintainer instruction in current development conversation",
   "excluded_scopes": [
     "recursive wildcard",
     "privacy/training policy",
@@ -13,10 +20,11 @@
     "paid API/GPU execution",
     "input/pin replacement"
   ],
-  "maintainer_answer": null,
-  "next_task": "P-B only after explicit acceptance; tests first, then one final full quality and applicable Gate A/diff extensions",
-  "patches_applied": false,
-  "product_policy_changed": false,
+  "implementation_status": "IMPLEMENTED_PENDING_FINAL_ACCEPTANCE",
+  "maintainer_answer": "接受 R08-A 推荐方案 A，按当前计划执行对应 P-B：先补齐回归测试，再实施 judge 直接 params 叶子默认 HIGH，保留用户 LOW/NONE 覆盖和历史记录。按验证流程完成一次最终质量门及五项目 Gate A，记录资源阻塞，提交并推送 main，确认 CI 通过。暂不调用付费 API，不发布版本。",
+  "next_task": "Focused GREEN, independent review, one final quality gate, five-project Gate A and main CI; paid/resource gates remain blocked",
+  "patches_applied": true,
+  "product_policy_changed": true,
   "proposal_sha256": "767c58ad9ef0cb11ff37807128f62f8a8fc16cb42a39d30ae6cc7a8a2fdbeed8",
   "proposed_patch_sha256": {
     "changelog-proposed.patch": "1604d145bbb87cd1be439720fa2b3d8b3c1a29f1a7ecb1de0c6e9a06d11c4f4f",
@@ -27,6 +35,6 @@
   },
   "recommended_option": "A: single default evaluation.judge.params.* HIGH row",
   "schema_version": 1,
-  "status": "PROPOSED",
+  "status": "APPROVED",
   "task_id": "R08-A"
 }

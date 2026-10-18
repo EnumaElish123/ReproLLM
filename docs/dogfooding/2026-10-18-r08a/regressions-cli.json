@@ -1,0 +1,214 @@
+{
+  "coverage_scope": [
+    "18 CLI cases: changed/added/removed x default/LOW/NONE x child profile extending judge_only/llm_judge",
+    "Real isolated stdlib argparse child consumption of cap 256/384 or None; clean Git and unavailable nvidia-smi use proc.run_cmd stubs",
+    "Complete unique drift path set; no file/config/code HIGH can mask the target; CLI argv remains MEDIUM",
+    "HIGH threshold and display filter; hidden argv MEDIUM still triggers the MEDIUM threshold; full summary counts; repeat JSON bytes and empty self-diff",
+    "Saved run/snapshot/manifest/profile bytes remain unchanged; synthetic legacy version-1 run re-diff uses current policy while archived MEDIUM diff bytes remain unchanged"
+  ],
+  "frozen_input_red": {
+    "by_file": {
+      "tests.unit.cli.test_judge_param_policy": {
+        "errors": 0,
+        "failed": 7,
+        "passed": 12,
+        "skipped": 0,
+        "tests": 19
+      }
+    },
+    "command": [
+      "<venv-python>",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/unit/cli/test_judge_param_policy.py",
+      "--basetemp",
+      "<private-fresh-temp>",
+      "--junitxml",
+      "<private-junit>"
+    ],
+    "errors": 0,
+    "exit_code": 1,
+    "failed": 7,
+    "failure_test_ids": [
+      "test_cli_judge_cap_policy_matrix[256-384-changed-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[256-384-changed-default-llm_judge]",
+      "test_cli_judge_cap_policy_matrix[None-384-added-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[None-384-added-default-llm_judge]",
+      "test_cli_judge_cap_policy_matrix[256-None-removed-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[256-None-removed-default-llm_judge]",
+      "test_legacy_judge_runs_get_current_policy_without_rewriting_history"
+    ],
+    "passed": 12,
+    "private_artifacts": [
+      {
+        "bytes": 19091,
+        "logical_file": "red-final.log",
+        "sha256": "b14bb9d941347be68565209911e290674920d5a2103719f2dce8acfd5a5b1d39",
+        "storage": "private local scratch; raw output not shared"
+      },
+      {
+        "bytes": 21390,
+        "logical_file": "red-final.xml",
+        "sha256": "b5af1696389451518609461df9216a9609596432ab0aa710e24537e26190a04e",
+        "storage": "private local scratch; raw output not shared"
+      }
+    ],
+    "pytest_seconds": 12.68,
+    "skip_reasons": [],
+    "skipped": 0,
+    "test_source_sha256": "59e003214ed6eff18a9fb47effc3d63b49485d5e7471903371a986d41ccf6efd",
+    "tests": 19,
+    "timing_precision_seconds": 0.01,
+    "wall_seconds": 13.53
+  },
+  "full_quality_gate": "NOT_RUN_IN_THIS_BRANCH",
+  "gate_a": "Recorded separately by the session owner; stubs do not establish real-checkout acceptance.",
+  "green": {
+    "by_file": {
+      "tests.unit.cli.test_diff": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 18,
+        "skipped": 1,
+        "tests": 19
+      },
+      "tests.unit.cli.test_judge_param_policy": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 19,
+        "skipped": 0,
+        "tests": 19
+      }
+    },
+    "command": [
+      "<venv-python>",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/unit/cli/test_judge_param_policy.py",
+      "tests/unit/cli/test_diff.py",
+      "--basetemp",
+      "<private-fresh-temp>",
+      "--junitxml",
+      "<private-junit>"
+    ],
+    "errors": 0,
+    "exit_code": 0,
+    "failed": 0,
+    "failure_test_ids": [],
+    "passed": 37,
+    "private_artifacts": [
+      {
+        "bytes": 113,
+        "logical_file": "green.log",
+        "sha256": "3307edca9a58f7426326803ea1b56977b952b6aa833dcc84565cd1773490f646",
+        "storage": "private local scratch; raw output not shared"
+      },
+      {
+        "bytes": 5508,
+        "logical_file": "green.xml",
+        "sha256": "6ecd60d25040f226ef17d9e7e5f92cdfcafdb5e2e456ae0a8c1c0325f3b9abdf",
+        "storage": "private local scratch; raw output not shared"
+      }
+    ],
+    "pytest_seconds": 15.78,
+    "skip_reasons": [
+      "symlink creation unavailable on this platform"
+    ],
+    "skipped": 1,
+    "test_source_sha256": "59e003214ed6eff18a9fb47effc3d63b49485d5e7471903371a986d41ccf6efd",
+    "tests": 38,
+    "timing_precision_seconds": 0.01,
+    "wall_seconds": 16.61
+  },
+  "historical_fixture_boundary": "Legacy fixtures are synthetic reader-policy regressions based on existing version-1 judge fixtures; they are not historical live/provider validation.",
+  "initial_failure_boundary": {
+    "actual_errors": 0,
+    "actual_failures": 7,
+    "expected_failures": 7,
+    "policy_after": "The accepted one-segment evaluation.judge.params.* default is HIGH; explicit profile LOW/NONE remains authoritative.",
+    "policy_before": "Direct judge parameter leaves fell back to MEDIUM.",
+    "reason": "Six default-policy matrix cases and one synthetic version-1 re-diff returned MEDIUM where the accepted contract requires HIGH. LOW/NONE override cases passed; no environment failure caused these RED results."
+  },
+  "initial_red": {
+    "by_file": {
+      "tests.unit.cli.test_judge_param_policy": {
+        "errors": 0,
+        "failed": 7,
+        "passed": 12,
+        "skipped": 0,
+        "tests": 19
+      }
+    },
+    "command": [
+      "<venv-python>",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/unit/cli/test_judge_param_policy.py",
+      "--basetemp",
+      "<private-fresh-temp>",
+      "--junitxml",
+      "<private-junit>"
+    ],
+    "errors": 0,
+    "exit_code": 1,
+    "failed": 7,
+    "failure_test_ids": [
+      "test_cli_judge_cap_policy_matrix[256-384-changed-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[256-384-changed-default-llm_judge]",
+      "test_cli_judge_cap_policy_matrix[None-384-added-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[None-384-added-default-llm_judge]",
+      "test_cli_judge_cap_policy_matrix[256-None-removed-default-judge_only]",
+      "test_cli_judge_cap_policy_matrix[256-None-removed-default-llm_judge]",
+      "test_legacy_judge_runs_get_current_policy_without_rewriting_history"
+    ],
+    "input_note": "Initial observation preceded format and extra summary-count assertions; its exact test-file hash was not recorded. Raw log and XML retained; no product change occurred between the two RED runs.",
+    "passed": 12,
+    "private_artifacts": [
+      {
+        "bytes": 19049,
+        "logical_file": "red.log",
+        "sha256": "6c92f50a161c2d559598da15dbb953ae542b655a38e4aca54839b1d1719a84c1",
+        "storage": "private local scratch; raw output not shared"
+      },
+      {
+        "bytes": 21348,
+        "logical_file": "red.xml",
+        "sha256": "98cf15748fd123e24a7e29ba2af49c5887e6ef18256568f872394b0c1315a02b",
+        "storage": "private local scratch; raw output not shared"
+      }
+    ],
+    "pytest_seconds": 10.17,
+    "skip_reasons": [],
+    "skipped": 0,
+    "test_source_sha256": null,
+    "tests": 19,
+    "timing_precision_seconds": 0.01,
+    "wall_seconds": 10.75
+  },
+  "model_or_provider_execution": "NOT_RUN; child executes stdlib argparse and JSON only; the existing autouse HTTP mock guard remains active.",
+  "published": false,
+  "recorded_on": "2026-10-18",
+  "schema_version": 1,
+  "source_commit": "a2005b46f18c4bb30ecdca1053815e699ebf487f",
+  "status": "GREEN_WITH_ADJACENT_PLATFORM_SKIP",
+  "task": "P-B/R08-A",
+  "test_inputs_sha256": {
+    "src/reprollm/diff/drift_severity.yaml": "ff45045d1f3c3bd8cf2dfa46c2fe26950e5111c2b16ec5b12e612493130dae01",
+    "src/reprollm/diff/severity.py": "c907ddb66a35b7420c4b8805a47a2b427425aec06e1654c8970d7939fd864483",
+    "src/reprollm/profiles/judge_only.yaml": "4c0a62115f65213865462d87e6392739f4db5c3da78c53c67778deee8d9fafed",
+    "src/reprollm/profiles/llm_judge.yaml": "e0fddb64ed0b1e21ee1181510a644d47a3ade185c2456dab51c39c680dc0d689",
+    "src/reprollm/profiles/loader.py": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758",
+    "tests/unit/cli/test_diff.py": "6986902d0bb89118218f48472458987117a1afc39110f15d225381ca5b6031b2",
+    "tests/unit/cli/test_judge_param_policy.py": "59e003214ed6eff18a9fb47effc3d63b49485d5e7471903371a986d41ccf6efd"
+  },
+  "worktree_scope": "Approved policy/default and regression changes are not yet committed; source hashes bind these inputs."
+}

@@ -1,6 +1,6 @@
 # Roadmap and delivery status
 
-Updated 2026-10-15. Status is based on recorded releases and validated changes;
+Updated 2026-10-18. Status is based on recorded releases and validated changes;
 historical sprint dates are planning records, not a statement of availability.
 The [changelog](../../CHANGELOG.md) identifies release contents. Documentation
 on main can describe options not yet included in the published package.
@@ -74,11 +74,15 @@ CI budget failure. That follow-up's local validation passed 2,505 tests, 174 sec
 tests and a fresh five-project Gate A; final five-job CI is verified against
 the actual pushed main HEAD in the session's final reply.
 
-The remaining [UX3 task](../plan/UX3_2026-10-02.md), T02, awaits the concrete
-policy/baseline amendment in [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9).
-It proposes HIGH for direct judge parameter leaves while preserving user profile
-overrides and historical MEDIUM records. The current default policy has not
-changed; other UX3 tasks are delivered as recorded above.
+The [UX3 task](../plan/UX3_2026-10-02.md) T02 is implemented through R08-A on
+main, unreleased, following the maintainer's 2026-10-18 acceptance of
+[the concrete proposal](../plan/reliability-2026-10-03/proposals/R08-A/R08-A_direct_judge_params.md).
+Direct judge parameter leaves now default to HIGH; user LOW/NONE overrides,
+single-segment matching and historical MEDIUM records are preserved. See the
+[accepted decision](../plan/reliability-2026-10-03/proposals/R08-A/decision.json)
+and [P-B validation report](../dogfooding/2026-10-18-r08a/README.md).
+The existing [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9) remains
+the policy discussion reference; resource gates retain their separate requirements.
 
 ## Future proposals
 

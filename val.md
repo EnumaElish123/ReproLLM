@@ -580,6 +580,25 @@ covering the exact request body, tariff calculation, no-retry timeout reservatio
 and rejection before network for unapproved output limits. Live acceptance is
 recorded separately in the session report, never inferred from these mocks.
 
+### 8.4.1 Prospective R08-A judge policy supplement
+
+Applies only after the narrow R08-A policy and this supplement are explicitly
+accepted and implemented. Retain §8.4's historical MEDIUM cap leaf, HIGH config
+hash and MEDIUM clean commit records without rewriting the original evidence.
+For a new formal replay using the exact same approved inputs and pair 256 → 384,
+expect `evaluation.judge.params.max_tokens` HIGH; keep every other input,
+pin, path, expected value, request/response requirement and delta unchanged.
+Existing explicit user overrides retain their policy; the formal default case
+must not add one. This supplements only the judge severity expectation and
+does not amend privacy/training gold.
+
+An isolated local CLI cap pair must separately prove that the leaf itself
+triggers `--fail-on HIGH` with no changed config hash, dirty tree or other HIGH.
+It is supplementary plumbing evidence and does not replace real provider
+acceptance. Original formal inputs, provider access and newly approved budget
+must be provisioned before paid replay; missing resources remain BLOCKED.
+§9 baseline review and historical evidence preservation still apply.
+
 ### 8.5a Completion record — FastChat and LlamaFactory (2026-09-28)
 
 The FastChat §8.3 answer-generation row and the LlamaFactory §8.3 row are
