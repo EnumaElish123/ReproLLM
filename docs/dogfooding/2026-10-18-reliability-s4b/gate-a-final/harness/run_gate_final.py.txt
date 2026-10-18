@@ -1,0 +1,47 @@
+from __future__ import annotations
+import concurrent.futures,datetime,hashlib,json,os,pathlib,shutil,subprocess,sys,time
+repo=pathlib.Path.cwd(); temp=pathlib.Path(__file__).parent; output=temp/'gate-output-final'; output.mkdir(exist_ok=False); (output/'raw').mkdir(); (output/'comparisons').mkdir(); python=repo/'.venv/Scripts/python.exe'; base=repo/'docs/dogfooding/2026-10-15-reliability-s4a/validation/expected/base'; locations=json.loads((temp/'checkout-locations.json').read_text(encoding='utf-8-sig')); prep=json.loads((temp/'preparation.json').read_text(encoding='utf-8')); provenance=json.loads((base/'gate-a/oracle-and-environment-provenance.json').read_text(encoding='utf-8')); expected_stderr={r['name']:r['default_stderr_utf8'] for r in provenance['sources']}; command_records=[]; env=os.environ.copy(); env.update({'R04_GATE_CANDIDATE':str(repo),'R04_GATE_VERSION':'0.7.0','PYTHONUTF8':'1','PYTHONIOENCODING':'utf-8','NO_COLOR':'1','TERM':'dumb'}); env.pop('PYTHONPATH',None); env.pop('PYTHONHOME',None)
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def logical(argument):
+ text=str(argument)
+ for name,path in locations.items():text=text.replace(path,f'<checkout:{name}>')
+ text=text.replace(str(python),'<candidate-python>').replace(str(repo),'<candidate>').replace(str(temp),'<task-temp>')
+ return text
+
+def run(name,label,args,cwd):
+ started=time.perf_counter(); p=subprocess.run([str(v) for v in args],cwd=cwd,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=300); elapsed=round(time.perf_counter()-started,6)
+ stdout_file=f'raw/{name}-{label}.stdout'; stderr_file=f'raw/{name}-{label}.stderr'; (output/stdout_file).write_bytes(p.stdout); (output/stderr_file).write_bytes(p.stderr)
+ record={'target':name,'label':label,'command':[logical(x) for x in args],'cwd':logical(cwd),'exit_code':p.returncode,'elapsed_seconds':elapsed,'stdout':{'file':stdout_file,'bytes':len(p.stdout),'sha256':sha(p.stdout)},'stderr':{'file':stderr_file,'bytes':len(p.stderr),'sha256':sha(p.stderr)}}; command_records.append(record); return p,record
+
+def identity(name,phase):
+ root=pathlib.Path(locations[name]); observed={};checks=[]
+ for label,args in [('head',['rev-parse','HEAD']),('origin',['remote','get-url','origin']),('status',['status','--porcelain=v1','--untracked-files=all'])]:
+  p,rec=run(name,f'{phase}-{label}',['git','-C',root,*args],repo);observed[label]=p.stdout.decode('utf-8').strip();checks.append(p.returncode==0 and not p.stderr)
+ reference=next(r for r in prep['targets'] if r['name']==name); valid=all(checks) and observed=={'head':reference['required_sha'],'origin':reference['origin'],'status':''}
+ return {'observed':observed,'valid':valid}
+
+def target(name):
+ root=pathlib.Path(locations[name]); before=identity(name,'before')
+ if not before['valid']:return {'name':name,'before':before,'status':'INVALID_INPUT'}
+ checks=[]
+ for label,args,expected,metadata in [('L0',[python,'-X','utf8',temp/'cli.py','--no-color','audit','.','--format','json','--fail-on','never'],base/f'expected-audit/{name}.json',True),('facts',[python,'-X','utf8',temp/'collect_facts.py',repo],base/f'expected-facts/{name}.json',False)]:
+  process,record=run(name,label,args,root);actual=output/record['stdout']['file'];compare_args=[python,'-X','utf8',repo/'scripts/compare_gold.py',expected,actual]
+  if metadata:compare_args.append('--audit-metadata')
+  compared,crecord=run(name,label+'-comparison',compare_args,repo)
+  try:comparison=json.loads(compared.stdout);valid_compared=comparison['status']=='PASS' and comparison['differences']==[]
+  except (ValueError,KeyError):valid_compared=False
+  want=expected_stderr[name] if label=='L0' else ''; stderr=process.stderr.decode('utf-8'); normalized=stderr.replace('\r\n','\n'); stderr_match=normalized==want
+  checks.append({'label':label,'command_exit_expected':0,'command_exit_actual':process.returncode,'comparison_exit':compared.returncode,'complete_json_equal':valid_compared,'stderr_complete_equal':stderr_match,'stderr_normalization':'CRLF to LF only; raw original bytes retained','expected_stderr_utf8':want,'status':'PASS' if process.returncode==0 and compared.returncode==0 and valid_compared and stderr_match else 'FAIL'})
+ after=identity(name,'after');ok=all(c['status']=='PASS' for c in checks) and after['valid'];print(name,'PASS' if ok else 'FAIL',flush=True)
+ return {'name':name,'before':before,'checks':checks,'after':after,'status':'PASS' if ok else 'FAIL'}
+start=time.perf_counter()
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:targets=list(pool.map(target,locations))
+wall=round(time.perf_counter()-start,6)
+(product_before:=json.loads((temp/'product-inputs-before.json').read_text(encoding='utf-8')))
+changed=[rel for rel,digest in product_before['files'].items() if not (repo/rel).is_file() or sha((repo/rel).read_bytes())!=digest]
+summary={'schema_version':1,'session':'S4-B:D03','candidate_base_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo).decode().strip(),'run_at':datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),'scope':'Explicitly requested fresh five-project non-resource Gate A. Complete immutable reviewed audit/facts semantics and diagnostics; no product commands or expected outputs reused. Not the release/native matrix.','targets':targets,'status':'PASS' if all(t['status']=='PASS' for t in targets) and not changed else 'FAIL','product_inventory_unchanged':not changed,'changed_product_inputs':changed,'command_count':len(command_records),'product_commands':sum(r['label'] in {'L0','facts'} for r in command_records),'full_json_comparisons':sum(r['label'].endswith('-comparison') for r in command_records),'git_identity_commands':sum(r['label'].startswith(('before-','after-')) for r in command_records),'wall_seconds':wall,'summed_command_seconds':round(sum(r['elapsed_seconds'] for r in command_records),6),'summed_product_seconds':round(sum(r['elapsed_seconds'] for r in command_records if r['label'] in {'L0','facts'}),6),'gate_b':'NOT_RUN: no GPU, API credentials, weights, paid provider, or restricted access provisioned to this subtask.'}
+command_records.sort(key=lambda r:(r['target'],r['label']))
+(output/'commands.json').write_text(json.dumps({'schema_version':1,'commands':command_records},ensure_ascii=False,sort_keys=True,indent=2)+'\n',encoding='utf-8');(output/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,sort_keys=True,indent=2)+'\n',encoding='utf-8')
+print(json.dumps({k:v for k,v in summary.items() if k not in {'targets'}},ensure_ascii=False),flush=True)
+raise SystemExit(0 if summary['status']=='PASS' else 1)
+
