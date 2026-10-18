@@ -1,0 +1,311 @@
+{
+  "commands": [
+    {
+      "command": [
+        "<uv>",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "exit_code": 0,
+      "id": "locked-sync",
+      "log_sha256": "4810b8a423111e587fec8c6973359b972b34171525336f20f8ea905e4b7bcb33",
+      "seconds": 0.031
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "quickstart-preflight",
+      "log_sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85",
+      "seconds": 7.375
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<private>\\pytest-report.xml"
+      ],
+      "exit_code": 0,
+      "id": "pytest-coverage",
+      "log_sha256": "b1e533e38107acf8a571d678b2b3356511c2167c96ddf43b798b9e97b8952cbb",
+      "seconds": 405.86
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "exit_code": 0,
+      "id": "redaction-branches",
+      "log_sha256": "0cf6dc67c4313ba0349d797e3525bc678fcea6f679edd018cf11f707202729fc",
+      "seconds": 0.14
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-check",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "seconds": 0.063
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-format",
+      "log_sha256": "c15c4dabc403ea9eec71b90d941b362cb3f8cfb9d7df558fccfc1edded067afe",
+      "seconds": 0.078
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "mypy",
+        "src/"
+      ],
+      "exit_code": 0,
+      "id": "mypy",
+      "log_sha256": "e378adbadb2d1c81482fcf831fa1944c512d98c313541ae43ec09c5e7e09665e",
+      "seconds": 0.25
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "exit_code": 0,
+      "id": "security",
+      "log_sha256": "bebe6b3ef18015750752f879540048b30f2437d9e1f38e20dd6d0e0af25eb701",
+      "seconds": 15.672
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "rules-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.297
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "profiles-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.281
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "cli-doc",
+      "log_sha256": "e9414be199fd2ac9f0bef9b1a6afbd8c16f42f9fd3d1a355b918ef202bbc33ae",
+      "seconds": 8.391
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "schema",
+        "export",
+        "--out",
+        "<private>\\schemas"
+      ],
+      "exit_code": 0,
+      "id": "schema-export",
+      "log_sha256": "069778b9f13aa09e378ab609238fabfe1b3e2974b02ae9dbc1b6334b207a31c7",
+      "seconds": 0.453
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-audit",
+      "log_sha256": "46d968bbaceda3ccd2c1e2bb45ac9abc6d9b3cf7af64e3e706682b8cd7b8fc00",
+      "seconds": 0.594
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\hf_vllm_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.359
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\lm_eval_replay",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-lm_eval_replay-audit",
+      "log_sha256": "48ab6846405854dac70efbc310542b7ca6677e9275931ea55475d869dc14a3e0",
+      "seconds": 0.641
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-audit",
+      "log_sha256": "7efaf8c20e740a57463c2cc2cdf85577a2ec6150f9199c1c2208f8d4df5b0a8a",
+      "seconds": 0.64
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\openai_judge_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.36
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-audit",
+      "log_sha256": "51b1eb17b2f60e75376bd48d1038f89f0b2061c5ae22c0e1c387a8e33d16af18",
+      "seconds": 0.64
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\privacy_custom_params"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.36
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "exit_code": 0,
+      "id": "self-audit",
+      "log_sha256": "8959462ae8f578d427b2bfe5bada2d058d23db00a1d29912876656240c84f0d9",
+      "seconds": 22.093
+    }
+  ],
+  "comparison_correction": "Recompared the same original fresh exports using the established Windows-only CRLF policy; no product/test/tool inputs or raw output bytes changed.",
+  "execution_context": "Windows administrator test token; fresh short TEMP; existing process-local Git utilities and Python3 alias",
+  "frozen_inputs_unchanged": true,
+  "gate_a": {
+    "reason": "Validation tools, recovered inputs and documentation only; no product/default/schema/dependency/packaging change.",
+    "status": "NOT_APPLICABLE"
+  },
+  "input_count": 497,
+  "input_inventory_sha256": "56e3eb0091215fdebccfe1e178337ce1084f371b32e00f248808817bfdfa60e0",
+  "platform": "windows",
+  "pytest_result": {
+    "coverage_percent": 93.76,
+    "deselected": 4,
+    "passed": 2800,
+    "skipped": 4,
+    "test_seconds": 405.2
+  },
+  "python": "3.12.9",
+  "redaction_line_and_branch_coverage_percent": 100,
+  "schema_canonical_lf_byte_equality": true,
+  "schema_comparison": "schema-comparison.json",
+  "schema_exact_byte_equality": false,
+  "schema_version": 1,
+  "security_result": {
+    "deselected": 2603,
+    "passed": 203,
+    "skipped": 2,
+    "test_seconds": 15.26
+  },
+  "source_commit": "5b675ae9289ae60245645db7d0616ec6a279dc0a",
+  "status": "PASS",
+  "wall_seconds": 464.938
+}

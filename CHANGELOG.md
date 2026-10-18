@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- A01-B (spec §§4–5, 15–19, 22): share an offline stdlib replay with two
+  isolated installations of the same verified wheel, independent consumption
+  receipts, exact snapshot hashes, complete A/B drift, post-consumption mutation
+  and selected-run exports. Retain failed preparation attempts and resource
+  blockers; no native or paid validation is promoted and no version is published.
+
 - A01-A (spec §§4–5, 16, 22): recover available reviewed input bytes,
   verify their original hashes, and inventory inaccessible formal inputs with
   precise recovery actions. Input recovery does not close resource gates.

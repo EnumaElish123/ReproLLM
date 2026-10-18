@@ -1,0 +1,75 @@
+schema_version: 1
+project:
+  name: a01-stdlib-replay
+experiment:
+  profiles:
+  - evaluation
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen2.5-0.5B-Instruct
+    revision: 7ae557604adf67be50417f59c2c2f167def9a775
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: false
+datasets:
+  eval:
+    provider: huggingface
+    id: openai/gsm8k
+    revision: 740312add88f781978c0658806c59bc2815b9866
+    subset: main
+    split: test
+    sampling:
+      n: 100
+      method: first
+      seed: 42
+    preprocessing:
+      script: lm_eval/tasks/gsm8k/gsm8k.yaml
+prompts:
+  task:
+    path: lm_eval/tasks/gsm8k/gsm8k.yaml
+    few_shot:
+      n: 5
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 32
+  do_sample: false
+  seed: 42
+  stop:
+  - 'Question:'
+  - </s>
+  - <|im_end|>
+inference:
+  backend: vllm
+  dtype: bfloat16
+  tensor_parallel_size: 1
+  quantization: none
+  gpu_memory_utilization: 0.12
+  max_model_len: 4096
+evaluation:
+  metrics:
+  - name: exact_match
+    implementation: lm_eval/api/metrics.py
+  aggregation: mean
+  repetitions: 1
+execution:
+  command: python -I -X utf8 probe.py --config validation/eval.yaml --rewrite-cap 96
+  seed: 42
+  config_files:
+  - validation/eval.yaml
+  - validation/tasks/gsm8k_validation.yaml
+  - lm_eval/tasks/gsm8k/gsm8k.yaml
+bindings:
+  generation.max_tokens:
+    config: validation/eval.yaml:gen_kwargs.max_gen_toks
+  generation.temperature:
+    config: validation/eval.yaml:gen_kwargs.temperature
+  models.primary.id:
+    config: validation/eval.yaml:model_args.pretrained
+  models.primary.revision:
+    config: validation/eval.yaml:model_args.revision
+artifacts:
+  outputs:
+  - outputs/current/**/*.json
+  - outputs/current/**/*.jsonl

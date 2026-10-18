@@ -1,0 +1,42 @@
+{
+  "accepted_wheel_source": "S4-B prebuilt artifact; original source commit retained in build-manifest.json",
+  "attempts": [
+    {
+      "exit_code": 1,
+      "id": "full-source-export",
+      "reason": "Windows path length prevented extracting historical nested evidence.",
+      "recovery": "Restrict private build export to exact build inputs; no repository bytes changed.",
+      "status": "BLOCKED"
+    },
+    {
+      "exit_code": 1,
+      "id": "unused-offline-build",
+      "log_sha256": "2540f10ae5a09eca0ed9c2339ad15f28c39580fb9822cd0709da8668a20f78b7",
+      "reason": "Sandbox uv interpreter cache persistence was denied; no wheel produced.",
+      "recovery": "Recover the already validated S4-B wheel and independently match all 141 package payload files to current source.",
+      "status": "BLOCKED"
+    },
+    {
+      "completed_previews": [
+        "FastChat",
+        "HarmBench",
+        "LlamaFactory",
+        "llm-dp-finetune"
+      ],
+      "id": "collector-checkout-map",
+      "raw_stdout_sha256": {
+        "FastChat.stdout.txt": "bb5a009c76fcd85c3bb33db26d86077e01bb54251923f7aaa32bb7c549d9215e",
+        "HarmBench.stdout.txt": "ae9bfec7fd1ba39b2f80f2727f183f168bbb9fc4735e0eff2fc82d8ae9c86ad1",
+        "LlamaFactory.stdout.txt": "32c97397e8addf09b80f5be892af80f12ec9f40fe35166f8ecee157b6635e976",
+        "llm-dp-finetune.stdout.txt": "cb0ae6080a4b749e232ca0a22c437482d0856bcb328cff91e0f1da97f041ef8f"
+      },
+      "reason": "Four readonly previews passed before the helper reached a checkout kept in a separate short-path directory.",
+      "recovery": "Read the existing verified checkout-locations mapping and complete a fresh five-target receipt; original raw outputs remain private.",
+      "status": "INVALID_INPUT_LOCATOR"
+    }
+  ],
+  "published": false,
+  "schema_version": 1,
+  "scope": "Preparation failures only; no failed build artifact used for validation.",
+  "successful_builds_this_session": 0
+}

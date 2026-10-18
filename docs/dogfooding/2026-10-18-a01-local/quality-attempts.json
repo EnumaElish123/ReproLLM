@@ -1,0 +1,39 @@
+{
+  "accepted_final_context": "quality-summary.json",
+  "administrator_preflight": {
+    "administrator_role_confirmed_before_execution": true,
+    "exit_code": 0,
+    "fresh_short_temporary_directory": true,
+    "raw_log_sha256": "43910dbcff5912a6bb22e71e6c32cc6c0c9e7e426e746208a0af1e6dbfdcd420",
+    "status": "PASS",
+    "test_count": 6
+  },
+  "attempts": [
+    {
+      "accepted": false,
+      "deselected": 4,
+      "errors": 10,
+      "failed": 3,
+      "frozen_input_count": 497,
+      "id": "standard-windows-token",
+      "input_inventory_unchanged": true,
+      "passed": 2726,
+      "pytest_exit_code": 1,
+      "raw_pytest_log_sha256": "f76f2a08f68fcb54d3beff908aba06dc200c6c25861137654d2c4040014cd7e5",
+      "raw_summary_sha256": "746b5e2296342a93293cac9d72049fead302515a4bbd6d16977fe1d804ba8bfc",
+      "reason": "Windows token lacks symlink creation privilege; inherited previous short TEMP also has inaccessible directories.",
+      "recovery": "Use the established administrator test context with a fresh short TEMP, verify focused failures, then rerun the unchanged final quality matrix.",
+      "schema_and_later_checks": "NOT_RUN: stopped at pytest failure",
+      "skipped": 65,
+      "status": "ENVIRONMENT_FAILURE"
+    }
+  ],
+  "helper_preparation": {
+    "detail": "The initial elevated helper exited before producing a test receipt; UTF-8 BOM was then supplied for the PowerShell 5 script containing the non-ASCII checkout path. The subsequent administrator-role and focused tests passed.",
+    "product_or_test_bytes_changed": false,
+    "status": "RESOLVED"
+  },
+  "product_or_replay_tool_changed_for_environment_fix": false,
+  "schema_comparison_correction": "schema-comparison.json",
+  "schema_version": 1
+}

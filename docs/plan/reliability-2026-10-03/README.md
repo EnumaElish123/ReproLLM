@@ -12,6 +12,7 @@
 2. 从 [Agent 提示词](AGENT_PROMPTS.md) 复制与本次任务对应的启动指令。
 3. 读取前置 [S3-B报告](../../dogfooding/2026-10-14-reliability-s3b/README.md) 和 [runtime evidence交接](../../dogfooding/2026-10-14-reliability-s3b/runtime-evidence-handoff.md)，核对R04-A/R04-B实际提交、批准的R04-S、完整本地Gate及冻结桥兼容证据。
 4. 读取 [S4-B 报告](../../dogfooding/2026-10-18-reliability-s4b/README.md)：D03 发布门已交付，S4-A 的 D01 / D02 成果继续保留。后续按 [06](06_Validation_and_Adoption.md) 推进 **A01-A 输入与资源准备、A01-B 修复后回放和证据包**；政策提案逐项独立审议。其余四项目仍需修复后候选的原生验收；完整 VAL-R01 与发布资源矩阵没有关闭。工程交付不授权发布版本。
+5. 接续 [A01 本地证据报告](../../dogfooding/2026-10-18-a01-local/README.md)：已恢复 12/50 个精确输入 slot，完成同一 wheel 的两路径 stdlib 回放；5 个原始 metadata manifest 缺失、33 个输入 slot 访问阻塞。下一步恢复清单中的原始文件并提供相应资源，不能把无资源回放写成 formal Gate B 通过。
 
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 

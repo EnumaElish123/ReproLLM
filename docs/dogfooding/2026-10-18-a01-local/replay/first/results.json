@@ -1,0 +1,511 @@
+{
+  "captures": [
+    {
+      "cap": 32,
+      "checks": {
+        "consumed_cap": 32,
+        "input_change": "unchanged",
+        "input_snapshot_files_checked": 4,
+        "recorder_consumption": "unverified"
+      },
+      "config_sha256": "a7bc8316852aac0e9a4b2fb0ea67b0bf10df9b7debc000cad1b0e1a997ad5467",
+      "lock_sha256": "bd818c83cd98c7ce8cd4856e9ddaa89edba0a4f837a8527578508c3488ebff23",
+      "manifest_sha256": "d76e0b3c7088ade450c31b9d69dbd4c3f8b6b6e1348d3eaebe8b727c0d66a603",
+      "name": "a",
+      "receipt_sha256": "305e52a006df2190dd734258e8d35a8071b73e1d0ddc63724a6d5ef9d3c29287",
+      "run_id": "20261018T073716Z-a8ee4e"
+    },
+    {
+      "cap": 48,
+      "checks": {
+        "consumed_cap": 48,
+        "input_change": "unchanged",
+        "input_snapshot_files_checked": 4,
+        "recorder_consumption": "unverified"
+      },
+      "config_sha256": "c63f6346ae1ce432b8d1a8baa494d5f667b4622e4b86d740807566c72b725e6d",
+      "lock_sha256": "1b26cf28a6b08afcc37a0c48fdb3764e3647bb079aa0b395a34c6ceb47f138be",
+      "manifest_sha256": "c604e1dadbba53e8a07f5e268a68ad6773713f4066db1e95fb5efc36b4abc935",
+      "name": "b",
+      "receipt_sha256": "0948f8f0c29793db068ed850cec89df3803cf1156c45e0a2c658e1a7346b75b6",
+      "run_id": "20261018T073720Z-df4bcd"
+    },
+    {
+      "cap": 32,
+      "checks": {
+        "consumed_cap": 32,
+        "input_change": "changed",
+        "input_snapshot_files_checked": 4,
+        "recorder_consumption": "unverified"
+      },
+      "config_sha256": "a7bc8316852aac0e9a4b2fb0ea67b0bf10df9b7debc000cad1b0e1a997ad5467",
+      "lock_sha256": "abc236600ed4682beac5a531ef55627cc54ea687a75bc704130b0802045a0fb6",
+      "manifest_sha256": "70d6f70cab00f4f482c7808bdfdc4b7bf9f43740bff5c6d9a0b268260c2db77d",
+      "name": "consume-then-mutate",
+      "receipt_sha256": "305e52a006df2190dd734258e8d35a8071b73e1d0ddc63724a6d5ef9d3c29287",
+      "run_id": "20261018T073724Z-a343f6"
+    }
+  ],
+  "case_id": "a01-stdlib-replay",
+  "commands": [
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.609,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "36169e0dcee44abe7bb246de580f3706490f694f2e8eae6c13fb2b484a7698bb"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--offline"
+      ],
+      "elapsed_seconds": 0.391,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "56815ec7bf819438a04d9a856b74f184ef4d3538e9893499f4270256116f54e3"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--check"
+      ],
+      "elapsed_seconds": 0.359,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "command": [
+        "run",
+        "--name",
+        "a01-a",
+        "--capture-output",
+        "--",
+        "python",
+        "-I",
+        "-X",
+        "utf8",
+        "probe.py",
+        "--config",
+        "validation/eval.yaml"
+      ],
+      "elapsed_seconds": 0.687,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "541aa7b449c6d107e130886463a583ce7f5c81eb91164808c8e8da768dc6277c"
+    },
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.641,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "22034b155e905f87adcb60d19be15109cab0995d38e1634f741410cc02231a10"
+    },
+    {
+      "command": [
+        "export",
+        ".",
+        "--run",
+        "20261018T073716Z-a8ee4e"
+      ],
+      "elapsed_seconds": 0.718,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3828a69f22b1bf2d3636e444c26a7e73ccddec2415c13444c9000324e1ab1b52"
+    },
+    {
+      "command": [
+        "diff",
+        "20261018T073716Z-a8ee4e",
+        "20261018T073716Z-a8ee4e",
+        "--format",
+        "json"
+      ],
+      "elapsed_seconds": 0.422,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "33bc1c4e5c682ae3ba53bd1555f53c84126d95dc19dfb4c128761ba2c146d635"
+    },
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.734,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "aedcda2562471d17f2df78ffd5a0e9451c01c1d5a32d0912bc410ebc531b6e0a"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--offline"
+      ],
+      "elapsed_seconds": 0.422,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "56815ec7bf819438a04d9a856b74f184ef4d3538e9893499f4270256116f54e3"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--check"
+      ],
+      "elapsed_seconds": 0.375,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "command": [
+        "run",
+        "--name",
+        "a01-b",
+        "--capture-output",
+        "--",
+        "python",
+        "-I",
+        "-X",
+        "utf8",
+        "probe.py",
+        "--config",
+        "validation/eval.yaml"
+      ],
+      "elapsed_seconds": 0.719,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3ea7a9f10e59ed25bcb461222d6d3e04ba4aa679a70f8015ad8197ba45a4acda"
+    },
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.672,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "86532b5bbb8b02975e7d07d3ea3e66d86a500c42297616141fd1413330d1aef3"
+    },
+    {
+      "command": [
+        "export",
+        ".",
+        "--run",
+        "20261018T073720Z-df4bcd"
+      ],
+      "elapsed_seconds": 0.719,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c12276f935ddb23759a6ef5cf267cab8630071739619c7706b9358d9e0e17bae"
+    },
+    {
+      "command": [
+        "diff",
+        "20261018T073720Z-df4bcd",
+        "20261018T073720Z-df4bcd",
+        "--format",
+        "json"
+      ],
+      "elapsed_seconds": 0.406,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "832b947f9b1b2f9c60a762f4f7c9ef30f5beb03a27b6006a49e62cf2351f4353"
+    },
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.672,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c1c38426505870f2b919b956556876c409e8aa532ac43c768ed94034f61f4200"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--offline"
+      ],
+      "elapsed_seconds": 0.407,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "56815ec7bf819438a04d9a856b74f184ef4d3538e9893499f4270256116f54e3"
+    },
+    {
+      "command": [
+        "lock",
+        ".",
+        "--check"
+      ],
+      "elapsed_seconds": 0.375,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "command": [
+        "run",
+        "--name",
+        "a01-consume-then-mutate",
+        "--capture-output",
+        "--",
+        "python",
+        "-I",
+        "-X",
+        "utf8",
+        "probe.py",
+        "--config",
+        "validation/eval.yaml",
+        "--rewrite-cap",
+        "96"
+      ],
+      "elapsed_seconds": 0.766,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3dc235fe6a5819bb5824a52d58a446276e9b9ea53c1eb8d05038e44597b9b7cf"
+    },
+    {
+      "command": [
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "elapsed_seconds": 0.656,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0c20d7532ef25354d0f60d7df46ebc669ef67fd42147e3e8b3566db22d1912c7"
+    },
+    {
+      "command": [
+        "export",
+        ".",
+        "--run",
+        "20261018T073724Z-a343f6"
+      ],
+      "elapsed_seconds": 0.735,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bf36af4d5b6b2b767030ce9cf2a363fe4d276172714bddb01cf38faddb934f46"
+    },
+    {
+      "command": [
+        "diff",
+        "20261018T073724Z-a343f6",
+        "20261018T073724Z-a343f6",
+        "--format",
+        "json"
+      ],
+      "elapsed_seconds": 0.422,
+      "executable": "<venv-python>",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d98b89c06bc5e8c1d553c358e192b8fa97a052c013c73762c90383995f537285"
+    },
+    {
+      "command": [
+        "diff",
+        "20261018T073716Z-a8ee4e",
+        "20261018T073720Z-df4bcd",
+        "--format",
+        "json",
+        "--fail-on",
+        "HIGH"
+      ],
+      "elapsed_seconds": 0.422,
+      "executable": "<venv-python>",
+      "exit_code": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ffe06cd5777777e8d82945dab7ee9a2f806d67c3b887b347eb59f41bce7a292e"
+    }
+  ],
+  "imports": {
+    "archive_sha256": "0be12d1d44a07e1ab29459c161cf67fcdc48a0934d1e57d593cc5887ac6049ff",
+    "cli_module": "Lib/site-packages/reprollm/cli/main.py",
+    "code_version": "0.7.0",
+    "console_entrypoint": "<venv-cli>",
+    "console_entrypoint_exit_code": 0,
+    "distribution_version": "0.7.0",
+    "editable": false,
+    "installed_distributions": [
+      {
+        "name": "Jinja2",
+        "version": "3.1.6"
+      },
+      {
+        "name": "MarkupSafe",
+        "version": "3.0.3"
+      },
+      {
+        "name": "PyYAML",
+        "version": "6.0.3"
+      },
+      {
+        "name": "Pygments",
+        "version": "2.21.0"
+      },
+      {
+        "name": "annotated-doc",
+        "version": "0.0.5"
+      },
+      {
+        "name": "annotated-types",
+        "version": "0.8.0"
+      },
+      {
+        "name": "anyio",
+        "version": "4.15.0"
+      },
+      {
+        "name": "certifi",
+        "version": "2026.7.22"
+      },
+      {
+        "name": "colorama",
+        "version": "0.4.6"
+      },
+      {
+        "name": "h11",
+        "version": "0.16.0"
+      },
+      {
+        "name": "httpcore",
+        "version": "1.0.9"
+      },
+      {
+        "name": "httpx",
+        "version": "0.28.1"
+      },
+      {
+        "name": "idna",
+        "version": "3.19"
+      },
+      {
+        "name": "markdown-it-py",
+        "version": "4.2.0"
+      },
+      {
+        "name": "mdurl",
+        "version": "0.1.2"
+      },
+      {
+        "name": "packaging",
+        "version": "26.3"
+      },
+      {
+        "name": "pip",
+        "version": "24.3.1"
+      },
+      {
+        "name": "pydantic",
+        "version": "2.13.5"
+      },
+      {
+        "name": "pydantic_core",
+        "version": "2.46.5"
+      },
+      {
+        "name": "reprollm",
+        "version": "0.7.0"
+      },
+      {
+        "name": "rich",
+        "version": "15.0.0"
+      },
+      {
+        "name": "shellingham",
+        "version": "1.5.4"
+      },
+      {
+        "name": "typer",
+        "version": "0.27.2"
+      },
+      {
+        "name": "typing-inspection",
+        "version": "0.4.4"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.16.0"
+      }
+    ],
+    "isolated": true,
+    "module": "Lib/site-packages/reprollm/__init__.py",
+    "probe_sha256": "4ec53107edbed9cd49afac658a1f26bb4ef6fbdcb0404c20beb425ad42db390e",
+    "python": "<venv-python>",
+    "user_site_enabled": false
+  },
+  "installation": {
+    "dependency_mode": "declared-runtime-dependencies",
+    "elapsed_seconds": 3.36,
+    "exit_code": 0,
+    "find_links_count": 1,
+    "no_index": true,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5c9d11538057f0019dc88435d12d03c9852741c7cf5d2d78596f1704ad736f58"
+  },
+  "layer": "L2 stdlib only",
+  "native_framework": "NOT_RUN",
+  "non_none_drift_paths": [
+    "code.commit",
+    "files.validation/eval.yaml.sha256",
+    "generation.max_tokens"
+  ],
+  "replay": "first",
+  "schema_version": 1,
+  "status": "PASS"
+}

@@ -1,0 +1,159 @@
+{
+  "commands": [
+    {
+      "command": [
+        "<venv-python>",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/lock/test_hf_resolver.py",
+        "tests/unit/lock/test_local_resolver.py",
+        "tests/unit/lock/test_resolver.py",
+        "--basetemp",
+        "<private-review>/p1",
+        "--junit-xml",
+        "<private-review>/hf-metadata-lock-mocks.xml",
+        "--tb=short"
+      ],
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 18,
+        "skipped": 0,
+        "tests": 18
+      },
+      "elapsed_seconds": 3.185752,
+      "exit_code": 0,
+      "id": "hf-metadata-lock-mocks",
+      "raw": {
+        "junit": {
+          "bytes": 2639,
+          "logical_path": "<private-review>/hf-metadata-lock-mocks.xml",
+          "sha256": "323dc474b7be7a6a35f47a769061059706178c7ad8107a320e3e53108991c645"
+        },
+        "stderr": {
+          "bytes": 0,
+          "logical_path": "<private-review>/hf-metadata-lock-mocks.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 101,
+          "logical_path": "<private-review>/hf-metadata-lock-mocks.stdout.log",
+          "sha256": "93b6342843265ddab908c996604f77af0a06dabdfac46da649d07bf40201943c"
+        }
+      }
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/core/test_redaction.py",
+        "tests/unit/run/test_persisted_privacy.py",
+        "tests/unit/run/test_privacy_fidelity.py",
+        "--basetemp",
+        "<private-review>/p2",
+        "--junit-xml",
+        "<private-review>/r02r-synthetic-privacy.xml",
+        "--tb=short"
+      ],
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 245,
+        "skipped": 0,
+        "tests": 245
+      },
+      "elapsed_seconds": 5.918232,
+      "exit_code": 0,
+      "id": "r02r-synthetic-privacy",
+      "raw": {
+        "junit": {
+          "bytes": 36611,
+          "logical_path": "<private-review>/r02r-synthetic-privacy.xml",
+          "sha256": "cc4825fa97208226632c689a64eb29b4ddd869cf47c93d9c647906d14be0c137"
+        },
+        "stderr": {
+          "bytes": 0,
+          "logical_path": "<private-review>/r02r-synthetic-privacy.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 345,
+          "logical_path": "<private-review>/r02r-synthetic-privacy.stdout.log",
+          "sha256": "be7a0e96998fbb99be9ce3f53b291bf1d68b1fd119ab89bff87fe2c46476bead"
+        }
+      }
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/lock/test_hf_client.py",
+        "--basetemp",
+        "<private-review>/p3",
+        "--junit-xml",
+        "<private-review>/hf-client-boundaries.xml",
+        "--tb=short"
+      ],
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 9,
+        "skipped": 0,
+        "tests": 9
+      },
+      "elapsed_seconds": 1.53183,
+      "exit_code": 0,
+      "id": "hf-client-boundaries",
+      "raw": {
+        "junit": {
+          "bytes": 1296,
+          "logical_path": "<private-review>/hf-client-boundaries.xml",
+          "sha256": "4218a4d63f4ab965bd5f0cc04da6d0b098db47b307c2f56bc73d18219f10f9ac"
+        },
+        "stderr": {
+          "bytes": 0,
+          "logical_path": "<private-review>/hf-client-boundaries.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 100,
+          "logical_path": "<private-review>/hf-client-boundaries.stdout.log",
+          "sha256": "ce794344396be5e2edd595b5c182c812dc4396b46f4f9685d9650e274f040ac7"
+        }
+      }
+    }
+  ],
+  "date": "2026-10-18",
+  "environment": {
+    "git_utilities": "process-local Git usr/bin and cmd precede inherited PATH",
+    "python": "<venv-python>",
+    "temporary_files": "<private-review>",
+    "utf8": true
+  },
+  "formal_gate_b": "BLOCKED: mock resolution and synthetic stdlib children do not establish real HF metadata, successful gated access, native inference/training or paid API completion.",
+  "gate_a": "NOT_APPLICABLE: this independent branch changes only documentation receipts and runs existing regression tests.",
+  "network_contract": "Session autouse respx guard rejects unmocked httpx requests; HF responses are fixtures. No live provider/model requests or weights. Standard provider/proxy environment variable names were removed from the child environment.",
+  "schema_version": 1,
+  "scope": "Independent focused existing mock and synthetic regressions; not a full session quality gate.",
+  "source_commit": "8d713c78d8081f4b69051acc50542ff70b8dd662",
+  "spec_references": [
+    "docs/plan/01_specification.md sections 16.1-16.5",
+    "val.md section 8",
+    "docs/plan/validation-workflow-2026-10-13.md section 3"
+  ],
+  "status": "PASS",
+  "total_elapsed_seconds": 10.635814,
+  "total_passed": 272,
+  "total_tests": 272
+}

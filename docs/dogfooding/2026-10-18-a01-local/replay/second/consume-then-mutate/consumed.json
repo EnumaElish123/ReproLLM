@@ -1,0 +1,36 @@
+{
+  "configuration": {
+    "batch_size": 1,
+    "gen_kwargs": {
+      "do_sample": false,
+      "max_gen_toks": 32,
+      "temperature": 0.0,
+      "top_p": 1.0
+    },
+    "include_path": "validation/tasks",
+    "limit": 100,
+    "log_samples": true,
+    "model": "vllm",
+    "model_args": {
+      "dtype": "bfloat16",
+      "enforce_eager": true,
+      "gpu_memory_utilization": 0.12,
+      "max_model_len": 4096,
+      "max_num_seqs": 8,
+      "pretrained": "Qwen/Qwen2.5-0.5B-Instruct",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "seed": 42,
+      "tensor_parallel_size": 1,
+      "tokenizer_revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+    },
+    "num_fewshot": 5,
+    "output_path": "outputs/current",
+    "seed": 42,
+    "tasks": [
+      "gsm8k_validation"
+    ]
+  },
+  "input_sha256": "a7bc8316852aac0e9a4b2fb0ea67b0bf10df9b7debc000cad1b0e1a997ad5467",
+  "schema_version": 1,
+  "witness": "stdlib recipe parser; no model execution"
+}

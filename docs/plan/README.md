@@ -33,6 +33,12 @@ matrix and final shared gates. S4-B's D03 publication gates are implemented;
 its current acceptance and resource boundaries are recorded in the
 [S4-B session report](../dogfooding/2026-10-18-reliability-s4b/README.md).
 The engineering implementation does not authorize a version release.
+The [A01 local evidence session](../dogfooding/2026-10-18-a01-local/README.md)
+recovers 12 of 50 exact input slots and completes the resource-free two-path
+replay layer. Five original metadata manifests remain missing and 33 input
+slots are inaccessible; formal resource gates remain BLOCKED. Continue A01
+input restoration and provisioned native/authenticated/paid acceptance, with
+policy proposals and adoption materials tracked separately.
 The other four native project scenarios still need acceptance on the current
 candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

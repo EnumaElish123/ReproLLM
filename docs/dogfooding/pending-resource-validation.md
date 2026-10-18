@@ -32,11 +32,21 @@ capture, consumption, diff and export acceptance using the candidate wheel.
 The other four native projects have not been rerun on these product bytes;
 their historical evidence does not establish current release readiness.
 
+Updated 2026-10-18: [A01-A local input recovery](2026-10-18-a01-local/input-readiness.md)
+inventories 50 required input slots: 12 recovered with exact independent hashes,
+5 original metadata manifests missing, and 33 inaccessible through the current
+remote evidence connection. The input inventory retains formal/supplementary
+identities and exact recovery members. Historical remote availability does not
+establish local possession. The [local resource receipt](2026-10-18-a01-local/resource-readiness.json)
+records a 16 GiB GPU, below the current formal native guard. Paid API calls are
+excluded from this session; authorized gated-file success remains unprovisioned.
+No resource checkbox is promoted by input recovery or offline regression tests.
+
 | Tracking ID | Outstanding coverage | Blocker | Status |
 |---|---|---|---|
 | VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | S4-A fixes observed source fidelity and accepts fresh lm-eval A/B; the other four native projects still need current-candidate acceptance | BLOCKED — remaining native matrix |
-| VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Input bundle recovered; fresh provider/tariff/budget preflight and bounded real judge replay remain outstanding | BLOCKED |
-| VAL-R03 | Successful authenticated HF gated-file resolution | Successful model-author-authorized file access is still unverified by fresh authenticated replay | BLOCKED |
+| VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Bundle historically recovered remotely; exact local inputs remain inaccessible. Current provider/tariff/budget and bounded paid replay are not provisioned for this session | BLOCKED |
+| VAL-R03 | Successful authenticated HF gated-file resolution | Original Project C metadata manifest is missing; model-author-approved file access and a permitted token are not provisioned for this session | BLOCKED |
 
 ## VAL-R01 — Linux and five-project GPU replay
 
