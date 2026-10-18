@@ -1,0 +1,41 @@
+--- a/tests/unit/diff/test_severity.py
++++ b/tests/unit/diff/test_severity.py
+@@ -136,3 +136,38 @@
+ )
+ def test_single_segment_globs(pattern: str, path: str, expected: bool) -> None:
+     assert matches(pattern, path) is expected
++
++
++@pytest.mark.parametrize("field", ["max_tokens", "temperature", "vendor_option"])
++@pytest.mark.parametrize(("a", "b"), [(1, 2), (None, 2), (1, None)])
++def test_r08a_direct_judge_parameters(field: str, a: object, b: object) -> None:
++    assert SeverityResolver().resolve(f"evaluation.judge.params.{field}", a, b).severity == "HIGH"
++
++
++@pytest.mark.parametrize(
++    ("path", "expected"),
++    [
++        ("evaluation.judge.params.nested.x", "MEDIUM"),
++        ("privacy.mechanism.params.target_epsilon", "MEDIUM"),
++        ("training.params.custom_option", "MEDIUM"),
++        ("evaluation.judge.model_ref", "HIGH"),
++    ],
++)
++def test_r08a_keeps_other_policy(path: str, expected: str) -> None:
++    assert SeverityResolver().resolve(path, 1, 2).severity == expected
++
++
++@pytest.mark.parametrize("override", ["LOW", "NONE"])
++@pytest.mark.parametrize(("a", "b"), [(1, 2), (None, 2), (1, None)])
++def test_r08a_precise_override_precedes_default(override: str, a: object, b: object) -> None:
++    target = "evaluation.judge.params.max_tokens"
++    resolver = SeverityResolver(profile_overrides={target: override})
++    assert resolver.resolve(target, a, b).severity == override
++
++
++def test_r08a_default_order_and_single_segment() -> None:
++    rows = [row.path for row in SeverityResolver().table.rules]
++    assert rows.count("evaluation.judge.params.*") == 1
++    assert rows.index("evaluation.judge.params.*") < rows.index("evaluation.judge.*")
++    assert matches("evaluation.judge.params.*", "evaluation.judge.params.vendor_option")
++    assert not matches("evaluation.judge.params.*", "evaluation.judge.params.nested.x")

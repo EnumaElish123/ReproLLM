@@ -35,6 +35,10 @@
 
 ### 当前合同与推荐改动
 
+2026-10-18：[具体提案、当前行为复现及未应用补丁](proposals/R08-A/R08-A_direct_judge_params.md)
+已准备供审阅，决定仍为 PROPOSED。默认表/规格/gold 实际文件未应用这些行为变更；
+P-B 需引用后续具体决定。
+
 入口：`src/reprollm/diff/drift_severity.yaml`、`src/reprollm/diff/severity.py`、`src/reprollm/profiles/llm_judge.yaml`、`judge_only.yaml`、`tests/unit/diff/test_severity.py`、`tests/unit/cli/test_diff.py`。
 
 当前 `*` 只匹配一个路径 segment，first-match 生效，profile overrides 在默认表前。`evaluation.judge.*` 不匹配 `evaluation.judge.params.max_tokens`，后者落到默认 MEDIUM。这与 Issue #9 的待审议范围一致。

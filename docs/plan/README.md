@@ -38,7 +38,11 @@ recovers 12 of 50 exact input slots and completes the resource-free two-path
 replay layer. Five original metadata manifests remain missing and 33 input
 slots are inaccessible; formal resource gates remain BLOCKED. Continue A01
 input restoration and provisioned native/authenticated/paid acceptance, with
-policy proposals and adoption materials tracked separately.
+policy proposals and adoption materials tracked separately. For work independent
+of these resources, continue with the [A02 local trial materials](../trials/a02-local/README.md),
+[A03 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md), then
+P-A's concrete policy proposals. Actual independent trials remain PENDING;
+application form checks and any submission are separate from local drafting.
 The other four native project scenarios still need acceptance on the current
 candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
