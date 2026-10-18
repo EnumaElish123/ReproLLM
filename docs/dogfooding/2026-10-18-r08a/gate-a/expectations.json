@@ -1,0 +1,91 @@
+{
+  "base": {
+    "audit_args": [
+      "--no-color",
+      "audit",
+      ".",
+      "--level",
+      "0",
+      "--format",
+      "json",
+      "--fail-on",
+      "never"
+    ],
+    "audit_ignored_fields": [
+      "generated_at",
+      "reprollm_version"
+    ],
+    "complete_json_comparisons": 10,
+    "facts_ignored_fields": [],
+    "git_identity_commands": 30,
+    "product_commands": 10,
+    "stderr_normalization": "CRLF to LF only; compare complete text and retain original raw hashes.",
+    "targets": 5
+  },
+  "diff": {
+    "a": 256,
+    "allowed_none_paths": [
+      "run_id",
+      "started_at",
+      "ended_at",
+      "duration_seconds"
+    ],
+    "argv_path": "command.argv",
+    "argv_severity": "MEDIUM",
+    "b": 384,
+    "captured_config_files": 0,
+    "case_identity": "supplementary CLI binding fixture in disposable clones; not formal native/judge runtime",
+    "child_consumption": "actual stdlib argparse cap; receipt checked independently; recorder still labels child consumption unverified",
+    "hidden_medium_high_filter_exit": 1,
+    "high_filter_preserves_complete_summary": true,
+    "policies": {
+      "LOW": {
+        "high_gate_exit": 0,
+        "non_none_paths": [
+          "command.argv",
+          "evaluation.judge.params.max_tokens"
+        ],
+        "target_severity": "LOW"
+      },
+      "NONE": {
+        "high_gate_exit": 0,
+        "non_none_paths": [
+          "command.argv"
+        ],
+        "target_severity": "NONE"
+      },
+      "default": {
+        "high_gate_exit": 1,
+        "non_none_paths": [
+          "command.argv",
+          "evaluation.judge.params.max_tokens"
+        ],
+        "target_severity": "HIGH"
+      }
+    },
+    "profile_bases_by_target": {
+      "FastChat": "llm_judge",
+      "HarmBench": "llm_judge",
+      "LlamaFactory": "judge_only",
+      "llm-dp-finetune": "judge_only",
+      "lm-evaluation-harness": "judge_only"
+    },
+    "profile_fixture": {
+      "adaptation": "Real Git disposable clones; child uses PATH-resolved python; installed package metadata remains real, hardware capture explicitly unavailable without a GPU probe. No pytest/Git stubs imported.",
+      "child_sha256": "b2342f731a51d0e22181d8d0407afb52d68816dfddd7db537c725ed8c5897292",
+      "source_relative_path": "tests/unit/cli/test_judge_param_policy.py",
+      "source_sha256": "59e003214ed6eff18a9fb47effc3d63b49485d5e7471903371a986d41ccf6efd"
+    },
+    "repeat_json_identical": true,
+    "same_clean_commit": true,
+    "same_manifest_snapshot": true,
+    "self_diff_changes": 0,
+    "self_diff_exit": 0,
+    "target": "evaluation.judge.params.max_tokens"
+  },
+  "execution_prerequisite": "Root final QA PASS signal plus exact quality summary/input inventory supplied and verified before first product command.",
+  "gate_b": "BLOCKED_UNEXECUTED; no GPU/API/provider/model/authorized-access execution",
+  "schema_version": 1,
+  "status": "FIXED_BEFORE_PRODUCT_EXECUTION",
+  "task": "P-B:R08-A"
+}

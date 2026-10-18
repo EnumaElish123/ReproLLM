@@ -1,0 +1,336 @@
+{
+  "commands": [
+    {
+      "command": [
+        "<uv>",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "exit_code": 0,
+      "id": "locked-sync",
+      "log_sha256": "883727cae558d2b22a41212ac71653f9da80ca45ce048687a444f02e55932a81",
+      "seconds": 0.172
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "quickstart-preflight",
+      "log_sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85",
+      "seconds": 8.609
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<private>\\pytest-report.xml"
+      ],
+      "exit_code": 0,
+      "id": "pytest-coverage",
+      "log_sha256": "c03d496f3163768609449fb02c72a4a43c3f5093460a5869bd5105f98cefc6a7",
+      "seconds": 543.266
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "exit_code": 0,
+      "id": "redaction-branches",
+      "log_sha256": "0cf6dc67c4313ba0349d797e3525bc678fcea6f679edd018cf11f707202729fc",
+      "seconds": 0.187
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "coverage",
+        "json",
+        "-o",
+        "<private>\\coverage.json"
+      ],
+      "exit_code": 0,
+      "id": "coverage-json",
+      "log_sha256": "6bb1755222465d69c8702e40ca5a52cd85e35d15aca19c7b72a424cf5b702890",
+      "seconds": 1.125
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-check",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "seconds": 0.078
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-format",
+      "log_sha256": "2b0a66dc393d31bf823a9d9f7a6146174ea2df612ffc6cb6fff6ed43743b46d7",
+      "seconds": 0.079
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "mypy",
+        "src/"
+      ],
+      "exit_code": 0,
+      "id": "mypy",
+      "log_sha256": "e378adbadb2d1c81482fcf831fa1944c512d98c313541ae43ec09c5e7e09665e",
+      "seconds": 0.468
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "exit_code": 0,
+      "id": "security",
+      "log_sha256": "3c4e8dfd7bdfa23e9509add6501dc3ce71011c0640f55dc7b3dfc8cf799748c0",
+      "seconds": 19.282
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "rules-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.359
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "profiles-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.359
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "cli-doc",
+      "log_sha256": "e9414be199fd2ac9f0bef9b1a6afbd8c16f42f9fd3d1a355b918ef202bbc33ae",
+      "seconds": 10.203
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "schema",
+        "export",
+        "--out",
+        "<private>\\schemas"
+      ],
+      "exit_code": 0,
+      "id": "schema-export",
+      "log_sha256": "b2eb8b510a95586bc670894b39b7176046a31d1051eba85568feec47021731f1",
+      "seconds": 0.563
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-audit",
+      "log_sha256": "6db65a2796c1bdc5131739e2e5e0c4f4592788a96c96fbf2c4fd817fdd38da34",
+      "seconds": 0.672
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\hf_vllm_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.422
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\lm_eval_replay",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-lm_eval_replay-audit",
+      "log_sha256": "40ae0af3df31b1bb20c0b807b0e88c96a71444ed61aba02f7b9a71fbf1bec972",
+      "seconds": 0.703
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-audit",
+      "log_sha256": "687542d3b7e88f0ef460f6f444389391092a4e9640e92a74fbab6a140156a493",
+      "seconds": 0.844
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\openai_judge_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.437
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-audit",
+      "log_sha256": "4cbd81d0ea1ad53db65a12df2499237118c312a35a1d3496bcf8af988140674d",
+      "seconds": 0.703
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\privacy_custom_params"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.438
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "exit_code": 0,
+      "id": "self-audit",
+      "log_sha256": "eee8104619f3c90be17260fd3f6d34d9dac6bd20de106e01fce6990e082d80c3",
+      "seconds": 47.062
+    }
+  ],
+  "coverage_percent": 93.76416347581464,
+  "frozen_inputs_unchanged": true,
+  "gate_a": {
+    "reason": "R08-A product default policy changed; five fresh L0/facts and affected diff extensions required.",
+    "status": "REQUIRED_AFTER_QUALITY"
+  },
+  "input_count": 498,
+  "input_inventory_sha256": "ce075791eae0dc562b8a240403aeadfda089e71ddee0fdd8c947657e9258f33d",
+  "platform": "windows",
+  "pytest_result": {
+    "deselected": 4,
+    "failures": 0,
+    "passed": 2839,
+    "skipped": 4
+  },
+  "python": "3.12.9",
+  "redaction_coverage": {
+    "covered_branches": 24,
+    "covered_lines": 59,
+    "excluded_lines": 0,
+    "missing_branches": 0,
+    "missing_lines": 0,
+    "num_branches": 24,
+    "num_partial_branches": 0,
+    "num_statements": 59,
+    "percent_branches_covered": 100.0,
+    "percent_branches_covered_display": "100",
+    "percent_covered": 100.0,
+    "percent_covered_display": "100",
+    "percent_statements_covered": 100.0,
+    "percent_statements_covered_display": "100"
+  },
+  "schema_crlf_only_equality": true,
+  "schema_exact_byte_equality": false,
+  "schema_version": 1,
+  "security_result": {
+    "deselected": 2642,
+    "passed": 203,
+    "skipped": 2
+  },
+  "source_commit": "0b36780edaaa6150693dc9dd7330e5ba429a1398",
+  "status": "PASS",
+  "wall_seconds": 636.641
+}

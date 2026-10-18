@@ -1,0 +1,20 @@
+
+import os, sys
+from pathlib import Path
+
+def prohibit(event, args):
+    if event == "socket.connect":
+        raise RuntimeError("Offline Gate A forbids network")
+    if event == "import" and str(args[0]).split(".")[0] in {"torch","transformers","vllm","huggingface_hub","numpy"}:
+        raise RuntimeError("Offline Gate A forbids heavy imports")
+sys.addaudithook(prohibit)
+import reprollm
+if Path(reprollm.__file__).resolve() != Path(os.environ["R04_GATE_CANDIDATE"]) / "src/reprollm/__init__.py":
+    raise RuntimeError("Gate A module origin differs from qualified candidate")
+if reprollm.__version__ != os.environ["R04_GATE_VERSION"]:
+    raise RuntimeError("Gate A source version differs from final quality")
+from reprollm.run import wrapper
+from reprollm.schemas.run_record import HardwareInfo
+wrapper.capture_hardware = lambda: HardwareInfo(cpu_count=os.cpu_count() or 0)
+from reprollm.cli.main import cli
+cli()

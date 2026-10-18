@@ -76,10 +76,10 @@
 
 ### 交付与批准后执行
 
-- [ ] 读取 Issue #9 和最新维护者决定，复用已有讨论。
-- [ ] 策略行、规格 §18、CHANGELOG、窄范围回归和 gold amendment 草稿齐全。
-- [ ] 决定明确后，仅实施该范围，运行 full quality + Gate A；触发 formal 回放时按资源状态执行。
-- [ ] UI / README 不再用原有 config-hash HIGH 结果证明 judge 参数政策已经正确。
+- [x] 读取 Issue #9 和最新维护者决定，复用已有讨论；旧在线核验快照及本次明确接受分别保留。
+- [x] 策略行、规格 §18、CHANGELOG、窄范围回归和前瞻性 gold amendment 齐全。
+- [x] 决定明确后，仅实施该范围；full quality + 五项目 Gate A 及受影响 diff 扩展通过，formal 回放按资源状态保留 BLOCKED。精确推送提交的 CI 在证据收尾提交后确认。
+- [x] UI / README 使用无其他 HIGH 遮蔽的直接参数回归，不用原有 config-hash HIGH 结果证明本策略。
 
 建议提交：`fix(diff): classify direct judge parameter drift as high (R08-A)`。
 

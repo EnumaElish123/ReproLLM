@@ -1,0 +1,54 @@
+{
+  "candidate_commit": "0b36780edaaa6150693dc9dd7330e5ba429a1398",
+  "correction": {
+    "old_gold_changed": false,
+    "product_commands": 0,
+    "pure_git_commands": 4,
+    "qa_product_inputs_changed": false,
+    "regression": "harness-fix-regression.json",
+    "scope": "private harness only; create .git/info before appending run exclusion"
+  },
+  "interpretation": "The r1 base result is a qualified partial result, not complete Gate A. r2 reruns every product/comparison/identity/clone command fresh. Timings are per attempt; command sums are not wall time.",
+  "r1": {
+    "all_process_exits": 0,
+    "base_product_commands": 10,
+    "clone_preparation_git_commands": 135,
+    "command_count": 185,
+    "comparisons": 10,
+    "diff_product_commands": 0,
+    "original_commands_sha256": "057085548c55e9fa8f9f3d43882913d75a8b250030a532542eda60746286ac26",
+    "original_identity_commands": 30,
+    "original_summary_sha256": "aff2364df475e4c03ba48b95ce22ff338163c8c2f769b706d7f75dd412784bf5",
+    "raw_originals_retained_private": true,
+    "reason": "Empty Git template omits .git/info; private harness attempted exclude before creating the parent. All fifteen cases stopped during preparation before any extension product command.",
+    "runner_sha256": "5f4dba2c6a05a701bf63e4e847de784b59d7184f3f125b902366a37ca990d7aa",
+    "status": "BASE_PASS_EXTENSION_NOT_EXECUTED_HARNESS_FAILURE",
+    "summed_command_seconds": 224.781317,
+    "tool_manifest_sha256": "52ba072c2e0acc15438044a097b4ae866b0a3269042130835ed407dc6730965e",
+    "wall_seconds": 168.151331
+  },
+  "r2": {
+    "base_product_commands": 10,
+    "captures": 30,
+    "command_count": 380,
+    "complete_base_json_comparisons": 10,
+    "diff_cases": 15,
+    "diff_commands": 90,
+    "diff_product_commands": 120,
+    "disposable_git_commands": 210,
+    "exit_counts": {
+      "0": 355,
+      "1": 25
+    },
+    "original_raws_retained_private": true,
+    "product_commands": 130,
+    "runner_sha256": "d15f8cb2c4f5f54e03ce464c8999ffd99200d37310b364c04675a4131819f983",
+    "source_checkout_identity_commands": 30,
+    "status": "PASS",
+    "summed_command_seconds": 275.893365,
+    "summed_product_seconds": 216.771025,
+    "tool_manifest_sha256": "a5904bed755d7fd00982d2a3c889be074659adf726cdf1d4765c0272817e81cf",
+    "wall_seconds": 176.0554
+  },
+  "schema_version": 1
+}

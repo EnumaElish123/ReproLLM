@@ -1,0 +1,46 @@
+"""Unexecuted lightweight Gate A supplement; no init/task inventory or extensions."""
+from __future__ import annotations
+
+import dataclasses
+import json
+import sys
+from pathlib import Path
+
+
+def guard(event: str, args: tuple[object, ...]) -> None:
+    if event == 'socket.connect':
+        raise RuntimeError('Gate A static facts forbid network')
+    if event == 'import' and str(args[0]).split('.')[0] in {'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'}:
+        raise RuntimeError('Gate A static facts forbid heavy imports')
+
+
+def main() -> None:
+    sys.addaudithook(guard)
+    import reprollm
+
+    candidate = Path(sys.argv[1])
+    if Path(reprollm.__file__).resolve() != candidate / 'src/reprollm/__init__.py':
+        raise RuntimeError('Gate A facts module origin must be the frozen candidate')
+    from reprollm.core.context import AuditContext
+    from reprollm.integrations.frameworks import detected_frameworks
+
+    context = AuditContext(Path.cwd(), level=0)
+    scan = context.pyscan
+    dependencies = context.deps
+    detection = context.detection
+    result = {
+        'schema_version': 1,
+        'hints': detection.hints.model_dump(mode='json'),
+        'profiles': detection.model_dump(mode='json')['profiles'],
+        'python_paths': context.fs.python_files(),
+        'analysis_files': context.fs.analysis_files(),
+        'imports': [dataclasses.asdict(item) for item in scan.imports],
+        'declarations': [dataclasses.asdict(item) for item in dependencies.declarations],
+        'frameworks': [{'name': integration.name, 'evidence': [item.model_dump(mode='json') for item in evidence]} for integration, evidence in detected_frameworks(context.fs, scan)],
+        'diagnostics': sorted({*context.fs.warnings, *scan.warnings, *dependencies.unparsed}),
+    }
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

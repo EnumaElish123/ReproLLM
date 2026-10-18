@@ -42,6 +42,14 @@ records a 16 GiB GPU, below the current formal native guard. Paid API calls are
 excluded from this session; authorized gated-file success remains unprovisioned.
 No resource checkbox is promoted by input recovery or offline regression tests.
 
+Updated 2026-10-18, R08-A P-B: the maintainer accepted the direct judge-param
+HIGH default and the prospective [val §8.4.1](../../val.md#841-prospective-r08-a-judge-policy-supplement).
+New comparisons after this policy use HIGH for the direct cap leaf; historical
+§8.4 MEDIUM reports stay unchanged. [Local policy validation](2026-10-18-r08a/README.md)
+does not restore the original judge bundle, provide execution/budget or model
+access, or close any resource checkbox. Paid API calls and publication are
+excluded from this session.
+
 | Tracking ID | Outstanding coverage | Blocker | Status |
 |---|---|---|---|
 | VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | S4-A fixes observed source fidelity and accepts fresh lm-eval A/B; the other four native projects still need current-candidate acceptance | BLOCKED — remaining native matrix |
@@ -125,9 +133,11 @@ propose a separate reviewed scenario change.
   no secrets, absolute host paths or machine identity.
 - [ ] All selected judge checks and capture consistency meet the independent
   expectations; unrelated upstream findings remain visible.
-- [ ] Pair diff contains the prescribed nested cap MEDIUM, config hash HIGH and
-  clean commit MEDIUM changes; remaining changes are explained, self-diff is
-  empty, and `--fail-on HIGH` exits 1. Retain the known nested-severity gap.
+- [ ] A new pair after R08-A uses §8.4.1: direct cap HIGH, config hash HIGH and
+  clean commit MEDIUM; retain the historical §8.4 cap MEDIUM evidence unchanged.
+  Remaining changes are explained, self-diff is empty, and `--fail-on HIGH`
+  exits 1. Preserve the historical nested-severity gap as historical evidence;
+  the current direct judge-param policy follows §8.4.1.
 - [ ] The sanitized dated report covers the M5/M6 pair and M7 API-judge gate.
 
 The already-passed real `discover` request is separate evidence and does not

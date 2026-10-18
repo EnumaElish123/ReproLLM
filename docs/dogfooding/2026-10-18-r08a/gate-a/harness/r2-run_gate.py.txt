@@ -1,0 +1,570 @@
+from __future__ import annotations
+
+import argparse
+import concurrent.futures
+import datetime
+import json
+import math
+import time
+from pathlib import Path
+from typing import Any
+
+import yaml
+from gate_base import (
+    TOOLS,
+    GateContext,
+    digest,
+    read_json,
+    run_base,
+    verify_oracle,
+    verify_quality,
+    verify_tools,
+)
+
+FIELD = "evaluation.judge.params.max_tokens"
+
+
+def require(condition: bool, label: str) -> None:
+    if not condition:
+        raise RuntimeError(label)
+
+
+def check_metadata(
+    changes: dict[str, Any], left: dict[str, Any], right: dict[str, Any], allowed_none: set[str]
+) -> set[str]:
+    expected_metadata = {
+        name
+        for name in allowed_none
+        if not (
+            math.isclose(left[name], right[name], rel_tol=1e-9)
+            if name == "duration_seconds"
+            else left[name] == right[name]
+        )
+    }
+    require(
+        set(changes) == {FIELD, "command.argv", *expected_metadata},
+        "Complete semantic and metadata path set differs",
+    )
+    for name in expected_metadata:
+        metadata = changes[name]
+        require(
+            (metadata["a"], metadata["b"], metadata["status"], metadata["severity"])
+            == (left[name], right[name], "changed", "NONE"),
+            "Metadata value/status/severity differs",
+        )
+    return expected_metadata
+
+
+def write_run_exclusion(clone: Path) -> None:
+    exclude = clone / ".git/info/exclude"
+    exclude.parent.mkdir(parents=True, exist_ok=True)
+    with exclude.open("a", encoding="utf-8", newline="\n") as stream:
+        stream.write("\n/.reprollm/runs/\n")
+
+
+def prepare_case(
+    context: GateContext, target: dict[str, str], policy: str, index: int
+) -> tuple[Path, str, bytes]:
+    suffix = {"default": "d", "LOW": "l", "NONE": "n"}[policy]
+    clone = context.output / "c" / (str(index) + suffix)
+    clone.parent.mkdir(exist_ok=True)
+    name = target["name"] + ":" + policy
+
+    def git(label: str, args: list[object], cwd: Path = context.candidate):
+        result, _ = context.command(name, "setup-" + label, ["git", *args], cwd)
+        require(result.returncode == 0, "Disposable Git setup failed: " + label)
+        return result
+
+    git(
+        "clone",
+        [
+            "-c",
+            "core.longpaths=true",
+            "-c",
+            "core.autocrlf=false",
+            "-c",
+            "core.eol=lf",
+            "clone",
+            "--quiet",
+            "--no-hardlinks",
+            "--no-checkout",
+            target["private_path"],
+            clone,
+        ],
+    )
+    for key, value in (
+        ("core.autocrlf", "false"),
+        ("core.eol", "lf"),
+        ("core.longpaths", "true"),
+        ("core.symlinks", "false"),
+    ):
+        git(key, ["-C", clone, "config", key, value])
+    git("origin", ["-C", clone, "remote", "set-url", "origin", target["origin"]])
+    git("pin", ["-C", clone, "checkout", "--quiet", "--detach", target["required_sha"]])
+    initial = git(
+        "initial-clean", ["-C", clone, "status", "--porcelain=v1", "--untracked-files=all"]
+    )
+    require(not initial.stdout.strip(), "Disposable source pin is dirty before overlays")
+    original_head = git("initial-head", ["-C", clone, "rev-parse", "HEAD"])
+    require(
+        original_head.stdout.decode().strip() == target["required_sha"],
+        "Disposable source pin differs",
+    )
+    base_profile = context.expected["diff"]["profile_bases_by_target"][target["name"]]
+    profile = {
+        "schema_version": 1,
+        "name": "judge_policy",
+        "description": "Exercise inherited judge policy through the CLI",
+        "extends": [base_profile],
+        "drift_overrides": {} if policy == "default" else {FIELD: policy},
+    }
+    manifest = {
+        "schema_version": 1,
+        "project": {"name": "judge-policy-cli"},
+        "experiment": {"profiles": ["judge_policy"]},
+        "models": {"judge": {"provider": "openai", "id": "fixture-judge"}},
+        "prompts": {"judge": {"text": "Compare the two synthetic answers."}},
+        "evaluation": {"judge": {"model_ref": "judge", "prompt_ref": "judge"}},
+        "bindings": {FIELD: {"cli": "--cap"}},
+    }
+    profiles = clone / ".reprollm/profiles"
+    profiles.mkdir(parents=True)
+    for path, data in (
+        (profiles / "judge_policy.yaml", profile),
+        (clone / "reprollm.yaml", manifest),
+    ):
+        with path.open("w", encoding="utf-8", newline="\n") as stream:
+            stream.write(yaml.safe_dump(data, sort_keys=True))
+    write_run_exclusion(clone)
+    git(
+        "add-inputs",
+        ["-C", clone, "add", "-f", "reprollm.yaml", ".reprollm/profiles/judge_policy.yaml"],
+    )
+    git(
+        "commit-inputs",
+        [
+            "-C",
+            clone,
+            "-c",
+            "user.name=Validation",
+            "-c",
+            "user.email=validation@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--quiet",
+            "-m",
+            "test: fixed supplementary R08-A CLI inputs",
+        ],
+    )
+    clean = git(
+        "prepared-clean", ["-C", clone, "status", "--porcelain=v1", "--untracked-files=all"]
+    )
+    require(not clean.stdout.strip(), "Disposable fixed overlay commit is dirty")
+    committed = git("prepared-head", ["-C", clone, "rev-parse", "HEAD"]).stdout.decode().strip()
+    return clone, committed, (clone / "reprollm.yaml").read_bytes()
+
+
+def run_pair(
+    context: GateContext, target: dict[str, str], policy: str, index: int
+) -> dict[str, Any]:
+    name = target["name"] + ":" + policy
+    clone, committed, manifest_raw = prepare_case(context, target, policy, index)
+    child = (TOOLS / "child.txt").read_text(encoding="utf-8")
+    expected = context.expected["diff"]["policies"][policy]
+    profile_path = clone / ".reprollm/profiles/judge_policy.yaml"
+    profile_hash = digest(profile_path.read_bytes())
+    captures = []
+    for cap in (256, 384):
+        before = set(clone.glob(".reprollm/runs/*/run.json"))
+        argv = ["python", "-I", "-X", "utf8", "-c", child, "--cap", str(cap)]
+        result, _ = context.command(
+            name,
+            "capture-" + str(cap),
+            [
+                context.python,
+                "-X",
+                "utf8",
+                TOOLS / "harness/cli_diff.py",
+                "run",
+                "--capture-output",
+                "--",
+                *argv,
+            ],
+            clone,
+        )
+        require(result.returncode == 0, "Real stdlib capture failed")
+        created = set(clone.glob(".reprollm/runs/*/run.json")) - before
+        require(len(created) == 1, "Capture did not create exactly one run")
+        path = created.pop()
+        record = read_json(path)
+        consumed = read_json(path.parent / "stdout.log")
+        require(consumed == {"consumed_cap": cap}, "Independent child cap receipt differs")
+        require(
+            record["status"] == "completed"
+            and record["exit_code"] == 0
+            and record["schema_version"] == 2,
+            "Run completion/schema differs",
+        )
+        require(
+            record["code"]["commit"] == committed and record["code"]["dirty"] is False,
+            "Captured code commit/clean differs",
+        )
+        require(
+            record["hardware"]["source"] == "unavailable",
+            "Diff fixture must not probe GPU metadata",
+        )
+        require(
+            record["files"] == [] and record["lock"] is None,
+            "Config files or lock could mask target drift",
+        )
+        require(
+            record["input_capture"]["consumption"] == "unverified",
+            "Recorder may not claim verified consumption",
+        )
+        observed = record["bindings_observed"].get(FIELD, [])
+        require([row["value"] for row in observed] == [cap], "Binding cap differs")
+        require(
+            all(
+                row["source"]["type"] == "cli" and row["source"]["key"] == "--cap"
+                for row in observed
+            ),
+            "Binding source differs",
+        )
+        require(
+            record["command"]["argv"] == argv,
+            "Recorded child argv must preserve PATH python and all exact arguments",
+        )
+        require(
+            (path.parent / "manifest.yaml").read_bytes() == manifest_raw,
+            "Manifest snapshot bytes differ",
+        )
+        require(
+            (clone / "reprollm.yaml").read_bytes() == manifest_raw
+            and digest(profile_path.read_bytes()) == profile_hash,
+            "Fixed inputs changed",
+        )
+        captures.append(
+            (
+                path,
+                record,
+                {
+                    "cap": cap,
+                    "run_id": record["run_id"],
+                    "run_sha256": digest(path.read_bytes()),
+                    "manifest_sha256": digest(manifest_raw),
+                    "receipt_sha256": digest((path.parent / "stdout.log").read_bytes()),
+                    "receipt": consumed,
+                    "captured_config_files": 0,
+                    "recorded_child_argv_exact": True,
+                },
+            )
+        )
+    left_path, left, _ = captures[0]
+    right_path, right, _ = captures[1]
+    require(left["manifest"] == right["manifest"], "A/B manifest reference differs")
+    run_bytes = {
+        path.relative_to(clone).as_posix(): path.read_bytes()
+        for path in clone.glob(".reprollm/runs/**/*")
+        if path.is_file()
+    }
+
+    def diff(label: str, *extra: str, expected_exit: int = 0, same: bool = False):
+        selected = left["run_id"] if same else right["run_id"]
+        args = [
+            context.python,
+            "-X",
+            "utf8",
+            TOOLS / "harness/cli.py",
+            "diff",
+            left["run_id"],
+            selected,
+            "--format",
+            "json",
+            *extra,
+        ]
+        result, receipt = context.command(name, label, args, clone)
+        require(
+            result.returncode == expected_exit and result.stderr == b"",
+            "Diff exit/stderr differs: " + label,
+        )
+        report = json.loads(result.stdout)
+        require(report["schema_version"] == 1, "Diff schema differs")
+        return report, result.stdout, receipt
+
+    report, raw, pair_receipt = diff("pair")
+    changes = {row["path"]: row for row in report["changes"]}
+    require(len(changes) == len(report["changes"]), "Duplicate semantic paths")
+    require(
+        (
+            changes[FIELD]["a"],
+            changes[FIELD]["b"],
+            changes[FIELD]["status"],
+            changes[FIELD]["severity"],
+        )
+        == (256, 384, "changed", expected["target_severity"]),
+        "Target value/status/severity differs",
+    )
+    require(
+        changes["command.argv"]["severity"] == "MEDIUM"
+        and changes["command.argv"]["a"] == left["command"]["argv"]
+        and changes["command.argv"]["b"] == right["command"]["argv"],
+        "Complete argv drift differs",
+    )
+    allowed_none = set(context.expected["diff"]["allowed_none_paths"])
+    check_metadata(changes, left, right, allowed_none)
+    require(
+        {path for path, row in changes.items() if row["severity"] != "NONE"}
+        == set(expected["non_none_paths"]),
+        "Complete non-NONE path set differs",
+    )
+    require(
+        all(changes[path]["severity"] == "NONE" for path in changes.keys() & allowed_none),
+        "Metadata severity differs",
+    )
+    counts = {
+        "HIGH": 0,
+        "MEDIUM_HIGH": 0,
+        "MEDIUM": 1,
+        "LOW": 0,
+        "NONE": len(changes.keys() & allowed_none),
+    }
+    counts[expected["target_severity"]] += 1
+    require(
+        report["summary"]["counts"] == counts
+        and report["summary"]["highest"] == ("HIGH" if policy == "default" else "MEDIUM"),
+        "Complete summary differs",
+    )
+    require(diff("repeat")[1] == raw, "Repeat JSON is not byte-identical")
+    high_exit = expected["high_gate_exit"]
+    require(
+        diff("high-gate", "--fail-on", "HIGH", expected_exit=high_exit)[0] == report,
+        "HIGH-gated complete JSON differs",
+    )
+    filtered, _, _ = diff(
+        "high-filter", "--min-severity", "HIGH", "--fail-on", "HIGH", expected_exit=high_exit
+    )
+    require(
+        filtered["summary"] == report["summary"] and filtered["filtered_below"] == "HIGH",
+        "Filtered complete summary differs",
+    )
+    require(
+        filtered["changes"] == ([changes[FIELD]] if policy == "default" else []),
+        "HIGH-filtered changes differ",
+    )
+    require(
+        diff("hidden-medium", "--min-severity", "HIGH", "--fail-on", "MEDIUM", expected_exit=1)[0]
+        == filtered,
+        "Hidden MEDIUM does not preserve threshold behavior",
+    )
+    same, _, _ = diff("self", "--fail-on", "LOW", same=True)
+    require(
+        same["changes"] == []
+        and same["summary"]["highest"] == "NONE"
+        and all(value == 0 for value in same["summary"]["counts"].values()),
+        "Self-diff is not empty",
+    )
+    require(
+        all((clone / path).read_bytes() == raw for path, raw in run_bytes.items()),
+        "Diff rewrote saved run evidence",
+    )
+    clean, _ = context.command(
+        name,
+        "final-clone-clean",
+        ["git", "-C", clone, "status", "--porcelain=v1", "--untracked-files=all"],
+        context.candidate,
+    )
+    require(
+        clean.returncode == 0 and clean.stdout.strip() == b"",
+        "A/B clone is dirty after all commands",
+    )
+    require(
+        (clone / "reprollm.yaml").read_bytes() == manifest_raw
+        and digest(profile_path.read_bytes()) == profile_hash,
+        "A/B changed tracked input bytes",
+    )
+    safe_non_none = [
+        {
+            "path": row["path"],
+            "severity": row["severity"],
+            "a": row["a"],
+            "b": row["b"],
+            "status": row["status"],
+        }
+        for row in report["changes"]
+        if row["severity"] != "NONE"
+    ]
+    return {
+        "target": target["name"],
+        "policy": policy,
+        "base_profile": context.expected["diff"]["profile_bases_by_target"][target["name"]],
+        "status": "PASS",
+        "source_pin": target["required_sha"],
+        "overlay_commit": committed,
+        "same_clean_commit": True,
+        "manifest_sha256": digest(manifest_raw),
+        "profile_sha256": profile_hash,
+        "captures": [item[2] for item in captures],
+        "complete_non_none": safe_non_none,
+        "complete_summary": report["summary"],
+        "summary_same_scope": "Observed and repeat/filter-preserved; not independently counted",
+        "allowed_none_paths_observed": sorted(changes.keys() & allowed_none),
+        "repeat_json_identical": True,
+        "high_gate_exit": high_exit,
+        "filtered_summary_preserved": True,
+        "hidden_medium_exit": 1,
+        "self_diff_empty": True,
+        "saved_artifacts_unchanged": True,
+        "pair_raw_reference": pair_receipt["stdout"],
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--qa-summary", type=Path, required=True)
+    parser.add_argument("--qa-inputs", type=Path, required=True)
+    parser.add_argument("--execute-after-final-qa", action="store_true", required=True)
+    args = parser.parse_args()
+    verify_oracle()
+    tools = verify_tools()
+    candidate = args.candidate.resolve()
+    qa = verify_quality(candidate, args.qa_summary, args.qa_inputs)
+    fixture = read_json(TOOLS / "expectations.json")["diff"]["profile_fixture"]
+    require(
+        digest((candidate / fixture["source_relative_path"]).read_bytes())
+        == fixture["source_sha256"],
+        "Final accepted CLI fixture changed since preparation",
+    )
+    require(
+        digest((TOOLS / "child.txt").read_bytes()) == fixture["child_sha256"],
+        "Reviewed stdlib child changed",
+    )
+    context = GateContext(candidate, args.output, qa)
+    started = time.perf_counter()
+    base: dict[str, Any] = {"status": "NOT_RUN"}
+    cases = []
+    failure = None
+    try:
+        base = run_base(context, defer_after=True)
+        require(base["status"] == "PASS_AFTER_PENDING", "Fresh base layer failed")
+        jobs = [
+            (target, policy, index)
+            for index, target in enumerate(context.targets)
+            for policy in ("default", "LOW", "NONE")
+        ]
+
+        def one(job):
+            target, policy, index = job
+            try:
+                row = run_pair(context, target, policy, index)
+                print(target["name"], policy, "DIFF_PASS", flush=True)
+                return row
+            except Exception as error:
+                print(target["name"], policy, "DIFF_FAIL", type(error).__name__, flush=True)
+                return {
+                    "target": target["name"],
+                    "policy": policy,
+                    "status": "FAIL",
+                    "reason": str(error),
+                }
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+            cases = list(pool.map(one, jobs))
+        require(
+            all(row["status"] == "PASS" for row in cases),
+            "At least one supplementary diff case failed",
+        )
+    except Exception as error:
+        failure = {"type": type(error).__name__, "reason": str(error)}
+    after_by_name = {
+        target["name"]: context.identity(target, "after") for target in context.targets
+    }
+    for row in base.get("targets", []):
+        row["after"] = after_by_name[row["name"]]
+        row["status"] = (
+            "PASS"
+            if row["status"] in {"PASS", "PASS_AFTER_PENDING"} and row["after"]["valid"]
+            else "FAIL"
+        )
+    base["status"] = (
+        "PASS"
+        if base.get("targets") and all(row["status"] == "PASS" for row in base["targets"])
+        else "FAIL"
+    )
+    changed = context.unchanged_inputs()
+    try:
+        verify_oracle()
+        verify_tools()
+        verify_quality(candidate, args.qa_summary, args.qa_inputs)
+    except Exception as error:
+        failure = failure or {"type": type(error).__name__, "reason": str(error)}
+    passed = (
+        failure is None
+        and base["status"] == "PASS"
+        and len(cases) == 15
+        and all(row["status"] == "PASS" for row in cases)
+        and not changed
+    )
+    summary = {
+        "schema_version": 1,
+        "session": "P-B:R08-A",
+        "status": "PASS" if passed else "FAIL",
+        "run_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "base": base,
+        "diff_cases": cases,
+        "qa": qa,
+        "tool_inventory": tools,
+        "failure": failure,
+        "changed_frozen_inputs": changed,
+        "command_count": len(context.records),
+        "base_product_commands": sum(row["label"] in {"L0", "facts"} for row in context.records),
+        "diff_product_commands": sum(
+            row["label"]
+            in {
+                "capture-256",
+                "capture-384",
+                "pair",
+                "repeat",
+                "high-gate",
+                "high-filter",
+                "hidden-medium",
+                "self",
+            }
+            for row in context.records
+        ),
+        "full_json_comparisons": sum(
+            row["label"].endswith("-comparison") for row in context.records
+        ),
+        "original_identity_commands": sum(
+            ":" not in row["target"] and row["label"].startswith(("before-", "after-"))
+            for row in context.records
+        ),
+        "supplementary_git_commands": sum(
+            row["label"].startswith("setup-") or row["label"] == "final-clone-clean"
+            for row in context.records
+        ),
+        "wall_seconds": round(time.perf_counter() - started, 6),
+        "summed_command_seconds": round(sum(row["elapsed_seconds"] for row in context.records), 6),
+        "gate_b": "BLOCKED_UNEXECUTED",
+        "fixture_scope": (
+            "Supplementary stdlib CLI binding extension; real clean Git; "
+            "GPU metadata explicitly unavailable; no model/provider/HF/API execution."
+        ),
+    }
+    context.persist(summary)
+    print(
+        json.dumps(
+            {
+                key: summary[key]
+                for key in ("status", "command_count", "wall_seconds", "summed_command_seconds")
+            }
+        ),
+        flush=True,
+    )
+    return 0 if passed else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

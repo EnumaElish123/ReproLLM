@@ -1,0 +1,30 @@
+{
+  "deselected_count": 4,
+  "deselected_marker": "not slow and not linux_only",
+  "platform": "Windows",
+  "schema_version": 1,
+  "scope": "actual final full quality run; CI retains cross-platform coverage",
+  "skip_count": 4,
+  "skips": [
+    {
+      "class": "tests.unit.cli.test_audit_normalization",
+      "reason": "creating symlinks needs privileges on Windows",
+      "test": "test_symlinked_invocation_normalizes"
+    },
+    {
+      "class": "tests.unit.cli.test_scan_diagnostics",
+      "reason": "POSIX filename includes colon/control character",
+      "test": "test_untrusted_warning_prefix_cannot_become_default_coverage[syntax]"
+    },
+    {
+      "class": "tests.unit.cli.test_scan_diagnostics",
+      "reason": "POSIX filename includes colon/control character",
+      "test": "test_untrusted_warning_prefix_cannot_become_default_coverage[external-read]"
+    },
+    {
+      "class": "tests.unit.core.test_manifest_scaffold",
+      "reason": "POSIX permission bits are unavailable on Windows",
+      "test": "test_force_success_preserves_existing_file_modes"
+    }
+  ]
+}

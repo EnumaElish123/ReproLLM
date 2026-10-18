@@ -1,0 +1,407 @@
+from __future__ import annotations
+
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import os
+import re
+import subprocess
+import threading
+import time
+from pathlib import Path
+from typing import Any
+
+TOOLS = Path(__file__).resolve().parent
+
+
+def digest(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def write_json(path: Path, value: Any) -> None:
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
+        json.dump(value, stream, ensure_ascii=False, sort_keys=True, indent=2)
+        stream.write("\n")
+
+
+def verify_oracle() -> dict[str, Any]:
+    manifest = read_json(TOOLS / "oracle-manifest.json")
+    source_index = TOOLS / "oracle/source-index.json"
+    if digest(source_index.read_bytes()) != manifest["source_index_sha256"]:
+        raise RuntimeError("Copied independent oracle index changed")
+    for row in manifest["files"]:
+        path = TOOLS / "oracle" / row["path"]
+        raw = path.read_bytes()
+        if digest(raw) != row["sha256"] or len(raw) != row["bytes"]:
+            raise RuntimeError("Copied independent oracle changed: " + row["path"])
+    preparation = read_json(TOOLS / "preparation.json")
+    for row in preparation["harness"]:
+        if digest((TOOLS / row["path"]).read_bytes()) != row["sha256"]:
+            raise RuntimeError("Reviewed guarded collector changed")
+    return manifest
+
+
+def verify_tools() -> dict[str, Any]:
+    inventory = read_json(TOOLS / "tool-inventory.json")
+    for row in inventory["files"]:
+        path = TOOLS / row["path"]
+        if digest(path.read_bytes()) != row["sha256"] or path.stat().st_size != row["bytes"]:
+            raise RuntimeError("Frozen private validation tool changed: " + row["path"])
+    return {
+        "manifest_sha256": digest((TOOLS / "tool-inventory.json").read_bytes()),
+        "files_checked": len(inventory["files"]),
+    }
+
+
+def verify_quality(candidate: Path, summary_path: Path, inputs_path: Path) -> dict[str, Any]:
+    summary = read_json(summary_path)
+    if summary.get("input_inventory_sha256") != digest(inputs_path.read_bytes()):
+        raise RuntimeError("Final QA summary does not bind this exact frozen input inventory")
+    if summary.get("status") != "PASS":
+        raise RuntimeError("Final QA must explicitly record PASS")
+    commands = summary.get("commands", [])
+    if not commands or any(row.get("exit_code", row.get("returncode")) != 0 for row in commands):
+        raise RuntimeError("Final QA command exits are missing or not all zero")
+    inventory = read_json(inputs_path)
+    files = inventory.get("files", inventory.get("files_sha256"))
+    if not isinstance(files, dict) or not files:
+        raise RuntimeError("Final QA frozen input inventory is required")
+    minimum = {
+        "src/reprollm/diff/drift_severity.yaml",
+        "src/reprollm/cli/diff.py",
+        "src/reprollm/profiles/judge_only.yaml",
+        "src/reprollm/profiles/llm_judge.yaml",
+        "scripts/compare_gold.py",
+        "tests/unit/cli/test_judge_param_policy.py",
+        "uv.lock",
+    }
+    if not minimum.issubset(files):
+        raise RuntimeError("QA inventory omits required R08-A inputs")
+    changed = []
+    for relative, expected in files.items():
+        path = (candidate / relative).resolve()
+        if not path.is_relative_to(candidate) or not path.is_file():
+            changed.append(relative)
+            continue
+        if isinstance(expected, dict):
+            expected = expected.get("sha256")
+        if digest(path.read_bytes()) != expected:
+            changed.append(relative)
+    if changed:
+        raise RuntimeError("Final QA inputs changed before Gate A: " + repr(changed))
+    return {
+        "summary_sha256": digest(summary_path.read_bytes()),
+        "inputs_sha256": digest(inputs_path.read_bytes()),
+        "input_files_checked": len(files),
+        "all_inputs_unchanged": True,
+        "source_commit_recorded_by_qa": summary.get("source_commit"),
+    }
+
+
+class GateContext:
+    def __init__(self, candidate: Path, output: Path, qa: dict[str, Any]) -> None:
+        self.candidate = candidate.resolve()
+        self.python = self.candidate / ".venv/Scripts/python.exe"
+        self.output = output.resolve()
+        if not self.output.is_relative_to(TOOLS) or self.output == TOOLS:
+            raise RuntimeError("Raw output must stay in this exclusively owned private directory")
+        self.output.mkdir(parents=True, exist_ok=False)
+        (self.output / "raw").mkdir()
+        self.targets = read_json(TOOLS / "locations-private.json")["targets"]
+        self.expected = read_json(TOOLS / "expectations.json")
+        target_names = [row["name"] for row in self.targets]
+        expected_names = set(self.expected["diff"]["profile_bases_by_target"])
+        if (
+            len(target_names) != 5
+            or len(set(target_names)) != 5
+            or set(target_names) != expected_names
+        ):
+            raise RuntimeError("Gate A requires exactly the five distinct pinned targets")
+        self.qa = qa
+        self.records: list[dict[str, Any]] = []
+        self.lock = threading.Lock()
+        self.counter = 0
+        self.env = os.environ.copy()
+        for name in list(self.env):
+            if re.search(r"(?:API_KEY|TOKEN|SECRET|PASSWORD)$", name, re.IGNORECASE):
+                self.env.pop(name, None)
+        for name in list(self.env):
+            if name in {"PYTHONPATH", "PYTHONHOME", "GIT_CONFIG_PARAMETERS"} or name.startswith(
+                ("GIT_CONFIG_KEY_", "GIT_CONFIG_VALUE_")
+            ):
+                self.env.pop(name, None)
+        self.env.update(
+            {
+                "R04_GATE_CANDIDATE": str(self.candidate),
+                "R04_GATE_VERSION": "0.7.0",
+                "PYTHONUTF8": "1",
+                "PYTHONIOENCODING": "utf-8",
+                "NO_COLOR": "1",
+                "TERM": "dumb",
+                "GIT_OPTIONAL_LOCKS": "0",
+                "GIT_CONFIG_GLOBAL": os.devnull,
+                "GIT_CONFIG_NOSYSTEM": "1",
+                "GIT_TEMPLATE_DIR": str(TOOLS / "empty-git-template"),
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.hooksPath",
+                "GIT_CONFIG_VALUE_0": str(TOOLS / "empty-git-template"),
+                "PATH": str(self.python.parent) + os.pathsep + self.env.get("PATH", ""),
+            }
+        )
+        product_files = [
+            p
+            for p in (self.candidate / "src/reprollm").rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts and p.suffix not in {".pyc", ".pyo"}
+        ]
+        product_files += list((self.candidate / "schemas").glob("*.json"))
+        product_files += [
+            self.candidate / name
+            for name in (
+                "pyproject.toml",
+                "uv.lock",
+                "scripts/compare_gold.py",
+                "val.md",
+                "docs/plan/01_specification.md",
+                "tests/unit/cli/test_judge_param_policy.py",
+                "tests/unit/diff/test_severity.py",
+            )
+        ]
+        self.frozen_inputs = {
+            p.relative_to(self.candidate).as_posix(): digest(p.read_bytes())
+            for p in sorted(product_files)
+        }
+
+    def logical(self, value: object) -> str:
+        text = str(value)
+        for row in self.targets:
+            text = text.replace(row["private_path"], "<checkout:" + row["name"] + ">")
+        text = text.replace(str(self.python), "<candidate-python>")
+        text = text.replace(str(self.candidate), "<candidate>")
+        return text.replace(str(TOOLS), "<private-gate-tools>")
+
+    def command(self, target: str, label: str, args: list[object], cwd: Path, timeout: int = 300):
+        with self.lock:
+            self.counter += 1
+            sequence = self.counter
+        prefix = f"{sequence:04d}-" + re.sub(r"[^A-Za-z0-9_.-]", "_", target + "-" + label)
+        started = time.perf_counter()
+        try:
+            result = subprocess.run(
+                [str(value) for value in args],
+                cwd=cwd,
+                env=self.env,
+                capture_output=True,
+                timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as error:
+            result = subprocess.CompletedProcess(
+                args, 124, error.stdout or b"", error.stderr or b""
+            )
+        row: dict[str, Any] = {
+            "target": target,
+            "label": label,
+            "sequence": sequence,
+            "command": [self.logical(x) for x in args],
+            "cwd": self.logical(cwd),
+            "exit_code": result.returncode,
+            "elapsed_seconds": round(time.perf_counter() - started, 6),
+        }
+        for kind, raw in (("stdout", result.stdout), ("stderr", result.stderr)):
+            relative = "raw/" + prefix + "." + kind
+            (self.output / relative).write_bytes(raw)
+            row[kind] = {"file": relative, "bytes": len(raw), "sha256": digest(raw)}
+        with self.lock:
+            self.records.append(row)
+        return result, row
+
+    def cli(self, target: str, label: str, args: list[object], cwd: Path, timeout: int = 300):
+        return self.command(
+            target,
+            label,
+            [self.python, "-X", "utf8", TOOLS / "harness/cli.py", *args],
+            cwd,
+            timeout,
+        )
+
+    def identity(self, target: dict[str, str], phase: str) -> dict[str, Any]:
+        observed = {}
+        clean_execution = True
+        for label, args in (
+            ("head", ["rev-parse", "HEAD"]),
+            ("origin", ["remote", "get-url", "origin"]),
+            ("status", ["status", "--porcelain=v1", "--untracked-files=all"]),
+        ):
+            result, _ = self.command(
+                target["name"],
+                phase + "-" + label,
+                ["git", "-C", target["private_path"], *args],
+                self.candidate,
+            )
+            observed[label] = result.stdout.decode("utf-8").strip()
+            clean_execution &= result.returncode == 0 and not result.stderr
+        valid = clean_execution and observed == {
+            "head": target["required_sha"],
+            "origin": target["origin"],
+            "status": "",
+        }
+        return {"valid": bool(valid), "observed": observed}
+
+    def unchanged_inputs(self) -> list[str]:
+        return [
+            relative
+            for relative, expected in self.frozen_inputs.items()
+            if not (self.candidate / relative).is_file()
+            or digest((self.candidate / relative).read_bytes()) != expected
+        ]
+
+    def persist(self, summary: dict[str, Any]) -> None:
+        write_json(
+            self.output / "commands.json",
+            {
+                "schema_version": 1,
+                "commands": sorted(self.records, key=lambda row: (row["target"], row["label"])),
+            },
+        )
+        write_json(
+            self.output / "product-inputs.json", {"schema_version": 1, "files": self.frozen_inputs}
+        )
+        write_json(self.output / "summary.json", summary)
+
+
+def run_base(context: GateContext, defer_after: bool = False) -> dict[str, Any]:
+    provenance = read_json(TOOLS / "oracle/gate-a/oracle-and-environment-provenance.json")
+    expected_stderr = {row["name"]: row["default_stderr_utf8"] for row in provenance["sources"]}
+
+    def one(target: dict[str, str]) -> dict[str, Any]:
+        before = context.identity(target, "before")
+        if not before["valid"]:
+            return {"name": target["name"], "before": before, "status": "INVALID_INPUT"}
+        checks = []
+        for label in ("L0", "facts"):
+            if label == "L0":
+                result, record = context.cli(
+                    target["name"],
+                    label,
+                    context.expected["base"]["audit_args"],
+                    Path(target["private_path"]),
+                )
+                oracle = TOOLS / "oracle/expected-audit" / (target["name"] + ".json")
+            else:
+                result, record = context.command(
+                    target["name"],
+                    label,
+                    [
+                        context.python,
+                        "-X",
+                        "utf8",
+                        TOOLS / "harness/collect_facts.py",
+                        context.candidate,
+                    ],
+                    Path(target["private_path"]),
+                )
+                oracle = TOOLS / "oracle/expected-facts" / (target["name"] + ".json")
+            args = [
+                context.python,
+                "-X",
+                "utf8",
+                context.candidate / "scripts/compare_gold.py",
+                oracle,
+                context.output / record["stdout"]["file"],
+            ]
+            if label == "L0":
+                args.append("--audit-metadata")
+            compared, _ = context.command(
+                target["name"], label + "-comparison", args, context.candidate
+            )
+            try:
+                comparison = json.loads(compared.stdout)
+                complete_equal = comparison["status"] == "PASS" and comparison["differences"] == []
+            except (ValueError, KeyError):
+                complete_equal = False
+            wanted = expected_stderr[target["name"]] if label == "L0" else ""
+            stderr_equal = result.stderr.decode("utf-8").replace("\r\n", "\n") == wanted
+            checks.append(
+                {
+                    "label": label,
+                    "command_exit_actual": result.returncode,
+                    "comparison_exit": compared.returncode,
+                    "complete_json_equal": complete_equal,
+                    "stderr_complete_equal": stderr_equal,
+                    "comparison_stderr_empty": not compared.stderr,
+                    "status": "PASS"
+                    if result.returncode == compared.returncode == 0
+                    and complete_equal
+                    and stderr_equal
+                    and not compared.stderr
+                    else "FAIL",
+                }
+            )
+        after = (
+            {"valid": None, "deferred": True} if defer_after else context.identity(target, "after")
+        )
+        passed = (defer_after or after["valid"]) and all(row["status"] == "PASS" for row in checks)
+        print(target["name"], "BASE_PASS" if passed else "BASE_FAIL", flush=True)
+        return {
+            "name": target["name"],
+            "before": before,
+            "after": after,
+            "checks": checks,
+            "status": ("PASS_AFTER_PENDING" if defer_after else "PASS") if passed else "FAIL",
+        }
+
+    started = time.perf_counter()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+        targets = list(pool.map(one, context.targets))
+    return {
+        "targets": targets,
+        "status": ("PASS_AFTER_PENDING" if defer_after else "PASS")
+        if all(row["status"] in {"PASS", "PASS_AFTER_PENDING"} for row in targets)
+        else "FAIL",
+        "wall_seconds": round(time.perf_counter() - started, 6),
+    }
+
+
+def main() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Private Gate A base; full session also requires the R08-A diff extension"
+    )
+    parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--qa-summary", type=Path, required=True)
+    parser.add_argument("--qa-inputs", type=Path, required=True)
+    parser.add_argument("--execute-after-final-qa", action="store_true", required=True)
+    args = parser.parse_args()
+    verify_oracle()
+    verify_tools()
+    candidate = args.candidate.resolve()
+    qa = verify_quality(candidate, args.qa_summary, args.qa_inputs)
+    context = GateContext(candidate, args.output, qa)
+    started = time.perf_counter()
+    base = run_base(context)
+    changed = context.unchanged_inputs()
+    verify_quality(candidate, args.qa_summary, args.qa_inputs)
+    summary = {
+        "schema_version": 1,
+        "session": "P-B:R08-A",
+        "base": base,
+        "qa": qa,
+        "changed_frozen_inputs": changed,
+        "diff_extension": "NOT_RUN",
+        "status": "BASE_PASS_DIFF_PENDING" if base["status"] == "PASS" and not changed else "FAIL",
+        "command_count": len(context.records),
+        "wall_seconds": round(time.perf_counter() - started, 6),
+        "run_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    context.persist(summary)
+    return 0 if summary["status"] == "BASE_PASS_DIFF_PENDING" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
