@@ -1,0 +1,110 @@
+"""Observe the pinned upstream single-GPU DP method without replacing its math."""
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import sys
+
+import torch
+import yaml
+from datasets import Dataset
+from transformers import TrainerCallback, set_seed
+
+sys.path.insert(0, str(Path('src').resolve()))
+from llm_pft.arguments.env_args import EnvArgs
+from llm_pft.arguments.model_args import ModelArgs
+from llm_pft.arguments.privacy_args import PrivacyArgs
+from llm_pft.arguments.trainer_args import TrainerArgs
+from llm_pft.models.gpt2 import GPT2
+import fastDP
+from fastDP import autograd_grad_sample as grad_sample
+
+config = yaml.safe_load(Path('validation/train.yaml').read_text())
+set_seed(config['seed'])
+torch.set_num_threads(2)
+torch.cuda.set_per_process_memory_fraction(0.15, 0)
+snapshot = Path(os.environ['HF_HUB_CACHE']) / ('models--' + config['model_id'].replace('/', '--')) / 'snapshots' / config['model_revision']
+assert snapshot.is_dir()
+model = GPT2(ModelArgs(architecture=str(snapshot), tokenizer_max_length=config['max_length'], device_map=None), EnvArgs(device='cuda', num_workers=0))
+model.load()
+model._lm.to('cuda')
+
+def parameters_hash(module):
+    h = hashlib.sha256()
+    for name, parameter in module.named_parameters():
+        h.update(name.encode())
+        h.update(parameter.detach().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()
+
+initial_hash = parameters_hash(model._lm)
+intended_names = {name for name, p in model._lm.named_parameters() if p.requires_grad}
+observations = {'clip_calls': 0, 'finite_norm_checks': 0, 'positive_noise_draws': 0, 'losses': []}
+engines = []
+optimizers = []
+original_attach = fastDP.PrivacyEngine.attach
+original_clip = grad_sample._per_block_clip_grad
+original_normal = torch.normal
+
+def attach(engine, optimizer):
+    original_attach(engine, optimizer)
+    assert optimizer.privacy_engine is engine
+    assert optimizer.step.__name__ == 'dp_step'
+    engines.append(engine)
+    optimizers.append(optimizer)
+
+def clip(layer, named_params, *args, **kwargs):
+    observations['clip_calls'] += 1
+    norms = [p.norm_sample for _, p in named_params if hasattr(p, 'norm_sample')]
+    assert norms and all(torch.isfinite(n).all().item() for n in norms)
+    observations['finite_norm_checks'] += 1
+    return original_clip(layer, named_params, *args, **kwargs)
+
+def normal(*args, **kwargs):
+    std = kwargs.get('std', args[1] if len(args) > 1 else None)
+    if std is not None and bool(torch.as_tensor(std).gt(0).all()):
+        observations['positive_noise_draws'] += 1
+    return original_normal(*args, **kwargs)
+
+class LossObserver(TrainerCallback):
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        if logs and 'loss' in logs:
+            assert math.isfinite(logs['loss'])
+            observations['losses'].append(float(logs['loss']))
+
+class DataAdapter:
+    def __init__(self, data): self.data = data
+    def get_hf_dataset(self): return self.data
+    def __len__(self): return len(self.data)
+    def shuffle(self): return DataAdapter(self.data.shuffle(seed=config['seed']))
+    def select(self, indices): return DataAdapter(self.data.select(indices))
+
+texts = json.loads(Path('validation/texts.json').read_text())
+assert len(texts) == 16
+data = DataAdapter(Dataset.from_dict({'text': texts}))
+train_args = TrainerArgs(output_dir=config['output_dir'], max_steps=config['max_steps'], num_train_epochs=0.125, per_device_train_batch_size=config['batch_size'], gradient_accumulation_steps=config['gradient_accumulation'], learning_rate=config['learning_rate'], limit_eval_dataset=2, remove_unused_columns=False, logging_steps=1, report_to=[], save_strategy='no', evaluation_strategy='no', dataloader_num_workers=0, seed=config['seed'], data_seed=config['seed'], fp16=False, bf16=False, disable_tqdm=True, optim='adamw_torch')
+train_args.resume_from_checkpoint = None
+privacy_args = PrivacyArgs(target_epsilon=config['target_epsilon'], target_delta=config['target_delta'], max_grad_norm_dp=config['max_grad_norm'])
+fastDP.PrivacyEngine.attach = attach
+grad_sample._per_block_clip_grad = clip
+torch.normal = normal
+try:
+    model._fine_tune_fast_dp(data, data, train_args, privacy_args, extra_callbacks=[LossObserver()])
+finally:
+    fastDP.PrivacyEngine.attach = original_attach
+    grad_sample._per_block_clip_grad = original_clip
+    torch.normal = original_normal
+
+assert len(engines) == 1 and engines[0].steps == 2
+engine = engines[0]
+assert {name for name, _ in engine.named_params} == intended_names
+assert optimizers[0].privacy_engine is engine and engine.noise_multiplier > 0
+assert observations['clip_calls'] > 0 and observations['positive_noise_draws'] > 0
+assert len(observations['losses']) == 2
+final_hash = parameters_hash(model._lm)
+assert final_hash != initial_hash
+spent = {key: float(value) for key, value in engine.get_privacy_spent().items()}
+assert all(math.isfinite(value) for value in spent.values())
+result = dict(schema_version=1, scenario='supplementary-public-single-gpu-dp', model_id=config['model_id'], model_revision=config['model_revision'], steps=engine.steps, intended_parameter_tensors=len(intended_names), covered_parameter_tensors=len(engine.named_params), initial_parameters_sha256=initial_hash, final_parameters_sha256=final_hash, target_epsilon=config['target_epsilon'], noise_multiplier=engine.noise_multiplier, privacy_spent=spent, **observations)
+Path(config['output_dir'], 'validation-proof.json').write_text(json.dumps(result, indent=2, sort_keys=True)+'\n')
+print(json.dumps({k: result[k] for k in ['steps', 'clip_calls', 'positive_noise_draws', 'noise_multiplier']}))

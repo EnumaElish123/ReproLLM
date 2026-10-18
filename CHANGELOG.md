@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- A01-A (spec §§4–5, 16, 22): recover available reviewed input bytes,
+  verify their original hashes, and inventory inaccessible formal inputs with
+  precise recovery actions. Input recovery does not close resource gates.
+
 - D03: gate publication on the exact candidate's reusable five-job quality
   checks, nonempty preflight release notes, complete hash-bound validation
   evidence and the independently installed wheel from one build. Recheck wheel,

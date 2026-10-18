@@ -4,20 +4,20 @@
 
 补充代码审查：`781366e89362a54d9036d3aed070fad169ba8204`。v1.2 经维护者要求纳入 run 脱敏、公共读取边界、输入采集时点和已知依赖规范冲突四项调整；当前版本替代 v1.1 作为执行方案。
 
-本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A、S1-B及S2已交付；S3-A、S3-B和S4-A状态为 **产品与本地验收已完成**，后续任务保持待执行/待决。会话从实际 HEAD 复核，不回退到审查基线。
+本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
 ## 从这里开始
 
 1. 阅读 [统一执行总则](00_Execution_Guide.md) 以及仓库 [AGENTS.md](../../../AGENTS.md)、[架构决策](../00_architecture_and_decisions.md)、[规格](../01_specification.md)、[val.md](../../../val.md)。
 2. 从 [Agent 提示词](AGENT_PROMPTS.md) 复制与本次任务对应的启动指令。
 3. 读取前置 [S3-B报告](../../dogfooding/2026-10-14-reliability-s3b/README.md) 和 [runtime evidence交接](../../dogfooding/2026-10-14-reliability-s3b/runtime-evidence-handoff.md)，核对R04-A/R04-B实际提交、批准的R04-S、完整本地Gate及冻结桥兼容证据。
-4. 读取最新 [S4-A 报告](../../dogfooding/2026-10-15-reliability-s4a/README.md)：D01 真实 lm-eval A/B、输入快照保真修复、D02 同一 wheel 实装及故障矩阵、本地完整质量门和五项目 Gate A 已通过。最终 main 五项 CI 由推送后实际 HEAD 核对，见会话最终回复与本地 `final-ci.json`。下一工程会话为 **S4-B：D03**。其余四项目仍需当前候选的原生验收；完整 VAL-R01 与发布资源矩阵没有关闭。
+4. 读取 [S4-B 报告](../../dogfooding/2026-10-18-reliability-s4b/README.md)：D03 发布门已交付，S4-A 的 D01 / D02 成果继续保留。后续按 [06](06_Validation_and_Adoption.md) 推进 **A01-A 输入与资源准备、A01-B 修复后回放和证据包**；政策提案逐项独立审议。其余四项目仍需修复后候选的原生验收；完整 VAL-R01 与发布资源矩阵没有关闭。工程交付不授权发布版本。
 
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
 R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 提交 `110087b1e416c12c25253c07365944935e986470`，修复首次推送的 Windows CI 预算失败。
-最新本地质量门为 2,505 tests / 174 security tests；新源码的五项目 Gate A
+该性能会话的本地质量门为 2,505 tests / 174 security tests；当时源码的五项目 Gate A
 126 条全新命令、987 项完整比较及另列的 30 项独立核对全部通过。
 
 ## 执行文件与会话

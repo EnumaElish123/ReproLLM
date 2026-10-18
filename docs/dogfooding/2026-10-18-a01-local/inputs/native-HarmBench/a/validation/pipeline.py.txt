@@ -1,0 +1,62 @@
+"""Bounded original-function HarmBench adapter; no attack search or API calls."""
+import csv
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+import yaml
+
+sys.path.insert(0, str(Path('.').resolve()))
+config = yaml.safe_load(Path('validation/pipeline.yaml').read_text())
+output = Path(config['output_dir'])
+output.mkdir(parents=True, exist_ok=True)
+with Path('data/behavior_datasets/harmbench_behaviors_text_all.csv').open() as source:
+    selected = [row for row in csv.DictReader(source) if row['BehaviorID'] == config['behavior_id']]
+assert len(selected) == 1 and not selected[0]['ContextString'] and not selected[0]['Tags']
+behavior = selected[0]
+
+def save(name, value):
+    (output / name).write_text(json.dumps(value, indent=2, sort_keys=True)+'\n')
+
+def target():
+    from baselines.direct_request import DirectRequest
+    from baselines.model_utils import VICUNA_PROMPT
+    from vllm import LLM, SamplingParams
+    test_cases, _ = DirectRequest().generate_test_cases([behavior], verbose=False)
+    assert test_cases == {config['behavior_id']: [behavior['Behavior']]}
+    save('test_cases.json', test_cases)
+    model = LLM(model=config['target_id'], revision=config['target_revision'], tokenizer_revision=config['target_revision'], dtype='float16', tensor_parallel_size=1, gpu_memory_utilization=config['target_gpu_memory_utilization'], max_model_len=config['max_model_len'], max_num_seqs=1, enforce_eager=True, seed=config['seed'])
+    prompt = VICUNA_PROMPT['prompt'].format(instruction=test_cases[config['behavior_id']][0])
+    params = SamplingParams(temperature=0.0, top_p=1.0, max_tokens=config['max_new_tokens'], seed=config['seed'])
+    responses = model.generate([prompt], params, use_tqdm=False)
+    assert len(responses) == 1 and 0 < len(responses[0].outputs[0].token_ids) <= config['max_new_tokens']
+    text = responses[0].outputs[0].text
+    assert text.strip()
+    save('completions.json', [{'test_case': test_cases[config['behavior_id']][0], 'generation': text}])
+    save('target-proof.json', dict(schema_version=1, behavior_id=config['behavior_id'], completion_count=1, generated_tokens=len(responses[0].outputs[0].token_ids), prompt_tokens=len(responses[0].prompt_token_ids), max_new_tokens=config['max_new_tokens']))
+
+def classify():
+    from vllm import LLM, SamplingParams
+    from eval_utils import compute_results_classifier
+    completions = json.loads((output/'completions.json').read_text())
+    model = LLM(model=config['classifier_id'], revision=config['classifier_revision'], tokenizer_revision=config['classifier_revision'], dtype='float16', tensor_parallel_size=1, gpu_memory_utilization=config['classifier_gpu_memory_utilization'], max_model_len=config['max_model_len'], max_num_seqs=1, enforce_eager=True, seed=config['seed'])
+    params = SamplingParams(temperature=0.0, max_tokens=1, seed=config['seed'])
+    results = compute_results_classifier(behavior, completions, model, params)
+    save('classified.json', results)
+    assert len(results) == 1 and results[0]['label'] in (0, 1)
+    proof = json.loads((output/'target-proof.json').read_text())
+    proof.update(classifier_count=1, classifier_label=results[0]['label'], original_classifier_function=True)
+    save('validation-proof.json', proof)
+    print(json.dumps(proof, sort_keys=True))
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        for phase in ('target', 'classify'):
+            subprocess.run([sys.executable, 'validation/pipeline.py', phase], check=True)
+    elif sys.argv[1] == 'target':
+        target()
+    elif sys.argv[1] == 'classify':
+        classify()
+    else:
+        raise SystemExit('unknown phase')
