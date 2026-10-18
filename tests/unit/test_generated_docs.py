@@ -48,7 +48,7 @@ def test_profiles_document_is_fresh_and_complete() -> None:
 
 def test_ci_checks_coverage_and_generated_docs() -> None:
     """Freshness belongs in normal CI as well as the nightly performance gate."""
-    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github/workflows/quality.yml").read_text(encoding="utf-8")
     assert "--cov-fail-under=85" in workflow
     nightly = (ROOT / ".github/workflows/nightly.yml").read_text(encoding="utf-8")
     for generator in ("rules_doc", "profiles_doc", "cli_doc", "quickstart"):

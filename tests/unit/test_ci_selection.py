@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_regular_ci_keeps_fast_tests_and_excludes_performance(
     tmp_path: Path, platform: str
 ) -> None:
-    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    workflow = yaml.safe_load((ROOT / ".github/workflows/quality.yml").read_text())
     row = next(
         item
         for item in workflow["jobs"]["quality"]["strategy"]["matrix"]["include"]

@@ -1,0 +1,276 @@
+{
+  "commands": [
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "quickstart-preflight",
+      "log_sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85",
+      "seconds": 7.016
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<private>\\pytest-report.xml"
+      ],
+      "exit_code": 0,
+      "id": "pytest-coverage",
+      "log_sha256": "f5f1fad2efc0c34f4b32d733dadd5199168a13b9c5c8f6a1d4f4068942ad969d",
+      "seconds": 397.047
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "exit_code": 0,
+      "id": "redaction-branches",
+      "log_sha256": "0cf6dc67c4313ba0349d797e3525bc678fcea6f679edd018cf11f707202729fc",
+      "seconds": 0.14
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-check",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "seconds": 0.063
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "id": "ruff-format",
+      "log_sha256": "76fc4cac1f3220d3cf798f254f0e2dbd962aa5022721df2702f15770d4e2bdc4",
+      "seconds": 0.078
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "mypy",
+        "src/"
+      ],
+      "exit_code": 0,
+      "id": "mypy",
+      "log_sha256": "e378adbadb2d1c81482fcf831fa1944c512d98c313541ae43ec09c5e7e09665e",
+      "seconds": 4.266
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security"
+      ],
+      "exit_code": 0,
+      "id": "security",
+      "log_sha256": "c9411b5aeb36b925e8a0451487c9bc331975e95a2d0527fb199eeaff3cc6df0c",
+      "seconds": 15.265
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "rules-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.281
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "profiles-doc",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.282
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "cli-doc",
+      "log_sha256": "e9414be199fd2ac9f0bef9b1a6afbd8c16f42f9fd3d1a355b918ef202bbc33ae",
+      "seconds": 8.375
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "schema",
+        "export",
+        "--out",
+        "<private>\\schemas"
+      ],
+      "exit_code": 0,
+      "id": "schema-export",
+      "log_sha256": "7a5638c1e5d2fe390c3371ed7ca9e537d548737aa3c497de6a685b20e8ebc732",
+      "seconds": 0.468
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-audit",
+      "log_sha256": "d46f7142838cbf38727e3bbef9730359dfaa97fe19df57e3bc6384898c078a70",
+      "seconds": 0.61
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\hf_vllm_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-hf_vllm_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.359
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\lm_eval_replay",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-lm_eval_replay-audit",
+      "log_sha256": "6b79675c90ac043c234b1b191fa47fe27cb9fa1b1d6346ee71b0e8b964a98555",
+      "seconds": 0.61
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-audit",
+      "log_sha256": "640521a0986de2a64a7f631fe5b78079b9259cb354f5ba76a99972399ca9411e",
+      "seconds": 0.609
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\openai_judge_eval"
+      ],
+      "exit_code": 0,
+      "id": "example-openai_judge_eval-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.359
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        "<repo>\\examples\\privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-audit",
+      "log_sha256": "5f57f8e3a69f577434537c8c302018389c194371c4af35159c88183408f14043",
+      "seconds": 0.61
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "lock",
+        "--check",
+        "<repo>\\examples\\privacy_custom_params"
+      ],
+      "exit_code": 0,
+      "id": "example-privacy_custom_params-lock",
+      "log_sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487",
+      "seconds": 0.375
+    },
+    {
+      "command": [
+        "<reprollm>",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "exit_code": 0,
+      "id": "self-audit",
+      "log_sha256": "cb96f1b6f1f2f57935f5a7edca455829ae980b8cf111c976c7e2607b4eee4ff2",
+      "seconds": 21.047
+    }
+  ],
+  "frozen_inputs_unchanged": true,
+  "input_count": 450,
+  "input_inventory_sha256": "588884cfa7c6df6973aadb0365ad672325bcf5db5ccb6b7ab55247a85a6b56f1",
+  "platform": "windows",
+  "python": "3.12.9",
+  "schema_byte_equality": false,
+  "schema_version": 1,
+  "source_commit": "53782ab93a606abe3b57491d878759dd41aa5f52",
+  "status": "FAIL",
+  "wall_seconds": 457.922
+}

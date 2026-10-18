@@ -322,6 +322,48 @@ def test_failed_command_keeps_raw_output_for_evidence_before_raising(
     )
 
 
+@pytest.mark.parametrize("record_count", [0, 2])
+def test_successful_child_without_unique_record_emits_safe_json_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    record_count: int,
+) -> None:
+    wheel = _wheel(tmp_path)
+    output = tmp_path / "summary.json"
+    private_detail = f"{tmp_path}/synthetic-private-detail"
+    monkeypatch.setattr(validate_distribution.venv.EnvBuilder, "create", lambda *a: None)
+    monkeypatch.setattr(validate_distribution, "_install", lambda *a, **k: {"exit_code": 0})
+    monkeypatch.setattr(validate_distribution, "_import_evidence", lambda *a: {})
+
+    def run(command, **kwargs):
+        for index in range(record_count):
+            record = Path(kwargs["cwd"]) / f".reprollm/runs/record-{index}/run.json"
+            record.parent.mkdir(parents=True)
+            record.write_text("{}", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, private_detail, private_detail)
+
+    def walkthrough(work, *, python, on_step):
+        work.mkdir()
+        gen_quickstart._capture(work, "capture-a", python=python, on_step=on_step)
+        pytest.fail("capture must reject a missing or ambiguous record")
+
+    monkeypatch.setattr(gen_quickstart.subprocess, "run", run)
+    monkeypatch.setattr(gen_quickstart, "run_workflow", walkthrough)
+    assert validate_distribution.main(["--wheel", str(wheel), "--output", str(output)]) == 1
+    captured = capsys.readouterr()
+    summary = json.loads(captured.out)
+    assert captured.err == ""
+    assert json.loads(output.read_text(encoding="utf-8")) == summary
+    assert summary["status"] == "FAIL"
+    assert summary["failure"] == "invalid_input_or_execution"
+    assert summary["error_type"] == "RuntimeError"
+    assert summary["commands"][0]["exit_code"] == 0
+    assert private_detail not in captured.out
+    assert str(tmp_path) not in captured.out
+    assert "capture must create exactly one run record" not in captured.out
+
+
 def test_private_outputs_cannot_be_written_into_source_checkout(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

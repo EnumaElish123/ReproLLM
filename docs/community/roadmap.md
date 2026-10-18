@@ -63,7 +63,10 @@ input capture. S4-A supplies the [bounded GSM8K recipe](../../examples/lm_eval_r
 and [candidate-wheel validation entry](../distribution.md); its actual validation
 results are recorded in the
 [S4-A session report](../dogfooding/2026-10-15-reliability-s4a/README.md).
-D03's release workflow gate is the next engineering task. These changes remain unreleased; pending policy
+D03's release workflow gate is implemented with exact-candidate quality,
+preflight evidence, one build and installed-wheel checks; see the
+[S4-B acceptance report](../dogfooding/2026-10-18-reliability-s4b/README.md)
+and [release contract](../releasing.md). These changes remain unreleased; pending policy
 decisions and resource validations retain their separate requirements.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 at `110087b1e416c12c25253c07365944935e986470` addresses the initial Windows

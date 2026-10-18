@@ -96,7 +96,7 @@ def test_user_guides_do_not_reinitialize_shipped_intent() -> None:
     for name in NAMES:
         text = (ROOT / "examples" / name / "README.md").read_text(encoding="utf-8")
         assert "reprollm init . --force" not in text
-    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github/workflows/quality.yml").read_text(encoding="utf-8")
     assert 'reprollm lock --check "$example" || true' not in workflow
 
 

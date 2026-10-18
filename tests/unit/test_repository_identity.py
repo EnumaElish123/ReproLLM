@@ -31,6 +31,7 @@ NORMATIVE_AND_PUBLIC = [
     "docs/plan/01_specification.md",
     "val.md",
     ".github/workflows/ci.yml",
+    ".github/workflows/quality.yml",
     ".github/workflows/release.yml",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/ISSUE_TEMPLATE/bug_report.yml",

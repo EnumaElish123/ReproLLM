@@ -29,7 +29,10 @@ S3-B (R04-A → R04-B) has also passed product and local acceptance; read its
 S4-A (D01 → D02) has passed product and local acceptance; read its
 [session report](../dogfooding/2026-10-15-reliability-s4a/README.md) for the real
 lm-eval A/B replay, snapshot fidelity repair, installed-wheel success/failure
-matrix and final shared gates. The next engineering session is **S4-B: D03**.
+matrix and final shared gates. S4-B's D03 publication gates are implemented;
+its current acceptance and resource boundaries are recorded in the
+[S4-B session report](../dogfooding/2026-10-18-reliability-s4b/README.md).
+The engineering implementation does not authorize a version release.
 The other four native project scenarios still need acceptance on the current
 candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

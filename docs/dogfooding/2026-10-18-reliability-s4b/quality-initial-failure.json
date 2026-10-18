@@ -1,0 +1,61 @@
+{
+  "commands": [
+    {
+      "command": [
+        "<venv-python>",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "id": "quickstart-preflight",
+      "log_sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85",
+      "seconds": 10.266
+    },
+    {
+      "command": [
+        "<venv-python>",
+        "-m",
+        "pytest",
+        "-q",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<private>\\pytest-report.xml"
+      ],
+      "exit_code": 1,
+      "id": "pytest-coverage",
+      "log_sha256": "e450710e3cf70c9a1769a73cadf6b47eb21e3c76f5b44be9b3b098fe1e80fbb4",
+      "seconds": 597.469
+    }
+  ],
+  "frozen_inputs_unchanged": true,
+  "input_count": 450,
+  "input_inventory_sha256": "a17009cb7b9efacb7d5c685ac6e054ec4e5f6edd2dbb9de46c1b7f595f21b264",
+  "platform": "windows",
+  "python": "3.12.9",
+  "schema_byte_equality": false,
+  "schema_version": 1,
+  "source_commit": "53782ab93a606abe3b57491d878759dd41aa5f52",
+  "status": "FAIL",
+  "wall_seconds": 607.797,
+  "schema_check_status": "NOT_RUN_AFTER_PYTEST_FAILURE",
+  "pytest_result": {
+    "skipped": 65,
+    "passed": 2650,
+    "deselected": 4,
+    "failed": 46,
+    "coverage_percent": 92.86
+  },
+  "followup": {
+    "stale_workflow_consumer": "Updated shared-quality security-order assertions; focused 30 PASS",
+    "short_temp_and_verified_utilities": {
+      "remaining_error": "Windows symbolic-link privilege 1314",
+      "passed": 77,
+      "failed": 3
+    },
+    "next_attempt": "Unmodified test selection with Windows administrator token, short TEMP and verified process-local tools"
+  }
+}

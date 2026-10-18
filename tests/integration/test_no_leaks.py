@@ -127,13 +127,27 @@ def test_no_leaks_across_every_run_artifact(
 
 def test_security_gate_precedes_distribution_build() -> None:
     root = Path(__file__).resolve().parents[2]
-    for name, job in (("ci.yml", "quality"), ("release.yml", "build")):
-        workflow = yaml.safe_load((root / ".github/workflows" / name).read_text())
-        steps = workflow["jobs"][job]["steps"]
-        security = next(i for i, step in enumerate(steps) if "-m security" in step.get("run", ""))
-        assert not steps[security].get("continue-on-error", False)
-        assert "if" not in steps[security]
-        if name == "release.yml":
-            build = next(i for i, step in enumerate(steps) if step.get("run") == "uv build")
-            assert security < build
-            assert workflow["jobs"]["publish"]["needs"] == "build"
+    workflows = {
+        name: yaml.safe_load((root / ".github/workflows" / name).read_text())
+        for name in ("ci.yml", "quality.yml", "release.yml")
+    }
+    for name in ("ci.yml", "release.yml"):
+        caller = workflows[name]["jobs"]["quality"]
+        assert caller["uses"] == "./.github/workflows/quality.yml"
+        assert "if" not in caller and not caller.get("continue-on-error", False)
+    quality = workflows["quality.yml"]["jobs"]["quality"]
+    assert "if" not in quality and not quality.get("continue-on-error", False)
+    security = next(step for step in quality["steps"] if "-m security" in step.get("run", ""))
+    assert "if" not in security and not security.get("continue-on-error", False)
+
+    release = workflows["release.yml"]["jobs"]
+    build = release["build"]
+    assert set(build["needs"]) == {"prepare", "quality"}
+    assert "if" not in build and not build.get("continue-on-error", False)
+    assert any(step.get("run") == "uv build" for step in build["steps"])
+    publish = release["publish"]
+    assert set(publish["needs"]) == {"prepare", "quality", "build"}
+    assert all(
+        f"needs.{job}.result == 'success'" in publish["if"]
+        for job in ("prepare", "quality", "build")
+    )

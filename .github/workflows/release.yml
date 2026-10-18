@@ -4,86 +4,322 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Candidate tag to validate without publishing
+        required: true
+        type: string
+      validation_run_id:
+        description: Successful same-commit run containing release-validation
+        required: true
+        type: string
 
 permissions: {}
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      commit: ${{ steps.identity.outputs.commit }}
+      tag: ${{ steps.identity.outputs.tag }}
+      version: ${{ steps.identity.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+          enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv sync --locked --dev
 
-      - name: Verify tag matches package version
+      - name: Resolve candidate identity
+        id: identity
+        shell: python
+        env:
+          CANDIDATE_TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+          VALIDATION_RUN_ID: ${{ inputs.validation_run_id || vars.RELEASE_VALIDATION_RUN_ID }}
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          PKG_VERSION="$(uv run python -c 'from reprollm import __version__; print(__version__)')"
-          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
-            echo "tag $GITHUB_REF_NAME does not match package version $PKG_VERSION" >&2
-            exit 1
-          fi
+          import os, re, subprocess
+          commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tag = os.environ["CANDIDATE_TAG"]
+          run_id = os.environ["VALIDATION_RUN_ID"]
+          if re.fullmatch(r"[0-9a-f]{40}", commit) is None or commit != os.environ["GITHUB_SHA"]:
+              raise SystemExit("candidate checkout does not match the triggering commit")
+          if re.fullmatch(r"v[0-9][A-Za-z0-9.!+_-]*", tag) is None:
+              raise SystemExit("candidate tag must be v followed by a package version")
+          if re.fullmatch(r"[1-9][0-9]*", run_id) is None:
+              raise SystemExit("a successful candidate validation run ID is required")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"commit={commit}\ntag={tag}\nversion={tag[1:]}\nvalidation_run_id={run_id}\n")
 
-      - name: Security leakage gate
-        run: uv run pytest -q -m security
+      - name: Read validation run metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VALIDATION_RUN_ID: ${{ steps.identity.outputs.validation_run_id }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$VALIDATION_RUN_ID" > "$RUNNER_TEMP/validation-run.json"
 
-      - name: Build distributions
+      - name: Verify validation run metadata
+        shell: python
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          VALIDATION_RUN_ID: ${{ steps.identity.outputs.validation_run_id }}
+        run: |
+          import json, os
+          from pathlib import Path
+          data = json.loads((Path(os.environ["RUNNER_TEMP"]) / "validation-run.json").read_text())
+          repository = {"full_name": os.environ["EXPECTED_REPOSITORY"]}
+          valid = (
+              type(data.get("id")) is int
+              and data["id"] == int(os.environ["VALIDATION_RUN_ID"])
+              and data.get("head_sha") == os.environ["EXPECTED_COMMIT"]
+              and data.get("status") == "completed"
+              and data.get("conclusion") == "success"
+              and isinstance(data.get("repository"), dict)
+              and data["repository"].get("full_name") == repository["full_name"]
+              and isinstance(data.get("head_repository"), dict)
+              and data["head_repository"].get("full_name") == repository["full_name"]
+          )
+          if not valid:
+              raise SystemExit("validation run must be a successful same-repository candidate run")
+          receipt = {
+              "schema_version": 1, "id": data["id"], "head_sha": data["head_sha"],
+              "status": data["status"], "conclusion": data["conclusion"],
+              "repository": repository, "head_repository": repository,
+          }
+          output = Path("release-evidence/validation-run.json")
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+      - name: Download candidate resource validation
+        uses: actions/download-artifact@v4
+        with:
+          name: release-validation
+          path: release-validation
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.identity.outputs.validation_run_id }}
+
+      - name: Preflight candidate release
+        env:
+          CANDIDATE_COMMIT: ${{ steps.identity.outputs.commit }}
+          CANDIDATE_TAG: ${{ steps.identity.outputs.tag }}
+        run: |
+          uv run python scripts/release_gate.py preflight \
+            --commit "$CANDIDATE_COMMIT" --tag "$CANDIDATE_TAG" \
+            --validation-dir release-validation --output-dir release-evidence \
+            --validation-run "$RUNNER_TEMP/validation-run.json" --repository "$GITHUB_REPOSITORY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-preflight
+          path: release-evidence/
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-release-inputs
+          path: release-validation/
+          if-no-files-found: error
+
+  quality:
+    needs: prepare
+    permissions:
+      contents: read
+    uses: ./.github/workflows/quality.yml
+    with:
+      commit: ${{ needs.prepare.outputs.commit }}
+
+  build:
+    needs: [prepare, quality]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-preflight
+          path: release-evidence
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-release-inputs
+          path: release-validation
+
+      - name: Build distributions once
         run: uv build
+
+      - name: Bind build artifacts to the candidate
+        env:
+          CANDIDATE_COMMIT: ${{ needs.prepare.outputs.commit }}
+          CANDIDATE_TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          uv run python scripts/release_gate.py build-manifest \
+            --commit "$CANDIDATE_COMMIT" --tag "$CANDIDATE_TAG" --dist dist \
+            --output release-evidence/build-manifest.json
+
+      - name: Validate the built wheel installation
+        env:
+          CANDIDATE_TAG: ${{ needs.prepare.outputs.tag }}
+          CANDIDATE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          test "${#wheels[@]}" -eq 1
+          uv run python scripts/validate_distribution.py --wheel "${wheels[0]}" \
+            --build-manifest release-evidence/build-manifest.json \
+            --expected-version "$CANDIDATE_VERSION" --expected-tag "$CANDIDATE_TAG" \
+            --output release-evidence/distribution.json
+
+      - name: Authorize candidate artifacts
+        env:
+          CANDIDATE_COMMIT: ${{ needs.prepare.outputs.commit }}
+          CANDIDATE_TAG: ${{ needs.prepare.outputs.tag }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+        run: |
+          uv run python scripts/release_gate.py authorize \
+            --commit "$CANDIDATE_COMMIT" --tag "$CANDIDATE_TAG" --quality-result "$QUALITY_RESULT" \
+            --dist dist --validation-dir release-validation --evidence-dir release-evidence \
+            --distribution release-evidence/distribution.json
 
       - uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence
+          path: release-evidence/
+          if-no-files-found: error
 
   publish:
-    needs: build
+    needs: [prepare, quality, build]
+    if: >-
+      github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') &&
+      needs.prepare.result == 'success' && needs.quality.result == 'success' &&
+      needs.build.result == 'success'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
-      # Trusted publishing (PyPI OIDC); no API token is used or stored.
+      contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
       - uses: actions/download-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: dist
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-evidence
+          path: release-evidence
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-release-inputs
+          path: release-validation
+
+      - name: Authorize downloaded release artifacts
+        env:
+          CANDIDATE_COMMIT: ${{ needs.prepare.outputs.commit }}
+          CANDIDATE_TAG: ${{ needs.prepare.outputs.tag }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+        run: |
+          uv run python scripts/release_gate.py authorize \
+            --commit "$CANDIDATE_COMMIT" --tag "$CANDIDATE_TAG" --quality-result "$QUALITY_RESULT" \
+            --dist dist --validation-dir release-validation --evidence-dir release-evidence \
+            --distribution release-evidence/distribution.json
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
-    needs: publish
+    needs: [prepare, quality, build, publish]
+    if: >-
+      github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') &&
+      needs.prepare.result == 'success' && needs.quality.result == 'success' &&
+      needs.build.result == 'success' && needs.publish.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
 
       - uses: actions/download-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: dist
 
-      - name: Extract release notes from CHANGELOG
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-evidence
+          path: release-evidence
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-release-inputs
+          path: release-validation
+
+      - name: Authorize downloaded release artifacts
+        env:
+          CANDIDATE_COMMIT: ${{ needs.prepare.outputs.commit }}
+          CANDIDATE_TAG: ${{ needs.prepare.outputs.tag }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          awk -v ver="$VERSION" '
-            index($0, "## [" ver "]") == 1 { in_section = 1; next }
-            /^## \[/ && in_section { exit }
-            in_section && !/^\[[^]]*\]:/ { print }
-          ' CHANGELOG.md > release_notes.md
-          if [ ! -s release_notes.md ]; then
-            echo "no CHANGELOG section found for $VERSION" >&2
-            exit 1
-          fi
+          uv run python scripts/release_gate.py authorize \
+            --commit "$CANDIDATE_COMMIT" --tag "$CANDIDATE_TAG" --quality-result "$QUALITY_RESULT" \
+            --dist dist --validation-dir release-validation --evidence-dir release-evidence \
+            --distribution release-evidence/distribution.json
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
-          body_path: release_notes.md
+          body_path: release-evidence/release-notes.md

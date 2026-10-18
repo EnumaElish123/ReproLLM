@@ -510,6 +510,7 @@ def validate(
         summary["failure"] = str(exc)
     except (
         OSError,
+        RuntimeError,
         ValueError,
         KeyError,
         TypeError,
