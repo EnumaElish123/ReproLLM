@@ -386,9 +386,14 @@ def _package_data(
         )
     checks.append({"id": "all_builtin_profiles", "passed": True})
     run(["schema", "export", "--out", "schema-output"])
-    actual = {path.name: path.read_bytes() for path in (work / "schema-output").glob("*.json")}
+    actual = {
+        path.name: path.read_bytes().replace(b"\r\n", b"\n")
+        for path in (work / "schema-output").glob("*.json")
+    }
     expected = {
-        f"{name}.schema.json": (ROOT / "schemas" / f"{name}.schema.json").read_bytes()
+        f"{name}.schema.json": (ROOT / "schemas" / f"{name}.schema.json")
+        .read_bytes()
+        .replace(b"\r\n", b"\n")
         for name in SCHEMAS
     }
     _require(actual == expected, "installed_schema_exports")

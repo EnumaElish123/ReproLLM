@@ -169,6 +169,50 @@ def test_all_gates_bind_one_commit_one_build_and_preflight_notes(candidate: Path
     assert result["validation_gate_count"] == 28
 
 
+@pytest.mark.parametrize("content", [b"*", b"*\n", b"*\r\n"])
+def test_uv_dist_marker_keeps_exact_package_manifest_and_download_authorization(
+    candidate: Path, content: bytes
+) -> None:
+    expected = release_gate.build_manifest(candidate, COMMIT, TAG, candidate / "dist")
+    marker = candidate / "dist/.gitignore"
+    marker.write_bytes(content)
+    prepare(candidate)
+    manifest = json.loads((candidate / "evidence/build-manifest.json").read_text())
+    assert manifest == expected
+    assert len(manifest["artifacts"]) == 2
+    assert {row["filename"] for row in manifest["artifacts"]} == {
+        "reprollm-0.7.0-py3-none-any.whl",
+        "reprollm-0.7.0.tar.gz",
+    }
+    for artifact in manifest["artifacts"]:
+        package = candidate / "dist" / artifact["filename"]
+        assert artifact["sha256"] == hashlib.sha256(package.read_bytes()).hexdigest()
+    result = authorize(candidate)
+    assert result["status"] == "PASS"
+    marker.unlink()
+    assert authorize(candidate) == result
+
+
+@pytest.mark.parametrize("content", [b"", b"!\n", b"**", b"*\n\n", b"*\nextra"])
+def test_dist_rejects_unexpected_marker_contents(candidate: Path, content: bytes) -> None:
+    (candidate / "dist/.gitignore").write_bytes(content)
+    with pytest.raises(release_gate.GateFailure):
+        release_gate.build_manifest(candidate, COMMIT, TAG, candidate / "dist")
+
+
+def test_dist_rejects_marker_directory(candidate: Path) -> None:
+    (candidate / "dist/.gitignore").mkdir()
+    with pytest.raises(release_gate.GateFailure):
+        release_gate.build_manifest(candidate, COMMIT, TAG, candidate / "dist")
+
+
+@pytest.mark.parametrize("name", [".gitkeep", ".env"])
+def test_dist_does_not_ignore_other_hidden_files(candidate: Path, name: str) -> None:
+    (candidate / "dist" / name).write_bytes(b"*")
+    with pytest.raises(release_gate.GateFailure, match="distribution_files"):
+        release_gate.build_manifest(candidate, COMMIT, TAG, candidate / "dist")
+
+
 @pytest.mark.parametrize("kind", ["missing", "blank", "duplicate", "wrong-version"])
 def test_bad_changelog_or_tag_fails_before_build(candidate: Path, kind: str) -> None:
     path = candidate / "CHANGELOG.md"

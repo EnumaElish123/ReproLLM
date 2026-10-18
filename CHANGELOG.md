@@ -15,6 +15,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   sdist and evidence after artifact download before either publishing action;
   keep dispatch rehearsals nonpublishing and retain explicit resource blockers.
   No version, tag or publication is introduced by this change.
+  Recognize uv's narrowly validated build-directory marker without including
+  it in the package manifest or weakening rejection of unexpected files.
 
 - D02: validate one prebuilt wheel in a fresh external environment using the
   shared offline walkthrough, explicit interpreter selection and package-data
@@ -49,6 +51,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - D03 / D02 handoff: return a safe JSON distribution failure when a command exits
   zero without producing one unique run record, preserving command receipts
   without exposing the private exception message or machine paths.
+  Compare installed schemas with only CRLF/LF normalization, retaining strict
+  file sets and every other byte so native Windows exports can be validated.
 
 - D01 (spec §§5, 15–19): restore the reviewed bounded GSM8K cap 32→48
   recipe with matching model/data revisions, actual config bindings, independent

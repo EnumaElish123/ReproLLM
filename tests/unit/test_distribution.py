@@ -264,6 +264,78 @@ def test_only_help_is_not_a_distribution_walkthrough(tmp_path: Path) -> None:
         validate_distribution.verify_walkthrough([step], tmp_path)
 
 
+@pytest.mark.parametrize("change", [None, "semantic", "whitespace", "missing", "extra", "bare-cr"])
+def test_package_schema_exports_normalize_only_crlf(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, change: str | None
+) -> None:
+    source = tmp_path / "source"
+    (source / "schemas").mkdir(parents=True)
+    schema = b'{\n  "type": "object"\n}\n'
+    names = [f"{name}.schema.json" for name in sorted(validate_distribution.SCHEMAS)]
+    for name in names:
+        (source / "schemas" / name).write_bytes(schema)
+    exported = {name: schema.replace(b"\n", b"\r\n") for name in names}
+    target = names[0]
+    if change == "semantic":
+        exported[target] = exported[target].replace(b'"object"', b'"number"')
+    elif change == "whitespace":
+        exported[target] = exported[target].replace(b"  ", b"    ")
+    elif change == "missing":
+        exported.pop(target)
+    elif change == "extra":
+        exported["unexpected.schema.json"] = schema
+    elif change == "bare-cr":
+        exported[target] = exported[target].replace(b"\r\n", b"\r")
+    work = tmp_path / "tour"
+    run_record = work / ".reprollm/runs/synthetic/run.json"
+    run_record.parent.mkdir(parents=True)
+    run_record.write_bytes(b"{}")
+    seen = []
+
+    def run(args, cwd, *, python, on_step):
+        stdout = ""
+        if args[:2] == ["profiles", "list"]:
+            stdout = json.dumps(
+                [{"name": name, "source": "built-in"} for name in validate_distribution.PROFILES]
+            )
+        elif args[:2] == ["profiles", "show"]:
+            stdout = f"profile: {args[2]}\nrules (1)\n"
+        elif args[:2] == ["schema", "export"]:
+            directory = cwd / "schema-output"
+            directory.mkdir()
+            for name, content in exported.items():
+                (directory / name).write_bytes(content)
+        else:
+            assert args[0] == "export"
+            (cwd / args[-1]).write_bytes(
+                b"synthetic\n### Generation parameters\n- `max_tokens`: 48\n"
+            )
+        step = gen_quickstart.Step("", args, stdout, "", 0, 0.0)
+        on_step(step)
+        return step
+
+    monkeypatch.setattr(validate_distribution, "ROOT", source)
+    monkeypatch.setattr(gen_quickstart, "_run", run)
+    if change is not None:
+        with pytest.raises(
+            validate_distribution.ValidationFailure, match="installed_schema_exports"
+        ):
+            validate_distribution._package_data(Path(sys.executable), work, seen.append)
+    else:
+        checks = validate_distribution._package_data(Path(sys.executable), work, seen.append)
+        assert {check["id"] for check in checks} == {
+            "all_builtin_profiles",
+            "all_schema_exports",
+            "template_default",
+            "template_neurips",
+            "template_acl",
+            "template_acm",
+        }
+        assert len(seen) == 14
+        assert (work / "schema-output" / target).read_bytes() == exported[target]
+        assert (source / "schemas" / target).read_bytes() == schema
+
+
 def test_high_summary_does_not_hide_wrong_target_leaf(walkthrough) -> None:
     records, work = walkthrough
     index = next(i for i, row in enumerate(records) if row.command[0] == "diff")

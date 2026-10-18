@@ -223,6 +223,17 @@ def preflight(
 
 def artifacts(dist: Path, version: str) -> list[dict[str, Any]]:
     files = sorted(dist.iterdir())
+    marker = next((path for path in files if path.name == ".gitignore"), None)
+    if marker is not None:
+        # uv marks its build directory; only distributable packages enter the manifest.
+        require(
+            marker.is_file()
+            and not marker.is_symlink()
+            and marker.stat().st_size <= 3
+            and marker.read_bytes() in (b"*", b"*\n", b"*\r\n"),
+            "distribution_directory_marker",
+        )
+        files.remove(marker)
     require(
         len(files) == 2 and all(path.is_file() and not path.is_symlink() for path in files),
         "distribution_files",

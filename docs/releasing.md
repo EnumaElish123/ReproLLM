@@ -28,6 +28,11 @@ artifact. Publication uses PyPI OIDC and its existing protected environment.
 GitHub Release consumes the preflight notes, rather than extracting new notes
 after PyPI publication.
 
+The local `uv build` directory can also contain uv's small `.gitignore` marker.
+The gate accepts only its exact star bytes with optional LF/CRLF, as a regular
+file of at most three bytes. The marker never enters the artifact manifest or
+uploaded `dist` artifact. Unknown files or altered markers still block the gate.
+
 ## Validation artifact contract
 
 The artifact comes from a maintainer-provisioned validation run. For a tag-triggered
