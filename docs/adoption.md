@@ -1,5 +1,11 @@
 # Adoption metrics
 
+The table below is historical, including the pre-month October placeholder;
+it has not been refreshed by the 2026-10-18 documentation session. Current
+independent-adoption counts are unmeasured. See the
+[dated facts and evidence index](adoption/a03-2026-10-18.md) and
+[A02 trial materials](trials/a02-local/README.md) for the next local work.
+
 Updated monthly on the 1st (D-37). These numbers — not feature counts — decide how the
 project is positioned in applications and outreach.
 

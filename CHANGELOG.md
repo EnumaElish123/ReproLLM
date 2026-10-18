@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- A03 (spec §§1, 5, 17–20): index dated project and validation facts with their
+  sources and limitations, retain a provisional OSS-maintenance narrative,
+  and label old adoption metrics and application text as historical. Current
+  form matching, independent feedback and submission remain incomplete.
+
 - A02 (spec §§1, 5, 17–19): prepare local trial task cards, candidate installation
   guidance, an empty feedback template and a draft invitation. Separate material
   readiness from real independent trials, issue closure and sustained adoption;

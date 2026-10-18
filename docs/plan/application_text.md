@@ -1,5 +1,10 @@
 # Codex for Open Source application text (2026-09-29 draft)
 
+Historical draft, retained for provenance. Its metrics, form-field assumptions
+and 500-character limits are not current requirements. Do not submit it as-is.
+Use the [2026-10-18 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md)
+for review; current official form and eligibility checks remain pending there.
+
 ## Why eligible (≤500 characters)
 
 > ReproLLM is an Apache-2.0 CLI that makes LLM research experiments reproducible:
