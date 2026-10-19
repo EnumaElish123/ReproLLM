@@ -144,6 +144,7 @@ def test_malformed_embedded_context_fails_closed(tmp_path: Path) -> None:
         "x = " + "[" * 70 + "1" + "]" * 70,
         "x = '" + "a" * 1_048_576 + "'\n",
     ],
+    ids=["unfinished-string", "excessive-depth", "excessive-size"],
 )
 def test_unsupported_or_excessive_python_returns_no_partial_result(source: str) -> None:
     from reprollm.run.python_text import redact_python_source
