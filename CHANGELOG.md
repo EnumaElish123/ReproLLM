@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- P-A / R06-B (spec §12.2): prepare source-linked dependency and lock-scope
+  evidence, a concrete association proposal, compatibility limits and future
+  acceptance cases; synchronize current delivery/resource navigation. The
+  proposal and its specification patch remain unapplied; no dependency policy,
+  historical gold, schema, package version or release behavior changes.
+
 - P-A / R08-A (spec §18): prepare a bounded direct-judge-parameter proposal,
   current-policy evidence, regression design and unapplied policy/spec/test/gold
   patches. Decisions remain proposed; default severities and historical gold

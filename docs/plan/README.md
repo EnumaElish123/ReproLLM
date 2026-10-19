@@ -34,8 +34,9 @@ its current acceptance and resource boundaries are recorded in the
 [S4-B session report](../dogfooding/2026-10-18-reliability-s4b/README.md).
 The engineering implementation does not authorize a version release.
 The [A01 local evidence session](../dogfooding/2026-10-18-a01-local/README.md)
-recovers 12 of 50 exact input slots and completes the resource-free two-path
-replay layer. The [2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
+recorded 12 of 50 exact input slots in its 2026-10-18 local environment and
+completed the resource-free two-path replay layer. The
+[2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
 restores 45 of 50 exact input slots on the provisioned Linux node; five original
 metadata manifests remain missing. Linux H2 and all five native GPU A/B pairs,
 complete capture/consumption/diff checks and 20 default export states pass at
@@ -47,6 +48,12 @@ and fresh five-project CPU capture/diff/export acceptance PASS. A new formal
 judge A/B replay also passes complete provider, capture and semantic-pair
 acceptance under a newly approved CNY 3 budget, closing VAL-R02 at `75d1b0`.
 The direct judge-cap leaf is HIGH; the earlier `750270b` failure is unchanged.
+The [Windows test-identifier correction](../dogfooding/2026-10-19-judge-snapshot-fix/windows-ci/README.md)
+at `409a1a7` changes test metadata only; the accepted product and formal wheel
+remain those of `75d1b0`. The preceding progress check confirmed
+[all five CI jobs on `af8adea`](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)
+successful on 2026-10-19. This is that commit's CI result; later commits require
+their own check, and historical CI receipts remain unchanged.
 HF authenticated small-file access last returned 403; original metadata and
 successful model-access requirements remain independent. Follow the maintainer's
 updated resource guidance in `val.md §8.3` without reinstating old artificial
@@ -56,6 +63,9 @@ of these resources, continue with the [A02 local trial materials](../trials/a02-
 [A03 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md), then
 P-A's concrete policy proposals. Actual independent trials remain PENDING;
 application form checks and any submission are separate from local drafting.
+The current [R06-B dependency/lock-scope proposal](reliability-2026-10-03/proposals/R06-B/R06-B_dependency_lock_scope.md)
+is **PROPOSED**, not approved or implemented. Its preparation does not change
+scope, dependency gold or lock ownership; other proposals need their own decisions.
 The maintainer accepted R08-A option A on 2026-10-18. Its direct judge-param
 HIGH default is implemented, unreleased; read the
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
@@ -79,10 +89,11 @@ is checked against the actual pushed main HEAD in the session's final reply.
 - [Policy and compatibility decisions](reliability-2026-10-03/05_Policy_and_Compatibility.md)
 - [Validation, adoption and application evidence](reliability-2026-10-03/06_Validation_and_Adoption.md)
 
-The package combines delivered S1/S2 work and the recorded S3-A/S3-B/S4-A status with
-planned later tasks. Historical
-importing/revision reports do not establish implementation status. S2 does not
-change the judge drift policy in Issue #9 or complete the pending resource gates.
+The package records delivered S1 through S4-B engineering and the later dated
+policy/resource results above alongside remaining tasks. Historical importing
+and revision reports do not establish current implementation status. S2 itself
+did not change judge drift policy; the later accepted R08-A implementation is
+the current direct-parameter policy. Resource acceptance remains candidate-bound.
 Resume from the assigned session and its actual
 predecessor report, checking the current HEAD rather than resetting to the
 reviewed commit.
@@ -91,8 +102,10 @@ reviewed commit.
 
 The existing M1–M12 and UX plans remain historical task/acceptance records:
 
-- [UX3: run readiness and navigation](UX3_2026-10-02.md), including its pending
+- [UX3: run readiness and navigation](UX3_2026-10-02.md), including the historical
   [judge policy proposal](https://github.com/EnumaElish123/ReproLLM/issues/9).
+  Its narrow direct-parameter policy is accepted and implemented through R08-A,
+  unreleased; this does not approve other policy changes.
 - [UX2: experiment workflow improvements](UX2_2026-10-02.md).
 - [Earlier UX repairs](UX_2026-10-02.md) and
   [proposal status](ux-2026-10-02-proposals/README.md).

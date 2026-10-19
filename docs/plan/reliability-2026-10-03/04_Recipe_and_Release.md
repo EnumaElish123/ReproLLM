@@ -1,8 +1,18 @@
 # Sprint 4：真实 recipe、分发验证与发布门
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 初始日期：2026-10-03 · 状态：DELIVERED（D01 / D02 / D03 工程交付；2026-10-19 导航更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
+
+当前交付导航：[S4-A 报告](../../dogfooding/2026-10-15-reliability-s4a/README.md)记录 D01 recipe
+与 D02 已安装候选 wheel 验收；[S4-B 报告](../../dogfooding/2026-10-18-reliability-s4b/README.md)
+记录 D03 发布门、实际故障阻断与产物关联。现有入口是
+[`scripts/validate_distribution.py`](../../../scripts/validate_distribution.py)，用法见
+[分发验证说明](../../distribution.md)。正式资源结果仍按[当前账本](../../dogfooding/pending-resource-validation.md)
+绑定候选；完整同候选发布矩阵未完成，工程交付不授权发布。
+
+下文“当前问题”“已确认现状”等保留为原审查症状；任务步骤与验收清单是原计划合同，
+不是今天尚未实现的功能清单。实际行为与完成状态以上述报告和现有入口为准。
 
 ## 1. 目标与会话
 
@@ -89,7 +99,7 @@ README 已区分 main 未发布功能，不能再把它描述为完全没有版�
 ### 实施步骤
 
 1. 建立一张实际版本证据表：当前 SHA、代码 version、候选 wheel metadata、已发布版本及其功能范围。source 与 PyPI 都叫 0.6.1 不等于功能相同。
-2. 新增或扩展一个分发验收入口，建议文件名 `scripts/validate_distribution.py`。这是待实现入口，当前不能假定存在；D03 直接调用它。
+2. 统一分发验收入口现已实现为 [`scripts/validate_distribution.py`](../../../scripts/validate_distribution.py)，D03 复用此入口；实际安装、成功/失败矩阵和源码关联证据见 [S4-A 报告](../../dogfooding/2026-10-15-reliability-s4a/README.md)。后续维护继续复用，不另建验证器。
 3. 输入为**已经构建好的 wheel 文件**。在源码目录外创建临时 venv，安装该 wheel，使用全新 cwd；清除 `PYTHONPATH` / 用户 site / editable source 注入，记录实际 import 路径属于新 venv。对外报告不保留机器绝对路径。
 4. 从安装包运行离线 walkthrough：audit → init → lock offline / check → run A / B → diff → export → schema / profile / template 等包数据读取。优先复用已有 12 步 quickstart 的命令语义和独立预期。
 5. runner 可以使用源码中的外部测试 fixture，但被测 import / CLI 必须来自 wheel；不能因 sdist 不带 tests / docs / examples 就从源码导入产品模块补齐。
@@ -99,16 +109,16 @@ README 已区分 main 未发布功能，不能再把它描述为完全没有版�
 
 安装依赖可使用预置缓存或正常包分发源；离线 walkthrough 自身不发真实 HTTP。不要把 `--no-deps` 导致未安装运行依赖的失败误判为 wheel 缺陷，也不要把开发环境依赖全复制进新 venv 后宣称独立安装成功。
 
-### 拟新增入口的验收调用
+### 现有入口的验收调用
 
-实现后，预期可从仓库根执行下述形式。尖括号是实际产物占位符，不是现有 CLI 参数值：
+S4-A 已实现下述最小调用形式；完整构建清单、版本/标签校验及离线安装参数见[分发验证说明](../../distribution.md)，实际结果见 S4-A / S4-B 报告。尖括号是实际产物占位符，不是现有 CLI 参数值：
 
 ```bash
 uv build
 uv run python scripts/validate_distribution.py --wheel <built-wheel-path>
 ```
 
-runner 不自行重新 build；输出包括 wheel SHA-256、分发版本、被测代码 SHA 的关联证据、import 隔离检查、各命令退出码和目标断言。源码 SHA 的关联来自构建步骤生成的产物清单；没有清单时标为未确认，不能用 validator 当前 checkout 的 HEAD 或相同 version 猜测 wheel 来源。必要时增加显式构建清单输入，并输出安全的 JSON 摘要供 release workflow 使用。
+runner 不自行重新 build；输出包括 wheel SHA-256、分发版本、被测代码 SHA 的关联证据、import 隔离检查、各命令退出码和目标断言。源码 SHA 的关联来自构建步骤生成的产物清单；现有 `--build-manifest` 接收该清单，没有清单时标为未确认，不能用 validator 当前 checkout 的 HEAD 或相同 version 猜测 wheel 来源。runner 输出安全的 JSON 摘要供 release workflow 使用。
 
 ### 故障与成功验收
 

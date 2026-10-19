@@ -1,8 +1,17 @@
 # Sprint 3：扫描范围与运行环境证据
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PARTIALLY_DELIVERED（S3-A：产品与本地验收已完成；S3-B：PLANNED）
+版本：v1.2 · 初始日期：2026-10-03 · 状态：DELIVERED（S3-A / S3-B 产品与本地验收已完成；2026-10-19 导航更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
+
+当前交付导航：[S3-A 报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)及
+[S3-B 报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)分别记录 R07-A/B、R04-A/B。
+[R04-S 具体决定](proposals/R04-S/decision.json)已接受并实施；run v2、冻结 0.6.2 读取桥与
+0.7.0 reader 的实际兼容证据见 S3-B，[runtime 交接](../../dogfooding/2026-10-14-reliability-s3b/runtime-evidence-handoff.md)
+说明 recorder/child、输入基线及消费证据边界。该交付不等于版本已发布，资源状态按[当前入口](../README.md)另列。
+
+下文缺陷复现中的“当前”保留为原审查症状，步骤、条件依赖及验收清单保留原计划合同；
+不把已完成的 S3-B 或已批准的 R04-S 再当作待启动、待决定事项。
 
 ## 1. 目标与会话
 
@@ -23,7 +32,7 @@ R07-A：产品与本地验收已完成，提交 `41122934a9c3ea2fc7bbee22fe870c4
 [CI 收尾](../../dogfooding/2026-10-13-reliability-s3a/r07a-ci-followup.md)保留第二次
 Windows 覆盖率超时；并行 VOPT-01 已恢复普通 CI 与 nightly 的原选择合同，
 没有改性能预算或 R07-B 获批 §13，不宣称独立 Windows 性能已通过。
-下一工程会话为S3-B；本次不完成R04-A/B、R07-C或D01。以下问题描述与实施步骤保留审查时的任务依据，不代表修复后问题仍存在。
+上述性能与 CI 跟进保留 S3-A 时点：当时下一工程会话为 S3-B，未在该会话完成 R04-A/B、R07-C 或 D01。当前 S3-B 已交付，D01 后续交付见 [Sprint 4](04_Recipe_and_Release.md)；R07-C 仍是独立政策事项。以下问题描述与实施步骤保留原审查症状，不代表修复后问题仍存在。
 
 R04-A 接续 R03 的 State 合并合同；R04-B 是独立提交的输入证据任务，必须在 D01 正式验收之前完成。R07-A 接续 R06-G 的公共内容边界，不能以候选过滤替代安全读取。R07-C 的规则覆盖率政策、R04-S 的条件 schema 工作见 [05](05_Policy_and_Compatibility.md)，只在相应任务需要时激活；R04-S 可由 R04-A 或 R04-B 触发。会话容量不足时登记具名接续会话，D01 的依赖不因日程变化消失。
 

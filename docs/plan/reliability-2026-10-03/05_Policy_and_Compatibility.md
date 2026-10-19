@@ -1,6 +1,6 @@
 # 专项方案：语义决策、策略变更与兼容性
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PROPOSED
+版本：v1.2 · 初始日期：2026-10-03 · 状态：MIXED（已交付与逐项待审并存；2026-10-19 导航更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -78,7 +78,7 @@
 
 - [x] 读取 Issue #9 和最新维护者决定，复用已有讨论；旧在线核验快照及本次明确接受分别保留。
 - [x] 策略行、规格 §18、CHANGELOG、窄范围回归和前瞻性 gold amendment 齐全。
-- [x] 决定明确后，仅实施该范围；full quality + 五项目 Gate A 及受影响 diff 扩展通过，formal 回放按资源状态保留 BLOCKED。精确推送提交的 CI 在证据收尾提交后确认。
+- [x] 决定明确后，仅实施该范围；10-18 的 full quality + 五项目 Gate A 及 diff 扩展通过，当次 formal 未执行。10-19 的 [R02-R 后续正式 judge 验收](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)已在 `75d1b0` 通过；不回写旧资源记录。CI 按精确推送提交单独确认。
 - [x] UI / README 使用无其他 HIGH 遮蔽的直接参数回归，不用原有 config-hash HIGH 结果证明本策略。
 
 建议提交：`fix(diff): classify direct judge parameter drift as high (R08-A)`。
@@ -117,6 +117,15 @@
 建议提案提交：`docs(spec): clarify exact dependency and requirements lock semantics (R05-S)`。
 
 ## 4. R06-B：依赖和 lock 的 scope
+
+2026-10-19 P-A 材料：[具体提案](proposals/R06-B/R06-B_dependency_lock_scope.md)、
+[源码/离线观察](proposals/R06-B/implementation-evidence.md)、
+[五项目来源](proposals/R06-B/portfolio-evidence.md)与[待决记录](proposals/R06-B/decision.json)。
+状态 **PROPOSED**；本轮只准备材料并同步计划，未批准或实施依赖政策。
+推荐 A 保留全仓 existential exact 汇总，只收紧有明确来源关联的格式 lock 包名信用；
+`env.lockfile_present` 的存在性合同保持独立。旧/新行为、同目录 manager 边界、
+import 最近项目根、unknown barrier、workspace 兼容成本及后续验收均在具体提案中定义。
+下列原验收是批准后 P-B 的合同，不把本轮原程序观察写成未来政策已通过。
 
 ### 当前需要解决的歧义
 

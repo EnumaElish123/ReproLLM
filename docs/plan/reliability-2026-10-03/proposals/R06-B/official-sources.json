@@ -1,0 +1,57 @@
+{
+  "checked_date": "2026-10-19",
+  "method": "read-only official documentation through web browsing; no package manager or model-provider execution",
+  "policy_status": "PROPOSED; association decisions are ReproLLM design inferences, not upstream mandates",
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "pip-requirements",
+      "limit_or_design_inference": "Does not authorize adding unsupported directives or sibling membership.",
+      "supported_fact_paraphrase": "Requirements files have explicit requirement and constraint references; pip's complete grammar is broader than ReproLLM's bounded parser.",
+      "title": "Requirements File Format",
+      "url": "https://pip.pypa.io/en/stable/reference/requirements-file-format/"
+    },
+    {
+      "id": "pip-constraints",
+      "limit_or_design_inference": "ReproLLM -c support remains outside this proposal; do not treat -c as -r.",
+      "supported_fact_paraphrase": "A constraint limits versions without itself requesting installation.",
+      "title": "Constraints Files",
+      "url": "https://pip.pypa.io/en/stable/user_guide/#constraints-files"
+    },
+    {
+      "id": "uv-workspaces",
+      "limit_or_design_inference": "Option A deliberately does not delegate a parent lock to members; this is a conservative policy limit, not native uv semantics.",
+      "supported_fact_paraphrase": "Workspace members have individual pyproject files and share a lock; membership can use include/exclude globs.",
+      "title": "Using workspaces",
+      "url": "https://docs.astral.sh/uv/concepts/projects/workspaces/"
+    },
+    {
+      "id": "poetry-project-lock",
+      "limit_or_design_inference": "Same-directory association is proposed static evidence, not proof the observed child installed through Poetry.",
+      "supported_fact_paraphrase": "Poetry uses the project's lock with its pyproject during Poetry installation; pip installation does not use that lock to choose dependency versions.",
+      "title": "Installing with poetry.lock",
+      "url": "https://python-poetry.org/docs/basic-usage/#installing-with-poetrylock"
+    },
+    {
+      "id": "pyproject-tables",
+      "limit_or_design_inference": "A tool-only table is not automatically runtime dependency evidence under ReproLLM's existing contract.",
+      "supported_fact_paraphrase": "Build requirements, project metadata and arbitrary tool configuration are distinct tables.",
+      "title": "pyproject.toml specification",
+      "url": "https://packaging.python.org/en/latest/specifications/pyproject-toml/"
+    },
+    {
+      "id": "pipenv-categories",
+      "limit_or_design_inference": "Option A preserves only currently supported categories and does not validate lock content hashes or resolver results.",
+      "supported_fact_paraphrase": "Pipfile packages and dev-packages correspond to default and develop lock categories; Pipenv also documents custom categories.",
+      "title": "Pipfile and Pipfile.lock",
+      "url": "https://pipenv.pypa.io/en/latest/pipfile.html"
+    },
+    {
+      "id": "conda-lock-sources",
+      "limit_or_design_inference": "Option A's unique same-directory environment pairing is narrower than conda-lock capabilities and is not a claim of source-hash freshness.",
+      "supported_fact_paraphrase": "An environment source can generate a conda-lock.yml; the documentation also links other source formats.",
+      "title": "Basic Usage",
+      "url": "https://conda.github.io/conda-lock/basic_usage/"
+    }
+  ]
+}

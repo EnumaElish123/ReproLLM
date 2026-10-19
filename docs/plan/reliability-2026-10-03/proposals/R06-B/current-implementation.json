@@ -1,0 +1,2107 @@
+{
+  "cases": [
+    {
+      "id": "E01",
+      "independent_current_expectation": {
+        "critical_warning_packages": [
+          "torch"
+        ],
+        "lock_presence_warning_count": 1
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        }
+      ],
+      "label": "root loose declaration, no lock",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml"
+        ],
+        "critical_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": 3,
+                "note": "declared as >=2",
+                "path": "pyproject.toml",
+                "value": ">=2"
+              }
+            ],
+            "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+            "level": 0,
+            "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+            "profile_origin": [],
+            "rule_id": "env.llm_critical_deps_pinned",
+            "severity": "WARNING",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          }
+        ],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": null,
+                "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                "path": null,
+                "value": null
+              }
+            ],
+            "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+            "level": 0,
+            "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+            "profile_origin": [],
+            "rule_id": "env.lockfile_present",
+            "severity": "WARNING",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          }
+        ],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning remains; no format-lock credit"
+    },
+    {
+      "id": "E02",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "tools/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 45,
+          "path": "tools/uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "unowned child uv lock",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "tools/uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "tools/uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; tools lock has no corresponding qualified manifest or in-use origin"
+    },
+    {
+      "id": "E03",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 45,
+          "path": "uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "same-project uv declaration pair",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; same pyproject declaration pairs with root uv lock"
+    },
+    {
+      "id": "E04",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "tools/poetry.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 45,
+          "path": "tools/poetry.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "unowned child Poetry lock",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "tools/poetry.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "tools/poetry.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; unowned child Poetry lock gives no credit"
+    },
+    {
+      "id": "E05",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "Pipfile": "[packages]\ntorch = \"*\"\n",
+        "tools/Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==2.5.0\"}}}\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 23,
+          "path": "Pipfile",
+          "sha256": "c89eaacbb7c975ca3e1871e02c0f82b90c0684edd1c81d0786467e2bc7ddab0a"
+        },
+        {
+          "bytes": 44,
+          "path": "tools/Pipfile.lock",
+          "sha256": "adbe30209681813586550156754796dc09425942ce94b2ca45038d5504126a75"
+        }
+      ],
+      "label": "unowned child Pipfile lock",
+      "observation": {
+        "analysis_files": [
+          "Pipfile",
+          "tools/Pipfile.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 2,
+            "name": "torch",
+            "source_file": "Pipfile",
+            "specifier": "*"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "tools/Pipfile.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; no matching Pipfile for child lock"
+    },
+    {
+      "id": "E06",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "environment.yml": "dependencies:\n  - pytorch\n",
+        "tools/conda-lock.yml": "package:\n  - name: pytorch\n    version: \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 26,
+          "path": "environment.yml",
+          "sha256": "7a44fbdf7496b8050a32d4f22c110cf63ded866be7ef464a11adbff9bb9f935a"
+        },
+        {
+          "bytes": 48,
+          "path": "tools/conda-lock.yml",
+          "sha256": "876925538ba7211fa891d65c964695dfeca6d7a2d0701beb6a8a3923c8c4b332"
+        }
+      ],
+      "label": "unowned child Conda lock",
+      "observation": {
+        "analysis_files": [
+          "environment.yml",
+          "tools/conda-lock.yml"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "pytorch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": null
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "tools/conda-lock.yml"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; no unique same-directory environment for child lock"
+    },
+    {
+      "id": "E07",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "Pipfile": "[packages]\ntorch = \"*\"\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 23,
+          "path": "Pipfile",
+          "sha256": "c89eaacbb7c975ca3e1871e02c0f82b90c0684edd1c81d0786467e2bc7ddab0a"
+        },
+        {
+          "bytes": 45,
+          "path": "uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "same-directory wrong-manager declaration",
+      "observation": {
+        "analysis_files": [
+          "Pipfile",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 2,
+            "name": "torch",
+            "source_file": "Pipfile",
+            "specifier": "*"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; Pipfile declaration cannot pair with uv lock and no import exists"
+    },
+    {
+      "id": "E08",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "research/requirements.txt": "torch==2.5.0\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 13,
+          "path": "research/requirements.txt",
+          "sha256": "e68e2030ac477b59b931f3fc3214a9059f17ac306477a8550ed0d2d666e2ac05"
+        }
+      ],
+      "label": "nested exact declaration retains existential aggregation",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "research/requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": "2.5.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "research/requirements.txt",
+            "specifier": "==2.5.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "research/requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "research/requirements.txt",
+              "sources": [
+                "research/requirements.txt"
+              ]
+            }
+          ],
+          "edges": [],
+          "roots": [
+            "research/requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; any exact declaration remains sufficient repository-wide"
+    },
+    {
+      "id": "E09",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "requirements.txt": "torch==2.1.0\ntorch==2.2.0\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 26,
+          "path": "requirements.txt",
+          "sha256": "55c179a504f38e800699aa1e0b032fa8e69e30556213ed1e610f8a826833c251"
+        }
+      ],
+      "label": "conflicting exact versions within one requirements closure",
+      "observation": {
+        "analysis_files": [
+          "requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2.1.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "requirements.txt",
+            "specifier": "==2.1.0"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": "2.2.0",
+            "line": 2,
+            "name": "torch",
+            "source_file": "requirements.txt",
+            "specifier": "==2.2.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "requirements.txt",
+              "sources": [
+                "requirements.txt"
+              ]
+            }
+          ],
+          "edges": [],
+          "roots": [
+            "requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; conflicting exact declarations are not solved or rejected in A"
+    },
+    {
+      "id": "E10",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "base.txt": "torch==2.5.0\n",
+        "requirements.txt": "-r base.txt\n",
+        "unreferenced.txt": "vllm==0.6.0\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 13,
+          "path": "base.txt",
+          "sha256": "e68e2030ac477b59b931f3fc3214a9059f17ac306477a8550ed0d2d666e2ac05"
+        },
+        {
+          "bytes": 12,
+          "path": "requirements.txt",
+          "sha256": "040641d2104f7610c728aa738de53dfb27065fc92921ca6daeb4a11facb78e63"
+        },
+        {
+          "bytes": 12,
+          "path": "unreferenced.txt",
+          "sha256": "7461597e116642ea1eaffd0c9a5dc2fa779e762123b5bda1cfc21a49580482ad"
+        }
+      ],
+      "label": "unreferenced sibling is not part of requirements closure",
+      "observation": {
+        "analysis_files": [
+          "base.txt",
+          "requirements.txt",
+          "unreferenced.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2.5.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "base.txt",
+            "specifier": "==2.5.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "requirements.txt",
+              "sources": [
+                "base.txt",
+                "requirements.txt"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "error": null,
+              "line": 1,
+              "source": "requirements.txt",
+              "target": "base.txt"
+            }
+          ],
+          "roots": [
+            "requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "unchanged closure has torch only; unreferenced ordinary file is not a root"
+    },
+    {
+      "id": "E11",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "base.txt": "torch==2.5.0\n",
+        "requirements-extra.txt": "vllm==0.6.0\n",
+        "requirements.txt": "-r base.txt\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 13,
+          "path": "base.txt",
+          "sha256": "e68e2030ac477b59b931f3fc3214a9059f17ac306477a8550ed0d2d666e2ac05"
+        },
+        {
+          "bytes": 12,
+          "path": "requirements-extra.txt",
+          "sha256": "7461597e116642ea1eaffd0c9a5dc2fa779e762123b5bda1cfc21a49580482ad"
+        },
+        {
+          "bytes": 12,
+          "path": "requirements.txt",
+          "sha256": "040641d2104f7610c728aa738de53dfb27065fc92921ca6daeb4a11facb78e63"
+        }
+      ],
+      "label": "independent requirements roots keep separate closures",
+      "observation": {
+        "analysis_files": [
+          "base.txt",
+          "requirements-extra.txt",
+          "requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch",
+          "vllm"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "vllm",
+            "exact_version": "0.6.0",
+            "line": 1,
+            "name": "vllm",
+            "source_file": "requirements-extra.txt",
+            "specifier": "==0.6.0"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": "2.5.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "base.txt",
+            "specifier": "==2.5.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "vllm"
+            ],
+            "path": "requirements-extra.txt"
+          },
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "vllm"
+              ],
+              "root": "requirements-extra.txt",
+              "sources": [
+                "requirements-extra.txt"
+              ]
+            },
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "requirements.txt",
+              "sources": [
+                "base.txt",
+                "requirements.txt"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "error": null,
+              "line": 1,
+              "source": "requirements.txt",
+              "target": "base.txt"
+            }
+          ],
+          "roots": [
+            "requirements-extra.txt",
+            "requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "both root locks exist; each retains its own package set; global exact aggregation stays"
+    },
+    {
+      "id": "E12",
+      "independent_current_expectation": {
+        "critical_warning_packages": [
+          "torch"
+        ],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "requirements-extra.txt": "vllm==0.6.0\n",
+        "requirements.txt": "torch>=2\n-r missing.txt\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 12,
+          "path": "requirements-extra.txt",
+          "sha256": "7461597e116642ea1eaffd0c9a5dc2fa779e762123b5bda1cfc21a49580482ad"
+        },
+        {
+          "bytes": 24,
+          "path": "requirements.txt",
+          "sha256": "b7b8768e9041e6dcde2480fe9ee9d329b79ee06d46b21d898750dce31109831d"
+        }
+      ],
+      "label": "incomplete root and independent valid sibling root",
+      "observation": {
+        "analysis_files": [
+          "requirements-extra.txt",
+          "requirements.txt"
+        ],
+        "critical_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": 1,
+                "note": "declared as >=2",
+                "path": "requirements.txt",
+                "value": ">=2"
+              }
+            ],
+            "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+            "level": 0,
+            "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+            "profile_origin": [],
+            "rule_id": "env.llm_critical_deps_pinned",
+            "severity": "WARNING",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          }
+        ],
+        "critical_in_use": [
+          "torch",
+          "vllm"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "vllm",
+            "exact_version": "0.6.0",
+            "line": 1,
+            "name": "vllm",
+            "source_file": "requirements-extra.txt",
+            "specifier": "==0.6.0"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "requirements.txt",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "vllm"
+            ],
+            "path": "requirements-extra.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "vllm"
+              ],
+              "root": "requirements-extra.txt",
+              "sources": [
+                "requirements-extra.txt"
+              ]
+            },
+            {
+              "complete": false,
+              "is_exact": false,
+              "packages": [
+                "torch"
+              ],
+              "root": "requirements.txt",
+              "sources": [
+                "requirements.txt"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "error": null,
+              "line": 2,
+              "source": "requirements.txt",
+              "target": "missing.txt"
+            }
+          ],
+          "roots": [
+            "requirements-extra.txt",
+            "requirements.txt"
+          ]
+        },
+        "unparsed": [
+          "requirements.txt:2: include unreadable"
+        ]
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; independent vllm root does not cover torch; presence remains existential"
+    },
+    {
+      "id": "E13",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 1
+      },
+      "inputs": {
+        "child.txt": "torch==2.5.0\n-r requirements.txt\n",
+        "requirements.txt": "-r child.txt\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 33,
+          "path": "child.txt",
+          "sha256": "7badc95088fa4116673b7e9ef1c80342b712759b5232a4dd2be05cf664016d94"
+        },
+        {
+          "bytes": 13,
+          "path": "requirements.txt",
+          "sha256": "6778b65efdc1928d77bc1ab8f34f5d17fcaadfde22370af8cc0a9893bc7b3b0e"
+        }
+      ],
+      "label": "cyclic closure can still contain an exact declaration",
+      "observation": {
+        "analysis_files": [
+          "child.txt",
+          "requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2.5.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "child.txt",
+            "specifier": "==2.5.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": null,
+                "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                "path": null,
+                "value": null
+              }
+            ],
+            "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+            "level": 0,
+            "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+            "profile_origin": [],
+            "rule_id": "env.lockfile_present",
+            "severity": "WARNING",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          }
+        ],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": false,
+              "is_exact": false,
+              "packages": [
+                "torch"
+              ],
+              "root": "requirements.txt",
+              "sources": [
+                "child.txt",
+                "requirements.txt"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "error": null,
+              "line": 2,
+              "source": "child.txt",
+              "target": "requirements.txt"
+            },
+            {
+              "error": null,
+              "line": 1,
+              "source": "requirements.txt",
+              "target": "child.txt"
+            }
+          ],
+          "roots": [
+            "requirements.txt"
+          ]
+        },
+        "unparsed": [
+          "child.txt:2: include cycle",
+          "requirements.txt:1: include incomplete"
+        ]
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning from exact declaration, but cyclic closure is not a qualifying lock"
+    },
+    {
+      "id": "E14",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[tool.ruff]\nline-length = 100\n",
+        "research/requirements.txt": "torch==2.5.0\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 30,
+          "path": "pyproject.toml",
+          "sha256": "fc60c178de02b75ccb0d1958443eb14e4e64af47b8879a988e86f2e7ac4275ed"
+        },
+        {
+          "bytes": 13,
+          "path": "research/requirements.txt",
+          "sha256": "e68e2030ac477b59b931f3fc3214a9059f17ac306477a8550ed0d2d666e2ac05"
+        }
+      ],
+      "label": "tool-only root does not hide nested exact research dependency",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "research/requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2.5.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "research/requirements.txt",
+            "specifier": "==2.5.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "research/requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "research/requirements.txt",
+              "sources": [
+                "research/requirements.txt"
+              ]
+            }
+          ],
+          "edges": [],
+          "roots": [
+            "research/requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; valid nested exact declarations remain in aggregation"
+    },
+    {
+      "id": "E15",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 27,
+          "path": "uv.lock",
+          "sha256": "1cabb9b35bd4fd88cdbe12835170981a25a91fa3fe70e42b96b8967438475336"
+        }
+      ],
+      "label": "same-project name-only uv package entry",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; A does not add version, header, freshness, or format-validity checks"
+    },
+    {
+      "id": "E16",
+      "independent_current_expectation": {
+        "critical_warning_packages": [
+          "torch"
+        ],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "uv.lock": "[[package]\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 11,
+          "path": "uv.lock",
+          "sha256": "85170af27c954c6917c287ecec13a49191f058d9ffc19fc24882fca95558cd6c"
+        }
+      ],
+      "label": "malformed format lock still has artifact presence",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [
+          {
+            "aliases": [],
+            "category": "env",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "file",
+                "line": 3,
+                "note": "declared as >=2",
+                "path": "pyproject.toml",
+                "value": ">=2"
+              }
+            ],
+            "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+            "level": 0,
+            "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+            "profile_origin": [],
+            "rule_id": "env.llm_critical_deps_pinned",
+            "severity": "WARNING",
+            "severity_origin": "default",
+            "status": "fail",
+            "suppressed_reason": null
+          }
+        ],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning remains; artifact presence remains unchanged despite empty parsed package set"
+    },
+    {
+      "id": "E17",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch==2.1.0\"]\n",
+        "research/requirements.txt": "torch==2.2.0\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 59,
+          "path": "pyproject.toml",
+          "sha256": "5bf1ace81624ed19ce715549c03d4672fcd4511da977c22cb109912adf2b24fb"
+        },
+        {
+          "bytes": 13,
+          "path": "research/requirements.txt",
+          "sha256": "3c87d099477e921ba5207e9f0512f0f63e00ce1d48202a3763814b51f858ad1f"
+        }
+      ],
+      "label": "conflicting exact versions across files",
+      "observation": {
+        "analysis_files": [
+          "pyproject.toml",
+          "research/requirements.txt"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2.1.0",
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": "==2.1.0"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": "2.2.0",
+            "line": 1,
+            "name": "torch",
+            "source_file": "research/requirements.txt",
+            "specifier": "==2.2.0"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "research/requirements.txt"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [
+            {
+              "complete": true,
+              "is_exact": true,
+              "packages": [
+                "torch"
+              ],
+              "root": "research/requirements.txt",
+              "sources": [
+                "research/requirements.txt"
+              ]
+            }
+          ],
+          "edges": [],
+          "roots": [
+            "research/requirements.txt"
+          ]
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; A does not choose a version or prove one installable environment"
+    },
+    {
+      "id": "E18",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "child/pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "child/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n",
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "child/pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 45,
+          "path": "child/uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        },
+        {
+          "bytes": 55,
+          "path": "pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        }
+      ],
+      "label": "child has own matching declaration and lock despite loose root",
+      "observation": {
+        "analysis_files": [
+          "child/pyproject.toml",
+          "child/uv.lock",
+          "pyproject.toml"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "pyproject.toml",
+            "specifier": ">=2"
+          },
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "child/pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "child/uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; child has paired in-use declaration, so existential credit remains"
+    },
+    {
+      "id": "E19",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "child/pyproject.toml": "[project]\nname = \"example\"\ndependencies = []\n",
+        "child/train.py": "import torch\n",
+        "child/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 45,
+          "path": "child/pyproject.toml",
+          "sha256": "6b7ca6414dbd424578d73f0389ff2761566f7327e793a1ebcf8adf9217d8301b"
+        },
+        {
+          "bytes": 13,
+          "path": "child/train.py",
+          "sha256": "b91a3bc5e2064d025a8ae122555c96948ec5b4895d53d809c4b66b71a4915133"
+        },
+        {
+          "bytes": 45,
+          "path": "child/uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "child has own matching import and lock",
+      "observation": {
+        "analysis_files": [
+          "child/pyproject.toml",
+          "child/train.py",
+          "child/uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "child/train.py"
+          }
+        ],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "child/uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; import nearest qualified root has eligible uv pair and no uncertainty"
+    },
+    {
+      "id": "E20",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "member/pyproject.toml": "[project]\nname = \"example\"\ndependencies = [\"torch>=2\"]\n",
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = []\n[tool.uv.workspace]\nmembers = [\"member\"]\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 55,
+          "path": "member/pyproject.toml",
+          "sha256": "3d6cf46a427a8201bcc32d150796ee6a399a70218cfec01fa298adf0e6820c24"
+        },
+        {
+          "bytes": 86,
+          "path": "pyproject.toml",
+          "sha256": "bfd04827beebcb9cc69f997a6a05c5d0860f827a344dc13aece6c03666cf51cf"
+        },
+        {
+          "bytes": 45,
+          "path": "uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "workspace-shaped ancestor uv lock with member declaration",
+      "observation": {
+        "analysis_files": [
+          "member/pyproject.toml",
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 3,
+            "name": "torch",
+            "source_file": "member/pyproject.toml",
+            "specifier": ">=2"
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning possible; A does not infer workspace parent-to-member delegation; B deferred"
+    },
+    {
+      "id": "E21",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "child/pyproject.toml": "[project\n",
+        "child/train.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = []\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 9,
+          "path": "child/pyproject.toml",
+          "sha256": "1573cba3fed5d835d7e26dd8bb7bedce79cf0a6180094c3cb6a720e66c5566bd"
+        },
+        {
+          "bytes": 13,
+          "path": "child/train.py",
+          "sha256": "b91a3bc5e2064d025a8ae122555c96948ec5b4895d53d809c4b66b71a4915133"
+        },
+        {
+          "bytes": 45,
+          "path": "pyproject.toml",
+          "sha256": "6b7ca6414dbd424578d73f0389ff2761566f7327e793a1ebcf8adf9217d8301b"
+        },
+        {
+          "bytes": 45,
+          "path": "uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "malformed nested manifest does not currently block ancestor lock borrowing",
+      "observation": {
+        "analysis_files": [
+          "child/pyproject.toml",
+          "child/train.py",
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "child/train.py"
+          }
+        ],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": [
+          "child/pyproject.toml:0: Expected ']' at the end of a table declaration (at line 1, column 9)"
+        ]
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; observed malformed nested candidate is an uncertain import barrier in A"
+    },
+    {
+      "id": "E22",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "child/pyproject.toml": "[tool.ruff]\nline-length = 100\n",
+        "child/train.py": "import torch\n",
+        "pyproject.toml": "[project]\nname = \"example\"\ndependencies = []\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"2.5.0\"\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 30,
+          "path": "child/pyproject.toml",
+          "sha256": "fc60c178de02b75ccb0d1958443eb14e4e64af47b8879a988e86f2e7ac4275ed"
+        },
+        {
+          "bytes": 13,
+          "path": "child/train.py",
+          "sha256": "b91a3bc5e2064d025a8ae122555c96948ec5b4895d53d809c4b66b71a4915133"
+        },
+        {
+          "bytes": 45,
+          "path": "pyproject.toml",
+          "sha256": "6b7ca6414dbd424578d73f0389ff2761566f7327e793a1ebcf8adf9217d8301b"
+        },
+        {
+          "bytes": 45,
+          "path": "uv.lock",
+          "sha256": "8beadd43f577de5cc3f635e8211a682b8ed3815065335426cf3900ea5dced5e7"
+        }
+      ],
+      "label": "tool-only child is not a qualified project boundary",
+      "observation": {
+        "analysis_files": [
+          "child/pyproject.toml",
+          "child/train.py",
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "child/train.py"
+          }
+        ],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "uv.lock"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "no torch warning; tool-only pyproject creates no boundary; import pairs with root uv lock"
+    },
+    {
+      "id": "E23",
+      "independent_current_expectation": {
+        "critical_warning_packages": [],
+        "lock_presence_warning_count": 0
+      },
+      "inputs": {
+        "conda-lock.yml": "package:\n  - name: torch\n    version: \"2.5.0\"\n",
+        "environment.yaml": "dependencies:\n  - torch\n",
+        "environment.yml": "dependencies:\n  - torch\n"
+      },
+      "inputs_inventory": [
+        {
+          "bytes": 46,
+          "path": "conda-lock.yml",
+          "sha256": "909bb8447dffa4a05e4d7935f1258c685f896bcbc17a7f8809bce1d341a3accb"
+        },
+        {
+          "bytes": 24,
+          "path": "environment.yaml",
+          "sha256": "2b4c07ff69025850f66200f1a4753b4159cec965c00e7f256b799d9ad3b051f3"
+        },
+        {
+          "bytes": 24,
+          "path": "environment.yml",
+          "sha256": "2b4c07ff69025850f66200f1a4753b4159cec965c00e7f256b799d9ad3b051f3"
+        }
+      ],
+      "label": "two same-directory environment files do not identify one Conda owner",
+      "observation": {
+        "analysis_files": [
+          "conda-lock.yml",
+          "environment.yaml",
+          "environment.yml"
+        ],
+        "critical_findings": [],
+        "critical_in_use": [
+          "torch"
+        ],
+        "critical_rule_applies": true,
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yaml",
+            "specifier": null
+          },
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": null
+          }
+        ],
+        "imports": [],
+        "lock_presence_findings": [],
+        "lock_presence_rule_applies": true,
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml"
+          }
+        ],
+        "manifest_present": true,
+        "requirements_graph": {
+          "closures": [],
+          "edges": [],
+          "roots": []
+        },
+        "unparsed": []
+      },
+      "proposed_a_design_expectation_not_executed": "torch warning; A does not guess a Conda declaration/import owner when both candidates exist"
+    }
+  ],
+  "date": "2026-10-19",
+  "evidence_kind": "CURRENT_IMPLEMENTATION_BOUNDED_OFFLINE_OBSERVATION_NOT_GOLD",
+  "reproduction": {
+    "actual_process_exit_code": 0,
+    "earlier_replay_environment_failure": {
+      "process_exit_code": 1,
+      "product_case_count": 0,
+      "reason": "Windows sandbox tempfile-created directory rejected first child mkdir with WinError 5",
+      "resolution": "Require an explicit new writable private workspace; preserve inputs and avoid implicit cleanup",
+      "status": "ENVIRONMENT_SETUP_FAILED_BEFORE_FIRST_CASE"
+    },
+    "logical_command": "python observer.py current-implementation.json NEW_PRIVATE_WORKSPACE",
+    "observation_wall_seconds": 0.144516,
+    "observer_python": "from __future__ import annotations\nimport dataclasses\nimport hashlib\nimport importlib.util\nimport json\nimport sys\nfrom pathlib import Path\nfrom unittest.mock import patch\n\ndef deny_resources(event, args):\n    if event in {\"socket.connect\", \"socket.getaddrinfo\", \"subprocess.Popen\"}:\n        raise RuntimeError(\"resource operation prohibited in this observer\")\n    if event == \"import\" and args[0].split(\".\")[0] in {\n        \"torch\", \"transformers\", \"vllm\", \"huggingface_hub\", \"numpy\"\n    }:\n        raise RuntimeError(\"heavy model import prohibited in this observer\")\n\nsys.addaudithook(deny_resources)\nfrom reprollm.core.context import AuditContext\nfrom reprollm.core.deps import (\n    Declarations, _RequirementInclude, _RequirementsGraph, scan_dependencies,\n)\nfrom reprollm.core.git import GitInfo\nfrom reprollm.core.scanner import RepoScanner\nfrom reprollm.rules.env import LlmCriticalDepsPinnedRule, LockfilePresentRule\n\ndef observe(case, workspace):\n    root = workspace / case[\"id\"]\n    root.mkdir()\n    for rel, text in sorted(case[\"inputs\"].items()):\n        path = root / rel\n        path.parent.mkdir(parents=True, exist_ok=True)\n        path.write_bytes(text.encode(\"utf-8\"))\n    scanner = RepoScanner(root, GitInfo(is_repo=False))\n    deps = scan_dependencies(scanner)\n    ctx = AuditContext(root)\n    ctx._git = GitInfo(is_repo=False)\n    ctx._fs = scanner\n    ctx._deps = deps\n    critical = LlmCriticalDepsPinnedRule()\n    presence = LockfilePresentRule()\n    with patch(\"reprollm.rules.env.installed_versions\", return_value={}):\n        findings = critical.check(ctx) if critical.applies(ctx) else []\n        present_findings = presence.check(ctx) if presence.applies(ctx) else []\n    graph = _RequirementsGraph(scanner, Declarations())\n    roots = sorted(p for p in scanner.analysis_files()\n                   if Path(p).name.startswith(\"requirements\") and p.endswith(\".txt\"))\n    graph.parse(roots)\n    return {\n        \"analysis_files\": scanner.analysis_files(),\n        \"manifest_present\": deps.manifest_present,\n        \"declarations\": [dataclasses.asdict(d) for d in deps.declarations],\n        \"imports\": [dataclasses.asdict(i) for i in ctx.pyscan.imports],\n        \"unparsed\": deps.unparsed,\n        \"lockfiles\": [{\"path\": item.path, \"packages\": sorted(item.packages)}\n                      for item in deps.lockfiles],\n        \"requirements_graph\": {\n            \"roots\": roots,\n            \"edges\": [{\"source\": source, **dataclasses.asdict(event)}\n                      for source, node in sorted(graph.nodes.items())\n                      for event in node.events if isinstance(event, _RequirementInclude)],\n            \"closures\": [{\"root\": source, \"complete\": c.complete,\n                          \"is_exact\": c.is_exact, \"sources\": sorted(c.sources),\n                          \"packages\": sorted(c.packages)}\n                         for source, c in sorted(graph.closures.items())],\n        },\n        \"critical_in_use\": critical._critical_in_use(ctx),\n        \"critical_rule_applies\": critical.applies(ctx),\n        \"critical_findings\": [f.model_dump(mode=\"json\") for f in findings],\n        \"lock_presence_rule_applies\": presence.applies(ctx),\n        \"lock_presence_findings\": [f.model_dump(mode=\"json\") for f in present_findings],\n    }\n\ndef replay(document, workspace):\n    if \"sources\" in document:\n        import reprollm\n        expected_module = Path.cwd() / \"src/reprollm/__init__.py\"\n        if Path(reprollm.__file__).resolve() != expected_module.resolve():\n            raise AssertionError(\"observer must import the intended checkout\")\n        for source in document[\"sources\"]:\n            raw = (Path.cwd() / source[\"path\"]).read_bytes()\n            if len(raw) != source[\"bytes\"] or hashlib.sha256(raw).hexdigest() != source[\"sha256\"]:\n                raise AssertionError(\"source inventory mismatch: \" + source[\"path\"])\n    rows = []\n    for case in document[\"cases\"]:\n        observed = observe(case, workspace)\n        expected = case.get(\"observation\")\n        if expected is not None and observed != expected:\n            raise AssertionError(\"observation mismatch: \" + case[\"id\"])\n        rows.append({\"id\": case[\"id\"], \"observation\": observed})\n    return rows\n\nif __name__ == \"__main__\":\n    document = json.loads(Path(sys.argv[1]).read_text(encoding=\"utf-8\"))\n    workspace = Path(sys.argv[2])\n    workspace.mkdir(parents=False, exist_ok=False)\n    rows = replay(document, workspace)\n    print(json.dumps({\"schema_version\": 1, \"cases_compared\": len(rows),\n                      \"result\": \"MATCHED_CURRENT_OBSERVATIONS\"}, sort_keys=True))\n",
+    "observer_source_sha256": "e7866f27df7a6d347f97ea6635cd579208c91d2cf4570de69f9ef6fd68d03d36",
+    "prerequisites": "Existing local development environment with repository dependencies installed; no dependency installation is performed",
+    "public_json_replay": {
+      "cases_compared": 23,
+      "process_exit_code": 0,
+      "result": "MATCHED_CURRENT_OBSERVATIONS",
+      "schema_version": 1,
+      "source_inventory_entries_checked": 12,
+      "workspace": "new explicit writable private directory; absolute location not published"
+    },
+    "working_directory": "repository root; observer imports this checkout src via existing editable environment"
+  },
+  "schema_version": 1,
+  "scope": {
+    "actual_product_entry_points": [
+      "scan_dependencies",
+      "AuditContext.pyscan",
+      "LlmCriticalDepsPinnedRule.applies/check",
+      "LockfilePresentRule.applies/check"
+    ],
+    "finding_interpretation": "Empty check findings are observations, not full audit PASS or formal environment validation",
+    "internal_observer_only": "_RequirementsGraph is parsed a second time on the same cached scanner to expose edges/closures; no new public product contract",
+    "not_executed": [
+      "full audit engine or CLI",
+      "pytest or final quality gate",
+      "five-project Gate A or gold regeneration",
+      "lock writer/resolver",
+      "package-manager install/solver",
+      "network, model, GPU, provider or credentials"
+    ],
+    "policy_status": "PROPOSED_NOT_IMPLEMENTED",
+    "resource_guards": "Python audit hook rejects subprocess.Popen, socket.connect/getaddrinfo and heavy model imports",
+    "simulation": [
+      "synthetic tiny files; no native package-manager lock generation",
+      "GitInfo(is_repo=False): actual fallback scanner, no real git checkout or Git CLI",
+      "installed_versions mocked to empty map only for deterministic warning suggestions"
+    ]
+  },
+  "source_commit": "af8adea8ec37fb5db57373432f4ced58cec9fb9e",
+  "sources": [
+    {
+      "bytes": 28931,
+      "path": "src/reprollm/core/deps.py",
+      "reviewed_line_starts": [
+        31,
+        35,
+        78,
+        92,
+        105,
+        121,
+        161,
+        169,
+        186,
+        204,
+        227,
+        239,
+        252,
+        285,
+        307,
+        499,
+        576,
+        631,
+        660,
+        692,
+        706,
+        721,
+        740,
+        755
+      ],
+      "sha256": "4ee16a91c1b465b92f6a86288661b72a4d6d02435a91bf51ea4573c83a317624"
+    },
+    {
+      "bytes": 4096,
+      "path": "src/reprollm/core/context.py",
+      "reviewed_line_starts": [
+        80,
+        86,
+        92,
+        99
+      ],
+      "sha256": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b"
+    },
+    {
+      "bytes": 15377,
+      "path": "src/reprollm/core/scanner.py",
+      "reviewed_line_starts": [
+        23,
+        26,
+        29,
+        76,
+        134,
+        149,
+        198,
+        241,
+        269,
+        313,
+        343
+      ],
+      "sha256": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503"
+    },
+    {
+      "bytes": 6378,
+      "path": "src/reprollm/core/pyscan.py",
+      "reviewed_line_starts": [
+        27,
+        78,
+        112
+      ],
+      "sha256": "6c0a6381eb025e8b45cdb20b48744e11d95fec41d3d7ecd7196f00b78918ad70"
+    },
+    {
+      "bytes": 2582,
+      "path": "src/reprollm/core/envinfo.py",
+      "reviewed_line_starts": [
+        16,
+        52,
+        67
+      ],
+      "sha256": "42cc5a068419f7f383a338fe0bfd4f9b0525ad138a8f6a36ebcda2a44647f7a8"
+    },
+    {
+      "bytes": 12485,
+      "path": "src/reprollm/rules/env.py",
+      "reviewed_line_starts": [
+        31,
+        60,
+        77,
+        99,
+        123,
+        151,
+        158
+      ],
+      "sha256": "f81067ce106dda80c09b3ca686699d9c0cc27a2245bc69710ea77b6c36b64276"
+    },
+    {
+      "bytes": 7720,
+      "path": "src/reprollm/lock/writer.py",
+      "reviewed_line_starts": [
+        57,
+        100
+      ],
+      "sha256": "a657d5943d7f917b8138f62c46c4cd33b2d90290677b7cc05203b46c3711842a"
+    },
+    {
+      "bytes": 9651,
+      "path": "src/reprollm/lock/resolver.py",
+      "reviewed_line_starts": [
+        69,
+        214,
+        224
+      ],
+      "sha256": "5f51a0e83c9438b803a41d03ad8124890baed243573bef7f6a997ef1025e4293"
+    },
+    {
+      "bytes": 115139,
+      "path": "docs/plan/01_specification.md",
+      "reviewed_line_starts": [
+        913,
+        917,
+        918,
+        919,
+        924,
+        926,
+        928,
+        930
+      ],
+      "sha256": "c5e857c9f97c99d0e10372ea5bb2d0fe57f7251a6a57f6bacdbfc88803a75342"
+    },
+    {
+      "bytes": 27331,
+      "path": "docs/plan/00_architecture_and_decisions.md",
+      "reviewed_line_starts": [
+        269
+      ],
+      "sha256": "159bbfb6a89eb66c23150731a4e5f305cd4b30e48d138f82291efb8a70015e17"
+    },
+    {
+      "bytes": 2537,
+      "path": "docs/dogfooding/2026-10-10-reliability-s2/s2-handoff.md",
+      "reviewed_line_starts": [
+        5,
+        7,
+        13,
+        14,
+        18,
+        24
+      ],
+      "sha256": "642a2e4a8e4baee0d903281c2182fb73b2965dc352780cdec3aba8a43c99592b"
+    },
+    {
+      "bytes": 12289,
+      "path": "tests/unit/core/test_deps.py",
+      "reviewed_line_starts": [
+        192,
+        209
+      ],
+      "sha256": "1da9970cb350f8348903f0732b8137c17f54f684de92df854ec7ec6ff0337103"
+    }
+  ],
+  "summary": {
+    "case_expectations_matched": 23,
+    "cases_executed": 23,
+    "critical_rule_checks": 23,
+    "critical_rule_findings": 3,
+    "future_a_cases_executed": 0,
+    "lock_presence_findings": 2,
+    "lock_presence_rule_checks": 23,
+    "python_imports_observed": 3,
+    "synthetic_input_bytes": 1860,
+    "synthetic_input_files": 54
+  }
+}

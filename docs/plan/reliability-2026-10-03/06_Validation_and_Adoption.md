@@ -1,6 +1,6 @@
 # 专项方案：可重放证据、独立试用与申请材料
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-19 更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -17,10 +17,15 @@
 
 不把外部用户回应、资源供应或申请结果算成可由编码 Agent 保证完成的开发 Sprint 任务。材料完成、实际执行、独立采用分别登记。
 
-2026-10-18 接续状态：[A01 本地层已交付](../../dogfooding/2026-10-18-a01-local/README.md)，
-formal 资源检查仍 BLOCKED。[A02 材料](../../trials/a02-local/README.md)已准备供审阅，
-独立试用 PENDING；[A03 本地事实表与叙述草稿](../../adoption/a03-2026-10-18.md)已整理，
-当前官方表单核验尚未执行。下文完成条件是任务合同，不以材料准备替代真实反馈或正式验证。
+2026-10-19 接续状态：
+
+- [A01 本地层](../../dogfooding/2026-10-18-a01-local/README.md)保留 10-18 环境的 12/50 恢复及无资源回放结果；后续 [资源实跑](../../dogfooding/2026-10-19-resource-completion/README.md)在已提供的 Linux 节点恢复 **45/50** 个精确 slot，5 个原始 metadata manifest 仍缺失。此节点的恢复不代表本机已取得文件。
+- **VAL-R01 PASS，绑定 `750270b`**：Linux H2、五项目原生 GPU A/B、完整捕获/消费/diff 与 20 个默认 export 状态。**VAL-R02 PASS，绑定 `75d1b0`**：[R02-R 修复后的新 formal judge A/B](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)通过真实 provider、完整捕获与语义验收；旧 `750270b` A FAIL / B NOT_RUN 继续保留。
+- [Windows 测试 ID 修正](../../dogfooding/2026-10-19-judge-snapshot-fix/windows-ci/README.md)的 `409a1a7` 仅改测试元数据，产品和正式 wheel 不变。前一进度核对确认 [`af8adea` 的五项 CI 成功](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)；本次及后续提交需另核对 CI，不覆盖旧 receipt。
+- **VAL-R03 BLOCKED**：HF 认证成功但限定小文件仍 403，原始 metadata 输入仍有缺口。`75d1b0` 的 CPU/judge 跟进没有重跑 GPU/H2；完整同候选发布矩阵未完成，未授权发布。详见[资源账本](../../dogfooding/pending-resource-validation.md)。
+- [A02 材料](../../trials/a02-local/README.md)可审阅，独立试用 PENDING；[A03 本地事实与叙述](../../adoption/a03-2026-10-18.md)已整理，当前官方表单核验尚未执行。[R06-B scope 提案](proposals/R06-B/R06-B_dependency_lock_scope.md)为 **PROPOSED**，不改变产品或 gold，等待单项审议。
+
+下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放
 
@@ -37,13 +42,15 @@ formal 资源检查仍 BLOCKED。[A02 材料](../../trials/a02-local/README.md)�
 5. 需要新替代案例时，使用新 case ID、全新输入哈希和独立预期，标 supplementary。只有维护者明确更改 formal baseline 后才改变其地位。
 6. 不假定以前的凭据、路径、预算或 GPU 仍可用；核对本轮实际提供的资源和仍有效授权。已授权且仍在相同边界内的操作不用重复请求。
 
-### 当前阻塞的恢复动作
+### 当前资源状态与后续恢复动作
 
-| 项目 | 需要恢复 / 验证 | 何时可转为 PASS |
+| 项目 | 已有验收 / 当前缺口 | 后续验收边界 |
 |---|---|---|
-| VAL-R01 | Linux / GPU 环境和五项目真实 A / B 输入；按现有 formal 限额确认可执行性 | 在本次候选 SHA 真正完成对应运行与字段级断言 |
-| VAL-R02 | formal FastChat / DeepSeek 的确切 entry、transport、config、fixed answer 输入包；本轮可用凭据和预算 | 输入 hash 匹配，有限真实请求完成，消费 / 隐私 / diff 预期通过 |
-| VAL-R03 | 模型作者授予的 gated 文件访问权限和被提供的 HF 凭据 | 原先受限的小文件成功解析；401 / 403 处理成功不能替代成功访问 |
+| VAL-R01 | `750270b` 已通过 Linux H2 与五项目真实 A/B；不声称 `75d1b0` 有新的 GPU/H2 矩阵 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
+| VAL-R02 | `75d1b0` 已通过原始 formal 输入的新 provider A/B、完整捕获与语义配对 | 后续付费回放仍核对输入、当轮 provider/凭据和有效预算；保留旧失败，不复用历史成功冒充新执行 |
+| VAL-R03 | 原始 Project C metadata manifest 仍缺失；已提供 token 能认证但限定文件仍 403 | 恢复并核验原始输入，获得模型作者允许的小文件访问；成功解析并验证 revision/hash/provenance，401/403 安全处理不能替代成功访问 |
+
+Linux 节点的 45/50 输入清单仍有五个 §8.1 原始 manifest 缺口；它与无资源本地层、H2 supplementary 输入和其他历史输入的身份分别保留。各次结果及具体恢复动作以[资源账本](../../dogfooding/pending-resource-validation.md)与对应机器的输入清单为准。
 
 历史 formal FastChat 输入的四个关键文件为 `reprollm.yaml`、`validation/judge.yaml`、`validation/judge_entry.py`、`validation/judge_transport.py`，精确 hash 在 `val.md §8.4`。恢复时逐个比对，不复制一份不完整报告当输入包。
 
@@ -216,4 +223,4 @@ D01 最终 recipe、D02 的候选 wheel / hash、A01-A 的已验证输入、R02-
 
 所有外部缺口写明“需要什么、谁能提供、拿到之后先做什么”，不转成笼统的“待完善”。
 
-依据：[val.md](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/val.md)、[待执行资源验证](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/docs/dogfooding/pending-resource-validation.md)、[Codex for OSS 官方说明](https://developers.openai.com/community/codex-for-oss)、[申请表](https://openai.com/form/codex-for-oss/)、[项目条款](https://learn.chatgpt.com/docs/codex-for-oss-terms)。官方申请信息与服务价格在实际提交 / 调用前重新核验。
+初始审查依据（历史快照）：[val.md](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/val.md)、[待执行资源验证](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/docs/dogfooding/pending-resource-validation.md)。当前执行以仓库中的 [val.md](../../../val.md) 和[资源账本](../../dogfooding/pending-resource-validation.md)为准，按最新维护者资源指导，不恢复旧人工阈值。[Codex for OSS 官方说明](https://developers.openai.com/community/codex-for-oss)、[申请表](https://openai.com/form/codex-for-oss/)、[项目条款](https://learn.chatgpt.com/docs/codex-for-oss-terms)。官方申请信息与服务价格在实际提交 / 调用前重新核验。

@@ -1,8 +1,18 @@
 # Sprint 1：产物保全与有效运行参数
 
-版本：v1.2 · 日期：2026-10-03 · 状态：PLANNED
+版本：v1.2 · 初始日期：2026-10-03 · 状态：DELIVERED（S1-A / S1-B；2026-10-19 导航更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
+
+当前交付导航：[S1-A 报告](../../dogfooding/2026-10-10-reliability-s1a/README.md)记录 R00 / R01；
+S1-B 的 [R02](../../dogfooding/2026-10-10-reliability-s1b/r02-session.md)、
+[R02-R](../../dogfooding/2026-10-10-reliability-s1b/r02r-session.md)及
+[R03 收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)记录实际提交、回归与验收。
+后续 [10-19 R02-R judge snapshot 修复](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)
+另绑定 `75d1b0`，不覆盖 S1 的历史报告。资源与发布状态见[当前计划入口](../README.md)。
+
+下文“已确认问题”“当前证据”等保留为原审查症状；任务步骤与验收清单是原计划合同，
+不表示缺陷今天仍存在，也不要求重做已交付任务。实际状态以上述报告和当前入口为准。
 
 ## 1. 目标与会话
 
