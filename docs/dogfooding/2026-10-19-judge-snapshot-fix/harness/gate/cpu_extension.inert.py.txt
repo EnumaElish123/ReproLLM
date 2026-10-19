@@ -1,0 +1,172 @@
+"""Five-pin offline CPU capture/consumer extension; execution requires final QA."""
+from __future__ import annotations
+import argparse
+import ast
+import getpass
+import importlib.util
+import json
+import os
+import shutil
+import socket
+import warnings
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+import subprocess
+import time
+from datetime import datetime
+from pathlib import Path
+import yaml
+import run_base as base
+import cpu_oracle as oracle
+
+HERE=Path(__file__).resolve().parent
+SCRATCH=HERE.parent
+CHILD_SOURCE='''"""Independent stdlib input consumer; no model, HTTP or ReproLLM import."""
+import ast
+import hashlib
+import json
+import warnings
+from pathlib import Path
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+paths=["validation/original_common.py","validation/judge_prompts.jsonl","validation/judge.json","validation/privacy.json"]
+raw={name:Path(name).read_bytes() for name in paths}
+ast.parse(raw[paths[0]].decode("utf-8"))
+rows=[json.loads(line) for line in raw[paths[1]].splitlines()]
+assert len(rows)==8
+cfg=json.loads(raw[paths[2]])
+consumed={"models.judge.id":cfg["model"],"models.judge.endpoint.base_url":cfg["endpoint"],"evaluation.judge.params.temperature":cfg["temperature"],"evaluation.judge.params.max_tokens":cfg["max_tokens"]}
+result={"schema_version":1,"consumed":consumed,"source_sha256":{name:digest(body) for name,body in raw.items()},"rubric_rows":len(rows),"common_valid_python":True}
+body=json.dumps(result,sort_keys=True,ensure_ascii=False,indent=2)+"\\n"
+Path("outputs/current").mkdir(parents=True,exist_ok=True)
+Path("outputs/current/consumed.json").write_text(body,encoding="utf-8")
+print(body,end="")
+'''
+
+def manifest(cap):
+    return {'schema_version':1,'project':{'name':'judge-capture-cpu-validation'},'experiment':{'profiles':['llm_judge'],'description':'Offline stdlib capture/consumer regression; no actual model request.'},'models':{'judge':{'provider':'other','id':'synthetic-judge','endpoint':{'base_url':'https://example.invalid'}}},'prompts':{'judge':{'path':oracle.RUBRIC,'format':'fstring'}},'evaluation':{'metrics':[],'judge':{'model_ref':'judge','prompt_ref':'judge','params':{'temperature':0,'max_tokens':cap},'repetitions':1,'parser':oracle.COMMON},'repetitions':1},'execution':{'command':'python '+oracle.CHILD,'config_files':[oracle.COMMON,oracle.RUBRIC,oracle.CONFIG,oracle.PRIVATE,oracle.CHILD],'seed':17},'bindings':{field:{'config':oracle.CONFIG+':'+key} for field,key in oracle.FIELDS.items()},'artifacts':{'outputs':['outputs/current/*.json']}}
+
+def originals_from_pin():
+    pin=base.PINS['FastChat'][0];root=base.PORTFOLIO/'FastChat'
+    common=subprocess.check_output(['git','-C',str(root),'show',pin+':fastchat/llm_judge/common.py'])
+    rubric=subprocess.check_output(['git','-C',str(root),'show',pin+':fastchat/llm_judge/data/judge_prompts.jsonl'])
+    assert oracle.sha(common)==oracle.COMMON_SHA and oracle.sha(rubric)==oracle.RUBRIC_SHA
+    ast.parse(common.decode('utf-8'));assert len([json.loads(line) for line in rubric.splitlines()])==8
+    return {oracle.COMMON:common,oracle.RUBRIC:rubric,oracle.CONFIG:oracle.raw_json(oracle.config(256)),oracle.PRIVATE:oracle.raw_json(oracle.PRIVATE_DATA),oracle.CHILD:CHILD_SOURCE.encode(),'reprollm.yaml':oracle.raw_json(manifest(256))}
+
+def write(path,value):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    assert value['schema_version']==1
+    with path.open('x') as stream:stream.write(json.dumps(value,indent=2,sort_keys=True,ensure_ascii=False)+'\n')
+
+def bind_quality(candidate,commit,quality):
+    base.CANDIDATE=candidate;base.PYTHON=candidate/'.venv/bin/python';base.COMMIT=commit
+    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=candidate).decode().strip()==commit
+    assert subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],cwd=candidate)==b''
+    inputs=base.inventory();q=base.read(quality/'summary.json')
+    assert q['all_passed'] and q['inputs_byte_identical_before_after'] and q['candidate_commit']==commit
+    assert base.read(quality/'inputs-before.json')==inputs==base.read(quality/'inputs-after.json')
+    assert q['candidate_input_inventory_sha256']==inputs['inventory_sha256']
+    return inputs
+
+def cli(r,name,label,args,cwd,expected=0):
+    return r.command(name+'-'+label,[str(base.PYTHON),str(HERE/'harness/cli.py'),*args],cwd,expected)
+
+def expected_stderr(name):
+    if name=='lm-evaluation-harness':return b'scan: Python analysis incomplete: parsed 500 of 818 candidate files; selected 500 (limit 500), omitted 318. Missing signals may be in unanalysed files.\n'
+    return b''
+
+def prepare(out):
+    assert out.is_relative_to(HERE) and not out.exists()
+    r=base.Runner(out);r.pins('before');originals=originals_from_pin()
+    sources=out/'sources';sources.mkdir()
+    for relative,raw in originals.items():
+        path=sources/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+    for name in base.PINS:
+        dest=out/'clones'/name
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        r.command(name+'-clone',['git','clone','--quiet','--no-hardlinks',str(base.PORTFOLIO/name),str(dest)],base.CANDIDATE)
+        r.command(name+'-detach',['git','checkout','--quiet','--detach',base.PINS[name][0]],dest)
+        r.command(name+'-origin',['git','remote','set-url','origin','https://github.com/'+base.PINS[name][1]+'.git'],dest)
+        for relative,raw in originals.items():
+            path=dest/relative;assert not path.exists();path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+        with (dest/'.git/info/exclude').open('a') as stream:stream.write('\n.reprollm/runs/\noutputs/current/\nREPRODUCIBILITY.md\n__pycache__/\n*.pyc\n')
+    r.pins('after')
+    plan={'schema_version':1,'status':'PREPARED_NOT_EXECUTED','product_commands':0,'source_pin':base.PINS['FastChat'][0],'original_input_sha256':{name:oracle.sha(raw) for name,raw in originals.items()},'all_five_pins':{name:pin for name,(pin,origin) in base.PINS.items()},'variants':{'a':256,'b':384},'required_quality_before_execution':True,'required_explicit_root_authorization_before_execution':True,'cpu_only_supplement_not_formal_judge_acceptance':True,'predeclared_expectations':['Full exact original common.py and every JSONL row; private fixture redacts only supported secrets/paths','Exactly four config observations agree with independent stdlib consumption proof','Full run2 baseline/checks and snapshot/hash/provenance/State alternatives','Exact semantic pair cap HIGH/config hash HIGH/clean commit MEDIUM plus NONE timing identities; empty self diff','Complete selected-run default export semantics, current audit and diagnostics'],'tool_files_sha256':{p.name:oracle.sha(p.read_bytes()) for p in sorted(HERE.glob('*.py'))}}
+    write(out/'execution-plan.json',plan);print(json.dumps({'schema_version':1,'status':'PREPARED_NOT_EXECUTED','clones':5,'product_commands':0}))
+
+def run(args):
+    candidate=args.candidate.resolve();out=args.output.resolve();prepared=args.prepared.resolve()
+    assert args.root_authorized and args.quality and args.commit and not out.exists() and out.is_relative_to(HERE)
+    inputs=bind_quality(candidate,args.commit,args.quality.resolve())
+    plan=base.read(prepared/'execution-plan.json');assert plan['status']=='PREPARED_NOT_EXECUTED'
+    for name,digest in plan['tool_files_sha256'].items():assert oracle.sha((HERE/name).read_bytes())==digest,'Prepared tool bytes changed; repeat tool self-check/preparation'
+    originals={name:(prepared/'sources'/name).read_bytes() for name in plan['original_input_sha256']}
+    assert {name:oracle.sha(raw) for name,raw in originals.items()}==plan['original_input_sha256']
+    (HERE/'harness').mkdir(exist_ok=True);(HERE/'harness/cli.py').write_text(base.CLI)
+    r=base.Runner(out);r.pins('before')
+    write(out/'source-binding.json',{'schema_version':1,'source_commit':args.commit,'candidate_reprollm_version':'0.7.0','files_sha256':{name:item['sha256'] for name,item in inputs['files'].items()}})
+    write(out/'quality-binding.json',{'schema_version':1,'candidate_commit':args.commit,'quality_summary_sha256':oracle.sha((args.quality/'summary.json').read_bytes()),'quality_inventory_sha256':inputs['inventory_sha256'],'root_authorized':True,'all_passed':True})
+    targets=[];failure=None
+    try:
+        for name in base.PINS:
+            case=prepared/'clones'/name;records=[];flats=[];audits=[];variant_checks=[]
+            assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=case).decode().strip()==base.PINS[name][0]
+            for variant,cap in (('a',256),('b',384)):
+                folder=out/name/variant;folder.mkdir(parents=True)
+                current=dict(originals);current[oracle.CONFIG]=oracle.raw_json(oracle.config(cap));current['reprollm.yaml']=oracle.raw_json(manifest(cap))
+                for relative,raw in current.items():(case/relative).write_bytes(raw)
+                if (case/'outputs/current').exists():shutil.rmtree(case/'outputs/current')
+                cli(r,name,variant+'-lock',['lock','--offline'],case)
+                current['reprollm.lock']=(case/'reprollm.lock').read_bytes()
+                r.command(name+'-'+variant+'-git-add',['git','add','-f','--',*current.keys()],case)
+                r.command(name+'-'+variant+'-git-commit',['git','-c','user.name=ReproLLM Validation','-c','user.email=validation@reprollm.invalid','commit','--quiet','-m','validation: offline judge capture '+variant],case)
+                commit=r.command(name+'-'+variant+'-HEAD',['git','rev-parse','HEAD'],case).stdout.decode().strip()
+                assert r.command(name+'-'+variant+'-clean',['git','status','--porcelain=v1','--untracked-files=all'],case).stdout==b''
+                cli(r,name,variant+'-lock-check',['lock','--check'],case)
+                before=set(case.glob('.reprollm/runs/*/run.json'))
+                child=cli(r,name,variant+'-run',['run','--name','judge-snapshot-cpu-'+variant,'--capture-output','--','python',oracle.CHILD],case)
+                after=set(case.glob('.reprollm/runs/*/run.json'));assert len(after-before)==1;path=(after-before).pop();record=json.loads(path.read_bytes());run_dir=path.parent
+                shutil.copytree(run_dir,folder/'run');shutil.copytree(case/'outputs/current',folder/'outputs')
+                witness=json.loads((case/'outputs/current/consumed.json').read_bytes())
+                proof=oracle.check_capture(record,run_dir,case,current,cap,commit,witness);write(folder/'capture-check.json',proof)
+                formats={f['snapshot']:('python' if f['path'].endswith('.py') else 'jsonl' if f['path'].endswith('.jsonl') else 'json') for f in record['files'] if f['snapshot']}
+                private=oracle.privacy_scan(run_dir,formats,[str(case),str(candidate),getpass.getuser(),socket.gethostname()]);write(folder/'privacy-check.json',private)
+                state=r.command(name+'-'+variant+'-State',[str(base.PYTHON),str(HERE/'state_probe.py'),str(candidate),str(path)],case)
+                probe=json.loads(state.stdout);assert state.stderr==b''
+                schema={k:json.loads((candidate/'schemas'/f'{k}.schema.json').read_bytes()) for k in ('manifest','lock')}
+                documents={'manifest':oracle.normalized(manifest(cap),schema['manifest']),'lock':oracle.normalized(yaml.safe_load(current['reprollm.lock']),schema['lock'])}
+                statecheck=oracle.check_state(probe,documents['manifest'],documents['lock'],record,cap);write(folder/'state-check.json',statecheck)
+                flats.append(oracle.state_expected(documents['manifest'],documents['lock'],record));records.append(record)
+                audit=cli(r,name,variant+'-audit',['audit','--format','json','--fail-on','never'],case);assert audit.stderr==expected_stderr(name)
+                audit_path=out/'raw'/f'{name}-{variant}-audit.stdout';audits.append(json.loads(audit.stdout))
+                output=case/'REPRODUCIBILITY.md'
+                export=cli(r,name,variant+'-export',['export','--run',record['run_id']],case);shutil.copyfile(output,folder/'REPRODUCIBILITY.md')
+                receipt=r.commands[-1];write(folder/'export-command.json',{'schema_version':1,'argv':[str(base.PYTHON),str(HERE/'harness/cli.py'),'export','--run',record['run_id']],'exit_code':receipt['exit'],'stdout_sha256':receipt['stdout_sha256'],'stderr_sha256':receipt['stderr_sha256']})
+                (folder/'expected-stderr.txt').write_bytes(expected_stderr(name))
+                checker=r.command(name+'-'+variant+'-export-check',[str(base.PYTHON),str(HERE/'verify_export.py'),'--implementation-root',str(candidate),'--project-root',str(case),'--run-id',record['run_id'],'--markdown',str(folder/'REPRODUCIBILITY.md'),'--stdout',str(out/'raw'/f'{name}-{variant}-export.stdout'),'--stderr',str(out/'raw'/f'{name}-{variant}-export.stderr'),'--audit-json',str(audit_path),'--command-receipt',str(folder/'export-command.json'),'--source-binding',str(out/'source-binding.json'),'--case','FastChat-deepseek','--variant',variant,'--upstream-fidelity','PASS','--upstream-fidelity-evidence',str(folder/'capture-check.json'),'--expected-stderr',str(folder/'expected-stderr.txt'),'--report',str(folder/'export-check.json')],candidate)
+                exportcheck=base.read(folder/'export-check.json');assert exportcheck['export_projection_passed']
+                variant_checks.append({'variant':variant,'cap':cap,'run_id':record['run_id'],'capture':'PASS','State_complete_leaves':statecheck['complete_flat_leaf_count'],'export_comparisons':exportcheck['comparison_count'],'privacy_owned_files':private['owned_files_checked']})
+                print(name+' '+variant+': capture/full State/export PASS',flush=True)
+                # Avoid an ambiguous selected-latest-run when timestamps share seconds.
+                while time.time()<int(datetime.fromisoformat(record['started_at'].replace('Z','+00:00')).timestamp())+1:time.sleep(0.05)
+            pair=cli(r,name,'pair',['diff',records[0]['run_id'],records[1]['run_id'],'--format','json','--fail-on','HIGH'],case,1)
+            own=cli(r,name,'self',['diff',records[0]['run_id'],records[0]['run_id'],'--format','json'],case)
+            assert pair.stderr==own.stderr==b''
+            paircheck=oracle.check_pair(json.loads(pair.stdout),json.loads(own.stdout),flats[0],flats[1],records);write(out/name/'pair-check.json',paircheck)
+            assert audits[0]['findings']==audits[1]['findings'] and audits[0]['profiles']==audits[1]['profiles'],'Full paired audit findings/profile mismatch'
+            assert r.command(name+'-final-clone-clean',['git','status','--porcelain=v1','--untracked-files=all'],case).stdout==b''
+            targets.append({'target':name,'status':'PASS','variants':variant_checks,'pair_changes':paircheck['full_change_count'],'full_findings_and_profiles_equal':True})
+    except BaseException as error:
+        failure={'type':type(error).__name__,'message':str(error),'last_command':r.commands[-1]['label'] if r.commands else None}
+    r.pins('after');after_inputs=base.inventory();assert after_inputs==inputs
+    summary={'schema_version':1,'status':'PASS' if failure is None and len(targets)==5 else 'FAIL','candidate_commit':args.commit,'targets':targets,'failure':failure,'all_five_pins_unchanged':True,'source_inputs_unchanged':True,'source_inventory_sha256':inputs['inventory_sha256'],'command_count':len(r.commands),'product_commands':sum(any(c['label'].endswith('-'+x) for x in ('lock','lock-check','run','audit','export','pair','self')) for c in r.commands),'summed_command_seconds':round(sum(c['elapsed_seconds'] for c in r.commands),6),'wall_seconds':round(time.monotonic()-r.start,6),'formal_judge_acceptance':False,'gpu_or_api_jobs':0}
+    write(out/'summary.json',summary);print(json.dumps(summary,sort_keys=True));return 0 if summary['status']=='PASS' else 1
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--prepare',action='store_true');p.add_argument('--candidate',type=Path,default=SCRATCH/'worktree');p.add_argument('--commit');p.add_argument('--quality',type=Path);p.add_argument('--prepared',type=Path);p.add_argument('--root-authorized',action='store_true');p.add_argument('--output',type=Path,required=True);args=p.parse_args()
+    base.CANDIDATE=args.candidate.resolve();base.PYTHON=base.CANDIDATE/'.venv/bin/python'
+    if args.prepare:prepare(args.output.resolve());return 0
+    assert args.prepared is not None;return run(args)
+if __name__=='__main__':raise SystemExit(main())

@@ -100,13 +100,21 @@ These are unscheduled proposals, not promises for the next release.
 
 [VAL-R01, VAL-R02 and VAL-R03](../dogfooding/pending-resource-validation.md)
 retain separate acceptance requirements. The
-[2026-10-13 native replay](../dogfooding/2026-10-13-val-r01/README.md) executed all
-ten GPU children but left VAL-R01 blocked on snapshot fidelity. S4-A repairs the
-observed capture defects and validates its own lm-eval recipe; the full other-project
-native matrix still requires fresh acceptance. VAL-R02's formal paid judge and
-VAL-R03's authenticated gated-file access are not established by these offline
-or lm-eval checks. Historical successes remain historical;
-the [five-project baseline](../../val.md) governs resumption and release gates.
+[2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
+closes VAL-R01 at `750270b`: Linux H2, ten native GPU children, all five complete
+A/B pairs and 20 available export states pass. That candidate's paid judge A
+remains a historical snapshot-fidelity FAIL, with B NOT_RUN.
+
+The [R02-R snapshot repair](../dogfooding/2026-10-19-judge-snapshot-fix/README.md)
+at `75d1b0` passes final quality and fresh five-project CPU capture/diff/export
+acceptance. Under a newly approved CNY 3 budget, both new formal judge requests,
+complete captures and the full semantic pair PASS, closing VAL-R02 at `75d1b0`.
+The direct cap leaf is HIGH and the old failed run remains historical. This
+does not claim a new GPU/H2 matrix at `75d1b0`. VAL-R03 remains blocked by the last measured HF 403
+and missing original metadata inputs; five original manifests remain missing.
+These unreleased changes do not establish a complete release matrix. Historical
+results retain their candidates; the [five-project baseline](../../val.md)
+governs resumption and release gates.
 
 ## Good first issues
 

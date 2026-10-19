@@ -1,0 +1,1524 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-19T03:48:54Z",
+  "target": ".",
+  "level": 2,
+  "profiles": {
+    "declared": [
+      "llm_judge"
+    ],
+    "resolved": [
+      "core",
+      "inference",
+      "evaluation",
+      "llm_judge"
+    ],
+    "detected": [
+      {
+        "profile": "evaluation",
+        "confidence": "low",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "README.md",
+            "field": null,
+            "line": null,
+            "value": null,
+            "expected": null,
+            "note": "keyword 'benchmark' in readme text"
+          }
+        ],
+        "shipped": true
+      },
+      {
+        "profile": "finetuning",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "fastchat/data/convert_alpaca.py",
+            "field": null,
+            "line": 10,
+            "value": null,
+            "expected": null,
+            "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments"
+          },
+          {
+            "kind": "detection",
+            "path": "fastchat/model/apply_lora.py",
+            "field": null,
+            "line": 13,
+            "value": null,
+            "expected": null,
+            "note": "import peft"
+          },
+          {
+            "kind": "detection",
+            "path": "fastchat/train/train_lora.py",
+            "field": null,
+            "line": 24,
+            "value": null,
+            "expected": null,
+            "note": "import deepspeed"
+          }
+        ],
+        "shipped": true
+      },
+      {
+        "profile": "inference",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "fastchat/serve/sglang_worker.py",
+            "field": null,
+            "line": 17,
+            "value": null,
+            "expected": null,
+            "note": "import sglang"
+          },
+          {
+            "kind": "detection",
+            "path": "fastchat/serve/vllm_worker.py",
+            "field": null,
+            "line": 15,
+            "value": null,
+            "expected": null,
+            "note": "import vllm"
+          }
+        ],
+        "shipped": true
+      },
+      {
+        "profile": "llm_judge",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "README.md",
+            "field": null,
+            "line": null,
+            "value": null,
+            "expected": null,
+            "note": "keyword 'judge' in readme text"
+          },
+          {
+            "kind": "detection",
+            "path": "README.md",
+            "field": null,
+            "line": null,
+            "value": null,
+            "expected": null,
+            "note": "keyword 'llm-as-a-judge' in readme text"
+          },
+          {
+            "kind": "detection",
+            "path": "README.md",
+            "field": null,
+            "line": null,
+            "value": null,
+            "expected": null,
+            "note": "keyword 'llm_judge' in readme text"
+          }
+        ],
+        "shipped": true
+      }
+    ]
+  },
+  "documents": {
+    "manifest": "sha256:09049809313b34095b37c18f1a2ca755199665650b0bfab9b1dc0557bb813e4a",
+    "lock": "sha256:cfa02112eed446a4540cc9552703fa8498bb8adbf492fefc4daefc306d24fdde",
+    "runs": 1
+  },
+  "summary": {
+    "critical": 5,
+    "warning": 19,
+    "info": 3,
+    "pass": 24,
+    "suppressed": 0,
+    "skipped": 20
+  },
+  "findings": [
+    {
+      "rule_id": "model.primary_declared",
+      "aliases": [],
+      "category": "model",
+      "severity": "CRITICAL",
+      "status": "fail",
+      "level": 2,
+      "message": "models.primary.id is missing",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.primary.id",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set models.primary.id in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.declared",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "CRITICAL",
+      "status": "fail",
+      "level": 2,
+      "message": "datasets is missing",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "datasets",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set datasets in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "profile:evaluation",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.backend_declared",
+      "aliases": [],
+      "category": "gen",
+      "severity": "CRITICAL",
+      "status": "fail",
+      "level": 2,
+      "message": "inference.backend is missing",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "inference.backend",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set inference.backend in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "profile:inference",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.params_declared",
+      "aliases": [],
+      "category": "gen",
+      "severity": "CRITICAL",
+      "status": "fail",
+      "level": 2,
+      "message": "Missing fields: generation.max_tokens, generation.temperature, generation.top_p",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "generation.max_tokens",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        },
+        {
+          "kind": "field",
+          "path": null,
+          "field": "generation.temperature",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        },
+        {
+          "kind": "field",
+          "path": null,
+          "field": "generation.top_p",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set generation.max_tokens, generation.temperature, generation.top_p in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "profile:inference",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "eval.metrics_declared",
+      "aliases": [],
+      "category": "eval",
+      "severity": "CRITICAL",
+      "status": "fail",
+      "level": 2,
+      "message": "evaluation.metrics is missing",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "evaluation.metrics",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set evaluation.metrics in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "profile:evaluation",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "accelerate is used but not pinned to an exact version (suggestion: accelerate==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": ">=0.21",
+          "expected": null,
+          "note": "declared as >=0.21"
+        }
+      ],
+      "fix_hint": "Pin accelerate exactly, e.g. `accelerate==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "anthropic is used but not pinned to an exact version (suggestion: anthropic==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin anthropic exactly, e.g. `anthropic==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "datasets is used but not pinned to an exact version (suggestion: datasets==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/serve/monitor/dataset_release_scripts/arena_33k/upload_hf_dataset.py",
+          "field": null,
+          "line": 5,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin datasets exactly, e.g. `datasets==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "deepspeed is used but not pinned to an exact version (suggestion: deepspeed==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/train/train_lora.py",
+          "field": null,
+          "line": 24,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin deepspeed exactly, e.g. `deepspeed==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "flash_attn is used but not pinned to an exact version (suggestion: flash_attn==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 24,
+          "value": ">=2.0",
+          "expected": null,
+          "note": "declared as >=2.0"
+        }
+      ],
+      "fix_hint": "Pin flash_attn exactly, e.g. `flash_attn==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 16,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin numpy exactly, e.g. `numpy==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "openai is used but not pinned to an exact version (suggestion: openai==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin openai exactly, e.g. `openai==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "peft is used but not pinned to an exact version (suggestion: peft==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin peft exactly, e.g. `peft==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "safetensors is used but not pinned to an exact version (suggestion: safetensors==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/model/compression.py",
+          "field": null,
+          "line": 184,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin safetensors exactly, e.g. `safetensors==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "sentencepiece is used but not pinned to an exact version (suggestion: sentencepiece==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin sentencepiece exactly, e.g. `sentencepiece==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "sglang is used but not pinned to an exact version (suggestion: sglang==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/serve/sglang_worker.py",
+          "field": null,
+          "line": 17,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin sglang exactly, e.g. `sglang==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": "(no version)",
+          "expected": null,
+          "note": "declared as unversioned"
+        }
+      ],
+      "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "transformers is used but not pinned to an exact version (suggestion: transformers==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 22,
+          "value": ">=4.31.0",
+          "expected": null,
+          "note": "declared as >=4.31.0"
+        }
+      ],
+      "fix_hint": "Pin transformers exactly, e.g. `transformers==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "vllm is used but not pinned to an exact version (suggestion: vllm==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/serve/vllm_worker.py",
+          "field": null,
+          "line": 15,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin vllm exactly, e.g. `vllm==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "xformers is used but not pinned to an exact version (suggestion: xformers==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "fastchat/train/llama_xformers_attn_monkey_patch.py",
+          "field": null,
+          "line": 14,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        }
+      ],
+      "fix_hint": "Pin xformers exactly, e.g. `xformers==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.lockfile_present",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": null,
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+        }
+      ],
+      "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.provider_known",
+      "aliases": [],
+      "category": "model",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "models.judge.provider is 'other'; provider-specific resolution is unavailable",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.judge.provider",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "unsupported provider"
+        }
+      ],
+      "fix_hint": "Keep models.judge.provider as other and record models.judge.endpoint.base_url in reprollm.yaml; provider metadata is unsupported and API aliases do not guarantee immutable revisions.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.revision_pinned",
+      "aliases": [],
+      "category": "model",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "models.judge cannot be pinned to an immutable provider revision",
+      "evidence": [
+        {
+          "kind": "lock",
+          "path": null,
+          "field": "models.judge.pinnability",
+          "line": null,
+          "value": "unpinnable",
+          "expected": "exact",
+          "note": "source=provider_no_pinning; note=none"
+        }
+      ],
+      "fix_hint": "Run `reprollm lock` with network access (set HF_TOKEN for gated models), or set models.<role>.revision to a commit SHA.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.trust_remote_code_declared",
+      "aliases": [],
+      "category": "model",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 2,
+      "message": "models has no explicit trust_remote_code declaration despite detected use",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.judge.trust_remote_code",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.submodules_initialized",
+      "aliases": [],
+      "category": "code",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no .gitmodules",
+      "evidence": [],
+      "fix_hint": "Run `git submodule update --init --recursive`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.reprollm_initialized",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "audit level > 0; reprollm.yaml exists",
+      "evidence": [],
+      "fix_hint": "Run `reprollm init` to create reprollm.yaml and .reprollm/.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "exec.profile_detection_mismatch",
+      "aliases": [],
+      "category": "exec",
+      "severity": "INFO",
+      "status": "fail",
+      "level": 2,
+      "message": "detected profile 'finetuning' (high confidence) is not declared in experiment.profiles",
+      "evidence": [
+        {
+          "kind": "detection",
+          "path": "fastchat/data/convert_alpaca.py",
+          "field": null,
+          "line": 10,
+          "value": null,
+          "expected": null,
+          "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments"
+        },
+        {
+          "kind": "detection",
+          "path": "fastchat/model/apply_lora.py",
+          "field": null,
+          "line": 13,
+          "value": null,
+          "expected": null,
+          "note": "import peft"
+        },
+        {
+          "kind": "detection",
+          "path": "fastchat/train/train_lora.py",
+          "field": null,
+          "line": 24,
+          "value": null,
+          "expected": null,
+          "note": "import deepspeed"
+        }
+      ],
+      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.chat_template_hashed",
+      "aliases": [],
+      "category": "model",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable locked declarations",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to record models.<role>.chat_template in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.dtype_declared",
+      "aliases": [],
+      "category": "model",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "models.judge.dtype: not required for API models",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.judge.dtype",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "not required for API models"
+        }
+      ],
+      "fix_hint": "Set models.<role>.dtype or inference.dtype in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.quantization_declared",
+      "aliases": [],
+      "category": "model",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "models.judge.quantization: not required for API models",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.judge.quantization",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "not required for API models"
+        }
+      ],
+      "fix_hint": "Set models.<role>.quantization or inference.quantization in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "model.tokenizer_pinned",
+      "aliases": [],
+      "category": "model",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable locked declarations",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to resolve models.<role>.tokenizer.revision in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.local_files_hashed",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable locked declarations",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to hash datasets.<role>.files in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.preprocessing_declared",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set datasets.<role>.preprocessing in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.revision_pinned",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable locked declarations",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to resolve datasets.<role>.revision in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.sampling_seed_declared",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set datasets.<role>.sampling.seed in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.split_declared",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set datasets.<role>.split in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "dataset.subset_declared",
+      "aliases": [],
+      "category": "dataset",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set datasets.<role>.subset in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.backend_config_declared",
+      "aliases": [],
+      "category": "gen",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set inference.dtype, inference.tensor_parallel_size, inference.quantization and inference.gpu_memory_utilization in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.backend_version_locked",
+      "aliases": [],
+      "category": "gen",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable locked declarations",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to record inference.version in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.seed_declared",
+      "aliases": [],
+      "category": "gen",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set generation.seed in reprollm.yaml when sampling is enabled.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "gen.stop_declared",
+      "aliases": [],
+      "category": "gen",
+      "severity": "INFO",
+      "status": "fail",
+      "level": 2,
+      "message": "generation.stop is missing",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "generation.stop",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set generation.stop in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "prompt.few_shot_declared",
+      "aliases": [],
+      "category": "prompt",
+      "severity": "INFO",
+      "status": "fail",
+      "level": 2,
+      "message": "prompts has no few_shot declaration",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "prompts.judge.few_shot",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "absent"
+        }
+      ],
+      "fix_hint": "Set prompts.<role>.few_shot in reprollm.yaml; use n: 0 for zero-shot prompts.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "eval.aggregation_declared",
+      "aliases": [],
+      "category": "eval",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set evaluation.aggregation in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "eval.metric_implementation_referenced",
+      "aliases": [],
+      "category": "eval",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set evaluation.metrics.<index>.implementation to a relative file or pkg==version in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "eval.repetitions_declared",
+      "aliases": [],
+      "category": "eval",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "no applicable declarations",
+      "evidence": [],
+      "fix_hint": "Set evaluation.repetitions in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.custom_fields",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "accepted custom.* bindings and latest-run observations are required",
+      "evidence": [],
+      "fix_hint": "Reconcile custom.* in reprollm.yaml with bindings in .reprollm/project-rules.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.generation_params",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 2,
+      "message": "manifest and latest-run generation.* observations are required",
+      "evidence": [],
+      "fix_hint": "Reconcile generation.* in reprollm.yaml with the declared runtime bindings.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.clean_tree",
+      "aliases": [],
+      "category": "code",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Tracked files have no uncommitted modifications.",
+      "evidence": [],
+      "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.git_commit",
+      "aliases": [],
+      "category": "code",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "HEAD points at a committed revision (no unborn branch).",
+      "evidence": [],
+      "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.git_repo",
+      "aliases": [],
+      "category": "code",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The experiment code lives in a git repository.",
+      "evidence": [],
+      "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.no_untracked",
+      "aliases": [],
+      "category": "code",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "No untracked, non-ignored files are left in the tree.",
+      "evidence": [],
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "code.remote_recorded",
+      "aliases": [],
+      "category": "code",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "An origin remote records where this code is published.",
+      "evidence": [],
+      "fix_hint": "Run `git remote add origin <url>` so the experiment's code source is recorded.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.dependency_manifest_present",
+      "aliases": [],
+      "category": "env",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "A dependency manifest declares the Python environment.",
+      "evidence": [],
+      "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.python_version_declared",
+      "aliases": [],
+      "category": "env",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The required Python version is declared.",
+      "evidence": [],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.secret_files_ignored",
+      "aliases": [],
+      "category": "env",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Secret-bearing files are not present or are gitignored.",
+      "evidence": [],
+      "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "exec.command_declared",
+      "aliases": [],
+      "category": "exec",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The command that reproduces the experiment is declared.",
+      "evidence": [],
+      "fix_hint": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "exec.run_recorded",
+      "aliases": [],
+      "category": "exec",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "At least one run record captures what actually executed.",
+      "evidence": [],
+      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "exec.seed_declared",
+      "aliases": [],
+      "category": "exec",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "A random seed is declared somewhere (execution/generation/training).",
+      "evidence": [],
+      "fix_hint": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "prompt.declared",
+      "aliases": [],
+      "category": "prompt",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "prompts is declared",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "prompts",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "declared"
+        }
+      ],
+      "fix_hint": "Set prompts in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "prompt.file_exists",
+      "aliases": [],
+      "category": "prompt",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "prompts.judge.path: referenced file exists",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "prompts.judge.path",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "referenced file exists"
+        },
+        {
+          "kind": "file",
+          "path": "validation/judge_prompts.jsonl",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": null
+        }
+      ],
+      "fix_hint": "Set prompts.judge.path to an existing file in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "prompt.hashed",
+      "aliases": [],
+      "category": "prompt",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Every prompt role has a recorded content hash.",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to hash prompts.<role> in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.model_declared",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "models.judge is declared",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "models.judge",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "declared"
+        }
+      ],
+      "fix_hint": "Set models.judge in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.params_declared",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Judge temperature and max_tokens are declared.",
+      "evidence": [],
+      "fix_hint": "Set evaluation.judge.params.temperature and evaluation.judge.params.max_tokens in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.pinnability_recorded",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The declared judge model has an explicit pinnability record.",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to record pinnability for evaluation.judge.model_ref in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.prompt_declared",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "prompts.judge is declared",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "prompts.judge",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "declared"
+        }
+      ],
+      "fix_hint": "Set prompts.judge in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.prompt_hashed",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The declared judge prompt has a recorded content hash.",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to hash the evaluation.judge.prompt_ref role in reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "judge.repetitions_declared",
+      "aliases": [],
+      "category": "judge",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "evaluation.judge.repetitions is declared",
+      "evidence": [
+        {
+          "kind": "field",
+          "path": null,
+          "field": "evaluation.judge.repetitions",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "declared"
+        }
+      ],
+      "fix_hint": "Set evaluation.judge.repetitions in reprollm.yaml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.env_vs_lock",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Recorder LLM-critical package metadata agrees with the lock; the child environment is unverified.",
+      "evidence": [],
+      "fix_hint": "Reconcile recorder environment.packages with reprollm.lock; verify the child environment separately.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.file_hashes",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Declared file hashes agree between the lock, working tree, and latest run.",
+      "evidence": [],
+      "fix_hint": "Reconcile reprollm.lock prompts/files hashes with the intended files and rerun.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.lock_fresh",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "The lock matches the manifest and accepted project rules.",
+      "evidence": [],
+      "fix_hint": "Run `reprollm lock` to refresh reprollm.lock after declaration changes.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "consistency.model_identity",
+      "aliases": [],
+      "category": "consistency",
+      "severity": "PASS",
+      "status": "pass",
+      "level": 2,
+      "message": "Recorded model identities agree with the manifest and lock; child consumption is unverified.",
+      "evidence": [],
+      "fix_hint": "Reconcile models.<role>.id and revision in reprollm.yaml and reprollm.lock.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

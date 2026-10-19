@@ -12,10 +12,16 @@ GPU/pair replay), VAL-R02 (formal FastChat/DeepSeek judge inputs and replay), an
 VAL-R03 (successful HF gated-file access). The
 [2026-10-19 replay](../dogfooding/2026-10-19-resource-completion/README.md)
 closes VAL-R01 on candidate `750270b`: H2, all ten native children, five semantic
-pairs and 20 available export states pass. VAL-R02 now has an actual product
-capture failure after one successful provider request; VAL-R03 remains blocked
-by original-input and successful-access requirements. `val.md` remains the gold
-source and records the maintainer's continuing actual-capacity resource guidance.
+pairs and 20 available export states pass. Its judge A remains a historical
+capture FAIL, with B NOT_RUN. The
+[R02-R follow-up](../dogfooding/2026-10-19-judge-snapshot-fix/README.md) repairs both
+source defects at `75d1b0`; final quality and five-project CPU acceptance pass.
+Under a newly approved CNY 3 budget, the new formal A/B provider, complete capture
+and semantic-pair acceptance pass, closing VAL-R02 at `75d1b0`. This does not
+rerun the native matrix at `75d1b0`. VAL-R03 remains blocked by the last observed
+HF 403 and original-input requirements; five original metadata manifests are
+still missing. `val.md` remains the gold source and records the maintainer's
+continuing actual-capacity resource guidance.
 
 ## Product trial follow-up (2026-10-02)
 
@@ -51,19 +57,22 @@ T02's accepted narrow policy amendment is implemented as R08-A, described below.
 
 ## Engineering
 
-- **Formal judge source snapshot fidelity (R02-R follow-up, 2026-10-19):**
-  the [current resource report](../dogfooding/2026-10-19-resource-completion/README.md)
-  records two independent CPU-reproducible defects. A valid Python f-string is
-  parsed as a YAML fragment and a later symbolic API-key assignment causes
+- **Formal judge source snapshot fidelity — resolved (R02-R follow-up,
+  2026-10-19 candidate `75d1b0`).**
+  The [historical resource report](../dogfooding/2026-10-19-resource-completion/README.md)
+  records two independent CPU-reproducible defects at `750270b`. A valid Python
+  f-string is parsed as a YAML fragment and a later symbolic API-key assignment causes
   `common.py`'s snapshot to be omitted. Separately, raw JSONL escaped newlines
   after the role label `A:` are misread as Windows paths, changing four
-  multi-turn rubric rows. Preserve Python lexical/fragment boundaries and
-  decoded JSONL scalar meaning while retaining secret/path protection; do not
-  bypass capture checks, fabricate the missing snapshot or change the gold.
-  Lock down the original source cases and minimal reproducers before a fix,
-  retain security negatives, then repeat final quality and the affected real
-  judge acceptance on the repaired candidate. The existing paid A remains FAIL
-  and B NOT_RUN; successful `single-v1` parsing does not repair the full file.
+  multi-turn rubric rows. The [repair report](../dogfooding/2026-10-19-judge-snapshot-fix/README.md)
+  records exact original-source/minimal regressions, retained secret/path
+  protection, final quality and fresh five-project CPU run/diff/export acceptance.
+  Both new paid requests, full captures and the formal semantic pair pass under
+  this replay's newly approved CNY 3 ceiling. The direct cap leaf is HIGH and
+  all seven changes are explained; self-diff is empty. The old paid A remains
+  FAIL and its B NOT_RUN; no historical snapshot or gold answer is rewritten.
+  This engineering repair remains unreleased and does not establish a complete
+  release matrix.
 
 - **Privacy heuristic punctuation / relative-source false positives (M7 follow-up,
   2026-10-01):** existing `RunPrivacy.text` treats standalone `/` prose separators

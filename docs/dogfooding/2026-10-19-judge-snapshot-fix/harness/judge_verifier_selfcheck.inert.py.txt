@@ -1,0 +1,201 @@
+"""CPU-only tool qualification; no product CLI, provider request or GPU job."""
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import importlib.util
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / "gate"))
+import cpu_oracle as fixture
+import judge_capture_verifier as verifier
+
+OLD = Path("<PROVISIONED_RESOURCE_ROOT>/replays/resource-20261019-750270b")
+
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    result = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(result)
+    return result
+
+
+def git(case, *args):
+    result = subprocess.run(["git", "-C", str(case), *args], capture_output=True)
+    assert result.returncode == 0, "tool-fixture Git operation failed"
+    return result.stdout
+
+
+def build(root):
+    helpers = load_module("cpu_fixture_builder", HERE / "gate/selfcheck.py")
+    helpers.ROOT = root
+    case, run_dir, originals, record, witness = helpers.build()
+    record["environment"]["env_capture"] = "allowlist"
+    lock = {
+        "schema_version": 1,
+        "reprollm_version": "0.7.0",
+        "generated_at": "2026-10-19T00:00:00Z",
+        "manifest_sha256": "sha256:" + fixture.sha(originals["reprollm.yaml"]),
+        "resolution": {"mode": "offline"},
+    }
+    originals["reprollm.lock"] = fixture.raw_json(lock)
+    (case / "reprollm.lock").write_bytes(originals["reprollm.lock"])
+    (run_dir / "lock.yaml").write_bytes(originals["reprollm.lock"])
+    record["lock"]["sha256"] = "sha256:" + fixture.sha(originals["reprollm.lock"])
+    item = next(row for row in record["input_capture"]["checks"] if row["path"] == "reprollm.lock")
+    item["before"] = item["after"] = {"availability": "present", "sha256": record["lock"]["sha256"], "size_bytes": len(originals["reprollm.lock"])}
+    git(case, "init", "--quiet")
+    (case / ".git/info/exclude").write_text("outputs/\n__pycache__/\n")
+    git(case, "add", "--all")
+    git(case, "-c", "user.name=ReproLLM Tool Validation", "-c", "user.email=validation@reprollm.invalid", "commit", "--quiet", "-m", "validation: synthetic capture verifier fixture")
+    git(case, "remote", "add", "origin", "https://github.com/lm-sys/FastChat.git")
+    commit = git(case, "rev-parse", "HEAD").decode().strip()
+    record["code"]["commit"] = commit
+    (run_dir / "run.json").write_bytes(fixture.raw_json(record))
+    return case, run_dir, originals, record, witness, commit
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    out = args.output.resolve()
+    assert out.parent == HERE and not out.exists()
+    out.mkdir()
+    case, run_dir, originals, record, witness, commit = build(out / "synthetic")
+    cases = []
+
+    def check(label, action, reject=False):
+        rejected = False
+        reason = None
+        try:
+            action()
+        except verifier.VerificationError as exc:
+            rejected = True
+            reason = str(exc)
+        assert rejected == reject, label + ": " + str(reason)
+        cases.append({"case": label, "expected_rejection": reject, "rejected": rejected, "passed": True, "fixed_diagnostic": reason})
+
+    def write_record(value):
+        (run_dir / "run.json").write_bytes(fixture.raw_json(value))
+
+    def capture():
+        return verifier.verify_capture(case, run_dir, "evaluation.judge.params.max_tokens", 256, ["python", fixture.CHILD], record["environment"]["packages"], commit)
+
+    check("synthetic-full-capture-with-public-originals-and-redacted-private-fixture", capture)
+    for label, mutate in [
+        ("missing-common-snapshot", lambda value: value["files"][0].update(snapshot=None)),
+        ("wrong-original-hash", lambda value: value["files"][0].update(sha256="sha256:" + "0" * 64)),
+        ("wrong-original-size", lambda value: value["files"][0].update(size_bytes=1)),
+        ("missing-declared-input", lambda value: value["files"].pop()),
+        ("wrong-cap-binding", lambda value: value["bindings_observed"]["evaluation.judge.params.max_tokens"][0].update(value=384)),
+        ("false-child-consumption", lambda value: value["input_capture"].update(consumption="verified")),
+        ("missing-pre-post-check", lambda value: value["input_capture"]["checks"].pop()),
+        ("wrong-after-size", lambda value: value["input_capture"]["checks"][0]["after"].update(size_bytes=1)),
+        ("wrong-command", lambda value: value["command"].update(argv=["python", "unknown.py"])),
+        ("missing-capture-hardware", lambda value: value.update(hardware=None)),
+        ("wrong-inherited-device-input", lambda value: value["environment"]["env"].update(CUDA_VISIBLE_DEVICES="0")),
+        ("missing-artifact", lambda value: value.update(artifacts=[])),
+    ]:
+        bad = copy.deepcopy(record)
+        mutate(bad)
+        write_record(bad)
+        check("capture-reject-" + label, capture, True)
+        write_record(record)
+
+    for relative, label in [(fixture.COMMON, "common-bit-flip"), (fixture.RUBRIC, "unselected-rubric-row-change")]:
+        entry = next(row for row in record["files"] if row["path"] == relative)
+        path = run_dir / entry["snapshot"]
+        before = path.read_bytes()
+        changed = before.replace(b"Assistant A:", b"Assistant X:", 1) if relative == fixture.RUBRIC else before + b"\n# changed\n"
+        assert changed != before
+        path.write_bytes(changed)
+        check("capture-reject-" + label, capture, True)
+        path.write_bytes(before)
+
+    # Privacy checks use independent syntax classification and core normative
+    # value patterns only, never the implementation under test's capture layer.
+    positives = [
+        ("public-common-exact", originals[fixture.COMMON].decode(), ".py"),
+        ("public-rubric-all-eight-rows", originals[fixture.RUBRIC].decode(), ".jsonl"),
+        ("role-newline-and-safe-escapes", '{"prompt":"### Assistant <SYNTHETIC_OR_LOCAL_PATH>}", "unicode":"\\u4e2d"}\n', ".jsonl"),
+        ("nested-serialized-role-newline", json.dumps({"nested": json.dumps({"prompt": "### Assistant <SYNTHETIC_OR_LOCAL_PATH>}"})}), ".json"),
+        ("symbolic-lookups-and-no-space-arithmetic", 'openai.api_key = api_dict["api_key"]\nvalue=(a+b)/1000000\n', ".py"),
+        ("relative-python-template", 'path=f"data/{name}/question.jsonl"\n', ".py"),
+    ]
+    for label, text, suffix in positives:
+        check("privacy-positive-" + label, lambda text=text, suffix=suffix: verifier._privacy(case, text, suffix=suffix))
+
+    private_paths = [r"<SYNTHETIC_OR_LOCAL_PATH>", r"<SYNTHETIC_OR_LOCAL_PATH>", r"<SYNTHETIC_OR_LOCAL_PATH>", "<SYNTHETIC_PATH>/file", "file://<SYNTHETIC_PATH>/file"]
+    negatives = [
+        ("context-secret", json.dumps({"api_key": fixture.CANARY}), ".json"),
+        ("second-row-context-secret", '{"prompt":"### Assistant <SYNTHETIC_OR_LOCAL_PATH>}"}\n{"api\\u005fkey":"' + fixture.CANARY + '"}\n', ".jsonl"),
+        ("actual-prefixed-secret", json.dumps({"value": "<SHARED_REDACTED:openai>"}), ".json"),
+        ("duplicate-key-earlier-secret", '{"api_key":"' + fixture.CANARY + '","api_key":"safe"}', ".json"),
+        ("malformed-jsonl", '{"role":"safe"}\n{"api_key":', ".jsonl"),
+        ("literal-source-secret", 'openai.api_key = "' + fixture.CANARY + '"\n', ".py"),
+        ("literal-dictionary-secret", 'options={"api_key":"' + fixture.CANARY + '"}\n', ".py"),
+        ("source-comment-secret", '# api_key=' + fixture.CANARY + '\nx=1\n', ".py"),
+        ("source-pem-comment", '# <SHARED_REDACTED:pem-marker>\n# not-a-real-key\n# -----END PRIVATE KEY-----\nx=1\n', ".py"),
+        ("source-unfinished-pem-comment", '# <SHARED_REDACTED:pem-marker>\n# not-a-real-key\nx=1\n', ".py"),
+        ("nested-source-serialized-secret", 'value = ' + repr(json.dumps({"api_key": fixture.CANARY})) + '\n', ".py"),
+        ("malformed-nested-source-serialized-secret", 'value = ' + repr('{"api_key":"' + fixture.CANARY) + '\n', ".py"),
+        ("malformed-nested-source-container-secret", 'value = ' + repr('{"api_key":["' + fixture.CANARY) + '\n', ".py"),
+        ("malformed-output-quoted-key-secret", 'message {"api_key":"' + fixture.CANARY, ""),
+        ("unicode-escaped-Unix-source-path", 'value="\\u002fprivate-owner/file"\n', ".py"),
+    ]
+    for index, value in enumerate(private_paths):
+        negatives.extend([
+            ("decoded-path-" + str(index), json.dumps({"path": value}), ".json"),
+            ("decoded-key-path-" + str(index), json.dumps({value: "safe"}), ".json"),
+            ("nested-serialized-path-" + str(index), json.dumps({"nested": json.dumps({"path": value})}), ".json"),
+            ("Python-literal-path-" + str(index), "path=" + repr(value) + "\n", ".py"),
+        ])
+    for label, text, suffix in negatives:
+        check("privacy-reject-" + label, lambda text=text, suffix=suffix: verifier._privacy(case, text, suffix=suffix), True)
+
+    # Original failed 750270b evidence is immutable and remains failed. The two
+    # source-fidelity defects are checked separately from its aggregate warning.
+    old_run = OLD / "evidence/runtime/FastChat-deepseek/a/run"
+    old_case = OLD / "cases/FastChat-deepseek"
+    old = json.loads((old_run / "run.json").read_bytes())
+    check("historical-750270b-A-remains-FAIL", lambda: verifier.verify_capture(old_case, old_run, "evaluation.judge.params.max_tokens", 256, old["command"]["argv"], old["environment"]["packages"], old["code"]["commit"]), True)
+    old_common = next(item for item in old["files"] if item["path"] == "fastchat/llm_judge/common.py")
+    assert old_common["snapshot"] is None
+    check("historical-750270b-independent-missing-Python", lambda: verifier._require(old_common["snapshot"] is not None, "eligible input snapshot missing"), True)
+    old_rubric = next(item for item in old["files"] if item["path"].endswith("judge_prompts.jsonl"))
+    original_rubric = git(old_case, "show", old["code"]["commit"] + ":" + old_rubric["path"])
+    check("historical-750270b-independent-changed-JSONL", lambda: verifier._snapshot(old_case, old_run, old_rubric["path"], old_rubric["snapshot"], original_rubric), True)
+
+    # Qualify the same privacy oracle over all six public formal-run inputs,
+    # including upstream conversation.py and the independently reviewed transport.
+    for entry in old["files"]:
+        raw = git(old_case, "show", old["code"]["commit"] + ":" + entry["path"])
+        check("formal-original-input-privacy-" + entry["path"], lambda raw=raw, entry=entry: verifier._privacy(old_case, raw.decode(), suffix=Path(entry["path"]).suffix))
+
+    summary = {
+        "schema_version": 1,
+        "status": "PASS",
+        "positive_cases": sum(not row["expected_rejection"] for row in cases),
+        "negative_cases": sum(row["expected_rejection"] for row in cases),
+        "cases": cases,
+        "original_common_sha256": fixture.COMMON_SHA,
+        "original_rubric_sha256": fixture.RUBRIC_SHA,
+        "tool_sha256": {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in [Path(__file__), HERE / "judge_capture_verifier.py", HERE / "gate/path_oracle.py"]},
+        "new_product_commands": 0,
+        "new_provider_or_gpu_jobs": 0,
+        "historical_capture_rewritten": False,
+        "scope": "Synthetic complete captures and immutable existing captures/public source bytes; tool qualification only.",
+    }
+    (out / "summary.json").write_bytes(fixture.raw_json(summary))
+    print(json.dumps({key: value for key, value in summary.items() if key != "cases"}, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

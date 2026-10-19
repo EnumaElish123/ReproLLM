@@ -1,0 +1,85 @@
+"""Tool-only positive/negative checks; no ReproLLM CLI/model/network execution."""
+from __future__ import annotations
+import copy
+import json
+import shutil
+from pathlib import Path
+import cpu_oracle as oracle
+from cpu_extension import originals_from_pin, manifest, CHILD_SOURCE
+
+ROOT=Path(__file__).resolve().parent/'tool-selfcheck-4'
+
+def build():
+    originals=originals_from_pin();originals['reprollm.lock']=b'{"schema_version":1}\n'
+    case=ROOT/'case';run_dir=ROOT/'run';(run_dir/'files').mkdir(parents=True)
+    for name,raw in originals.items():path=case/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+    refs=[]
+    for name in (oracle.COMMON,oracle.RUBRIC,oracle.CONFIG,oracle.PRIVATE,oracle.CHILD):
+        raw=originals[name];digest=oracle.sha(raw);snapshot='files/'+digest
+        saved=oracle.raw_json(oracle.PRIVATE_EXPECTED) if name==oracle.PRIVATE else raw
+        (run_dir/snapshot).write_bytes(saved)
+        refs.append({'path':name,'origin':'declared','sha256':'sha256:'+digest,'size_bytes':len(raw),'redacted':name==oracle.PRIVATE,'snapshot':snapshot})
+    for label,snapshot,relative in (('manifest','manifest.yaml','reprollm.yaml'),('lock','lock.yaml','reprollm.lock')):(run_dir/snapshot).write_bytes(originals[relative])
+    record={'schema_version':2,'run_id':'synthetic-a','reprollm_version':'0.7.0','name':'synthetic-a','status':'completed','exit_code':0,'started_at':'2026-10-19T00:00:00Z','ended_at':'2026-10-19T00:00:01Z','duration_seconds':1.0,'code':{'commit':'1'*40,'branch':'HEAD','dirty':False,'remote':'https://github.com/lm-sys/FastChat.git'},'command':{'argv':['python',oracle.CHILD],'cwd':'.'},'environment':{'python':'3.12.14','packages':{'python':'3.12.14'},'env':{'CUDA_VISIBLE_DEVICES':''},'env_capture':'inherited','platform':'linux','os':'synthetic','hostname_sha256':'sha256:'+'2'*64},'hardware':{'cpu_count':1,'gpus':[],'source':'unavailable','driver':None,'cuda_driver_max':None},'files':refs,'bindings_observed':{f:[{'value':value,'source':{'type':'config','path':oracle.CONFIG,'key':oracle.FIELDS[f]}}] for f,value in oracle.bound(256).items()},'manifest':{'path':'reprollm.yaml','snapshot':'manifest.yaml','sha256':'sha256:'+oracle.sha(originals['reprollm.yaml'])},'lock':{'path':'reprollm.lock','snapshot':'lock.yaml','sha256':'sha256:'+oracle.sha(originals['reprollm.lock'])},'input_capture':{'baseline_phase':'pre_child','check_phase':'post_child','consumption':'unverified','checks':[{'path':name,'origin':'declared','before':{'availability':'present','sha256':'sha256:'+oracle.sha(raw),'size_bytes':len(raw)},'after':{'availability':'present','sha256':'sha256:'+oracle.sha(raw),'size_bytes':len(raw)},'change':'unchanged'} for name,raw in originals.items()]},'warnings':[]}
+    witness={'schema_version':1,'consumed':oracle.bound(256),'source_sha256':{oracle.COMMON:oracle.COMMON_SHA,oracle.RUBRIC:oracle.RUBRIC_SHA,oracle.CONFIG:oracle.sha(originals[oracle.CONFIG]),oracle.PRIVATE:oracle.sha(originals[oracle.PRIVATE])},'rubric_rows':8,'common_valid_python':True}
+    (run_dir/'stdout.log').write_bytes(oracle.raw_json(witness));(run_dir/'stderr.log').write_bytes(b'')
+    (case/'outputs/current').mkdir(parents=True);(case/'outputs/current/consumed.json').write_bytes(oracle.raw_json(witness))
+    record['artifacts']=[{'path':'outputs/current/consumed.json','sha256':'sha256:'+oracle.sha(oracle.raw_json(witness)),'size_bytes':len(oracle.raw_json(witness))}]
+    return case,run_dir,originals,record,witness
+
+def main():
+    assert not ROOT.exists();ROOT.mkdir();case,run_dir,originals,record,witness=build();rows=[]
+    def check(label,action,reject=False):
+        rejected=False
+        try:action()
+        except AssertionError:rejected=True
+        assert rejected==reject,label
+        rows.append({'case':label,'expected_rejection':reject,'rejected':rejected,'passed':True})
+    capture=lambda rec=record,wit=witness:oracle.check_capture(rec,run_dir,case,originals,256,'1'*40,wit)
+    check('capture-complete-positive',capture)
+    for label,mutate in [('missing-Python-snapshot',lambda r:r['files'][0].update(snapshot=None)),('missing-input',lambda r:r['files'].pop()),('false-redacted-marker',lambda r:r['files'][0].update(redacted=True)),('wrong-original-hash',lambda r:r['files'][0].update(sha256='sha256:'+'0'*64)),('bad-binding',lambda r:r['bindings_observed']['evaluation.judge.params.max_tokens'][0].update(value=999)),('false-child-consumption-claim',lambda r:r['input_capture'].update(consumption='verified')),('lost-run-warning',lambda r:r['warnings'].append('snapshot unavailable')),('wrong-after-fingerprint',lambda r:r['input_capture']['checks'][0]['after'].update(size_bytes=1)),('missing-artifact',lambda r:r.update(artifacts=[]))]:
+        bad=copy.deepcopy(record);mutate(bad);check(label,lambda:oracle.check_capture(bad,run_dir,case,originals,256,'1'*40,witness),True)
+    entry=next(f for f in record['files'] if f['path']==oracle.RUBRIC);p=run_dir/entry['snapshot'];raw=p.read_bytes();changed=raw.replace(b'Assistant A:',b'Assistant X:',1);assert changed!=raw;p.write_bytes(changed);check('unrelated-rubric-row-corruption',capture,True);p.write_bytes(raw)
+    entry=next(f for f in record['files'] if f['path']==oracle.PRIVATE);p=run_dir/entry['snapshot'];raw=p.read_bytes();bad=copy.deepcopy(oracle.PRIVATE_EXPECTED);bad['safe']['role']='corrupted';p.write_bytes(oracle.raw_json(bad));check('private-fixture-safe-role-corruption',capture,True);p.write_bytes(raw)
+    formats={f['snapshot']:('python' if f['path'].endswith('.py') else 'jsonl' if f['path'].endswith('.jsonl') else 'json') for f in record['files']}
+    check('owned-privacy-positive',lambda:oracle.privacy_scan(run_dir,formats,['never-actual-host','never-actual-user']))
+    for label,text in [('plain-secret',json.dumps({'value':oracle.CANARY})),('Windows-new-path',json.dumps({'path':r'<SYNTHETIC_OR_LOCAL_PATH>'})),('drive-A-path',json.dumps({'path':r'<SYNTHETIC_OR_LOCAL_PATH>'})),('UNC-path',json.dumps({'path':r'<SYNTHETIC_OR_LOCAL_PATH>'})),('Unix-path',json.dumps({'path':'<LOCAL_PATH>'})),('local-URI',json.dumps({'path':'file:///private/data'}))]:
+        badpath=run_dir/'injected.json';badpath.write_text(text);check('owned-privacy-reject-'+label,lambda:oracle.privacy_scan(run_dir,formats,['never-host']),True);badpath.unlink()
+    # This remains tool-only: these expected leaves come from the fixed documents,
+    # while independently mutating every evidence component qualifies rejection.
+    declared=manifest(256);lock={'schema_version':1,'models':{},'prompts':{},'files':[]}
+    flat=oracle.state_expected(declared,lock,record)
+    def tree(flat):
+        out={}
+        for path,leaf in flat.items():
+            parts=['files',path[6:-7],'sha256'] if path.startswith('files.') and path.endswith('.sha256') else path.split('.')
+            node=out
+            for part in parts[:-1]:node=node.setdefault(part,{})
+            node[parts[-1]]=leaf
+        return {**out,'profiles':['llm_judge']}
+    probe={'schema_version':1,'state':tree(copy.deepcopy(flat)),'flat':copy.deepcopy(flat),'roundtrip_equal':True,'overlap_merge_equal':True}
+    check('full-State-positive',lambda:oracle.check_state(probe,declared,lock,record,256))
+    for key,value in [('value',999),('source','manifest'),('confidence','declared'),('detail','wrong'),('context',None),('alternatives',[])]:
+        bad=copy.deepcopy(probe);field='models.judge.id';bad['flat'][field][key]=value
+        if key=='alternatives':assert flat[field]['alternatives']
+        check('full-State-reject-'+key,lambda:oracle.check_state(bad,declared,lock,record,256),True)
+    bad=copy.deepcopy(probe);bad['state']['models']['judge']['id']['value']='invented';check('full-State-reject-serialized-tree',lambda:oracle.check_state(bad,declared,lock,record,256),True)
+    # A fixed minimal complete delta set qualifies values, severities, notes,
+    # summaries, source IDs, and rejection of hidden/extra changes.
+    left={"evaluation.judge.params.max_tokens":{"value":256,"context":oracle.INPUT},"files.validation/judge.json.sha256":{"value":"sha256:"+"1"*64,"context":oracle.INPUT},"code.commit":{"value":"1"*40,"context":None},"run_id":{"value":"synthetic-a","context":None}}
+    right=copy.deepcopy(left)
+    for field,value in [("evaluation.judge.params.max_tokens",384),("files.validation/judge.json.sha256","sha256:"+"2"*64),("code.commit","2"*40),("run_id","synthetic-b")]:right[field]["value"]=value
+    changes=[]
+    for field,severity in [("evaluation.judge.params.max_tokens","HIGH"),("files.validation/judge.json.sha256","HIGH"),("code.commit","MEDIUM"),("run_id","NONE")]:
+        context=left[field]["context"]
+        note="; ".join(side+": input_file/pre_child; child unverified" for side in ("a","b")) if context else "code changed" if field=="code.commit" else None
+        changes.append({"path":field,"a":left[field]["value"],"b":right[field]["value"],"status":"changed","severity":severity,"note":note})
+    pair={"schema_version":1,"a":{"kind":"run","ref":"synthetic-a"},"b":{"kind":"run","ref":"synthetic-b"},"filtered_below":None,"changes":changes,"summary":{"highest":"HIGH","counts":{"NONE":1,"LOW":0,"MEDIUM":1,"HIGH":2,"MEDIUM_HIGH":0},"same":0}}
+    own={"schema_version":1,"a":{"kind":"run","ref":"synthetic-a"},"b":{"kind":"run","ref":"synthetic-a"},"filtered_below":None,"changes":[],"summary":{"highest":"NONE","counts":{s:0 for s in ("NONE","LOW","MEDIUM","MEDIUM_HIGH","HIGH")},"same":4}}
+    records=[{"run_id":"synthetic-a"},{"run_id":"synthetic-b"}]
+    check("full-pair-positive",lambda:oracle.check_pair(pair,own,left,right,records))
+    for label,mutate in [("missing-direct-leaf",lambda r:r["changes"].pop(0)),("wrong-direct-severity",lambda r:r["changes"][0].update(severity="MEDIUM")),("wrong-value",lambda r:r["changes"][0].update(b=999)),("wrong-context-note",lambda r:r["changes"][0].update(note=None)),("hidden-below-filter",lambda r:r.update(filtered_below="HIGH")),("wrong-summary",lambda r:r["summary"].update(same=1))]:
+        bad=copy.deepcopy(pair);mutate(bad);check("full-pair-reject-"+label,lambda:oracle.check_pair(bad,own,left,right,records),True)
+    summary={'schema_version':1,'status':'PASS','positive_cases':sum(not r['expected_rejection'] for r in rows),'negative_cases':sum(r['expected_rejection'] for r in rows),'cases':rows,'new_product_commands':0,'gpu_or_api_jobs':0,'scope':'Independent synthetic verifier fixtures and fixed public upstream sources only; not product acceptance.'}
+    (ROOT/'summary.json').write_bytes(oracle.raw_json(summary));print(json.dumps(summary,sort_keys=True))
+if __name__=='__main__':main()

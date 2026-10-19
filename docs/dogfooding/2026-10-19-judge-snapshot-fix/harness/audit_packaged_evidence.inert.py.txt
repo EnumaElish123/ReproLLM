@@ -1,0 +1,59 @@
+"""Read-only independent hash/copy checks over an explicitly selected evidence bundle."""
+import argparse
+import hashlib
+import importlib.util
+import json
+import re
+from pathlib import Path
+
+parser=argparse.ArgumentParser();parser.add_argument('bundle',type=Path);args=parser.parse_args()
+base=Path('<TASK>');bundle=args.bundle.resolve()
+assert bundle.is_relative_to(base) and bundle != base and not bundle.is_relative_to(base/'worktree')
+spec=importlib.util.spec_from_file_location('packager_checks',base/'package_evidence.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+selections=[]
+for name in ('stable-files.json','dynamic-files.json'):
+ manifest=json.loads((bundle/name).read_bytes());assert manifest['schema_version']==1
+ selections.extend(manifest['source_selections'])
+original=0;transformed=0
+for row in selections:
+ source=base/row['source_logical_file'].removeprefix('<TASK>/');target=bundle/row['retained_file']
+ assert source.is_relative_to(base) and target.is_relative_to(bundle)
+ assert not source.is_symlink() and not target.is_symlink()
+ raw=source.read_bytes();retained=target.read_bytes()
+ assert sha(raw)==row['source_sha256'] and len(raw)==row['source_size_bytes']
+ assert sha(retained)==row['retained_sha256'] and len(retained)==row['retained_size_bytes']
+ assert (raw!=retained)==row['sharing_transform_applied']
+ if row['original_product_run_tree_byte_preserved']:
+  assert raw==retained;original+=1
+ transformed+=raw!=retained
+files=[p for p in bundle.rglob('*') if p.is_file()]
+assert not any(p.is_symlink() for p in bundle.rglob('*'))
+for path in files:m.assert_portable(path.read_bytes(),path.relative_to(bundle).as_posix())
+for row in json.loads((bundle/'stable-files.json').read_bytes())['omitted_local_originals']:
+ source=base/row['source_logical_file'].removeprefix('<TASK>/')
+ assert m.file_digest(source)==row['source_sha256'] and source.stat().st_size==row['source_size_bytes']
+metadata=json.loads((bundle/'packaging-validation.json').read_bytes())
+for entry in metadata['original_run_trees']:
+ target=bundle/entry['retained_directory'];selected=[r for r in selections if r['retained_file'].startswith(entry['retained_directory']+'/')]
+ assert len(list(p for p in target.rglob('*') if p.is_file()))==entry['file_count']==len(selected)
+ assert json.loads((target/'run.json').read_bytes())['schema_version']==2
+pattern_checks={
+ 'openai':r'\bsk-(?:proj-)?[A-Za-z0-9_-]{16,}\b',
+ 'huggingface':r'\bhf_[A-Za-z0-9]{20,}\b',
+ 'github':r'\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b',
+ 'aws':r'\bAKIA[0-9A-Z]{16}\b',
+ 'slack':r'\bxox[baprs]-[A-Za-z0-9-]{10,}\b',
+ 'jwt':r'\beyJ[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}(?![A-Za-z0-9_=-])',
+ 'pem':r'-----BEGIN [A-Z ]*PRIVATE KEY-----',
+}
+findings=[]
+for path in files:
+ text=path.read_text()
+ for kind,pattern in pattern_checks.items():
+  if re.search(pattern,text):findings.append({'retained_file':path.relative_to(bundle).as_posix(),'kind':kind})
+result={'schema_version':1,'status':'PASS' if not findings else 'PRIVACY_REVIEW_REQUIRED','source_mappings_verified':len(selections),'original_product_files_byte_identical':original,'transformed_selections':transformed,'retained_files_checked':len(files),'original_run_trees_verified':len(metadata['original_run_trees']),'all_source_and_retained_hashes_and_sizes_match':True,'all_hash_only_omissions_verified':True,'<SYNTHETIC_CANARY>':0,'normative_pattern_findings':findings,'exact_actual_credential_scan':'PENDING_SESSION_OWNER','credentials_read':False,'formal_judge_observation':metadata['formal_judge_observation'],'product_commands_executed':0}
+report=bundle/'packaging-audit.json';raw=(json.dumps(result,sort_keys=True,indent=2)+'\n').encode()
+if report.exists():assert report.read_bytes()==raw
+else:report.write_bytes(raw)
+print(json.dumps(result,sort_keys=True))

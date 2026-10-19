@@ -10,7 +10,8 @@ the session to defer unavailable resources and complete the executable checks.
 [`val.md`](../../val.md) remains authoritative for repository pins, inputs,
 commands, independent gold and resource guards. This checklist does not change
 that baseline. Earlier successful executions remain historical evidence;
-unchecked items below are **blocked**, not fresh passes for 0.6.1.
+resource blockers, actual capture failures and active replays are distinguished
+below, and later-candidate results are not fresh passes for 0.6.1.
 
 Updated 2026-10-13: [current-candidate resource replay](2026-10-13-val-r01/README.md)
 restored the reviewed inputs and completed Linux H2 plus ten native GPU A/B
@@ -59,18 +60,32 @@ bytes. The maintainer's continuing actual-capacity GPU guidance supersedes old
 artificial numerical launch restrictions in `val.md §8.3`; historical receipts
 and gold inputs retain their identities.
 
-The formal DeepSeek A request succeeds, but capture fails two non-secret source
-snapshot requirements: `common.py` is omitted and four unused multi-turn rubric
-rows are changed. Both have independent CPU reproducers; no product fix or
+At `750270b`, the formal DeepSeek A request succeeds, but capture fails two
+non-secret source snapshot requirements: `common.py` is omitted and four unused
+multi-turn rubric rows are changed. Both have independent CPU reproducers; no product fix or
 second completion is performed. VAL-R02 is **FAIL**, rather than missing an
 input bundle or budget. HF authentication succeeds, but both selected restricted
 small files return 403; original §8.1 manifests are still missing. VAL-R03 remains
 **BLOCKED**. This is not release readiness or a retrospective pass for 0.6.1.
 
+Updated 2026-10-19, R02-R follow-up: the
+[snapshot repair](2026-10-19-judge-snapshot-fix/README.md) at candidate
+`75d1b065e9f0e3eeafa8e480e195a2a2ddbe95b5` passes final quality and fresh
+five-project CPU capture/diff/export acceptance, including exact original Python
+and complete eight-row JSONL snapshot fidelity. Under a newly approved CNY 3
+budget, both new formal requests, complete captures and the full semantic pair
+PASS, closing VAL-R02 for `75d1b0`. The seven changes are the direct cap HIGH,
+config-file hash HIGH, clean commit MEDIUM and four NONE metadata changes;
+self-diff is empty and `--fail-on HIGH` exits 1. The older `750270b` paid A
+remains FAIL and its B NOT_RUN. VAL-R01's native acceptance remains bound to
+`750270b`; the CPU repair
+does not rerun GPU/H2. HF 403 and all five original metadata-manifest gaps remain
+independent, with no new HF success or release-readiness claim.
+
 | Tracking ID | Outstanding coverage | Current cause | Status |
 |---|---|---|---|
-| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Current candidate passes complete native matrix, including all additional differences and self-diffs | PASS — 2026-10-19, `750270b` |
-| VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Actual A capture fails two snapshot-fidelity cases; B NOT_RUN after the known failure. Exact inputs, usable credentials and a fresh CNY 3 budget were provisioned | FAIL — product capture defects |
+| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Complete native acceptance at `750270b`; no new GPU/H2 matrix claimed for `75d1b0` | PASS — 2026-10-19, `750270b` |
+| VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Both original-input provider requests, full capture fidelity and the complete HIGH direct-cap pair pass under a newly approved CNY 3 ceiling | PASS — 2026-10-19, `75d1b0` |
 | VAL-R03 | Successful authenticated HF gated-file resolution | Authenticated small files still return 403; original Project C metadata manifest remains missing | BLOCKED |
 
 
@@ -93,7 +108,7 @@ lm-eval input and completion records in §§8.3 and 8.5a–8.5c before preparing
 Previous shared-GPU exceptions are historical approvals, not a replacement for
 checking the resources provisioned for the new execution.
 
-**Current closure — 2026-10-19 candidate `750270b`:**
+**Closure for 2026-10-19 candidate `750270b`:**
 
 - [x] Linux H2: all five supplementary metadata inputs, offline/two-online/check/audit,
   exact hashes/revisions, normalized lock equality, freshness, doctor and probe.
@@ -123,20 +138,34 @@ approved DistilGPT2 standard. Original §8.1 metadata input gaps remain separate
 
 ## VAL-R02 — Formal FastChat/DeepSeek judge replay
 
-**Current result:** one genuine A judgment completes and the original parser
-returns a finite score of 7. All four bindings, usage accounting and six judge
+**Current result — `75d1b0`:** the product repair, final quality and fresh
+five-project CPU acceptance PASS. Both formal provider requests, complete
+captures and semantic-pair acceptance PASS under a newly approved CNY 3 budget.
+The original parser returns observed scores 7/7, which are observations rather
+than gold. Both attempts return valid usage with no retry; the combined
+peak-tariff estimate is CNY 0.002836, not a verified account invoice. The direct
+cap leaf and config hash are HIGH, the clean commit is MEDIUM, all four NONE
+changes are explained, self-diff is empty, and `--fail-on HIGH` exits 1.
+Complete audit findings/profiles agree and all six judge rules pass in each run.
+The [new report](2026-10-19-judge-snapshot-fix/README.md) records this real pair;
+the preceding CPU source-fidelity checks alone are not formal provider evidence.
+
+**Historical result — `750270b`:** one genuine A judgment completes and the
+original parser returns a finite score of 7. All four bindings, usage accounting and six judge
 rules are verified; the complete source-snapshot gate fails. The retained
 [failed run and CPU diagnoses](2026-10-19-resource-completion/DYNAMIC-PARTIAL.md)
 do not become a passing formal pair. B is NOT_RUN, not an exhausted-budget claim.
 The estimated peak-tariff charge is CNY 0.001394, not a verified account invoice.
 
-**Resources for a repaired-candidate replay:** the exact approved input bundle,
-an isolated compatible environment, usable DeepSeek credentials and a bounded
-execution budget. This judge-only scenario does not require a GPU. Recover and
-verify the four Variant A input hashes in [`val.md` §8.4](../../val.md#84-approved-deepseekfastchat-supplementary-judge-2026-09-27)
+**Resources:** this replay has the exact approved input bundle, an isolated
+compatible environment, usable DeepSeek credentials and a newly approved CNY 3
+ceiling. Each later replay still requires its own resource and budget checks.
+This judge-only scenario does not require a GPU. Recover and verify the four
+Variant A input hashes in
+[`val.md` §8.4](../../val.md#84-approved-deepseekfastchat-supplementary-judge-2026-09-27)
 before sending anything. Public question/rubric files alone are insufficient.
 
-**Resume:** use the §8.4 entry and transport with public MT-Bench question 82,
+**Future replays:** use the §8.4 entry and transport with public MT-Bench question 82,
 the fixed synthetic answer and original `single-v1` rubric. A/B changes only
 the declared judge cap and its config binding, 256 → 384. Confirm the selected
 model is available through authenticated `/models`; verify the provider tariff
@@ -145,26 +174,26 @@ two completion attempts, no retries, input size and request deadline. If the
 bundle, provider or budget cannot satisfy that scenario, retain BLOCKED and
 propose a separate reviewed scenario change.
 
-**Close only when:**
+**Closure checks — candidate `75d1b0`:**
 
-- [ ] Both real judgments finish successfully; the original parser returns a
+- [x] Both real judgments finish successfully; the original parser returns a
   finite score from 1 to 10. Exact scores or identical generated text are not gold.
-- [ ] Sent rubric/question/answer, consumed cap, provider identity, usage,
+- [x] Sent rubric/question/answer, consumed cap, provider identity, usage,
   bindings, package versions, input/output hashes and snapshots match §8.4.
-- [ ] Credentials appear only as presence metadata; persisted artifacts contain
+- [x] Credentials appear only as presence metadata; persisted artifacts contain
   no secrets, absolute host paths or machine identity.
-- [ ] All selected judge checks and capture consistency meet the independent
+- [x] All selected judge checks and capture consistency meet the independent
   expectations; unrelated upstream findings remain visible.
-- [ ] A new pair after R08-A uses §8.4.1: direct cap HIGH, config hash HIGH and
+- [x] A new pair after R08-A uses §8.4.1: direct cap HIGH, config hash HIGH and
   clean commit MEDIUM; retain the historical §8.4 cap MEDIUM evidence unchanged.
   Remaining changes are explained, self-diff is empty, and `--fail-on HIGH`
   exits 1. Preserve the historical nested-severity gap as historical evidence;
   the current direct judge-param policy follows §8.4.1.
-- [ ] The sanitized dated report covers the M5/M6 pair and M7 API-judge gate.
+- [x] The sanitized dated report covers the M5/M6 pair and M7 API-judge gate.
 
-The already-passed real `discover` request is separate evidence and does not
-close this judge replay. The earlier CNY 3 execution and formal promotion are
-historical records in §§8.4–8.5.
+The already-passed real `discover` request remains separate evidence and is not
+a substitute for this formal judge pair. The earlier CNY 3 execution and formal
+promotion are historical records in §§8.4–8.5.
 
 ## VAL-R03 — Successful HF gated-file resolution
 

@@ -1,0 +1,63 @@
+FF.F.FF..                                                                [100%]
+=================================== FAILURES ===================================
+__________ test_minimal_python_symbols_and_fstring_keep_exact_source ___________
+tests/unit/run/test_judge_snapshot_regressions.py:92: in test_minimal_python_symbols_and_fstring_keep_exact_source
+    assert privacy.text(MINIMAL_PYTHON, python_source=True) == (MINIMAL_PYTHON, 0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/privacy.py:100: in text
+    result, count = redact_contextual_text(value, manifest=manifest, keys=keys)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/contextual_text.py:470: in redact_contextual_text
+    result, count = _fragments(text, 0)
+                    ^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/contextual_text.py:442: in _fragments
+    raise _UnsafeCapture("cannot sanitize secret capture value") from None
+E   reprollm.run.contextual_text._UnsafeCapture: cannot sanitize secret capture value
+_________ test_jsonl_role_labels_and_newline_escapes_keep_exact_source _________
+tests/unit/run/test_judge_snapshot_regressions.py:101: in test_jsonl_role_labels_and_newline_escapes_keep_exact_source
+    assert privacy.text(source) == (source, 0)
+E   assert ('{"prompt": ...: 32}\r\n', 2) == ('{"prompt": ...: 32}\r\n', 0)
+E     
+E     At index 0 diff: '{"prompt": "### Assistant <REDACTED:path>}", "stop": "</s>"}\r\n{"prompt": "### Assistant <REDACTED:path>}", "limit": 32}\r\n' != '{"prompt": "### Assistant <SYNTHETIC_OR_LOCAL_PATH>}", "stop": "</s>"}\r\n{"prompt": "### Assistant <SYNTHETIC_OR_LOCAL_PATH>}", "limit": 32}\r\n'
+E     Use -v to get more diff
+____ test_original_judge_sources_survive_real_capture_and_child_exit[True] _____
+tests/unit/run/test_judge_snapshot_regressions.py:110: in test_original_judge_sources_survive_real_capture_and_child_exit
+    assert record.exit_code == 7 and record.warnings == []
+E   AssertionError: assert (7 == 7 and ['input file ... unavailable'] == []
+E    +  where 7 = RunRecord(schema_version=2, reprollm_version='0.7.0', run_id='20261019T032027Z-617858', name=None, status=<RunStatus.C...a256='sha256:2ea2cf570ba1eaacdabade9d798a655e4cc6834277051036bec28d2975fdf040', size_bytes=379), change='unchanged')])).exit_code
+E     
+E     Left contains one more item: 'input file snapshot unavailable'
+E     Use -v to get more diff)
+----------------------------- Captured stderr call -----------------------------
+<unknown>:34: SyntaxWarning: invalid escape sequence '\['
+<unknown>:35: SyntaxWarning: invalid escape sequence '\['
+<unknown>:36: SyntaxWarning: invalid escape sequence '\['
+<unknown>:37: SyntaxWarning: invalid escape sequence '\['
+__ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[python] __
+tests/unit/run/test_judge_snapshot_regressions.py:170: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    assert record.exit_code == 7 and record.warnings == []
+E   AssertionError: assert (7 == 7 and ['input file ... unavailable'] == []
+E    +  where 7 = RunRecord(schema_version=2, reprollm_version='0.7.0', run_id='20261019T032028Z-1f6829', name=None, status=<RunStatus.C...a256='sha256:2ea2cf570ba1eaacdabade9d798a655e4cc6834277051036bec28d2975fdf040', size_bytes=379), change='unchanged')])).exit_code
+E     
+E     Left contains one more item: 'input file snapshot unavailable'
+E     Use -v to get more diff)
+__ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[jsonl] ___
+tests/unit/run/test_judge_snapshot_regressions.py:170: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    assert record.exit_code == 7 and record.warnings == []
+E   AssertionError: assert (7 == 7 and ['input file ... unavailable'] == []
+E    +  where 7 = RunRecord(schema_version=2, reprollm_version='0.7.0', run_id='20261019T032028Z-746564', name=None, status=<RunStatus.C...a256='sha256:2ea2cf570ba1eaacdabade9d798a655e4cc6834277051036bec28d2975fdf040', size_bytes=379), change='unchanged')])).exit_code
+E     
+E     Left contains one more item: 'input file snapshot unavailable'
+E     Use -v to get more diff)
+----------------------------- Captured stderr call -----------------------------
+<unknown>:34: SyntaxWarning: invalid escape sequence '\['
+<unknown>:35: SyntaxWarning: invalid escape sequence '\['
+<unknown>:36: SyntaxWarning: invalid escape sequence '\['
+<unknown>:37: SyntaxWarning: invalid escape sequence '\['
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_minimal_python_symbols_and_fstring_keep_exact_source
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_jsonl_role_labels_and_newline_escapes_keep_exact_source
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_original_judge_sources_survive_real_capture_and_child_exit[True]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[python]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[jsonl]
+5 failed, 4 passed in 1.12s

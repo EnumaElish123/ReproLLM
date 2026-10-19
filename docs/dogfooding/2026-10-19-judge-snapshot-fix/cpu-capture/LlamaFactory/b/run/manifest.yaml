@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "outputs": [
+      "outputs/current/*.json"
+    ]
+  },
+  "bindings": {
+    "evaluation.judge.params.max_tokens": {
+      "config": "validation/judge.json:max_tokens"
+    },
+    "evaluation.judge.params.temperature": {
+      "config": "validation/judge.json:temperature"
+    },
+    "models.judge.endpoint.base_url": {
+      "config": "validation/judge.json:endpoint"
+    },
+    "models.judge.id": {
+      "config": "validation/judge.json:model"
+    }
+  },
+  "evaluation": {
+    "judge": {
+      "model_ref": "judge",
+      "params": {
+        "max_tokens": 384,
+        "temperature": 0
+      },
+      "parser": "validation/original_common.py",
+      "prompt_ref": "judge",
+      "repetitions": 1
+    },
+    "metrics": [],
+    "repetitions": 1
+  },
+  "execution": {
+    "command": "python validation/capture_child.py",
+    "config_files": [
+      "validation/original_common.py",
+      "validation/judge_prompts.jsonl",
+      "validation/judge.json",
+      "validation/privacy.json",
+      "validation/capture_child.py"
+    ],
+    "seed": 17
+  },
+  "experiment": {
+    "description": "Offline stdlib capture/consumer regression; no actual model request.",
+    "profiles": [
+      "llm_judge"
+    ]
+  },
+  "models": {
+    "judge": {
+      "endpoint": {
+        "base_url": "https://example.invalid"
+      },
+      "id": "synthetic-judge",
+      "provider": "other"
+    }
+  },
+  "project": {
+    "name": "judge-capture-cpu-validation"
+  },
+  "prompts": {
+    "judge": {
+      "format": "fstring",
+      "path": "validation/judge_prompts.jsonl"
+    }
+  },
+  "schema_version": 1
+}

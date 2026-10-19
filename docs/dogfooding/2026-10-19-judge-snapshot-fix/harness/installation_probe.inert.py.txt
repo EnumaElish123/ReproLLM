@@ -1,0 +1,62 @@
+"""Bind an isolated installed payload to the already validated candidate wheel."""
+import hashlib
+import importlib.metadata as md
+import json
+import sys
+import zipfile
+from pathlib import Path
+
+TASK = Path(__file__).resolve().parent
+
+
+def inventory():
+    rows = {}
+    for dist in md.distributions():
+        name = dist.metadata['Name']
+        assert name not in rows
+        rows[name] = dist.version
+    package = md.distribution('reprollm')
+    files = {
+        str(item): hashlib.sha256(package.locate_file(item).read_bytes()).hexdigest()
+        for item in package.files or []
+        if str(item).startswith('reprollm/') and item.suffix != '.pyc'
+    }
+    return {'schema_version': 1, 'python': sys.version.split()[0], 'distributions': dict(sorted(rows.items())), 'reprollm_payload_sha256': dict(sorted(files.items()))}
+
+
+def main():
+    cfg = json.loads((TASK / 'session-config.json').read_text())
+    quality = Path(cfg['quality_directory'])
+    manifest = json.loads((quality / 'build-manifest.json').read_text())
+    assert manifest['source_commit'] == cfg['candidate_commit']
+    assert len(manifest['artifacts']) == 1
+    wheel = quality / 'dist' / manifest['artifacts'][0]['filename']
+    wheel_hash = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    assert wheel_hash == manifest['artifacts'][0]['sha256']
+    with zipfile.ZipFile(wheel) as archive:
+        expected = {name: hashlib.sha256(archive.read(name)).hexdigest() for name in archive.namelist() if name.startswith('reprollm/') and not name.endswith('/')}
+    actual = inventory()
+    before = json.loads((TASK / 'installation/modern-before.json').read_text())
+    other = lambda value: {k: v for k, v in value['distributions'].items() if k != 'reprollm'}
+    assert other(actual) == other(before)
+    assert actual['python'] == before['python']
+    assert actual['distributions']['reprollm'] == '0.7.0'
+    assert actual['reprollm_payload_sha256'] == expected
+    import reprollm
+    package = md.distribution('reprollm')
+    assert Path(reprollm.__file__).resolve() == package.locate_file('reprollm/__init__.py').resolve()
+    proof = {'schema_version': 1, 'status': 'PASS', 'candidate_commit': cfg['candidate_commit'], 'wheel_sha256': wheel_hash, 'wheel_payload_files': len(expected), 'all_installed_payload_bytes_match': True, 'other_distribution_count': len(other(actual)), 'all_other_distributions_unchanged': True, 'new_optional_or_heavy_dependencies': 0}
+    if sys.argv[1] == 'after':
+        for name, value in [('modern-after.json', actual), ('proof.json', proof)]:
+            with (TASK / 'installation' / name).open('x') as stream:
+                stream.write(json.dumps(value, sort_keys=True, indent=2) + '\n')
+    elif sys.argv[1] == 'check':
+        assert actual == json.loads((TASK / 'installation/modern-after.json').read_text())
+        assert proof == json.loads((TASK / 'installation/proof.json').read_text())
+    else:
+        raise ValueError('Unknown verification mode')
+    print(json.dumps(proof, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

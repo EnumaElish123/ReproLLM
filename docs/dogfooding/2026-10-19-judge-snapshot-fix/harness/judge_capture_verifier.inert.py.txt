@@ -1,0 +1,824 @@
+"""Read-only acceptance checks for the five approved, bounded native replay cases.
+
+No model execution, HTTP, installation, source mutation or evidence replacement.
+Original Git bytes are the input oracle; State is used only for the current
+effective-binding contract, never to invent expected experimental values.
+"""
+
+from __future__ import annotations
+
+import ast
+import getpass
+import hashlib
+import io
+import json
+import math
+import re
+import socket
+import subprocess
+import sys
+import tokenize
+from collections.abc import Callable
+from functools import wraps
+from pathlib import Path, PureWindowsPath
+from typing import Any, ParamSpec, TypeVar
+
+import yaml
+
+from reprollm.core.persistence import redact_keyed_values
+from reprollm.core.redaction import redact_text
+from reprollm.schemas.diff_report import DiffReport
+from reprollm.schemas.finding import AuditReport
+from reprollm.schemas.manifest import Manifest
+from reprollm.schemas.run_record import RunRecord
+from reprollm.schemas.state import State
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "gate"))
+from path_oracle import unsafe_matches
+
+_LOCAL_PATH = re.compile(
+    r"(?i)\bfile:[/\\]{2}"
+    r"|(?<![\w])[A-Za-z]:[\\/](?=[^\s\"'<>;,\)\]}>])"
+    r"|(?<![\<SYNTHETIC_OR_LOCAL_PATH><.])/(?=[^\s\"'<>;,\)\]}>])[^\s\"'<>;,\)\]}>]*"
+    r"|\\\\[A-Za-z0-9_.-]+\\+[A-Za-z0-9_.-]+"
+)
+
+_P = ParamSpec("_P")
+_T = TypeVar("_T")
+
+_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
+_NONE = {"run_id", "started_at", "ended_at", "duration_seconds", "environment.hostname_sha256"}
+_PUBLIC_HASHES = {
+    "fastchat/llm_judge/common.py": "71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+    "validation/original_common.py": "71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+    "fastchat/llm_judge/data/judge_prompts.jsonl": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+    "validation/judge_prompts.jsonl": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+}
+_MAX_TEXT = 1_048_576
+_MAX_NODES = 10_000
+_MAX_DEPTH = 64
+_MAX_NESTED = 8
+_TEMPLATE_END = re.compile(r"\{[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\}$")
+_CONTEXT_ASSIGN = re.compile(r'''(?P<key>"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[\w.-]+)\s*[:=]\s*''')
+_CONTEXT_STRING = re.compile(r'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*' ''', re.VERBOSE)
+
+
+class VerificationError(AssertionError):
+    """A fixed diagnostic that never includes untrusted values or exception text."""
+
+
+def _safe_failure(fn: Callable[_P, _T]) -> Callable[_P, _T]:
+    @wraps(fn)
+    def wrapped(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+        try:
+            return fn(*args, **kwargs)
+        except VerificationError:
+            raise
+        except Exception:
+            raise VerificationError("verification input or filesystem invalid") from None
+
+    return wrapped
+
+
+def _require(ok: bool, reason: str) -> None:
+    if not ok:
+        raise VerificationError(reason)
+
+
+def _digest(raw: bytes) -> str:
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+
+def _equal(a: Any, b: Any) -> bool:
+    def normal(v: Any) -> Any:
+        if isinstance(v, str):
+            if v.lower() in ("true", "false"):
+                return v.lower() == "true"
+            try:
+                return float(v) if "." in v or "e" in v.lower() else int(v)
+            except ValueError:
+                return v
+        if isinstance(v, list):
+            return [normal(item) for item in v]
+        return v
+
+    left, right = normal(a), normal(b)
+    if isinstance(left, list) and isinstance(right, list):
+        return len(left) == len(right) and all(
+            _equal(x, y) for x, y in zip(left, right, strict=True)
+        )
+    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+        return math.isclose(left, right, rel_tol=1e-9)
+    return bool(left == right)
+
+
+def _inside(root: Path, relative: str) -> Path:
+    _require(
+        bool(relative)
+        and "\x00" not in relative
+        and not Path(relative).is_absolute()
+        and not PureWindowsPath(relative).anchor
+        and ".." not in Path(relative).parts,
+        "invalid evidence location",
+    )
+    result = root / relative
+    _require(not result.is_symlink(), "symlink evidence is unsupported")
+    _require(result.resolve().is_relative_to(root.resolve()), "evidence escapes its root")
+    return result
+
+
+def _git(case: Path, *argv: str) -> bytes:
+    result = subprocess.run(
+        ["git", "-C", str(case), *argv], capture_output=True, check=False, timeout=30
+    )
+    _require(result.returncode == 0, "Git input evidence unavailable")
+    return result.stdout
+
+
+def _raw_input(case: Path, commit: str, relative: str) -> bytes:
+    _inside(case, relative)
+    _require(bool(_COMMIT.fullmatch(commit)), "invalid captured commit")
+    return _git(case, "show", commit + ":" + relative)
+
+
+def _parse(raw: bytes, suffix: str) -> Any:
+    text = raw.decode("utf-8")
+    if suffix == ".json":
+        return json.loads(text)
+    if suffix == ".toml":
+        if sys.version_info >= (3, 11):
+            import tomllib
+        else:
+            import tomli as tomllib
+        return tomllib.loads(text)
+    return yaml.safe_load(text)
+
+
+def _read_run(run_dir: Path) -> RunRecord:
+    try:
+        return RunRecord.model_validate_json(_inside(run_dir, "run.json").read_bytes())
+    except Exception:
+        raise VerificationError("invalid typed run record") from None
+
+
+class _Pairs(list):
+    """Keep every JSON member, including duplicate keys, for independent checking."""
+
+
+def _constant_error(value: str) -> None:
+    raise ValueError("not a JSON constant")
+
+
+def _json_documents(text: str) -> list[Any] | None:
+    def load(value: str) -> Any:
+        return json.loads(value, object_pairs_hook=_Pairs, parse_constant=_constant_error)
+
+    try:
+        return [load(text)]
+    except RecursionError:
+        raise VerificationError("persisted structure exceeds inspection limits") from None
+    except ValueError:
+        pass
+    lines = text.split("\n")
+    if lines[-1] == "":
+        lines.pop()
+    if len(lines) < 2 or any(not line.strip(" \r\t") for line in lines):
+        return None
+    try:
+        return [load(line) for line in lines]
+    except RecursionError:
+        raise VerificationError("persisted structure exceeds inspection limits") from None
+    except ValueError:
+        return None
+
+
+def _identity(text: str) -> None:
+    for identity in (socket.gethostname(), getpass.getuser()):
+        if identity:
+            _require(
+                re.search(r"(?<![\w])" + re.escape(identity) + r"(?![\w])", text) is None,
+                "persisted machine identity",
+            )
+
+
+def _scalar_paths(text: str, *, python_template: bool = False) -> None:
+    for match in unsafe_matches(text):
+        # A decoded Python literal can contain a relative format-template
+        # continuation. This never exempts drive paths, UNC or local URIs.
+        if (
+            python_template
+            and match[0].startswith("/")
+            and not any(char in match[0] for char in ("\\", ":"))
+            and _TEMPLATE_END.search(text[:match.start()])
+        ):
+            continue
+        raise VerificationError("persisted decoded absolute path or local URI")
+
+
+def _plain_secret(value: Any, keys: tuple[str, ...] = ()) -> None:
+    _require(redact_keyed_values(value, keys) == value, "persisted supported contextual secret")
+    if isinstance(value, str):
+        _require(re.search(r"-----BEGIN [A-Z ]*PRIVATE KEY-----", value) is None, "persisted private-key marker")
+        _require(redact_text(value)[0] == value, "persisted supported secret")
+        # Core's raw generic pattern does not recognize a quoted JSON key's
+        # closing quote. Complete structures are checked by their decoded keys;
+        # malformed/nondocument text cannot hide behind that lexical difference.
+        if _json_documents(value) is None:
+            for match in _CONTEXT_ASSIGN.finditer(value):
+                raw_key = match["key"]
+                try:
+                    key = ast.literal_eval(raw_key) if raw_key.startswith(("'", '"')) else raw_key
+                except (ValueError, SyntaxError):
+                    raise VerificationError("persisted secret context is unverifiable") from None
+                probe = "<SYNTHETIC_CANARY>"
+                if not isinstance(key, str) or redact_keyed_values(probe, (key,)) == probe:
+                    continue
+                tail = value[match.end():].lstrip()
+                _require(bool(tail), "persisted secret context is incomplete")
+                if tail.startswith(("[", "{")):
+                    try:
+                        candidate = yaml.safe_load(tail)
+                    except yaml.YAMLError:
+                        raise VerificationError("persisted secret context is unverifiable") from None
+                elif tail.startswith(("'", '"')):
+                    literal = _CONTEXT_STRING.match(tail)
+                    _require(literal is not None, "persisted secret context is incomplete")
+                    try:
+                        candidate = ast.literal_eval(literal[0])
+                    except (ValueError, SyntaxError):
+                        raise VerificationError("persisted secret context is unverifiable") from None
+                else:
+                    candidate = re.split(r"[\s,;\]}]", tail, maxsplit=1)[0]
+                _require(redact_keyed_values(candidate, (key,)) == candidate, "persisted supported quoted-key secret")
+
+
+def _structured_privacy(
+    value: Any,
+    keys: tuple[str, ...] = (),
+    *,
+    nested: int = 0,
+    depth: int = 0,
+    visited: list[int] | None = None,
+    ancestors: frozenset[int] = frozenset(),
+) -> None:
+    visited = [0] if visited is None else visited
+    visited[0] += 1
+    _require(
+        visited[0] <= _MAX_NODES and depth <= _MAX_DEPTH and nested <= _MAX_NESTED,
+        "persisted structure exceeds inspection limits",
+    )
+    _require(id(value) not in ancestors, "cyclic persisted structure")
+    if isinstance(value, (dict, _Pairs, list)):
+        ancestors = ancestors | {id(value)}
+    if isinstance(value, (dict, _Pairs)):
+        pairs = value.items() if isinstance(value, dict) else value
+        for key, item in pairs:
+            _structured_privacy(str(key), nested=nested, depth=depth + 1, visited=visited, ancestors=ancestors)
+            _structured_privacy(item, (*keys, str(key)), nested=nested, depth=depth + 1, visited=visited, ancestors=ancestors)
+    elif isinstance(value, list):
+        for item in value:
+            _structured_privacy(item, keys, nested=nested, depth=depth + 1, visited=visited, ancestors=ancestors)
+    elif isinstance(value, str):
+        _identity(value)
+        documents = _json_documents(value)
+        if documents is None:
+            _scalar_paths(value)
+            _plain_secret(value, keys)
+        else:
+            _plain_secret(value, keys)
+            for document in documents:
+                _structured_privacy(document, keys, nested=nested + 1, depth=depth + 1, visited=visited, ancestors=ancestors)
+    else:
+        _plain_secret(value, keys)
+
+
+def _target_key(node: ast.AST) -> tuple[str, ...]:
+    if isinstance(node, ast.Name):
+        return (node.id,)
+    if isinstance(node, ast.Attribute):
+        return (node.attr,)
+    if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+        return (str(node.slice.value),)
+    return ()
+
+
+def _python_privacy(text: str) -> None:
+    # No product capture/parser implementation is used as its own oracle.
+    try:
+        tree = ast.parse(text)
+        offsets = [0]
+        for line in text.splitlines(keepends=True):
+            offsets.append(offsets[-1] + len(line))
+        operators = {
+            offsets[token.start[0] - 1] + token.start[1]
+            for token in tokenize.generate_tokens(io.StringIO(text).readline)
+            if token.type == tokenize.OP and token.string in {"/", "//", "/=", "//="}
+        }
+        # The shared oracle may consume a division operator and its following
+        # number as one /1000000 match. A parsed OP at exactly that position is
+        # still arithmetic; quoted/comment paths do not get this exemption.
+        _require(not any(match.start() not in operators for match in unsafe_matches(text, python_source=True)), "persisted Python absolute path")
+    except (SyntaxError, ValueError, RecursionError):
+        raise VerificationError("persisted Python source is unverifiable") from None
+    _require(sum(1 for _ in ast.walk(tree)) <= _MAX_NODES, "persisted Python structure too large")
+    children = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+
+    def literal(node: ast.AST, keys: tuple[str, ...]) -> None:
+        try:
+            value = ast.literal_eval(node)
+        except (ValueError, TypeError, SyntaxError):
+            return
+        # Only literal data inherits an assignment/call context. A symbolic
+        # expression such as api_dict["api_key"] is not the credential value.
+        _plain_secret(value, keys)
+
+    def assign(target: ast.AST, value: ast.AST) -> None:
+        if isinstance(target, (ast.List, ast.Tuple)) and isinstance(value, (ast.List, ast.Tuple)):
+            if len(target.elts) == len(value.elts):
+                for left, right in zip(target.elts, value.elts, strict=True):
+                    assign(left, right)
+        else:
+            literal(value, _target_key(target))
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            _identity(node.value)
+            _plain_secret(node.value)
+            documents = _json_documents(node.value)
+            if documents is not None:
+                for document in documents:
+                    _structured_privacy(document)
+            if not isinstance(children.get(node), ast.JoinedStr):
+                _scalar_paths(node.value, python_template=True)
+        elif isinstance(node, ast.JoinedStr):
+            literal_parts = [part.value if isinstance(part, ast.Constant) and isinstance(part.value, str) else "VALUE" for part in node.values]
+            _scalar_paths("".join(literal_parts), python_template=True)
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                assign(target, node.value)
+        elif isinstance(node, (ast.AnnAssign, ast.AugAssign, ast.NamedExpr)) and node.value is not None:
+            assign(node.target, node.value)
+        elif isinstance(node, ast.keyword) and node.arg:
+            literal(node.value, (node.arg,))
+        elif isinstance(node, ast.Dict):
+            for key, item in zip(node.keys, node.values, strict=True):
+                if isinstance(key, ast.Constant) and isinstance(key.value, str):
+                    literal(item, (key.value,))
+        elif isinstance(node, ast.arguments):
+            args = [*node.posonlyargs, *node.args]
+            for arg, default in zip(args[-len(node.defaults):] if node.defaults else [], node.defaults, strict=True):
+                literal(default, (arg.arg,))
+            for arg, default in zip(node.kwonlyargs, node.kw_defaults, strict=True):
+                if default is not None:
+                    literal(default, (arg.arg,))
+    try:
+        for token in tokenize.generate_tokens(io.StringIO(text).readline):
+            if token.type == tokenize.COMMENT:
+                _plain_secret(token.string)
+    except (tokenize.TokenError, IndentationError):
+        raise VerificationError("persisted Python tokenization failed") from None
+
+
+def _privacy(root: Path, text: str, *, suffix: str = "") -> None:
+    _require(len(text.encode("utf-8")) <= _MAX_TEXT, "persisted text exceeds inspection limit")
+    _identity(text)
+    if suffix == ".py":
+        _python_privacy(text)
+        return
+    documents = _json_documents(text)
+    if documents is not None:
+        visited = [0]
+        for document in documents:
+            _structured_privacy(document, visited=visited)
+        return
+    if suffix in {".json", ".jsonl"}:
+        raise VerificationError("persisted JSON document is malformed")
+    if suffix in {".yaml", ".yml", ".lock"}:
+        try:
+            document = yaml.safe_load(text)
+        except yaml.YAMLError:
+            raise VerificationError("persisted YAML document is malformed") from None
+        _structured_privacy(document)
+        return
+    _scalar_paths(text)
+    _plain_secret(text)
+
+
+def _semantic_copy(original: Any, snapshot: Any, case: Path, keys: tuple[str, ...] = ()) -> None:
+    if isinstance(original, dict):
+        _require(
+            isinstance(snapshot, dict) and original.keys() == snapshot.keys(),
+            "snapshot keys changed",
+        )
+        for key, value in original.items():
+            _semantic_copy(value, snapshot[key], case, (*keys, str(key)))
+    elif isinstance(original, list):
+        _require(
+            isinstance(snapshot, list) and len(original) == len(snapshot), "snapshot list changed"
+        )
+        for before, after in zip(original, snapshot, strict=True):
+            _semantic_copy(before, after, case, keys)
+    elif original != snapshot:
+        _require(isinstance(original, str) and isinstance(snapshot, str), "snapshot scalar changed")
+        secret = redact_keyed_values(original, keys)
+        secret = redact_text(secret)[0] if isinstance(secret, str) else secret
+        if secret != original:
+            _require(snapshot == secret, "supported-secret snapshot substitution incorrect")
+            return
+        # Stop tokens, globs, URLs, keys, model identities and bindings stay
+        # exact; only an independently recognizable whole path scalar changes.
+        whole_path = Path(original).is_absolute() or PureWindowsPath(original).is_absolute()
+        whole_uri = bool(re.match(r"(?i)^file:[/\\]{2}", original))
+        _require((whole_path or whole_uri) and bool(unsafe_matches(original)), "non-secret snapshot scalar changed")
+        expected = "<REDACTED:path>"
+        try:
+            relative = Path(original).relative_to(case.resolve())
+            if ".." not in relative.parts:
+                expected = relative.as_posix()
+        except ValueError:
+            pass
+        _require(snapshot == expected, "absolute-path snapshot substitution incorrect")
+
+
+def _snapshot(case: Path, run_dir: Path, relative: str, snapshot: str, raw: bytes) -> None:
+    saved = _inside(run_dir, snapshot).read_bytes()
+    _privacy(case, saved.decode("utf-8"), suffix=Path(relative).suffix)
+    if relative in _PUBLIC_HASHES:
+        _require(hashlib.sha256(raw).hexdigest() == _PUBLIC_HASHES[relative], "fixed public input identity mismatch")
+        _require(saved == raw, "fixed public source snapshot fidelity failed")
+    if saved != raw:
+        try:
+            _semantic_copy(
+                _parse(raw, Path(relative).suffix), _parse(saved, Path(relative).suffix), case
+            )
+        except VerificationError:
+            raise
+        except Exception:
+            raise VerificationError("changed snapshot cannot be checked structurally") from None
+
+
+def _binding_sources(manifest: Manifest, field: str) -> set[tuple[str, str | None, str]]:
+    binding = manifest.bindings.get(field)
+    _require(binding is not None, "expected field binding undeclared")
+    assert binding is not None
+    result: set[tuple[str, str | None, str]] = set()
+    if binding.config:
+        path, _, key = binding.config.partition(":")
+        result.add(("config", path, key))
+    if binding.cli:
+        result.add(("cli", None, binding.cli))
+    if binding.env:
+        result.add(("env", None, binding.env))
+    return result
+
+
+def _effective(run_dir: Path, field: str, expected: Any) -> dict[str, Any]:
+    run = _read_run(run_dir)
+    _require(run.manifest is not None, "manifest capture missing")
+    assert run.manifest is not None
+    manifest = Manifest.model_validate(
+        _parse(_inside(run_dir, run.manifest.snapshot).read_bytes(), ".yaml")
+    )
+    sources = _binding_sources(manifest, field)
+    observations = run.bindings_observed.get(field, [])
+    _require(bool(observations), "expected binding observation missing")
+    _require(
+        all(
+            (item.source.type, item.source.path, item.source.key) in sources
+            for item in observations
+        ),
+        "binding observation source differs from declaration",
+    )
+    leaf = State.from_run(run, run_dir=run_dir).flatten().get(field)
+    _require(
+        leaf is not None and leaf.source == "run" and _equal(leaf.value, expected),
+        "effective binding value mismatch",
+    )
+    assert leaf is not None
+    details = {f"{kind}:{path + ':' if path else ''}{key}" for kind, path, key in sources}
+    _require(leaf.detail in details, "effective binding source mismatch")
+    return {
+        "field": field,
+        "value": leaf.value,
+        "source": leaf.detail,
+        "observations": len(observations),
+    }
+
+
+@_safe_failure
+def verify_capture(
+    case: Path,
+    run_dir: Path,
+    expected_field: str,
+    expected_value: Any,
+    expected_argv: list[str],
+    expected_packages: dict[str, str],
+    expected_code_commit: str,
+) -> dict[str, Any]:
+    """Check a fresh capture before the orchestrator moves the native outputs."""
+    run = _read_run(run_dir)
+    _require(
+        run.status.value == "completed" and run.exit_code == 0,
+        "native child did not complete successfully",
+    )
+    _require(not run.warnings, "required capture has warnings or missing data")
+    _require(run.command.argv == expected_argv, "captured command mismatch")
+    _require(run.command.cwd == ".", "captured working directory mismatch")
+    _require(
+        run.code.commit == expected_code_commit and not run.code.dirty,
+        "captured code identity mismatch",
+    )
+    _require(not _git(case, "status", "--porcelain"), "native execution changed tracked inputs")
+    _require(
+        run.environment is not None and run.hardware is not None,
+        "full environment or hardware capture missing",
+    )
+    assert run.environment is not None
+    assert run.hardware is not None
+    # Judge uses a remote API. Host hardware remains typed recorder metadata,
+    # with no GPU allocation or device-index acceptance requirement.
+    for attribute, prefix in (("slurm", "SLURM_"), ("pbs", "PBS_"), ("lsf", "LSB_")):
+        expected_namespace = {
+            key: value
+            for key, value in run.environment.env.items()
+            if key.startswith(prefix) and isinstance(value, str)
+        }
+        captured_namespace = getattr(run.scheduler, attribute) if run.scheduler else None
+        _require(
+            captured_namespace == (expected_namespace or None),
+            "scheduler namespace differs from captured environment metadata",
+        )
+    _require(run.environment.packages == expected_packages, "launcher package metadata mismatch")
+    _require(
+        run.environment.env.get("CUDA_VISIBLE_DEVICES") == "",
+        "approved GPU selection not captured",
+    )
+    _require(
+        run.manifest is not None
+        and run.lock is not None
+        and bool(run.files)
+        and bool(run.artifacts),
+        "required documents, inputs or outputs missing",
+    )
+    checked_inputs: list[str] = []
+    for entry in run.files:
+        raw = _raw_input(case, expected_code_commit, entry.path)
+        _require(
+            _digest(raw) == entry.sha256 and len(raw) == entry.size_bytes,
+            "captured input hash or size mismatch",
+        )
+        _require(_inside(case, entry.path).read_bytes() == raw, "input changed during execution")
+        text_eligible = len(raw) <= 1048576 and b"\0" not in raw
+        try:
+            raw.decode("utf-8")
+        except UnicodeDecodeError:
+            text_eligible = False
+        if text_eligible:
+            _require(entry.snapshot is not None, "eligible input snapshot missing")
+        if entry.snapshot is not None:
+            _snapshot(case, run_dir, entry.path, entry.snapshot, raw)
+            if not entry.redacted:
+                _require(
+                    _inside(run_dir, entry.snapshot).read_bytes() == raw,
+                    "unredacted snapshot differs from source",
+                )
+        checked_inputs.append(entry.path)
+    for document in (run.manifest, run.lock):
+        assert document is not None
+        raw = _raw_input(case, expected_code_commit, document.path)
+        _require(_digest(raw) == document.sha256, "document source hash mismatch")
+        _require(
+            _inside(case, document.path).read_bytes() == raw, "document changed during execution"
+        )
+        _snapshot(case, run_dir, document.path, document.snapshot, raw)
+    assert run.manifest is not None
+    manifest = Manifest.model_validate(
+        _parse(_inside(run_dir, run.manifest.snapshot).read_bytes(), ".yaml")
+    )
+    declared: set[str] = set(manifest.execution.config_files or []) if manifest.execution else set()
+    declared.update(
+        item.config.partition(":")[0] for item in manifest.bindings.values() if item.config
+    )
+    declared.update(item.path for item in manifest.prompts.values() if item.path)
+    _require(declared <= set(checked_inputs), "declared input capture incomplete")
+    capture = run.input_capture
+    _require(
+        run.schema_version == 2
+        and capture is not None
+        and capture.baseline_phase == "pre_child"
+        and capture.check_phase == "post_child"
+        and capture.consumption == "unverified",
+        "run input phases or consumption claims mismatch",
+    )
+    assert capture is not None
+    expected_checks = set(checked_inputs) | {run.manifest.path, run.lock.path}
+    _require(
+        len(capture.checks) == len(expected_checks)
+        and {item.path for item in capture.checks} == expected_checks,
+        "run pre/post input checks incomplete or duplicated",
+    )
+    for check in capture.checks:
+        raw = _raw_input(case, expected_code_commit, check.path)
+        for observed in (check.before, check.after):
+            _require(
+                observed.availability == "present"
+                and observed.sha256 == _digest(raw)
+                and observed.size_bytes == len(raw),
+                "run pre/post input fingerprint mismatch",
+            )
+        _require(check.change == "unchanged", "run input changed or unknown")
+    patterns = manifest.artifacts.outputs or [] if manifest.artifacts else []
+    expected_outputs = {
+        p.relative_to(case).as_posix()
+        for pattern in patterns
+        for p in case.glob(pattern)
+        if p.is_file()
+    }
+    _require(
+        expected_outputs == {item.path for item in run.artifacts},
+        "declared output capture incomplete",
+    )
+    for artifact in run.artifacts:
+        raw_path = _inside(case, artifact.path)
+        digest = hashlib.sha256()
+        with raw_path.open("rb") as stream:
+            for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+                digest.update(block)
+        _require(
+            "sha256:" + digest.hexdigest() == artifact.sha256
+            and raw_path.stat().st_size == artifact.size_bytes,
+            "output hash or size mismatch",
+        )
+    _require(
+        all(_inside(run_dir, name).is_file() for name in ("stdout.log", "stderr.log")),
+        "required saved output log missing",
+    )
+    checked_saved = 0
+    snapshot_suffixes = {entry.snapshot: Path(entry.path).suffix for entry in run.files if entry.snapshot}
+    snapshot_suffixes.update({run.manifest.snapshot: ".yaml", run.lock.snapshot: ".yaml"})
+    for path in sorted(run_dir.rglob("*")):
+        _require(not path.is_symlink(), "symlink in owned run directory")
+        if path.is_file():
+            _privacy(case, path.read_bytes().decode("utf-8"), suffix=snapshot_suffixes.get(path.relative_to(run_dir).as_posix(), path.suffix))
+            checked_saved += 1
+    effective = _effective(run_dir, expected_field, expected_value)
+    return {
+        "schema_version": 1,
+        "status": "PASS",
+        "run_id": run.run_id,
+        "effective_binding": effective,
+        "input_files_checked": len(checked_inputs),
+        "artifacts_checked": len(run.artifacts),
+        "saved_files_privacy_checked": checked_saved,
+        "source_hashes_are_original_bytes": True,
+        "environment_proof": (
+            "same launcher environment metadata; "
+            "external child interpreter is not independently attested"
+        ),
+    }
+
+
+def _report(value: dict[str, Any] | Path | str) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    result: dict[str, Any] = json.loads(value.read_text() if isinstance(value, Path) else value)
+    _require(isinstance(result, dict), "report root is not an object")
+    return result
+
+
+@_safe_failure
+def verify_pair(
+    case: Path,
+    a_run_dir: Path,
+    b_run_dir: Path,
+    field: str,
+    values: tuple[Any, Any],
+    severity: str,
+    config_path: str,
+    pair_json: dict[str, Any] | Path | str,
+    self_json: dict[str, Any] | Path | str,
+    audit_a_json: dict[str, Any] | Path | str,
+    audit_b_json: dict[str, Any] | Path | str,
+) -> dict[str, Any]:
+    """Verify the target gold and report every other current semantic delta."""
+    left_run, right_run = _read_run(a_run_dir), _read_run(b_run_dir)
+    _require(
+        all(
+            run.status.value == "completed" and run.exit_code == 0 and not run.warnings
+            for run in (left_run, right_run)
+        ),
+        "paired native execution or capture incomplete",
+    )
+    effective = [
+        _effective(folder, field, expected)
+        for folder, expected in zip((a_run_dir, b_run_dir), values, strict=True)
+    ]
+    _require(
+        left_run.environment is not None and right_run.environment is not None,
+        "pair environment missing",
+    )
+    assert left_run.environment is not None and right_run.environment is not None
+    _require(
+        left_run.environment.packages == right_run.environment.packages,
+        "paired package environment changed",
+    )
+    documents = [_report(item) for item in (pair_json, self_json, audit_a_json, audit_b_json)]
+    for document in documents:
+        _privacy(case, json.dumps(document, ensure_ascii=False))
+    pair, self_report = (DiffReport.model_validate(item) for item in documents[:2])
+    audits = [AuditReport.model_validate(item) for item in documents[2:]]
+    _require(
+        pair.filtered_below is None and self_report.filtered_below is None,
+        "filtered diff cannot prove full comparison",
+    )
+    _require(
+        pair.a.ref == left_run.run_id and pair.b.ref == right_run.run_id, "pair sources mismatch"
+    )
+    _require(
+        self_report.a.ref == left_run.run_id
+        and self_report.b.ref == left_run.run_id
+        and not self_report.changes,
+        "self diff is not empty or source mismatch",
+    )
+    left = State.from_run(left_run, run_dir=a_run_dir).flatten()
+    right = State.from_run(right_run, run_dir=b_run_dir).flatten()
+    expected_paths = {
+        key
+        for key in left.keys() | right.keys()
+        if key not in left or key not in right or not _equal(left[key].value, right[key].value)
+    }
+    _require(
+        len(pair.changes) == len({item.path for item in pair.changes})
+        and {item.path for item in pair.changes} == expected_paths,
+        "full diff fields missing or duplicated",
+    )
+    explained: list[dict[str, Any]] = []
+    extras: list[dict[str, Any]] = []
+    for change in pair.changes:
+        before, after = left.get(change.path), right.get(change.path)
+        _require(
+            _equal(change.a, before.value if before else None)
+            and _equal(change.b, after.value if after else None),
+            "diff value differs from effective State",
+        )
+        expected_status = "added" if before is None else "removed" if after is None else "changed"
+        _require(change.status == expected_status, "diff change status mismatch")
+        reason = "requires independent explanation"
+        expected_severity = None
+        if change.path == field:
+            expected_severity, reason = severity, "the predeclared experimental parameter"
+            _require(
+                _equal(change.a, values[0]) and _equal(change.b, values[1]),
+                "target drift values mismatch",
+            )
+        elif change.path == f"files.{config_path}.sha256":
+            expected_severity, reason = "HIGH", "original configuration bytes changed"
+        elif change.path == "code.commit":
+            expected_severity, reason = "MEDIUM", "clean disposable input commit changed"
+        elif change.path in _NONE:
+            expected_severity, reason = "NONE", "per-run timing or identity metadata"
+        if expected_severity is not None:
+            _require(change.severity == expected_severity, "declared delta severity mismatch")
+        item = change.model_dump(mode="json") | {"explanation": reason}
+        explained.append(item)
+        if expected_severity is None:
+            extras.append(item)
+    required = {field, f"files.{config_path}.sha256", "code.commit"}
+    _require(required <= expected_paths, "required experimental or input delta missing")
+    for audit in audits:
+        for rule in (
+            "consistency.env_vs_lock",
+            "consistency.file_hashes",
+            "consistency.lock_fresh",
+            "consistency.model_identity",
+            "consistency.generation_params",
+            "consistency.custom_fields",
+        ):
+            findings = [item for item in audit.findings if item.rule_id == rule]
+            if rule in (
+                "consistency.env_vs_lock",
+                "consistency.file_hashes",
+                "consistency.lock_fresh",
+                "consistency.model_identity",
+            ):
+                _require(
+                    bool(findings) and all(item.status.value == "pass" for item in findings),
+                    "required consistency result is not PASS",
+                )
+            _require(
+                all(item.status.value in ("pass", "skipped") for item in findings),
+                "pair consistency contradicts declared runtime",
+            )
+    return {
+        "schema_version": 1,
+        "status": "NEEDS_REVIEW" if extras else "PASS",
+        "effective_bindings": effective,
+        "target_gold_unchanged": True,
+        "complete_changes": explained,
+        "additional_changes_requiring_review": extras,
+        "self_diff_empty": True,
+        "full_findings_equal": documents[2]["findings"] == documents[3]["findings"],
+        "audit_profiles_equal": documents[2]["profiles"] == documents[3]["profiles"],
+        "audit_summaries": [item["summary"] for item in documents[2:]],
+        "observed_delta_count": len(pair.changes),
+    }

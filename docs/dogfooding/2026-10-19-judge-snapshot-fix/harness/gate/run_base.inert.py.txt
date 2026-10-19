@@ -1,0 +1,234 @@
+"""Fresh five-pin Gate A baseline; no resource or mutation scenarios."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SCRATCH = HERE.parent
+CANDIDATE = SCRATCH / "worktree"
+PYTHON = CANDIDATE / ".venv/bin/python"
+PORTFOLIO = Path("<PINNED_CHECKOUT_ROOT>")
+ORACLE = Path("<LOCAL_PATH>")
+QUALITY = SCRATCH / "quality/final-1"
+COMMIT = "750270b10307455795fcff126664429dc895983a"
+VERSION = "0.7.0"
+ORACLE_INDEX_SHA = "06d04134b580257b5c63fc297a50f4635fba874e24f5176737b0b7655bc9cf80"
+SHIM = Path("<GIT_COMPATIBILITY>/bin/git")
+SHIM_SHA = "87a9309323f9e82d8721b7bd58cac0c1a8f08e44a4348fbf6d476854aa19b298"
+PINS = {
+    "lm-evaluation-harness": ("b954108c9baaaa934b4ad842033b31a97ee30816", "EleutherAI/lm-evaluation-harness"),
+    "FastChat": ("587d5cfa1609a43d192cedb8441cac3c17db105d", "lm-sys/FastChat"),
+    "LlamaFactory": ("673048c6a543cbbeaed5b8444b8223dc4e23c721", "hiyouga/LlamaFactory"),
+    "HarmBench": ("8e1604d1171fe8a48d8febecd22f600e462bdcdd", "centerforaisafety/HarmBench"),
+    "llm-dp-finetune": ("7f8b5dff4b92aae90ceccce3ec959b48307bed9e", "jyhong836/llm-dp-finetune"),
+}
+CLI = '''import os, sys
+from pathlib import Path
+def prohibit(event, args):
+    if event == "socket.connect":
+        raise RuntimeError("Offline Gate A forbids network")
+    if event == "import" and str(args[0]).split(".")[0] in {"torch", "transformers", "vllm", "huggingface_hub", "numpy"}:
+        raise RuntimeError("Offline Gate A forbids heavy imports")
+sys.addaudithook(prohibit)
+import reprollm
+if Path(reprollm.__file__).resolve() != Path(os.environ["GATE_CANDIDATE"]) / "src/reprollm/__init__.py":
+    raise RuntimeError("Candidate module origin mismatch")
+if reprollm.__version__ != "0.7.0":
+    raise RuntimeError("Candidate version mismatch")
+from reprollm.cli.main import cli
+cli()
+'''
+ENVIRONMENT = '''import importlib.metadata, json, sys
+from pathlib import Path
+import reprollm
+assert Path(reprollm.__file__).resolve() == Path(sys.argv[1]) / "src/reprollm/__init__.py"
+assert Path(sys.prefix).resolve() == Path(sys.argv[1]) / ".venv"
+assert reprollm.__version__ == importlib.metadata.version("reprollm") == "0.7.0"
+names = ["reprollm", "pytest", "pytest-cov", "coverage", "ruff", "mypy", "pydantic", "typer", "PyYAML"]
+print(json.dumps({"schema_version":1, "python":sys.version.split()[0], "versions":{n:importlib.metadata.version(n) for n in names}, "origin_verified":True}, sort_keys=True))
+'''
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read(path: Path):
+    return json.loads(path.read_bytes())
+
+
+def write(path: Path, value: dict) -> None:
+    assert value["schema_version"] == 1
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def environment() -> dict[str, str]:
+    return {"PATH": f"{SHIM.parent}:{PYTHON.parent}:/usr/bin:/bin", "PYTHONPATH": f"{CANDIDATE / 'src'}:{CANDIDATE}", "GATE_CANDIDATE": str(CANDIDATE), "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8", "NO_COLOR": "1", "COLUMNS": "120", "OMP_NUM_THREADS": "1", "HF_HUB_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "CUDA_VISIBLE_DEVICES": "", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC"}
+
+
+def safe(value):
+    if isinstance(value, str):
+        for prefix, replacement in [(str(CANDIDATE), "<CANDIDATE>"), (str(PORTFOLIO), "<PINNED_PORTFOLIO>"), (str(ORACLE), "<IMMUTABLE_ORACLE>"), (str(SCRATCH), "<SESSION_SCRATCH>"), (str(SHIM.parent), "<GIT_SHIM>")]:
+            value = value.replace(prefix, replacement)
+        return value
+    if isinstance(value, dict):
+        return {k: safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [safe(v) for v in value]
+    return value
+
+
+class Runner:
+    def __init__(self, out: Path):
+        self.out = out
+        self.commands = []
+        self.checks = []
+        self.env = environment()
+        self.start = time.monotonic()
+        (out / "raw").mkdir(parents=True)
+        (out / "comparison").mkdir()
+
+    def command(self, label: str, argv: list[str], cwd: Path, expected: int = 0):
+        start = time.monotonic()
+        result = subprocess.run(argv, cwd=cwd, env=self.env, capture_output=True, timeout=300)
+        stdout = self.out / "raw" / (label + ".stdout")
+        stderr = self.out / "raw" / (label + ".stderr")
+        stdout.write_bytes(result.stdout)
+        stderr.write_bytes(result.stderr)
+        row = {"label": label, "argv": safe(argv), "cwd": safe(str(cwd)), "expected_exit": expected, "exit": result.returncode, "elapsed_seconds": round(time.monotonic() - start, 6), "stdout": str(stdout.relative_to(self.out)), "stderr": str(stderr.relative_to(self.out)), "stdout_sha256": sha(result.stdout), "stderr_sha256": sha(result.stderr)}
+        self.commands.append(row)
+        write(self.out / "commands.json", {"schema_version": 1, "commands": self.commands})
+        assert result.returncode == expected, f"Unexpected exit for {label}"
+        return result
+
+    def check(self, label: str, passed: bool, **details):
+        self.checks.append({"label": label, "passed": passed, **safe(details)})
+        write(self.out / "checks.json", {"schema_version": 1, "checks": self.checks})
+        assert passed, label
+
+    def pins(self, when: str):
+        rows = []
+        for name, (commit, upstream) in PINS.items():
+            target = PORTFOLIO / name
+            head = self.command(f"{name}-{when}-HEAD", ["git", "rev-parse", "HEAD"], target).stdout.decode().strip()
+            origin = self.command(f"{name}-{when}-origin", ["git", "remote", "get-url", "origin"], target).stdout.decode().strip()
+            status = self.command(f"{name}-{when}-status", ["git", "status", "--porcelain=v1", "--untracked-files=all"], target).stdout
+            self.check(f"{name}-{when}-identity", head == commit and origin in (f"https://github.com/{upstream}", f"https://github.com/{upstream}.git", f"git@github.com:{upstream}.git") and status == b"", expected_commit=commit, actual_commit=head, public_origin=origin, tracked_untracked_clean=status == b"")
+            rows.append({"name": name, "sha": head, "origin": origin, "clean": status == b""})
+        write(self.out / f"pins-{when}.json", {"schema_version": 1, "targets": rows})
+
+
+def inventory() -> dict:
+    entries = subprocess.check_output(["git", "ls-files", "--stage", "-z"], cwd=CANDIDATE)
+    files = {}
+    total = 0
+    for entry in entries.split(b"\0"):
+        if not entry:
+            continue
+        metadata, raw_name = entry.split(b"\t", 1)
+        mode, blob, stage = metadata.decode().split()
+        assert stage == "0"
+        name = raw_name.decode()
+        path = CANDIDATE / name
+        raw = os.readlink(path).encode() if path.is_symlink() else path.read_bytes()
+        assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == blob
+        files[name] = {"sha256": sha(raw), "git_blob_sha1": blob, "mode": mode}
+        total += len(raw)
+    return {"schema_version": 1, "commit": COMMIT, "tracked_file_count": len(files), "tracked_bytes_total": total, "files": files, "inventory_sha256": sha(json.dumps(files, sort_keys=True, separators=(",", ":")).encode()), "all_git_blob_bytes_verified": True}
+
+
+def oracle() -> dict:
+    assert sha((ORACLE / "index.json").read_bytes()) == ORACLE_INDEX_SHA
+    index = read(ORACLE / "index.json")
+    expected = [f"expected-{kind}/{name}.json" for name in PINS for kind in ("audit", "facts")]
+    expected.append("gate-a/oracle-and-environment-provenance.json")
+    for relative in expected:
+        assert sha((ORACLE / relative).read_bytes()) == index["files_sha256"][relative], f"Changed oracle: {relative}"
+    return {"schema_version": 1, "index_sha256": ORACLE_INDEX_SHA, "retained_members_sha256": {r: index["files_sha256"][r] for r in expected}, "reuse": "Reviewed prior semantic expectations only; candidate actual outputs must be fresh.", "scope": "Complete L0 report, detection, hints, complete dependency declarations, source paths/import evidence/frameworks, diagnostics; no unaffected D01/D02 fixture extensions."}
+
+
+def main() -> int:
+    global CANDIDATE, PYTHON, COMMIT, QUALITY
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--root-authorized", action="store_true")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--candidate", type=Path, default=CANDIDATE)
+    parser.add_argument("--commit", required=True)
+    parser.add_argument("--quality", type=Path)
+    args = parser.parse_args()
+    CANDIDATE = args.candidate.resolve()
+    PYTHON = CANDIDATE / ".venv/bin/python"
+    COMMIT = args.commit
+    QUALITY = args.quality.resolve() if args.quality else SCRATCH / "quality/final-1"
+
+    assert sha(SHIM.read_bytes()) == SHIM_SHA
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=CANDIDATE).decode().strip() == COMMIT
+    assert subprocess.check_output(["git", "status", "--porcelain=v1", "--untracked-files=all"], cwd=CANDIDATE) == b""
+    assert args.output.resolve().is_relative_to(HERE) and not args.output.exists()
+    bundle = oracle()
+    (HERE / "harness/cli.py").write_text(CLI)
+    facts_source = CANDIDATE / "docs/dogfooding/2026-10-18-r08a/gate-a/harness/collect_facts.py.txt"
+    facts = HERE / "harness/collect_facts.py"
+    shutil.copyfile(facts_source, facts)
+    assert sha(facts.read_bytes()) == "3fc111446cc13bf77dcc298118a8cab853ad4daaf67c3c304fb052194e5d3d60"
+    run = Runner(args.output)
+    write(args.output / "oracle-binding.json", bundle)
+    run.pins("before")
+    source = inventory()
+    write(args.output / "inputs-before.json", source)
+    if args.prepare:
+        write(args.output / "summary.json", {"schema_version": 1, "status": "PREPARED_NOT_EXECUTED", "candidate_commit": COMMIT, "all_five_valid_clean": True, "product_commands": 0, "quality_requirement": "Require root authorization plus final quality receipt PASS on identical candidate bytes before execution.", "scope": bundle["scope"], "runner_sha256": sha(Path(__file__).read_bytes()), "facts_sha256": sha(facts.read_bytes()), "candidate_inventory_sha256": source["inventory_sha256"]})
+        print("PREPARED_NOT_EXECUTED: five pins clean; immutable oracle validated")
+        return 0
+    assert args.root_authorized, "Root authorization required after final QA"
+    quality = read(QUALITY / "summary.json")
+    assert quality["all_passed"] is True and quality["inputs_byte_identical_before_after"] is True
+    assert quality["candidate_commit"] == COMMIT and quality["candidate_input_inventory_sha256"] == source["inventory_sha256"]
+    assert read(QUALITY / "inputs-before.json") == source == read(QUALITY / "inputs-after.json")
+    write(args.output / "quality-binding.json", {"schema_version": 1, "candidate_commit": COMMIT, "quality_summary_sha256": sha((QUALITY / "summary.json").read_bytes()), "quality_inventory_sha256": source["inventory_sha256"], "quality_all_passed": True, "root_authorized": True, "product_execution_started_after_quality_pass": True})
+    env = run.command("candidate-environment", [str(PYTHON), "-c", ENVIRONMENT, str(CANDIDATE)], CANDIDATE)
+    observed_env = json.loads(env.stdout)
+    prior_env = read(ORACLE / "gate-a/oracle-and-environment-provenance.json")["environment"]
+    mismatches = {k: {"old": v, "current": observed_env["versions"].get(k)} for k, v in prior_env["versions"].items() if k != "reprollm" and v != observed_env["versions"].get(k)}
+    run.check("oracle-environment-applicable", observed_env["python"] == prior_env["python"] and not mismatches, mismatches=mismatches, version_metadata_exception="0.6.1 -> 0.7.0 only per spec T-02")
+    provenance = {row["name"]: row for row in read(ORACLE / "gate-a/oracle-and-environment-provenance.json")["sources"]}
+    started_product = time.monotonic()
+    failed = None
+    try:
+        for name in PINS:
+            target = PORTFOLIO / name
+            actual = run.command(f"{name}-L0", [str(PYTHON), str(HERE / "harness/cli.py"), "--no-color", "audit", ".", "--level", "0", "--format", "json", "--fail-on", "never"], target)
+            run.check(f"{name}-L0-diagnostics", actual.stderr.decode().replace("\r\n", "\n") == provenance[name]["default_stderr_utf8"], expected_stderr_sha256=sha(provenance[name]["default_stderr_utf8"].encode()), actual_stderr_sha256=sha(actual.stderr))
+            comparison = run.command(f"{name}-L0-comparison", [str(PYTHON), str(CANDIDATE / "scripts/compare_gold.py"), str(ORACLE / f"expected-audit/{name}.json"), str(args.output / "raw" / f"{name}-L0.stdout"), "--audit-metadata"], CANDIDATE)
+            shutil.copyfile(args.output / "raw" / f"{name}-L0-comparison.stdout", args.output / "comparison" / f"{name}-L0.json")
+            run.check(f"{name}-L0-full-json", json.loads(comparison.stdout)["status"] == "PASS" and json.loads(comparison.stdout)["differences"] == [])
+            fact_result = run.command(f"{name}-facts", [str(PYTHON), str(facts), str(CANDIDATE)], target)
+            run.check(f"{name}-facts-stderr", fact_result.stderr == b"")
+            fact_comp = run.command(f"{name}-facts-comparison", [str(PYTHON), str(CANDIDATE / "scripts/compare_gold.py"), str(ORACLE / f"expected-facts/{name}.json"), str(args.output / "raw" / f"{name}-facts.stdout")], CANDIDATE)
+            shutil.copyfile(args.output / "raw" / f"{name}-facts-comparison.stdout", args.output / "comparison" / f"{name}-facts.json")
+            run.check(f"{name}-facts-full-json", json.loads(fact_comp.stdout)["status"] == "PASS" and json.loads(fact_comp.stdout)["differences"] == [])
+            print(f"{name}: full L0, diagnostics, detection/hints/dependencies/source facts PASS", flush=True)
+    except BaseException as exc:
+        failed = {"error_type": type(exc).__name__, "label": run.commands[-1]["label"] if run.commands else "none"}
+    run.pins("after")
+    after = inventory()
+    write(args.output / "inputs-after.json", after)
+    run.check("final-source-bytes-match-quality", source == after)
+    product = [c for c in run.commands if c["label"].endswith(("-L0", "-facts"))]
+    comps = [c for c in run.commands if c["label"].endswith("-comparison")]
+    summary = {"schema_version": 1, "candidate_commit": COMMIT, "status": "PASS" if failed is None and len(product) == len(comps) == 10 else "FAIL", "failed": failed, "all_five_targets": len(product) == 10, "product_commands": len(product), "complete_json_comparisons": len(comps), "git_identity_commands": 30, "command_count": len(run.commands), "checks": len(run.checks), "all_checks_passed": all(c["passed"] for c in run.checks), "source_inputs_unchanged": source == after, "quality_receipt_sha256": sha((QUALITY / "summary.json").read_bytes()), "runner_sha256": sha(Path(__file__).read_bytes()), "facts_sha256": sha(facts.read_bytes()), "oracle_index_sha256": ORACLE_INDEX_SHA, "product_elapsed_seconds": round(sum(c["elapsed_seconds"] for c in product), 6), "summed_command_elapsed_seconds": round(sum(c["elapsed_seconds"] for c in run.commands), 6), "wall_seconds": round(time.monotonic() - run.start, 6), "after_quality_wall_seconds": round(time.monotonic() - started_product, 6), "resources": "No network, credentials, model imports, GPU work, user mutations or resource Gate B execution.", "scope": bundle["scope"]}
+    write(args.output / "summary.json", summary)
+    print(json.dumps(summary, sort_keys=True), flush=True)
+    return 0 if summary["status"] == "PASS" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

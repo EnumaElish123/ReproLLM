@@ -1,0 +1,16 @@
+.....................................................F.................. [ 69%]
+...............................                                          [100%]
+=================================== FAILURES ===================================
+___________ test_python_strings_and_non_source_values_remain_private ___________
+tests/unit/run/test_privacy_fidelity.py:190: in test_python_strings_and_non_source_values_remain_private
+    assert safe == 'ratio = count /2\ncache = "<REDACTED:path>"\n'
+E   assert "ratio = coun...CTED:path>'\n" == 'ratio = coun...CTED:path>"\n'
+E     
+E       ratio = count /2
+E     - cache = "<REDACTED:path>"
+E     ?         ^               ^
+E     + cache = '<REDACTED:path>'
+E     ?         ^               ^
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_privacy_fidelity.py::test_python_strings_and_non_source_values_remain_private
+1 failed, 102 passed in 1.71s

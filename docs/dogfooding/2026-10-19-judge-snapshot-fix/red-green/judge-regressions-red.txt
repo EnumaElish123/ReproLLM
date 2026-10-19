@@ -1,0 +1,117 @@
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+__________ test_minimal_python_symbols_and_fstring_keep_exact_source ___________
+tests/unit/run/test_judge_snapshot_regressions.py:90: in test_minimal_python_symbols_and_fstring_keep_exact_source
+    assert privacy.text(MINIMAL_PYTHON, python_source=True) == (MINIMAL_PYTHON, 0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/privacy.py:100: in text
+    result, count = redact_contextual_text(value, manifest=manifest, keys=keys)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/contextual_text.py:470: in redact_contextual_text
+    result, count = _fragments(text, 0)
+                    ^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/contextual_text.py:442: in _fragments
+    raise _UnsafeCapture("cannot sanitize secret capture value") from None
+E   reprollm.run.contextual_text._UnsafeCapture: cannot sanitize secret capture value
+_________ test_jsonl_role_labels_and_newline_escapes_keep_exact_source _________
+tests/unit/run/test_judge_snapshot_regressions.py:99: in test_jsonl_role_labels_and_newline_escapes_keep_exact_source
+    assert privacy.text(source) == (source, 0)
+E   assert ('{"prompt": ...: 32}\r\n', 2) == ('{"prompt": ...: 32}\r\n', 0)
+E     
+E     At index 0 diff: '{"prompt": "### Assistant <REDACTED:path>}", "stop": "</s>"}\r\n{"prompt": "### Assistant <REDACTED:path>}", "limit": 32}\r\n' != '{"prompt": "### Assistant <SYNTHETIC_OR_LOCAL_PATH>}", "stop": "</s>"}\r\n{"prompt": "### Assistant <SYNTHETIC_OR_LOCAL_PATH>}", "limit": 32}\r\n'
+E     Use -v to get more diff
+____ test_original_judge_sources_survive_real_capture_and_child_exit[False] ____
+tests/unit/run/test_judge_snapshot_regressions.py:107: in test_original_judge_sources_survive_real_capture_and_child_exit
+    record, folder = _execute(tmp_path, snapshot=snapshot)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+____ test_original_judge_sources_survive_real_capture_and_child_exit[True] _____
+tests/unit/run/test_judge_snapshot_regressions.py:107: in test_original_judge_sources_survive_real_capture_and_child_exit
+    record, folder = _execute(tmp_path, snapshot=snapshot)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+____________ test_exact_sources_do_not_mask_the_real_judge_cap_diff ____________
+tests/unit/run/test_judge_snapshot_regressions.py:133: in test_exact_sources_do_not_mask_the_real_judge_cap_diff
+    a, a_dir = _execute(tmp_path, 256)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+__ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[python] __
+tests/unit/run/test_judge_snapshot_regressions.py:160: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    record, folder = _execute(tmp_path)
+                     ^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+__ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[jsonl] ___
+tests/unit/run/test_judge_snapshot_regressions.py:160: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    record, folder = _execute(tmp_path)
+                     ^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+_ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[malformed-python] _
+tests/unit/run/test_judge_snapshot_regressions.py:160: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    record, folder = _execute(tmp_path)
+                     ^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+_ test_capture_keeps_secret_protection_after_lexical_fidelity_repair[malformed-jsonl] _
+tests/unit/run/test_judge_snapshot_regressions.py:160: in test_capture_keeps_secret_protection_after_lexical_fidelity_repair
+    record, folder = _execute(tmp_path)
+                     ^^^^^^^^^^^^^^^^^^
+tests/unit/run/test_judge_snapshot_regressions.py:62: in _execute
+    record = wrapper.execute(
+src/reprollm/run/wrapper.py:289: in execute
+    manifest, project_rules, document_data = _safe_load(root)
+                                             ^^^^^^^^^^^^^^^^
+src/reprollm/run/wrapper.py:127: in _safe_load
+    raise UserError(
+E   reprollm.core.errors.UserError: cannot load reprollm.yaml (UserError); validate its contents
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_minimal_python_symbols_and_fstring_keep_exact_source
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_jsonl_role_labels_and_newline_escapes_keep_exact_source
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_original_judge_sources_survive_real_capture_and_child_exit[False]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_original_judge_sources_survive_real_capture_and_child_exit[True]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_exact_sources_do_not_mask_the_real_judge_cap_diff
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[python]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[jsonl]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[malformed-python]
+FAILED tests/unit/run/test_judge_snapshot_regressions.py::test_capture_keeps_secret_protection_after_lexical_fidelity_repair[malformed-jsonl]
+9 failed in 0.46s

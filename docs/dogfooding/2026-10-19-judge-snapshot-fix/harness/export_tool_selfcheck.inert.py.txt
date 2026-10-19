@@ -1,0 +1,40 @@
+"""Qualify copied export verifier with retained native evidence, no new product run."""
+from pathlib import Path
+import hashlib,json,subprocess,re,copy
+ROOT=Path('<TASK>')
+HERE=ROOT/'gate';OUT=ROOT/'export-tool-selfcheck'
+OLD=Path('<PREVIOUS_RESOURCE_TASK>/worktree')
+TASK=Path('<PROVISIONED_RESOURCE_ROOT>/replays/resource-20261019-750270b')
+EVIDENCE=TASK/'evidence/runtime/llm-dp-finetune/a'
+PYTHON=ROOT/'worktree/.venv/bin/python'
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def main():
+ assert not OUT.exists();OUT.mkdir()
+ commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=OLD).decode().strip()
+ binding={'schema_version':1,'source_commit':commit,'candidate_reprollm_version':'0.7.0','files_sha256':{p.relative_to(OLD).as_posix():sha(p.read_bytes()) for top in ('src/reprollm','schemas') for p in (OLD/top).rglob('*') if p.is_file() and p.suffix in ('.py','.yaml','.json')}}
+ bp=OUT/'source-binding.json';bp.write_text(json.dumps(binding,sort_keys=True)+'\n')
+ run=json.loads((EVIDENCE/'run/run.json').read_bytes());original=(EVIDENCE/'REPRODUCIBILITY.md').read_text()
+ blank=OUT/'expected-stderr.txt';blank.write_bytes(b'')
+ argv=[str(PYTHON),str(HERE/'verify_export.py'),'--implementation-root',str(OLD),'--project-root',str(TASK/'cases/llm-dp-finetune'),'--run-id',run['run_id'],'--stdout',str(EVIDENCE/'export.log'),'--stderr',str(EVIDENCE/'export.stderr.log'),'--audit-json',str(EVIDENCE/'audit-after.log'),'--command-receipt',str(EVIDENCE/'export.command.json'),'--source-binding',str(bp),'--case','llm-dp-finetune','--variant','a','--upstream-fidelity','PASS','--upstream-fidelity-evidence',str(EVIDENCE/'capture-check.json'),'--expected-stderr',str(blank)]
+ target_line=next(line for line in original.splitlines() if line.startswith('| mechanism.params.target') and 'epsilon' in line)
+ wrong_leaf=re.sub(r'(?<=\| )8(?:\.0)?(?= \|)','999',target_line)
+ inputline=next(line for line in original.splitlines() if line.startswith('| `') and 'sha256:' in line)
+ cases={'positive':original,'wrong-main-value':original.replace(target_line,wrong_leaf),'missing-input-row':original.replace(inputline+'\n',''),'wrong-input-phase':original.replace('Input observation phase: before child launch','Input observation phase: after child completion'),'wrong-provenance':original.replace('observed (run)','declared (manifest)'),'wrong-run-id':original.replace(run['run_id'],'wrong-run-id'),'missing-child-limit':original.replace('- Child Python and packages are unverified.\n',''),'extra-generation-field':original.replace('### Generation parameters\n','### Generation parameters\n\n- `invented_parameter`: wrong\n',1),'extra-privacy-field':original.replace('### Privacy\n','### Privacy\n\n| invented | wrong | observed (run) |\n',1),'failed-upstream':original,'invalid-source-commit':original}
+ records=[]
+ for label,body in cases.items():
+  folder=OUT/label;folder.mkdir();md=folder/'statement.md';md.write_text(body);report=folder/'report.json';args=argv+['--markdown',str(md),'--report',str(report)]
+  if label=='failed-upstream':
+   failed=folder/'upstream.json';payload=json.loads((EVIDENCE/'capture-check.json').read_bytes());payload['status']='FAIL';failed.write_text(json.dumps(payload));args[args.index('--upstream-fidelity-evidence')+1]=str(failed)
+  elif label=='invalid-source-commit':
+   invalid=folder/'binding.json';payload=copy.deepcopy(binding);payload['source_commit']='not-a-commit';invalid.write_text(json.dumps(payload));args[args.index('--source-binding')+1]=str(invalid)
+  if label not in ('positive','failed-upstream','invalid-source-commit'):assert body!=original,label
+  result=subprocess.run(args,capture_output=True);(folder/'stdout').write_bytes(result.stdout);(folder/'stderr').write_bytes(result.stderr)
+  expected=0 if label=='positive' else 1;assert result.returncode==expected,label
+  failed=[]
+  if report.exists():
+   data=json.loads(report.read_bytes());failed=[c['label'] for c in data['checks'] if not c['equal']];assert bool(failed)==(label!='positive')
+  else:assert label in ('failed-upstream','invalid-source-commit')
+  records.append({'case':label,'expected_exit':expected,'actual_exit':result.returncode,'failed_checks':failed,'report_written':report.exists(),'stdout_sha256':sha(result.stdout),'stderr_sha256':sha(result.stderr)})
+ summary={'schema_version':1,'status':'PASS','new_product_commands':0,'gpu_or_api_calls':0,'positive_cases':1,'negative_cases':len(records)-1,'records':records,'checker_sha256':sha((HERE/'verify_export.py').read_bytes()),'retained_source_candidate':commit,'scope':'Read-only verifier tests over already retained DP export, with disposable Markdown/binding/upstream mutations only; no new native/current-candidate acceptance.'}
+ (OUT/'summary.json').write_text(json.dumps(summary,sort_keys=True,indent=2)+'\n');print(json.dumps(summary,sort_keys=True))
+if __name__=='__main__':main()

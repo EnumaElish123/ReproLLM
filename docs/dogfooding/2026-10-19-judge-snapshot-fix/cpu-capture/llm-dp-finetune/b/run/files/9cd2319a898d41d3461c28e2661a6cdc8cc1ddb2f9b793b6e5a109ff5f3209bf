@@ -1,0 +1,22 @@
+"""Independent stdlib input consumer; no model, HTTP or ReproLLM import."""
+import ast
+import hashlib
+import json
+import warnings
+from pathlib import Path
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+paths=["validation/original_common.py","validation/judge_prompts.jsonl","validation/judge.json","validation/privacy.json"]
+raw={name:Path(name).read_bytes() for name in paths}
+ast.parse(raw[paths[0]].decode("utf-8"))
+rows=[json.loads(line) for line in raw[paths[1]].splitlines()]
+assert len(rows)==8
+cfg=json.loads(raw[paths[2]])
+consumed={"models.judge.id":cfg["model"],"models.judge.endpoint.base_url":cfg["endpoint"],"evaluation.judge.params.temperature":cfg["temperature"],"evaluation.judge.params.max_tokens":cfg["max_tokens"]}
+result={"schema_version":1,"consumed":consumed,"source_sha256":{name:digest(body) for name,body in raw.items()},"rubric_rows":len(rows),"common_valid_python":True}
+body=json.dumps(result,sort_keys=True,ensure_ascii=False,indent=2)+"\n"
+Path("outputs/current").mkdir(parents=True,exist_ok=True)
+Path("outputs/current/consumed.json").write_text(body,encoding="utf-8")
+print(body,end="")

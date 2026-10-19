@@ -1,0 +1,225 @@
+"""Independent read-only terminal review of two existing formal judge captures."""
+from __future__ import annotations
+
+import ast
+from collections import Counter
+from datetime import datetime
+from decimal import Decimal
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+import yaml
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / "gate"))
+import verify_export as projection
+import judge_capture_verifier as privacy
+from reprollm.schemas.run_record import RunRecord, SecretPresent
+
+CASE = HERE / "formal-judge/cases/FastChat-deepseek"
+EVIDENCE = HERE / "formal-judge/evidence/runtime/FastChat-deepseek"
+OUTPUT = EVIDENCE / "independent-terminal-observer.json"
+COMMON = "fastchat/llm_judge/common.py"
+RUBRIC = "fastchat/llm_judge/data/judge_prompts.jsonl"
+QUESTION = "fastchat/llm_judge/data/mt_bench/question.jsonl"
+CONFIG = "validation/judge.yaml"
+FIELDS = {
+    "models.judge.id": "model",
+    "models.judge.endpoint.base_url": "endpoint",
+    "evaluation.judge.params.temperature": "temperature",
+    "evaluation.judge.params.max_tokens": "max_tokens",
+}
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+def git_raw(commit, relative):
+    result = subprocess.run(["git", "-C", str(CASE), "show", commit + ":" + relative], capture_output=True, timeout=30)
+    assert result.returncode == 0, "original Git input unavailable"
+    return result.stdout
+
+
+def check(rows, label, actual, expected=True):
+    equal = actual == expected
+    rows.append({"label": label, "equal": equal, "actual_sha256": projection.digest(actual), "expected_sha256": projection.digest(expected)})
+    assert equal, label
+
+
+def main():
+    assert not OUTPUT.exists()
+    checks = []
+    records = []
+    flats = []
+    reviews = []
+    proofs = []
+    audits = []
+    export_count = 0
+    for variant, cap in [("a", 256), ("b", 384)]:
+        folder = EVIDENCE / variant
+        run_dir = folder / "run"
+        raw_run = (run_dir / "run.json").read_bytes()
+        record = read(run_dir / "run.json")
+        typed = RunRecord.model_validate_json(raw_run)
+        rows = []
+        check(rows, "complete-run2", [record["schema_version"], record["status"], record["exit_code"], record["warnings"]], [2, "completed", 0, []])
+        check(rows, "command", record["command"], {"argv": ["python", "validation/judge_entry.py"], "cwd": ".", "redactions": 0})
+        check(rows, "clean-code-evidence", record["code"]["dirty"], False)
+        check(rows, "inherited-device-input", record["environment"]["env"].get("CUDA_VISIBLE_DEVICES"), "")
+        check(rows, "persisted-credential-presence-only", record["environment"]["env"].get("OPENAI_API_KEY") == {"present": True})
+        marker = typed.environment.env.get("OPENAI_API_KEY")
+        check(rows, "typed-credential-presence-only", isinstance(marker, SecretPresent) and marker.model_dump() == {"present": True})
+        expected_inputs = {"fastchat/conversation.py", COMMON, RUBRIC, CONFIG, "validation/judge_entry.py", "validation/judge_transport.py"}
+        check(rows, "complete-unique-input-set", len(record["files"]) == len(expected_inputs) and {item["path"] for item in record["files"]} == expected_inputs)
+        originals = {}
+        suffixes = {"run.json": ".json", "stdout.log": "", "stderr.log": ""}
+        expected_owned = {"run.json", "stdout.log", "stderr.log"}
+        for entry in record["files"]:
+            relative = entry["path"]
+            raw = git_raw(record["code"]["commit"], relative)
+            originals[relative] = raw
+            check(rows, "original-source-hash-size-" + relative, [entry["sha256"], entry["size_bytes"]], ["sha256:" + sha(raw), len(raw)])
+            check(rows, "input-has-unredacted-snapshot-" + relative, bool(entry["snapshot"]) and entry["redacted"] is False)
+            saved = privacy._inside(run_dir, entry["snapshot"]).read_bytes()
+            check(rows, "snapshot-exact-complete-original-" + relative, saved, raw)
+            suffixes[entry["snapshot"]] = Path(relative).suffix
+            expected_owned.add(entry["snapshot"])
+        for relative in (COMMON, RUBRIC):
+            check(rows, "independently-pinned-public-source-" + relative, sha(originals[relative]), privacy._PUBLIC_HASHES[relative])
+        documents = {}
+        for label, relative in [("manifest", "reprollm.yaml"), ("lock", "reprollm.lock")]:
+            ref = record[label]
+            raw = git_raw(record["code"]["commit"], relative)
+            originals[relative] = raw
+            saved = privacy._inside(run_dir, ref["snapshot"]).read_bytes()
+            check(rows, "document-original-hash-" + label, ref["sha256"], "sha256:" + sha(raw))
+            check(rows, "document-exact-byte-fidelity-" + label, saved, raw)
+            schema = read(HERE / "worktree/schemas" / ("manifest.schema.json" if label == "manifest" else "lock.schema.json"))
+            documents[label] = projection.normalize(yaml.safe_load(saved), schema, schema)
+            suffixes[ref["snapshot"]] = ".yaml"
+            expected_owned.add(ref["snapshot"])
+        capture = record["input_capture"]
+        check(rows, "truthful-input-phases", [capture["baseline_phase"], capture["check_phase"], capture["consumption"]], ["pre_child", "post_child", "unverified"])
+        check(rows, "complete-pre-post-check-set", len(capture["checks"]) == len(originals) and {item["path"] for item in capture["checks"]} == set(originals))
+        for item in capture["checks"]:
+            raw = originals[item["path"]]
+            expected = {"availability": "present", "sha256": "sha256:" + sha(raw), "size_bytes": len(raw)}
+            check(rows, "exact-before-after-" + item["path"], [item["before"], item["after"], item["change"]], [expected, expected, "unchanged"])
+        original_run = CASE / ".reprollm/runs" / record["run_id"]
+        actual_owned = {path.relative_to(run_dir).as_posix() for path in run_dir.rglob("*") if path.is_file()}
+        check(rows, "complete-owned-file-set", actual_owned, expected_owned)
+        for relative in sorted(actual_owned):
+            path = privacy._inside(run_dir, relative)
+            check(rows, "original-owned-capture-byte-copy-" + relative, path.read_bytes(), privacy._inside(original_run, relative).read_bytes())
+            privacy._privacy(CASE, path.read_text(), suffix=suffixes[relative])
+            check(rows, "independent-owned-syntax-privacy-" + relative, True)
+        config = yaml.safe_load(originals[CONFIG])
+        expected_values = {field: config[key] for field, key in FIELDS.items()}
+        check(rows, "four-fixed-request-config-values", expected_values, {"models.judge.id": "deepseek-flash", "models.judge.endpoint.base_url": "https://api.deepseek.com", "evaluation.judge.params.temperature": 0, "evaluation.judge.params.max_tokens": cap})
+        expected_observations = {field: [{"value": expected_values[field], "source": {"type": "config", "path": CONFIG, "key": key}}] for field, key in FIELDS.items()}
+        check(rows, "complete-four-binding-observations", record["bindings_observed"], expected_observations)
+        flat = projection.snapshot_flat(documents["manifest"], documents["lock"], record)
+        for field, expected in expected_values.items():
+            check(rows, "independent-effective-binding-" + field, [flat[field]["value"], flat[field]["source"], flat[field]["confidence"], flat[field]["detail"]], [expected, "run", "observed", "config:" + CONFIG + ":" + FIELDS[field]])
+        check(rows, "complete-original-rubric-rows", len([json.loads(line) for line in originals[RUBRIC].splitlines()]), 8)
+        expected_artifacts = {"outputs/current/judgment.jsonl", "outputs/current/transport-proof.json"}
+        check(rows, "complete-artifact-set", len(record["artifacts"]) == 2 and {item["path"] for item in record["artifacts"]} == expected_artifacts)
+        for entry in record["artifacts"]:
+            archived = folder / "outputs" / Path(entry["path"]).name
+            raw = archived.read_bytes()
+            check(rows, "original-artifact-hash-size-" + archived.name, ["sha256:" + sha(raw), len(raw)], [entry["sha256"], entry["size_bytes"]])
+            privacy._privacy(CASE, raw.decode(), suffix=archived.suffix)
+            check(rows, "independent-artifact-syntax-privacy-" + archived.name, True)
+        proof = read(folder / "outputs/transport-proof.json")
+        transport = proof["transport"]
+        judgments = [json.loads(line) for line in (folder / "outputs/judgment.jsonl").read_bytes().splitlines()]
+        check(rows, "exactly-one-native-judgment", len(judgments), 1)
+        judgment = judgments[0]
+        rubric = next(row for row in [json.loads(line) for line in originals[RUBRIC].splitlines()] if row["name"] == config["prompt_name"])
+        questions = [json.loads(line) for line in git_raw(record["code"]["commit"], QUESTION).splitlines()]
+        question = next(row for row in questions if row["question_id"] == 82)
+        expected_prompt = rubric["prompt_template"].format(question=question["turns"][0], answer=config["answer"])
+        messages = [{"role": "system", "content": rubric["system_prompt"]}, {"role": "user", "content": expected_prompt}]
+        check(rows, "full-original-prompt-builder-result", judgment["user_prompt"], expected_prompt)
+        check(rows, "full-request-message-digest", transport["messages_sha256"], sha(json.dumps(messages, sort_keys=True, ensure_ascii=False).encode()))
+        check(rows, "bounded-public-request-size", len(json.dumps(messages, ensure_ascii=False).encode()) <= 4000)
+        check(rows, "original-native-single-turn-identity", [judgment["question_id"], judgment["turn"], judgment["model"], judgment["judge"]], [82, 1, "synthetic-fixed-email", ["deepseek-flash", "single-v1"]])
+        check(rows, "native-rating-and-transport-text", judgment["judgment"], transport["text"])
+        pattern_source = {}
+        for node in ast.walk(ast.parse(originals[COMMON].decode())):
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call) and node.value.args:
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id in {"one_score_pattern", "one_score_pattern_backup"}:
+                        pattern_source[target.id] = ast.literal_eval(node.value.args[0])
+        parsed = None
+        for name in ("one_score_pattern", "one_score_pattern_backup"):
+            match = re.search(pattern_source[name], transport["text"])
+            if match:
+                parsed = ast.literal_eval(match.group(1))
+                break
+        check(rows, "original-parser-rating-independently-recomputed", parsed, judgment["score"])
+        check(rows, "valid-score-and-proof-agreement", type(parsed) in (int, float) and 1 <= parsed <= 10 and proof["score"] == parsed)
+        check(rows, "transport-settings", [transport["request_model"], transport["temperature"], transport["thinking"], transport["max_tokens"], transport["upstream_requested_max_tokens"], transport["attempts"], transport["finish_reason"]], ["deepseek-flash", 0, {"type": "disabled"}, cap, 2048, 1, "stop"])
+        check(rows, "original-parser-proof", [proof["original_parser"], proof["single_turn"], proof["question_id"], proof["prompt_name"], proof["provider"]], [True, True, 82, "single-v1", "deepseek"])
+        usage = transport["usage"]
+        check(rows, "complete-usage-counter-fields", set(usage), {"prompt_tokens", "completion_tokens", "total_tokens", "prompt_cache_hit_tokens", "prompt_cache_miss_tokens"})
+        check(rows, "nonnegative-integer-usage", all(type(value) is int and value >= 0 for value in usage.values()))
+        check(rows, "consistent-bounded-usage", usage["prompt_tokens"] == usage["prompt_cache_hit_tokens"] + usage["prompt_cache_miss_tokens"] and usage["total_tokens"] == usage["prompt_tokens"] + usage["completion_tokens"] and usage["prompt_tokens"] <= 1048576 and usage["completion_tokens"] <= cap)
+        peak = (Decimal(usage["prompt_cache_hit_tokens"]) * Decimal("0.04") + Decimal(usage["prompt_cache_miss_tokens"]) * 2 + Decimal(usage["completion_tokens"]) * 8) / 1000000
+        check(rows, "peak-price-arithmetic", Decimal(transport["cost_peak_cny"]), peak)
+        check(rows, "off-peak-price-arithmetic", Decimal(transport["cost_off_peak_cny"]), peak / 2)
+        audit = read(folder / "audit-after.log")
+        judge_rules = [finding for finding in audit["findings"] if finding["rule_id"].startswith("judge.")]
+        check(rows, "all-six-judge-rules-PASS", len(judge_rules) == 6 and all(finding["status"] == "pass" for finding in judge_rules))
+        export = read(folder / "export-independent-check.json")
+        check(rows, "complete-export-independent-acceptance", export["export_projection_passed"] and not export["upstream_fidelity_blocker"] and all(item["equal"] for item in export["checks"]))
+        export_count += export["comparison_count"]
+        reviews.append({"variant": variant, "status": "PASS", "comparison_count": len(rows), "original_run_sha256": sha(raw_run), "original_common_sha256": sha(originals[COMMON]), "original_rubric_sha256": sha(originals[RUBRIC]), "all_eight_rubric_rows_verified": True, "owned_files_checked": len(actual_owned), "original_artifacts_checked": len(record["artifacts"]), "actual_score": parsed, "usage": usage, "cost_peak_cny": str(peak), "credential_presence_marker_only": True, "typed_marker_is_SecretPresent": True, "export_comparisons": export["comparison_count"], "checks": rows})
+        records.append(record)
+        flats.append(flat)
+        proofs.append(proof)
+        audits.append(audit)
+    check(checks, "serial-run-order", datetime.fromisoformat(records[0]["ended_at"].replace("Z", "+00:00")) <= datetime.fromisoformat(records[1]["started_at"].replace("Z", "+00:00")))
+    pair = read(EVIDENCE / "pair-diff.log")
+    self_report = read(EVIDENCE / "self-diff.log")
+    left, right = flats
+    expected_paths = {field for field in left.keys() | right.keys() if left.get(field, {}).get("value") != right.get(field, {}).get("value")}
+    expected_severities = {"evaluation.judge.params.max_tokens": "HIGH", "files." + CONFIG + ".sha256": "HIGH", "code.commit": "MEDIUM", **{field: "NONE" for field in privacy._NONE}}
+    check(checks, "every-delta-predeclared", expected_paths <= expected_severities.keys())
+    check(checks, "required-direct-leaf-and-input-code-deltas", {"evaluation.judge.params.max_tokens", "files." + CONFIG + ".sha256", "code.commit"} <= expected_paths)
+    check(checks, "complete-pair-unfiltered-source-identity", [pair["a"], pair["b"], pair["filtered_below"]], [{"kind": "run", "ref": records[0]["run_id"]}, {"kind": "run", "ref": records[1]["run_id"]}, None])
+    check(checks, "pair-schema-and-producer-version", [pair["schema_version"], pair["reprollm_version"]], [1, "0.7.0"])
+    check(checks, "complete-unique-pair-fields", len(pair["changes"]) == len(expected_paths) and {item["path"] for item in pair["changes"]} == expected_paths)
+    for item in pair["changes"]:
+        field = item["path"]
+        check(checks, "pair-values-status-severity-" + field, [item["a"], item["b"], item["status"], item["severity"]], [left[field]["value"], right[field]["value"], "changed", expected_severities[field]])
+        note = "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified" if field in {"evaluation.judge.params.max_tokens", "files." + CONFIG + ".sha256"} else "code changed" if field == "code.commit" else None
+        check(checks, "pair-context-note-" + field, item.get("note"), note)
+    counts = dict.fromkeys(["NONE", "LOW", "MEDIUM", "MEDIUM_HIGH", "HIGH"], 0)
+    counts.update(Counter(item["severity"] for item in pair["changes"]))
+    check(checks, "complete-pair-summary", pair["summary"], {"highest": "HIGH", "counts": counts, "same": len(left.keys() | right.keys()) - len(expected_paths)})
+    check(checks, "complete-empty-self-comparison", self_report, {"schema_version": 1, "reprollm_version": "0.7.0", "a": {"kind": "run", "ref": records[0]["run_id"]}, "b": {"kind": "run", "ref": records[0]["run_id"]}, "filtered_below": None, "changes": [], "summary": {"highest": "NONE", "counts": dict.fromkeys(counts, 0), "same": len(left)}})
+    check(checks, "complete-audit-findings-equal", audits[0]["findings"], audits[1]["findings"])
+    check(checks, "complete-audit-profiles-equal", audits[0]["profiles"], audits[1]["profiles"])
+    budget = read(EVIDENCE / "budget.json")
+    check(checks, "bounded-two-request-budget", [budget["ceiling_cny"], budget["max_attempts"], len(budget["attempts"])], ["3", 2, 2])
+    total = sum((Decimal(proof["transport"]["cost_peak_cny"]) for proof in proofs), Decimal(0))
+    check(checks, "total-peak-cost-within-approved-bound", Decimal(budget["charged_or_reserved_cny"]) == total and total <= 3)
+    for attempt, proof in zip(budget["attempts"], proofs, strict=True):
+        check(checks, "settled-attempt-" + str(attempt["max_tokens"]), [attempt["status"], attempt["max_tokens"], attempt["charged_or_reserved_cny"], attempt["response_id"]], ["usage_received", proof["transport"]["max_tokens"], proof["transport"]["cost_peak_cny"], proof["transport"]["response_id"]])
+    summary = {"schema_version": 1, "status": "PASS", "variants": reviews, "pair_comparison_count": len(checks), "pair_checks": checks, "observed_complete_delta_count": len(expected_paths), "export_comparisons": export_count, "observer_comparisons": sum(review["comparison_count"] for review in reviews) + len(checks), "estimated_peak_cost_cny": str(total), "new_product_commands": 0, "new_provider_or_gpu_jobs": 0, "actual_credentials_read": False, "unmodified_source_oracle": "Original disposable Git commit bytes and fixed public common/rubric hashes", "observer_sha256": sha(Path(__file__).read_bytes()), "export_checker_sha256": sha((HERE / "gate/verify_export.py").read_bytes()), "scope": "Independent terminal review of existing captures, full artifacts/prompt/parser/usage, complete semantic pair and two complete selected-run exports; no release claim."}
+    OUTPUT.write_bytes((json.dumps(summary, sort_keys=True, ensure_ascii=False, indent=2) + "\n").encode())
+    print(json.dumps({key: summary[key] for key in ["schema_version", "status", "observer_comparisons", "pair_comparison_count", "observed_complete_delta_count", "export_comparisons", "estimated_peak_cost_cny", "new_product_commands", "new_provider_or_gpu_jobs"]}, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

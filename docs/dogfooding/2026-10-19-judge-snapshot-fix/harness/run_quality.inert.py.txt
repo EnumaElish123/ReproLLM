@@ -1,0 +1,602 @@
+"""Prepare/run one final judge snapshot-repair quality attempt on an explicitly committed candidate."""
+
+from __future__ import annotations
+
+import argparse
+import getpass
+import hashlib
+import json
+import os
+import re
+import shutil
+import socket
+import stat
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+SCRATCH = Path("<TASK>")
+ROOT = SCRATCH / "worktree"
+DEFAULT_OUT = SCRATCH / "quality"
+ENVIRONMENT = ROOT / ".venv"
+PYTHON = ENVIRONMENT / "bin/python"
+SHIM = Path("<GIT_COMPATIBILITY>/bin/git")
+EXPECTED_SHIM = "87a9309323f9e82d8721b7bd58cac0c1a8f08e44a4348fbf6d476854aa19b298"
+EXPECTED_VERSION = "0.7.0"
+
+ORIGIN_CODE = """
+import importlib.metadata, json, sys
+from pathlib import Path
+import reprollm
+
+root = Path(sys.argv[1])
+assert Path(reprollm.__file__).resolve() == root / "src/reprollm/__init__.py", (
+    "module origin mismatch"
+)
+assert Path(sys.prefix).resolve() == root / ".venv", "interpreter environment mismatch"
+assert reprollm.__version__ == "0.7.0", "source version mismatch"
+assert importlib.metadata.version("reprollm") == "0.7.0", "installed metadata mismatch"
+print(
+    json.dumps(
+        {
+            "schema_version": 1,
+            "module_origin": "src/reprollm/__init__.py",
+            "source_version": reprollm.__version__,
+            "installed_version": importlib.metadata.version("reprollm"),
+            "verified": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
+VERSIONS_CODE = """
+import importlib.metadata, json, re, subprocess, sys, tomllib
+from pathlib import Path
+
+names = [
+    "reprollm",
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "ruff",
+    "mypy",
+    "pydantic",
+    "typer",
+    "PyYAML",
+    "respx",
+    "jsonschema",
+]
+versions = {name: importlib.metadata.version(name) for name in names}
+normalize = lambda name: re.sub(r"[-_.]+", "-", name).lower()
+lock = tomllib.loads(Path("uv.lock").read_text())
+pins = {normalize(p["name"]): p["version"] for p in lock["package"] if "version" in p}
+assert versions["reprollm"] == "0.7.0"
+assert all(versions[name] == pins[normalize(name)] for name in names if name != "reprollm"), (
+    "locked tool version mismatch"
+)
+git = (
+    subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()
+)
+uv = (
+    subprocess.run([sys.argv[1], "--version"], check=True, stdout=subprocess.PIPE)
+    .stdout.decode()
+    .strip()
+)
+print(
+    json.dumps(
+        {
+            "schema_version": 1,
+            "python": sys.version.split()[0],
+            "versions": versions,
+            "git": git,
+            "uv": uv,
+            "tool_versions_match_uv_lock": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
+SCHEMA_CODE = """
+import hashlib, json, sys
+from pathlib import Path
+
+target = Path(sys.argv[1])
+expected = {
+    p.relative_to(Path("schemas")).as_posix(): p.read_bytes()
+    for p in Path("schemas").rglob("*.json")
+}
+actual = {p.relative_to(target).as_posix(): p.read_bytes() for p in target.rglob("*.json")}
+equal = len(expected) == 10 and expected == actual
+print(
+    json.dumps(
+        {
+            "schema_version": 1,
+            "expected_file_count": len(expected),
+            "actual_file_count": len(actual),
+            "same_file_set_and_bytes": equal,
+            "expected_sha256": {k: hashlib.sha256(v).hexdigest() for k, v in expected.items()},
+            "actual_sha256": {k: hashlib.sha256(v).hexdigest() for k, v in actual.items()},
+        },
+        sort_keys=True,
+    )
+)
+raise SystemExit(0 if equal else 1)
+"""
+
+WHEEL_CODE = """
+import hashlib, json, sys, zipfile
+from pathlib import Path
+from email.parser import BytesParser
+
+target = Path(sys.argv[1])
+wheels = list(target.glob("*.whl"))
+assert len(wheels) == 1 and wheels[0].name == "reprollm-0.7.0-py3-none-any.whl", (
+    "unexpected candidate wheel"
+)
+with zipfile.ZipFile(wheels[0]) as archive:
+    names = archive.namelist()
+    assert len(names) == len(set(names)), "duplicate wheel entry"
+    expected = {
+        "reprollm/" + p.relative_to(Path("src/reprollm")).as_posix(): p.read_bytes()
+        for p in Path("src/reprollm").rglob("*")
+        if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+    }
+    actual = {
+        name: archive.read(name)
+        for name in names
+        if name.startswith("reprollm/") and not name.endswith("/")
+    }
+    metadata = BytesParser().parsebytes(archive.read("reprollm-0.7.0.dist-info/METADATA"))
+    equal = actual == expected and metadata["Version"] == "0.7.0"
+print(
+    json.dumps(
+        {
+            "schema_version": 1,
+            "wheel_filename": wheels[0].name,
+            "wheel_sha256": hashlib.sha256(wheels[0].read_bytes()).hexdigest(),
+            "metadata_version": metadata["Version"],
+            "all_package_file_set_and_bytes_match": equal,
+            "package_file_count": len(expected),
+            "payload_sha256": {k: hashlib.sha256(v).hexdigest() for k, v in actual.items()},
+            "source_sha256": {k: hashlib.sha256(v).hexdigest() for k, v in expected.items()},
+        },
+        sort_keys=True,
+    )
+)
+raise SystemExit(0 if equal else 1)
+"""
+
+
+BUILD_MANIFEST_CODE = r"""
+import hashlib, json, subprocess, sys
+from pathlib import Path
+
+out = Path(sys.argv[1])
+commit = sys.argv[2]
+assert subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() == commit
+payload = json.loads((out / "raw/22-candidate-wheel-payload.log").read_bytes())
+assert payload["all_package_file_set_and_bytes_match"] and payload["metadata_version"] == "0.7.0"
+wheel = out / "dist" / payload["wheel_filename"]
+assert hashlib.sha256(wheel.read_bytes()).hexdigest() == payload["wheel_sha256"]
+manifest = {
+    "schema_version": 1,
+    "source_commit": commit,
+    "version": payload["metadata_version"],
+    "artifacts": [{"filename": wheel.name, "sha256": payload["wheel_sha256"]}],
+    "build_command": ["uv", "build", "--offline", "--wheel"],
+    "source_inventory_sha256": json.loads((out / "inputs-before.json").read_bytes())["inventory_sha256"],
+    "source_payload_receipt_sha256": hashlib.sha256((out / "raw/22-candidate-wheel-payload.log").read_bytes()).hexdigest(),
+    "distribution_acceptance": "PENDING",
+}
+raw = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()
+(out / "build-manifest.json").write_bytes(raw)
+print(json.dumps(manifest, sort_keys=True))
+"""
+
+
+def digest(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def git(*args: str) -> bytes:
+    return subprocess.run(
+        ["<LOCAL_PATH>", "-C", str(ROOT), *args],
+        check=True,
+        capture_output=True,
+    ).stdout
+
+
+def input_inventory(commit: str) -> dict[str, Any]:
+    files: dict[str, dict[str, str]] = {}
+    total = 0
+    for entry in git("ls-files", "--stage", "-z").split(b"\0"):
+        if not entry:
+            continue
+        metadata, name_raw = entry.split(b"\t", 1)
+        mode, blob, stage = metadata.decode().split()
+        assert stage == "0" and mode in {"100644", "100755", "120000"}
+        name = name_raw.decode("utf-8", errors="strict")
+        path = ROOT / name
+        raw = (
+            os.readlink(path).encode() if stat.S_ISLNK(path.lstat().st_mode) else path.read_bytes()
+        )
+        actual_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        assert actual_blob == blob, "tracked bytes differ from committed index"
+        files[name] = {"sha256": digest(raw), "git_blob_sha1": blob, "mode": mode}
+        total += len(raw)
+    assert files, "empty candidate inventory"
+    canonical = json.dumps(files, sort_keys=True, separators=(",", ":")).encode()
+    return {
+        "schema_version": 1,
+        "commit": commit,
+        "tracked_file_count": len(files),
+        "tracked_bytes_total": total,
+        "files": files,
+        "inventory_sha256": digest(canonical),
+        "all_git_blob_bytes_verified": True,
+    }
+
+
+def portable(value: Any, mappings: list[tuple[str, str]], identities: list[str]) -> Any:
+    if isinstance(value, str):
+        for prefix, replacement in sorted(mappings, key=lambda item: -len(item[0])):
+            value = value.replace(prefix, replacement)
+        for identity in identities:
+            value = re.sub(r"(?<!\w)" + re.escape(identity) + r"(?!\w)", "<LOCAL_IDENTITY>", value)
+        return value
+    if isinstance(value, list):
+        return [portable(item, mappings, identities) for item in value]
+    if isinstance(value, dict):
+        return {
+            portable(key, mappings, identities): portable(item, mappings, identities)
+            for key, item in value.items()
+        }
+    return value
+
+
+def command_plan(out: Path, uv: str, commit: str) -> list[tuple[str, list[str]]]:
+    cli = [str(PYTHON), "-c", "from reprollm.cli.main import cli; cli()"]
+    commands = [
+        ("00-environment-versions", [str(PYTHON), "-c", VERSIONS_CODE, uv]),
+        ("01-quickstart-preflight", [str(PYTHON), "scripts/gen_quickstart.py", "--check"]),
+        (
+            "02-pytest-coverage",
+            [
+                str(PYTHON),
+                "-m",
+                "pytest",
+                "-q",
+                "--basetemp=" + str(out / "pytest-temp"),
+                "--cov=reprollm",
+                "--cov-report=term",
+                "--cov-report=xml:" + str(out / "coverage.xml"),
+                "--cov-report=json:" + str(out / "coverage.json"),
+                "--cov-fail-under=85",
+                "--tb=short",
+                "--junit-xml=" + str(out / "pytest-report.xml"),
+            ],
+        ),
+        (
+            "03-redaction-coverage",
+            [
+                str(PYTHON),
+                "-m",
+                "coverage",
+                "report",
+                "--fail-under=100",
+                "--include=src/reprollm/core/redaction.py",
+            ],
+        ),
+        (
+            "04-security",
+            [
+                str(PYTHON),
+                "-m",
+                "pytest",
+                "-q",
+                "-m",
+                "security",
+                "--basetemp=" + str(out / "security-temp"),
+                "--tb=short",
+            ],
+        ),
+        ("05-ruff-check", [str(ENVIRONMENT / "bin/ruff"), "check", "."]),
+        ("06-ruff-format-check", [str(ENVIRONMENT / "bin/ruff"), "format", "--check", "."]),
+        ("07-mypy", [str(ENVIRONMENT / "bin/mypy"), "src/", "scripts/compare_gold.py"]),
+        ("08-rules-documentation", [str(PYTHON), "scripts/gen_rules_doc.py", "--check"]),
+        ("09-profiles-documentation", [str(PYTHON), "scripts/gen_profiles_doc.py", "--check"]),
+        ("10-cli-documentation", [str(PYTHON), "scripts/gen_cli_doc.py", "--check"]),
+        ("11-schema-export", [*cli, "schema", "export", "--out", str(out / "schema-export")]),
+        (
+            "12-schema-full-byte-comparison",
+            [str(PYTHON), "-c", SCHEMA_CODE, str(out / "schema-export")],
+        ),
+    ]
+    # The D01 recipe has explicit L1/L2 acceptance and is not a prelocked demo.
+    examples = [ROOT / "examples" / name for name in (
+        "hf_vllm_eval", "openai_judge_eval", "privacy_custom_params"
+    )]
+    assert all(path.is_dir() for path in examples)
+    for example in examples:
+        relative = example.relative_to(ROOT).as_posix()
+        commands.extend(
+            [
+                (
+                    "example-" + example.name + "-audit",
+                    [
+                        *cli,
+                        "audit",
+                        relative,
+                        "--level",
+                        "1",
+                        "--fail-on",
+                        "never",
+                        "--format",
+                        "json",
+                    ],
+                ),
+                ("example-" + example.name + "-lock-check", [*cli, "lock", "--check", relative]),
+            ]
+        )
+    commands.extend(
+        [
+            ("20-self-audit", [*cli, "audit", ".", "--format", "github", "--fail-on", "never"]),
+            (
+                "21-candidate-wheel-build",
+                [uv, "build", "--offline", "--wheel", "--out-dir", str(out / "dist")],
+            ),
+            ("22-candidate-wheel-payload", [str(PYTHON), "-c", WHEEL_CODE, str(out / "dist")]),
+            ("23-candidate-build-manifest", [str(PYTHON), "-c", BUILD_MANIFEST_CODE, str(out), commit]),
+            ("24-installed-candidate-distribution", [str(PYTHON), "scripts/validate_distribution.py",
+                "--wheel", str(out / "dist/reprollm-0.7.0-py3-none-any.whl"),
+                "--build-manifest", str(out / "build-manifest.json"),
+                "--expected-version", EXPECTED_VERSION,
+                "--no-index", "--find-links", str(SCRATCH / "runtime-wheels"),
+                "--output", str(out / "distribution.json"),
+                "--raw-output-dir", str(out / "private-distribution")]),
+        ]
+    )
+    return commands
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--expected-commit", required=True)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUT)
+    args = parser.parse_args()
+    commit = args.expected_commit
+    out = args.output.resolve()
+    assert re.fullmatch(r"[0-9a-f]{40}", commit), "explicit full candidate commit required"
+    assert out.is_relative_to(SCRATCH) and not out.is_relative_to(ROOT)
+    assert git("rev-parse", "HEAD").decode().strip() == commit
+    assert git("status", "--porcelain=v1", "--untracked-files=all") == b""
+    assert digest(SHIM.read_bytes()) == EXPECTED_SHIM
+    uv = shutil.which("uv")
+    assert uv is not None, "uv executable unavailable"
+    assert not any(
+        (out / name).exists() for name in ("commands.json", "summary.json", "raw", "logs")
+    ), "never overwrite an earlier attempt"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "raw").mkdir()
+    (out / "logs").mkdir()
+    mappings = [
+        (str(out), "<QUALITY>"),
+        (str(ROOT), "<CANDIDATE>"),
+        (str(ENVIRONMENT), "<CANDIDATE_ENV>"),
+        (str(SHIM.parent), "<GIT_SHIM>"),
+        (uv, "<UV>"),
+        (str(Path.home() / ".cache/uv"), "<UV_CACHE>"),
+        (str(Path.home()), "<HOME>"),
+        ("<MAIN_REPOSITORY>", "<SOURCE_REPOSITORY>"),
+    ]
+    identities = [name for name in (getpass.getuser(), socket.gethostname()) if name]
+
+    def safe(value: Any) -> Any:
+        return portable(value, mappings, identities)
+
+    def write(name: str, value: dict[str, Any]) -> None:
+        assert value["schema_version"] == 1
+        (out / name).write_text(json.dumps(safe(value), indent=2, sort_keys=True) + "\n")
+
+    allowed_env = (
+        "PATH",
+        "HOME",
+        "LANG",
+        "LC_ALL",
+        "TZ",
+        "USER",
+        "LOGNAME",
+        "SystemRoot",
+        "WINDIR",
+        "PATHEXT",
+    )
+    env = {name: os.environ[name] for name in allowed_env if name in os.environ}
+    env.update(
+        {
+            "PATH": str(SHIM.parent)
+            + os.pathsep
+            + str(PYTHON.parent)
+            + os.pathsep
+            + env.get("PATH", ""),
+            "PYTHONPATH": str(ROOT / "src") + os.pathsep + str(ROOT),
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "UV_PROJECT_ENVIRONMENT": str(ENVIRONMENT),
+            "UV_NO_SYNC": "1",
+            "COVERAGE_FILE": str(out / "coverage.data"),
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONUTF8": "1",
+            "CUDA_VISIBLE_DEVICES": "",
+            "HF_HUB_OFFLINE": "1",
+            "HF_DATASETS_OFFLINE": "1",
+        }
+    )
+    started_all = time.monotonic()
+    harness_sha = digest(Path(__file__).read_bytes())
+    before = input_inventory(commit)
+    write("inputs-before.json", before)
+    plan = command_plan(out, uv, commit)
+    write(
+        "plan.json",
+        {
+            "schema_version": 1,
+            "candidate_commit": commit,
+            "commands": [{"label": label, "argv": argv} for label, argv in plan],
+            "command_count": len(plan),
+            "status": "PREPARED_FOR_THIS_ATTEMPT",
+        },
+    )
+    commands: list[dict[str, Any]] = []
+    failed: str | None = None
+    failure_kind: str | None = None
+
+    def execute(label: str, argv: list[str]) -> int:
+        origin_started = time.monotonic()
+        origin = subprocess.run(
+            [str(PYTHON), "-c", ORIGIN_CODE, str(ROOT)],
+            cwd=ROOT,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        origin_elapsed = round(time.monotonic() - origin_started, 6)
+        origin_name = label + "-origin.log"
+        (out / "raw" / origin_name).write_bytes(origin.stdout)
+        write(
+            "active-command.json",
+            {"schema_version": 1, "label": label, "argv": argv, "status": "STARTING"},
+        )
+        if origin.returncode:
+            write(
+                "origin-failure.json",
+                {
+                    "schema_version": 1,
+                    "label": label,
+                    "exit_code": origin.returncode,
+                    "elapsed_seconds": origin_elapsed,
+                    "raw_log_sha256": digest(origin.stdout),
+                },
+            )
+            raise RuntimeError("candidate module/environment/version origin guard failed")
+        assert json.loads(origin.stdout)["verified"] is True
+        print("START " + label, flush=True)
+        started = time.monotonic()
+        result = subprocess.run(
+            argv, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        )
+        elapsed = round(time.monotonic() - started, 6)
+        name = label + ".log"
+        (out / "raw" / name).write_bytes(result.stdout)
+        shared = safe(result.stdout.decode("utf-8", errors="strict")).encode()
+        (out / "logs" / name).write_bytes(shared)
+        commands.append(
+            {
+                "label": label,
+                "argv": argv,
+                "cwd": "<CANDIDATE>",
+                "exit_code": result.returncode,
+                "elapsed_seconds": elapsed,
+                "raw_log": "raw/" + name,
+                "raw_log_sha256": digest(result.stdout),
+                "shareable_log": "logs/" + name,
+                "shareable_log_sha256": digest(shared),
+                "origin_check": {
+                    "exit_code": 0,
+                    "elapsed_seconds": origin_elapsed,
+                    "raw_log": "raw/" + origin_name,
+                    "raw_log_sha256": digest(origin.stdout),
+                },
+                "candidate_input_inventory_sha256": before["inventory_sha256"],
+            }
+        )
+        write(
+            "commands.json",
+            {
+                "schema_version": 1,
+                "task": "R02-R judge snapshot follow-up final shared quality",
+                "candidate_commit": commit,
+                "candidate_input_inventory_sha256": before["inventory_sha256"],
+                "commands": commands,
+            },
+        )
+        write(
+            "active-command.json",
+            {
+                "schema_version": 1,
+                "label": label,
+                "status": "COMPLETE",
+                "exit_code": result.returncode,
+            },
+        )
+        print(f"DONE {label} exit={result.returncode} elapsed={elapsed}", flush=True)
+        if result.returncode:
+            print(safe(result.stdout.decode("utf-8", errors="strict"))[-16000:], flush=True)
+        return result.returncode
+
+    try:
+        for label, argv in plan:
+            if execute(label, argv):
+                failed, failure_kind = label, "quality_command_nonzero"
+                break
+    except Exception as exc:
+        failed, failure_kind = label, "orchestration_" + type(exc).__name__
+    try:
+        after = input_inventory(commit)
+        write("inputs-after.json", after)
+        unchanged = (
+            after == before and git("status", "--porcelain=v1", "--untracked-files=all") == b""
+        )
+    except Exception as exc:
+        unchanged = False
+        write("inputs-after-failure.json", {"schema_version": 1, "error_type": type(exc).__name__})
+    harness_unchanged = digest(Path(__file__).read_bytes()) == harness_sha
+    completed = len(commands) == len(plan)
+    passed = failed is None and completed and unchanged and harness_unchanged
+    summary = {
+        "schema_version": 1,
+        "task": "R02-R judge snapshot follow-up final shared quality",
+        "candidate_commit": commit,
+        "all_passed": passed,
+        "completed": completed,
+        "failed_command": failed,
+        "failure_kind": failure_kind,
+        "command_count": len(commands),
+        "planned_command_count": len(plan),
+        "origin_check_count": len(commands) + int((out / "origin-failure.json").exists()),
+        "candidate_input_inventory_sha256": before["inventory_sha256"],
+        "inputs_byte_identical_before_after": unchanged,
+        "orchestrator_sha256": harness_sha,
+        "orchestrator_unchanged": harness_unchanged,
+        "git_compatibility_shim_sha256": EXPECTED_SHIM,
+        "summed_check_elapsed_seconds": round(
+            sum(entry["elapsed_seconds"] for entry in commands), 6
+        ),
+        "summed_origin_guard_elapsed_seconds": round(
+            sum(entry["origin_check"]["elapsed_seconds"] for entry in commands), 6
+        ),
+        "wall_seconds": round(time.monotonic() - started_all, 6),
+        "environment_synced": False,
+        "resource_commands_executed": 0,
+        "standing_five_project_gate_a_commands_executed": 0,
+        "cross_platform_ci_status": "NOT_RUN_BY_THIS_LOCAL_RUNNER",
+        "published_action_step": "CI_ONLY_NOT_RUN_LOCALLY",
+        "validation_tools": (
+            "Worktree locked environment; source origin and installed 0.7.0 "
+            "metadata checked before each command."
+        ),
+        "cadence_basis": "docs/plan/validation-workflow-2026-10-13.md sections 3-5",
+        "next_step": (
+            "After PASS, run fresh all-five Gate A against the same product bytes; "
+            "report-only additions do not invalidate product evidence."
+        ),
+    }
+    write("summary.json", summary)
+    print(json.dumps(summary, sort_keys=True), flush=True)
+    return 0 if passed else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

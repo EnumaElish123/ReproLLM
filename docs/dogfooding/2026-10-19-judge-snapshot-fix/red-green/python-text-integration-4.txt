@@ -1,0 +1,28 @@
+........................................................................ [ 96%]
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_interpolation_context_never_increases_secret_minimum_length[api_key = f"{value}/short"\n] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+source = 'api_key = f"{value}/short"\n'
+
+    @pytest.mark.parametrize(
+        "source",
+        [
+            'api_key = f"{value}ok"\n',
+            'api_key = f"{value}/short"\n',
+        ],
+    )
+    def test_interpolation_context_never_increases_secret_minimum_length(
+        tmp_path: Path, source: str
+    ) -> None:
+>       assert _sanitize(tmp_path, source) == (source, 0)
+E       assert ("api_key = f...ic_kv>'\n", 1) == ('api_key = f.../short"\n', 0)
+E         
+E         At index 0 diff: "api_key = f'{value}<REDACTED:generic_kv>'\n" != 'api_key = f"{value}/short"\n'
+E         Use -v to get more diff
+
+tests/unit/run/test_python_text.py:236: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_python_text.py::test_interpolation_context_never_increases_secret_minimum_length[api_key = f"{value}/short"\n]
+1 failed, 74 passed in 0.36s

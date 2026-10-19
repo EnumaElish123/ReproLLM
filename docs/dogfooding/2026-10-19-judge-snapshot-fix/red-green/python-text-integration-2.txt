@@ -1,0 +1,31 @@
+....................................................................F..  [100%]
+=================================== FAILURES ===================================
+_ test_symbolic_lookup_keys_are_locations_under_secret_assignment[api_key = getattr(config, "access_token")\n] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+source = 'api_key = getattr(config, "access_token")\n'
+
+    @pytest.mark.parametrize(
+        "source",
+        [
+            'api_key = api_dict["access_token"]\n',
+            'api_key = api_dict.get("access_token")\n',
+            'api_key = os.environ.get("ACCESS_TOKEN")\n',
+            'api_key = getattr(config, "access_token")\n',
+            "api_key = f\"{api_dict['access_token']}\"\n",
+            "api_key = f\"{os.environ.get('ACCESS_TOKEN')}\"\n",
+        ],
+    )
+    def test_symbolic_lookup_keys_are_locations_under_secret_assignment(
+        tmp_path: Path, source: str
+    ) -> None:
+>       assert _sanitize(tmp_path, source) == (source, 0)
+E       assert ('api_key = g...c_kv>")\n', 1) == ('api_key = g...token")\n', 0)
+E         
+E         At index 0 diff: 'api_key = getattr(config, "<REDACTED:generic_kv>")\n' != 'api_key = getattr(config, "access_token")\n'
+E         Use -v to get more diff
+
+tests/unit/run/test_python_text.py:201: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_python_text.py::test_symbolic_lookup_keys_are_locations_under_secret_assignment[api_key = getattr(config, "access_token")\n]
+1 failed, 70 passed in 0.34s

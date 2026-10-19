@@ -37,14 +37,18 @@ The [A01 local evidence session](../dogfooding/2026-10-18-a01-local/README.md)
 recovers 12 of 50 exact input slots and completes the resource-free two-path
 replay layer. The [2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
 restores 45 of 50 exact input slots on the provisioned Linux node; five original
-metadata manifests remain missing. Current-candidate Linux H2 and all five
-native GPU A/B pairs, complete capture/consumption/diff checks and 20 default
-export states pass. VAL-R01 is closed for candidate `750270b`; historical
-reports retain their original identities. The formal judge's first real request
-completes, but two source-snapshot defects make capture FAIL; B is not sent.
-HF authenticated small-file access still returns 403. Fix the two demonstrated
-capture defects before a new formal judge replay, and retain missing original
-metadata/model-access requirements independently. Follow the maintainer's
+metadata manifests remain missing. Linux H2 and all five native GPU A/B pairs,
+complete capture/consumption/diff checks and 20 default export states pass at
+`750270b`, closing VAL-R01 for those product bytes. That candidate's formal judge
+A remains a historical capture FAIL; B was not sent. The
+[R02-R snapshot follow-up](../dogfooding/2026-10-19-judge-snapshot-fix/README.md)
+repairs both demonstrated defects at candidate `75d1b0`, with final local quality
+and fresh five-project CPU capture/diff/export acceptance PASS. A new formal
+judge A/B replay also passes complete provider, capture and semantic-pair
+acceptance under a newly approved CNY 3 budget, closing VAL-R02 at `75d1b0`.
+The direct judge-cap leaf is HIGH; the earlier `750270b` failure is unchanged.
+HF authenticated small-file access last returned 403; original metadata and
+successful model-access requirements remain independent. Follow the maintainer's
 updated resource guidance in `val.md §8.3` without reinstating old artificial
 GPU thresholds. Continue A01 recovery and remaining acceptance, with
 policy proposals and adoption materials tracked separately. For work independent
@@ -57,8 +61,10 @@ HIGH default is implemented, unreleased; read the
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
 Other policy proposals and resource gates remain independent.
-All five native scenarios now have current-candidate acceptance. This does not
-close the paid/gated requirements or establish a complete release matrix.
+All five native scenarios have acceptance at `750270b`; the `75d1b0` CPU/judge
+follow-up does not claim a new native GPU or H2 matrix. Successful gated access
+and a complete same-candidate release matrix remain outstanding; no release is
+authorized.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI

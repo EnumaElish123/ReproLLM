@@ -1,0 +1,17 @@
+..............................................................F......... [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 41%]
+........................................................................ [ 55%]
+........................................................................ [ 68%]
+........................................................................ [ 82%]
+........................................................................ [ 96%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+_ test_one_snapshot_failure_keeps_original_hash_binding_and_other_file_copies __
+tests/unit/run/test_input_capture.py:398: in test_one_snapshot_failure_keeps_original_hash_binding_and_other_file_copies
+    assert safe.snapshot is not None and (run_dir / safe.snapshot).read_bytes() == good
+E   AssertionError: assert (None is not None)
+E    +  where None = RunFileRef(path='z-good.json', sha256='sha256:3127faddfcc377bd29ecd28e94b06147e4e3a330305629ca68a62277fc16da82', size_bytes=21, origin=<RunFileOrigin.DECLARED: 'declared'>, snapshot=None, redacted=False).snapshot
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_input_capture.py::test_one_snapshot_failure_keeps_original_hash_binding_and_other_file_copies
+1 failed, 522 passed in 10.49s

@@ -1,0 +1,172 @@
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+___ test_stdlib_environment_lookup_keyword_key_is_source_location[os.getenv] ___
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+callee = 'os.getenv'
+
+    @pytest.mark.parametrize("callee", ["os.getenv", "os.environ.get"])
+    def test_stdlib_environment_lookup_keyword_key_is_source_location(
+        tmp_path: Path, callee: str
+    ) -> None:
+        source = f'api_key = {callee}(key="ACCESS_TOKEN")\n'
+>       assert _sanitize(tmp_path, source) == (source, 0)
+E       assert ('api_key = o...c_kv>")\n', 1) == ('api_key = o...TOKEN")\n', 0)
+E         
+E         At index 0 diff: 'api_key = os.getenv(key="<REDACTED:generic_kv>")\n' != 'api_key = os.getenv(key="ACCESS_TOKEN")\n'
+E         Use -v to get more diff
+
+tests/unit/run/test_python_text.py:315: AssertionError
+_ test_stdlib_environment_lookup_keyword_key_is_source_location[os.environ.get] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+callee = 'os.environ.get'
+
+    @pytest.mark.parametrize("callee", ["os.getenv", "os.environ.get"])
+    def test_stdlib_environment_lookup_keyword_key_is_source_location(
+        tmp_path: Path, callee: str
+    ) -> None:
+        source = f'api_key = {callee}(key="ACCESS_TOKEN")\n'
+>       assert _sanitize(tmp_path, source) == (source, 0)
+E       assert ('api_key = o...c_kv>")\n', 1) == ('api_key = o...TOKEN")\n', 0)
+E         
+E         At index 0 diff: 'api_key = os.environ.get(key="<REDACTED:generic_kv>")\n' != 'api_key = os.environ.get(key="ACCESS_TOKEN")\n'
+E         Use -v to get more diff
+
+tests/unit/run/test_python_text.py:315: AssertionError
+_ test_stdlib_environment_lookup_keyword_default_keeps_secret_context[os.getenv] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+callee = 'os.getenv'
+
+    @pytest.mark.parametrize("callee", ["os.getenv", "os.environ.get"])
+    def test_stdlib_environment_lookup_keyword_default_keeps_secret_context(
+        tmp_path: Path, callee: str
+    ) -> None:
+        source = f'api_key = {callee}(key="ACCESS_TOKEN", default="<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert 'key="ACCESS_TOKEN"' in safe and "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('key="ACCESS_TOKEN"' in 'api_key = os.getenv(key="<REDACTED:generic_kv>", default="<REDACTED:generic_kv>")\n')
+
+tests/unit/run/test_python_text.py:324: AssertionError
+_ test_stdlib_environment_lookup_keyword_default_keeps_secret_context[os.environ.get] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+callee = 'os.environ.get'
+
+    @pytest.mark.parametrize("callee", ["os.getenv", "os.environ.get"])
+    def test_stdlib_environment_lookup_keyword_default_keeps_secret_context(
+        tmp_path: Path, callee: str
+    ) -> None:
+        source = f'api_key = {callee}(key="ACCESS_TOKEN", default="<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert 'key="ACCESS_TOKEN"' in safe and "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('key="ACCESS_TOKEN"' in 'api_key = os.environ.get(key="<REDACTED:generic_kv>", default="<REDACTED:generic_kv>")\n')
+
+tests/unit/run/test_python_text.py:324: AssertionError
+____ test_unknown_callee_literal_never_loses_secret_assignment_context[get] ____
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+method = 'get'
+
+    @pytest.mark.parametrize("method", ["get", "pop", "setdefault", "__getitem__", "getenv"])
+    def test_unknown_callee_literal_never_loses_secret_assignment_context(
+        tmp_path: Path, method: str
+    ) -> None:
+        source = f'api_key = unknown.{method}("<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('<SYNTHETIC_CANARY>' not in 'api_key = u...ecret123")\n'
+E         
+E         '<SYNTHETIC_CANARY>' is contained here:
+E           api_key = unknown.get("<SYNTHETIC_CANARY>")
+E         ?                        +++++++++++++)
+
+tests/unit/run/test_python_text.py:334: AssertionError
+____ test_unknown_callee_literal_never_loses_secret_assignment_context[pop] ____
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+method = 'pop'
+
+    @pytest.mark.parametrize("method", ["get", "pop", "setdefault", "__getitem__", "getenv"])
+    def test_unknown_callee_literal_never_loses_secret_assignment_context(
+        tmp_path: Path, method: str
+    ) -> None:
+        source = f'api_key = unknown.{method}("<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('<SYNTHETIC_CANARY>' not in 'api_key = u...ecret123")\n'
+E         
+E         '<SYNTHETIC_CANARY>' is contained here:
+E           api_key = unknown.pop("<SYNTHETIC_CANARY>")
+E         ?                        +++++++++++++)
+
+tests/unit/run/test_python_text.py:334: AssertionError
+_ test_unknown_callee_literal_never_loses_secret_assignment_context[setdefault] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+method = 'setdefault'
+
+    @pytest.mark.parametrize("method", ["get", "pop", "setdefault", "__getitem__", "getenv"])
+    def test_unknown_callee_literal_never_loses_secret_assignment_context(
+        tmp_path: Path, method: str
+    ) -> None:
+        source = f'api_key = unknown.{method}("<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('<SYNTHETIC_CANARY>' not in 'api_key = u...ecret123")\n'
+E         
+E         '<SYNTHETIC_CANARY>' is contained here:
+E           api_key = unknown.setdefault("<SYNTHETIC_CANARY>")
+E         ?                               +++++++++++++)
+
+tests/unit/run/test_python_text.py:334: AssertionError
+_ test_unknown_callee_literal_never_loses_secret_assignment_context[__getitem__] _
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+method = '__getitem__'
+
+    @pytest.mark.parametrize("method", ["get", "pop", "setdefault", "__getitem__", "getenv"])
+    def test_unknown_callee_literal_never_loses_secret_assignment_context(
+        tmp_path: Path, method: str
+    ) -> None:
+        source = f'api_key = unknown.{method}("<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('<SYNTHETIC_CANARY>' not in 'api_key = u...ecret123")\n'
+E         
+E         '<SYNTHETIC_CANARY>' is contained here:
+E           api_key = unknown.__getitem__("<SYNTHETIC_CANARY>")
+E         ?                                +++++++++++++)
+
+tests/unit/run/test_python_text.py:334: AssertionError
+__ test_unknown_callee_literal_never_loses_secret_assignment_context[getenv] ___
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+method = 'getenv'
+
+    @pytest.mark.parametrize("method", ["get", "pop", "setdefault", "__getitem__", "getenv"])
+    def test_unknown_callee_literal_never_loses_secret_assignment_context(
+        tmp_path: Path, method: str
+    ) -> None:
+        source = f'api_key = unknown.{method}("<SYNTHETIC_CANARY>")\n'
+        safe, count = _sanitize(tmp_path, source)
+>       assert "<SYNTHETIC_CANARY>" not in safe and count > 0
+E       assert ('<SYNTHETIC_CANARY>' not in 'api_key = u...ecret123")\n'
+E         
+E         '<SYNTHETIC_CANARY>' is contained here:
+E           api_key = unknown.getenv("<SYNTHETIC_CANARY>")
+E         ?                           +++++++++++++)
+
+tests/unit/run/test_python_text.py:334: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_python_text.py::test_stdlib_environment_lookup_keyword_key_is_source_location[os.getenv]
+FAILED tests/unit/run/test_python_text.py::test_stdlib_environment_lookup_keyword_key_is_source_location[os.environ.get]
+FAILED tests/unit/run/test_python_text.py::test_stdlib_environment_lookup_keyword_default_keeps_secret_context[os.getenv]
+FAILED tests/unit/run/test_python_text.py::test_stdlib_environment_lookup_keyword_default_keeps_secret_context[os.environ.get]
+FAILED tests/unit/run/test_python_text.py::test_unknown_callee_literal_never_loses_secret_assignment_context[get]
+FAILED tests/unit/run/test_python_text.py::test_unknown_callee_literal_never_loses_secret_assignment_context[pop]
+FAILED tests/unit/run/test_python_text.py::test_unknown_callee_literal_never_loses_secret_assignment_context[setdefault]
+FAILED tests/unit/run/test_python_text.py::test_unknown_callee_literal_never_loses_secret_assignment_context[__getitem__]
+FAILED tests/unit/run/test_python_text.py::test_unknown_callee_literal_never_loses_secret_assignment_context[getenv]
+9 failed, 91 deselected in 0.31s

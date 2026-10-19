@@ -1,0 +1,185 @@
+"""Independent fixed-fixture expectations; imports no ReproLLM implementation."""
+from __future__ import annotations
+import copy
+import hashlib
+import json
+import re
+from collections import defaultdict
+from pathlib import Path
+from verify_export import normalize, plain, SECTIONS
+from path_oracle import unsafe_matches
+
+COMMON_SHA='71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7'
+RUBRIC_SHA='fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6'
+COMMON='validation/original_common.py'
+RUBRIC='validation/judge_prompts.jsonl'
+CONFIG='validation/judge.json'
+PRIVATE='validation/privacy.json'
+CHILD='validation/capture_child.py'
+CANARY='<SYNTHETIC_CANARY>'
+PRIVATE_DATA={'api_key':CANARY,'unix':'<SYNTHETIC_PATH><LOCAL_PATH>','windows':r'<SYNTHETIC_OR_LOCAL_PATH>','drive_a':r'<SYNTHETIC_OR_LOCAL_PATH>','unc':r'<SYNTHETIC_OR_LOCAL_PATH>','uri':'file://<SYNTHETIC_PATH><LOCAL_PATH>','safe':{'role':'### Assistant <SYNTHETIC_OR_LOCAL_PATH>}','stop':'</s>','glob':'outputs/current/*.json'}}
+PRIVATE_EXPECTED={**{k:'<REDACTED:path>' for k in ('unix','windows','drive_a','unc','uri')},'api_key':'<REDACTED:generic_kv>','safe':PRIVATE_DATA['safe']}
+FIELDS={'models.judge.id':'model','models.judge.endpoint.base_url':'endpoint','evaluation.judge.params.temperature':'temperature','evaluation.judge.params.max_tokens':'max_tokens'}
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def raw_json(value):return (json.dumps(value,sort_keys=True,ensure_ascii=False,indent=2)+'\n').encode()
+def config(cap):return {'schema_version':1,'model':'synthetic-judge','endpoint':'https://example.invalid','temperature':0,'max_tokens':cap}
+def bound(cap):return {field:config(cap)[key] for field,key in FIELDS.items()}
+def require(ok,label):
+    if not ok:raise AssertionError(label)
+def ctx(subject,phase):return {'subject':subject,'phase':phase,'verification':'unverified'}
+INPUT=ctx('input_file','pre_child')
+
+def normalized(raw,root_schema):return normalize(copy.deepcopy(raw),root_schema,root_schema)
+
+def state_expected(manifest,lock,run):
+    groups=defaultdict(list)
+    def leaf(value,source,detail=None,confidence=None,context=None):return {'value':plain(value),'source':source,'detail':detail,'confidence':confidence or ('observed' if source=='run' else 'declared'),'context':context,'alternatives':[]}
+    def add(value,path,source,context=None):
+        if source=='lock' and isinstance(value,dict) and {'value','source','confidence'}<=value.keys():
+            groups[path].append(leaf(value['value'],source,value['source'],value['confidence'],context));return
+        if isinstance(value,dict):
+            for k,v in sorted(value.items()):
+                if source=='lock' and k=='observed_at':continue
+                add(v,path+'.'+k,source,context)
+        elif value is not None:groups[path].append(leaf(value,source,context=context))
+    for section in SECTIONS:
+        add(manifest.get(section),section,'manifest',INPUT)
+        add(lock.get(section),section,'lock',INPUT)
+    for field in ('python','platform','packages'):
+        context=ctx('recorder' if field in ('python','packages') else 'host','lock_resolution')
+        add((lock.get('environment') or {}).get(field),'environment.'+field,'lock',context)
+    add((lock.get('environment') or {}).get('gpu'),'hardware','lock',ctx('host','lock_resolution'))
+    for item in lock.get('files',[]):groups['files.'+item['path']+'.sha256'].append(leaf(item['sha256'],'lock',context=INPUT))
+    observed={}
+    def project(value,path):
+        if isinstance(value,dict):
+            for k,v in sorted(value.items()):project(v,path+'.'+k)
+        elif value is not None:observed[path]=leaf(value,'run')
+    for section in ('code','environment','command','run_id','started_at','ended_at','duration_seconds'):project(run.get(section),section)
+    if run.get('hardware') is not None:
+        hw=copy.deepcopy(run['hardware']);hw['gpus']={str(g['index']):g for g in hw.get('gpus',[])};project(hw,'hardware')
+    for path,item in observed.items():
+        if path.startswith(('environment.','hardware.','command.')):
+            if path=='environment.python' or path.startswith('environment.packages.'):item['context']=ctx('recorder','post_child')
+            elif path=='environment.env_capture' or path.startswith('environment.env.'):item['context']=ctx('inherited_environment','pre_child')
+            elif path=='environment.hostname_sha256':item['context']=ctx('host','pre_child')
+            elif path.startswith(('environment.','hardware.')):item['context']=ctx('host','post_child')
+            else:item['context']=ctx('recorder','pre_child')
+        groups[path].append(item)
+    for item in run.get('files',[]):groups['files.'+item['path']+'.sha256'].append(leaf(item['sha256'],'run',context=INPUT))
+    for field,items in run.get('bindings_observed',{}).items():
+        for item in items:
+            source=item['source'];require(source['type']=='config','CPU fixture binding must be config')
+            detail='config:'+source['path']+':'+source['key']
+            groups[field].append(leaf(item['value'],'run',detail=detail,context=INPUT))
+    def order(item):
+        rank={'manifest':3,'lock':4,'run':6}[item['source']]
+        if item['source']=='run' and (item['detail'] or '').startswith('config:'):rank=8
+        return (-rank,item['detail'] or '',json.dumps(item['value'],sort_keys=True,ensure_ascii=False))
+    result={}
+    for path,items in sorted(groups.items()):
+        choices=sorted(items,key=order);result[path]=copy.deepcopy(choices[0]);result[path]['alternatives']=copy.deepcopy(choices[1:])
+    return result
+
+def check_state(probe,manifest,lock,record,cap):
+    require(probe['schema_version']==1 and probe['roundtrip_equal'] and probe['overlap_merge_equal'],'State serialization/merge')
+    expected=state_expected(manifest,lock,record)
+    require(probe['flat']==expected,'Complete State leaf/source/confidence/context/alternatives mismatch')
+    tree={}
+    def walk(value,path):
+        if isinstance(value,dict) and {'value','source','confidence','alternatives','context'}<=value.keys():tree[path]=value
+        elif isinstance(value,dict):
+            for k,v in sorted(value.items()):walk(v,(path+'.'+k).lstrip('.'))
+    walk({k:v for k,v in probe['state'].items() if k!='profiles'},'')
+    require(tree==expected,'Serialized State tree does not match all independently projected leaves')
+    require(probe['state']['profiles']==manifest['experiment']['profiles'],'State profiles')
+    for field,value in bound(cap).items():require(expected[field]['value']==value and expected[field]['source']=='run' and expected[field]['context']==INPUT,'Actual consumed binding in full State')
+    return {'schema_version':1,'status':'PASS','complete_flat_leaf_count':len(expected),'every_value_source_detail_confidence_context_alternative_checked':True,'roundtrip_and_overlapping_merge_checked':True}
+
+def check_capture(record,run_dir,case,originals,cap,commit,witness):
+    require(record['schema_version']==2 and record['status']=='completed' and record['exit_code']==0 and record['warnings']==[],'Complete successful run2 capture')
+    require(record['code']['commit']==commit and record['code']['dirty'] is False,'Clean disposable input commit')
+    require(record['command']['argv']==['python',CHILD] and record['command']['cwd']=='.','Fixed CPU command')
+    require(record['environment']['env']['CUDA_VISIBLE_DEVICES']=='','No GPU child')
+    require(set(record['bindings_observed'])==set(FIELDS),'Exactly four bindings')
+    for field,value in bound(cap).items():require(record['bindings_observed'][field]==[{'value':value,'source':{'type':'config','path':CONFIG,'key':FIELDS[field]}}],'Independent actual four binding observations')
+    expected_files={COMMON,RUBRIC,CONFIG,PRIVATE,CHILD}
+    require({f['path'] for f in record['files']}==expected_files,'Complete required input set')
+    snapshots={}
+    for item in record['files']:
+        rel=item['path'];raw=originals[rel]
+        require((case/rel).read_bytes()==raw,'Input source unchanged')
+        require(item['sha256']=='sha256:'+sha(raw) and item['size_bytes']==len(raw),'Original input hash/size')
+        require(bool(item['snapshot']),'Required snapshot exists')
+        path=run_dir/item['snapshot'];require(not path.is_symlink() and path.resolve().is_relative_to(run_dir.resolve()),'Owned snapshot boundary')
+        saved=path.read_bytes();snapshots[rel]=saved
+        if rel==PRIVATE:require(item['redacted'] is True and json.loads(saved)==PRIVATE_EXPECTED,'Protected secrets/paths and safe controls')
+        else:require(item['redacted'] is False and saved==raw,'Complete non-secret snapshot exact bytes')
+    require(sha(snapshots[COMMON])==COMMON_SHA and sha(snapshots[RUBRIC])==RUBRIC_SHA,'Original pinned source hashes')
+    rows=[json.loads(line) for line in snapshots[RUBRIC].splitlines()]
+    require(len(rows)==8 and rows==[json.loads(line) for line in originals[RUBRIC].splitlines()],'All eight complete rubric rows preserved')
+    for label in ('manifest','lock'):
+        ref=record[label];raw=originals['reprollm.yaml' if label=='manifest' else 'reprollm.lock']
+        require(ref['sha256']=='sha256:'+sha(raw) and (run_dir/ref['snapshot']).read_bytes()==raw,'Full manifest/lock snapshot fidelity')
+    capture=record['input_capture'];require((capture['baseline_phase'],capture['check_phase'],capture['consumption'])==('pre_child','post_child','unverified'),'Truthful run2 phases/consumption')
+    require({c['path'] for c in capture['checks']}==expected_files|{'reprollm.yaml','reprollm.lock'},'Complete pre/post input checks')
+    for item in capture['checks']:
+        raw=originals[item['path']];fp={'availability':'present','sha256':'sha256:'+sha(raw),'size_bytes':len(raw)}
+        require(item['before']==fp and item['after']==fp and item['change']=='unchanged','Exact unchanged before/after fingerprint')
+    expected_witness={'schema_version':1,'consumed':bound(cap),'source_sha256':{COMMON:COMMON_SHA,RUBRIC:RUBRIC_SHA,CONFIG:sha(originals[CONFIG]),PRIVATE:sha(originals[PRIVATE])},'rubric_rows':8,'common_valid_python':True}
+    require(witness==expected_witness,'Independent stdlib consumption witness')
+    require(json.loads((run_dir/'stdout.log').read_bytes())==witness and (run_dir/'stderr.log').read_bytes()==b'','Captured stdout/stderr consumed proof')
+    output=raw_json(witness)
+    require((case/'outputs/current/consumed.json').read_bytes()==output,'Complete output bytes')
+    require(record['artifacts']==[{'path':'outputs/current/consumed.json','sha256':'sha256:'+sha(output),'size_bytes':len(output)}],'Output artifact hash/size/set')
+    return {'schema_version':1,'status':'PASS','input_files':len(expected_files),'original_common_sha256':COMMON_SHA,'original_rubric_sha256':RUBRIC_SHA,'all_rubric_rows':8,'actual_consumed':bound(cap),'run2_consumption_remains_unverified':True}
+
+def check_pair(report,self_report,left,right,records):
+    severities=('NONE','LOW','MEDIUM','MEDIUM_HIGH','HIGH')
+    expected={path:(left[path]['value'],right[path]['value']) for path in left.keys()|right.keys() if left.get(path,{}).get('value')!=right.get(path,{}).get('value')}
+    allowed={'evaluation.judge.params.max_tokens':'HIGH','files.'+CONFIG+'.sha256':'HIGH','code.commit':'MEDIUM','run_id':'NONE','started_at':'NONE','ended_at':'NONE','duration_seconds':'NONE','environment.hostname_sha256':'NONE'}
+    require(set(expected)<=set(allowed) and {'evaluation.judge.params.max_tokens','files.'+CONFIG+'.sha256','code.commit'}<=set(expected),'Every independent change has predeclared explanation')
+    require(report['schema_version']==1 and report['filtered_below'] is None and report['a']=={'kind':'run','ref':records[0]['run_id']} and report['b']=={'kind':'run','ref':records[1]['run_id']},'Complete pair source/filter identity')
+    require(len(report['changes'])==len(expected) and {c['path'] for c in report['changes']}==set(expected),'Complete pair delta set')
+    counts={severity:0 for severity in severities}
+    for item in report['changes']:
+        path=item['path'];a,b=expected[path];severity=allowed[path]
+        require(item['a']==a and item['b']==b and item['status']=='changed' and item['severity']==severity,'Pair values/status/severity')
+        counts[severity]+=1
+        context=left[path]['context'];right_context=right[path]['context']
+        notes=['code changed'] if path=='code.commit' else []
+        for side,ct in (('a',context),('b',right_context)):
+            if ct is not None:notes.append(side+': '+ct['subject']+'/'+ct['phase']+'; child unverified')
+        require(item['note']==('; '.join(notes) or None),'Full diff evidence note')
+    require(report['summary']=={'highest':'HIGH','counts':counts,'same':len(left.keys()|right.keys())-len(expected)},'Complete pair summary')
+    require(self_report['a']==self_report['b']=={'kind':'run','ref':records[0]['run_id']} and self_report['changes']==[] and self_report['filtered_below'] is None,'Empty self diff')
+    require(self_report['summary']=={'highest':'NONE','counts':{s:0 for s in severities},'same':len(left)},'Full self diff summary')
+    return {'schema_version':1,'status':'PASS','full_change_count':len(expected),'complete_changes':report['changes'],'self_comparison_empty':True}
+
+def privacy_scan(folder,snapshot_formats,identities):
+    checked=0
+    def scalar(value):
+        if isinstance(value,dict):
+            for k,v in value.items():scalar(str(k));scalar(v)
+        elif isinstance(value,list):
+            for v in value:scalar(v)
+        elif isinstance(value,str):
+            require(not unsafe_matches(value),'Persisted decoded absolute path')
+    for path in sorted(folder.rglob('*')):
+        require(not path.is_symlink(),'Owned file must not be symlink')
+        if not path.is_file():continue
+        raw=path.read_bytes();text=raw.decode('utf-8');checked+=1
+        require(CANARY.encode() not in raw,'Synthetic plain secret persisted')
+        for private in identities:require(not re.search(r'(?<![\w])'+re.escape(private)+r'(?![\w])',text),'Machine identity persisted')
+        fmt=snapshot_formats.get(path.relative_to(folder).as_posix())
+        if fmt in ('json','jsonl') or path.suffix=='.json':
+            if fmt=='jsonl':
+                for line in text.splitlines():scalar(json.loads(line))
+            else:scalar(json.loads(text))
+        elif fmt=='python':require(not unsafe_matches(text,python_source=True),'Persisted Python absolute path')
+        elif path.name in ('stdout.log','stderr.log'):
+            if text:scalar(json.loads(text))
+        # YAML documents are byte-equal independently checked snapshots; scalar
+        # privacy is checked by the caller's normalized original manifest/lock.
+    return {'schema_version':1,'status':'PASS','owned_files_checked':checked,'configured_credentials_used':False,'synthetic_plain_secret_absent':True,'decoded_jsonl_and_python_lexical_path_check':True}

@@ -1,0 +1,162 @@
+"""Task-owned replay of exact approved judge inputs; explicit bounded authorization required."""
+from pathlib import Path
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+import sys
+
+SCRATCH=Path('<TASK>')
+RESOURCE=Path('<PROVISIONED_RESOURCE_ROOT>')
+TASK=SCRATCH/'formal-judge'
+CASE=TASK/'cases/FastChat-deepseek'
+EVIDENCE=TASK/'evidence/runtime/FastChat-deepseek'
+CANDIDATE=json.loads((SCRATCH/'session-config.json').read_text())['candidate_commit']
+PYTHON=RESOURCE/'envs/modern/bin/python'
+COMMITS={'a':'557ab76eaae9fbbcc8a18016fb72694f8c8702d5','b':'f310fab3f9dc04263946bb375800f3f271742b02'}
+COMMAND=['python','validation/judge_entry.py']
+FILES=['reprollm.yaml','validation/judge.yaml','validation/judge_entry.py','validation/judge_transport.py','validation/test_judge_transport.py','.reprollm/config.yaml']
+
+def module(name,path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result)
+    return result
+
+base=module('reviewed_old_base',Path('<HISTORICAL_RESOURCE_TASK>/replay.py'))
+base.TASK=TASK
+
+def save(path,value):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x') as stream: stream.write(json.dumps(value,indent=2,sort_keys=True)+'\n')
+
+def env(secret=False):
+    result=base.environment('modern',True)
+    result.pop('PYTHONPATH',None)
+    result.pop('REPROLLM_VALIDATION_PARENT_LEASE',None)
+    result.update(CUDA_VISIBLE_DEVICES='',PYTHONNOUSERSITE='1',VALIDATION_BUDGET_PATH=str(EVIDENCE/'budget.json'))
+    if secret:
+        key=os.environ['DEEPSEEK_API_KEY']
+        assert key and not any(c.isspace() for c in key)
+        result['OPENAI_API_KEY']=key
+    return result
+
+def command(args,folder,label,secret=False,expected=0):
+    return base.command([str(a) for a in args],CASE,env(secret),folder,label,expected)
+
+def git(*args):
+    return subprocess.check_output(['git','-C',str(CASE),*args])
+
+def prepare(variant):
+    source=RESOURCE/'cases/FastChat-deepseek'
+    folder=EVIDENCE/variant
+    assert not folder.exists()
+    if not CASE.exists():
+        subprocess.run(['git','clone','--quiet','--no-hardlinks','<PINNED_CHECKOUT_ROOT>/FastChat',str(CASE)],check=True)
+        git('checkout','--quiet','--detach','587d5cfa1609a43d192cedb8441cac3c17db105d')
+        git('remote','set-url','origin','https://github.com/lm-sys/FastChat.git')
+        with (CASE/'.git/info/exclude').open('a') as stream:
+            stream.write('\n.reprollm/runs/\noutputs/\nREPRODUCIBILITY.md\n__pycache__/\n*.pyc\n')
+    command([PYTHON, SCRATCH/'installation_probe.py', 'check'],folder,'installed-wheel-prepare')
+    hashes={}
+    for name in FILES:
+        raw=subprocess.check_output(['git','-C',str(source),'show',COMMITS[variant]+':'+name])
+        path=CASE/name; path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+        hashes[name]=hashlib.sha256(raw).hexdigest()
+    if variant=='a':
+        expectation=json.loads((SCRATCH/'providers/judge-inputs.json').read_text())
+        for entry in expectation['inputs']:
+            assert hashes[entry['path']]==entry['expected_sha256']
+    save(folder/'inputs.json',{'schema_version':1,'variant':variant,'source_commit':COMMITS[variant],'sha256':hashes})
+    command([PYTHON,'validation/test_judge_transport.py'],folder,'transport-contract')
+    command(['reprollm','lock','--offline'],folder,'lock')
+    command(['git','add','-f','--',*FILES,'reprollm.lock'],folder,'git-add')
+    command(['git','-c','user.name=ReproLLM Validation','-c','user.email=validation@reprollm.invalid','commit','-m','validation: formal judge '+variant],folder,'git-commit')
+    assert not git('status','--porcelain')
+    command(['reprollm','lock','--check'],folder,'lock-check')
+    command(['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-before')
+
+def run(variant):
+    authorization=json.loads((SCRATCH/'providers/budget-authorization.json').read_text())
+    assert authorization['authorized'] and authorization['ceiling_cny']=='3'
+    assert authorization['candidate_commit']==CANDIDATE
+    available=json.loads((SCRATCH/'providers/preflight.json').read_text())
+    assert next(c for c in available['checks'] if c['label']=='deepseek_models')['selected_model_available']
+    if variant=='b':
+        first=json.loads((EVIDENCE/'a/acceptance.json').read_text());assert first['status']=='PASS'
+        budget=json.loads((EVIDENCE/'budget.json').read_text())
+        assert len(budget['attempts'])==1 and budget['attempts'][0]['status']=='usage_received'
+    folder=EVIDENCE/variant
+    command([PYTHON, SCRATCH/'installation_probe.py', 'check'],folder,'installed-wheel-launch')
+    assert (folder/'lock-check.command.json').exists()
+    assert not (CASE/'outputs/current').exists()
+    save(folder/'budget-authorization.json',authorization)
+    label='snapshot-fixed-judge-'+variant
+    command(['reprollm','run','--name',label,'--capture-output','--',*COMMAND],folder,'run',secret=True)
+    paths=[p for p in (CASE/'.reprollm/runs').glob('*/run.json') if json.loads(p.read_text()).get('name')==label]
+    assert len(paths)==1
+    shutil.copytree(paths[0].parent,folder/'run')
+    command([PYTHON, SCRATCH/'installation_probe.py', 'check'],folder,'installed-wheel-after')
+    command(['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-after')
+    command([PYTHON,__file__,'verify',variant],folder,'verify',secret=True)
+    command(['reprollm','export','--run',paths[0].parent.name],folder,'export')
+    shutil.copyfile(CASE/'REPRODUCIBILITY.md',folder/'REPRODUCIBILITY.md')
+    shutil.move(str(CASE/'outputs/current'),str(folder/'outputs'))
+
+def verify(variant):
+    from reprollm.core.envinfo import installed_versions
+    from reprollm.schemas.run_record import RunRecord
+    from reprollm.schemas.state import State
+    folder=EVIDENCE/variant; cap=256 if variant=='a' else 384
+    checker=module('judge_capture_checker',SCRATCH/'judge_capture_verifier.py')
+    result=checker.verify_capture(CASE,folder/'run','evaluation.judge.params.max_tokens',cap,COMMAND,installed_versions(),git('rev-parse','HEAD').decode().strip())
+    record=RunRecord.model_validate_json((folder/'run/run.json').read_bytes())
+    assert record.schema_version==2 and record.input_capture is not None
+    assert record.input_capture.baseline_phase=='pre_child' and record.input_capture.check_phase=='post_child'
+    assert record.input_capture.consumption=='unverified'
+    assert all(c.change=='unchanged' and c.before.sha256==c.after.sha256 for c in record.input_capture.checks)
+    assert record.environment.env['OPENAI_API_KEY']=={'present':True}
+    expected={'models.judge.id':'deepseek-flash','models.judge.endpoint.base_url':'https://api.deepseek.com','evaluation.judge.params.temperature':0,'evaluation.judge.params.max_tokens':cap}
+    state=State.from_run(record,run_dir=folder/'run').flatten()
+    for name,value in expected.items():
+        assert state[name].value==value and state[name].context.phase=='pre_child'
+    proof=json.loads((CASE/'outputs/current/transport-proof.json').read_text())
+    assert proof['original_parser'] and proof['question_id']==82 and proof['single_turn']
+    assert type(proof['score']) in (int,float) and 1<=proof['score']<=10
+    transport=proof['transport']
+    assert transport['max_tokens']==cap and transport['finish_reason']=='stop' and transport['attempts']==1
+    assert transport['thinking']=={'type':'disabled'} and transport['temperature']==0
+    assert transport['request_model']=='deepseek-flash'
+    audit=json.loads((folder/'audit-after.log').read_text())
+    judge=[f for f in audit['findings'] if f['rule_id'].startswith('judge.')]
+    assert len(judge)==6 and all(f['status']=='pass' for f in judge)
+    key=os.environ['OPENAI_API_KEY'].encode()
+    for parent in (folder/'run',CASE/'outputs/current',folder):
+        for p in parent.rglob('*'):
+            if p.is_file(): assert key not in p.read_bytes()
+    result.update(input_capture_checks=[c.model_dump(mode='json') for c in record.input_capture.checks],run_protocol=2,all_four_effective_bindings=expected,judge_rules_pass=6,actual_transport=transport,actual_score=proof['score'],credential_presence_only=True)
+    save(folder/'acceptance.json',result)
+    print(json.dumps({'schema_version':1,'status':'PASS','variant':variant,'actual_score':proof['score'],'cost_peak_cny':transport['cost_peak_cny']}))
+
+def review():
+    ids=[json.loads((EVIDENCE/v/'run/run.json').read_text())['run_id'] for v in ('a','b')]
+    command(['reprollm','diff',*ids,'--format','json','--fail-on','HIGH'],EVIDENCE,'pair-diff',expected=1)
+    command(['reprollm','diff',ids[0],ids[0],'--format','json'],EVIDENCE,'self-diff')
+    command([PYTHON,__file__,'verify-pair'],EVIDENCE,'verify-pair')
+
+def verify_pair():
+    checker=module('judge_capture_checker',SCRATCH/'judge_capture_verifier.py')
+    result=checker.verify_pair(CASE,EVIDENCE/'a/run',EVIDENCE/'b/run','evaluation.judge.params.max_tokens',(256,384),'HIGH','validation/judge.yaml',EVIDENCE/'pair-diff.log',EVIDENCE/'self-diff.log',EVIDENCE/'a/audit-after.log',EVIDENCE/'b/audit-after.log')
+    assert result['status']=='PASS' and result['full_findings_equal'] and result['audit_profiles_equal']
+    save(EVIDENCE/'pair-acceptance.json',result)
+    print(json.dumps({'schema_version':1,'status':'PASS','changes':len(result['complete_changes'])}))
+
+if __name__=='__main__':
+    action=sys.argv[1]
+    if action=='prepare':prepare(sys.argv[2])
+    elif action=='run':run(sys.argv[2])
+    elif action=='verify':verify(sys.argv[2])
+    elif action=='review':review()
+    elif action=='verify-pair':verify_pair()
+    else:raise SystemExit('unknown action')

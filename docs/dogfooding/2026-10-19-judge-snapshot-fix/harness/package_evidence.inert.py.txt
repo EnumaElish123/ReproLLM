@@ -1,0 +1,348 @@
+"""Prepare an immutable portable evidence copy; never run validation or provider calls.
+
+Invoke only after the session owner has finalized the selected receipts. A repeat
+against identical inputs is harmless; changed content requires a fresh output.
+"""
+from __future__ import annotations
+
+import argparse
+import getpass
+import hashlib
+import json
+import os
+import re
+import socket
+from pathlib import Path
+from typing import Any
+
+BASE = Path('<TASK>')
+WORKTREE = BASE / 'worktree'
+FORMAL = BASE / 'formal-judge/evidence/runtime/FastChat-deepseek'
+PINNED_TARGETS = ('FastChat', 'HarmBench', 'LlamaFactory', 'llm-dp-finetune', 'lm-evaluation-harness')
+PATH_MAPPINGS = [
+    (str(WORKTREE), '<CANDIDATE>'),
+    (str(BASE), '<TASK>'),
+    ('<PROVISIONED_RESOURCE_ROOT>', '<PROVISIONED_RESOURCE_ROOT>'),
+    ('<MAIN_REPOSITORY>', '<MAIN_REPOSITORY>'),
+    ('<PINNED_CHECKOUT_ROOT>', '<PINNED_CHECKOUT_ROOT>'),
+    ('<PREVIOUS_RESOURCE_TASK>', '<PREVIOUS_RESOURCE_TASK>'),
+    ('<HISTORICAL_RESOURCE_TASK>', '<HISTORICAL_RESOURCE_TASK>'),
+    ('<GIT_COMPATIBILITY>', '<GIT_COMPATIBILITY>'),
+    ('<USER_HOME>', '<USER_HOME>'), ('<USER_HOME>', '<USER_HOME>'),
+    ('<SYNTHETIC_PATH>', '<SYNTHETIC_PATH>'), ('<SYNTHETIC_PATH>', '<SYNTHETIC_PATH>'),
+    ('<SYNTHETIC_PATH>', '<SYNTHETIC_PATH>'),
+]
+IDENTITIES = tuple(value for value in (getpass.getuser(), socket.gethostname()) if value)
+CANARY = re.compile(r'(?i)\b(?:[A-Za-z0-9_]*canary[A-Za-z0-9_]+|<SYNTHETIC_CANARY>[0-9]*)\b')
+LOCAL_PATH = re.compile(r'''(?<![\<SYNTHETIC_OR_LOCAL_PATH>])/(?:tmp|home|mnt|usr|opt|var|workspace|private|private-owner|private_owner|synthetic-owner)(?:/[^\s"'<>;,\)\]}>]*)?''')
+WINDOWS = re.compile(r'''(?<!\w)(?:[A-Za-z]:[\\/]|\\\\(?:private-host|synthetic-host|private_node|synthetic-node|host)[\\/])[^\s"'<>;,\)\]}>]*''')
+SHARING_VALUE_PATTERNS = {
+    'openai': re.compile(r'\bsk-(?:proj-)?[A-Za-z0-9_-]{16,}\b'),
+    'huggingface': re.compile(r'\bhf_[A-Za-z0-9]{20,}\b'),
+    'github': re.compile(r'\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b'),
+    'aws': re.compile(r'\bAKIA[0-9A-Z]{16}\b'),
+    'slack': re.compile(r'\bxox[baprs]-[A-Za-z0-9-]{10,}\b'),
+    'jwt': re.compile(r'\beyJ[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}\.[A-Za-z0-9_-]{8,}={0,2}(?![A-Za-z0-9_=-])'),
+    'pem-marker': re.compile(r'-----BEGIN [A-Z ]*PRIVATE KEY-----'),
+    'url-credential': re.compile(r'(?<=://)[^/\s:@]+:[^/\s@]+(?=@)'),
+}
+
+FORBIDDEN_PARTS = {'.git', '.venv', '__pycache__', 'clones', 'weights', 'pytest-temp'}
+SKIPPED_DIRECTORIES: set[str] = set()
+
+
+def digest(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def file_digest(path: Path) -> str:
+    result = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            result.update(chunk)
+    return result.hexdigest()
+
+
+def portable_text(text: str) -> str:
+    for original, replacement in sorted(PATH_MAPPINGS, key=lambda row: -len(row[0])):
+        text = text.replace(original, replacement)
+    text = LOCAL_PATH.sub('<LOCAL_PATH>', text)
+    text = WINDOWS.sub('<SYNTHETIC_OR_LOCAL_PATH>', text)
+    text = CANARY.sub('<SYNTHETIC_CANARY>', text)
+    for kind, pattern in SHARING_VALUE_PATTERNS.items():
+        text = pattern.sub('<SHARED_REDACTED:' + kind + '>', text)
+    for identity in IDENTITIES:
+        text = re.sub(r'(?<![\w])' + re.escape(identity) + r'(?![\w])', '<MACHINE_IDENTITY>', text)
+    return text
+
+
+def portable_value(value: Any) -> Any:
+    if isinstance(value, str):
+        return portable_text(value)
+    if isinstance(value, list):
+        return [portable_value(item) for item in value]
+    if isinstance(value, dict):
+        result = {portable_text(key): portable_value(item) for key, item in value.items()}
+        if len(result) != len(value):
+            raise ValueError('sharing transform would collapse distinct mapping keys')
+        return result
+    return value
+
+
+def portable_bytes(raw: bytes) -> bytes:
+    text = raw.decode('utf-8', 'strict')
+    try:
+        value = json.loads(text)
+    except ValueError:
+        lines = text.splitlines(keepends=True)
+        try:
+            values = [json.loads(line) for line in lines if line.strip()]
+        except ValueError:
+            return portable_text(text).encode('utf-8')
+        if len(values) > 1:
+            retained = [portable_value(value) for value in values]
+            if retained != values:
+                return ('\n'.join(json.dumps(value, sort_keys=True, ensure_ascii=False) for value in retained) + '\n').encode('utf-8')
+        return portable_text(text).encode('utf-8')
+    retained = portable_value(value)
+    if retained == value:
+        return raw
+    return (json.dumps(retained, sort_keys=True, indent=2, ensure_ascii=False) + '\n').encode('utf-8')
+
+
+def assert_portable(raw: bytes, label: str) -> None:
+    text = raw.decode('utf-8', 'strict')
+    if any(original in text for original, _ in PATH_MAPPINGS):
+        raise ValueError('unshared path in ' + label)
+    if any(pattern.search(text) for pattern in SHARING_VALUE_PATTERNS.values()):
+        raise ValueError('unshared value pattern or PEM marker in ' + label)
+    if CANARY.search(text) or LOCAL_PATH.search(text):
+        raise ValueError('private path or literal synthetic canary in ' + label)
+    for identity in IDENTITIES:
+        if re.search(r'(?<![\w])' + re.escape(identity) + r'(?![\w])', text):
+            raise ValueError('machine identity in ' + label)
+
+
+def files_below(root: Path):
+    """Walk only explicitly selected evidence folders, pruning all cache/checkout trees."""
+    if not root.exists():
+        return
+    for directory, folders, names in os.walk(root, followlinks=False):
+        current = Path(directory)
+        for name in sorted(folders):
+            path = current / name
+            if path.is_symlink():
+                raise ValueError('symlink is not admissible evidence')
+            if name in FORBIDDEN_PARTS:
+                SKIPPED_DIRECTORIES.add('<TASK>/' + path.relative_to(BASE).as_posix())
+        folders[:] = sorted(name for name in folders if name not in FORBIDDEN_PARTS)
+        for name in sorted(names):
+            path = current / name
+            if path.is_symlink():
+                raise ValueError('symlink is not admissible evidence')
+            if path.is_file():
+                yield path
+
+
+class Package:
+    def __init__(self, out: Path, commit: str) -> None:
+        if not out.is_relative_to(BASE) or out == BASE or out.is_relative_to(WORKTREE):
+            raise ValueError('output must be a new task-owned scratch directory')
+        self.out = out
+        self.commit = commit
+        self.stored: dict[str, str] = {}
+        self.groups: dict[str, list[dict[str, Any]]] = {'stable': [], 'dynamic': []}
+        self.omitted: list[dict[str, Any]] = []
+        self.original_runs: list[dict[str, Any]] = []
+
+    def write(self, relative: str, raw: bytes) -> None:
+        assert_portable(raw, relative)
+        target = self.out / relative
+        if not target.is_relative_to(self.out) or target.is_symlink():
+            raise ValueError('invalid output path')
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            if target.read_bytes() != raw:
+                raise ValueError('refuse to overwrite different retained evidence: ' + relative)
+            return
+        with target.open('xb') as stream:
+            stream.write(raw)
+
+    def document(self, relative: str, value: dict[str, Any]) -> None:
+        assert value['schema_version'] == 1
+        self.write(relative, (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False) + '\n').encode('utf-8'))
+
+    def retain(self, source: Path, preferred: str, *, group: str = 'stable', closed: bool = False, kind: str = 'safe-sharing-copy') -> str:
+        if source.is_symlink() or not source.is_relative_to(BASE):
+            raise ValueError('unadmitted source')
+        raw = source.read_bytes()
+        if closed:
+            retained = raw
+            assert_portable(retained, preferred)
+        else:
+            retained = portable_bytes(raw)
+        if preferred.endswith('.py') and not closed:
+            preferred = preferred[:-3] + '.inert.py.txt'
+        retained_hash = digest(retained)
+        target = preferred if closed else self.stored.get(retained_hash)
+        if target is None:
+            target = 'shared/empty.log' if not retained else preferred
+        self.write(target, retained)
+        if not closed:
+            self.stored[retained_hash] = target
+        self.groups[group].append({
+            'source_logical_file': '<TASK>/' + source.relative_to(BASE).as_posix(),
+            'source_sha256': digest(raw), 'source_size_bytes': len(raw),
+            'retained_file': target, 'retained_sha256': retained_hash, 'retained_size_bytes': len(retained),
+            'kind': kind, 'sharing_transform_applied': raw != retained,
+            'original_product_run_tree_byte_preserved': closed,
+            'transform_is_not_an_executable_original': not closed and source.suffix == '.py',
+        })
+        return target
+
+    def omit(self, source: Path, reason: str) -> None:
+        if source.exists():
+            self.omitted.append({'source_logical_file': '<TASK>/' + source.relative_to(BASE).as_posix(), 'source_sha256': file_digest(source), 'source_size_bytes': source.stat().st_size, 'reason': reason})
+
+    def tree(self, source: Path, destination: str, *, group: str = 'stable', closed: bool = False, kind: str = 'safe-sharing-copy') -> None:
+        for path in files_below(source):
+            self.retain(path, destination + '/' + path.relative_to(source).as_posix(), group=group, closed=closed, kind=kind)
+        if closed and source.exists():
+            entries = [row for row in self.groups[group] if row['retained_file'].startswith(destination + '/')]
+            record = json.loads((source / 'run.json').read_bytes())
+            if record['schema_version'] != 2:
+                raise ValueError('selected original run must use run v2')
+            self.original_runs.append({'retained_directory': destination, 'source_run_id': record['run_id'], 'schema_version': 2, 'file_count': len(entries), 'every_original_byte_preserved': all(row['source_sha256'] == row['retained_sha256'] for row in entries)})
+
+    def root_files(self, root: Path, destination: str, *, group: str = 'stable') -> None:
+        if root.exists():
+            for path in sorted(root.iterdir()):
+                if path.is_file():
+                    if path.name in {'inputs-before.json', 'inputs-after.json', 'source-binding.json'}:
+                        self.omit(path, 'Full local input dictionary omitted; candidate inventory and original receipt hashes retain source binding.')
+                    else:
+                        self.retain(path, destination + '/' + path.name, group=group)
+
+    def quality(self) -> None:
+        root = BASE / 'quality/final-1'
+        if not (root / 'summary.json').exists():
+            raise ValueError('quality summary is not final; packaging is premature')
+        summary = json.loads((root / 'summary.json').read_bytes())
+        if summary['candidate_commit'] != self.commit:
+            raise ValueError('candidate differs from quality receipt')
+        omitted = {'inputs-before.json', 'inputs-after.json', 'coverage.data', 'coverage.json', 'coverage.xml', 'pytest-report.xml'}
+        for path in sorted(root.iterdir()):
+            if path.is_file():
+                if path.name in omitted or path.suffix in {'.whl', '.gz'}:
+                    self.omit(path, 'Large local inventory/coverage/distribution remains hash-bound; acceptance is retained in complete commands, logs and summary.')
+                else:
+                    self.retain(path, 'quality/' + path.name)
+        self.tree(root / 'logs', 'quality/logs')
+        self.tree(root / 'raw', 'quality/raw')
+        for path in files_below(root / 'dist'):
+            self.omit(path, 'Built distribution is hash-bound by build/distribution acceptance; binary payload not copied.')
+        before = json.loads((root / 'inputs-before.json').read_bytes())
+        after = json.loads((root / 'inputs-after.json').read_bytes())
+        keys = ('commit', 'inventory_sha256', 'tracked_file_count', 'tracked_bytes_total', 'all_git_blob_bytes_verified')
+        self.document('quality/source-input-binding.json', {'schema_version': 1, 'candidate_commit': self.commit, 'before_after_identical': before == after, 'inventory': {key: before[key] for key in keys if key in before}, 'before_document_sha256': file_digest(root / 'inputs-before.json'), 'after_document_sha256': file_digest(root / 'inputs-after.json'), 'full_dictionaries_copied': False})
+
+    def gates(self) -> None:
+        for source_name, dest in [('base-final-1', 'gate-a'), ('cpu-final-1', 'cpu-capture')]:
+            root = BASE / 'gate' / source_name
+            summary = root / 'summary.json'
+            if not summary.exists():
+                raise ValueError('Gate summary is not final: ' + source_name)
+            if json.loads(summary.read_bytes())['candidate_commit'] != self.commit:
+                raise ValueError('Gate candidate differs from quality receipt')
+            self.root_files(root, dest)
+            self.tree(root / 'raw', dest + '/raw')
+            self.tree(root / 'comparison', dest + '/comparison')
+            if source_name == 'cpu-final-1':
+                for target in PINNED_TARGETS:
+                    self.root_files(root / target, dest + '/' + target)
+                    for variant in ('a', 'b'):
+                        folder = root / target / variant
+                        self.root_files(folder, dest + '/' + target + '/' + variant)
+                        self.tree(folder / 'run', dest + '/' + target + '/' + variant + '/run', closed=True, kind='original-product-run-tree')
+                        self.tree(folder / 'outputs', dest + '/' + target + '/' + variant + '/outputs')
+        self.root_files(BASE / 'gate/prepared-2', 'cpu-preparation')
+        self.tree(BASE / 'gate/prepared-2/sources', 'cpu-preparation/sources', kind='synthetic-inert-transformed-source-input')
+
+    def supporting(self) -> None:
+        for source, dest in [('gate/tool-selfcheck-4', 'tool-selfcheck/cpu'), ('judge-verifier-selfcheck-4', 'tool-selfcheck/judge'), ('export-tool-selfcheck', 'tool-selfcheck/export')]:
+            self.tree(BASE / source, dest, kind='synthetic-inert-transformed-verifier-fixture')
+        scripts = ['run_quality.py', 'provider_preflight.py', 'judge_controller.py', 'judge_capture_verifier.py', 'judge_verifier_selfcheck.py', 'judge_terminal_observer.py', 'export_tool_selfcheck.py', 'gate/run_base.py', 'gate/cpu_extension.py', 'gate/cpu_oracle.py', 'gate/path_oracle.py', 'gate/selfcheck.py', 'gate/state_probe.py', 'gate/verify_export.py', 'package_evidence.py', 'audit_packaged_evidence.py', 'installation_probe.py']
+        for relative in scripts:
+            if (BASE / relative).exists():
+                self.retain(BASE / relative, 'harness/' + relative, kind='inert-transformed-observer-source')
+        for name in ('judge-controller-correction.json', 'judge_controller.before-typed-presence.inert.py.txt'):
+            if (BASE / name).exists():
+                self.retain(BASE / name, 'controller-history/' + name, kind='controller-correction-or-inert-original-observer')
+        reconstructed = BASE / 'judge_terminal_observer.before-version-check.reconstructed.inert.py.txt'
+        if reconstructed.exists():
+            self.retain(reconstructed, 'observer-history/' + reconstructed.name, kind='explicitly-reconstructed-inert-prior-observer-not-original-stream')
+        for pattern in ('judge-*-driver.log', 'quality-driver-*.log', 'gate-*-driver.log', 'cpu-*-driver.log'):
+            for path in sorted(BASE.glob(pattern)):
+                self.retain(path, 'driver-logs/' + path.name, kind='transformed-controller-driver-log')
+        for path in sorted(BASE.glob('*.txt')):
+            if path.name.startswith(('focused-', 'integration-', 'judge-regressions-', 'python-')):
+                self.retain(path, 'red-green/' + path.name, kind='transformed-focused-acceptance-log')
+        self.tree(BASE / 'providers', 'providers')
+        self.root_files(BASE / 'installation', 'installation')
+        for name in ('judge-budget-proposal.md', 'session-config.json'):
+            if (BASE / name).exists():
+                self.retain(BASE / name, 'session/' + name)
+        fixture = WORKTREE / 'tests/fixtures/run/judge-source-fidelity'
+        for name in ('LICENSE.txt', 'provenance.json'):
+            self.retain(fixture / name, 'source-fixtures/' + name, kind='upstream-license-or-provenance')
+        self.document('source-fixtures/references.json', {'schema_version': 1, 'upstream_pin': '587d5cfa1609a43d192cedb8441cac3c17db105d', 'repository_fixture_root': 'tests/fixtures/run/judge-source-fidelity', 'exact_sources': ['common.py.txt', 'judge_prompts.jsonl.txt'], 'note': 'Original public sources already exist in the repository fixtures and in original product snapshots; license and provenance are retained here. Sanitized synthetic helper inputs are separate, never claimed to be original bytes.'})
+
+    def formal(self) -> dict[str, Any]:
+        self.root_files(FORMAL, 'judge', group='dynamic')
+        observations = {}
+        budget = FORMAL / 'budget.json'
+        attempts = json.loads(budget.read_bytes()).get('attempts', []) if budget.exists() else []
+        for variant in ('a', 'b'):
+            source = FORMAL / variant
+            dest = 'judge/' + variant
+            self.root_files(source, dest, group='dynamic')
+            self.tree(source / 'run', dest + '/run', group='dynamic', closed=True, kind='original-formal-judge-product-run-tree')
+            self.tree(source / 'outputs', dest + '/outputs', group='dynamic')
+            status = 'CAPTURED_ACCEPTANCE_PENDING' if (source / 'run/run.json').exists() else (
+                'NO_RUN_TREE_AVAILABLE' if len(attempts) > (0 if variant == 'a' else 1) else 'NOT_RUN'
+            )
+            acceptance = source / 'acceptance.json'
+            observations[variant] = {'run_tree_present': (source / 'run/run.json').exists(), 'observed_acceptance_status': json.loads(acceptance.read_bytes()).get('status') if acceptance.exists() else status}
+        authorization = BASE / 'providers/budget-authorization.json'
+        authorized = json.loads(authorization.read_bytes()).get('authorized', False) if authorization.exists() else False
+        no_runs = not any(entry['run_tree_present'] for entry in observations.values())
+        return {'gate_status': 'FORMAL_NOT_RUN_PENDING_NEW_BUDGET' if no_runs and not authorized else 'SEE_VARIANT_ACCEPTANCE_AND_ORIGINAL_RECEIPTS', 'new_budget_authorized': authorized, 'provider_attempt_count': len(attempts), 'variants': observations}
+
+    def finish(self, observations: dict[str, Any]) -> None:
+        self.write('.gitattributes', b'* -text\n')
+        for group, records in self.groups.items():
+            self.document(group + '-files.json', {'schema_version': 1, 'candidate_commit': self.commit, 'source_selections': records, 'source_selection_count': len(records), 'omitted_local_originals': self.omitted if group == 'stable' else [], 'excluded_subtrees_not_walked': sorted(SKIPPED_DIRECTORIES) if group == 'stable' else [], 'storage_policy': 'Repeated retained byte sequences share one retained_file except original run trees, which preserve every original file under its run directory. Resolve raw/log references through source_logical_file. Sharing transformations retain both source and retained hashes and are not executable originals.', 'formal_judge_observation': observations if group == 'dynamic' else None})
+        self.document('packaging-validation.json', {'schema_version': 1, 'status': 'PORTABLE_COPY_INTEGRITY_ONLY_NOT_RESOURCE_GATE_ACCEPTANCE', 'candidate_commit': self.commit, 'original_run_trees': self.original_runs, 'source_selection_count': sum(map(len, self.groups.values())), 'original_product_files': sum(row['file_count'] for row in self.original_runs), 'source_and_retained_hashes_recorded': True, 'credentials_read': False, 'exact_actual_credential_scan': 'PENDING_SESSION_OWNER', 'validation_or_provider_commands_launched': 0, 'formal_judge_observation': observations})
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--execute', action='store_true', help='Explicitly create only the task-owned portable copy.')
+    parser.add_argument('--candidate-commit', required=True)
+    parser.add_argument('--output', type=Path, default=BASE / 'shareable-evidence')
+    args = parser.parse_args()
+    if not re.fullmatch('[0-9a-f]{40}', args.candidate_commit):
+        parser.error('candidate must be a full lowercase Git commit')
+    if not args.execute:
+        parser.error('No evidence was read or copied; pass --execute only after final receipts exist.')
+    package = Package(args.output.resolve(), args.candidate_commit)
+    package.quality()
+    package.gates()
+    package.supporting()
+    observations = package.formal()
+    package.finish(observations)
+    print(json.dumps({'schema_version': 1, 'status': 'PORTABLE_COPY_CREATED', 'source_selection_count': sum(map(len, package.groups.values())), 'original_run_trees': len(package.original_runs), 'credentials_read': False}, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

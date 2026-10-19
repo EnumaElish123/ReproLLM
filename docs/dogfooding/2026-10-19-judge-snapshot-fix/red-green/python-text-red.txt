@@ -1,0 +1,67 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_python_symbolic_assignment_after_nested_quotes_keeps_exact_source ____
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+
+    def test_python_symbolic_assignment_after_nested_quotes_keeps_exact_source(tmp_path: Path) -> None:
+        source = 'print(f"x: {a[\'b\']}")\nopenai.api_key = api_dict["api_key"]\n'
+        privacy = RunPrivacy(tmp_path, hostname="", username="")
+>       assert privacy.text(source, python_source=True) == (source, 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/run/test_python_text.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/reprollm/run/privacy.py:100: in text
+    result, count = redact_contextual_text(value, manifest=manifest, keys=keys)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/reprollm/run/contextual_text.py:470: in redact_contextual_text
+    result, count = _fragments(text, 0)
+                    ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text = 'print(f"x: {a[\'b\']}")\nopenai.api_key = api_dict["api_key"]\n'
+depth = 0
+
+    def _fragments(text: str, depth: int) -> tuple[str, int]:
+        if depth > 8:
+            raise ValueError("nested capture text limit exceeded")
+        replacements: list[tuple[int, int, str]] = []
+        cursor = 0
+        while match := _KEY.search(text, cursor):
+            key = _decode(match["key"])
+            start = match.end()
+            if start >= len(text):
+                if _secret_key(key):
+                    raise _UnsafeCapture("missing secret capture value")
+                break
+            prefix = text[match.start() : start]
+            if "\n" in prefix and text[start] not in "[{\"'":
+                if _secret_key(key):
+                    raise _UnsafeCapture("ambiguous secret capture structure")
+                cursor = start
+                continue
+            try:
+                end = _value_end(text, start)
+                raw = text[start:end]
+                if raw.startswith(("{", "[")):
+                    safe, _ = _tree(raw, (key,), depth + 1)
+                else:
+                    original = _decode(raw)
+                    safe = str(redact_keyed_values(_pem_safe(original), (key,)))
+                    safe, _ = _fragments(safe, depth + 1)
+                    if safe == original:
+                        safe = raw
+                    elif raw.startswith(("'", '"')) or (match["key"].startswith('"') and ":" in prefix):
+                        safe = _encoded(safe, raw)
+            except _UnsafeCapture:
+                raise
+            except (ValueError, yaml.YAMLError):
+                if _secret_key(key) or _has_unsafe_context(text[start:]):
+>                   raise _UnsafeCapture("cannot sanitize secret capture value") from None
+E                   reprollm.run.contextual_text._UnsafeCapture: cannot sanitize secret capture value
+
+src/reprollm/run/contextual_text.py:442: _UnsafeCapture
+=========================== short test summary info ============================
+FAILED tests/unit/run/test_python_text.py::test_python_symbolic_assignment_after_nested_quotes_keeps_exact_source
+1 failed in 0.32s

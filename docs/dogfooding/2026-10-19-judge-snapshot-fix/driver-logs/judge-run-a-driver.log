@@ -1,0 +1,17 @@
+{"label": "installed-wheel-launch", "case": "FastChat-deepseek", "exit_code": 0, "elapsed_seconds": 0.315577}
+{"label": "run", "case": "FastChat-deepseek", "exit_code": 0, "elapsed_seconds": 11.058521}
+{"label": "installed-wheel-after", "case": "FastChat-deepseek", "exit_code": 0, "elapsed_seconds": 0.315768}
+{"label": "audit-after", "case": "FastChat-deepseek", "exit_code": 0, "elapsed_seconds": 1.820574}
+{"label": "verify", "case": "FastChat-deepseek", "exit_code": 1, "elapsed_seconds": 1.569908}
+Traceback (most recent call last):
+  File "<TASK>/judge_controller.py", line 158, in <module>
+    elif action=='run':run(sys.argv[2])
+                       ^^^^^^^^^^^^^^^^
+  File "<TASK>/judge_controller.py", line 102, in run
+    command([PYTHON,__file__,'verify',variant],folder,'verify',secret=True)
+  File "<TASK>/judge_controller.py", line 46, in command
+    return base.command([str(a) for a in args],CASE,env(secret),folder,label,expected)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HISTORICAL_RESOURCE_TASK>/replay.py", line 195, in command
+    raise RuntimeError(f"{case.name}/{label}: unexpected exit; preserve both complete streams")
+RuntimeError: FastChat-deepseek/verify: unexpected exit; preserve both complete streams
