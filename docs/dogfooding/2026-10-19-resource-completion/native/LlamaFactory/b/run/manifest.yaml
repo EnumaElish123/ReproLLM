@@ -1,0 +1,48 @@
+schema_version: 1
+project: {name: llamafactory-linux-runtime}
+experiment: {profiles: [finetuning]}
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-4B-Instruct-2507
+    revision: cdbee75f17c01a7cc42f958dc650907174af0554
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: false
+    adapter:
+      provider: other
+      id: outputs/current
+      type: lora
+      rank: 8
+      alpha: 16
+      dropout: 0.0
+      target_modules: [all]
+datasets:
+  train:
+    provider: local
+    id: data/identity.json
+    files: [data/identity.json, data/dataset_info.json]
+    sampling: {n: 16, method: first, seed: 42}
+    preprocessing: {description: qwen3_nothink template with a 64-token limit}
+training:
+  method: lora
+  learning_rate: 0.0002
+  optimizer: adamw_torch
+  scheduler: constant
+  batch_size: 1
+  gradient_accumulation: 1
+  epochs: 1.0
+  max_steps: 2
+  precision: bfloat16
+  seed: 42
+execution:
+  command: python validation/train_entry.py
+  seed: 42
+  config_files: [validation/train.yaml, validation/train_entry.py]
+bindings:
+  training.learning_rate: {config: 'validation/train.yaml:learning_rate'}
+  training.max_steps: {config: 'validation/train.yaml:max_steps'}
+  models.primary.id: {config: 'validation/train.yaml:model_name_or_path'}
+  models.primary.revision: {config: 'validation/train.yaml:model_revision'}
+artifacts:
+  outputs: ['outputs/current/*.json', 'outputs/current/*.safetensors']

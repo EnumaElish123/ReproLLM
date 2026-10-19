@@ -1,0 +1,30 @@
+"""Read-only regression on accepted S4A run2 pair and forged report negatives."""
+import copy
+import json
+from pathlib import Path
+from capture_verifier import verify_pair, VerificationError
+
+root=Path('<RESOURCE_ROOT>/replays/s4a-d01-20261015')
+case=root/'cases/lm-evaluation-harness'
+folder=root/'evidence/runtime/lm-evaluation-harness'
+pair=json.loads((folder/'pair-diff.log').read_bytes())
+self_report=json.loads((folder/'self-diff.log').read_bytes())
+audits=[json.loads((folder/v/'audit-after.log').read_bytes()) for v in ('a','b')]
+def check(report=pair,self_json=self_report):
+ return verify_pair(case,folder/'a/run',folder/'b/run','generation.max_tokens',(32,48),'HIGH','validation/eval.yaml',report,self_json,*audits)
+result=check()
+assert result['status']=='PASS' and result['full_findings_equal'] and result['audit_profiles_equal']
+checks=[{'case':'accepted-run2-pair','status':'PASS'}]
+for name in ('wrong-target-severity','missing-target','duplicate-target','nonempty-self'):
+ forged=copy.deepcopy(pair)
+ self_forged=copy.deepcopy(self_report)
+ if name=='wrong-target-severity': next(c for c in forged['changes'] if c['path']=='generation.max_tokens')['severity']='MEDIUM'
+ elif name=='missing-target': forged['changes']=[c for c in forged['changes'] if c['path']!='generation.max_tokens']
+ elif name=='duplicate-target': forged['changes'].append(copy.deepcopy(next(c for c in forged['changes'] if c['path']=='generation.max_tokens')))
+ else: self_forged['changes'].append(copy.deepcopy(next(c for c in pair['changes'] if c['path']=='generation.max_tokens')))
+ try: check(forged,self_forged)
+ except VerificationError: checks.append({'case':name,'status':'REJECTED_AS_EXPECTED'})
+ else: raise AssertionError('Forged acceptance report was not rejected')
+receipt={'schema_version':1,'status':'PASS','checks':checks,'GPU_runs':0,'scope':'Existing immutable historical raw S4A pair reused only to qualify the checker, not current-candidate acceptance.'}
+Path(__file__).with_name('verifier-regression.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+print(json.dumps(receipt,sort_keys=True))

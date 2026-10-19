@@ -1,0 +1,47 @@
+{
+  "GPU_jobs": 0,
+  "hypothesis": "Path matcher operates on serialized JSON escape sequences and mistakes a role-letter colon followed by encoded newline for a Windows drive prefix",
+  "requests": 0,
+  "schema_version": 1,
+  "single_variable_probes": [
+    {
+      "case": "JSON-escaped-newline-role-A",
+      "contextual_parser_preserves": true,
+      "path_matches": [
+        "A:\\n{answer"
+      ],
+      "privacy_preserves": false,
+      "redactions": 1
+    },
+    {
+      "case": "decoded-scalar",
+      "contextual_parser_preserves": true,
+      "path_matches": [],
+      "privacy_preserves": true,
+      "redactions": 0
+    },
+    {
+      "case": "role-word-instead-of-letter",
+      "contextual_parser_preserves": true,
+      "path_matches": [],
+      "privacy_preserves": true,
+      "redactions": 0
+    },
+    {
+      "case": "space-instead-of-newline",
+      "contextual_parser_preserves": true,
+      "path_matches": [],
+      "privacy_preserves": true,
+      "redactions": 0
+    },
+    {
+      "case": "actual-windows-path",
+      "contextual_parser_preserves": true,
+      "path_matches": [
+        "C:\\\\new\\\\file.json"
+      ],
+      "privacy_preserves": false,
+      "redactions": 1
+    }
+  ]
+}

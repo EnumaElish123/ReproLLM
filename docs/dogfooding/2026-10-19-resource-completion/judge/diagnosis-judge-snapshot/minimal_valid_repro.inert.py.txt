@@ -1,0 +1,17 @@
+"""Minimal valid source reproducer; references are synthetic identifiers, no secret."""
+import ast
+import json
+import sys
+from reprollm.run.privacy import RunPrivacy
+from pathlib import Path
+
+source='print(f"x: {a[\'b\']}")\nopenai.api_key = api_dict["api_key"]\n'
+ast.parse(source)
+privacy=RunPrivacy(Path.cwd(),hostname='synthetic-host',username='synthetic-user')
+try:
+ safe,count=privacy.text(source,python_source=True)
+ assert safe == source and count == 0
+except Exception as error:
+ print(json.dumps({'schema_version':1,'status':'REPRODUCED','valid_python':True,'contains_real_secret':False,'source':source,'actual_exception':type(error).__name__,'expected':'Preserve non-secret source and create snapshot'}))
+ sys.exit(1)
+print(json.dumps({'schema_version':1,'status':'PASS'}))

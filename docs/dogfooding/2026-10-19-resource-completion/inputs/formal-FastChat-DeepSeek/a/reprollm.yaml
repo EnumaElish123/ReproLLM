@@ -1,0 +1,51 @@
+schema_version: 1
+project:
+  name: fastchat-deepseek-supplement
+experiment:
+  profiles: [llm_judge]
+  description: Bounded DeepSeek transport adaptation with original FastChat single-judge logic
+models:
+  judge:
+    provider: other
+    id: deepseek-flash
+    endpoint: {base_url: 'https://api.deepseek.com'}
+    params: {actual_provider: deepseek, thinking: disabled}
+datasets:
+  eval:
+    provider: local
+    files: [fastchat/llm_judge/data/mt_bench/question.jsonl]
+    split: validation
+    sampling: {n: 1, method: question_id_82}
+    preprocessing: {description: Original first turn with an explicitly synthetic fixed email answer}
+prompts:
+  judge:
+    path: fastchat/llm_judge/data/judge_prompts.jsonl
+    format: fstring
+evaluation:
+  metrics:
+    - {name: single_judge_rating, implementation: fastchat/llm_judge/common.py}
+  aggregation: single_item_no_quality_claim
+  repetitions: 1
+  query_budget: 1
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params: {temperature: 0, max_tokens: 256}
+    repetitions: 1
+    parser: fastchat/llm_judge/common.py
+execution:
+  command: python validation/judge_entry.py
+  env_requirements: [OPENAI_API_KEY]
+  config_files:
+    - validation/judge.yaml
+    - validation/judge_entry.py
+    - validation/judge_transport.py
+    - fastchat/llm_judge/common.py
+    - fastchat/conversation.py
+bindings:
+  models.judge.id: {config: 'validation/judge.yaml:model'}
+  models.judge.endpoint.base_url: {config: 'validation/judge.yaml:endpoint'}
+  evaluation.judge.params.temperature: {config: 'validation/judge.yaml:temperature'}
+  evaluation.judge.params.max_tokens: {config: 'validation/judge.yaml:max_tokens'}
+artifacts:
+  outputs: ['outputs/current/*.json', 'outputs/current/*.jsonl']

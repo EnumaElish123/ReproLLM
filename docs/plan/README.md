@@ -35,9 +35,18 @@ its current acceptance and resource boundaries are recorded in the
 The engineering implementation does not authorize a version release.
 The [A01 local evidence session](../dogfooding/2026-10-18-a01-local/README.md)
 recovers 12 of 50 exact input slots and completes the resource-free two-path
-replay layer. Five original metadata manifests remain missing and 33 input
-slots are inaccessible; formal resource gates remain BLOCKED. Continue A01
-input restoration and provisioned native/authenticated/paid acceptance, with
+replay layer. The [2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
+restores 45 of 50 exact input slots on the provisioned Linux node; five original
+metadata manifests remain missing. Current-candidate Linux H2 and all five
+native GPU A/B pairs, complete capture/consumption/diff checks and 20 default
+export states pass. VAL-R01 is closed for candidate `750270b`; historical
+reports retain their original identities. The formal judge's first real request
+completes, but two source-snapshot defects make capture FAIL; B is not sent.
+HF authenticated small-file access still returns 403. Fix the two demonstrated
+capture defects before a new formal judge replay, and retain missing original
+metadata/model-access requirements independently. Follow the maintainer's
+updated resource guidance in `val.md §8.3` without reinstating old artificial
+GPU thresholds. Continue A01 recovery and remaining acceptance, with
 policy proposals and adoption materials tracked separately. For work independent
 of these resources, continue with the [A02 local trial materials](../trials/a02-local/README.md),
 [A03 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md), then
@@ -48,8 +57,8 @@ HIGH default is implemented, unreleased; read the
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
 Other policy proposals and resource gates remain independent.
-The other four native project scenarios still need acceptance on the current
-candidate; S4-A does not close the complete VAL-R01 or release resource matrix.
+All five native scenarios now have current-candidate acceptance. This does not
+close the paid/gated requirements or establish a complete release matrix.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI

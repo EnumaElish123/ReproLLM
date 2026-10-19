@@ -1,0 +1,111 @@
+{
+  "A_request_success_and_original_score": {
+    "child_exit": 0,
+    "completed": true,
+    "score": 7,
+    "score_is_observation_not_gold": true
+  },
+  "B_sent": false,
+  "actual": "RunPrivacy.text runs the Windows-drive path regex over serialized JSON bytes. A:\\n{answer is replaced by <REDACTED:path>, retaining valid JSON but changing rubric semantics.",
+  "candidate_commit": "750270b10307455795fcff126664429dc895983a",
+  "causal_evidence": "causal-probes.json",
+  "changed_rubric_rows": [
+    {
+      "changed_fields": [
+        "prompt_template"
+      ],
+      "line": 2,
+      "path_markers_inserted": 4,
+      "rubric_name": "pair-v2-multi-turn"
+    },
+    {
+      "changed_fields": [
+        "prompt_template"
+      ],
+      "line": 4,
+      "path_markers_inserted": 4,
+      "rubric_name": "pair-math-v1-multi-turn"
+    },
+    {
+      "changed_fields": [
+        "prompt_template"
+      ],
+      "line": 7,
+      "path_markers_inserted": 2,
+      "rubric_name": "single-v1-multi-turn"
+    },
+    {
+      "changed_fields": [
+        "prompt_template"
+      ],
+      "line": 8,
+      "path_markers_inserted": 2,
+      "rubric_name": "single-math-v1-multi-turn"
+    }
+  ],
+  "classification": "CONFIRMED_PRODUCT_SOURCE_SNAPSHOT_FIDELITY_DEFECT",
+  "complete_required_file_fidelity": "FAIL",
+  "expected": "Keep non-secret role labels, encoded newlines and placeholders unchanged in all eight rubric records; recorded raw hash alone does not establish snapshot fidelity.",
+  "files_sha256": {
+    "causal-probes.json": "b64ff19f05c7655c56a9a7ad34fdf1bd24b1111bc6dc598cc92efe9d24c7fe4e",
+    "minimal_jsonl_repro.py": "466c6f53e8a8a0980c4b7f90b3e3de6cea5edcbbb2642832c10a8823739799b7"
+  },
+  "minimal_repro": "minimal_jsonl_repro.py",
+  "product_entrypoints": [
+    {
+      "function": "hash_and_snapshot",
+      "line": 164,
+      "relative_path": "src/reprollm/run/capture.py"
+    },
+    {
+      "function": "RunPrivacy.text",
+      "line": 137,
+      "relative_path": "src/reprollm/run/privacy.py",
+      "role": "Applies _ABSOLUTE_PATH over serialized text after contextual parser."
+    },
+    {
+      "constant": "_ABSOLUTE_PATH",
+      "line": 29,
+      "relative_path": "src/reprollm/run/privacy.py",
+      "role": "Windows drive branch cannot distinguish JSON-encoded newline from literal backslash path."
+    }
+  ],
+  "ranked_hypotheses": [
+    {
+      "hypothesis": "Serialized newline escape after role-letter colon is mistaken for Windows drive syntax",
+      "prediction": "Decoded scalar or role Alpha instead of A is preserved.",
+      "rank": 1,
+      "result": "CONFIRMED"
+    },
+    {
+      "hypothesis": "Generic contextual secret parser changes the rubric first",
+      "prediction": "redact_contextual_text alone changes the minimal JSONL.",
+      "rank": 2,
+      "result": "FALSIFIED: contextual parser preserves it."
+    },
+    {
+      "hypothesis": "The original rubric contains actual machine paths requiring removal",
+      "prediction": "An actual decoded Windows path and the role-label scalar behave identically.",
+      "rank": 3,
+      "result": "FALSIFIED: decoded role label is preserved while real Windows path is redacted."
+    }
+  ],
+  "recorded_raw_hash_preserved": true,
+  "resource_shortage": false,
+  "schema_version": 1,
+  "scope": "CPU-only read-only diagnosis; original A unchanged, no B completion, no product code change, GPU, model or API request.",
+  "selected_single_v1_row_unchanged": true,
+  "separate_fix_review_requirements": [
+    "Apply machine-path checks to decoded supported structured scalar values, with format-aware lexical replacement preserving safe source bytes.",
+    "Handle each JSONL document and nested serialized value without interpreting escape syntax as a real drive path.",
+    "Preserve real Windows paths including C:\\new\\file, A:\\new, UNC, Unix paths and local file URIs through redaction; do not exempt drive letters or backslash-n globally.",
+    "Add full eight-row fixed rubric and minimal JSONL capture regressions, checking exact bytes for safe sources and decoded values.",
+    "Keep original successful paid A and its failed complete snapshot unchanged; selected rubric-row equality does not upgrade formal full-file acceptance.",
+    "Rerun required focused security/fidelity checks and final product quality gates in a separately scoped product repair; do not patch the validation oracle to accept this source mutation."
+  ],
+  "snapshot_record_count": 8,
+  "snapshot_sha256": "5b2964e55c605338c3fbb34d66000a38447b8b80687763425098c8687d195146",
+  "source_record_count": 8,
+  "source_relative_path": "fastchat/llm_judge/data/judge_prompts.jsonl",
+  "source_sha256": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6"
+}

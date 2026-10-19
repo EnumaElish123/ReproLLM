@@ -1,0 +1,75 @@
+"""Reject selected-run identity, input-phase/hash and provenance errors using real DP evidence."""
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import subprocess
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SCRATCH = HERE.parent
+OUT = HERE / "selected-export-selfcheck-final-3"
+NATIVE = Path("<RESOURCE_ROOT>/replays/resource-20261019-750270b")
+CASE = "llm-dp-finetune"
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def main() -> int:
+    assert not OUT.exists()
+    baseline = HERE / "exports-selected-run-final-2" / CASE / "a"
+    assert json.loads((baseline / "summary.json").read_bytes())["status"] == "PASS"
+    OUT.mkdir()
+    retained = NATIVE / "evidence/runtime" / CASE / "a"
+    run = json.loads((retained / "run/run.json").read_bytes())
+    markdown = (retained / "REPRODUCIBILITY.md").read_text()
+    main_line = next(line for line in markdown.splitlines() if line.startswith("| mechanism.params.target") and "epsilon" in line)
+    wrong_leaf = re.sub(r"(?<=\| )8(?:\.0)?(?= \|)", "999", main_line)
+    unavailable = "not available"
+    assert unavailable in markdown
+    argv = [str(SCRATCH / "worktree/.venv/bin/python"), str(HERE / "verify_export_current.py"), "--implementation-root", str(SCRATCH / "worktree"), "--project-root", str(NATIVE / "cases" / CASE), "--run-id", run["run_id"], "--markdown", str(retained / "REPRODUCIBILITY.md"), "--stdout", str(retained / "export.log"), "--stderr", str(retained / "export.stderr.log"), "--audit-json", str(retained / "audit-after.log"), "--command-receipt", str(retained / "export.command.json"), "--source-binding", str(HERE / "source-binding.json"), "--case", CASE, "--variant", "a", "--upstream-fidelity", "PASS", "--upstream-fidelity-evidence", str(retained / "capture-check.json"), "--expected-stderr", str(baseline / "expected-stderr.txt")]
+    first_input_row = next(line for line in markdown.splitlines() if line.startswith("| `") and " | " in line and "sha256:" in line)
+    variants = {"positive": (markdown, None), "wrong-dp-leaf": (markdown.replace(main_line, wrong_leaf), None), "false-hash-for-unavailable-input": (markdown.replace(unavailable, "sha256:" + "0" * 64, 1), None), "missing-input-row": (markdown.replace(first_input_row + "\n", "", 1), None), "wrong-input-phase": (markdown.replace("Input observation phase: before child launch", "Input observation phase: after child completion"), None), "wrong-observation-provenance": (markdown.replace("observed (run)", "declared (manifest)"), None), "wrong-run-id": (markdown.replace(run["run_id"], "wrong-run-id"), None), "hidden-child-verification-limit": (markdown.replace("- Child Python and packages are unverified.\n", ""), None), "failed-upstream-receipt": (markdown, "upstream")}
+    variants['unexpected-generation-parameter'] = (markdown.replace('### Generation parameters\n', '### Generation parameters\n\n- `invented_parameter`: wrong\n', 1), None)
+    variants['unexpected-privacy-parameter'] = (markdown.replace('### Privacy\n', '### Privacy\n\n| invented | wrong | observed (run) |\n', 1), None)
+    records = []
+    for label, (body, mode) in variants.items():
+        if label != "positive" and mode is None:
+            assert body != markdown, label
+        folder = OUT / label
+        folder.mkdir()
+        md = folder / "mutated.md"
+        md.write_text(body)
+        args = list(argv)
+        args[args.index("--markdown") + 1] = str(md)
+        report = folder / "projection.json"
+        args.extend(["--report", str(report)])
+        if mode == "upstream":
+            path = folder / "failed-upstream.json"
+            upstream = json.loads((retained / "capture-check.json").read_bytes())
+            upstream["status"] = "FAIL"
+            path.write_text(json.dumps(upstream))
+            args[args.index("--upstream-fidelity-evidence") + 1] = str(path)
+        result = subprocess.run(args, capture_output=True)
+        (folder / "stdout").write_bytes(result.stdout)
+        (folder / "stderr").write_bytes(result.stderr)
+        expected_exit = 0 if label == "positive" else 1
+        assert result.returncode == expected_exit, label
+        rejected = []
+        if report.exists():
+            rejected = [item["label"] for item in json.loads(report.read_bytes())["checks"] if not item["equal"]]
+            assert bool(rejected) == (label != "positive")
+        else:
+            assert mode == "upstream"
+        records.append({"case": label, "actual_exit": result.returncode, "expected_exit": expected_exit, "rejected_checks": rejected, "rejected_before_projection": not report.exists(), "markdown_sha256": sha(md.read_bytes()), "stdout_sha256": sha(result.stdout), "stderr_sha256": sha(result.stderr)})
+    summary = {"schema_version": 1, "status": "PASS", "positive_cases": 1, "negative_cases": len(records) - 1, "records": records, "checker_sha256": sha((HERE / "verify_export_current.py").read_bytes()), "product_commands": 0, "gpu_or_provider_calls": 0, "mutation_scope": "Disposable Markdown and failed-upstream JSON copies only; native run and retained outputs unchanged."}
+    (OUT / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=2) + "\n")
+    print(json.dumps(summary, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

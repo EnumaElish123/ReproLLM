@@ -1,0 +1,123 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+        "<SESSION_SCRATCH>/native/exports-nonrun-final-1/clones/lm-evaluation-harness"
+      ],
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 2.559819,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-clone",
+      "stderr": "raw/lm-evaluation-harness-clone.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "raw/lm-evaluation-harness-clone.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--quiet",
+        "--detach",
+        "b954108c9baaaa934b4ad842033b31a97ee30816"
+      ],
+      "cwd": "<SESSION_SCRATCH>/native/exports-nonrun-final-1/clones/lm-evaluation-harness",
+      "elapsed_seconds": 0.262608,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-detach-pin",
+      "stderr": "raw/lm-evaluation-harness-detach-pin.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "raw/lm-evaluation-harness-detach-pin.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "set-url",
+        "origin",
+        "git@github.com:EleutherAI/lm-evaluation-harness.git"
+      ],
+      "cwd": "<SESSION_SCRATCH>/native/exports-nonrun-final-1/clones/lm-evaluation-harness",
+      "elapsed_seconds": 0.028538,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-origin",
+      "stderr": "raw/lm-evaluation-harness-origin.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "raw/lm-evaluation-harness-origin.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "<CANDIDATE>/.venv/bin/python",
+        "<SESSION_SCRATCH>/gate/harness/cli.py",
+        "--no-color",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<SESSION_SCRATCH>/native/exports-nonrun-final-1/clones/lm-evaluation-harness",
+      "elapsed_seconds": 36.71831,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-independent-manifest-audit",
+      "stderr": "raw/lm-evaluation-harness-independent-manifest-audit.stderr",
+      "stderr_sha256": "07c83aa686eb4056ed2f73266120467dce3070ec6f9170a6fbc9274d5e9e5188",
+      "stdout": "raw/lm-evaluation-harness-independent-manifest-audit.stdout",
+      "stdout_sha256": "6b4346a796481498ab376fbc570c8675114cf39baa8c27d8d731a1b83c37d6ff"
+    },
+    {
+      "argv": [
+        "<CANDIDATE>/.venv/bin/python",
+        "<SESSION_SCRATCH>/native/verify_export_nonrun.py",
+        "--implementation-root",
+        "<CANDIDATE>",
+        "--project-root",
+        "<RESOURCE_ROOT>/replays/resource-20261019-750270b/cases/lm-evaluation-harness",
+        "--manifest",
+        "<SESSION_SCRATCH>/native/exports-nonrun-final-1/sources/lm-evaluation-harness/reprollm.yaml",
+        "--markdown",
+        "<RESOURCE_ROOT>/replays/resource-20261019-750270b/evidence/runtime/lm-evaluation-harness/a/manifest-only-REPRODUCIBILITY.md",
+        "--stdout",
+        "<RESOURCE_ROOT>/replays/resource-20261019-750270b/evidence/runtime/lm-evaluation-harness/a/manifest-export.log",
+        "--stderr",
+        "<RESOURCE_ROOT>/replays/resource-20261019-750270b/evidence/runtime/lm-evaluation-harness/a/manifest-export.stderr.log",
+        "--command-receipt",
+        "<RESOURCE_ROOT>/replays/resource-20261019-750270b/evidence/runtime/lm-evaluation-harness/a/manifest-export.command.json",
+        "--source-binding",
+        "<SESSION_SCRATCH>/native/source-binding.json",
+        "--expected-stderr",
+        "<SESSION_SCRATCH>/native/exports-nonrun-final-1/sources/lm-evaluation-harness/expected-stderr.txt",
+        "--report",
+        "<SESSION_SCRATCH>/native/exports-nonrun-final-1/projections/lm-evaluation-harness-manifest-only.json",
+        "--audit-json",
+        "<SESSION_SCRATCH>/native/exports-nonrun-final-1/raw/lm-evaluation-harness-independent-manifest-audit.stdout",
+        "--case",
+        "lm-evaluation-harness",
+        "--variant",
+        "a"
+      ],
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.134516,
+      "exit": 1,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-manifest-only-projection",
+      "stderr": "raw/lm-evaluation-harness-manifest-only-projection.stderr",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "raw/lm-evaluation-harness-manifest-only-projection.stdout",
+      "stdout_sha256": "763904c471514d163c1a1e49db074c2f26514f3c10cc52301603494b553f39f9"
+    }
+  ],
+  "schema_version": 1
+}

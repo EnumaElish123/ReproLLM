@@ -1,0 +1,18 @@
+schema_version: 1
+project:
+  name: llamafactory-linux-metadata
+experiment:
+  profiles: [finetuning]
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-4B-Instruct-2507
+datasets:
+  train:
+    provider: local
+    id: data
+    files: [data/identity.json, data/alpaca_en_demo.json]
+execution:
+  config_files:
+    - examples/train_lora/qwen3_lora_sft.yaml
+    - data/dataset_info.json

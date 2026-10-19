@@ -1,0 +1,40 @@
+Tokenizing Train and Eval Datasets ..
+Done Tokenizing!
+model: GPT2LMHeadModel(
+  (transformer): GPT2Model(
+    (wte): Embedding(50257, 768)
+    (wpe): Embedding(1024, 768)
+    (drop): Dropout(p=0.1, inplace=False)
+    (h): ModuleList(
+      (0-5): 6 x GPT2Block(
+        (ln_1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+        (attn): GPT2Attention(
+          (c_attn): Conv1D()
+          (c_proj): Conv1D()
+          (attn_dropout): Dropout(p=0.1, inplace=False)
+          (resid_dropout): Dropout(p=0.1, inplace=False)
+        )
+        (ln_2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+        (mlp): GPT2MLP(
+          (c_fc): Conv1D()
+          (c_proj): Conv1D()
+          (act): NewGELUActivation()
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (ln_f): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+  )
+  (lm_head): Linear(in_features=768, out_features=50257, bias=False)
+)
+Number of trainable params: 81.9126 million
+Number of total params: 81.913 million
+Number of trainable components:  77 ; Number of trainable layers:  40
+>>>>>>>>>>>>>>>>> Applying  automatic  per-sample gradient clipping.
+>>>>>>>>>>>>>>>>> Block heads for per-sample gradient clipping are defined as: ['transformer.wte']
+{'loss': 4.5719, 'learning_rate': 0.0001, 'epoch': 0.06}
+{'loss': 5.0063, 'learning_rate': 0.0001, 'epoch': 0.12}
+{'train_runtime': 0.6302, 'train_samples_per_second': 3.173, 'train_steps_per_second': 3.173, 'train_loss': 4.78908634185791, 'epoch': 0.12}
+saving to outputs/current
+{"steps": 2, "clip_calls": 2, "positive_noise_draws": 152, "noise_multiplier": 0.5475097656250001}
+Recorded run 20261019T022126Z-1dbf6a (exit 0, 21.5 s, 3 files hashed, 4 bindings observed, 0 warnings) → .reprollm/runs/20261019T022126Z-1dbf6a

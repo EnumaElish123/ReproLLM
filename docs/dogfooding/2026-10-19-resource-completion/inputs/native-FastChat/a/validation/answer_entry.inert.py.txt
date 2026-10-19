@@ -1,0 +1,28 @@
+"""Limit memory, then invoke pinned FastChat's native model-answer generator."""
+import json
+import os
+from pathlib import Path
+import runpy
+import sys
+
+import torch
+import yaml
+
+config = yaml.safe_load(Path('validation/answer.yaml').read_text())
+project_root = Path.cwd()
+torch.cuda.set_per_process_memory_fraction(0.30, 0)
+snapshot = Path(os.environ['HF_HUB_CACHE']) / ('models--' + config['model_id'].replace('/', '--')) / 'snapshots' / config['model_revision']
+assert snapshot.is_dir()
+answer_file = project_root / config['output_file']
+answer_file.parent.mkdir(parents=True, exist_ok=True)
+sys.argv = ['gen_model_answer.py', '--model-path', str(snapshot), '--model-id', 'vicuna-validation', '--bench-name', 'mt_bench', '--question-begin', '0', '--question-end', '1', '--num-choices', '1', '--num-gpus-per-model', '1', '--num-gpus-total', '1', '--max-gpu-memory', '20GiB', '--dtype', 'float16', '--max-new-token', str(config['max_new_tokens']), '--answer-file', str(answer_file)]
+os.chdir(project_root / 'fastchat/llm_judge')
+try:
+    runpy.run_module('fastchat.llm_judge.gen_model_answer', run_name='__main__')
+finally:
+    os.chdir(project_root)
+rows = [json.loads(line) for line in Path(config['output_file']).read_text().splitlines()]
+assert len(rows) == 1 and rows[0]['question_id'] == 81
+assert len(rows[0]['choices']) == 1 and len(rows[0]['choices'][0]['turns']) == 2
+assert all(text.strip() and text != 'ERROR' for text in rows[0]['choices'][0]['turns'])
+print(json.dumps(dict(schema_version=1, scenario='local-answer-only-not-paid-judge', question_id=81, choices=1, turns=2, max_new_tokens=config['max_new_tokens'])))

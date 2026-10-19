@@ -1,0 +1,77 @@
+"""Review each complete native selected-run export once; no product/model execution."""
+from __future__ import annotations
+
+import importlib.util
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location("gate_base", HERE.parent / "gate/run_base.py")
+base = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(base)
+RESOURCE = Path("<RESOURCE_ROOT>/replays/resource-20261019-750270b")
+OUT = HERE / "exports-selected-run-final-3"
+
+
+def main() -> int:
+    OUT.mkdir(exist_ok=True)
+    original_inputs = base.inventory()
+    assert original_inputs == base.read(base.QUALITY / "inputs-after.json")
+    all_results = []
+    failures = []
+    for name in base.PINS:
+        for variant in ("a", "b"):
+            retained = RESOURCE / "evidence/runtime" / name / variant
+            required = ["run/run.json", "REPRODUCIBILITY.md", "export.command.json", "audit-after.log", "capture-check.json", "output-check.command.json", "output-check.json", "consumption-check.command.json", "consumption-check.json"]
+            if not all((retained / p).is_file() for p in required):
+                continue
+            existing = OUT / name / variant
+            if (existing / "summary.json").exists():
+                previous = base.read(existing / "summary.json")
+                all_results.append(previous)
+                if previous['status'] != 'PASS':
+                    failures.append({'name':name, 'variant':variant})
+                continue
+            runner = base.Runner(existing)
+            upstream = base.read(retained / "capture-check.json")
+            runner.check("capture-receipt-pass", upstream["schema_version"] == 1 and upstream["status"] == "PASS")
+            record = base.read(retained / "run/run.json")
+            original_run = RESOURCE / "cases" / name / ".reprollm/runs" / record["run_id"] / "run.json"
+            runner.check("selected-original-run-byte-identity", base.sha(original_run.read_bytes()) == base.sha((retained / "run/run.json").read_bytes()))
+            capture_command = base.read(retained / "capture-check.command.json")
+            correction = None
+            if capture_command["exit_code"] != 0:
+                path = retained / "capture-oracle-correction.json"
+                correction = base.read(path)
+                runner.check("same-run-capture-requalification", correction["status"] == "PASS" and correction["GPU_children_repeated"] == 0 and correction["original_run_id"] == record["run_id"] and correction["original_run_json_sha256"] == base.sha((retained / "run/run.json").read_bytes()), correction_receipt_sha256=base.sha(path.read_bytes()), original_failed_capture_command_retained=True)
+            for label in ("output-check", "consumption-check", "export"):
+                receipt = base.read(retained / (label + ".command.json"))
+                runner.check(label + "-real-command-success", receipt["exit_code"] == 0 and receipt["stdout_sha256"].removeprefix("sha256:") == base.sha((retained / (label + ".log")).read_bytes()) and receipt["stderr_sha256"].removeprefix("sha256:") == base.sha((retained / (label + ".stderr.log")).read_bytes()))
+            proof = base.read(retained / "consumption-check.json")
+            runner.check("consumption-independent-proof", proof["status"] == "PASS" and proof["case"] == name and proof["variant"] == variant)
+            output = base.read(retained / "output-check.json")
+            runner.check("native-output-case-identity", output["schema_version"] == 1 and output["case"] == name and output["variant"] == variant)
+            diagnostics = existing / "expected-stderr.txt"
+            diagnostics.write_text("scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n" if name == "lm-evaluation-harness" else "")
+            argv = [str(base.PYTHON), str(HERE / "verify_export_current.py"), "--implementation-root", str(base.CANDIDATE), "--project-root", str(RESOURCE / "cases" / name), "--run-id", record["run_id"], "--markdown", str(retained / "REPRODUCIBILITY.md"), "--stdout", str(retained / "export.log"), "--stderr", str(retained / "export.stderr.log"), "--audit-json", str(retained / "audit-after.log"), "--command-receipt", str(retained / "export.command.json"), "--source-binding", str(HERE / "source-binding.json"), "--report", str(existing / "projection.json"), "--case", name, "--variant", variant, "--upstream-fidelity", "PASS", "--upstream-fidelity-evidence", str(retained / "capture-check.json"), "--expected-stderr", str(diagnostics)]
+            failure = None
+            try:
+                runner.command("selected-run-projection", argv, base.CANDIDATE)
+            except AssertionError:
+                failure = "projection checker rejected; preserve complete report and streams"
+            projection = base.read(existing / "projection.json") if (existing / "projection.json").exists() else {}
+            summary = {"schema_version": 1, "case": name, "variant": variant, "candidate_commit": base.COMMIT, "run_id": record["run_id"], "status": "PASS" if failure is None and projection.get("export_projection_passed") else "FAIL", "failure": failure, "comparisons": projection.get("comparison_count"), "projection_report_sha256": base.sha((existing / "projection.json").read_bytes()) if projection else None, "capture_report_sha256": base.sha((retained / "capture-check.json").read_bytes()), "capture_same_run_correction_sha256": base.sha((retained / "capture-oracle-correction.json").read_bytes()) if correction else None, "consumption_report_sha256": base.sha((retained / "consumption-check.json").read_bytes()), "output_report_sha256": base.sha((retained / "output-check.json").read_bytes()), "original_run_json_sha256": base.sha((retained / "run/run.json").read_bytes()), "product_commands": 0, "gpu_or_provider_calls": 0, "checker_sha256": base.sha((HERE / "verify_export_current.py").read_bytes())}
+            base.write(existing / "summary.json", summary)
+            all_results.append(summary)
+            if summary["status"] != "PASS":
+                failures.append({"name": name, "variant": variant})
+            print(f"{name} {variant}: selected-run export {summary['status']} ({summary['comparisons']} comparisons)", flush=True)
+    assert original_inputs == base.inventory()
+    summary = {"schema_version": 1, "candidate_commit": base.COMMIT, "reviewed": len(all_results), "passed": sum(r["status"] == "PASS" for r in all_results), "failed": failures, "records": all_results, "status": "PASS_FOR_AVAILABLE_STATES" if not failures else "FAIL", "judge": "NOT_RUN; upstream formal judge capture failure remains separate and cannot be promoted by projection", "product_commands": 0, "gpu_or_provider_calls": 0, "checker_sha256": base.sha((HERE / "verify_export_current.py").read_bytes())}
+    base.write(OUT / "summary.json", summary)
+    print(json.dumps({k: summary[k] for k in ("status", "reviewed", "passed", "failed")}, sort_keys=True))
+    return 0 if not failures else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,131 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-19T02:13:53Z'
+manifest_sha256: sha256:73b25168de2f52cc994f8b1535fdf04898ad8d8839e260f2f10893f38a3d9ae9
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  judge:
+    provider: openai
+    id: gpt-4o-2024-08-06
+    pinnability: snapshot_alias
+    revision:
+      value: null
+      source: provider_no_pinning
+      confidence: unresolved
+      resolved_at: null
+      note: null
+    observed_at: '2026-10-19T02:13:53Z'
+    tokenizer: null
+    chat_template: null
+    config_sha256: null
+    adapter: null
+    local: null
+    dtype: null
+    quantization: null
+    trust_remote_code: null
+  primary:
+    provider: huggingface
+    id: lmsys/vicuna-7b-v1.5
+    pinnability: exact
+    revision:
+      value: 3321f76e3f527bd14065daf69dad9344000a201d
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-19T02:13:53Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: lmsys/vicuna-7b-v1.5
+      revision:
+        value: 3321f76e3f527bd14065daf69dad9344000a201d
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-19T02:13:53Z'
+        note: null
+    chat_template:
+      sha256:
+        value: null
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-19T02:13:53Z'
+        note: model has no chat template
+      status: absent
+    config_sha256:
+      value: sha256:e122b598d0734b489590e99e3b3562a11ce67ea13bce390a7868b4f73ae6e615
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-10-19T02:13:53Z'
+      note: null
+    adapter: null
+    local: null
+    dtype: null
+    quantization: null
+    trust_remote_code: null
+datasets:
+  eval:
+    provider: local
+    id: fastchat/llm_judge/data/mt_bench
+    revision:
+      value: null
+      source: filesystem
+      confidence: exact
+      resolved_at: '2026-10-19T02:13:53Z'
+      note: null
+    subset: null
+    split: null
+    content_fingerprint:
+      status: not_computed
+    files:
+    - path: fastchat/llm_judge/data/mt_bench/question.jsonl
+      sha256: sha256:119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7
+      size_bytes: 48929
+    - path: fastchat/llm_judge/data/mt_bench/reference_answer/gpt-4.jsonl
+      sha256: sha256:f957a5bc977badb66885ec970e6cd08527845780313f0995764260e5777b9b3f
+      size_bytes: 51109
+prompts:
+  judge:
+    path: fastchat/llm_judge/data/judge_prompts.jsonl
+    sha256: sha256:fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6
+    size_bytes: 10449
+    text_sha256: null
+files:
+- path: fastchat/llm_judge/common.py
+  sha256: sha256:71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7
+  size_bytes: 22379
+- path: fastchat/llm_judge/gen_judgment.py
+  sha256: sha256:b6d74c050f91d93eb8c3e339ccc11f230032b4c6093c65f3683e0eba1c13b2ea
+  size_bytes: 9560
+- path: fastchat/llm_judge/gen_model_answer.py
+  sha256: sha256:8feb3c19262b8f8567b49c1cd45b0adfd83f199bdcd17e891a05dd608300c7c6
+  size_bytes: 9659
+generation: null
+inference: null
+training: null
+evaluation:
+  metrics: []
+  aggregation: null
+  repetitions: null
+  thresholds: null
+  definitions: null
+  query_budget: null
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params:
+      temperature: 0.0
+      top_p: null
+      max_tokens: 2048
+      seed: null
+    repetitions: 1
+    parser: null
+privacy: null
+environment:
+  python: 3.12.14
+  platform: linux
+  packages: {}
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.2'
+    source: nvidia_smi

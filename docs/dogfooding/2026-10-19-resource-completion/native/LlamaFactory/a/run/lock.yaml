@@ -1,0 +1,123 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-19T02:11:33Z'
+manifest_sha256: sha256:d201b66e2992e21d4e20d11181dbe9ba4911b901b8cbfbe66f59c569a7e503f3
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen3-4B-Instruct-2507
+    pinnability: exact
+    revision:
+      value: cdbee75f17c01a7cc42f958dc650907174af0554
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-19T02:11:33Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: Qwen/Qwen3-4B-Instruct-2507
+      revision:
+        value: cdbee75f17c01a7cc42f958dc650907174af0554
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-19T02:11:33Z'
+        note: null
+    chat_template:
+      sha256:
+        value: sha256:64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326
+        source: hf_file:tokenizer_config.json
+        confidence: exact
+        resolved_at: '2026-10-19T02:11:33Z'
+        note: null
+      status: present
+    config_sha256:
+      value: sha256:5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-10-19T02:11:33Z'
+      note: null
+    adapter:
+      id: outputs/current
+      revision:
+        value: null
+        source: provider_no_pinning
+        confidence: unresolved
+        resolved_at: null
+        note: null
+      config_sha256: null
+    local: null
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: false
+datasets:
+  train:
+    provider: local
+    id: data/identity.json
+    revision:
+      value: null
+      source: filesystem
+      confidence: exact
+      resolved_at: '2026-10-19T02:11:33Z'
+      note: null
+    subset: null
+    split: null
+    content_fingerprint:
+      status: not_computed
+    files:
+    - path: data/dataset_info.json
+      sha256: sha256:17162e129cbfede1ef7e955dbb7819146b78cd8809fa4f39dff4f9e61308c50f
+      size_bytes: 17748
+    - path: data/identity.json
+      sha256: sha256:fd029da7dd3df283ed034c82375d16d125a7b07cf1cb0316d03fb8743057d5f2
+      size_bytes: 20306
+prompts: {}
+files:
+- path: validation/train.yaml
+  sha256: sha256:f4334f6b207c0e1112e3e79665a02ee0541df256f3f71b1d8501b8031366ddae
+  size_bytes: 816
+- path: validation/train_entry.py
+  sha256: sha256:c9520bc72fc0fd50ffd547e07da164f678f3ae3d8372053465f10a7be640c5b2
+  size_bytes: 1341
+generation: null
+inference: null
+training:
+  method: lora
+  learning_rate: 0.0001
+  optimizer: adamw_torch
+  scheduler: constant
+  batch_size: 1
+  gradient_accumulation: 1
+  epochs: 1
+  max_steps: 2
+  precision: bfloat16
+  seed: 42
+  deepspeed: null
+  params: {}
+evaluation: null
+privacy: null
+environment:
+  python: 3.11.12
+  platform: linux
+  packages:
+    accelerate: 1.11.0
+    anthropic: 1.8.0
+    datasets: 3.6.0
+    evaluate: 0.4.6
+    lm_eval: 0.4.14.dev0
+    numpy: 2.2.6
+    openai: 2.24.0
+    peft: 0.18.1
+    safetensors: 0.8.0
+    sentencepiece: 0.2.2
+    tokenizers: 0.22.2
+    torch: 2.10.0+cu129
+    transformers: 4.57.6
+    trl: 0.24.0
+    vllm: 0.18.0
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.9'
+    source: nvidia_smi

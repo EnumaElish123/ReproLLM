@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""CPU/offline row-content check; never invoke the original cache-writing helper."""
+import hashlib
+import importlib.metadata
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path('<RESOURCE_ROOT>')
+OUT = Path('<TASK>/native/gsm8k-integrity')
+RESULT = OUT/'gsm8k-cache-row-integrity-final.json'
+FAILURE = OUT/'gsm8k-cache-row-integrity-final-failure.json'
+SCRATCH = OUT/'probe-scratch'
+EVENTS = {'network_attempts': [], 'process_attempts': [], 'cache_or_other_write_attempts': []}
+TEMP_EVENTS = []
+
+def mutation_path(value, directory_fd=None):
+    path = Path(os.fsdecode(value))
+    if not path.is_absolute():
+        base = Path(os.readlink('/proc/self/fd/'+str(directory_fd))) if directory_fd not in (None, -1) else Path.cwd()
+        path = base/path
+    return path.resolve()
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def guard(event, args):
+    if event in {'socket.connect', 'socket.getaddrinfo'}:
+        EVENTS['network_attempts'].append(event)
+        raise RuntimeError('Network forbidden during offline dataset row verification')
+    if event == 'subprocess.Popen':
+        EVENTS['process_attempts'].append(event)
+        raise RuntimeError('Child processes forbidden during dataset row verification')
+    if event == 'open' and isinstance(args[0], (str, bytes)):
+        path = Path(os.fsdecode(args[0])).resolve()
+        flags = args[2] or 0
+        if flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND):
+            if path == Path(os.devnull).resolve():
+                TEMP_EVENTS.append('null-device-type-probe')
+            elif path.is_relative_to(SCRATCH):
+                TEMP_EVENTS.append('owned-scratch-open')
+            elif path not in {RESULT, FAILURE}:
+                EVENTS['cache_or_other_write_attempts'].append(str(path).replace(str(ROOT), '<resource-root>'))
+                raise RuntimeError('Cache/source writes forbidden during dataset row verification')
+    if event in {'os.mkdir', 'os.remove', 'os.rmdir'}:
+        directory_fd = args[2] if event == 'os.mkdir' else args[1]
+        if mutation_path(args[0], directory_fd).is_relative_to(SCRATCH):
+            TEMP_EVENTS.append('owned-scratch-'+event)
+            return
+        EVENTS['cache_or_other_write_attempts'].append(event)
+        raise RuntimeError('Filesystem mutation outside owned scratch forbidden')
+    if event in {'os.rename', 'os.link'}:
+        if mutation_path(args[0], args[2]).is_relative_to(SCRATCH) and mutation_path(args[1], args[3]).is_relative_to(SCRATCH):
+            TEMP_EVENTS.append('owned-scratch-'+event)
+            return
+        EVENTS['cache_or_other_write_attempts'].append(event)
+        raise RuntimeError('Filesystem mutation outside owned scratch forbidden')
+    if event in {'os.symlink', 'os.truncate'}:
+        EVENTS['cache_or_other_write_attempts'].append(event)
+        raise RuntimeError('Filesystem mutation forbidden during dataset row verification')
+
+
+def main():
+    assert not RESULT.exists() and not FAILURE.exists()
+    assert SCRATCH.is_dir() and os.environ['TMPDIR'] == str(SCRATCH)
+    assert os.environ['CUDA_VISIBLE_DEVICES'] == ''
+    assert sys.dont_write_bytecode and os.environ['PYTHONDONTWRITEBYTECODE'] == '1'
+    assert all(os.environ[k] == '1' for k in ['HF_HUB_OFFLINE', 'HF_DATASETS_OFFLINE', 'TRANSFORMERS_OFFLINE'])
+    source = (ROOT/'prepare_dataset.py').read_bytes()
+    assert sha(source) == 'b6b9f13375fd910d572c67f61992e2a351c943acc98172c30ff4ef659b8dbdad'
+    assert "digest.update((json.dumps(row, sort_keys=True, ensure_ascii=False)+'\\n').encode())" in source.decode()
+    expected_bytes = (ROOT/'evidence/gsm8k-resource.json').read_bytes()
+    expected = json.loads(expected_bytes)
+    assert expected['rows'] == {'train': 7473, 'test': 1319}
+    assert expected['revision'] == '740312add88f781978c0658806c59bc2815b9866'
+    assert expected['content_sha256'] == {
+        'train': '9556bf9d7dba73d7fcaaeff6ca814c71684db1d8e8d485d83ec62f1c428b888d',
+        'test': '51b901a6559b123df91167acbe3ed6d6d5d404ee6fa0773a4da19fd9d44c767a',
+    }
+    sys.addaudithook(guard)
+    started = time.monotonic()
+    from datasets import Dataset
+
+    folder = ROOT/'hf/datasets/openai___gsm8k/main/0.0.0'/expected['revision']
+    rows = []
+    for split in ['train', 'test']:
+        path = folder/('gsm8k-'+split+'.arrow')
+        before = path.stat()
+        dataset = Dataset.from_file(str(path), in_memory=False)
+        digest = hashlib.sha256()
+        actual_count = 0
+        for row in dataset:
+            assert set(row) == {'question', 'answer'}
+            digest.update((json.dumps(row, sort_keys=True, ensure_ascii=False)+'\n').encode())
+            actual_count += 1
+        assert actual_count == len(dataset) == expected['rows'][split]
+        actual_hash = digest.hexdigest()
+        assert actual_hash == expected['content_sha256'][split]
+        after = path.stat()
+        assert (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+        rows.append({'split': split, 'arrow_relative_path': str(path.relative_to(ROOT)), 'arrow_size_bytes': after.st_size, 'actual_rows': actual_count, 'expected_rows': expected['rows'][split], 'actual_content_sha256': actual_hash, 'expected_content_sha256': expected['content_sha256'][split], 'hash_match': True, 'file_identity_size_mtime_unchanged': True})
+    assert not any(EVENTS.values())
+    report = {'schema_version': 1, 'all_passed': True, 'activity': '2026-10-19 actual fixed-revision GSM8K cache row integrity', 'dataset': expected['dataset'], 'revision': expected['revision'], 'source_serialization_helper_sha256': sha(source), 'saved_preselected_expected_document_sha256': sha(expected_bytes), 'serialization_protocol': "(json.dumps(row, sort_keys=True, ensure_ascii=False)+'\\n').encode(); defaults include JSON spaces, sort fields, preserve Unicode, append one UTF8 newline per row", 'datasets_version': importlib.metadata.version('datasets'), 'pyarrow_version': importlib.metadata.version('pyarrow'), 'interpreter_major_minor': str(sys.version_info.major)+'.'+str(sys.version_info.minor), 'elapsed_seconds': round(time.monotonic()-started,6), 'gpu_jobs': 0, 'network_requests': 0, 'paid_api_requests': 0, 'cache_writes': 0, 'original_preparation_helper_executed': False, 'new_child_processes': 0, 'guards': EVENTS, 'owned_temporary_feature_probe_mutations': sum(x != 'null-device-type-probe' for x in TEMP_EVENTS), 'null_device_type_probes': sum(x == 'null-device-type-probe' for x in TEMP_EVENTS), 'temporary_probe_policy': 'Only dedicated task-owned scratch writes/mkdir/link/removal allowed for import-time filelock capability probe; resource/cache/source and all other writes remain blocked.', 'initial_helper_failure_retained': {'source_sha256': 'f3b631f7ab4403dc6f40d48b71e0f9851a27368aeedc2d214abaad68b24858a3', 'failure_document_sha256': '1f5c94392c823835c733ab6d04e6f6a435f7e31e10347bf89dea28d11ee55304', 'initial_child_exit': 1, 'classification': 'Import-time filelock temporary capability probe blocked by overly broad helper guard before dataset reads'}, 'intermediate_helper_failure_retained': {'source_sha256': 'da8f3a5cb8a2360e4e16a6e56b119e41654fb92e177f6e4ca03b1b2db090d78d', 'failure_document_sha256': '914fbc1ffc8daaef69def5ba527fd0ca3a6c11eebb4d09ef50c20a265366e130', 'child_exit': 1, 'classification': 'dill import-time null-device type probe blocked before dataset reads'}, 'rows': rows}
+    RESULT.write_text(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2)+'\n')
+    print(json.dumps({'all_passed': True, 'rows': {r['split']:r['actual_rows'] for r in rows}, 'content_sha256': {r['split']:r['actual_content_sha256'] for r in rows}, 'elapsed_seconds': report['elapsed_seconds'], 'report_sha256': sha(RESULT.read_bytes())}), flush=True)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except BaseException as exc:
+        failure = {'schema_version':1,'all_passed':False,'failure_type':type(exc).__name__,'detail':str(exc).replace(str(ROOT),'<resource-root>'),'guards':EVENTS,'automatic_retry':False,'original_preparation_helper_executed':False}
+        FAILURE.write_text(json.dumps(failure,sort_keys=True,indent=2)+'\n')
+        raise

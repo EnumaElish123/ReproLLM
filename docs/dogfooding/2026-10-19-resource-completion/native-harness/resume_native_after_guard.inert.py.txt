@@ -1,0 +1,28 @@
+"""Complete CPU acceptance of an already-finished child; never launch a GPU job."""
+from pathlib import Path
+import json
+import shutil
+import subprocess
+import sys
+sys.path.insert(0,str(Path(__file__).parent/'native'))
+from controller import TASK, HERE, CASES, command, py, save, review
+
+name='lm-evaluation-harness';variant='b'
+case=TASK/'cases'/name;folder=TASK/'evidence/runtime'/name/variant
+receipt=json.loads((folder/'run.command.json').read_text())
+assert receipt['exit_code']==0 and not receipt['timed_out']
+label='r1019-'+name+'-'+variant
+matches=[p for p in (case/'.reprollm/runs').glob('*/run.json') if json.loads(p.read_text()).get('name')==label]
+assert len(matches)==1
+record=json.loads(matches[0].read_text());assert record['exit_code']==0 and record['status']=='completed'
+assert not (folder/'run').exists()
+shutil.copytree(matches[0].parent,folder/'run')
+save(folder/'post-guard-continuation.json',{'schema_version':1,'scope':'CPU checks only over already-completed original native run','native_run_repeated':False,'original_child_exit':0,'pre_launch_guard':'guard-before.json; strict gate passed','post_launch_observer_failure':'Controller additionally asserted idle after child completion; other-user GPU work had started. val8.3 requires strict idle before each launch. Preserve original failed wrapper and do not reinterpret this as permission to launch another child.','original_run_id':record['run_id']})
+command(name,['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-after')
+command(name,[py(name),HERE/'verify_capture.py',name,variant],folder,'capture-check')
+command(name,[py(name),HERE/'check_outputs.py',name,'--variant',variant,'--compare'],folder,'output-check')
+command(name,[py(name),HERE/'consumption_check.py',name,variant],folder,'consumption-check')
+command(name,['reprollm','export','--run',record['run_id']],folder,'export')
+shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'REPRODUCIBILITY.md')
+shutil.move(str(case/'outputs/current'),str(folder/'outputs'))
+review(name)

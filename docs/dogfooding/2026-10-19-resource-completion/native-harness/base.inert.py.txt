@@ -1,0 +1,519 @@
+"""Task-owned VAL-R01 controller; original research inputs remain unchanged."""
+
+from __future__ import annotations
+
+import argparse
+import fcntl
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from contextlib import contextmanager
+from pathlib import Path
+
+RESOURCE = Path("<RESOURCE_ROOT>")
+TASK = RESOURCE / "replays/val-r01-20261013-26c0b4a"
+CANDIDATE = Path("<PRIOR_RESOURCE_TASK>/candidate")
+RECOVERY = Path("<PRIOR_INPUT_RESTORATION>/formal-gpu-input-recovery.json")
+HERE = Path(__file__).parent
+CAPS = {
+    "lm-evaluation-harness": 0.12,
+    "LlamaFactory": 0.35,
+    "llm-dp-finetune": 0.15,
+    "HarmBench": 0.45,
+    "FastChat": 0.30,
+}
+
+
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def save(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
+
+
+def save_new(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x") as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
+
+
+def git(case: Path, *args: str) -> bytes:
+    return subprocess.check_output(["git", "-C", str(case), *args])
+
+
+def environment(kind: str, offline: bool = False) -> dict[str, str]:
+    env = dict(os.environ)
+    hf_token = env.get("HF_TOKEN")
+    for key in tuple(env):
+        if (
+            key
+            in {
+                "PYTHONPATH",
+                "HF_TOKEN",
+                "HUGGING_FACE_HUB_TOKEN",
+                "DEEPSEEK_API_KEY",
+                "OPENAI_API_KEY",
+                "ANTHROPIC_API_KEY",
+                "FORCE_TORCHRUN",
+                "USE_MCA",
+                "USE_MEGATRON_BRIDGE",
+                "USE_V1",
+                "RANK",
+                "LOCAL_RANK",
+                "WORLD_SIZE",
+                "LOCAL_WORLD_SIZE",
+                "MASTER_ADDR",
+                "MASTER_PORT",
+                "GROUP_RANK",
+                "ROLE_RANK",
+            }
+            or key.startswith(("TORCHELASTIC_", "SLURM_"))
+            or offline
+            and key.lower() in {"http_proxy", "https_proxy", "all_proxy"}
+        ):
+            env.pop(key)
+    # Avoid initializing an unused SOCKS fallback in the lightweight HTTP client.
+    for key in ("all_proxy", "ALL_PROXY"):
+        if env.get(key, "").lower().startswith("socks"):
+            env.pop(key)
+    env.update(
+        PATH=str(RESOURCE / "envs" / kind / "bin") + os.pathsep + env["PATH"],
+        CUDA_VISIBLE_DEVICES="0",
+        OMP_NUM_THREADS="2",
+        MKL_NUM_THREADS="2",
+        OPENBLAS_NUM_THREADS="2",
+        NUMEXPR_NUM_THREADS="2",
+        HF_HOME=str(RESOURCE / "hf"),
+        HF_HUB_CACHE=str(RESOURCE / "hf/hub"),
+        HF_DATASETS_CACHE=str(RESOURCE / "hf/datasets"),
+        HF_ENDPOINT="https://huggingface.co",
+        TORCH_HOME=str(TASK / "torch"),
+        TRITON_CACHE_DIR=str(TASK / "triton"),
+        XDG_CACHE_HOME=str(TASK / "cache"),
+        TMPDIR=str(TASK / "tmp"),
+        TOKENIZERS_PARALLELISM="false",
+        WANDB_MODE="disabled",
+        HF_HUB_DISABLE_TELEMETRY="1",
+        VLLM_NO_USAGE_STATS="1",
+        DO_NOT_TRACK="1",
+        HF_HUB_OFFLINE=str(int(offline)),
+        HF_DATASETS_OFFLINE=str(int(offline)),
+        PYTHONPATH=str(TASK / "hooks"),
+        REPROLLM_VALIDATION_RESOURCE_ROOT=str(RESOURCE),
+        REPROLLM_VALIDATION_TASK_ROOT=str(TASK),
+        REPROLLM_VALIDATION_PARENT_LEASE="1",
+        PYTHONDONTWRITEBYTECODE="1",
+    )
+    if not offline and hf_token:
+        env["HF_TOKEN"] = hf_token
+    if kind == "modern":
+        compat = str(RESOURCE / "cuda-compat/usr/local/cuda-12.9/compat")
+        env.update(
+            VLLM_ENABLE_CUDA_COMPATIBILITY="1",
+            VLLM_CUDA_COMPATIBILITY_PATH=compat,
+            LD_LIBRARY_PATH=compat + os.pathsep + env.get("LD_LIBRARY_PATH", ""),
+        )
+    return env
+
+
+def command(argv, case, env, evidence, label, expected=0):
+    evidence.mkdir(parents=True, exist_ok=True)
+    paths = [
+        evidence / (label + suffix)
+        for suffix in (".log", ".stderr.log", ".command.json", ".started.json")
+    ]
+    if any(path.exists() or path.is_symlink() for path in paths):
+        raise RuntimeError("command attempt already has evidence; inspect it without rerunning")
+    save_new(paths[3], dict(schema_version=1, state="started", label=label, cwd=case.name))
+    started = time.monotonic()
+    timed_out = False
+    with (
+        (evidence / (label + ".log")).open("xb") as stdout,
+        (evidence / (label + ".stderr.log")).open("xb") as stderr,
+    ):
+        try:
+            process = subprocess.Popen(
+                argv, cwd=case, env=env, stdout=stdout, stderr=stderr, start_new_session=True
+            )
+        except Exception as error:
+            save_new(
+                evidence / (label + ".command.json"),
+                dict(
+                    schema_version=1,
+                    argv=argv,
+                    cwd=case.name,
+                    exit_code=None,
+                    launch_failed=True,
+                    failure_kind=type(error).__name__,
+                    elapsed_seconds=round(time.monotonic() - started, 6),
+                ),
+            )
+            raise RuntimeError(
+                "command launch failed; complete attempt evidence retained"
+            ) from None
+        try:
+            result = process.wait(timeout=1800 if label == "run" else 900)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                result = process.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                result = process.wait()
+    record = dict(
+        schema_version=1,
+        argv=argv,
+        cwd=case.name,
+        exit_code=result,
+        timed_out=timed_out,
+        elapsed_seconds=round(time.monotonic() - started, 6),
+        stdout_sha256=sha((evidence / (label + ".log")).read_bytes()),
+        stderr_sha256=sha((evidence / (label + ".stderr.log")).read_bytes()),
+    )
+    save_new(evidence / (label + ".command.json"), record)
+    print(
+        json.dumps(
+            {
+                "label": label,
+                "case": case.name,
+                "exit_code": result,
+                "elapsed_seconds": record["elapsed_seconds"],
+            }
+        ),
+        flush=True,
+    )
+    if timed_out or expected is not None and result != expected:
+        raise RuntimeError(f"{case.name}/{label}: unexpected exit; preserve both complete streams")
+    return result
+
+
+def gpu_guard(case_name: str) -> list[list[int]]:
+    raw = subprocess.check_output(
+        [
+            "nvidia-smi",
+            "--query-gpu=index,memory.total,memory.used,memory.free,utilization.gpu",
+            "--format=csv,noheader,nounits",
+        ],
+        text=True,
+    )
+    rows = [[int(value.strip()) for value in line.split(",")] for line in raw.splitlines()]
+    gpu = next(row for row in rows if row[0] == 0)
+    minimum = max(20480, int(gpu[1] * CAPS[case_name]) + 2048)
+    if gpu[3] < minimum:
+        raise RuntimeError(f"{case_name}: GPU 0 free memory below stage cap plus reserve")
+    if shutil.disk_usage(RESOURCE).free < 50 * 1024**3:
+        raise RuntimeError("approved storage reserve below 50 GiB")
+    return rows
+
+
+def verify_run(case, env, evidence, name, label, variant):
+    archive = evidence / "raw-runs"
+    if archive.exists() or archive.is_symlink():
+        raise RuntimeError("raw run archive already exists; use read-only recheck")
+    try:
+        shutil.copytree(case / ".reprollm/runs", archive, symlinks=True)
+        result, selected = check_archive(case, env, archive, name, label, variant)
+    except Exception as error:
+        save_new(
+            evidence / "capture-failure.json",
+            dict(
+                schema_version=1,
+                state="failed_capture_checks",
+                raw_archive="raw-runs",
+                failure_kind=type(error).__name__,
+                automatic_retry=False,
+                outputs_preserved="case/outputs/current",
+            ),
+        )
+        raise RuntimeError("capture checks failed; raw evidence retained; use recheck") from None
+    save_new(evidence / "capture-check.json", result)
+    shutil.copytree(selected.parent, evidence / "run", symlinks=True)
+    return json.loads(selected.read_text())
+
+
+def check_archive(case, env, archive, name, label, variant):
+    from replay_verifier import verify_capture
+
+    selected = [
+        p
+        for p in archive.glob("*/run.json")
+        if not p.is_symlink() and json.loads(p.read_text()).get("name") == label
+    ]
+    if len(selected) != 1:
+        raise RuntimeError("run label must select exactly one new run")
+    query = [
+        "python",
+        "-c",
+        (
+            "import json; from reprollm.core.envinfo import installed_versions; "
+            "print(json.dumps(installed_versions()))"
+        ),
+    ]
+    packages = json.loads(subprocess.check_output(query, env=env, text=True))
+    field, expected = BASE.CASES[name][2], BASE.CASES[name][3 if variant == "a" else 4]
+    result = verify_capture(
+        case,
+        selected[0].parent,
+        field,
+        expected,
+        BASE.CASES[name][1],
+        packages,
+        git(case, "rev-parse", "HEAD").decode().strip(),
+    )
+    return result, selected[0]
+
+
+def load_base():
+    spec = importlib.util.spec_from_file_location(
+        "valr01_original_controller", TASK / "controllers/runtime_gate.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.ROOT, module.environment, module.command = TASK, environment, command
+    module.verify_run = verify_run
+    return module
+
+
+def restore(name: str, variant: str) -> None:
+    if (TASK / "evidence/preparation" / (name + "-" + variant + ".json")).exists():
+        raise RuntimeError("variant inputs already restored; inspect existing preparation")
+    record = next(
+        item for item in json.loads(RECOVERY.read_text())["cases"] if item["case"] == name
+    )
+    original = RESOURCE / "cases" / name
+    case = TASK / "cases" / name
+    if not case.exists():
+        subprocess.run(
+            [
+                "git",
+                "clone",
+                "--quiet",
+                "--no-hardlinks",
+                str(Path("<PORTFOLIO>") / name),
+                str(case),
+            ],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(case), "checkout", "--quiet", "--detach", record["upstream_pin"]],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(case), "remote", "set-url", "origin", record["upstream_origin"]],
+            check=True,
+        )
+        with (case / ".git/info/exclude").open("a") as handle:
+            handle.write("\n.reprollm/runs/\noutputs/\n__pycache__/\n*.pyc\nREPRODUCIBILITY.md\n")
+    selected = record["variants"][variant]
+    for entry in selected["light_inputs"]:
+        relative = entry["relative_path"]
+        data = git(original, "show", selected["source_git_commit"] + ":" + relative)
+        if len(data) != entry["byte_count"] or sha(data) != entry["sha256"]:
+            raise RuntimeError("restored input differs from independently verified bytes")
+        target = case / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    save(
+        TASK / "evidence/preparation" / (name + "-" + variant + ".json"),
+        dict(
+            schema_version=1,
+            case=name,
+            variant=variant,
+            source_git_commit=selected["source_git_commit"],
+            upstream_pin=record["upstream_pin"],
+            verified_inputs=selected["light_inputs"],
+        ),
+    )
+
+
+def call_original(action: str, name: str, variant: str = "a") -> None:
+    argv = sys.argv
+    try:
+        sys.argv = ["runtime_gate.py", action, name, "--variant", variant, "--attempt", "1"]
+        BASE.main()
+    finally:
+        sys.argv = argv
+
+
+@contextmanager
+def lease():
+    with (RESOURCE / "gpu-validation.lock").open("a") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            yield gpu_guard(ACTIVE_CASE)
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
+def run_variant(name: str, variant: str) -> None:
+    case = TASK / "cases" / name
+    kind = BASE.CASES[name][0]
+    evidence = TASK / "evidence/runtime" / name / variant
+    if (case / "outputs/current").exists() or (case / "outputs/current").is_symlink():
+        raise RuntimeError("native outputs already exist; preserve them and do not rerun")
+    attempt = evidence / "attempts/1"
+    if any(
+        (attempt / item).exists()
+        for item in ("run.log", "run.started.json", "run.command.json", "raw-runs")
+    ):
+        raise RuntimeError("native run attempt already recorded; use read-only recheck")
+    label = f"validation-{variant}-1"
+    if any(
+        json.loads(path.read_text()).get("name") == label
+        for path in (case / ".reprollm/runs").glob("*/run.json")
+    ):
+        raise RuntimeError("native run label already exists; do not rerun")
+    BASE.gpu_lease = lease
+    try:
+        call_original("run", name, variant)
+    except Exception as error:
+        archive = attempt / "raw-runs"
+        if not archive.exists() and (case / ".reprollm/runs").is_dir():
+            shutil.copytree(case / ".reprollm/runs", archive, symlinks=True)
+        save_new(
+            attempt / "run-failure.json",
+            dict(
+                schema_version=1,
+                state="failed_run_or_capture",
+                failure_kind=type(error).__name__,
+                automatic_retry=False,
+                raw_archive="raw-runs",
+                outputs_preserved="case/outputs/current",
+            ),
+        )
+        raise RuntimeError(
+            "run or capture failed; original evidence retained; do not rerun"
+        ) from None
+    output_check = [
+        str(RESOURCE / "envs" / kind / "bin/python"),
+        str(TASK / "controllers/check_outputs.py"),
+        name,
+        "--variant",
+        variant,
+    ]
+    if variant == "b":
+        output_check.append("--compare")
+    try:
+        command(output_check, case, environment(kind, True), evidence, "output-check")
+    except Exception as error:
+        save_new(
+            evidence / "output-check-failure.json",
+            dict(
+                schema_version=1,
+                state="failed_native_output_checks",
+                failure_kind=type(error).__name__,
+                automatic_retry=False,
+                outputs_preserved="case/outputs/current",
+            ),
+        )
+        raise RuntimeError("native output checks failed; outputs retained; do not rerun") from None
+    output = case / "outputs/current"
+    if output.is_dir():
+        shutil.move(str(output), str(evidence / "outputs"))
+
+
+def setup() -> None:
+    TASK.mkdir(parents=True, exist_ok=False)
+    TASK.chmod(0o700)
+    for path in ("cases", "controllers", "hooks", "tmp", "cache", "triton", "torch", "evidence"):
+        (TASK / path).mkdir()
+    (TASK / "envs").symlink_to(RESOURCE / "envs", target_is_directory=True)
+    for filename in ("runtime_gate.py", "check_outputs.py"):
+        data = (RESOURCE / filename).read_bytes()
+        if filename == "check_outputs.py":
+            data = data.replace(
+                b"ROOT = Path('<RESOURCE_ROOT>')",
+                f"ROOT = Path({str(TASK)!r})".encode(),
+            )
+        (TASK / "controllers" / filename).write_bytes(data)
+    shutil.copy2(HERE / "stage_guard.py", TASK / "hooks/sitecustomize.py")
+    save(
+        TASK / "evidence/session.json",
+        dict(
+            schema_version=1,
+            activity="VAL-R01 current-candidate replay",
+            candidate_commit="26c0b4a716b5b025058a3b1daabc64afdf1a022d",
+            shared_GPU_index=0,
+            minimum_spare_MiB=2048,
+            original_memory_caps=CAPS,
+            original_cases_or_inputs_modified=False,
+            paid_requests_authorized_by_this_session=False,
+        ),
+    )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("action", choices=("setup", "prepare", "run", "review", "recheck"))
+    parser.add_argument("case", nargs="?")
+    parser.add_argument("--variant", choices=("a", "b"), default="a")
+    args = parser.parse_args()
+    if args.action == "setup":
+        setup()
+    else:
+        BASE = load_base()
+        ACTIVE_CASE = args.case
+        if args.action == "prepare":
+            restore(args.case, args.variant)
+            call_original("prepare", args.case, args.variant)
+        elif args.action == "run":
+            run_variant(args.case, args.variant)
+        elif args.action == "recheck":
+            case = TASK / "cases" / args.case
+            kind = BASE.CASES[args.case][0]
+            attempt = TASK / "evidence/runtime" / args.case / args.variant / "attempts/1"
+            result, selected = check_archive(
+                case,
+                environment(kind),
+                attempt / "raw-runs",
+                args.case,
+                f"validation-{args.variant}-1",
+                args.variant,
+            )
+            index = 1
+            while (attempt / f"recheck-{index}.json").exists():
+                index += 1
+            save_new(attempt / f"recheck-{index}.json", result)
+            print(json.dumps({"case": args.case, "recheck_status": result["status"]}), flush=True)
+        else:
+            from replay_verifier import verify_pair
+
+            call_original("diff", args.case)
+            parent = TASK / "evidence/runtime" / args.case
+            _, _, field, a, b, severity = BASE.CASES[args.case]
+            config = next(
+                p["relative_path"]
+                for p in next(
+                    c for c in json.loads(RECOVERY.read_text())["cases"] if c["case"] == args.case
+                )["variants"]["a"]["light_inputs"]
+                if p["relative_path"].endswith(".yaml") and p["relative_path"] != "reprollm.yaml"
+            )
+            audits = [
+                json.loads((parent / v / "attempts/1/audit-after.log").read_text())
+                for v in ("a", "b")
+            ]
+            result = verify_pair(
+                TASK / "cases" / args.case,
+                parent / "a/run",
+                parent / "b/run",
+                field,
+                (a, b),
+                severity,
+                config,
+                json.loads((parent / "pair-diff.log").read_text()),
+                json.loads((parent / "self-diff.log").read_text()),
+                *audits,
+            )
+            save(parent / "final-review.json", result)
+            print(
+                json.dumps({"case": args.case, "review_status": result.get("status")}), flush=True
+            )

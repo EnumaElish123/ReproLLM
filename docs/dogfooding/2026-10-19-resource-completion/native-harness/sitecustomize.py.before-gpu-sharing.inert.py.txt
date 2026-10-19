@@ -1,0 +1,78 @@
+"""Observe selected upstream native calls without changing inputs or algorithms."""
+import atexit
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+if os.environ.get('REPROLLM_NATIVE_OBSERVE') == '1':
+    task = Path(os.environ['REPROLLM_NATIVE_TASK'])
+    case = os.environ['REPROLLM_NATIVE_CASE']
+    variant = os.environ['REPROLLM_NATIVE_VARIANT']
+    observations = []
+    errors = []
+
+    def append(kind, **values):
+        if len(observations) < 100:
+            observations.append({'kind': kind, **values})
+
+    def profile(frame, event, arg):
+        if event != 'call':
+            return
+        code = frame.f_code
+        name = code.co_name
+        if name not in {'get_model_answers', 'generate', 'training_step', '__init__'}:
+            return
+        source = code.co_filename.replace('\\', '/')
+        local = frame.f_locals
+        try:
+            if case == 'FastChat' and name == 'get_model_answers' and source.endswith('/fastchat/llm_judge/gen_model_answer.py'):
+                append('fastchat_native_answer', max_new_token=local['max_new_token'], num_choices=local['num_choices'], model_id=local['model_id'])
+            elif case == 'LlamaFactory' and name == 'training_step' and source.endswith('/transformers/trainer.py'):
+                trainer = local['self']
+                append('native_training_step', learning_rate=trainer.args.learning_rate, max_steps=trainer.args.max_steps, optimizer_group_lrs=[g['lr'] for g in trainer.optimizer.param_groups])
+            elif case == 'llm-dp-finetune' and name == '__init__' and source.endswith('/fastDP/privacy_engine.py'):
+                append('fastdp_engine_constructor', target_epsilon=local['target_epsilon'], target_delta=local['target_delta'], epochs=local['epochs'])
+            elif case == 'HarmBench' and name == 'generate' and source.endswith('/vllm/entrypoints/llm.py'):
+                params = local.get('sampling_params')
+                if params is None:
+                    return
+                params = params if isinstance(params, list) else [params]
+                append('vllm_generate', max_tokens=[p.max_tokens for p in params], temperature=[p.temperature for p in params], phase=sys.argv[1] if len(sys.argv) == 2 else 'unknown')
+            elif case == 'HarmBench' and name == '__init__' and source.endswith('/vllm/entrypoints/llm.py'):
+                values = local.get('kwargs', {})
+                append('vllm_constructor', model=local.get('model'), revision=local.get('revision', values.get('revision')), phase=sys.argv[1] if len(sys.argv) == 2 else 'unknown')
+        except Exception as error:
+            errors.append(type(error).__name__)
+
+    def finish():
+        sys.setprofile(None)
+        if observations or errors:
+            folder = task / 'evidence/consumption-observer' / case / variant
+            folder.mkdir(parents=True, exist_ok=True)
+            with (folder / (str(os.getpid())+'.json')).open('x') as stream:
+                json.dump({'schema_version': 1, 'case': case, 'variant': variant, 'observations': observations, 'errors': errors, 'scope': 'Read actual Python call arguments; do not change return values or native code.'}, stream, sort_keys=True, indent=2)
+                stream.write('\n')
+
+    if case == 'HarmBench' and Path(sys.argv[0]).name == 'pipeline.py' and len(sys.argv) == 2 and sys.argv[1] in {'target', 'classify'}:
+        try:
+            assert os.environ.get('CUDA_VISIBLE_DEVICES') == '0'
+            resource = Path(os.environ['REPROLLM_VALIDATION_RESOURCE_ROOT'])
+            raw = subprocess.check_output(['nvidia-smi', '--query-gpu=index,memory.total,memory.used,memory.free,utilization.gpu', '--format=csv,noheader,nounits'], text=True)
+            rows = [[int(value.strip()) for value in line.split(',')] for line in raw.splitlines()]
+            gpu = next(row for row in rows if row[0] == 0)
+            fraction = .28 if sys.argv[1] == 'target' else .45
+            assert gpu[2] < 2048 and gpu[3] >= max(70000, int(gpu[1]*fraction)+2048) and gpu[4] <= 10
+            assert shutil.disk_usage(resource).free >= 50*1024**3
+            folder = task / 'evidence/stage-guards' / variant
+            folder.mkdir(parents=True, exist_ok=True)
+            with (folder/(sys.argv[1]+'.json')).open('x') as stream:
+                json.dump({'schema_version':1, 'stage':sys.argv[1], 'GPU_index':0, 'fraction':fraction, 'GPUs':rows, 'strict_guard':'PASS'}, stream, sort_keys=True, indent=2)
+                stream.write('\n')
+        except Exception:
+            print('VALIDATION_STAGE_GUARD_FAILED; native GPU stage not started', file=sys.stderr)
+            os._exit(86)
+    atexit.register(finish)
+    sys.setprofile(profile)

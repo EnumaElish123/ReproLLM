@@ -1,0 +1,29 @@
+"""CPU-only observer interface checks; no upstream/GPU imports."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE/'observer-synthetic'
+fixtures = {
+ 'FastChat': ('/public/fastchat/llm_judge/gen_model_answer.py', "def get_model_answers(max_new_token,num_choices,model_id): return max_new_token\nget_model_answers(32,1,'vicuna-validation')", 'fastchat_native_answer'),
+ 'LlamaFactory': ('/public/transformers/trainer.py', "from types import SimpleNamespace\ndef training_step(self,model,inputs): return 0\nx=SimpleNamespace(args=SimpleNamespace(learning_rate=.0001,max_steps=2),optimizer=SimpleNamespace(param_groups=[{'lr':.0001}]))\ntraining_step(x,None,None)", 'native_training_step'),
+ 'llm-dp-finetune': ('/public/fastDP/privacy_engine.py', "def __init__(target_epsilon,target_delta,epochs): return None\n__init__(8,1e-5,.125)", 'fastdp_engine_constructor'),
+ 'HarmBench': ('/public/vllm/entrypoints/llm.py', "from types import SimpleNamespace\ndef generate(sampling_params): return None\ngenerate(SimpleNamespace(max_tokens=16,temperature=0.0))", 'vllm_generate'),
+}
+checks=[]
+for name,(source,body,kind) in fixtures.items():
+ env = dict(os.environ)
+ env.update(PYTHONPATH=str(HERE),REPROLLM_NATIVE_OBSERVE='1',REPROLLM_NATIVE_TASK=str(ROOT),REPROLLM_NATIVE_CASE=name,REPROLLM_NATIVE_VARIANT='a')
+ result=subprocess.run([sys.executable,'-c',f'exec(compile({body!r},{source!r},"exec"))'],env=env,capture_output=True)
+ assert result.returncode == 0
+ paths=list((ROOT/'evidence/consumption-observer'/name/'a').glob('*.json'))
+ assert len(paths)==1
+ receipt=json.loads(paths[0].read_bytes())
+ assert not receipt['errors'] and len(receipt['observations'])==1 and receipt['observations'][0]['kind']==kind
+ checks.append({'case':name,'hook':kind,'status':'PASS'})
+receipt={'schema_version':1,'status':'PASS','checks':checks,'scope':'Synthetic call-observation positives only; no actual native consumption or GPU execution established.'}
+(HERE/'observer-synthetic.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+print(json.dumps(receipt,sort_keys=True))

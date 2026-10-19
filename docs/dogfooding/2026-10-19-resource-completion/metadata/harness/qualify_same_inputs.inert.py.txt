@@ -1,0 +1,175 @@
+"""Qualify observed H2 evidence without launching any product or network command."""
+from __future__ import annotations
+import copy
+import hashlib
+import json
+from pathlib import Path
+import time
+import yaml
+
+HERE = Path(__file__).resolve().parent
+BASE = HERE.parent
+OLD = Path('<PRIOR_H2_ARTIFACTS>')
+NAMES = ['lm-evaluation-harness', 'FastChat', 'LlamaFactory', 'HarmBench', 'llm-dp-finetune']
+MODES = ['offline', 'online-1', 'online-2']
+SOURCE = BASE / 'worktree/src/reprollm/core/diagnostics.py'
+ENV_RULE = BASE / 'worktree/src/reprollm/rules/consistency.py'
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def write(name: str, value: dict) -> None:
+    assert value['schema_version'] == 1
+    (HERE / name).write_text(json.dumps(value, sort_keys=True, indent=2) + '\n')
+
+
+def normalized(value: dict) -> tuple[dict, list[str]]:
+    result = copy.deepcopy(value)
+    removed = []
+    if 'generated_at' in result:
+        del result['generated_at']
+        removed.append('/generated_at')
+    for role, model in result['models'].items():
+        if 'observed_at' in model:
+            del model['observed_at']
+            removed.append('/models/' + role + '/observed_at')
+    def walk(item: object, path: str) -> None:
+        if isinstance(item, dict):
+            if set(item) == {'value', 'source', 'confidence', 'resolved_at', 'note'}:
+                del item['resolved_at']
+                removed.append(path + '/resolved_at')
+                return
+            for key, child in item.items():
+                if key not in {'params', 'extensions', 'value'}:
+                    walk(child, path + '/' + key)
+        elif isinstance(item, list):
+            for index, child in enumerate(item):
+                walk(child, path + '/' + str(index))
+    walk(result, '')
+    return result, sorted(removed)
+
+
+def canonical(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(',', ':')).encode()
+
+
+def main() -> None:
+    start = time.monotonic()
+    source_names = ['summary.json', 'checks.json', 'commands.json', 'results.json', 'input-evidence.json', 'run_h2.py']
+    before = {name: sha((HERE / name).read_bytes()) for name in source_names}
+    summary = json.loads((HERE / 'summary.json').read_bytes())
+    checks = json.loads((HERE / 'checks.json').read_bytes())['checks']
+    commands = json.loads((HERE / 'commands.json').read_bytes())['commands']
+    expected_failed = {name + '/doctor-required-and-documents' for name in NAMES}
+    assert {c['label'] for c in checks if not c['passed']} == expected_failed
+    assert summary['controller_errors'] == []
+    assert len(commands) == 96 and sum(c['kind'] == 'product' for c in commands) == 51
+    assert all(c['exit'] == c['expected_exit'] == 0 and not c['timed_out'] for c in commands)
+    assert summary['targets'] == 5 and summary['modes_completed'] == 15
+    raw_verified = 0
+    for command in commands:
+        for stream in ['stdout', 'stderr']:
+            ref = command[stream]
+            raw = (HERE / ref['file']).read_bytes()
+            assert sha(raw) == ref['sha256'] and len(raw) == ref['bytes']
+            if command['kind'] == 'product':
+                assert not ref['path_sanitization_applied']
+                assert sha(raw) == ref['original_sha256'] and len(raw) == ref['original_bytes']
+            raw_verified += 1
+    origins = list((HERE / 'origins').glob('*.json'))
+    assert len(origins) == 51
+    expected_origin = (str(BASE / 'worktree/src/reprollm/__init__.py') + '\n').encode()
+    assert all(json.loads(p.read_bytes()) == {
+        'schema_version': 1, 'expected_origin': '<CANDIDATE>/src/reprollm/__init__.py',
+        'origin_matches': True, 'origin_stdout_sha256': sha(expected_origin),
+    } for p in origins)
+    corrections = []
+    for name in NAMES:
+        report = json.loads((HERE / 'artifacts' / (name + '-doctor.json')).read_bytes())['report']
+        actual = {item['name']: item['status'] for item in report['checks']}
+        expected = {'python': 'ok', 'git': 'warn', 'nvidia-smi': 'ok', 'uv': 'ok',
+                    'llm-critical-packages': 'ok', 'reprollm-documents': 'ok'}
+        assert actual == expected
+        git = next(item for item in report['checks'] if item['name'] == 'git')
+        assert git['detail'] == 'git 2.25.1 (>= 2.30 recommended)'
+        corrections.append({'label': name + '/doctor-required-and-documents', 'passed': True,
+                            'actual_complete_status_set': actual, 'git_detail': git['detail']})
+    assert 'MIN_GIT_VERSION = (2, 30, 0)' in SOURCE.read_text()
+    assert 'return CheckStatus.WARN, f"git {version} (>= 2.30 recommended)"' in SOURCE.read_text()
+    # Exact whole-report comparison retains every finding, hint, path and profile.
+    # Disclose the sole already-adopted source-scope message/hint change separately.
+    report_checks = []
+    lock_checks = []
+    new_message = ('confirmed compatible recorder context for lock/latest-run environment.packages '
+                   'is required; unknown or incompatible sources cannot verify the child environment')
+    new_hint = ('Reconcile recorder environment.packages with reprollm.lock; '
+                'verify the child environment separately.')
+    for name in NAMES:
+        online_locks = []
+        for mode in MODES:
+            stem = name + '-' + mode
+            lock_path = HERE / 'artifacts' / (stem + '.lock')
+            lock_raw = lock_path.read_bytes()
+            current_lock = yaml.safe_load(lock_raw)
+            old_lock = yaml.safe_load((OLD / (stem + '.lock')).read_bytes())
+            normalized_current, removed_current = normalized(current_lock)
+            normalized_old, removed_old = normalized(old_lock)
+            assert normalized_current.pop('reprollm_version') == '0.7.0'
+            assert normalized_old.pop('reprollm_version') == '0.6.1'
+            assert normalized_current == normalized_old
+            lock_checks.append({'target': name, 'mode': mode, 'historical_semantics_equal_except_disclosed_version': True,
+                                'current_removed_schema_metadata_pointers': removed_current,
+                                'historical_removed_schema_metadata_pointers': removed_old,
+                                'historical_version': '0.6.1', 'current_version': '0.7.0'})
+            if mode.startswith('online'):
+                pair_normalized, _ = normalized(current_lock)
+                online_locks.append(pair_normalized)
+            report_path = HERE / 'artifacts' / (stem + '-L2.json')
+            current_report = json.loads(report_path.read_bytes())
+            historical = json.loads((OLD / report_path.name).read_bytes())
+            expected_report = copy.deepcopy(historical)
+            expected_report['generated_at'] = current_report['generated_at']
+            assert expected_report['reprollm_version'] == '0.6.1'
+            expected_report['reprollm_version'] = '0.7.0'
+            expected_report['documents']['lock'] = 'sha256:' + sha(lock_raw)
+            changed_findings = [f for f in expected_report['findings'] if f['rule_id'] == 'consistency.env_vs_lock']
+            assert len(changed_findings) == 1 and changed_findings[0]['status'] == 'skipped'
+            changed_findings[0]['message'] = new_message
+            changed_findings[0]['fix_hint'] = new_hint
+            assert expected_report == current_report
+            assert current_report['documents']['manifest'] == 'sha256:' + sha((HERE / 'inputs' / (name + '.yaml')).read_bytes())
+            report_checks.append({'target': name, 'mode': mode, 'complete_findings_hints_paths_profiles_equal_after_explained_deltas': True,
+                                  'finding_count': len(current_report['findings']), 'summary': current_report['summary'],
+                                  'explained_deltas': ['top-level generated_at', 'displayed version 0.6.1 to 0.7.0',
+                                                       'documents.lock recomputed from current lock with current timestamp/version',
+                                                       'consistency.env_vs_lock same INFO/skipped; recorder scope message and fix hint adopted by R04-B/spec12']})
+        assert len(online_locks) == 2 and canonical(online_locks[0]) == canonical(online_locks[1])
+    assert before == {name: sha((HERE / name).read_bytes()) for name in source_names}
+    proof = {'schema_version': 1, 'classification': 'SAME_INPUT_OBSERVER_CORRECTION',
+             'reason': 'Doctor allows usable git below recommended 2.30 and emits WARN; the observer incorrectly required OK.',
+             'diagnostics_source_file': 'src/reprollm/core/diagnostics.py', 'diagnostics_source_sha256': sha(SOURCE.read_bytes()),
+             'env_rule_source_file': 'src/reprollm/rules/consistency.py', 'env_rule_source_sha256': sha(ENV_RULE.read_bytes()),
+             'independent_contract_source': 'spec12 consistency.env_vs_lock and diagnostic git >=2.30 recommendation',
+             'initial_source_sha256': before, 'initial_evidence_unchanged': True,
+             'initial_observer_failures': 5, 'corrected_predicates': corrections,
+             'actual_command_count': 96, 'actual_product_command_count': 51, 'all_actual_command_exits_zero': True,
+             'raw_streams_verified': raw_verified, 'candidate_origin_receipts_verified': len(origins),
+             'historical_complete_report_checks': report_checks, 'historical_full_lock_checks': lock_checks,
+             'fresh_product_commands': 0, 'provider_requests': 0, 'all_passed': True,
+             'qualification_elapsed_seconds': round(time.monotonic() - start, 6)}
+    write('same-input-qualification.json', proof)
+    qualified = copy.deepcopy(summary)
+    qualified.update({'all_passed': True, 'failed_checks': [], 'initial_observer_summary': 'summary.json',
+                      'initial_observer_all_passed': False, 'initial_observer_controller_exit': 1,
+                      'initial_evidence_unchanged': True, 'same_input_correction': 'same-input-qualification.json',
+                      'fresh_product_commands_during_qualification': 0,
+                      'historical_report_comparison_explained': True, 'unexplained_gold_deltas': []})
+    write('summary-qualified.json', qualified)
+    print(json.dumps({'schema_version': 1, 'qualified_all_passed': True, 'product_commands': 51,
+                      'raw_streams_verified': raw_verified, 'reports_full_verified': len(report_checks),
+                      'locks_historical_semantics_verified': len(lock_checks), 'fresh_product_commands': 0}))
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,109 @@
+{
+  "candidate_commit": "750270b10307455795fcff126664429dc895983a",
+  "causal_evidence": "causal-probes.json",
+  "classification": "CONFIRMED_PRODUCT_CAPTURE_DEFECT",
+  "files_sha256": {
+    "causal-probes.json": "a1e5198aa66607c847fa31b9f171a7794db336c2a7fcd972751f6052f22707c2",
+    "minimal_valid_repro.py": "b470710ef619f6c16b80b3753f6ee6774183018fd5a8784673fda0dfac3df658"
+  },
+  "independent_acceptance_before_any_product_fix": [
+    "A CPU regression exercises the exact capture_inputs/hash_and_snapshot seam on the original common.py hash; requires snapshot presence and non-secret byte fidelity.",
+    "The minimal valid-Python two-line source is preserved; moving independent statements does not change acceptance.",
+    "Synthetic actual API secrets, malformed supported nested secret documents, PEM/JWT patterns and machine paths remain safely redacted or rejected.",
+    "Full security regression and 100% redaction branch coverage plus secret-corpus additions satisfy AGENTS requirements for any redaction.py change.",
+    "Do not upgrade original paid A capture, fabricate a missing snapshot or send B as part of a CPU-only diagnosis. Formal fresh A/B live acceptance follows a separately validated product candidate."
+  ],
+  "live_scenario": {
+    "capture_acceptance": "FAIL",
+    "case": "FastChat-deepseek",
+    "native_child_exit": 0,
+    "new_requests_by_diagnosis": 0,
+    "original_a_modified": false,
+    "original_parser_score": 7,
+    "real_request_completed": true,
+    "score_is_observation_not_gold": true,
+    "variant_a_run_id": "20261019T021217Z-767545",
+    "variant_b_completion_sent": false,
+    "warnings": [
+      "input file snapshot unavailable"
+    ]
+  },
+  "minimal_reproduction": {
+    "actual": "RunPrivacy.text(..., python_source=True) raises _UnsafeCapture; capture_inputs catches it and records a null snapshot plus input file snapshot unavailable.",
+    "contains_real_secret": false,
+    "elapsed_seconds_approx": 0.06,
+    "expected": "Bounded valid Python source containing only symbolic references is safely snapshotable; unrelated later key names must not cause the earlier expression to be rejected.",
+    "observed_exit": 1,
+    "script": "minimal_valid_repro.py",
+    "source": "print(f\"x: {a['b']}\")\nopenai.api_key = api_dict[\"api_key\"]\n",
+    "valid_python": true
+  },
+  "product_entrypoints": [
+    {
+      "function": "capture_inputs",
+      "line": 165,
+      "relative_path": "src/reprollm/run/input_capture.py",
+      "role": "Calls hash_and_snapshot with privacy.text(python_source=True); catches any exception and appends fixed warning."
+    },
+    {
+      "function": "hash_and_snapshot",
+      "line": 164,
+      "relative_path": "src/reprollm/run/capture.py",
+      "role": "Calls sanitize on bounded UTF8 original source."
+    },
+    {
+      "function": "RunPrivacy.text",
+      "line": 100,
+      "relative_path": "src/reprollm/run/privacy.py",
+      "role": "Calls generic contextual text parser before Python source-specific division handling."
+    },
+    {
+      "function": "_fragments",
+      "line": 442,
+      "relative_path": "src/reprollm/run/contextual_text.py",
+      "role": "On an earlier fragment parse failure, _has_unsafe_context(text[start:]) inspects the complete later source suffix."
+    }
+  ],
+  "proposed_separate_fix_scope": [
+    "Carry Python lexical context to structured-fragment detection so f-string expressions are not parsed as standalone JSON/YAML payloads.",
+    "Bound unsafe-context decisions to the actual failed scalar/fragment; retain fail-closed handling for malformed nested secret payloads.",
+    "Do not solve only by swallowing _UnsafeCapture: the moved-key probe still redacts a symbolic reference and can corrupt source fidelity.",
+    "Retain contextual secret detection inside Python string constants, comments, embedded serialized documents and supported secret literals; do not exempt source merely because snapshots equal input."
+  ],
+  "ranked_hypotheses_before_probes": [
+    {
+      "hypothesis": "Benign Python f-string braces/subscription are interpreted as a structured YAML fragment",
+      "prediction": "Replacing the subscription expression with a plain identifier removes the ParserError branch.",
+      "rank": 1,
+      "result": "CONFIRMED_PART"
+    },
+    {
+      "hypothesis": "Unsafe context detection spans later independent source statements",
+      "prediction": "Removing, renaming or moving the later symbolic API-key assignment removes the exception.",
+      "rank": 2,
+      "result": "CONFIRMED_ROOT_CAUSE"
+    },
+    {
+      "hypothesis": "The source really contains a supported secret requiring fail-closed omission",
+      "prediction": "The minimal reproducer cannot fail without a literal secret or unsafe payload.",
+      "rank": 3,
+      "result": "FALSIFIED_FOR_THIS_REPRODUCER; only public symbolic identifiers and subscription keys are present."
+    }
+  ],
+  "rejected_exploratory_minimization": "The arbitrary-character 19-byte fragment is invalid Python and is excluded from the shareable reproducer and acceptance evidence.",
+  "resource_shortage": false,
+  "schema_version": 1,
+  "scope": "Read-only product diagnosis and task-owned CPU scratch; no product edit, GPU, network, credential inspection or repeated paid completion.",
+  "shareable_files": [
+    "minimal_valid_repro.py",
+    "causal-probes.json",
+    "diagnosis.json"
+  ],
+  "source_file": {
+    "bytes": 22379,
+    "pre_and_post_fingerprints_unchanged": true,
+    "relative_path": "fastchat/llm_judge/common.py",
+    "sha256": "71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+    "snapshot_reference": null
+  }
+}

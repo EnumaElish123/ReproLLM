@@ -50,11 +50,29 @@ does not restore the original judge bundle, provide execution/budget or model
 access, or close any resource checkbox. Paid API calls and publication are
 excluded from this session.
 
-| Tracking ID | Outstanding coverage | Blocker | Status |
+Updated 2026-10-19: the [provisioned-node replay](2026-10-19-resource-completion/README.md)
+restores 45 of 50 exact input slots; no slot remains inaccessible on this node.
+Linux H2, ten real native GPU children, all five complete semantic pairs and
+20 available default export states pass on candidate
+`750270b10307455795fcff126664429dc895983a`. VAL-R01 is closed for these product
+bytes. The maintainer's continuing actual-capacity GPU guidance supersedes old
+artificial numerical launch restrictions in `val.md §8.3`; historical receipts
+and gold inputs retain their identities.
+
+The formal DeepSeek A request succeeds, but capture fails two non-secret source
+snapshot requirements: `common.py` is omitted and four unused multi-turn rubric
+rows are changed. Both have independent CPU reproducers; no product fix or
+second completion is performed. VAL-R02 is **FAIL**, rather than missing an
+input bundle or budget. HF authentication succeeds, but both selected restricted
+small files return 403; original §8.1 manifests are still missing. VAL-R03 remains
+**BLOCKED**. This is not release readiness or a retrospective pass for 0.6.1.
+
+| Tracking ID | Outstanding coverage | Current cause | Status |
 |---|---|---|---|
-| VAL-R01 | Linux M4-H2; five real GPU inference/training scenarios and their M6 pairs | S4-A fixes observed source fidelity and accepts fresh lm-eval A/B; the other four native projects still need current-candidate acceptance | BLOCKED — remaining native matrix |
-| VAL-R02 | Formal FastChat/DeepSeek judge pair, including the M7 API-judge path | Bundle historically recovered remotely; exact local inputs remain inaccessible. Current provider/tariff/budget and bounded paid replay are not provisioned for this session | BLOCKED |
-| VAL-R03 | Successful authenticated HF gated-file resolution | Original Project C metadata manifest is missing; model-author-approved file access and a permitted token are not provisioned for this session | BLOCKED |
+| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Current candidate passes complete native matrix, including all additional differences and self-diffs | PASS — 2026-10-19, `750270b` |
+| VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Actual A capture fails two snapshot-fidelity cases; B NOT_RUN after the known failure. Exact inputs, usable credentials and a fresh CNY 3 budget were provisioned | FAIL — product capture defects |
+| VAL-R03 | Successful authenticated HF gated-file resolution | Authenticated small files still return 403; original Project C metadata manifest remains missing | BLOCKED |
+
 
 ## VAL-R01 — Linux and five-project GPU replay
 
@@ -75,41 +93,45 @@ lm-eval input and completion records in §§8.3 and 8.5a–8.5c before preparing
 Previous shared-GPU exceptions are historical approvals, not a replacement for
 checking the resources provisioned for the new execution.
 
-**Close only when:**
+**Current closure — 2026-10-19 candidate `750270b`:**
 
-- [x] Linux H2 (2026-10-13 candidate): offline/two-online/check/audit runs complete with the expected
-  revisions, file hashes, normalized lock equality and freshness results.
-- [x] lm-evaluation-harness (2026-10-15 S4-A candidate): real bounded inference,
-  complete A/B capture, source fidelity, independent consumption/output checks,
-  required semantic leaf/severity and selected-run exports match §8.3.
-- [ ] FastChat: real local answer generation and its A/B capture/diff pass.
-- [x] LlamaFactory (2026-10-13 candidate): real bounded LoRA updates, finite loss and its A/B
-  capture/diff pass. Its additional RPC scratch-variable MEDIUM delta is
-  independently explained; complete A/B environment byte identity is not claimed.
-- [ ] HarmBench: real target/classifier execution and its A/B capture/diff pass.
-- [ ] llm-dp-finetune: real DistilGPT2 privacy fine-tuning and its A/B
-  capture/diff pass under the formal standard in §8.5.
-- [ ] Every pair passes binding, package, input/output hash, snapshot-fidelity,
-  privacy and self-diff checks; all additional drift is explained. Preserve
-  the prescribed MEDIUM DP leaf even when the config-file hash is HIGH.
-- [ ] Available captured states pass the applicable M7 export checks.
+- [x] Linux H2: all five supplementary metadata inputs, offline/two-online/check/audit,
+  exact hashes/revisions, normalized lock equality, freshness, doctor and probe.
+- [x] lm-evaluation-harness: bounded native inference, A/B capture/consumption,
+  source fidelity, exact HIGH cap leaf and available-state exports.
+- [x] FastChat: real local answer generation, both turns, actual consumed cap,
+  complete A/B capture, HIGH target drift and available-state exports.
+- [x] LlamaFactory: two actual LoRA optimizer updates per variant, finite raw
+  loss, actual learning-rate observation, adapter checks and A/B acceptance.
+- [x] HarmBench: native DirectRequest/target/classifier, complete A/B acceptance,
+  actual cap observation and classification checks; no generated text published.
+- [x] llm-dp-finetune: formal DistilGPT2 privacy pair, real clipping/noise/optimizer
+  assertions and the unchanged MEDIUM epsilon leaf under §8.5.
+- [x] Every pair passes bindings, package metadata, original input/output hashes,
+  snapshot fidelity and privacy; self-diffs are empty and all 35 changes explained.
+- [x] Twenty available default export states pass complete projection checks:
+  five manifest-only, five lock-only and ten selected-run states.
 
-The 2026-10-13 report records ten successful native children, independent output
-checks and all 36 semantic changes, with the original snapshot fidelity failures
-preserved. S4-A fixes the observed defects and reaccepts the formal lm-eval pair.
-Remaining project items need fresh native capture and consumer verification;
-the ten-file CPU fidelity regression alone cannot promote their older runs.
-LlamaFactory and Linux H2 checkmarks above remain explicitly dated evidence,
-not complete release coverage for the new candidate.
+The [report](2026-10-19-resource-completion/README.md) retains initial observer
+failures and same-raw qualifications without repeating a native child. Eight
+launches satisfy the historical strict checks; the last two use the latest
+explicit actual-capacity direction. No existing process is modified. The older
+2026-10-13 and S4-A results remain historical; they are not overwritten.
+The retired gated Llama-2/ECHR multi-GPU case is not a prerequisite for the
+approved DistilGPT2 standard. Original §8.1 metadata input gaps remain separate.
 
-Standard-library capture probes do not close these native execution items.
-The retired gated Llama-2 multi-GPU DP scenario remains additional coverage,
-not a new prerequisite for the approved DistilGPT2 standard.
 
 ## VAL-R02 — Formal FastChat/DeepSeek judge replay
 
-**Resources:** the approved input bundle from the remote evidence store, an
-isolated compatible environment, usable DeepSeek credentials and a provisioned
+**Current result:** one genuine A judgment completes and the original parser
+returns a finite score of 7. All four bindings, usage accounting and six judge
+rules are verified; the complete source-snapshot gate fails. The retained
+[failed run and CPU diagnoses](2026-10-19-resource-completion/DYNAMIC-PARTIAL.md)
+do not become a passing formal pair. B is NOT_RUN, not an exhausted-budget claim.
+The estimated peak-tariff charge is CNY 0.001394, not a verified account invoice.
+
+**Resources for a repaired-candidate replay:** the exact approved input bundle,
+an isolated compatible environment, usable DeepSeek credentials and a bounded
 execution budget. This judge-only scenario does not require a GPU. Recover and
 verify the four Variant A input hashes in [`val.md` §8.4](../../val.md#84-approved-deepseekfastchat-supplementary-judge-2026-09-27)
 before sending anything. Public question/rubric files alone are insufficient.
@@ -145,6 +167,12 @@ close this judge replay. The earlier CNY 3 execution and formal promotion are
 historical records in §§8.4–8.5.
 
 ## VAL-R03 — Successful HF gated-file resolution
+
+**2026-10-19 preflight:** the supplied token authenticates successfully through
+the existing HTTP proxy, while official pinned `config.json` and
+`tokenizer_config.json` requests both return 403. Direct official-HF connectivity
+also fails without that transport. No token value, model weight or private data
+is persisted. Successful authorized-file resolution remains unverified.
 
 **Resources:** model-author approval for `meta-llama/Llama-2-7b-hf` and a locally
 provisioned token with permission to read that repository. HF login alone does
@@ -187,8 +215,9 @@ finding/diff deltas and reviewed evidence. Keep credentials, host connection
 details, weights and raw runtime artifacts outside the repository. Link the
 sanitized report here, date the checkbox update, and distinguish a later-version
 pass from a replay of 0.6.1. Mark a group complete only after all its items pass.
-If a resource is still missing or execution fails, record the reason and retain
-BLOCKED rather than substitute historical success or current tool output for gold.
+If a resource is still missing, record BLOCKED; if an actual acceptance check
+fails, record FAIL and keep the group unclosed. Never substitute historical
+success or current tool output for independent gold.
 
 The original deferral is in [`val.md` §8.7](../../val.md#87-patch-061-resource-execution-deferral-2026-10-01)
 and the [0.6.1 patch report](2026-10-01-patch-0.6.1.md#packaging-and-outstanding-resources).

@@ -1,0 +1,32 @@
+[INFO|2026-10-19 10:18:24] llamafactory.hparams.parser:651 >> Process rank: 0, world size: 1, device: cuda:0, distributed training: False, compute dtype: torch.bfloat16
+[INFO|2026-10-19 10:18:24] llamafactory.data.loader:144 >> Loading dataset identity.json...
+training example:
+input_ids:
+[151644, 872, 198, 6023, 151645, 198, 151644, 77091, 198, 9707, 0, 358, 1079, 5867, 606, 38154, 458, 15235, 17847, 7881, 553, 5867, 3094, 3417, 13, 2585, 646, 358, 7789, 498, 3351, 30, 151645, 198]
+inputs:
+<|im_start|>user
+hi<|im_end|>
+<|im_start|>assistant
+Hello! I am {{name}}, an AI assistant developed by {{author}}. How can I assist you today?<|im_end|>
+
+label_ids:
+[-100, -100, -100, -100, -100, -100, -100, -100, -100, 9707, 0, 358, 1079, 5867, 606, 38154, 458, 15235, 17847, 7881, 553, 5867, 3094, 3417, 13, 2585, 646, 358, 7789, 498, 3351, 30, 151645, 198]
+labels:
+Hello! I am {{name}}, an AI assistant developed by {{author}}. How can I assist you today?<|im_end|>
+
+[INFO|2026-10-19 10:18:25] llamafactory.model.model_utils.kv_cache:144 >> KV cache is disabled during training.
+[INFO|2026-10-19 10:18:27] llamafactory.model.model_utils.attention:144 >> Using torch SDPA for faster training and inference.
+[INFO|2026-10-19 10:18:27] llamafactory.model.adapter:144 >> Upcasting trainable params to float32.
+[INFO|2026-10-19 10:18:27] llamafactory.model.adapter:144 >> Fine-tuning method: LoRA
+[INFO|2026-10-19 10:18:27] llamafactory.model.model_utils.misc:144 >> Found linear modules: q_proj,o_proj,k_proj,down_proj,gate_proj,up_proj,v_proj
+[INFO|2026-10-19 10:18:28] llamafactory.model.loader:144 >> trainable params: 16,515,072 || all params: 4,038,983,168 || trainable%: 0.4089
+{'loss': 6.1662, 'grad_norm': 11.213783264160156, 'learning_rate': 0.0001, 'epoch': 0.06}
+{'loss': 4.9055, 'grad_norm': 9.966766357421875, 'learning_rate': 0.0001, 'epoch': 0.12}
+{'train_runtime': 1.5572, 'train_samples_per_second': 1.284, 'train_steps_per_second': 1.284, 'train_loss': 5.535845756530762, 'epoch': 0.12}
+***** train metrics *****
+  epoch                    =      0.125
+  total_flos               =     1631GF
+  train_loss               =     5.5358
+  train_runtime            = 0:00:01.55
+  train_samples_per_second =      1.284
+  train_steps_per_second   =      1.284

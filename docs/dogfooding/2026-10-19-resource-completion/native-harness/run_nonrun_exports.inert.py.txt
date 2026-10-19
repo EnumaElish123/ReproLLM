@@ -1,0 +1,103 @@
+"""Reconstruct exact prelock overlays in disposable clones and review retained exports."""
+from __future__ import annotations
+
+import importlib.util
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location("gate_base", HERE.parent / "gate/run_base.py")
+base = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(base)
+RESOURCE = Path("<RESOURCE_ROOT>/replays/resource-20261019-750270b")
+OUT = HERE / "exports-nonrun-final-3"
+PRIOR = HERE / "exports-nonrun-final-2"
+
+
+def main() -> int:
+    assert not OUT.exists()
+    runner = base.Runner(OUT)
+    runner.env.pop('PYTHONPATH', None)
+    launcher = OUT / 'installed_cli.py'
+    launcher.write_text(base.CLI.replace('if Path(reprollm.__file__).resolve() != Path(os.environ["GATE_CANDIDATE"]) / "src/reprollm/__init__.py":\n    raise RuntimeError("Candidate module origin mismatch")', 'import importlib.metadata\nassert importlib.metadata.version("reprollm") == "0.7.0"\nassert "/envs/" in str(Path(reprollm.__file__).resolve())'))
+    initial = base.inventory()
+    assert initial == base.read(base.QUALITY / "inputs-after.json")
+    (OUT / "clones").mkdir()
+    (OUT / "sources").mkdir()
+    (OUT / "projections").mkdir()
+    cases = []
+    reused_audits = []
+    for name, (pin, _) in base.PINS.items():
+        original = RESOURCE / "cases" / name
+        retained = RESOURCE / "evidence/runtime" / name / "a"
+        inputs = base.read(retained / "inputs.json")["inputs"]
+        candidates = subprocess.check_output(['git', 'log', '--all', '--format=%H', '--', 'reprollm.yaml'], cwd=original).decode().splitlines()
+        commit = next(c for c in candidates if base.sha(subprocess.check_output(['git', 'show', c + ':reprollm.yaml'], cwd=original)) == inputs['reprollm.yaml']['sha256'])
+        source = OUT / "sources" / name
+        source.mkdir()
+        for path in ("reprollm.yaml", "reprollm.lock"):
+            raw = subprocess.check_output(["git", "show", commit + ":" + path], cwd=original)
+            (source / path).write_bytes(raw)
+        assert base.sha((source / "reprollm.yaml").read_bytes()) == inputs["reprollm.yaml"]["sha256"], "Current source commit must still hold Variant A; never accept B bytes as A"
+        prior_audit = PRIOR / 'raw' / (name + '-independent-manifest-audit.stdout')
+        reused = prior_audit.exists()
+        clone = PRIOR / 'clones' / name if reused else OUT / "clones" / name
+        if not reused:
+            runner.command(name + "-clone", ["git", "clone", "--quiet", "--no-hardlinks", str(base.PORTFOLIO / name), str(clone)], base.CANDIDATE)
+            runner.command(name + "-detach-pin", ["git", "checkout", "--quiet", "--detach", pin], clone)
+        origin = subprocess.check_output(["git", "remote", "get-url", "origin"], cwd=original).decode().strip()
+        if not reused:
+            runner.command(name + "-origin", ["git", "remote", "set-url", "origin", origin], clone)
+            with (clone / ".git/info/exclude").open("a") as stream:
+                stream.write("\n.reprollm/runs/\noutputs/\nREPRODUCIBILITY.md\n__pycache__/\n*.pyc\n")
+        for relative, expectation in inputs.items():
+            raw = subprocess.check_output(["git", "show", commit + ":" + relative], cwd=original)
+            assert base.sha(raw) == expectation["sha256"] and len(raw) == expectation["bytes"]
+            path = clone / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if reused:
+                assert path.read_bytes() == raw
+            else:
+                path.write_bytes(raw)
+        tracked = subprocess.check_output(["git", "diff", "--name-only"], cwd=clone)
+        untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard", "-z"], cwd=clone).decode().strip("\0").split("\0")
+        runner.check(name + "-exact-prelock-source-identity", tracked == b"" and set(untracked) == set(inputs) and not (clone / "reprollm.lock").exists() and not (clone / ".reprollm/runs").exists(), upstream_pin=pin, overlay_commit=commit, exact_overlay_files=sorted(inputs))
+        native_python = Path('<RESOURCE_ROOT>/envs') / ('dp' if name == 'llm-dp-finetune' else 'modern') / 'bin/python'
+        runner.command(name + '-independent-installed-wheel', [str(native_python), str(HERE / 'wheel_check.py'), str(base.QUALITY / 'dist/reprollm-0.7.0-py3-none-any.whl'), base.COMMIT, str(base.QUALITY / 'build-manifest.json')], clone)
+        if reused:
+            previous = next(c for c in base.read(PRIOR / 'commands.json')['commands'] if c['label'] == name + '-independent-manifest-audit')
+            assert previous['exit'] == 0 and previous['stdout_sha256'] == base.sha(prior_audit.read_bytes())
+            for suffix in ('.stdout', '.stderr'):
+                shutil.copyfile(PRIOR / 'raw' / (name + '-independent-manifest-audit' + suffix), OUT / 'raw' / (name + '-independent-manifest-audit' + suffix))
+            reused_audits.append({'name':name, 'original_stdout_sha256':previous['stdout_sha256'], 'original_stderr_sha256':previous['stderr_sha256'], 'original_command_receipt_sha256':base.sha((PRIOR / 'commands.json').read_bytes()), 'reason':'Only independent schema integer-display normalization changed; original source, native wheel/environment and audit bytes remain valid; recompare retained output without claiming a new audit.'})
+        else:
+            runner.command(name + "-independent-manifest-audit", [str(native_python), str(launcher), "--no-color", "audit", ".", "--format", "json", "--fail-on", "never"], clone)
+        diagnostics = OUT / "sources" / name / "expected-stderr.txt"
+        text = "scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n" if name == "lm-evaluation-harness" else ""
+        diagnostics.write_text(text)
+        state_results = {}
+        for kind, prefix, markdown, audit in [("manifest-only", "manifest-export", "manifest-only-REPRODUCIBILITY.md", OUT / "raw" / (name + "-independent-manifest-audit.stdout")), ("lock", "lock-export", "lock-only-REPRODUCIBILITY.md", retained / "audit-before.log")]:
+            report = OUT / "projections" / (name + "-" + kind + ".json")
+            argv = [str(base.PYTHON), str(HERE / "verify_export_nonrun.py"), "--implementation-root", str(base.CANDIDATE), "--project-root", str(original), "--manifest", str(source / "reprollm.yaml"), "--markdown", str(retained / markdown), "--stdout", str(retained / (prefix + ".log")), "--stderr", str(retained / (prefix + ".stderr.log")), "--command-receipt", str(retained / (prefix + ".command.json")), "--source-binding", str(HERE / "source-binding.json"), "--expected-stderr", str(diagnostics), "--report", str(report), "--audit-json", str(audit), "--case", name, "--variant", "a"]
+            if kind == "lock":
+                argv.extend(["--lock", str(source / "reprollm.lock")])
+            runner.command(name + "-" + kind + "-projection", argv, base.CANDIDATE)
+            receipt = base.read(report)
+            runner.check(name + "-" + kind + "-complete-acceptance", receipt["complete_export_acceptance"] and receipt["status"] == "PASS")
+            state_results[kind] = {"status": receipt["status"], "comparisons": receipt["comparison_count"], "report_sha256": base.sha(report.read_bytes())}
+        cases.append({"name": name, "pin": pin, "source_overlay_commit": commit, "states": state_results})
+        print(name + ": retained manifest/lock exports and independent prelock audit PASS", flush=True)
+    runner.check("candidate-inputs-unchanged", initial == base.inventory())
+    summary = {"schema_version": 1, "status": "PASS", "candidate_commit": base.COMMIT, "cases": cases, "independent_manifest_audits": 5, "retained_exports_reviewed": 10, "product_exports_rerun": 0, "gpu_or_provider_calls": 0, "scope": "Existing native Variant-A manifest-only and lock-only exports reviewed against exact original overlays/documents. Fresh prelock audits are separately captured in disposable clones; original runtime checkouts remain untouched.", "quality_summary_sha256": base.sha((base.QUALITY / "summary.json").read_bytes()), "source_inputs_unchanged": True}
+    summary['reused_audit_receipts'] = reused_audits
+    summary['fresh_independent_manifest_audits_this_attempt'] = 5 - len(reused_audits)
+    base.write(OUT / "summary.json", summary)
+    print(json.dumps(summary, sort_keys=True), flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

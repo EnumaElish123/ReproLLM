@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<TASK>/native/verify_capture.py", line 10, in <module>
+    result = verify_capture(case,folder/'run',field,a if variant == 'a' else b,argv,installed_versions(),git(case,'rev-parse','HEAD').decode().strip())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<TASK>/native/capture_verifier.py", line 54, in wrapped
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "<TASK>/native/capture_verifier.py", line 327, in verify_capture
+    _snapshot(case, run_dir, entry.path, entry.snapshot, raw)
+  File "<TASK>/native/capture_verifier.py", line 193, in _snapshot
+    _privacy(case, saved.decode("utf-8"))
+  File "<TASK>/native/capture_verifier.py", line 145, in _privacy
+    _require(_LOCAL_PATH.search(text) is None, "persisted absolute path or local URI")
+  File "<TASK>/native/capture_verifier.py", line 65, in _require
+    raise VerificationError(reason)
+capture_verifier.VerificationError: persisted absolute path or local URI

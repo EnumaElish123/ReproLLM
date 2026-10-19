@@ -1,0 +1,35 @@
+{
+  "contains_actual_secret": false,
+  "fragment": "{a['b']}",
+  "fragment_tree_error": "ParserError",
+  "hypothesis": "Later unsafe-key context poisons an earlier benign Python f-string parsed as YAML fragment",
+  "later_tail_is_classified_unsafe": true,
+  "matched_key": "x",
+  "schema_version": 1,
+  "single_variable_probes": [
+    {
+      "case": "unchanged-trigger",
+      "exception": "_UnsafeCapture"
+    },
+    {
+      "case": "remove-later-key",
+      "exception": null,
+      "redactions": 0
+    },
+    {
+      "case": "move-key-before",
+      "exception": null,
+      "redactions": 1
+    },
+    {
+      "case": "rename-later-key",
+      "exception": null,
+      "redactions": 0
+    },
+    {
+      "case": "remove-subscript",
+      "exception": null,
+      "redactions": 1
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+"""Temporary, bounded DeepSeek transport; not a ReproLLM integration."""
+from decimal import Decimal
+import fcntl
+import json
+from pathlib import Path
+import signal
+
+import httpx
+
+
+class BudgetError(RuntimeError):
+    pass
+
+
+class Budget:
+    def __init__(self, path: Path, ceiling: str = "3"):
+        self.path = path
+        self.lease = path.with_suffix(".lock").open("a")
+        fcntl.flock(self.lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        self.data = json.loads(path.read_text()) if path.exists() else {
+            "schema_version": 1, "ceiling_cny": ceiling, "max_attempts": 2,
+            "attempts": [], "charged_or_reserved_cny": "0",
+        }
+        if self.data["ceiling_cny"] != ceiling or Decimal(ceiling) > 3:
+            raise BudgetError("Unapproved spending ceiling")
+        self._save()
+
+    def _save(self):
+        self.data["charged_or_reserved_cny"] = str(sum(
+            (Decimal(row["charged_or_reserved_cny"]) for row in self.data["attempts"]), Decimal(0)))
+        temporary = self.path.with_suffix(".pending")
+        temporary.write_text(json.dumps(self.data, sort_keys=True, indent=2)+"\n")
+        temporary.replace(self.path)
+
+    def report(self):
+        return json.loads(json.dumps(self.data))
+
+    def reserve(self, cap):
+        # Reserve the published entire 1 Mi-token context at peak uncached cost.
+        # A timed-out request retains this reservation rather than assuming no charge.
+        amount = (Decimal(1048576)*2 + Decimal(cap)*8)/1000000
+        if len(self.data["attempts"]) >= 2 or Decimal(self.data["charged_or_reserved_cny"])+amount > Decimal(self.data["ceiling_cny"]):
+            raise BudgetError("Attempt or spending ceiling reached")
+        self.data["attempts"].append({"max_tokens": cap, "status": "reserved",
+            "charged_or_reserved_cny": str(amount), "reservation_cny": str(amount)})
+        self._save()
+        return len(self.data["attempts"])-1
+
+    def settle(self, attempt, cost, response_id):
+        row = self.data["attempts"][attempt]
+        if not Decimal(0) <= cost <= Decimal(row["reservation_cny"]):
+            raise BudgetError("Reported usage exceeds reserved tariff bound")
+        row.update(status="usage_received", charged_or_reserved_cny=str(cost), response_id=response_id)
+        self._save()
+
+    def close(self):
+        self.lease.close()
+
+
+def complete(client, credential, messages, cap, budget):
+    if cap not in (256, 384) or len(json.dumps(messages, ensure_ascii=False).encode()) > 4000:
+        raise ValueError("Unapproved output cap or input size")
+    attempt = budget.reserve(cap)
+    payload = {"model": "deepseek-flash", "messages": messages, "max_tokens": cap,
+               "temperature": 0, "thinking": {"type": "disabled"}, "stream": False}
+
+    def deadline(signum, frame):
+        raise TimeoutError("Bounded API deadline exceeded")
+
+    previous = signal.signal(signal.SIGALRM, deadline)
+    signal.setitimer(signal.ITIMER_REAL, 90)
+    try:
+        response = client.post("https://api.deepseek.com/chat/completions", json=payload,
+            headers={"Authorization": "Bearer "+credential}, timeout=httpx.Timeout(60, connect=10),
+            follow_redirects=False)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
+    if response.status_code != 200:
+        raise RuntimeError(f"DeepSeek HTTP {response.status_code}; no automatic retry")
+    if len(response.content) > 1024*1024:
+        raise ValueError("Unexpectedly large provider response")
+    if credential in response.text:
+        raise ValueError("Provider response unexpectedly contains credential; not persisted")
+    body = response.json()
+    usage = body["usage"]
+    names = ("prompt_tokens", "completion_tokens", "total_tokens", "prompt_cache_hit_tokens", "prompt_cache_miss_tokens")
+    counters = {key: usage[key] for key in names}
+    if not all(type(value) is int and value >= 0 for value in counters.values()):
+        raise ValueError("Invalid provider token counters")
+    prompt, output = counters["prompt_tokens"], counters["completion_tokens"]
+    if prompt > 1048576 or output > cap or counters["total_tokens"] != prompt+output or counters["prompt_cache_hit_tokens"]+counters["prompt_cache_miss_tokens"] != prompt:
+        raise ValueError("Inconsistent provider token counters")
+    peak = (Decimal(counters["prompt_cache_hit_tokens"])*Decimal("0.04") + Decimal(counters["prompt_cache_miss_tokens"])*2 + Decimal(output)*8)/1000000
+    budget.settle(attempt, peak, body["id"])
+    choice = body["choices"][0]
+    if choice["finish_reason"] != "stop" or not choice["message"].get("content"):
+        raise ValueError("Missing or truncated judgment; not a passed judge case")
+    return {"schema_version": 1, "text": choice["message"]["content"], "usage": counters,
+            "request_model": "deepseek-flash", "response_model": body["model"],
+            "response_id": body["id"], "system_fingerprint": body.get("system_fingerprint"),
+            "finish_reason": choice["finish_reason"], "cost_peak_cny": str(peak),
+            "cost_off_peak_cny": str(peak/2), "max_tokens": cap,
+            "temperature": 0, "thinking": {"type": "disabled"}, "attempts": 1}

@@ -1,0 +1,437 @@
+"""Supplementary Linux H2 replay; independent gold is frozen val.md §§8.1–8.2."""
+from __future__ import annotations
+
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path, PureWindowsPath
+import re
+import shutil
+import subprocess
+import sys
+import time
+
+import yaml
+import reprollm
+from reprollm.schemas.lock import Lock
+from reprollm.schemas.manifest import Manifest
+
+TASK = Path(__file__).resolve().parent
+BASE = TASK.parent
+CANDIDATE = BASE / "worktree"
+PROJECT = Path("<SOURCE_REPOSITORY>")
+SOURCES = PROJECT.parent / "dogfooding"
+HISTORICAL = SOURCES / "m4-m6-20260926.6OgZhb"
+PYTHON = CANDIDATE / ".venv/bin/python"
+CLI = CANDIDATE / ".venv/bin/reprollm"
+COMMIT = "750270b10307455795fcff126664429dc895983a"
+PINS = {
+    "lm-evaluation-harness": "b954108c9baaaa934b4ad842033b31a97ee30816",
+    "FastChat": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+    "LlamaFactory": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+    "HarmBench": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+    "llm-dp-finetune": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+}
+ENV = dict(os.environ)
+for key in list(ENV):
+    if key.lower() == "all_proxy" or key in {"HF_TOKEN", "HUGGING_FACE_HUB_TOKEN", "HUGGINGFACE_HUB_TOKEN", "DEEPSEEK_API_KEY", "OPENAI_API_KEY", "REPROLLM_LLM_API_KEY"}:
+        ENV.pop(key)
+ENV.update({"HF_ENDPOINT": "https://huggingface.co", "PYTHONPATH": f"{CANDIDATE / 'src'}:{CANDIDATE}",
+            "UV_PROJECT_ENVIRONMENT": str(CANDIDATE / ".venv"), "UV_NO_SYNC": "1", "PYTHONDONTWRITEBYTECODE": "1", "CUDA_VISIBLE_DEVICES": ""})
+ENV["PATH"] = f"{CANDIDATE / '.venv/bin'}:{ENV.get('PATH', '')}"
+RECORDS: list[dict] = []
+CHECKS: list[dict] = []
+RESULTS: list[dict] = []
+PREFIXES = [(str(TASK), "<H2>"), (str(CANDIDATE), "<CANDIDATE>"),
+            (str(HISTORICAL), "<HISTORICAL_METADATA>"), (str(PROJECT), "<REPROLLM>"),
+            (str(SOURCES), "<PORTFOLIO>"), (str(BASE), "<VALR01>")]
+
+
+def sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def safe(value: str) -> str:
+    for old, new in PREFIXES:
+        value = value.replace(old, new)
+    return value
+
+
+def write(path: Path, obj: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(safe(json.dumps(obj, sort_keys=True, indent=2, ensure_ascii=False)) + "\n")
+
+
+def check(label: str, passed: bool, detail: object = None) -> None:
+    CHECKS.append({"label": label, "passed": bool(passed), "detail": detail})
+    write(TASK / "checks.json", {"schema_version": 1, "checks": CHECKS})
+    if not passed:
+        print(f"CHECK DELTA {label}", flush=True)
+
+
+def run(label: str, argv: list[object], cwd: Path = CANDIDATE,
+        *, product: bool = False, expected_exit: int = 0) -> subprocess.CompletedProcess:
+    number = len(RECORDS) + 1
+    prefix = f"{number:03d}-{re.sub('[^a-zA-Z0-9_-]+', '-', label)}"
+    if product:
+        origin = subprocess.run([str(PYTHON), "-c", "import reprollm; print(reprollm.__file__)"],
+                                cwd=cwd, env=ENV, capture_output=True, timeout=30)
+        expected = str(CANDIDATE / "src/reprollm/__init__.py")
+        if origin.returncode != 0 or origin.stdout.decode().strip() != expected:
+            raise RuntimeError("candidate module origin did not match")
+        (TASK / "origins").mkdir(exist_ok=True)
+        write(TASK / "origins" / f"{prefix}.json", {"schema_version": 1, "expected_origin": "<CANDIDATE>/src/reprollm/__init__.py", "origin_matches": True, "origin_stdout_sha256": sha(origin.stdout)})
+    start = time.monotonic()
+    timed_out = False
+    try:
+        result = subprocess.run([str(a) for a in argv], cwd=cwd, env=ENV,
+                                capture_output=True, timeout=480)
+    except subprocess.TimeoutExpired as exc:
+        timed_out = True
+        result = subprocess.CompletedProcess([str(a) for a in argv], 124,
+                                             exc.stdout or b"", exc.stderr or b"")
+    elapsed = round(time.monotonic() - start, 6)
+    raw = TASK / "raw"
+    raw.mkdir(exist_ok=True)
+    output_refs = {}
+    for stream in ("stdout", "stderr"):
+        data = getattr(result, stream)
+        data.decode("utf-8", errors="strict")
+        target = raw / f"{prefix}.{stream}"
+        sanitized = safe(data.decode("utf-8", errors="strict")).encode()
+        target.write_bytes(sanitized)
+        output_refs[stream] = {"file": target.relative_to(TASK).as_posix(), "sha256": sha(sanitized), "bytes": len(sanitized), "original_sha256": sha(data), "original_bytes": len(data), "path_sanitization_applied": data != sanitized}
+        if product:
+            check(label + "/" + stream + "-private-paths", data == sanitized)
+    record = {"label": label, "argv": [safe(str(a)) for a in argv], "cwd": safe(str(cwd)),
+              "kind": "product" if product else "preparation", "exit": result.returncode,
+              "expected_exit": expected_exit, "timed_out": timed_out, "elapsed_seconds": elapsed,
+              **output_refs}
+    if product:
+        record["module_origin"] = "<CANDIDATE>/src/reprollm/__init__.py"
+    RECORDS.append(record)
+    write(TASK / "commands.json", {"schema_version": 1, "commands": RECORDS})
+    print(f"{label}: exit={result.returncode}, elapsed={elapsed}s", flush=True)
+    check(label + "/exit", result.returncode == expected_exit,
+          {"actual": result.returncode, "expected": expected_exit})
+    return result
+
+
+def git_value(source: Path, *args: str) -> str:
+    p = subprocess.run(["git", "-C", str(source), *args], env=ENV, capture_output=True, timeout=60)
+    if p.returncode:
+        raise RuntimeError("source Git inspection failed")
+    return p.stdout.decode("utf-8", "strict").strip()
+
+
+def source_snapshot() -> dict:
+    result = {}
+    for name, pin in PINS.items():
+        source = SOURCES / name
+        result[name] = {"head": git_value(source, "rev-parse", "HEAD"),
+                        "origin": git_value(source, "remote", "get-url", "origin"),
+                        "status": git_value(source, "status", "--porcelain=v1", "--untracked-files=all")}
+        check(name + "/original-pin-clean", result[name]["head"] == pin and result[name]["status"] == ""
+              and "github.com" in result[name]["origin"])
+    return result
+
+
+def candidate_snapshot() -> dict:
+    frozen = json.loads((BASE / "quality/final-1/inputs-before.json").read_text())
+    mismatches = [rel for rel, evidence in frozen["files"].items()
+                  if sha((CANDIDATE / rel).read_bytes()) != evidence["sha256"]]
+    head = git_value(CANDIDATE, "rev-parse", "HEAD")
+    check("candidate/input-binding", not mismatches and head == COMMIT,
+          {"tracked_count": len(frozen["files"]), "mismatch_paths": mismatches, "commit": head})
+    return {"commit": head, "inventory_sha256": frozen["inventory_sha256"],
+            "tracked_file_count": len(frozen["files"]), "all_file_hashes_match": not mismatches}
+
+
+def table_value(text: str, label: str, pattern: str) -> str:
+    match = re.search(r"`" + re.escape(label) + r"` \| `(" + pattern + r")`", text)
+    if not match:
+        raise RuntimeError("missing independently reviewed gold row: " + label)
+    return match[1]
+
+
+def normalize(lock: dict) -> tuple[dict, list[str]]:
+    normalized = copy.deepcopy(lock)
+    pointers = []
+    if "generated_at" in normalized:
+        normalized.pop("generated_at")
+        pointers.append("/generated_at")
+    # Only schema-owned metadata locations, never free-form business maps or values.
+    for role, model in normalized["models"].items():
+        if "observed_at" in model:
+            model.pop("observed_at")
+            pointers.append(f"/models/{role}/observed_at")
+    def visit(value: object, pointer: str) -> None:
+        if isinstance(value, dict):
+            if set(value) == {"value", "source", "confidence", "resolved_at", "note"}:
+                value.pop("resolved_at")
+                pointers.append(pointer + "/resolved_at")
+                # Provenance.value remains intact, including any business keys.
+                return
+            for key, item in value.items():
+                if key not in {"params", "extensions", "value"}:
+                    visit(item, pointer + "/" + key)
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                visit(item, pointer + "/" + str(index))
+    visit(normalized, "")
+    return normalized, sorted(pointers)
+
+
+def canonical(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+
+
+def relative_paths(value: object) -> bool:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in {"path", "target"} and isinstance(item, str):
+                if Path(item).is_absolute() or PureWindowsPath(item).anchor or ".." in Path(item).parts:
+                    return False
+            if not relative_paths(item):
+                return False
+    elif isinstance(value, list):
+        return all(relative_paths(item) for item in value)
+    return True
+
+
+def provenance(expected_value: object, source: str, confidence: str, actual: dict) -> bool:
+    expected = {"value": expected_value, "source": source, "confidence": confidence,
+                "resolved_at": actual.get("resolved_at"), "note": actual.get("note")}
+    return canonical(actual) == canonical(expected)
+
+
+def verify_lock(name: str, mode: str, case: Path, manifest: dict, lock: dict, gold: str) -> None:
+    label = f"{name}/{mode}"
+    Lock.model_validate(lock)
+    check(label + "/schema-and-mode", lock["schema_version"] == 1 and lock["resolution"]["mode"] ==
+          ("offline" if mode == "offline" else "online"))
+    check(label + "/manifest-hash", lock["manifest_sha256"] == "sha256:" + sha((case / "reprollm.yaml").read_bytes()))
+    check(label + "/project-rules-absent", lock["project_rules_sha256"] is None)
+    check(label + "/roles-complete", set(lock["models"]) == set(manifest["models"]) and
+          set(lock["datasets"]) == set(manifest.get("datasets", {})) and
+          set(lock["prompts"]) == set(manifest.get("prompts", {})))
+    expected_config_files = sorted(set(manifest.get("execution", {}).get("config_files", [])))
+    check(label + "/config-file-set", [f["path"] for f in lock["files"]] == expected_config_files)
+    all_files = list(lock["files"]) + [p for p in lock["prompts"].values() if p.get("path")]
+    for dataset in lock["datasets"].values():
+        all_files.extend(dataset.get("files") or [])
+    for item in all_files:
+        expected_hash = table_value(gold, name + ":" + item["path"], "sha256:[a-f0-9]{64}")
+        check(label + "/local-file:" + item["path"], item["sha256"] == expected_hash ==
+              "sha256:" + sha((case / item["path"]).read_bytes()) and
+              item["size_bytes"] == (case / item["path"]).stat().st_size)
+    check(label + "/local-dataset-file-set", all([f["path"] for f in actual.get("files") or []] ==
+          sorted(set(spec.get("files", []))) for role, spec in manifest.get("datasets", {}).items()
+          if spec["provider"] == "local" for actual in [lock["datasets"][role]]))
+    for role, model in lock["models"].items():
+        spec = manifest["models"][role]
+        check(label + "/model-declaration:" + role, all(model[key] == spec.get(key) for key in
+              ("id", "provider", "dtype", "quantization", "trust_remote_code")))
+        if model["provider"] == "openai":
+            check(label + "/judge-snapshot-alias", model["pinnability"] == "snapshot_alias" and
+                  model["revision"]["value"] is None)
+            continue
+        if mode == "offline":
+            check(label + "/offline-revision:" + role, model["revision"]["value"] is None and
+                  model["revision"]["confidence"] == "unresolved" and model["revision"]["source"] == "offline")
+            continue
+        expected = table_value(gold, model["id"], "[a-f0-9]{40}")
+        check(label + "/model-revision:" + role, provenance(expected, "hf_api", "exact", model["revision"]),
+              {"expected": expected, "actual": model["revision"]})
+        check(label + "/tokenizer-revision:" + role,
+              model["tokenizer"]["id"] == model["id"] and
+              provenance(expected, "hf_api", "exact", model["tokenizer"]["revision"]))
+        if model["id"].startswith("meta-llama/"):
+            check(label + "/gated-config-denial", provenance(None, "hf_api_forbidden", "unresolved", model["config_sha256"]))
+        else:
+            expected_config = table_value(gold, model["id"] + "@" + expected + "/config.json", "sha256:[a-f0-9]{64}")
+            check(label + "/config-sha256:" + role, provenance(expected_config, "hf_file:config.json", "exact", model["config_sha256"]))
+            if model["id"].startswith("lmsys/"):
+                check(label + "/vicuna-template-absent", model["chat_template"]["status"] == "absent")
+            else:
+                match = re.search(r"`" + re.escape(model["id"]) + r"` extracted chat-template UTF-8 \| `(sha256:[a-f0-9]{64})`", gold)
+                if not match:
+                    raise RuntimeError("missing chat template gold")
+                check(label + "/template-sha256:" + role, model["chat_template"]["status"] == "present" and
+                      provenance(match[1], "hf_file:tokenizer_config.json", "exact", model["chat_template"]["sha256"]))
+    for role, dataset in lock["datasets"].items():
+        spec = manifest["datasets"][role]
+        check(label + "/dataset-declaration:" + role, all(dataset[key] == spec.get(key) for key in ("provider", "id", "subset", "split")) and dataset["content_fingerprint"] == {"status": "not_computed"})
+        if dataset["provider"] == "huggingface":
+            if mode == "offline":
+                check(label + "/offline-dataset:" + role, dataset["revision"]["source"] == "offline" and dataset["revision"]["value"] is None and dataset["revision"]["confidence"] == "unresolved")
+            else:
+                expected = table_value(gold, dataset["id"], "[a-f0-9]{40}")
+                check(label + "/dataset-revision:" + role, provenance(expected, "hf_api", "exact", dataset["revision"]),
+                      {"expected": expected, "actual": dataset["revision"]})
+    normalized_manifest = Manifest.model_validate(manifest).model_dump(mode="json")
+    for key in ("generation", "training", "privacy"):
+        check(label + "/passthrough:" + key, canonical(lock[key]) == canonical(normalized_manifest[key]))
+    check(label + "/portable-paths", relative_paths(lock))
+    check(label + "/linux-environment", lock["environment"]["platform"] == "linux")
+
+
+def metadata(name: str, gold: str) -> None:
+    first_check = len(CHECKS)
+    case = TASK / "cases" / name
+    if case.exists():
+        raise RuntimeError("owned case already exists; refuse overwrite")
+    source = SOURCES / name
+    run(name + "/clone", ["git", "clone", "--shared", "--no-hardlinks", source, case])
+    run(name + "/detach", ["git", "checkout", "--detach", PINS[name]], case)
+    origin = git_value(source, "remote", "get-url", "origin")
+    run(name + "/canonical-origin", ["git", "remote", "set-url", "origin", origin], case)
+    manifest_input = HISTORICAL / "metadata-inputs" / (name + ".yaml")
+    manifest_match = re.search(r"\| " + re.escape(name) + r" \| `([a-f0-9]{64})`", gold)
+    if not manifest_match:
+        raise RuntimeError("missing supplementary manifest gold")
+    expected_manifest = manifest_match[1]
+    check(name + "/reviewed-supplementary-manifest", sha(manifest_input.read_bytes()) == expected_manifest)
+    manifest = yaml.safe_load(manifest_input.read_bytes())
+    Manifest.model_validate(manifest)
+    inputs = TASK / "inputs"
+    inputs.mkdir(exist_ok=True)
+    shutil.copyfile(manifest_input, inputs / manifest_input.name)
+    shutil.copyfile(manifest_input, case / "reprollm.yaml")
+    paths = list(manifest.get("execution", {}).get("config_files", []))
+    paths += [p["path"] for p in manifest.get("prompts", {}).values()]
+    paths += [path for d in manifest.get("datasets", {}).values() for path in d.get("files", [])]
+    for relative in sorted(set(paths)):
+        expected = table_value(gold, name + ":" + relative, "sha256:[a-f0-9]{64}")
+        check(name + "/pre-cli-local-hash:" + relative, "sha256:" + sha((case / relative).read_bytes()) == expected)
+    previous = None
+    mode_refs = []
+    for mode in ("offline", "online-1", "online-2"):
+        label = name + "/" + mode
+        locked = run(label + "/lock", [CLI, "lock", case] + (["--offline"] if mode == "offline" else []), product=True)
+        if locked.returncode != 0 or not (case / "reprollm.lock").exists():
+            mode_refs.append({"mode": mode, "passed": False, "reason": "lock command failed"})
+            continue
+        text = (case / "reprollm.lock").read_bytes()
+        target = TASK / "artifacts" / f"{name}-{mode}.lock"
+        target.parent.mkdir(exist_ok=True)
+        target.write_bytes(text)
+        lock = yaml.safe_load(text)
+        verify_lock(name, mode, case, manifest, lock, gold)
+        normalized, removed = normalize(lock)
+        if mode == "online-2":
+            check(name + "/online-full-lock-equality", previous is not None and canonical(normalized) == canonical(previous),
+                  {"normalization": "only schema-owned generated_at/resolved_at/observed_at locations",
+                   "removed_json_pointers": removed, "online_1_sha256": sha(canonical(previous)),
+                   "online_2_sha256": sha(canonical(normalized))})
+        if mode == "online-1":
+            previous = normalized
+        run(label + "/check", [CLI, "lock", case, "--check"], product=True)
+        run(label + "/stage", ["git", "add", "reprollm.yaml", "reprollm.lock"], case)
+        run(label + "/commit", ["git", "-c", "user.name=Validation", "-c", "user.email=validation@example.invalid", "commit", "--allow-empty", "-m", "validation: supplementary Linux H2 metadata"], case)
+        check(label + "/clone-clean-before-audit", git_value(case, "status", "--porcelain=v1", "--untracked-files=all") == "")
+        audited = run(label + "/L2", [CLI, "audit", case, "--format", "json", "--fail-on", "never"], product=True)
+        if audited.returncode == 0:
+            report = json.loads(audited.stdout)
+            report_path = TASK / "artifacts" / f"{name}-{mode}-L2.json"
+            report_path.write_bytes(audited.stdout)
+            check(label + "/L2-complete-and-relative", report["level"] == 2 and relative_paths(report))
+            for rule in ("consistency.lock_fresh", "consistency.file_hashes"):
+                findings = [f for f in report["findings"] if f["rule_id"] == rule]
+                check(label + "/" + rule, bool(findings) and all(f["status"] == "pass" for f in findings),
+                      {"findings": len(findings), "statuses": [f["status"] for f in findings]})
+            check(label + "/clean-git-findings", all(f["status"] == "pass" for f in report["findings"]
+                  if f["rule_id"] in {"code.clean_tree", "code.no_untracked"}))
+            mode_refs.append({"mode": mode, "lock_file": target.relative_to(TASK).as_posix(), "lock_sha256": sha(text),
+                              "report_file": report_path.relative_to(TASK).as_posix(), "report_sha256": sha(audited.stdout),
+                              "normalized_lock_sha256": sha(canonical(normalized)), "removed_metadata_pointers": removed,
+                              "finding_count": len(report["findings"]), "summary": report["summary"]})
+    RESULTS.append({"target": name, "pin": PINS[name], "manifest_sha256": expected_manifest,
+                    "all_checks_passed": all(c["passed"] for c in CHECKS[first_check:]), "modes": mode_refs,
+                    "final_clone_head": git_value(case, "rev-parse", "HEAD"),
+                    "original_pin_preserved": git_value(source, "rev-parse", "HEAD") == PINS[name]})
+    write(TASK / "results.json", {"schema_version": 1, "results": RESULTS})
+
+
+def doctor_probe() -> None:
+    expected_names = {"python", "git", "nvidia-smi", "uv", "llm-critical-packages", "reprollm-documents"}
+    for name in PINS:
+        result = run(name + "/doctor", [CLI, "doctor", "--json"], SOURCES / name, product=True)
+        if result.returncode:
+            continue
+        report = json.loads(result.stdout)
+        write(TASK / "artifacts" / (name + "-doctor.json"), {"schema_version": 1, "report": report})
+        checks = {item["name"]: item for item in report["checks"]}
+        check(name + "/doctor-complete-relative", set(checks) == expected_names and relative_paths(report))
+        check(name + "/doctor-required-and-documents", all(checks[key]["status"] == "ok" for key in
+              ("python", "git", "nvidia-smi", "llm-critical-packages", "reprollm-documents")) and
+              checks["uv"]["status"] in {"ok", "warn"})
+        check(name + "/doctor-relative-documents", checks["reprollm-documents"]["detail"] ==
+              "no reprollm documents in " + name + "/ (Level 0)")
+    result = run("lm-evaluation-harness/doctor-network", [CLI, "doctor", "--json", "--check-network"],
+                 SOURCES / "lm-evaluation-harness", product=True)
+    if result.returncode == 0:
+        report = json.loads(result.stdout)
+        write(TASK / "artifacts/doctor-network.json", {"schema_version": 1, "report": report})
+        checks = {item["name"]: item for item in report["checks"]}
+        check("doctor-network/complete", set(checks) == expected_names | {"network"})
+        check("doctor-network/gpt2-reachable", checks["network"]["status"] == "ok" and
+              checks["network"]["detail"] == "Hugging Face gpt2: revision metadata reachable", checks["network"])
+
+
+def main() -> None:
+    start = time.monotonic()
+    TASK.mkdir(exist_ok=True)
+    quality = json.loads((BASE / "quality/final-1/summary.json").read_bytes())
+    if not (quality["all_passed"] and quality["candidate_commit"] == COMMIT and
+            quality["inputs_byte_identical_before_after"]):
+        raise RuntimeError("current candidate final quality authorization prerequisite not met")
+    write(TASK / "quality-binding.json", {"schema_version": 1, "candidate_commit": COMMIT,
+          "quality_summary_sha256": sha((BASE / "quality/final-1/summary.json").read_bytes()),
+          "quality_input_inventory_sha256": quality["candidate_input_inventory_sha256"],
+          "all_passed": True, "inputs_byte_identical_before_after": True})
+    assert Path(reprollm.__file__).resolve() == CANDIDATE / "src/reprollm/__init__.py"
+    gold = (CANDIDATE / "val.md").read_text()
+    input_evidence = {"schema_version": 1, "candidate_commit": COMMIT,
+                      "gold": {"file": "<CANDIDATE>/val.md", "sha256": sha(gold.encode())},
+                      "historical_controller_sha256": sha((HISTORICAL / "validate_metadata.py").read_bytes()),
+                      "scope": "Supplementary Linux H2; original M3 manifests not recovered; no GPU/paid API/weights/data downloads",
+                      "transport": {"hf_endpoint": ENV["HF_ENDPOINT"], "anonymous": True, "all_proxy_removed": True,
+                                    "http_proxy_present": bool(ENV.get("HTTP_PROXY") or ENV.get("http_proxy")),
+                                    "https_proxy_present": bool(ENV.get("HTTPS_PROXY") or ENV.get("https_proxy"))},
+                      "prepared_inputs_sha256": sha((TASK / "prepared-inputs.json").read_bytes())}
+    write(TASK / "input-evidence.json", input_evidence)
+    before_source = source_snapshot()
+    before_candidate = candidate_snapshot()
+    errors = []
+    for name in PINS:
+        try:
+            metadata(name, gold)
+        except Exception as exc:
+            errors.append({"target": name, "error_type": type(exc).__name__, "safe_error": safe(str(exc))})
+            check(name + "/controller-completion", False, {"error_type": type(exc).__name__})
+            print(f"CONTROLLER ERROR {name}: {type(exc).__name__}", flush=True)
+    doctor_probe()
+    after_source = source_snapshot()
+    after_candidate = candidate_snapshot()
+    check("original-pin-provenance-unchanged", before_source == after_source)
+    check("candidate-inputs-unchanged", before_candidate == after_candidate)
+    summary = {"schema_version": 1, "candidate_commit": COMMIT, "all_passed": not errors and all(c["passed"] for c in CHECKS),
+               "supplementary_not_original_m3": True, "targets": len(RESULTS), "modes_completed": sum(len(r["modes"]) for r in RESULTS),
+               "product_commands": sum(r["kind"] == "product" for r in RECORDS), "preparation_commands": sum(r["kind"] == "preparation" for r in RECORDS),
+               "command_seconds": round(sum(r["elapsed_seconds"] for r in RECORDS), 6),
+               "product_seconds": round(sum(r["elapsed_seconds"] for r in RECORDS if r["kind"] == "product"), 6),
+               "wall_seconds": round(time.monotonic() - start, 6), "total_checks": len(CHECKS),
+               "failed_checks": [c for c in CHECKS if not c["passed"]], "controller_errors": errors,
+               "candidate_binding_before": before_candidate, "candidate_binding_after": after_candidate,
+               "pin_provenance_before": before_source, "pin_provenance_after": after_source,
+               "authenticated_gated_success_gate": "NOT_ATTEMPTED_VAL_R03", "transport_deviation": "official HF endpoint via existing HTTP proxy; anonymous lock provenance kept independent",
+               "doctor_commands": 5, "anonymous_gpt2_probe_commands": 1, "historical_gpu_runtime_items": "Not exercised by this H2 replay"}
+    write(TASK / "summary.json", summary)
+    print("Linux H2 " + ("PASS" if summary["all_passed"] else "HAS DELTAS"), flush=True)
+    sys.exit(0 if summary["all_passed"] else 1)
+
+
+if __name__ == "__main__":
+    main()

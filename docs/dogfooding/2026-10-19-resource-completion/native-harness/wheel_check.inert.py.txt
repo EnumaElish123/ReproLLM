@@ -1,0 +1,20 @@
+import hashlib,importlib.metadata,json,sys,zipfile
+from pathlib import Path
+import reprollm
+wheel=Path(sys.argv[1]);candidate=sys.argv[2]
+manifest_path=Path(sys.argv[3]);manifest=json.loads(manifest_path.read_bytes())
+wheel_sha=hashlib.sha256(wheel.read_bytes()).hexdigest()
+assert manifest['schema_version']==1 and manifest['source_commit']==candidate
+assert manifest['version']==importlib.metadata.version('reprollm')
+matched=[a for a in manifest['artifacts'] if a['filename']==wheel.name]
+assert len(matched)==1 and matched[0]['sha256']==wheel_sha
+package=Path(reprollm.__file__).resolve().parent
+assert any('/envs/'+kind+'/' in str(package) for kind in ('modern','dp'))
+checked=0
+with zipfile.ZipFile(wheel) as archive:
+ for name in archive.namelist():
+  if name.startswith('reprollm/') and not name.endswith('/'):
+   assert (package/name.removeprefix('reprollm/')).read_bytes()==archive.read(name)
+   checked+=1
+assert checked>100
+print(json.dumps({'schema_version':1,'candidate_commit':candidate,'wheel_sha256':hashlib.sha256(wheel.read_bytes()).hexdigest(),'installed_version':importlib.metadata.version('reprollm'),'package_location':'<native-venv>/site-packages/reprollm','matched_package_files':checked,'build_manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'source_association':'explicit build manifest source commit and wheel filename/SHA/version checked; installed package payload bytes independently matched'}))

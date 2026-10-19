@@ -1,0 +1,205 @@
+"""Current-candidate bounded five-project native replay; no automatic GPU retry."""
+from __future__ import annotations
+import argparse
+import fcntl
+import hashlib
+import importlib.metadata
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+import base
+
+RESOURCE = Path('<RESOURCE_ROOT>')
+TASK = RESOURCE/'replays/resource-20261019-750270b'
+HERE = Path(__file__).resolve().parent
+WORKTREE = HERE.parent/'worktree'
+CANDIDATE = '750270b10307455795fcff126664429dc895983a'
+INVENTORY = WORKTREE/'docs/dogfooding/2026-10-18-a01-local/input-inventory.json'
+RECIPE = WORKTREE/'examples/lm_eval_replay'
+CASES = {
+    'lm-evaluation-harness': ('modern', ['python','-m','lm_eval','run','--config','validation/eval.yaml'], 'generation.max_tokens', 32, 48, 'HIGH', 'validation/eval.yaml', .12),
+    'LlamaFactory': ('modern', ['python','validation/train_entry.py'], 'training.learning_rate', .0001, .0002, 'HIGH', 'validation/train.yaml', .35),
+    'llm-dp-finetune': ('dp', ['python','validation/train_entry.py'], 'privacy.mechanism.params.target_epsilon', 8, 4, 'MEDIUM', 'validation/train.yaml', .15),
+    'HarmBench': ('modern', ['python','validation/pipeline.py'], 'generation.max_tokens', 16, 24, 'HIGH', 'validation/pipeline.yaml', .45),
+    'FastChat': ('modern', ['python','validation/answer_entry.py'], 'generation.max_tokens', 32, 48, 'HIGH', 'validation/answer.yaml', .30),
+}
+base.TASK = TASK
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def save(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, sort_keys=True, indent=2)
+        stream.write('\n')
+
+def git(case, *args):
+    return subprocess.check_output(['git','-C',str(case),*args])
+
+def env(name, offline=True, observe=None):
+    value = base.environment(CASES[name][0], offline)
+    for key in ('PYTHONPATH','PYTHONHOME','PYTHONSAFEPATH','REPROLLM_VALIDATION_PARENT_LEASE'):
+        value.pop(key, None)
+    value['PYTHONNOUSERSITE'] = '1'
+    value['TMPDIR'] = str(RESOURCE/'tmp/r1019')
+    value['VLLM_RPC_BASE_PATH'] = value['TMPDIR']
+    if observe:
+        value.update(PYTHONPATH=str(HERE), REPROLLM_NATIVE_OBSERVE='1', REPROLLM_NATIVE_TASK=str(TASK), REPROLLM_NATIVE_CASE=name, REPROLLM_NATIVE_VARIANT=observe)
+    return value
+
+def command(name, argv, folder, label, offline=True, expected=0, observe=None):
+    return base.command([str(x) for x in argv], TASK/'cases'/name, env(name,offline,observe), folder, label, expected)
+
+def py(name):
+    return RESOURCE/'envs'/CASES[name][0]/'bin/python'
+
+def setup():
+    assert git(WORKTREE,'rev-parse','HEAD').decode().strip() == CANDIDATE
+    TASK.mkdir(mode=0o700, parents=True, exist_ok=True)
+    for relative in ('cases','evidence','torch','cache','triton','tmp'):
+        (TASK/relative).mkdir(exist_ok=True)
+    short = RESOURCE/'tmp/r1019'
+    short.mkdir(mode=0o700, exist_ok=True)
+    assert len(str(short).encode())+37 < 107
+    entries = json.loads(INVENTORY.read_bytes())['inputs']
+    cases = []
+    for name in CASES:
+        case = TASK/'cases'/name
+        assert not case.exists(), 'Native checkout already exists; inspect without rerunning setup'
+        selected = [e for e in entries if e['case_id'] == 'native-'+name]
+        assert selected
+        pin = selected[0]['upstream_sha']
+        original = Path('<PORTFOLIO>')/name
+        assert git(original,'rev-parse','HEAD').decode().strip() == pin
+        assert not git(original,'status','--porcelain','--untracked-files=all')
+        origin = git(original,'remote','get-url','origin').decode().strip()
+        subprocess.run(['git','clone','--quiet','--no-hardlinks',str(original),str(case)], check=True)
+        git(case,'checkout','--quiet','--detach',pin)
+        git(case,'remote','set-url','origin',origin)
+        with (case/'.git/info/exclude').open('a') as stream:
+            stream.write('\n.reprollm/runs/\noutputs/\nREPRODUCIBILITY.md\n__pycache__/\n*.pyc\n')
+        cases.append({'case':name,'pin':pin,'origin':origin})
+    bound = json.loads((WORKTREE/'docs/dogfooding/2026-10-15-reliability-s4a/native/export-projection/source-binding.json').read_bytes())
+    binding = {'schema_version':1, 'source_commit':CANDIDATE, 'candidate_reprollm_version':'0.7.0', 'files_sha256':{p:sha((WORKTREE/p).read_bytes()) for p in bound['files_sha256']}, 'scope':'Current immutable source binding; independent selected-run export checker inherited from reviewed S4A run2.'}
+    save(HERE/'source-binding.json',binding)
+    save(TASK/'evidence/native-session.json',{'schema_version':1,'candidate_commit':CANDIDATE,'source_input_inventory_sha256':sha(INVENTORY.read_bytes()),'native_cases':cases,'automatic_native_retry':False,'shared_task_directory':True,'GPU_guard':{'index':0,'used_mib_less_than':2048,'free_mib_at_least':70000,'utilization_percent_at_most':10,'free_disk_gib_at_least':50},'helpers_sha256':{p.name:sha(p.read_bytes()) for p in sorted(HERE.glob('*.py'))}})
+
+def restore(name, variant):
+    entries = [e for e in json.loads(INVENTORY.read_bytes())['inputs'] if e['case_id'] == 'native-'+name and e['variant'] == variant]
+    case = TASK/'cases'/name
+    hashes = {}
+    for entry in entries:
+        relative = entry['original_relative_path']
+        if name == 'lm-evaluation-harness':
+            mapping = {'reprollm.yaml':'reprollm.yaml' if variant == 'a' else 'variants/reprollm-b.yaml', 'validation/eval.yaml':'validation/eval.yaml' if variant == 'a' else 'variants/eval-b.yaml', 'validation/tasks/gsm8k_validation.yaml':'validation/tasks/gsm8k_validation.yaml'}
+            data = (RECIPE/mapping[relative]).read_bytes()
+        else:
+            data = git(RESOURCE/'cases'/name,'show',entry['source_git_commit']+':'+relative)
+        assert len(data) == entry['expected_bytes'] and sha(data) == entry['expected_sha256'], 'Independent exact input identity mismatch'
+        target = case/relative
+        target.parent.mkdir(parents=True,exist_ok=True)
+        target.write_bytes(data)
+        hashes[relative] = {'sha256':sha(data),'bytes':len(data),'source_git_commit':entry['source_git_commit']}
+    assert len(hashes) == (4 if name == 'llm-dp-finetune' else 3)
+    return hashes
+
+def prepare(name, variant):
+    case = TASK/'cases'/name
+    folder = TASK/'evidence/runtime'/name/variant
+    assert not folder.exists(), 'Variant attempt already exists'
+    assert not (case/'outputs/current').exists()
+    save(folder/'inputs.json',{'schema_version':1,'case':name,'variant':variant,'inputs':restore(name,variant)})
+    if variant == 'a':
+        command(name,['reprollm','export'],folder,'manifest-export')
+        shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'manifest-only-REPRODUCIBILITY.md')
+    command(name,['reprollm','lock'],folder,'lock',offline=False)
+    command(name,['git','add','-f','--','reprollm.yaml','reprollm.lock','validation'],folder,'git-add')
+    command(name,['git','-c','user.name=ReproLLM Validation','-c','user.email=validation@reprollm.invalid','commit','-m',f'validation: bounded current-candidate {name} {variant}'],folder,'git-commit')
+    assert not git(case,'status','--porcelain','--untracked-files=all')
+    command(name,['reprollm','lock','--check'],folder,'lock-check')
+    command(name,['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-before')
+    if variant == 'a':
+        command(name,['reprollm','export'],folder,'lock-export')
+        shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'lock-only-REPRODUCIBILITY.md')
+
+def guard(name):
+    raw = subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.total,memory.used,memory.free,utilization.gpu','--format=csv,noheader,nounits'], text=True)
+    rows = [[int(x.strip()) for x in line.split(',')] for line in raw.splitlines()]
+    gpu = next(row for row in rows if row[0] == 0)
+    assert gpu[2] < 2048 and gpu[3] >= 70000 and gpu[4] <= 10, 'Strict native idle guard not satisfied'
+    assert gpu[3] >= int(gpu[1]*CASES[name][7])+2048, 'Native cap plus reserve not satisfied'
+    assert shutil.disk_usage(RESOURCE).free >= 50*1024**3
+    return {'schema_version':1,'GPUs':rows,'free_disk_bytes':shutil.disk_usage(RESOURCE).free,'fraction':CASES[name][7],'strict_guard':'PASS'}
+
+def run(name,variant,wheel,manifest):
+    case = TASK/'cases'/name
+    folder = TASK/'evidence/runtime'/name/variant
+    assert not (case/'outputs/current').exists()
+    assert (folder/'lock-check.command.json').exists()
+    assert not git(case,'status','--porcelain','--untracked-files=all')
+    command(name,[py(name),HERE/'wheel_check.py',wheel,CANDIDATE,manifest],folder,'installed-wheel')
+    with (RESOURCE/'gpu-validation.lock').open('a') as lease:
+        fcntl.flock(lease,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        save(folder/'guard-before.json',guard(name))
+        command(name,['reprollm','run','--name',f'r1019-{name}-{variant}','--capture-output','--',*CASES[name][1]],folder,'run',observe=variant)
+        save(folder/'guard-after.json',guard(name))
+    selected = [p for p in (case/'.reprollm/runs').glob('*/run.json') if json.loads(p.read_bytes()).get('name') == f'r1019-{name}-{variant}']
+    assert len(selected) == 1
+    shutil.copytree(selected[0].parent,folder/'run')
+    command(name,['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-after')
+    command(name,[py(name),HERE/'verify_capture.py',name,variant],folder,'capture-check')
+    args = [py(name),HERE/'check_outputs.py',name,'--variant',variant]
+    if variant == 'b':
+        args.append('--compare')
+    command(name,args,folder,'output-check')
+    command(name,[py(name),HERE/'consumption_check.py',name,variant],folder,'consumption-check')
+    command(name,['reprollm','export','--run',selected[0].parent.name],folder,'export')
+    shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'REPRODUCIBILITY.md')
+    shutil.move(str(case/'outputs/current'),str(folder/'outputs'))
+
+def verify_export(name,variant):
+    case = TASK/'cases'/name
+    folder = TASK/'evidence/runtime'/name/variant
+    out = HERE/'exports'/name/variant
+    out.mkdir(parents=True,exist_ok=False)
+    expected = out/'expected-stderr.txt'
+    diagnostic = ''
+    if name == 'lm-evaluation-harness':
+        files = sorted(git(case,'ls-files','-z','--','*.py').decode().strip('\0').split('\0'))
+        assert len(files) == 816
+        diagnostic = 'scan: Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.\n'
+    expected.write_text(diagnostic)
+    rid = json.loads((folder/'run/run.json').read_bytes())['run_id']
+    command(name,[py(name),HERE/'verify_export_run2.py','--implementation-root',WORKTREE,'--project-root',case,'--run-id',rid,'--markdown',folder/'REPRODUCIBILITY.md','--stdout',folder/'export.log','--stderr',folder/'export.stderr.log','--audit-json',folder/'audit-after.log','--command-receipt',folder/'export.command.json','--source-binding',HERE/'source-binding.json','--report',out/'projection.json','--case',name,'--variant',variant,'--upstream-fidelity','PASS','--upstream-fidelity-evidence',folder/'capture-check.json','--expected-stderr',expected],folder,'export-projection')
+
+def review(name):
+    folder = TASK/'evidence/runtime'/name
+    ids = [json.loads((folder/v/'run/run.json').read_bytes())['run_id'] for v in ('a','b')]
+    command(name,['reprollm','diff',*ids,'--format','json','--fail-on','HIGH'],folder,'pair-diff',expected=1)
+    command(name,['reprollm','diff',ids[0],ids[0],'--format','json'],folder,'self-diff')
+    command(name,[py(name),HERE/'verify_pair.py',name],folder,'pair-check')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action',choices=['setup','prepare','run','review','guard','verify-export'])
+    parser.add_argument('case',nargs='?',choices=CASES)
+    parser.add_argument('--variant',choices=['a','b'],default='a')
+    parser.add_argument('--wheel',type=Path)
+    parser.add_argument('--manifest',type=Path)
+    args = parser.parse_args()
+    if args.action == 'setup':
+        setup()
+    else:
+        assert args.case
+        if args.action == 'prepare': prepare(args.case,args.variant)
+        elif args.action == 'run':
+            assert args.wheel and args.manifest
+            run(args.case,args.variant,args.wheel,args.manifest)
+        elif args.action == 'guard': print(json.dumps(guard(args.case)))
+        elif args.action == 'verify-export': verify_export(args.case,args.variant)
+        else: review(args.case)

@@ -1,0 +1,117 @@
+"""Terminal read-only audit of the candidate's completed native/export evidence."""
+from __future__ import annotations
+
+import importlib.util
+import json
+from datetime import datetime
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SCRATCH = HERE.parent
+spec = importlib.util.spec_from_file_location('gate_base', SCRATCH / 'gate/run_base.py')
+base = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(base)
+NATIVE = Path('<RESOURCE_ROOT>/replays/resource-20261019-750270b')
+OUT = HERE / 'terminal-evidence-review-final-1.json'
+FIELDS = {
+    'lm-evaluation-harness': ('generation.max_tokens', 32, 48, 'HIGH', .12),
+    'FastChat': ('generation.max_tokens', 32, 48, 'HIGH', .30),
+    'LlamaFactory': ('training.learning_rate', .0001, .0002, 'HIGH', .35),
+    'HarmBench': ('generation.max_tokens', 16, 24, 'HIGH', .45),
+    'llm-dp-finetune': ('privacy.mechanism.params.target_epsilon', 8, 4, 'MEDIUM', .15),
+}
+
+
+def main() -> int:
+    assert not OUT.exists()
+    checks = []
+
+    def check(label, passed, **details):
+        checks.append({'label': label, 'passed': bool(passed), **details})
+        assert passed, label
+
+    quality = base.read(base.QUALITY / 'summary.json')
+    q_sha = base.sha((base.QUALITY / 'summary.json').read_bytes())
+    check('same-candidate-final-quality', quality['all_passed'] and quality['candidate_commit'] == base.COMMIT and quality['inputs_byte_identical_before_after'])
+    check('candidate-tracked-inputs-still-frozen', base.inventory() == base.read(base.QUALITY / 'inputs-after.json'))
+    gate = base.read(SCRATCH / 'gate/final-1/summary.json')
+    check('fresh-complete-five-project-gate-a', gate['status'] == 'PASS' and gate['product_commands'] == gate['complete_json_comparisons'] == 10 and gate['source_inputs_unchanged'] and gate['quality_receipt_sha256'] == q_sha)
+    previews = base.read(SCRATCH / 'gate/discover-preview-final-2/summary.json')
+    check('five-complete-supplementary-discover-previews', previews['status'] == 'PASS' and len(previews['records']) == 5 and previews['requests_sent'] == 0 and previews['formal_gate_status'] == 'NOT_CLOSED')
+    nonrun = base.read(HERE / 'exports-nonrun-final-4/summary.json')
+    selected = base.read(HERE / 'exports-selected-run-final-3/summary.json')
+    check('ten-declared-and-locked-exports', nonrun['status'] == 'PASS' and len(nonrun['records']) == 10 and all(row['status'] == 'PASS' for row in nonrun['records']))
+    check('ten-accepted-selected-run-exports', selected['reviewed'] == selected['passed'] == 10 and not selected['failed'] and {(r['case'], r['variant']) for r in selected['records']} == {(n, v) for n in FIELDS for v in ('a', 'b')})
+    final_checker_sha = base.sha((HERE / 'verify_export_current.py').read_bytes())
+    check('export-evidence-uses-final-checker', nonrun['identity_helper_sha256'] == final_checker_sha == selected['checker_sha256'])
+    for relative, negatives in [('export-projection-selfcheck-final-3/summary.json', 7), ('selected-export-selfcheck-final-3/summary.json', 10)]:
+        report = base.read(HERE / relative)
+        check('verifier-negative-regressions-' + str(negatives), report['status'] == 'PASS' and report['positive_cases'] == 1 and report['negative_cases'] == negatives and report.get('identity_projection_helper_sha256', report.get('checker_sha256')) == final_checker_sha)
+    auth_path = SCRATCH / 'providers/gpu-sharing-authorization.json'
+    auth = base.read(auth_path)
+    auth_sha = base.sha(auth_path.read_bytes())
+    check('latest-explicit-resource-direction', auth['authorized'] and auth['candidate_commit'] == base.COMMIT and auth['policy'] == 'hardware_capacity_only' and auth['maintainer_answer'] == '只要GPU有空闲显存，即可使用，无需考虑人为设定的资源限制' and not auth['other_process_mutation_permitted'] and auth['sequential_GPU_lease_required'])
+    strict = shared = 0
+    guards = []
+    runs = []
+    pair_results = []
+    for name, (field, a, b, severity, fraction) in FIELDS.items():
+        parent = NATIVE / 'evidence/runtime' / name
+        pair_path = parent / 'pair-check.json'
+        pair = base.read(pair_path)
+        target = [c for c in pair['complete_changes'] if c['path'] == field]
+        check(name + '-complete-independent-pair', pair['status'] == 'PASS' and pair['target_gold_unchanged'] and pair['self_diff_empty'] and not pair['additional_changes_requiring_review'] and len(target) == 1 and target[0]['a'] == a and target[0]['b'] == b and target[0]['severity'] == severity)
+        pair_results.append({'case': name, 'required_leaf': field, 'a': a, 'b': b, 'severity': severity, 'complete_change_count': pair['observed_delta_count'], 'self_diff_empty': True, 'receipt_sha256': base.sha(pair_path.read_bytes())})
+        for variant in ('a', 'b'):
+            folder = parent / variant
+            record = base.read(folder / 'run/run.json')
+            check(name + '-' + variant + '-completed-run2', record['schema_version'] == 2 and record['status'] == 'completed' and record['exit_code'] == 0 and record['environment']['env']['CUDA_VISIBLE_DEVICES'] == '0')
+            before_path = folder / 'guard-before.json'
+            guard = base.read(before_path)
+            gpu = next(g for g in guard['GPUs'] if g[0] == 0)
+            if name in {'FastChat', 'HarmBench'} and variant == 'b':
+                shared += 1
+                check(name + '-' + variant + '-authorized-capacity-guard', guard['launch_guard'] == 'AUTHORIZED_SHARING_PASS' and guard['authorization_sha256'] == auth_sha and guard['phase'] == 'pre_child' and gpu[3] > 0 and gpu[3] >= int(gpu[1] * fraction))
+                kind = 'LATEST_EXPLICIT_AUTHORIZATION'
+            else:
+                strict += 1
+                check(name + '-' + variant + '-historical-strict-launch-guard', guard.get('strict_guard', guard.get('launch_guard')) in {'PASS', 'STRICT_PASS'} and gpu[2] < 2048 and gpu[3] >= 70000 and gpu[4] <= 10 and guard['free_disk_bytes'] >= 50 * 1024**3)
+                kind = 'ORIGINAL_STRICT_LAUNCH_REQUIREMENTS'
+            check(name + '-' + variant + '-unchanged-original-allocation', guard['fraction'] == fraction)
+            guard_row = {'case': name, 'variant': variant, 'regime': kind, 'GPU_index': 0, 'total_mib': gpu[1], 'used_mib': gpu[2], 'free_mib': gpu[3], 'utilization_percent': gpu[4], 'original_fraction': fraction, 'receipt_sha256': base.sha(before_path.read_bytes()), 'authorization_sha256': guard.get('authorization_sha256')}
+            continuation = folder / 'post-guard-continuation.json'
+            if continuation.exists():
+                proof = base.read(continuation)
+                check('lm-eval-b-original-child-cpu-continuation', name == 'lm-evaluation-harness' and variant == 'b' and proof['native_run_repeated'] is False and proof['original_child_exit'] == 0 and proof['original_run_id'] == record['run_id'])
+                guard_row['post_child_handling'] = 'Original extra post-idle assertion failed after another user started work; original child retained, CPU checks continued without a model rerun.'
+                guard_row['post_guard_continuation_sha256'] = base.sha(continuation.read_bytes())
+            else:
+                guard_row['post_guard_observation_sha256'] = base.sha((folder / 'guard-after.json').read_bytes())
+            wheel_label = 'installed-wheel-latest-authorization' if kind == 'LATEST_EXPLICIT_AUTHORIZATION' else 'installed-wheel'
+            wheel = base.read(folder / (wheel_label + '.log'))
+            check(name + '-' + variant + '-same-candidate-installed-wheel', wheel['candidate_commit'] == base.COMMIT and wheel['wheel_sha256'] == base.read(base.QUALITY / 'build-manifest.json')['artifacts'][0]['sha256'] and wheel['matched_package_files'] > 100)
+            guards.append(guard_row)
+            runs.append({'case': name, 'variant': variant, 'run_id': record['run_id'], 'started_at': record['started_at'], 'ended_at': record['ended_at'], 'run_json_sha256': base.sha((folder / 'run/run.json').read_bytes())})
+    check('eight-original-plus-two-latest-authorized-launches', strict == 8 and shared == 2 and len(guards) == 10)
+    ordered = sorted(runs, key=lambda r: r['started_at'])
+    check('native-child-intervals-sequential', all(datetime.fromisoformat(a['ended_at'].replace('Z', '+00:00')) <= datetime.fromisoformat(b['started_at'].replace('Z', '+00:00')) for a, b in zip(ordered, ordered[1:])))
+    stages = []
+    for variant in ('a', 'b'):
+        for phase, fraction in [('target', .28), ('classify', .45)]:
+            path = NATIVE / 'evidence/stage-guards' / variant / (phase + '.json')
+            stage = base.read(path)
+            gpu = next(g for g in stage['GPUs'] if g[0] == 0)
+            check('harmbench-' + variant + '-' + phase + '-stage-identity', stage['GPU_index'] == 0 and stage['stage'] == phase and stage['fraction'] == fraction)
+            if variant == 'a':
+                check('harmbench-a-' + phase + '-strict-stage-guard', stage.get('strict_guard', stage.get('launch_guard')) in {'PASS', 'STRICT_PASS'} and gpu[2] < 2048 and gpu[3] >= max(70000, int(gpu[1] * fraction) + 2048) and gpu[4] <= 10)
+            else:
+                check('harmbench-b-' + phase + '-authorized-stage-capacity', stage['launch_guard'] == 'AUTHORIZED_SHARING_PASS' and stage['authorization_file'] == 'gpu-sharing-authorization.json' and gpu[3] > 0 and gpu[3] >= int(gpu[1] * fraction))
+            stages.append({'variant': variant, 'stage': phase, 'fraction': fraction, 'free_mib': gpu[3], 'used_mib': gpu[2], 'utilization_percent': gpu[4], 'regime': 'ORIGINAL_STRICT' if variant == 'a' else 'LATEST_EXPLICIT_AUTHORIZATION', 'receipt_sha256': base.sha(path.read_bytes())})
+    result = {'schema_version': 1, 'candidate_commit': base.COMMIT, 'status': 'PASS_FOR_NATIVE_AND_AVAILABLE_ARTIFACT_MATRIX', 'all_checks_passed': all(c['passed'] for c in checks), 'checks': checks, 'native_children': 10, 'independent_pairs': pair_results, 'native_run_intervals': ordered, 'pre_child_guards': guards, 'strict_launches': strict, 'latest_authorized_launches': shared, 'harmbench_cross_stage_guards': stages, 'exports': {'manifest_and_lock_states': 10, 'manifest_and_lock_comparisons': sum(r['comparisons'] for r in nonrun['records']), 'selected_run_states': 10, 'selected_run_comparisons': sum(r['comparisons'] for r in selected['records']), 'total_states': 20}, 'summary_sha256': {'quality': q_sha, 'gate_a': base.sha((SCRATCH / 'gate/final-1/summary.json').read_bytes()), 'supplementary_discover': base.sha((SCRATCH / 'gate/discover-preview-final-2/summary.json').read_bytes()), 'nonrun_exports': base.sha((HERE / 'exports-nonrun-final-4/summary.json').read_bytes()), 'selected_run_exports': base.sha((HERE / 'exports-selected-run-final-3/summary.json').read_bytes())}, 'resource_direction_sha256': auth_sha, 'gold_or_pins_changed': False, 'product_source_changed_by_validation': False, 'product_or_resource_commands_executed_by_this_audit': 0, 'remaining_boundaries': {'formal_judge_pair': 'A provider child completed but source snapshot fidelity failed; B NOT_RUN, no complete pair acceptance.', 'successful_hf_gated_branch': 'Separate original-input/model-author-access requirements remain; native validation does not close them.', 'formal_discover_live': 'Supplementary five-project offline preview is accepted; formal initialized/live replay is not established by these previews.', 'release_ready': False}, 'scope': 'Ten original native children, five complete independent semantic pairs, twenty accepted default export states, quality/Gate A and supplementary offline collection; actual resource direction is distinguished from historical numeric guards. No artificial 20GB/60GiB proposal is treated as policy.'}
+    base.write(OUT, result)
+    print(json.dumps({k: result[k] for k in ('status', 'all_checks_passed', 'native_children', 'strict_launches', 'latest_authorized_launches', 'exports')}, sort_keys=True))
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

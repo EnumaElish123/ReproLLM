@@ -451,6 +451,23 @@ PyTorch allocator caps are 0.35 (LoRA), 0.15 (DP), 0.30 (FastChat). The latter's
 native `--max-gpu-memory 20GiB` is not enforced on its single-GPU path, so it is
 not the resource guard. Remove inherited distributed-launch overrides.
 
+**Maintainer resource update, 2026-10-19:** “只要GPU有空闲显存，即可使用，
+无需考虑人为设定的资源限制”. This continuing instruction supersedes the
+historical fixed used/free-memory, utilization and device restrictions above
+for the same bounded validation work in explicitly provisioned environments.
+Use actual available VRAM and the current stage's executable allocation needs;
+do not request approval again solely because those historical thresholds are
+not met. The proposed 20-GiB-used/60-GiB-free limits were not accepted and are
+not a new policy. An allocator ceiling is not automatically a minimum required
+allocation. Preserve reviewed experiment inputs, batch/sequence settings and
+stage configuration, observe capacity at target/classifier boundaries, retain
+serial execution, and leave existing jobs untouched. Record actual devices,
+resource observations and outcomes. This does not provision paid API budgets,
+credentials or model-author access. Historical guard receipts keep their
+original meaning. The [current replay report](docs/dogfooding/2026-10-19-resource-completion/README.md)
+records eight launches under the old numerical checks and two under this
+explicit updated guidance; all ten used GPU 0 without changing the gold inputs.
+
 Use isolated `modern` and `dp` environments on the approved data volume. Install
 ReproLLM in each and use that same environment for launcher and child. The
 modern CUDA 12.9 compatibility libraries are process-local; never replace the

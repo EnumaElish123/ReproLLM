@@ -1,0 +1,18 @@
+"""Continue the original successful native A after CPU-only oracle correction."""
+import hashlib,json,shutil
+from pathlib import Path
+from controller import TASK,HERE,py,command,save
+name='FastChat';variant='a'
+case=TASK/'cases'/name
+folder=TASK/'evidence/runtime'/name/variant
+run=json.loads((folder/'run/run.json').read_bytes())
+assert run['status']=='completed' and run['exit_code']==0
+assert json.loads((folder/'capture-check.json').read_bytes())['status']=='PASS'
+assert (case/'outputs/current').is_dir()
+command(name,[py(name),HERE/'check_outputs.py',name,'--variant',variant],folder,'output-check')
+command(name,[py(name),HERE/'consumption_check.py',name,variant],folder,'consumption-check')
+command(name,['reprollm','export','--run',run['run_id']],folder,'export')
+shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'REPRODUCIBILITY.md')
+shutil.move(str(case/'outputs/current'),str(folder/'outputs'))
+save(folder/'capture-oracle-correction.json',{'schema_version':1,'status':'PASS','original_run_id':run['run_id'],'original_run_json_sha256':hashlib.sha256((folder/'run/run.json').read_bytes()).hexdigest(),'GPU_children_repeated':0,'paid_requests':0,'classification':'Existing raw native A requalified after independent path-oracle correction; original failed verifier command preserved.','oracle_before_sha256':hashlib.sha256((HERE/'capture_verifier-before-python-oracle.py.txt').read_bytes()).hexdigest(),'oracle_after_sha256':hashlib.sha256((HERE/'capture_verifier.py').read_bytes()).hexdigest(),'regression_receipt_sha256':hashlib.sha256((HERE/'path-oracle-regression.json').read_bytes()).hexdigest()})
+print(json.dumps({'case':name,'variant':variant,'status':'PASS','original_run_id':run['run_id'],'GPU_children_repeated':0}))

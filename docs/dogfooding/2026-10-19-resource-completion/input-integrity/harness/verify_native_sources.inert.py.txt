@@ -1,0 +1,47 @@
+"""Compare current native source bytes with frozen upstream Git objects, read-only."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE=Path(__file__).resolve().parent
+ROOT=Path('<RESOURCE_ROOT>/cases')
+CASES={
+ 'FastChat':('587d5cfa1609a43d192cedb8441cac3c17db105d',['fastchat/llm_judge/common.py','fastchat/llm_judge/gen_model_answer.py','fastchat/llm_judge/gen_judgment.py','fastchat/model/model_adapter.py']),
+ 'LlamaFactory':('673048c6a543cbbeaed5b8444b8223dc4e23c721',['src/llamafactory/cli.py','src/llamafactory/launcher.py','src/llamafactory/train/sft/trainer.py','src/llamafactory/train/tuner.py','src/llamafactory/hparams/parser.py','data/identity.json']),
+ 'HarmBench':('8e1604d1171fe8a48d8febecd22f600e462bdcdd',['baselines/direct_request/direct_request.py','baselines/model_utils.py','eval_utils.py','data/behavior_datasets/harmbench_behaviors_text_all.csv']),
+ 'llm-dp-finetune':('7f8b5dff4b92aae90ceccce3ec959b48307bed9e',['src/llm_pft/models/language_model.py','src/llm_pft/models/gpt2.py','src/llm_pft/arguments/privacy_args.py']),
+ 'lm-evaluation-harness':('b954108c9baaaa934b4ad842033b31a97ee30816',['lm_eval/api/task.py','lm_eval/evaluator.py','lm_eval/tasks/gsm8k/gsm8k.yaml','lm_eval/loggers/evaluation_tracker.py','lm_eval/models/vllm_causallms.py']),
+ 'fastDP':('3339cf45fa334cac67eb6a38726a8726630e31c2',None),
+}
+rows=[]
+for name,(pin,files) in CASES.items():
+ case=ROOT/name
+ def git(*args): return subprocess.check_output(['git','-C',str(case),*args])
+ assert git('cat-file','-t',pin).strip()==b'commit'
+ if files is None:
+  assert git('rev-parse','HEAD').decode().strip()==pin
+  files=git('ls-tree','-r','--name-only',pin).decode().splitlines()
+ result=[]
+ for relative in files:
+  expected=git('show',pin+':'+relative)
+  actual=(case/relative).read_bytes()
+  expected_blob=git('rev-parse',pin+':'+relative).decode().strip()
+  actual_blob=hashlib.sha1(b'blob '+str(len(actual)).encode()+b'\0'+actual).hexdigest()
+  same=expected==actual and expected_blob==actual_blob
+  assert same, 'Native source differs from frozen upstream object'
+  result.append({'relative_path':relative,'expected_git_blob_sha1':expected_blob,'actual_git_blob_sha1':actual_blob,'actual_sha256':hashlib.sha256(actual).hexdigest(),'byte_count':len(actual),'byte_equal_to_frozen_source':same,'sha256_expectation':'observed; source equality is independently checked against immutable Git object'})
+ row={'case':name,'source_commit':pin,'verified_source_files':result}
+ if name=='fastDP':
+  status=git('status','--porcelain','--untracked-files=all').decode().splitlines()
+  tracked=[line for line in status if not line.startswith('?? ')]
+  untracked=[line[3:] for line in status if line.startswith('?? ')]
+  assert not tracked
+  expected_generated=all(path.startswith('fastDP.egg-info/') or '/__pycache__/' in path for path in untracked)
+  row.update(tracked_source_clean=True,existing_untracked_files=untracked,existing_untracked_kind='Prior editable-install metadata and Python bytecode' if expected_generated else 'NEEDS_REVIEW',untracked_unchanged=True)
+  assert expected_generated
+ rows.append(row)
+receipt={'schema_version':1,'status':'PASS','cases':rows,'network_requests':0,'GPU_jobs':0,'source_mutations':False,'scope':'Current source bytes independently compared to frozen upstream Git blobs; SHA-256 observations are not invented prior gold.'}
+with (HERE/'native-source-integrity.json').open('x') as stream:
+ json.dump(receipt,stream,sort_keys=True,indent=2);stream.write('\n')
+print(json.dumps({'status':'PASS','source_files':sum(len(r['verified_source_files']) for r in rows),'cases':len(rows),'fastDP_existing_generated_untracked_files':len(rows[-1]['existing_untracked_files'])}))

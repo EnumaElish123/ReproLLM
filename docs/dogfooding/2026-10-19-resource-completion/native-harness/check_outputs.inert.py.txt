@@ -1,0 +1,113 @@
+"""Independent structural checks of real upstream outputs, not expected model prose."""
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+
+ROOT = Path('<RESOURCE_ROOT>/replays/resource-20261019-750270b')
+
+def load(path):
+    return json.loads(path.read_text())
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('case')
+    parser.add_argument('--variant', choices=['a', 'b'], default='a')
+    parser.add_argument('--compare', action='store_true')
+    args = parser.parse_args()
+    case = ROOT/'cases'/args.case
+    output = case/'outputs/current'
+    evidence = ROOT/'evidence/runtime'/args.case
+    proof = dict(schema_version=1, case=args.case, variant=args.variant)
+    if args.case == 'lm-evaluation-harness':
+        from transformers import AutoTokenizer
+        tokenizer = AutoTokenizer.from_pretrained('Qwen/Qwen2.5-0.5B-Instruct', revision='7ae557604adf67be50417f59c2c2f167def9a775', local_files_only=True)
+        files = list(output.rglob('*samples*.jsonl'))
+        assert len(files) == 1, files
+        rows = [json.loads(line) for line in files[0].read_text().splitlines()]
+        assert len(rows) == 200, '100 documents, two original extraction filters each'
+        by_id = {}
+        lengths = []
+        cap = 32 if args.variant == 'a' else 48
+        for row in rows:
+            by_id.setdefault(row['doc_id'], []).append(row)
+            # The pinned EvaluationTracker serializes request tuples into named maps.
+            assert set(row['arguments']) == {'gen_args_0'}
+            assert set(row['arguments']['gen_args_0']) == {'arg_0', 'arg_1'}
+            prompt = row['arguments']['gen_args_0']['arg_0']
+            assert isinstance(prompt, str) and len(tokenizer.encode(prompt)) + 48 < 4096
+            assert row['arguments']['gen_args_0']['arg_1']['max_gen_toks'] == cap
+            response = row['resps'][0][0]
+            length = len(tokenizer.encode(response, add_special_tokens=False))
+            assert 0 <= length <= cap
+            lengths.append(length)
+            assert math.isfinite(row['exact_match'])
+        assert set(by_id) == set(range(100))
+        assert all(len(items) == 2 and {item['filter'] for item in items} == {'strict-match', 'flexible-extract'} for items in by_id.values())
+        proof.update(documents=100, logged_filter_rows=len(rows), max_response_tokens=max(lengths),
+                     prompts={str(key): items[0]['prompt_hash'] for key, items in by_id.items()},
+                     documents_hashes={str(key): items[0]['doc_hash'] for key, items in by_id.items()})
+        results = list(output.rglob('*results*.json'))
+        assert len(results) == 1
+        metrics = load(results[0])['results']['gsm8k_validation']
+        for key in ('exact_match,strict-match', 'exact_match,flexible-extract'):
+            assert math.isfinite(metrics[key])
+        proof['metrics'] = metrics
+    elif args.case == 'LlamaFactory':
+        from safetensors.torch import load_file
+        import torch
+        state = load(output/'trainer_state.json')
+        assert state['global_step'] == 2
+        batches = load(output/'validation-proof.json')['actual_batches']
+        assert len(batches) == 2 and all(batch['supervised_tokens'] > 0 and math.isfinite(batch['loss']) for batch in batches)
+        losses = [entry for entry in state['log_history'] if 'loss' in entry]
+        assert len(losses) == 2 and all(math.isfinite(entry['loss']) for entry in losses)
+        assert [entry['step'] for entry in losses] == [1, 2]
+        weights = load_file(output/'adapter_model.safetensors')
+        assert weights and all(torch.isfinite(weight).all().item() for weight in weights.values())
+        b_weights = [weight for name, weight in weights.items() if 'lora_B' in name]
+        assert b_weights and any(torch.count_nonzero(weight).item() > 0 for weight in b_weights)
+        config = load(output/'adapter_config.json')
+        assert config['r'] == 8 and config['lora_alpha'] == 16
+        proof.update(steps=2, losses=[entry['loss'] for entry in losses], actual_batches=batches, adapter_tensors=len(weights),
+                     nonzero_lora_b_tensors=sum(torch.count_nonzero(weight).item() > 0 for weight in b_weights))
+    elif args.case == 'llm-dp-finetune':
+        proof.update(load(output/'validation-proof.json'))
+        assert proof['steps'] == 2 and proof['clip_calls'] > 0 and proof['positive_noise_draws'] > 0
+        assert proof['covered_parameter_tensors'] == proof['intended_parameter_tensors']
+        assert proof['initial_parameters_sha256'] != proof['final_parameters_sha256']
+        assert len(proof['losses']) == 2 and all(math.isfinite(value) for value in proof['losses'])
+        assert proof['noise_multiplier'] > 0
+        assert proof['target_epsilon'] == (8 if args.variant == 'a' else 4)
+    elif args.case == 'HarmBench':
+        proof.update(load(output/'validation-proof.json'))
+        cap = 16 if args.variant == 'a' else 24
+        assert proof['completion_count'] == proof['classifier_count'] == 1
+        assert proof['classifier_label'] in (0, 1) and proof['original_classifier_function']
+        assert 0 < proof['generated_tokens'] <= cap
+        assert proof['prompt_tokens'] + cap < 2048
+    elif args.case == 'FastChat':
+        rows = [json.loads(line) for line in (output/'answers.jsonl').read_text().splitlines()]
+        assert len(rows) == 1 and rows[0]['question_id'] == 81
+        assert len(rows[0]['choices']) == 1
+        turns = rows[0]['choices'][0]['turns']
+        assert len(turns) == 2 and all(text.strip() and text != 'ERROR' for text in turns)
+        proof.update(question_id=81, choices=1, turns=2, paid_judge=False)
+    else:
+        raise AssertionError(args.case)
+    if args.compare:
+        assert args.variant == 'b'
+        baseline = load(evidence/'a/output-check.json')
+        if args.case == 'lm-evaluation-harness':
+            assert baseline['prompts'] == proof['prompts']
+            assert baseline['documents_hashes'] == proof['documents_hashes']
+        if args.case == 'llm-dp-finetune':
+            assert baseline['initial_parameters_sha256'] == proof['initial_parameters_sha256']
+            assert baseline['noise_multiplier'] < proof['noise_multiplier']
+    (evidence/args.variant/'output-check.json').write_text(json.dumps(proof, indent=2, sort_keys=True)+'\n')
+    print(json.dumps({key: value for key, value in proof.items() if key not in ('prompts', 'documents_hashes')}, sort_keys=True))
+
+if __name__ == '__main__':
+    main()

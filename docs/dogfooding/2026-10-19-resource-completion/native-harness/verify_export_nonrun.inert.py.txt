@@ -1,0 +1,130 @@
+"""Independent declared/locked default-export projection; no product imports or execution."""
+from __future__ import annotations
+
+import argparse
+import getpass
+import json
+import re
+import socket
+import subprocess
+from pathlib import Path
+
+import yaml
+
+import verify_export_current as expected
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("implementation-root", "project-root", "manifest", "markdown", "stdout", "stderr", "command-receipt", "source-binding", "expected-stderr", "report"):
+        parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--lock", type=Path)
+    parser.add_argument("--audit-json", type=Path)
+    parser.add_argument("--case", choices=expected.FIELDS, required=True)
+    parser.add_argument("--variant", choices=("a", "b"), required=True)
+    args = parser.parse_args()
+    assert args.report.resolve().is_relative_to(Path("/tmp")) and not args.report.exists()
+    implementation = args.implementation_root.resolve()
+    source_root = args.project_root.resolve()
+    binding = json.loads(args.source_binding.read_bytes())
+    assert binding["source_commit"] == "750270b10307455795fcff126664429dc895983a"
+    assert binding["candidate_reprollm_version"] == "0.7.0"
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=implementation).decode().strip() == binding["source_commit"]
+    for relative, digest in binding["files_sha256"].items():
+        assert expected.digest((implementation / relative).read_bytes()) == digest
+    documents = {}
+    for name, path in (("manifest", args.manifest), ("lock", args.lock)):
+        if path:
+            raw = yaml.safe_load(path.read_bytes())
+            schema = json.loads((implementation / "schemas" / (name + ".schema.json")).read_bytes())
+            documents[name] = expected.normalize(raw, schema, schema)
+        else:
+            documents[name] = {}
+    manifest, lock = documents["manifest"], documents["lock"]
+    flat = expected.snapshot_flat(manifest, lock, {})
+    markdown = args.markdown.read_bytes()
+    document = markdown.decode()
+    checks = []
+
+    def check(label, actual, wanted):
+        checks.append({"label": label, "actual_sha256": expected.digest(actual), "expected_sha256": expected.digest(wanted), "equal": actual == wanted})
+
+    check("declaration-source-scope", "from the current manifest and available lockfile." in document, True)
+    check("project-title", expected.literal(document.splitlines()[0]), "# Reproducibility statement — " + manifest["project"]["name"])
+    profiles = manifest.get("experiment", {}).get("profiles", [])
+    check("complete-declared-profiles", "Declared profiles: " + ", ".join(profiles) + "." in expected.literal(document) if profiles else "Declared profiles:" not in document, True)
+    parameter, values, title, suffix = expected.FIELDS[args.case]
+    check("independent-literal-variant", flat[parameter]["value"], values[args.variant == "b"])
+    check("parameter-evidence-kind", flat[parameter]["source"], "lock" if lock and parameter in flat else "manifest")
+    roles = expected.identity_projection(document, flat, check)
+    check("complete-no-run-code", expected.section(document, "Code").strip(), "- commit: `unknown`\n- branch: unknown\n- dirty: unknown\n- remote: not recorded")
+    environment = [["Python evidence", "recorder interpreter; during lock resolution." if lock else "not captured."], ["Inherited environment", "not captured."], ["Python", str(flat.get("environment.packages.python", flat.get("environment.python", {"value": "unknown"}))["value"])]]
+    for field, label in (("platform", "Platform"), ("os", "OS")):
+        if "environment." + field in flat:
+            environment.append([label, str(flat["environment." + field]["value"]) + " (recorder host; during lock resolution)"])
+    environment.extend([[path.removeprefix("environment.packages."), str(leaf["value"]) + " (recorder interpreter; during lock resolution)"] for path, leaf in sorted(flat.items()) if path.startswith("environment.packages.") and path != "environment.packages.python"])
+    actual_env = [expected.literal(line[2:]).split(": ", 1) for line in expected.section(document, "Environment").splitlines() if line.startswith("- ")]
+    check("complete-nonrun-environment", actual_env, environment)
+    hardware = [[path.removeprefix("hardware."), str(leaf["value"]), "recorder host; during lock resolution"] for path, leaf in sorted(flat.items()) if path.startswith("hardware.")]
+    check("complete-nonrun-hardware", [r for r in expected.table(expected.section(document, "Hardware")) if r[0] != "Field"], hardware)
+    check("hardware-scope", "- Collector evidence: " + ("recorder host; during lock resolution." if lock else "not captured.") in expected.section(document, "Hardware"), True)
+    check("no-runtime-claim", expected.section(document, "Execution").strip(), "No run record exists for this experiment. Wrap the command with\n`reprollm run -- <command>` to record what actually executed.")
+    limits = []
+    if lock:
+        for role, model in sorted(lock.get("models", {}).items()):
+            revision = model["revision"]
+            if revision["confidence"] != "exact":
+                text = "models." + role + ": revision unresolved (" + revision["source"] + ")"
+                if revision.get("note"):
+                    text += " — " + revision["note"]
+                limits.append(text)
+            if model.get("pinnability") == "unpinnable":
+                limits.append("models." + role + ": closed-source API alias is unpinnable; identity is observation-based only")
+        for role, dataset in sorted(lock.get("datasets", {}).items()):
+            if dataset["revision"]["confidence"] != "exact":
+                limits.append("datasets." + role + ": revision unresolved (" + dataset["revision"]["source"] + ")")
+            if dataset.get("content_fingerprint", {}).get("status") == "not_computed":
+                limits.append("datasets." + role + ": content fingerprint not computed")
+        if ((lock.get("environment") or {}).get("gpu") or {}).get("source") == "unavailable":
+            limits.append("hardware: GPU information unavailable at lock time")
+    else:
+        limits.extend(path + ": no lock exists; value unresolved" for path in sorted(flat) if path.startswith(("models.", "datasets.")) and path.endswith((".id", ".revision")))
+    if manifest.get("bindings"):
+        limits.append("bindings: " + ", ".join(sorted(manifest["bindings"])) + " — runtime agreement is only checked when run records exist")
+    check("complete-nonrun-limitations", [expected.literal(line[2:]) for line in expected.section(document, "Known limitations").splitlines() if line.startswith("- ")], list(dict.fromkeys(limits)))
+    check("current-version", "Generated by [ReproLLM](https://github.com/EnumaElish123/ReproLLM) 0.7.0" in document, True)
+    check("nonrun-schema-footer", all(item in document for item in ["schema versions: manifest " + str(manifest["schema_version"]), "lock " + (str(lock["schema_version"]) if lock else "n/a"), "run record n/a"]), True)
+    check("audit-scope", all(item in document for item in ["Audit scope: the current working tree and its available documents", "not a separate audit of a selected historical run"]), True)
+    audit_verified = args.audit_json is not None
+    if args.audit_json:
+        audit = json.loads(args.audit_json.read_bytes())
+        summary = audit["summary"]
+        audit_text = expected.literal(expected.section(document, "Audit summary"))
+        check("complete-audit-counts", all(item in audit_text for item in [str(summary["critical"]) + " critical", str(summary["warning"]) + " warning", str(summary["info"]) + " info", str(summary["pass"]) + " passed"]), True)
+        findings = ["- **" + finding["severity"] + "** `" + finding["rule_id"] + "`: " + finding["message"] for finding in audit["findings"] if finding["severity"] in ("CRITICAL", "WARNING")]
+        check("complete-audit-notable", [expected.literal(line) for line in expected.section(document, "Audit summary").splitlines() if line.startswith("- **")], findings)
+    receipt = json.loads(args.command_receipt.read_bytes())
+    check("actual-export-exit", receipt["exit_code"], 0)
+    stdout, stderr = args.stdout.read_bytes(), args.stderr.read_bytes()
+    check("stdout-receipt", expected.digest(stdout), receipt["stdout_sha256"].removeprefix("sha256:"))
+    check("stderr-receipt", expected.digest(stderr), receipt["stderr_sha256"].removeprefix("sha256:"))
+    check("exact-independent-diagnostics", stderr, args.expected_stderr.read_bytes())
+    argv = receipt["argv"]
+    assert "export" in argv and "--run" not in argv
+    output = Path(argv[argv.index("--output") + 1]) if "--output" in argv else Path("REPRODUCIBILITY.md")
+    output = output if output.is_absolute() else source_root / output
+    check("complete-export-stdout", stdout, (f"Wrote {output} ({len(roles)} models, no run) — commit this file with your paper artifact\n").encode())
+    decoded = expected.literal(document)
+    check("no-private-local-values", any(value in decoded for value in (str(implementation), str(source_root), getpass.getuser(), socket.gethostname())), False)
+    check("no-credential-signatures", bool(re.search(r"(?:sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16}|-----BEGIN .*PRIVATE KEY-----)", decoded)), False)
+    projection = all(item["equal"] for item in checks)
+    result = {"schema_version": 1, "case": args.case, "variant": args.variant, "state_kind": "manifest+lock" if lock else "manifest-only", "projection_passed": projection, "complete_export_acceptance": projection and audit_verified, "status": "FAIL" if not projection else "PASS" if audit_verified else "PARTIAL_MISSING_INDEPENDENT_AUDIT", "embedded_audit_independently_verified": audit_verified, "source_commit": binding["source_commit"], "source_binding_sha256": expected.digest(args.source_binding.read_bytes()), "checks": checks, "comparison_count": len(checks), "original_inputs_sha256": {"manifest": expected.digest(args.manifest.read_bytes()), "lock": expected.digest(args.lock.read_bytes()) if args.lock else None, "markdown": expected.digest(markdown), "command_receipt": expected.digest(args.command_receipt.read_bytes()), "audit_json": expected.digest(args.audit_json.read_bytes()) if args.audit_json else None}, "product_commands_executed": 0, "resource_jobs": 0, "scope": "Source-derived declared/locked identity, environment/hardware context, no-run provenance, known limitations, exact diagnostics/exit/stdout and optional separate embedded audit; no model execution claim."}
+    result['checker_sha256'] = expected.digest(Path(__file__).read_bytes())
+    result['identity_projection_helper_sha256'] = expected.digest(Path(expected.__file__).read_bytes())
+    args.report.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(json.dumps({key: result[key] for key in ("status", "comparison_count", "projection_passed", "complete_export_acceptance")}, sort_keys=True))
+    return 1 if not projection else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

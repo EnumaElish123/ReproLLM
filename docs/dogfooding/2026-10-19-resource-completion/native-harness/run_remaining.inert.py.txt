@@ -1,0 +1,32 @@
+"""First launches of the two prepared remaining children under current authorization."""
+from pathlib import Path
+import fcntl
+import json
+import shutil
+import sys
+sys.path.insert(0,str(Path(__file__).parent/'native'))
+from controller import TASK, RESOURCE, HERE, CASES, CANDIDATE, command, py, save, git, guard, review
+
+QUALITY=HERE.parent/'quality/final-1'
+for name in ('FastChat','HarmBench'):
+    variant='b';case=TASK/'cases'/name;folder=TASK/'evidence/runtime'/name/variant
+    assert not (folder/'run.started.json').exists() and not (folder/'run.command.json').exists()
+    assert not (case/'outputs/current').exists()
+    assert not git(case,'status','--porcelain','--untracked-files=all')
+    command(name,[py(name),HERE/'wheel_check.py',QUALITY/'dist/reprollm-0.7.0-py3-none-any.whl',CANDIDATE,QUALITY/'build-manifest.json'],folder,'installed-wheel-latest-authorization')
+    with (RESOURCE/'gpu-validation.lock').open('a') as lease:
+        fcntl.flock(lease,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        save(folder/'guard-before.json',guard(name,variant))
+        command(name,['reprollm','run','--name',f'r1019-{name}-{variant}','--capture-output','--',*CASES[name][1]],folder,'run',observe=variant)
+        save(folder/'guard-after.json',guard(name,variant,'post_child'))
+    selected=[p for p in (case/'.reprollm/runs').glob('*/run.json') if json.loads(p.read_bytes()).get('name')==f'r1019-{name}-{variant}']
+    assert len(selected)==1
+    shutil.copytree(selected[0].parent,folder/'run')
+    command(name,['reprollm','audit','--format','json','--fail-on','never'],folder,'audit-after')
+    command(name,[py(name),HERE/'verify_capture.py',name,variant],folder,'capture-check')
+    command(name,[py(name),HERE/'check_outputs.py',name,'--variant',variant,'--compare'],folder,'output-check')
+    command(name,[py(name),HERE/'consumption_check.py',name,variant],folder,'consumption-check')
+    command(name,['reprollm','export','--run',selected[0].parent.name],folder,'export')
+    shutil.copyfile(case/'REPRODUCIBILITY.md',folder/'REPRODUCIBILITY.md')
+    shutil.move(str(case/'outputs/current'),str(folder/'outputs'))
+    review(name)

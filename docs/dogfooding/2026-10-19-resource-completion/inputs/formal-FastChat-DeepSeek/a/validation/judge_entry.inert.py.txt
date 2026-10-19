@@ -1,0 +1,66 @@
+"""Run FastChat's original single-judge prompt builder/parser with bounded transport."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+
+import httpx
+import yaml
+
+from judge_transport import Budget, complete
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+
+def main():
+    from fastchat.conversation import get_conv_template
+    from fastchat.llm_judge import common
+
+    config = yaml.safe_load((ROOT/"validation/judge.yaml").read_text())
+    assert config["model"] == "deepseek-flash" and config["endpoint"] == "https://api.deepseek.com"
+    assert config["temperature"] == 0 and config["thinking"] == "disabled"
+    questions = common.load_questions(str(ROOT/"fastchat/llm_judge/data/mt_bench/question.jsonl"), None, None)
+    question = next(item for item in questions if item["question_id"] == config["question_id"])
+    prompts = common.load_judge_prompts(str(ROOT/"fastchat/llm_judge/data/judge_prompts.jsonl"))
+    prompt = prompts[config["prompt_name"]]
+    answer = {"question_id": question["question_id"], "model_id": "synthetic-fixed-email",
+              "choices": [{"index": 0, "turns": [config["answer"]]}]}
+    expected_prompt = prompt["prompt_template"].format(question=question["turns"][0], answer=config["answer"])
+    observations = []
+    budget = Budget(Path(os.environ["VALIDATION_BUDGET_PATH"]))
+    with httpx.Client(trust_env=False, transport=httpx.HTTPTransport(retries=0)) as client:
+        def transport(model, conv, temperature, max_tokens):
+            assert model == config["model"] and temperature == 0 and max_tokens == 2048
+            messages = conv.to_openai_api_messages()
+            assert messages == [{"role": "system", "content": prompt["system_prompt"]},
+                                {"role": "user", "content": expected_prompt}]
+            result = complete(client, os.environ["OPENAI_API_KEY"], messages, config["max_tokens"], budget)
+            result["messages_sha256"] = hashlib.sha256(json.dumps(messages, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+            result["upstream_requested_max_tokens"] = max_tokens
+            observations.append(result)
+            return result["text"]
+
+        common.OPENAI_MODEL_LIST = [*common.OPENAI_MODEL_LIST, config["model"]]
+        common.get_conversation_template = lambda model: get_conv_template("chatgpt")
+        common.chat_completion_openai = transport
+        match = common.MatchSingle(question, "synthetic-fixed-email", answer, common.Judge(config["model"], prompt))
+        output = ROOT/"outputs/current"
+        output.mkdir(parents=True, exist_ok=False)
+        result = common.play_a_match_single(match, str(output/"judgment.jsonl"))
+    budget.close()
+    assert len(observations) == 1 and result["user_prompt"] == expected_prompt
+    assert isinstance(result["score"], (int, float)) and 1 <= result["score"] <= 10
+    (output/"transport-proof.json").write_text(json.dumps({"schema_version": 1, "provider": "deepseek",
+        "transport": observations[0], "score": result["score"], "question_id": question["question_id"],
+        "single_turn": True, "prompt_name": prompt["name"], "original_parser": True}, sort_keys=True, indent=2)+"\n")
+    print("PASS: one real DeepSeek judgment parsed by original FastChat logic")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print("Judge validation failed: "+type(error).__name__+"; no automatic retry", file=sys.stderr)
+        raise SystemExit(1) from None

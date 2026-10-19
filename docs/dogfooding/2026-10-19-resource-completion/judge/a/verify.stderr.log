@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "<TASK>/judge_controller.py", line 156, in <module>
+    elif action=='verify':verify(sys.argv[2])
+                          ^^^^^^^^^^^^^^^^^^^
+  File "<TASK>/judge_controller.py", line 110, in verify
+    result=checker.verify_capture(CASE,folder/'run','evaluation.judge.params.max_tokens',cap,COMMAND,installed_versions(),git('rev-parse','HEAD').decode().strip())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<TASK>/judge_capture_verifier.py", line 54, in wrapped
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "<TASK>/judge_capture_verifier.py", line 269, in verify_capture
+    _require(not run.warnings, "required capture has warnings or missing data")
+  File "<TASK>/judge_capture_verifier.py", line 65, in _require
+    raise VerificationError(reason)
+judge_capture_checker.VerificationError: required capture has warnings or missing data

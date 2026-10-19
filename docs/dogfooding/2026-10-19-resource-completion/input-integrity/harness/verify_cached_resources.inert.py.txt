@@ -1,0 +1,43 @@
+"""Read native model cache once; compare preselected independent fixed identities."""
+import hashlib
+import json
+from pathlib import Path
+import time
+
+HERE=Path(__file__).resolve().parent
+RESOURCE=Path('<RESOURCE_ROOT>')
+ORACLE=HERE.parent/'worktree/docs/dogfooding/2026-10-13-val-r01/input-integrity/model-integrity.json'
+start=time.monotonic()
+source=ORACLE.read_bytes()
+oracle=json.loads(source)
+records=[]
+for row in oracle['files']:
+ relative=row['logical_paths'][0]
+ path=RESOURCE/relative
+ before=path.stat()
+ digest=hashlib.sha256()
+ blob=hashlib.sha1(b'blob '+str(before.st_size).encode()+b'\0')
+ began=time.monotonic()
+ with path.open('rb') as stream:
+  for block in iter(lambda:stream.read(8*1024*1024),b''):
+   digest.update(block)
+   blob.update(block)
+ after=path.stat()
+ stable=(before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns)
+ checks=[]
+ for expected in row['expectations']:
+  expected_size=expected.get('expected_bytes')
+  expected_sha=expected.get('expected_sha256')
+  expected_blob=expected.get('expected_git_blob_sha1')
+  assert expected_sha or expected_blob, 'Independent content oracle missing; do not assert match'
+  content_equal=digest.hexdigest()==expected_sha if expected_sha else blob.hexdigest()==expected_blob
+  size_equal=expected_size is None or before.st_size==expected_size
+  checks.append({'source':expected['source'],'model_id':expected['model_id'],'revision':expected['revision'],'sha256_oracle':expected_sha,'git_blob_sha1_oracle':expected_blob,'content_identity_equal':content_equal,'size_equal':size_equal})
+ result={'relative_paths':row['logical_paths'],'size_bytes':before.st_size,'actual_sha256':digest.hexdigest(),'actual_git_blob_sha1':blob.hexdigest(),'input_unchanged_while_reading':stable,'read_once':True,'checks':checks,'status':'MATCH' if stable and all(c['content_identity_equal'] and c['size_equal'] for c in checks) else 'FAIL','elapsed_seconds':round(time.monotonic()-began,6)}
+ records.append(result)
+ print(json.dumps({'file':relative,'status':result['status'],'bytes':before.st_size}),flush=True)
+receipt={'schema_version':1,'status':'PASS' if all(r['status']=='MATCH' for r in records) else 'FAIL','oracle_repository_path':'docs/dogfooding/2026-10-13-val-r01/input-integrity/model-integrity.json','oracle_sha256':hashlib.sha256(source).hexdigest(),'physical_files_hashed':len(records),'physical_bytes_read':sum(r['size_bytes'] for r in records),'elapsed_seconds':round(time.monotonic()-start,6),'parallel_readers':1,'files':records,'network_requests':0,'GPU_jobs':0,'cache_mutations':False,'scope':'Independent historical fixed SHA-256/LFS or official immutable Git-blob oracle; current large-file bytes read once, no network or weights download.'}
+with (HERE/'cached-model-integrity.json').open('x') as stream:
+ json.dump(receipt,stream,sort_keys=True,indent=2);stream.write('\n')
+assert receipt['status']=='PASS'
+print(json.dumps({k:v for k,v in receipt.items() if k!='files'},sort_keys=True),flush=True)

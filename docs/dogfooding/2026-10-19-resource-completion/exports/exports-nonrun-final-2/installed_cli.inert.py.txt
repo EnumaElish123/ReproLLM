@@ -1,0 +1,16 @@
+import os, sys
+from pathlib import Path
+def prohibit(event, args):
+    if event == "socket.connect":
+        raise RuntimeError("Offline Gate A forbids network")
+    if event == "import" and str(args[0]).split(".")[0] in {"torch", "transformers", "vllm", "huggingface_hub", "numpy"}:
+        raise RuntimeError("Offline Gate A forbids heavy imports")
+sys.addaudithook(prohibit)
+import reprollm
+import importlib.metadata
+assert importlib.metadata.version("reprollm") == "0.7.0"
+assert "/envs/" in str(Path(reprollm.__file__).resolve())
+if reprollm.__version__ != "0.7.0":
+    raise RuntimeError("Candidate version mismatch")
+from reprollm.cli.main import cli
+cli()

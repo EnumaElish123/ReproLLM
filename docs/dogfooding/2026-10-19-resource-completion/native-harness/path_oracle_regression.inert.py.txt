@@ -1,0 +1,17 @@
+import json
+from pathlib import Path
+from path_oracle import unsafe_matches
+safe=['roles=("[INST]","[/INST]")\n','value = total // count\n','value = a / b\n','value //= divisor\n','p = f"data/{args.bench_name}/question.jsonl"\n','p = f"data/{args.bench_name}/model_answer/{args.model_id}.jsonl"\n']
+bad=['"/home/example/file"','"/mnt/data/file"','r"C:\\Users\\example\\file"','r"\\\\server\\share\\file"','"file:///tmp/private"','f"/home/{name}/file"','f"C:\\Users\\{name}\\file"','f"data/{name}/ok /home/example/file"','f"data/{\'/home/example/file\'}"']
+checks=[]
+for text in safe:
+ assert not unsafe_matches(text,python_source=True), text
+ checks.append({'kind':'safe-python-syntax','status':'PASS'})
+for text in bad:
+ assert unsafe_matches(text,python_source=True), text
+ checks.append({'kind':'actual-path-in-python-source','status':'REJECTED_AS_EXPECTED'})
+ assert unsafe_matches(text,python_source=False),text
+ checks.append({'kind':'actual-path-in-plain-text','status':'REJECTED_AS_EXPECTED'})
+receipt={'schema_version':1,'status':'PASS','checks':checks,'safe_python_cases':len(safe),'actual_path_negative_cases':len(bad),'source_equality_used_to_exempt_paths':False}
+Path(__file__).with_name('path-oracle-regression.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+print(json.dumps(receipt,sort_keys=True))
