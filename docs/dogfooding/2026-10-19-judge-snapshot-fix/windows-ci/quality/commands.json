@@ -1,0 +1,617 @@
+{
+  "candidate_commit": "409a1a707c5da1f23d06f890cd88e2399002da20",
+  "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+  "commands": [
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "\nimport importlib.metadata, json, re, subprocess, sys, tomllib\nfrom pathlib import Path\n\nnames = [\n    \"reprollm\",\n    \"pytest\",\n    \"pytest-cov\",\n    \"coverage\",\n    \"ruff\",\n    \"mypy\",\n    \"pydantic\",\n    \"typer\",\n    \"PyYAML\",\n    \"respx\",\n    \"jsonschema\",\n]\nversions = {name: importlib.metadata.version(name) for name in names}\nnormalize = lambda name: re.sub(r\"[-_.]+\", \"-\", name).lower()\nlock = tomllib.loads(Path(\"uv.lock\").read_text())\npins = {normalize(p[\"name\"]): p[\"version\"] for p in lock[\"package\"] if \"version\" in p}\nassert versions[\"reprollm\"] == \"0.7.0\"\nassert all(versions[name] == pins[normalize(name)] for name in names if name != \"reprollm\"), (\n    \"locked tool version mismatch\"\n)\ngit = (\n    subprocess.run([\"git\", \"--version\"], check=True, stdout=subprocess.PIPE).stdout.decode().strip()\n)\nuv = (\n    subprocess.run([sys.argv[1], \"--version\"], check=True, stdout=subprocess.PIPE)\n    .stdout.decode()\n    .strip()\n)\nprint(\n    json.dumps(\n        {\n            \"schema_version\": 1,\n            \"python\": sys.version.split()[0],\n            \"versions\": versions,\n            \"git\": git,\n            \"uv\": uv,\n            \"tool_versions_match_uv_lock\": True,\n        },\n        sort_keys=True,\n    )\n)\n",
+        "<UV>"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.177908,
+      "exit_code": 0,
+      "label": "00-environment-versions",
+      "origin_check": {
+        "elapsed_seconds": 0.077919,
+        "exit_code": 0,
+        "raw_log": "raw/00-environment-versions-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/00-environment-versions.log",
+      "raw_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154",
+      "shareable_log": "logs/00-environment-versions.log",
+      "shareable_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 11.718399,
+      "exit_code": 0,
+      "label": "01-quickstart-preflight",
+      "origin_check": {
+        "elapsed_seconds": 0.076505,
+        "exit_code": 0,
+        "raw_log": "raw/01-quickstart-preflight-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/01-quickstart-preflight.log",
+      "raw_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "shareable_log": "logs/01-quickstart-preflight.log",
+      "shareable_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--basetemp=<QUALITY>/pytest-temp",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<QUALITY>/coverage.xml",
+        "--cov-report=json:<QUALITY>/coverage.json",
+        "--cov-fail-under=85",
+        "--tb=short",
+        "--junit-xml=<QUALITY>/pytest-report.xml"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 448.705997,
+      "exit_code": 0,
+      "label": "02-pytest-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.076462,
+        "exit_code": 0,
+        "raw_log": "raw/02-pytest-coverage-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/02-pytest-coverage.log",
+      "raw_log_sha256": "983a83803cf230cd9d112f1ab2b73e7e7160ade9c99fbe70b6ecea0fa7901018",
+      "shareable_log": "logs/02-pytest-coverage.log",
+      "shareable_log_sha256": "e5492c6c983df7d9a553ccfce533b36f8500bcf06b0bfa5e2cc12af5d807605b"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.164897,
+      "exit_code": 0,
+      "label": "03-redaction-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.076978,
+        "exit_code": 0,
+        "raw_log": "raw/03-redaction-coverage-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/03-redaction-coverage.log",
+      "raw_log_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1",
+      "shareable_log": "logs/03-redaction-coverage.log",
+      "shareable_log_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security",
+        "--basetemp=<QUALITY>/security-temp",
+        "--tb=short"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 20.180686,
+      "exit_code": 0,
+      "label": "04-security",
+      "origin_check": {
+        "elapsed_seconds": 0.076714,
+        "exit_code": 0,
+        "raw_log": "raw/04-security-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/04-security.log",
+      "raw_log_sha256": "b5b84cf4c807186d0cc88a38c32289b828d6baff4235a25f5843d39c626e5596",
+      "shareable_log": "logs/04-security.log",
+      "shareable_log_sha256": "b5b84cf4c807186d0cc88a38c32289b828d6baff4235a25f5843d39c626e5596"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "check",
+        "."
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.063449,
+      "exit_code": 0,
+      "label": "05-ruff-check",
+      "origin_check": {
+        "elapsed_seconds": 0.075123,
+        "exit_code": 0,
+        "raw_log": "raw/05-ruff-check-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/05-ruff-check.log",
+      "raw_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "shareable_log": "logs/05-ruff-check.log",
+      "shareable_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.07205,
+      "exit_code": 0,
+      "label": "06-ruff-format-check",
+      "origin_check": {
+        "elapsed_seconds": 0.071107,
+        "exit_code": 0,
+        "raw_log": "raw/06-ruff-format-check-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/06-ruff-format-check.log",
+      "raw_log_sha256": "6a72488597d4965016af014915226c461e18dec2ea6eed031ffb1fcdd619c032",
+      "shareable_log": "logs/06-ruff-format-check.log",
+      "shareable_log_sha256": "6a72488597d4965016af014915226c461e18dec2ea6eed031ffb1fcdd619c032"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/mypy",
+        "src/",
+        "scripts/compare_gold.py"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.287551,
+      "exit_code": 0,
+      "label": "07-mypy",
+      "origin_check": {
+        "elapsed_seconds": 0.068802,
+        "exit_code": 0,
+        "raw_log": "raw/07-mypy-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/07-mypy.log",
+      "raw_log_sha256": "8b5797357e93091221a6fcd852b451114a3ea8e2435b261bb73dd79f29e7412b",
+      "shareable_log": "logs/07-mypy.log",
+      "shareable_log_sha256": "8b5797357e93091221a6fcd852b451114a3ea8e2435b261bb73dd79f29e7412b"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.377708,
+      "exit_code": 0,
+      "label": "08-rules-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.077917,
+        "exit_code": 0,
+        "raw_log": "raw/08-rules-documentation-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/08-rules-documentation.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shareable_log": "logs/08-rules-documentation.log",
+      "shareable_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.396039,
+      "exit_code": 0,
+      "label": "09-profiles-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.074829,
+        "exit_code": 0,
+        "raw_log": "raw/09-profiles-documentation-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/09-profiles-documentation.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shareable_log": "logs/09-profiles-documentation.log",
+      "shareable_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 12.753567,
+      "exit_code": 0,
+      "label": "10-cli-documentation",
+      "origin_check": {
+        "elapsed_seconds": 0.077439,
+        "exit_code": 0,
+        "raw_log": "raw/10-cli-documentation-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/10-cli-documentation.log",
+      "raw_log_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c",
+      "shareable_log": "logs/10-cli-documentation.log",
+      "shareable_log_sha256": "0759132639786ed520974d027df6784c2492af2c4f1a1de3364fb2ab8703741c"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "schema",
+        "export",
+        "--out",
+        "<QUALITY>/schema-export"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.517968,
+      "exit_code": 0,
+      "label": "11-schema-export",
+      "origin_check": {
+        "elapsed_seconds": 0.075192,
+        "exit_code": 0,
+        "raw_log": "raw/11-schema-export-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/11-schema-export.log",
+      "raw_log_sha256": "0467e34c197f89de69e2cf960636f9fe03e886b37633f6797a431420d70b9bd3",
+      "shareable_log": "logs/11-schema-export.log",
+      "shareable_log_sha256": "0a9d75ef0e5bdcd505d98842e0451e7f33efec529bcb5ec5284a996055555beb"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "\nimport hashlib, json, sys\nfrom pathlib import Path\n\ntarget = Path(sys.argv[1])\nexpected = {\n    p.relative_to(Path(\"schemas\")).as_posix(): p.read_bytes()\n    for p in Path(\"schemas\").rglob(\"*.json\")\n}\nactual = {p.relative_to(target).as_posix(): p.read_bytes() for p in target.rglob(\"*.json\")}\nequal = len(expected) == 10 and expected == actual\nprint(\n    json.dumps(\n        {\n            \"schema_version\": 1,\n            \"expected_file_count\": len(expected),\n            \"actual_file_count\": len(actual),\n            \"same_file_set_and_bytes\": equal,\n            \"expected_sha256\": {k: hashlib.sha256(v).hexdigest() for k, v in expected.items()},\n            \"actual_sha256\": {k: hashlib.sha256(v).hexdigest() for k, v in actual.items()},\n        },\n        sort_keys=True,\n    )\n)\nraise SystemExit(0 if equal else 1)\n",
+        "<QUALITY>/schema-export"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.039763,
+      "exit_code": 0,
+      "label": "12-schema-full-byte-comparison",
+      "origin_check": {
+        "elapsed_seconds": 0.076924,
+        "exit_code": 0,
+        "raw_log": "raw/12-schema-full-byte-comparison-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/12-schema-full-byte-comparison.log",
+      "raw_log_sha256": "4c82f73fcc930a9fb9c3575ce5ed364eaf0e3aa2a040e6315cb5ea7400a50755",
+      "shareable_log": "logs/12-schema-full-byte-comparison.log",
+      "shareable_log_sha256": "4c82f73fcc930a9fb9c3575ce5ed364eaf0e3aa2a040e6315cb5ea7400a50755"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "examples/hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.799496,
+      "exit_code": 0,
+      "label": "example-hf_vllm_eval-audit",
+      "origin_check": {
+        "elapsed_seconds": 0.080038,
+        "exit_code": 0,
+        "raw_log": "raw/example-hf_vllm_eval-audit-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-hf_vllm_eval-audit.log",
+      "raw_log_sha256": "6a3655aa452051b5ede4fbd0b365fc78753a3ad520291863a2a033e4d54f3230",
+      "shareable_log": "logs/example-hf_vllm_eval-audit.log",
+      "shareable_log_sha256": "6a3655aa452051b5ede4fbd0b365fc78753a3ad520291863a2a033e4d54f3230"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check",
+        "examples/hf_vllm_eval"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.453691,
+      "exit_code": 0,
+      "label": "example-hf_vllm_eval-lock-check",
+      "origin_check": {
+        "elapsed_seconds": 0.076905,
+        "exit_code": 0,
+        "raw_log": "raw/example-hf_vllm_eval-lock-check-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-hf_vllm_eval-lock-check.log",
+      "raw_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "shareable_log": "logs/example-hf_vllm_eval-lock-check.log",
+      "shareable_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "examples/openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.851315,
+      "exit_code": 0,
+      "label": "example-openai_judge_eval-audit",
+      "origin_check": {
+        "elapsed_seconds": 0.078653,
+        "exit_code": 0,
+        "raw_log": "raw/example-openai_judge_eval-audit-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-openai_judge_eval-audit.log",
+      "raw_log_sha256": "c297de75265e887b4d668fbd51c908b79ee6b0b3b6b5f39913775f9e6e55ed4b",
+      "shareable_log": "logs/example-openai_judge_eval-audit.log",
+      "shareable_log_sha256": "c297de75265e887b4d668fbd51c908b79ee6b0b3b6b5f39913775f9e6e55ed4b"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check",
+        "examples/openai_judge_eval"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.452568,
+      "exit_code": 0,
+      "label": "example-openai_judge_eval-lock-check",
+      "origin_check": {
+        "elapsed_seconds": 0.077622,
+        "exit_code": 0,
+        "raw_log": "raw/example-openai_judge_eval-lock-check-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-openai_judge_eval-lock-check.log",
+      "raw_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "shareable_log": "logs/example-openai_judge_eval-lock-check.log",
+      "shareable_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        "examples/privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.815353,
+      "exit_code": 0,
+      "label": "example-privacy_custom_params-audit",
+      "origin_check": {
+        "elapsed_seconds": 0.076419,
+        "exit_code": 0,
+        "raw_log": "raw/example-privacy_custom_params-audit-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-privacy_custom_params-audit.log",
+      "raw_log_sha256": "fa225f21e9d21b438a8c5b92e9e412f7bb276f0a7d6d8619dc5da54cd31fabe0",
+      "shareable_log": "logs/example-privacy_custom_params-audit.log",
+      "shareable_log_sha256": "fa225f21e9d21b438a8c5b92e9e412f7bb276f0a7d6d8619dc5da54cd31fabe0"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "lock",
+        "--check",
+        "examples/privacy_custom_params"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.450436,
+      "exit_code": 0,
+      "label": "example-privacy_custom_params-lock-check",
+      "origin_check": {
+        "elapsed_seconds": 0.076811,
+        "exit_code": 0,
+        "raw_log": "raw/example-privacy_custom_params-lock-check-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/example-privacy_custom_params-lock-check.log",
+      "raw_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "shareable_log": "logs/example-privacy_custom_params-lock-check.log",
+      "shareable_log_sha256": "c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "from reprollm.cli.main import cli; cli()",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 40.898453,
+      "exit_code": 0,
+      "label": "20-self-audit",
+      "origin_check": {
+        "elapsed_seconds": 0.075701,
+        "exit_code": 0,
+        "raw_log": "raw/20-self-audit-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/20-self-audit.log",
+      "raw_log_sha256": "68c661900d4c50d252c4626baa1d03daf6c7774311eed92747f6e6026cdad6f5",
+      "shareable_log": "logs/20-self-audit.log",
+      "shareable_log_sha256": "68c661900d4c50d252c4626baa1d03daf6c7774311eed92747f6e6026cdad6f5"
+    },
+    {
+      "argv": [
+        "<UV>",
+        "build",
+        "--offline",
+        "--wheel",
+        "--out-dir",
+        "<QUALITY>/dist"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.490933,
+      "exit_code": 0,
+      "label": "21-candidate-wheel-build",
+      "origin_check": {
+        "elapsed_seconds": 0.075929,
+        "exit_code": 0,
+        "raw_log": "raw/21-candidate-wheel-build-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/21-candidate-wheel-build.log",
+      "raw_log_sha256": "128b7c87812c78e8cd9661f1220a4c7424dc885dff1ea47024a9479077bf2326",
+      "shareable_log": "logs/21-candidate-wheel-build.log",
+      "shareable_log_sha256": "b5fc2d09c0efeac2b4700cd6885173f1d716fcf71381cf9cb15aa2461f86bf78"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "\nimport hashlib, json, sys, zipfile\nfrom pathlib import Path\nfrom email.parser import BytesParser\n\ntarget = Path(sys.argv[1])\nwheels = list(target.glob(\"*.whl\"))\nassert len(wheels) == 1 and wheels[0].name == \"reprollm-0.7.0-py3-none-any.whl\", (\n    \"unexpected candidate wheel\"\n)\nwith zipfile.ZipFile(wheels[0]) as archive:\n    names = archive.namelist()\n    assert len(names) == len(set(names)), \"duplicate wheel entry\"\n    expected = {\n        \"reprollm/\" + p.relative_to(Path(\"src/reprollm\")).as_posix(): p.read_bytes()\n        for p in Path(\"src/reprollm\").rglob(\"*\")\n        if p.is_file() and \"__pycache__\" not in p.parts and p.suffix != \".pyc\"\n    }\n    actual = {\n        name: archive.read(name)\n        for name in names\n        if name.startswith(\"reprollm/\") and not name.endswith(\"/\")\n    }\n    metadata = BytesParser().parsebytes(archive.read(\"reprollm-0.7.0.dist-info/METADATA\"))\n    equal = actual == expected and metadata[\"Version\"] == \"0.7.0\"\nprint(\n    json.dumps(\n        {\n            \"schema_version\": 1,\n            \"wheel_filename\": wheels[0].name,\n            \"wheel_sha256\": hashlib.sha256(wheels[0].read_bytes()).hexdigest(),\n            \"metadata_version\": metadata[\"Version\"],\n            \"all_package_file_set_and_bytes_match\": equal,\n            \"package_file_count\": len(expected),\n            \"payload_sha256\": {k: hashlib.sha256(v).hexdigest() for k, v in actual.items()},\n            \"source_sha256\": {k: hashlib.sha256(v).hexdigest() for k, v in expected.items()},\n        },\n        sort_keys=True,\n    )\n)\nraise SystemExit(0 if equal else 1)\n",
+        "<QUALITY>/dist"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.082376,
+      "exit_code": 0,
+      "label": "22-candidate-wheel-payload",
+      "origin_check": {
+        "elapsed_seconds": 0.074885,
+        "exit_code": 0,
+        "raw_log": "raw/22-candidate-wheel-payload-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/22-candidate-wheel-payload.log",
+      "raw_log_sha256": "d4be46db7aa42d17e6be2f307c1b395488f0fea12895535209472cd9ccb2e6de",
+      "shareable_log": "logs/22-candidate-wheel-payload.log",
+      "shareable_log_sha256": "d4be46db7aa42d17e6be2f307c1b395488f0fea12895535209472cd9ccb2e6de"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "\nimport hashlib, json, subprocess, sys\nfrom pathlib import Path\n\nout = Path(sys.argv[1])\ncommit = sys.argv[2]\nassert subprocess.check_output([\"git\", \"rev-parse\", \"HEAD\"], text=True).strip() == commit\npayload = json.loads((out / \"raw/22-candidate-wheel-payload.log\").read_bytes())\nassert payload[\"all_package_file_set_and_bytes_match\"] and payload[\"metadata_version\"] == \"0.7.0\"\nwheel = out / \"dist\" / payload[\"wheel_filename\"]\nassert hashlib.sha256(wheel.read_bytes()).hexdigest() == payload[\"wheel_sha256\"]\nmanifest = {\n    \"schema_version\": 1,\n    \"source_commit\": commit,\n    \"version\": payload[\"metadata_version\"],\n    \"artifacts\": [{\"filename\": wheel.name, \"sha256\": payload[\"wheel_sha256\"]}],\n    \"build_command\": [\"uv\", \"build\", \"--offline\", \"--wheel\"],\n    \"source_inventory_sha256\": json.loads((out / \"inputs-before.json\").read_bytes())[\"inventory_sha256\"],\n    \"source_payload_receipt_sha256\": hashlib.sha256((out / \"raw/22-candidate-wheel-payload.log\").read_bytes()).hexdigest(),\n    \"distribution_acceptance\": \"PENDING\",\n}\nraw = (json.dumps(manifest, indent=2, sort_keys=True) + \"\\n\").encode()\n(out / \"build-manifest.json\").write_bytes(raw)\nprint(json.dumps(manifest, sort_keys=True))\n",
+        "<QUALITY>",
+        "409a1a707c5da1f23d06f890cd88e2399002da20"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.089871,
+      "exit_code": 0,
+      "label": "23-candidate-build-manifest",
+      "origin_check": {
+        "elapsed_seconds": 0.072722,
+        "exit_code": 0,
+        "raw_log": "raw/23-candidate-build-manifest-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/23-candidate-build-manifest.log",
+      "raw_log_sha256": "70a6a0967548ada2cdc289e2ff167bbd1ac059ad4267c3338c69a0ea85cd30a2",
+      "shareable_log": "logs/23-candidate-build-manifest.log",
+      "shareable_log_sha256": "70a6a0967548ada2cdc289e2ff167bbd1ac059ad4267c3338c69a0ea85cd30a2"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/validate_distribution.py",
+        "--wheel",
+        "<QUALITY>/dist/reprollm-0.7.0-py3-none-any.whl",
+        "--build-manifest",
+        "<QUALITY>/build-manifest.json",
+        "--expected-version",
+        "0.7.0",
+        "--no-index",
+        "--find-links",
+        "<TASK>/runtime-wheels",
+        "--output",
+        "<QUALITY>/distribution.json",
+        "--raw-output-dir",
+        "<QUALITY><LOCAL_PATH>-distribution"
+      ],
+      "candidate_input_inventory_sha256": "61d8a5aab51f7f3df8db631c7e83199c3e310f08eaff14d3c81a52768858bf9b",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 29.699341,
+      "exit_code": 0,
+      "label": "24-installed-candidate-distribution",
+      "origin_check": {
+        "elapsed_seconds": 0.075879,
+        "exit_code": 0,
+        "raw_log": "raw/24-installed-candidate-distribution-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log": "raw/24-installed-candidate-distribution.log",
+      "raw_log_sha256": "9c07676ba667b7c931b13a309127263dfc29378ec5dee9813a49624e9bd30927",
+      "shareable_log": "logs/24-installed-candidate-distribution.log",
+      "shareable_log_sha256": "9c07676ba667b7c931b13a309127263dfc29378ec5dee9813a49624e9bd30927"
+    }
+  ],
+  "schema_version": 1,
+  "task": "R02-R judge snapshot follow-up final shared quality"
+}

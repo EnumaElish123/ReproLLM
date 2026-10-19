@@ -1,0 +1,73 @@
+profile: judge_only
+source:  built-in
+description: Judge pre-generated outputs with separate judge parameters. Explicit selection with shipped core/judge_only/privacy profiles permits no primary model; other combinations and user profile overrides retain primary requirements.
+extends: core
+chain:  judge_only → core
+
+rules (48):
+  rule                                   level  default         override  effective       origin
+  code.clean_tree                        0      WARNING         -         WARNING         default
+  code.git_commit                        0      CRITICAL        -         CRITICAL        default
+  code.git_repo                          0      CRITICAL        -         CRITICAL        default
+  code.no_untracked                      0      WARNING         -         WARNING         default
+  code.remote_recorded                   0      INFO            -         INFO            default
+  code.submodules_initialized            0      WARNING         -         WARNING         default
+  consistency.custom_fields              2      (project rule)  -         (project rule)  project_rule
+  consistency.env_vs_lock                2      WARNING         -         WARNING         default
+  consistency.file_hashes                2      CRITICAL        -         CRITICAL        default
+  consistency.generation_params          2      CRITICAL        -         CRITICAL        default
+  consistency.lock_fresh                 2      WARNING         -         WARNING         default
+  consistency.model_identity             2      CRITICAL        -         CRITICAL        default
+  dataset.declared                       1      INFO            CRITICAL  CRITICAL        profile:judge_only
+  dataset.local_files_hashed             2      CRITICAL        -         CRITICAL        default
+  dataset.preprocessing_declared         1      WARNING         -         WARNING         default
+  dataset.revision_pinned                2      WARNING         CRITICAL  CRITICAL        profile:judge_only
+  dataset.sampling_seed_declared         1      WARNING         CRITICAL  CRITICAL        profile:judge_only
+  dataset.split_declared                 1      WARNING         -         WARNING         default
+  dataset.subset_declared                1      INFO            -         INFO            default
+  env.dependency_manifest_present        0      CRITICAL        -         CRITICAL        default
+  env.llm_critical_deps_pinned           0      WARNING         -         WARNING         default
+  env.lockfile_present                   0      WARNING         -         WARNING         default
+  env.python_version_declared            0      WARNING         -         WARNING         default
+  env.reprollm_initialized               0      INFO            -         INFO            default
+  env.secret_files_ignored               0      CRITICAL        -         CRITICAL        default
+  eval.aggregation_declared              1      WARNING         -         WARNING         default
+  eval.metric_implementation_referenced  1      WARNING         -         WARNING         default
+  eval.metrics_declared                  1      WARNING         CRITICAL  CRITICAL        profile:judge_only
+  eval.repetitions_declared              1      WARNING         -         WARNING         default
+  exec.command_declared                  1      WARNING         -         WARNING         default
+  exec.profile_detection_mismatch        1      INFO            -         INFO            default
+  exec.run_recorded                      1      INFO            -         INFO            default
+  exec.seed_declared                     1      WARNING         CRITICAL  CRITICAL        profile:judge_only
+  gen.backend_version_locked             2      WARNING         -         WARNING         default
+  judge.model_declared                   1      CRITICAL        -         CRITICAL        default
+  judge.params_declared                  1      CRITICAL        -         CRITICAL        default
+  judge.pinnability_recorded             2      WARNING         -         WARNING         default
+  judge.prompt_declared                  1      CRITICAL        -         CRITICAL        default
+  judge.prompt_hashed                    2      WARNING         -         WARNING         default
+  judge.repetitions_declared             1      WARNING         -         WARNING         default
+  model.dtype_declared                   1      WARNING         -         WARNING         default
+  model.primary_declared                 1      CRITICAL        -         CRITICAL        default
+  model.provider_known                   1      WARNING         -         WARNING         default
+  model.revision_pinned                  2      CRITICAL        -         CRITICAL        default
+  model.tokenizer_pinned                 2      WARNING         -         WARNING         default
+  model.trust_remote_code_declared       1      WARNING         -         WARNING         default
+  prompt.file_exists                     1      CRITICAL        -         CRITICAL        default
+  prompt.hashed                          2      WARNING         -         WARNING         default
+
+required fields:
+  project.name
+  models.primary.id (not required for this shipped judge_only selection)
+  datasets.eval.id
+  evaluation.metrics
+  models.judge.id
+  prompts.judge.path
+  evaluation.judge.params.temperature
+  evaluation.judge.params.max_tokens
+
+severity overrides:
+  dataset.declared: CRITICAL
+  dataset.revision_pinned: CRITICAL
+  dataset.sampling_seed_declared: CRITICAL
+  eval.metrics_declared: CRITICAL
+  exec.seed_declared: CRITICAL

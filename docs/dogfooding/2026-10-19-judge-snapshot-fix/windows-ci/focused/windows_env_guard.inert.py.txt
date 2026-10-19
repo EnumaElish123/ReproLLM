@@ -1,0 +1,38 @@
+"""Simulate only Windows' environment-value length boundary; never save values."""
+from __future__ import annotations
+import json
+import os
+from pathlib import Path
+
+_ORIGINAL = os.putenv
+_REJECTIONS = []
+_CALLS = 0
+_MAX_LENGTH = 0
+
+
+def pytest_addoption(parser):
+    parser.addoption('--windows-env-guard-report', required=True)
+
+
+def pytest_sessionstart(session):
+    def guarded(key, value):
+        global _CALLS, _MAX_LENGTH
+        decoded_key = key.decode('utf-8', 'surrogateescape') if isinstance(key, bytes) else key
+        decoded = value.decode('utf-8', 'surrogateescape') if isinstance(value, bytes) else value
+        _CALLS += 1
+        length = len(decoded)
+        _MAX_LENGTH = max(_MAX_LENGTH, length)
+        if length > 32767:
+            phase = next((name for name in ('setup', 'call', 'teardown') if decoded.endswith(' (' + name + ')')), 'other')
+            _REJECTIONS.append({'key_is_pytest_current_test': decoded_key == 'PYTEST_CURRENT_TEST', 'length_characters': length, 'phase': phase})
+            raise ValueError('simulated Windows environment value exceeds 32767 characters')
+        return _ORIGINAL(key, value)
+    os.putenv = guarded
+
+
+def pytest_sessionfinish(session, exitstatus):
+    os.putenv = _ORIGINAL
+    report = {'schema_version': 1, 'simulation_scope': 'os.putenv value length only; not a real Windows execution', 'value_limit_characters': 32767, 'putenv_calls_observed': _CALLS, 'maximum_value_length_characters': _MAX_LENGTH, 'rejections': _REJECTIONS, 'rejected_values_recorded': False, 'pytest_exitstatus': int(exitstatus), 'collected_tests': session.testscollected, 'pytest_failure_count': session.testsfailed, 'provider_or_network_calls': 0}
+    destination = Path(session.config.getoption('--windows-env-guard-report'))
+    with destination.open('x') as stream:
+        stream.write(json.dumps(report, indent=2, sort_keys=True) + '\n')

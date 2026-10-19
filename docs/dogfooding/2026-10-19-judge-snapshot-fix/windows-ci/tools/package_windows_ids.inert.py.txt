@@ -1,0 +1,485 @@
+"""Prepare a separate portable bundle for the pytest short-ID follow-up only.
+
+Default mode lists the selection and runs no product checks. --self-check uses only
+synthetic data. --execute requires the final 409a1a7 quality gate to be complete;
+it copies evidence, never executes pytest, Gate A, GPU or provider requests.
+The previously committed product evidence and its manifests are read-only.
+"""
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import re
+import tempfile
+from pathlib import Path
+from typing import Any
+from urllib.parse import urlsplit
+
+BASE = Path('<TASK>')
+CANDIDATE = '409a1a707c5da1f23d06f890cd88e2399002da20'
+PRODUCT = '75d1b065e9f0e3eeafa8e480e195a2a2ddbe95b5'
+PREVIOUS_CI = '4ada2d17394e969a790797d039b354da847d6c93'
+QUALITY = BASE / 'quality/windows-ids-final-1'
+DEFAULT_OUT = BASE / 'windows-ids-shareable-evidence'
+SPEC = importlib.util.spec_from_file_location('original_evidence_packager', BASE / 'package_evidence.py')
+assert SPEC is not None and SPEC.loader is not None
+SUPPORT = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(SUPPORT)
+
+# Lists are deliberate: no wildcard can admit future provider evidence or raw HTML.
+ROOT_NAMES = (
+    'windows_env_guard.py',
+    'windows-env-guard-red-command.json', 'windows-env-guard-red-summary.json',
+    'windows-env-guard-red.stdout', 'windows-env-guard-red.stderr',
+    'windows-env-guard-green-command.json', 'windows-env-guard-green-summary.json',
+    'windows-env-guard-green.stdout', 'windows-env-guard-green.stderr',
+    'windows-short-ids-change-proof.json', 'windows-short-ids-collection-proof.json',
+    'windows-short-ids-product-identity.json', 'windows-ids-packager-selfcheck.json',
+    'windows-ids-packager-correction.json', 'windows-ids-package-driver-1.log',
+    'windows-short-ids-ruff-check-command.json', 'windows-short-ids-ruff-check.stdout',
+    'windows-short-ids-ruff-check.stderr',
+    'windows-short-ids-ruff-format-command.json', 'windows-short-ids-ruff-format.stdout',
+    'windows-short-ids-ruff-format.stderr',
+    'python-short-ids-focused-command.json', 'python-short-ids-focused.stdout',
+    'python-short-ids-focused.stderr',
+    'judge-short-ids-three-module-focused-command.json',
+    'judge-short-ids-three-module-focused.stdout',
+    'judge-short-ids-three-module-focused.stderr',
+    'test_python_text.before-short-ids.py.txt', 'quality-windows-ids-driver-1.log',
+)
+LARGE_OR_PRIVATE = (
+    'windows-filter-collect-only.txt', 'windows-filter-collect-after-short-ids.txt',
+    'ci-run-page.html', 'ci-windows-job.html', 'ci-windows-job-latest.html',
+    'ci-job-groups.json', 'ci-job-groups-latest.json', 'ci-job-groups-fresh.json',
+)
+QUALITY_OMIT = {'inputs-before.json', 'inputs-after.json', 'coverage.data',
+                'coverage.json', 'coverage.xml', 'pytest-report.xml'}
+HASH = re.compile(r'[0-9a-f]{64}\Z')
+COMMIT = re.compile(r'[0-9a-f]{40}\Z')
+JOB_NAME = re.compile(r'quality / (?:ubuntu|macos|windows)-latest / py3\.(?:10|11|12)\Z')
+STATUS = {'queued', 'in_progress', 'completed', 'waiting', 'pending', 'requested'}
+CONCLUSION = {None, 'success', 'failure', 'cancelled', 'timed_out', 'skipped',
+              'neutral', 'action_required', 'stale', 'startup_failure'}
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError(message)
+
+
+def load(path: Path) -> dict[str, Any]:
+    require(path.is_file() and not path.is_symlink(), 'missing or unsafe receipt: ' + path.name)
+    value = json.loads(path.read_bytes())
+    require(isinstance(value, dict) and value.get('schema_version') == 1,
+            'receipt schema mismatch: ' + path.name)
+    return value
+
+
+def public_url(value: Any) -> str:
+    require(isinstance(value, str), 'CI URL is not a string')
+    split = urlsplit(value)
+    require(split.scheme == 'https' and split.netloc == 'github.com'
+            and not split.query and not split.fragment
+            and re.fullmatch(r'/EnumaElish123/ReproLLM/actions/runs/[0-9]+(?:/job/[0-9]+)?', split.path)
+            is not None, 'CI URL is not an admitted public run/job URL')
+    return value
+
+
+def positive_id(value: Any) -> int:
+    require(type(value) is int and value > 0, 'invalid public CI identifier')
+    return value
+
+
+def project_ci(value: dict[str, Any]) -> dict[str, Any]:
+    """Admit typed fields only; raw public pages can contain temporary tokens."""
+    require(value.get('schema_version') == 1, 'CI schema mismatch')
+    require(isinstance(value.get('head'), str) and COMMIT.fullmatch(value['head']) is not None,
+            'CI head is not a full commit')
+    require(type(value.get('all_five_jobs_success')) is bool, 'CI success flag is not boolean')
+    result: dict[str, Any] = {
+        'schema_version': 1, 'head': value['head'],
+        'all_five_jobs_success': value['all_five_jobs_success'],
+        'run_id': positive_id(value['run_id']), 'url': public_url(value['url']), 'jobs': [],
+    }
+    jobs = value.get('jobs')
+    require(isinstance(jobs, list) and len(jobs) == 5, 'expected five public CI jobs')
+    for row in jobs:
+        require(isinstance(row, dict), 'invalid public CI job')
+        require(isinstance(row.get('name'), str) and JOB_NAME.fullmatch(row['name']) is not None,
+                'unexpected public CI job name')
+        require(row.get('status') in STATUS and row.get('conclusion') in CONCLUSION,
+                'invalid public CI job state')
+        result['jobs'].append({'id': positive_id(row['id']), 'name': row['name'],
+                               'status': row['status'], 'conclusion': row['conclusion']})
+    require(len({row['id'] for row in result['jobs']}) == 5, 'duplicate CI job identifiers')
+    actual_success = all(row['status'] == 'completed' and row['conclusion'] == 'success'
+                         for row in result['jobs'])
+    require(actual_success == result['all_five_jobs_success'], 'CI success summary disagrees with jobs')
+    for key in ('jobs_response_sha256', 'runs_response_sha256', 'job_groups_sha256'):
+        if key in value:
+            require(isinstance(value[key], str) and HASH.fullmatch(value[key]) is not None,
+                    'invalid public CI source hash')
+            result[key] = value[key]
+    for key in ('observed_at_utc', 'response_date'):
+        if key in value:
+            require(isinstance(value[key], str) and len(value[key]) < 100
+                    and '\n' not in value[key], 'invalid public CI observation time')
+            result[key] = value[key]
+    if 'head_bound_by_initial_api_and_public_commit_link' in value:
+        require(type(value['head_bound_by_initial_api_and_public_commit_link']) is bool,
+                'invalid CI binding flag')
+        result['head_bound_by_initial_api_and_public_commit_link'] = value['head_bound_by_initial_api_and_public_commit_link']
+    return result
+
+
+def project_observation(value: dict[str, Any]) -> dict[str, Any]:
+    require(value.get('observed_ci_head') == PREVIOUS_CI, 'maintainer observation head changed')
+    require(value.get('actual_new_provider_requests') == 0, 'unexpected provider request in observation')
+    require(value.get('actual_windows_error_traceback_available') is False,
+            'original Windows traceback availability changed; review required')
+    require(value.get('image_copied_into_repository') is False, 'screenshot must remain outside repository')
+    image_hash = value.get('maintainer_supplied_image_sha256')
+    require(isinstance(image_hash, str) and HASH.fullmatch(image_hash) is not None,
+            'missing actual maintainer screenshot hash')
+    observations = value.get('direct_image_observations')
+    require(observations == [
+        'two error markers EE near the line ending at 88 percent',
+        'progress reaches 100 percent',
+        'ERRORS header with no following exception details',
+    ], 'maintainer image observation changed; review required')
+    require(value.get('maintainer_followup') == '仍停在 ERRORS', 'maintainer statement changed')
+    result = {
+        'schema_version': 1, 'observed_ci_head': PREVIOUS_CI,
+        'maintainer_supplied_image_sha256': image_hash,
+        'direct_image_observations': observations,
+        'maintainer_followup': value['maintainer_followup'],
+        'actual_windows_error_traceback_available': False,
+        'image_copied_into_repository': False, 'actual_new_provider_requests': 0,
+        'run_id': positive_id(value['run_id']),
+        'windows_job_id': positive_id(value['windows_job_id']),
+        'job_url': public_url(value['job_url']),
+        'platform_limit_reproduction_scope':
+            'Separate simulated Windows environment-length boundary, not the unavailable original traceback',
+        'public_status_before_superseding_run': project_ci(value['public_status_before_superseding_run']),
+    }
+    require(result['public_status_before_superseding_run']['head'] == PREVIOUS_CI,
+            'observation/public CI heads differ')
+    return result
+
+
+def verify_streams(prefix: str, expected_exit: int) -> None:
+    receipt = load(BASE / (prefix + '-command.json'))
+    require(receipt.get('exit_code') == expected_exit, 'unexpected focused command exit: ' + prefix)
+    for stream in ('stdout', 'stderr'):
+        path = BASE / (prefix + '.' + stream)
+        require(SUPPORT.file_digest(path) == receipt[stream + '_sha256'],
+                'focused stream hash mismatch: ' + path.name)
+        if stream + '_bytes' in receipt:
+            require(path.stat().st_size == receipt[stream + '_bytes'], 'focused stream size mismatch')
+
+
+def verify_focused() -> None:
+    for prefix, code in (
+        ('windows-env-guard-red', 1), ('windows-env-guard-green', 0),
+        ('windows-short-ids-ruff-check', 0), ('windows-short-ids-ruff-format', 0),
+        ('python-short-ids-focused', 0), ('judge-short-ids-three-module-focused', 0),
+    ):
+        verify_streams(prefix, code)
+    red = load(BASE / 'windows-env-guard-red-summary.json')
+    green = load(BASE / 'windows-env-guard-green-summary.json')
+    require(red['pytest_exitstatus'] == 1 and red['collected_tests'] == 3
+            and red['pytest_failure_count'] == 2 and len(red['rejections']) == 2,
+            'RED simulation receipt disagrees with accepted reproduction')
+    require({row['phase'] for row in red['rejections']} == {'setup', 'teardown'},
+            'RED setup/teardown reproduction changed')
+    require(green['pytest_exitstatus'] == 0 and green['collected_tests'] == 3
+            and green['pytest_failure_count'] == 0 and green['rejections'] == [],
+            'GREEN simulation receipt disagrees with accepted reproduction')
+    for receipt in (red, green):
+        require(receipt['value_limit_characters'] == 32767
+                and receipt['provider_or_network_calls'] == 0
+                and receipt['rejected_values_recorded'] is False,
+                'simulation boundary or disclosure policy differs')
+    identity = load(BASE / 'windows-short-ids-product-identity.json')
+    require(identity['accepted_product_commit'] == PRODUCT
+            and identity['test_metadata_commit'] == CANDIDATE,
+            'product identity receipt has unexpected commits')
+    require(all(identity[key] is True for key in (
+        'all_143_product_payload_files_identical',
+        'schema_dependencies_examples_and_ci_identical',
+        'resource_inputs_and_outputs_not_modified')),
+        'test-only product identity receipt is not affirmative')
+    proof = load(BASE / 'windows-short-ids-change-proof.json')
+    before = BASE / 'test_python_text.before-short-ids.py.txt'
+    require(SUPPORT.file_digest(before) == proof['before_sha256'], 'prior test source hash differs')
+    require(proof['product_files_changed'] is False and proof['paid_provider_requests'] == 0,
+            'short-ID change scope differs')
+    collect = load(BASE / 'windows-short-ids-collection-proof.json')
+    for name, key in (('windows-filter-collect-only.txt', 'before_collect_sha256'),
+                      ('windows-filter-collect-after-short-ids.txt', 'after_collect_sha256')):
+        require(SUPPORT.file_digest(BASE / name) == collect[key], 'collection output hash differs')
+    require(collect['before_selected_count'] == collect['after_selected_count'] == 3002
+            and collect['changed_nodeids'] == 3 and collect['before_nodeids_over_32767'] == 1
+            and collect['after_nodeids_over_32767'] == 0, 'collection proof scope differs')
+    project_observation(load(BASE / 'windows-ci-observation.json'))
+
+
+def verify_quality(root: Path) -> dict[str, Any]:
+    require(root.is_relative_to(BASE) and not root.is_relative_to(BASE / 'worktree'),
+            'quality root must be an admitted scratch evidence directory')
+    summary = load(root / 'summary.json')
+    require(summary.get('candidate_commit') == CANDIDATE and summary.get('completed') is True
+            and summary.get('all_passed') is True
+            and summary.get('inputs_byte_identical_before_after') is True
+            and summary.get('orchestrator_unchanged') is True
+            and summary.get('command_count') == summary.get('planned_command_count') == 24,
+            'final 409a1a7 quality gate is not complete and PASS')
+    before = load(root / 'inputs-before.json')
+    after = load(root / 'inputs-after.json')
+    require(before == after and before['commit'] == CANDIDATE
+            and before['all_git_blob_bytes_verified'] is True
+            and before['inventory_sha256'] == summary['candidate_input_inventory_sha256'],
+            'quality input inventories do not bind identical final candidate bytes')
+    proof = load(BASE / 'windows-short-ids-change-proof.json')
+    require(before['files']['tests/unit/run/test_python_text.py']['sha256'] == proof['after_sha256'],
+            'quality did not test accepted short-ID source bytes')
+    commands = load(root / 'commands.json')
+    plan = load(root / 'plan.json')
+    require(commands['candidate_commit'] == plan['candidate_commit'] == CANDIDATE
+            and len(commands['commands']) == plan['command_count'] == 24,
+            'quality command inventory differs')
+    for command in commands['commands']:
+        require(command['exit_code'] == 0 and command['origin_check']['exit_code'] == 0,
+                'quality command or origin guard failed')
+        for key, hash_key in (('raw_log', 'raw_log_sha256'), ('shareable_log', 'shareable_log_sha256')):
+            path = root / command[key]
+            require(path.resolve().is_relative_to(root.resolve()) and not path.is_symlink()
+                    and SUPPORT.file_digest(path) == command[hash_key], 'quality log hash differs')
+        guard = command['origin_check']
+        require(SUPPORT.file_digest(root / guard['raw_log']) == guard['raw_log_sha256'],
+                'quality origin guard hash differs')
+    build = load(root / 'build-manifest.json')
+    distribution = load(root / 'distribution.json')
+    require(build['source_commit'] == CANDIDATE
+            and build['source_inventory_sha256'] == before['inventory_sha256'],
+            'build does not bind final test candidate')
+    require(distribution['status'] == 'PASS'
+            and distribution['provenance']['source_commit'] == CANDIDATE
+            and all(row['passed'] is True for row in distribution['checks']),
+            'installed distribution acceptance is not PASS')
+    wheel = distribution['wheel']
+    require(SUPPORT.file_digest(root / 'dist' / wheel['filename']) == wheel['sha256']
+            and any(row['filename'] == wheel['filename'] and row['sha256'] == wheel['sha256']
+                    for row in build['artifacts']), 'accepted wheel hash differs')
+    for command in distribution['commands']:
+        for stream in ('stdout', 'stderr'):
+            artifact = command[stream + '_artifact']
+            path = root / 'private-distribution' / artifact
+            require(path.resolve().is_relative_to((root / 'private-distribution').resolve())
+                    and SUPPORT.file_digest(path) == command[stream + '_sha256'],
+                    'installed-distribution child stream hash differs')
+    return before
+
+
+def project_into(package: Any, source: Path, target: str, value: dict[str, Any]) -> None:
+    raw = source.read_bytes()
+    retained = (json.dumps(SUPPORT.portable_value(value), sort_keys=True, indent=2,
+                           ensure_ascii=False) + '\n').encode('utf-8')
+    package.write(target, retained)
+    package.groups['stable'].append({
+        'source_logical_file': '<TASK>/' + source.relative_to(BASE).as_posix(),
+        'source_sha256': SUPPORT.digest(raw), 'source_size_bytes': len(raw),
+        'retained_file': target, 'retained_sha256': SUPPORT.digest(retained),
+        'retained_size_bytes': len(retained), 'kind': 'typed-public-ci-projection',
+        'sharing_transform_applied': raw != retained,
+        'original_product_run_tree_byte_preserved': False,
+        'transform_is_not_an_executable_original': False,
+        'unknown_fields_discarded_before_sharing': True,
+    })
+
+
+def package_evidence(out: Path, quality: Path) -> dict[str, Any]:
+    require(not out.exists(), 'fresh output required; never overwrite a prior evidence package')
+    verify_focused()
+    before = verify_quality(quality)
+    package = SUPPORT.Package(out, CANDIDATE)
+    for name in ROOT_NAMES:
+        package.retain(BASE / name, 'focused/' + name)
+    project_into(package, BASE / 'windows-ci-observation.json', 'ci/maintainer-observation.json',
+                 project_observation(load(BASE / 'windows-ci-observation.json')))
+    for name in ('ci-api-last-success.json', 'final-ci-jobs.json'):
+        source = BASE / name
+        if source.exists():
+            project_into(package, source, 'ci/' + name, project_ci(load(source)))
+    package.omit(BASE / 'package_windows_ids.before-self-sharing.inert.py.txt',
+                 'Failed tool source retained locally and hash-bound by correction receipt; contains a literal synthetic URL-credential self-check case.')
+    for name in LARGE_OR_PRIVATE:
+        package.omit(BASE / name,
+                     'Large collection or raw public CI page/response omitted; hash-bound original only. Raw CI pages may include temporary tokens.')
+    for path in sorted(quality.iterdir()):
+        if not path.is_file():
+            continue
+        if path.name in QUALITY_OMIT or path.suffix in {'.whl', '.gz', '.xml'}:
+            package.omit(path, 'Large local inventory, coverage, JUnit or binary output omitted; full command and acceptance receipts retained.')
+        else:
+            package.retain(path, 'quality/' + path.name)
+    package.tree(quality / 'logs', 'quality/logs')
+    package.tree(quality / 'raw', 'quality/raw')
+    for path in SUPPORT.files_below(quality / 'dist'):
+        package.omit(path, 'Built wheel remains hash-bound by complete payload/build/installed-distribution acceptance.')
+    # Only root child outputs, never disposable walkthrough checkout/venv contents.
+    for path in sorted((quality / 'private-distribution').iterdir()):
+        if path.is_file():
+            package.retain(path, 'quality/installed-distribution/' + path.name)
+    keys = ('commit', 'inventory_sha256', 'tracked_file_count', 'tracked_bytes_total',
+            'all_git_blob_bytes_verified')
+    package.document('quality/source-input-binding.json', {
+        'schema_version': 1, 'candidate_commit': CANDIDATE, 'before_after_identical': True,
+        'inventory': {key: before[key] for key in keys},
+        'before_document_sha256': SUPPORT.file_digest(quality / 'inputs-before.json'),
+        'after_document_sha256': SUPPORT.file_digest(quality / 'inputs-after.json'),
+        'full_dictionaries_copied': False,
+    })
+    package.retain(Path(__file__).resolve(), 'tools/package_windows_ids.py')
+    package.retain(BASE / 'package_evidence.py', 'tools/original-package-support.py')
+    package.retain(BASE / 'run_quality.py', 'tools/run_quality.py')
+    package.document('scope.json', {
+        'schema_version': 1, 'task': 'pytest bounded-source short-ID corrective follow-up',
+        'test_metadata_commit': CANDIDATE, 'accepted_product_commit': PRODUCT,
+        'classification': 'CI/test-only corrective follow-up',
+        'gate_a': {'status': 'NOT_APPLICABLE', 'commands_executed_for_this_followup': 0,
+                   'basis': 'Validation workflow section 3: test-only follow-up; all 143 accepted product payload files byte-identical.'},
+        'resource_gates': {'status': 'NOT_APPLICABLE', 'gpu_commands_executed_for_this_followup': 0,
+                           'provider_requests_for_this_followup': 0,
+                           'basis': 'Product and resource inputs/outputs unchanged; original dated product evidence remains separately accepted.'},
+        'windows_guard_scope': 'Simulates only Windows environment-value length limit using real pytest on Linux; not a Windows execution or the unavailable original CI traceback.',
+        'previous_windows_ci': 'Public status retained as observed; incomplete prior Windows job is not claimed to pass or to have an available original traceback.',
+        'identity_receipt_creation_time_status_preserved': True,
+        'final_quality_receipt_is_authoritative': 'quality/summary.json',
+        'screenshots_raw_html_models_credentials_and_resource_runs_copied': False,
+        'previous_product_evidence_and_manifests_modified': False,
+        'release_or_publication_authorized': False,
+    })
+    manifest = {'schema_version': 1, 'candidate_commit': CANDIDATE,
+                'scope': 'Separate test-only evidence; does not replace product evidence manifests.',
+                'retained': sorted(package.groups['stable'], key=lambda row: row['source_logical_file']),
+                'omitted_local_originals': sorted(package.omitted, key=lambda row: row['source_logical_file'])}
+    package.document('source-files.json', manifest)
+    checked = 0
+    for row in manifest['retained']:
+        path = out / row['retained_file']
+        require(path.is_file() and SUPPORT.file_digest(path) == row['retained_sha256'],
+                'retained evidence hash mismatch')
+        SUPPORT.assert_portable(path.read_bytes(), row['retained_file'])
+        checked += 1
+    result = {
+        'schema_version': 1, 'status': 'PASS_COPY_INTEGRITY_ONLY',
+        'test_metadata_commit': CANDIDATE, 'accepted_product_commit': PRODUCT,
+        'retained_source_mappings_verified': checked,
+        'omitted_originals_hash_bound': len(package.omitted),
+        'source_manifest_sha256': SUPPORT.file_digest(out / 'source-files.json'),
+        'complete_quality_gate': 'PASS', 'gate_a': 'NOT_APPLICABLE',
+        'gpu_and_provider_gates': 'NOT_APPLICABLE',
+        'new_validation_commands_executed_by_packager': 0,
+        'original_windows_ci_success_claimed': False,
+        'actual_credential_value_scan': 'PENDING_SESSION_OWNER',
+        'previous_committed_manifests_changed': False,
+    }
+    package.document('packaging-validation.json', result)
+    return result
+
+
+def self_check() -> dict[str, Any]:
+    source = load(BASE / 'windows-ci-observation.json')
+    expected = project_observation(source)
+    injected = json.loads(json.dumps(source))
+    injected['temporary_url'] = 'https://example.invalid/private?temporary=hidden'
+    injected['public_status_before_superseding_run']['extra_private_value'] = 'discard-me'
+    projected = project_observation(injected)
+    require(projected == expected and 'temporary_url' not in projected,
+            'unknown CI fields were not discarded')
+    require('discard-me' not in json.dumps(projected), 'nested unknown CI field leaked')
+    checks = ['unknown CI fields discarded', 'nested unknown CI fields discarded']
+    for bad in ('https://github.com/EnumaElish123/ReproLLM/actions/runs/1?temporary=hidden',
+                'https://other.invalid/EnumaElish123/ReproLLM/actions/runs/1',
+                'https://' + 'name' + ':' + 'password' + '@github.com/EnumaElish123/ReproLLM/actions/runs/1'):
+        try:
+            public_url(bad)
+        except ValueError:
+            pass
+        else:
+            raise ValueError('unsafe CI URL accepted by self-check')
+    checks.append('query strings, alternate hosts and URL credentials rejected')
+    with tempfile.TemporaryDirectory(prefix='windows-ids-packager-selfcheck-', dir=BASE) as temp:
+        root = Path(temp)
+        package = SUPPORT.Package(root / 'copy', CANDIDATE)
+        project_into(package, BASE / 'windows-ci-observation.json', 'ci.json', projected)
+        written = (root / 'copy/ci.json').read_bytes()
+        require(json.loads(written)['maintainer_supplied_image_sha256']
+                == source['maintainer_supplied_image_sha256'], 'actual image hash changed')
+        require(b'temporary_url' not in written and b'discard-me' not in written,
+                'unsafe field entered written projection')
+    checks.append('safe projection written and actual image hash retained')
+    own_sharing_copy = SUPPORT.portable_bytes(Path(__file__).read_bytes())
+    SUPPORT.assert_portable(own_sharing_copy, 'tool-self-sharing-copy')
+    checks.append('tool source portable sharing copy passes sharing assertion')
+    with tempfile.TemporaryDirectory(prefix='windows-ids-quality-guard-selfcheck-', dir=BASE) as temp:
+        root = Path(temp)
+        summary = {'schema_version': 1, 'candidate_commit': CANDIDATE, 'completed': False,
+                   'all_passed': False, 'inputs_byte_identical_before_after': False,
+                   'orchestrator_unchanged': True, 'command_count': 0,
+                   'planned_command_count': 24}
+        (root / 'summary.json').write_text(json.dumps(summary))
+        try:
+            verify_quality(root)
+        except ValueError:
+            pass
+        else:
+            raise ValueError('unfinished quality gate accepted by self-check')
+        summary.update(completed=True, all_passed=True,
+                       inputs_byte_identical_before_after=True, command_count=24,
+                       candidate_input_inventory_sha256='0' * 64)
+        (root / 'summary.json').write_text(json.dumps(summary))
+        before = {'schema_version': 1, 'commit': CANDIDATE,
+                  'all_git_blob_bytes_verified': True, 'inventory_sha256': '0' * 64}
+        (root / 'inputs-before.json').write_text(json.dumps(before))
+        (root / 'inputs-after.json').write_text(json.dumps(dict(before, inventory_sha256='1' * 64)))
+        try:
+            verify_quality(root)
+        except ValueError:
+            pass
+        else:
+            raise ValueError('different before/after inventories accepted by self-check')
+    checks.append('unfinished quality gate and mismatched inventories rejected')
+    return {'schema_version': 1, 'status': 'PASS_TOOL_SELF_CHECK_ONLY', 'checks': checks,
+            'product_tests_run': 0, 'provider_or_gpu_calls': 0,
+            'final_evidence_package_created': False, 'repository_files_modified': False}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--self-check', action='store_true')
+    parser.add_argument('--output', type=Path, default=DEFAULT_OUT)
+    parser.add_argument('--quality-root', type=Path, default=QUALITY)
+    args = parser.parse_args()
+    require(not (args.execute and args.self_check), 'self-check and execute are separate modes')
+    if args.self_check:
+        result = self_check()
+    elif args.execute:
+        result = package_evidence(args.output.resolve(), args.quality_root.resolve())
+    else:
+        result = {'schema_version': 1, 'status': 'PREPARED_NOT_EXECUTED',
+                  'test_metadata_commit': CANDIDATE, 'accepted_product_commit': PRODUCT,
+                  'selected_focused_source_count': len(ROOT_NAMES),
+                  'quality_source': '<TASK>/quality/windows-ids-final-1',
+                  'output': '<TASK>/windows-ids-shareable-evidence',
+                  'requires_before_execute': 'Final 24-command quality PASS and identical candidate inventories.',
+                  'gate_a': 'NOT_APPLICABLE', 'resource_gates': 'NOT_APPLICABLE',
+                  'product_or_provider_commands_executed': 0}
+    print(json.dumps(result, sort_keys=True, indent=2, ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    main()

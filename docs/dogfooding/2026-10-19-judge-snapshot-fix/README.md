@@ -7,6 +7,11 @@ pass. The shared quality gate and fresh five-project Gate A use these same
 product bytes. This is an unreleased repair; no release, tag or publication is
 performed.
 
+The [Windows test-identifier follow-up](windows-ci/README.md) corrects one
+pytest case name that exceeded the Windows environment limit. Its final full
+quality gate passes on `409a1a7`; the product and formal wheel are unchanged.
+The initial `4ada2d1` Windows job is not accepted as a five-job PASS.
+
 The assigned scope is the R02-R follow-up in the [backlog](../../plan/backlog.md),
 under specification §§5.1, 16, 18–19 and [val §§8.4–8.4.1](../../../val.md#84-approved-deepseekfastchat-supplementary-judge-2026-09-27).
 The earlier `750270b` paid A remains a historical capture **FAIL**, with B
