@@ -6,10 +6,7 @@ makes captured paths portable and removes the current machine's identity.
 
 from __future__ import annotations
 
-import ast
-import io
 import re
-import tokenize
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -18,6 +15,8 @@ from pydantic import BaseModel
 
 from reprollm.core.persistence import redact_keyed_values
 from reprollm.run.contextual_text import redact_contextual_text
+from reprollm.run.json_text import redact_json_strings
+from reprollm.run.python_text import redact_python_source
 from reprollm.schemas.run_record import Observation
 
 # An absolute path starts at a segment boundary: not after a word char,
@@ -37,49 +36,6 @@ _LOCAL_URI = re.compile(r"""(?i)\bfile:[/\\]{2}[^\s"'<>;,\)\]}>]*""")
 _TEMPLATE_SUFFIX = re.compile(r"\{[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\}$")
 
 
-def _division_spans(text: str) -> list[tuple[int, int]]:
-    """Locate only parsed Python operators, including f-string expressions.
-
-    Literal strings and comments remain subject to the full path policy.
-    AST columns are UTF-8 byte offsets, unlike tokenize's character offsets.
-    """
-    try:
-        tree = ast.parse(text)
-    except (SyntaxError, ValueError, RecursionError):
-        return []
-    lines = text.splitlines(keepends=True)
-    offsets = [0]
-    for line in lines:
-        offsets.append(offsets[-1] + len(line))
-
-    def position(line: int, column: int) -> int:
-        return offsets[line - 1] + len(lines[line - 1].encode("utf-8")[:column].decode("utf-8"))
-
-    spans = []
-    for node in ast.walk(tree):
-        if not isinstance(node, (ast.BinOp, ast.AugAssign)) or not isinstance(
-            node.op, (ast.Div, ast.FloorDiv)
-        ):
-            continue
-        left = node.left if isinstance(node, ast.BinOp) else node.target
-        right = node.right if isinstance(node, ast.BinOp) else node.value
-        if left.end_lineno is None or left.end_col_offset is None:
-            continue
-        start = position(left.end_lineno, left.end_col_offset)
-        end = position(right.lineno, right.col_offset)
-        gap = text[start:end]
-        gap_lines = gap.splitlines(keepends=True)
-        try:
-            for token in tokenize.generate_tokens(io.StringIO(gap).readline):
-                if token.type == tokenize.OP and token.string in {"/", "//", "/=", "//="}:
-                    at = start + sum(map(len, gap_lines[: token.start[0] - 1])) + token.start[1]
-                    spans.append((at, at + len(token.string)))
-                    break
-        except (tokenize.TokenError, IndentationError):
-            continue
-    return sorted(set(spans))
-
-
 class RunPrivacy:
     def __init__(self, root: Path, *, hostname: str, username: str) -> None:
         self.root = root.resolve()
@@ -97,7 +53,31 @@ class RunPrivacy:
         keys: tuple[str, ...] = (),
         python_source: bool = False,
     ) -> tuple[str, int]:
+        return self._text(value, manifest=manifest, keys=keys, python_source=python_source)
+
+    def _text(
+        self,
+        value: str,
+        *,
+        manifest: bool = False,
+        keys: tuple[str, ...] = (),
+        python_source: bool = False,
+        depth: int = 0,
+    ) -> tuple[str, int]:
+        if depth > 8:
+            raise ValueError("nested capture text limit exceeded")
+        if python_source and not keys:
+            source = redact_python_source(
+                value,
+                lambda scalar, context: self._text(scalar, keys=context, depth=depth + 1),
+            )
+            if source is not None:
+                return source
         result, count = redact_contextual_text(value, manifest=manifest, keys=keys)
+        structured = redact_json_strings(result, lambda scalar: self._text(scalar, depth=depth + 1))
+        if structured is not None and any(char in result for char in '"[{'):
+            safe, replaced = structured
+            return safe, count + replaced
         result, replaced = _LOCAL_URI.subn("<REDACTED:path>", result)
         count += replaced
 
@@ -125,17 +105,7 @@ class RunPrivacy:
             redacted_until = match.end()
             return "<REDACTED:path>"
 
-        # Only captured .py files opt in. Arbitrary argv/config strings must
-        # not gain a path-redaction exemption by resembling Python arithmetic.
-        spans = _division_spans(result) if python_source else []
-        pieces: list[str] = []
-        cursor = 0
-        for start, end in [*spans, (len(result), len(result))]:
-            redacted_until = 0
-            safe = _ABSOLUTE_PATH.sub(path, result[cursor:start])
-            pieces.extend((safe, result[start:end]))
-            cursor = end
-        result = "".join(pieces)
+        result = _ABSOLUTE_PATH.sub(path, result)
         for pattern, kind in self.identities:
             result, replaced = pattern.subn(f"<REDACTED:{kind}>", result)
             count += replaced

@@ -73,6 +73,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R02-R follow-up (spec §§5.1, 16): retain bounded Python judge source and
+  complete JSONL rubrics without changing safe source bytes. Python literal
+  and key contexts no longer cross independent statements; JSON path checks
+  use decoded strings so escaped newlines remain intact. Keep secret, real
+  path, identity, malformed-input and child-exit protections, with exact pinned
+  source and whole-run regressions.
+
 - R08-A (spec §18): classify changed, added and removed direct
   `evaluation.judge.params.*` leaves as HIGH by default. Explicit
   `--fail-on HIGH` can now exit 1 for that leaf alone; exact LOW/NONE
