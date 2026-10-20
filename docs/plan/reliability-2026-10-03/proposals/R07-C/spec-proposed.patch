@@ -1,0 +1,62 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -884,7 +884,7 @@
+ 2. **Determine level**: no manifest → 0; manifest → 1; lock or ≥1 run record → 2. `--level` may lower it.
+ 3. **Resolve profiles**: `core` + declared (`--profiles` overrides declared) with inheritance closure. At Level 0, run detection and report as INFO only.
+ 4. **Select rules**: union of resolved profiles' rules + project rules. Rules not selected are not executed and produce nothing.
+-5. **Execute**: for each selected rule with `min_level ≤ level`: if `applies(ctx)` is false → `status: skipped`; else `check(ctx)` returns zero or more findings; zero findings → synthesize one `PASS`.
++5. **Execute**: for each selected rule with `min_level ≤ level`: if `applies(ctx)` is false → `status: skipped`; else `check(ctx)` returns zero or more findings. Preserve every nonempty result, including explicit PASS/SKIPPED findings. For an empty built-in-rule result only, ask its opt-in `pass_skip_reason(ctx)`; a reason produces one `SKIPPED` with severity INFO, the reason as message, empty evidence and the original rule identity/fix hint. Otherwise synthesize one `PASS`. The default hook returns no reason. Generated project rules keep their existing execution path. Profile overrides, suppression, ordering, summaries and exit thresholds are then applied as before.
+ 6. **Severity**: a rule MAY emit a finding with a severity lower than its `default_severity` (e.g. `model.revision_pinned` for API providers); otherwise the finding carries `default_severity`. If the resolved profiles define a `severity_overrides` entry for the rule (most-derived profile wins), that value **replaces** the emitted severity. Project rules carry their own severity. Record `severity_origin`.
+ 7. **Suppression**: `config.audit.ignore` by `rule_id` or alias → `status: suppressed`, severity `INFO`, keep original in `evidence[].note`.
+ 8. **Report**: sort, summarize, emit. Exit code per §1.1 computed on non-suppressed `fail` findings.
+@@ -950,6 +950,37 @@
+ | `exec.seed_declared` | WARNING | 1 | manifest | none of `execution.seed`, `generation.seed`, `training.seed` present |
+ | `exec.run_recorded` | INFO | 1 | manifest | no run records |
+ | `exec.profile_detection_mismatch` | INFO | 1 | manifest | a `high`-confidence detected profile is not declared, or a declared profile has no detection evidence |
++
++### 12.3.1 Known primary-Python gaps: bounded synthetic-PASS policy (R07-C A)
++
++Only `env.llm_critical_deps_pinned` and `exec.profile_detection_mismatch` opt in.
++When applicable and their check returns no findings, synthesize SKIPPED/INFO instead
++of PASS if primary-Python candidate analysis is unobserved, its counts are
++inconsistent, or parsed is less than candidate. This is a deliberately conservative rule-level veto, including when
++input-specific evidence might already settle the rule. The fixed message is:
++
++```text
++Python candidate analysis incomplete: parsed {parsed} of {candidate} candidate files; selected {selected} (limit {limit}); no rule-wide PASS is established.
++```
++
++Unobserved or inconsistent internal coverage uses `Python candidate coverage is
++unavailable; no rule-wide PASS is established.` Count invariants are
++0 <= parsed <= selected <= candidate, 0 <= limit and selected <= limit.
++Normal completed scans record observation even
++with zero candidates. Counts refer only to the captured eligible candidate view
++and the active count/read/parse budgets in §13. They do not certify Git listing,
++filesystem enumeration, dependency parsing, framework scanning or full detection.
++No warning prose is parsed into coverage facts; no persisted fields are added.
++
++Nonempty rule results, applicability skips, all other built-in rules and generated
++project rules are unchanged. In particular, declared-but-undetected profile INFO
++and used-but-unpinned package WARNING remain existing bounded-scan conclusions;
++some depend on absence and may be overturned by additional evidence. They are not
++relabelled as fully proven violations. Classification of those branches and of
++listing/dependency/framework uncertainty remains OPEN R07-C work. This limited
++policy must not be described as full R07-C coverage assurance or proof of complete
++experiment reproducibility. With consistent observed counts and parsed=candidate, prior behavior stays
++unchanged; default fail-on and all existing schema versions stay unchanged.
+
+ ### 12.4 `model.*` (M3 presence, M4 lock)
+
+@@ -1136,9 +1167,9 @@
+ The diagnostic contains only fixed text and integers. JSON stdout remains one
+ unmodified JSON document; report files and exported Markdown gain no diagnostic
+ fields or text. Internal coverage counts and CLI diagnostics do not add persisted
+-schema fields, findings, severity/summary counts, rule-status changes or fail-on
+-changes. This disclosure does not decide the separate R07-C policy for rule
+-conclusions under incomplete coverage. Discover payload/snippet budgets remain
++schema fields or change findings, severity/summary counts, rule statuses or fail-on
++by itself. The separate bounded R07-C policy in §12.3.1 changes two rules' empty-result
++PASS handling; the R07-B diagnostic and its default visibility remain unchanged. Discover payload/snippet budgets remain
+ independent under §20.2 and are not described as this Python file-count limit.
+
+ ---

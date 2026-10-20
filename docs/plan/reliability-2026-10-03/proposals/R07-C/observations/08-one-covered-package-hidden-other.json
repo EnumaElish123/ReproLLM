@@ -1,0 +1,425 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:09dbf7cde8ca531899c3af0ed3c4b38a01f514fb463a68ca12adf5899f12b76d",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "git rev-parse --is-inside-work-tree failed",
+          "path": ".",
+          "value": null
+        }
+      ],
+      "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+      "level": 1,
+      "message": ". is not inside a git work tree",
+      "profile_origin": [],
+      "rule_id": "code.git_repo",
+      "severity": "CRITICAL",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.id",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.id in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.id is missing",
+      "profile_origin": [],
+      "rule_id": "model.primary_declared",
+      "severity": "CRITICAL",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "no requires-python / .python-version / conda python= found",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "level": 1,
+      "message": "no Python version requirement is declared",
+      "profile_origin": [],
+      "rule_id": "env.python_version_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "matches a forbidden file pattern; not a git repo",
+          "path": ".env",
+          "value": null
+        }
+      ],
+      "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+      "level": 1,
+      "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+      "profile_origin": [],
+      "rule_id": "env.secret_files_ignored",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "execution.command",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+      "level": 1,
+      "message": "execution.command is missing; the experiment command is not recorded",
+      "profile_origin": [],
+      "rule_id": "exec.command_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "execution.seed",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": "generation.seed",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": "training.seed",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+      "level": 1,
+      "message": "no seed is declared (checked execution.seed, generation.seed, training.seed)",
+      "profile_origin": [],
+      "rule_id": "exec.seed_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+      "level": 1,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.clean_tree",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+      "level": 1,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.git_commit",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+      "level": 1,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.no_untracked",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git remote add origin <url>` so the experiment's code source is recorded.",
+      "level": 1,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.remote_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git submodule update --init --recursive`.",
+      "level": 1,
+      "message": "not a git repository",
+      "profile_origin": [],
+      "rule_id": "code.submodules_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Run `reprollm init` to create reprollm.yaml and .reprollm/.",
+      "level": 1,
+      "message": "audit level > 0; reprollm.yaml exists",
+      "profile_origin": [],
+      "rule_id": "env.reprollm_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "run",
+          "line": null,
+          "note": "no run.json found",
+          "path": ".reprollm/runs",
+          "value": null
+        }
+      ],
+      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+      "level": 1,
+      "message": "no run records found under .reprollm/runs",
+      "profile_origin": [],
+      "rule_id": "exec.run_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.dtype or inference.dtype in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "model.dtype_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.provider to a supported provider in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "model.provider_known",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "model.trust_remote_code_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [],
+      "fix_hint": "Set datasets.<role>.split in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "dataset.split_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "prompt",
+      "evidence": [],
+      "fix_hint": "Set prompts.<role>.path to an existing file in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "prompt.file_exists",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+      "level": 1,
+      "message": "A dependency manifest declares the Python environment.",
+      "profile_origin": [],
+      "rule_id": "env.dependency_manifest_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+      "level": 1,
+      "message": "Every LLM-critical dependency in use is pinned to an exact version.",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+      "level": 1,
+      "message": "A lockfile (or fully pinned requirements) records exact versions.",
+      "profile_origin": [],
+      "rule_id": "env.lockfile_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "level": 1,
+      "message": "Declared profiles and detected signals agree.",
+      "profile_origin": [],
+      "rule_id": "exec.profile_detection_mismatch",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    }
+  ],
+  "generated_at": "2026-10-20T03:15:15Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 2,
+    "info": 1,
+    "pass_": 4,
+    "skipped": 11,
+    "suppressed": 0,
+    "warning": 4
+  },
+  "target": "."
+}

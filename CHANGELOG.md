@@ -19,6 +19,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- P-A / R07-C (spec §§11–13): prepare all-rule evidence, eleven original-policy
+  observations, complete five-project conditional comparisons, and unapplied
+  specification/engine patches for a bounded two-rule synthetic-PASS veto.
+  The proposed policy and D-41 change remain unapproved; broader mixed-evidence
+  coverage remains open. Product behavior, schemas and historical gold do not change.
+
 - P-A / R06-B (spec §12.2): prepare source-linked dependency and lock-scope
   evidence, a concrete association proposal, compatibility limits and future
   acceptance cases; synchronize current delivery/resource navigation. The

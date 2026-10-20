@@ -1,0 +1,1013 @@
+{
+  "case_count": 11,
+  "cases": [
+    {
+      "all_findings_relative": "cases-final-1/cap-before-positive/audit-observation.json",
+      "all_findings_sha256": "c65340b18e57c1037ad7f1dd4ba7ad4ec1f8feb48c3fdf6113b500a559381f50",
+      "case": "cap-before-positive",
+      "declared_profiles": [],
+      "diagnostics": [
+        "Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 1 of 2 files"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "imported",
+              "path": "a.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Pin vllm exactly, e.g. `vllm==<version>`.",
+          "level": 1,
+          "message": "vllm is used but not pinned to an exact version (suggestion: vllm==<version>)",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "detection",
+              "line": 1,
+              "note": "import vllm",
+              "path": "a.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "detected profile 'inference' (high confidence) is not declared in experiment.profiles",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/cap-after-hidden-positive/audit-observation.json",
+      "all_findings_sha256": "1402f91a551737efefc06ac72432c493650e019daadf8ded27044eed660eb5d9",
+      "case": "cap-after-hidden-positive",
+      "declared_profiles": [],
+      "diagnostics": [
+        "Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 1 of 2 files"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "no LLM-critical package is declared or imported",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/complete-absent/audit-observation.json",
+      "all_findings_sha256": "b8d0d8b0643b6261063aa59755e5102a06e76435b247f4fa92c49cda9f0faa81",
+      "case": "complete-absent",
+      "declared_profiles": [],
+      "diagnostics": [],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "no LLM-critical package is declared or imported",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/selected-unreadable/audit-observation.json",
+      "all_findings_sha256": "d1bebabefeee892bb16ef8a5758f9d95ff4506f3967590ab961098b7bcb9afab",
+      "case": "selected-unreadable",
+      "declared_profiles": [],
+      "diagnostics": [
+        "a.py: cannot read file; skipped",
+        "a.py: unreadable or over the size cap; skipped"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "no LLM-critical package is declared or imported",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": [
+        "a.py"
+      ]
+    },
+    {
+      "all_findings_relative": "cases-final-1/hidden-positive-complete/audit-observation.json",
+      "all_findings_sha256": "a36d093b2c062b120edecfeaeb39c3aa8537041b33278f59a0c2e9f51179fad4",
+      "case": "hidden-positive-complete",
+      "declared_profiles": [],
+      "diagnostics": [],
+      "python_file_limit_override": 2,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "imported",
+              "path": "z.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Pin vllm exactly, e.g. `vllm==<version>`.",
+          "level": 1,
+          "message": "vllm is used but not pinned to an exact version (suggestion: vllm==<version>)",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "detection",
+              "line": 1,
+              "note": "import vllm",
+              "path": "z.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "detected profile 'inference' (high confidence) is not declared in experiment.profiles",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/declared-hidden-profile/audit-observation.json",
+      "all_findings_sha256": "015085cf9b53325c58ac2af4e0ff5cd7e3b95adf6a90e63cbd5843df1050247c",
+      "case": "declared-hidden-profile",
+      "declared_profiles": [
+        "inference"
+      ],
+      "diagnostics": [
+        "Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 1 of 2 files"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "no LLM-critical package is declared or imported",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [
+            {
+              "expected": null,
+              "field": "experiment.profiles",
+              "kind": "field",
+              "line": null,
+              "note": "inference declared, nothing detected",
+              "path": null,
+              "value": null
+            }
+          ],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "declared profile 'inference' has no detection evidence in this repository",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/declared-profile-complete/audit-observation.json",
+      "all_findings_sha256": "2a02425385c91b4a066bef3d4591f18cfd193730221053e7153fdc6852352042",
+      "case": "declared-profile-complete",
+      "declared_profiles": [
+        "inference"
+      ],
+      "diagnostics": [],
+      "python_file_limit_override": 2,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "imported",
+              "path": "z.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Pin vllm exactly, e.g. `vllm==<version>`.",
+          "level": 1,
+          "message": "vllm is used but not pinned to an exact version (suggestion: vllm==<version>)",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/one-covered-package-hidden-other/audit-observation.json",
+      "all_findings_sha256": "0a5132830cc6100da46b5b7621906a13838ce9bc2052aee2315d9d5f7835a99d",
+      "case": "one-covered-package-hidden-other",
+      "declared_profiles": [],
+      "diagnostics": [
+        "Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 1 of 2 files"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "Every LLM-critical dependency in use is pinned to an exact version.",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/other-package-complete/audit-observation.json",
+      "all_findings_sha256": "5bbd0ae9fd9986049d45e290145207bdcfda3a4415058a27e0bb6014bfa4a179",
+      "case": "other-package-complete",
+      "declared_profiles": [],
+      "diagnostics": [],
+      "python_file_limit_override": 2,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "imported",
+              "path": "z.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Pin vllm exactly, e.g. `vllm==<version>`.",
+          "level": 1,
+          "message": "vllm is used but not pinned to an exact version (suggestion: vllm==<version>)",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "detection",
+              "line": 1,
+              "note": "import vllm",
+              "path": "z.py",
+              "value": null
+            }
+          ],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "detected profile 'inference' (high confidence) is not declared in experiment.profiles",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    },
+    {
+      "all_findings_relative": "cases-final-1/known-use-unread-exact/audit-observation.json",
+      "all_findings_sha256": "a535c79041794f361fa455fe85471f6c29567f234b5a97c0ab2d6c1f7096e451",
+      "case": "known-use-unread-exact",
+      "declared_profiles": [],
+      "diagnostics": [
+        "nested/requirements.txt: cannot read file; skipped",
+        "nested/requirements.txt:0: unreadable"
+      ],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": 1,
+              "note": "declared as unversioned",
+              "path": "requirements.txt",
+              "value": "(no version)"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "level": 1,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": [
+        "nested/requirements.txt"
+      ]
+    },
+    {
+      "all_findings_relative": "cases-final-1/known-use-exact-readable/audit-observation.json",
+      "all_findings_sha256": "446932636088c79987474f44ba6ed3b68d556babfa0e09916990dc967966e52a",
+      "case": "known-use-exact-readable",
+      "declared_profiles": [],
+      "diagnostics": [],
+      "python_file_limit_override": 1,
+      "selected_findings": [
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [
+            {
+              "expected": null,
+              "field": null,
+              "kind": "file",
+              "line": null,
+              "note": "matches a forbidden file pattern; not a git repo",
+              "path": ".env",
+              "value": null
+            }
+          ],
+          "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+          "level": 1,
+          "message": "1 secret-bearing file(s) present: .env (not a git repo; gitignore status cannot be verified)",
+          "profile_origin": [],
+          "rule_id": "env.secret_files_ignored",
+          "severity": "WARNING",
+          "severity_origin": "default",
+          "status": "fail",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "model",
+          "evidence": [],
+          "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+          "level": 1,
+          "message": "no applicable declarations",
+          "profile_origin": [],
+          "rule_id": "model.trust_remote_code_declared",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "env",
+          "evidence": [],
+          "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+          "level": 1,
+          "message": "Every LLM-critical dependency in use is pinned to an exact version.",
+          "profile_origin": [],
+          "rule_id": "env.llm_critical_deps_pinned",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        },
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "unreadable_candidates": []
+    }
+  ],
+  "checks": {
+    "complete_absent_current_pass": true,
+    "covered_known_package_can_hide_global_unknown_package": true,
+    "declared_missing_detection_is_absence_fail": true,
+    "existing_warning_is_nonmonotonic_if_exact_source_unread": true,
+    "full_declared_matching_detection_pass": true,
+    "full_other_package_yields_warning": true,
+    "no_default_count_summary_for_one_selected_unreadable": true,
+    "omitted_positive_yields_current_synth_pass": true,
+    "positive_detected_mismatch_is_retained_under_cap": true,
+    "reading_independent_exact_removes_warning": true,
+    "same_hidden_positive_full_scan_yields_fail": true,
+    "specific_forbidden_file_fail_in_every_case": true,
+    "within_limit_unreadable_current_pass": true
+  },
+  "future_policy_approved_or_executed": false,
+  "git_gateway_stub_call_count": 11,
+  "guard_network_subprocess_heavy_import_events": [],
+  "limits": [
+    "These observations describe existing behavior, not accepted R07-C semantics.",
+    "A Python-count cap=1/2 is a fixture control, not a new production limit or changed repository file.",
+    "No complete quality/five-project/resource/release acceptance is claimed."
+  ],
+  "method": "Public run_audit with synthetic files; sanctioned proc.run_cmd non-git stub, fixed synthetic hostname/user APIs and temporary filesystem unreadable boundary; explicit per-process active Python limit=1/2; no private rule/parser helpers invoked",
+  "privacy": "Only synthetic/public source fixtures; .env contains no credential and is never sourced",
+  "schema_version": 1,
+  "source_bytes_unchanged": true,
+  "source_commit": "055c5fb880f4e374555a1d229b79d0d612c80350",
+  "source_hashes_after": {
+    "src/reprollm/core/deps.py": "9985b8595fdad7285e82309d33a7913978980e5a02fc913658aa6713864bf6c5",
+    "src/reprollm/core/engine.py": "ab88fea3faef70f2d682e13b0d67d6bc34a731e991fc65d1dd5724bc784d6acc",
+    "src/reprollm/core/pyscan.py": "6c0a6381eb025e8b45cdb20b48744e11d95fec41d3d7ecd7196f00b78918ad70",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "src/reprollm/rules/env.py": "3ddab17d76725f0e4538a4ea47a6d483b6870c9a08fca0c54691f71217622430",
+    "src/reprollm/rules/exec_.py": "2b5f18b6e3306f77f56e9c6d3ad782c2519ce23d3077d6dc0bd675bb803677fe"
+  },
+  "source_hashes_before": {
+    "src/reprollm/core/deps.py": "9985b8595fdad7285e82309d33a7913978980e5a02fc913658aa6713864bf6c5",
+    "src/reprollm/core/engine.py": "ab88fea3faef70f2d682e13b0d67d6bc34a731e991fc65d1dd5724bc784d6acc",
+    "src/reprollm/core/pyscan.py": "6c0a6381eb025e8b45cdb20b48744e11d95fec41d3d7ecd7196f00b78918ad70",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "src/reprollm/rules/env.py": "3ddab17d76725f0e4538a4ea47a6d483b6870c9a08fca0c54691f71217622430",
+    "src/reprollm/rules/exec_.py": "2b5f18b6e3306f77f56e9c6d3ad782c2519ce23d3077d6dc0bd675bb803677fe"
+  },
+  "status": "PASS_ORIGINAL_IMPLEMENTATION_OBSERVATIONS"
+}

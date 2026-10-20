@@ -1,0 +1,2731 @@
+{
+  "approval_status": "UNAPPROVED_R07C_PA_DESIGN_INPUT",
+  "builtin_rule_count": 69,
+  "coverage_fact_boundaries": [
+    {
+      "channel": "file listing",
+      "fact": "files() uses Git ls-files or walk, skips run directory and silently filters stat failures/non-files/>2MiB; no complete rejected-file inventory/counter is available.",
+      "references": [
+        {
+          "end_line": 156,
+          "line": 134,
+          "path": "src/reprollm/core/scanner.py"
+        },
+        {
+          "end_line": 344,
+          "line": 333,
+          "path": "src/reprollm/core/scanner.py"
+        }
+      ]
+    },
+    {
+      "channel": "static candidate selection",
+      "fact": "analysis_files applies environment/generated/excluded-directory policy and logical safe-read boundaries independently of security/Git listing. Deliberate exclusion is not necessarily an observed failed read.",
+      "references": [
+        {
+          "end_line": 232,
+          "line": 149,
+          "path": "src/reprollm/core/scanner.py"
+        }
+      ]
+    },
+    {
+      "channel": "Python scan",
+      "fact": "Current counters candidate/selected/parsed/active limit identify count omissions and selected read/parse gaps. candidate>parsed is a bounded signal of Python incompleteness, not a proof all physical repository content is covered when equal.",
+      "references": [
+        {
+          "end_line": 119,
+          "line": 41,
+          "path": "src/reprollm/core/pyscan.py"
+        }
+      ]
+    },
+    {
+      "channel": "content reader",
+      "fact": "Default512KiB; returnsNone for oversize/non-text/binary/unreadable/unsafe/missing. Some causes produce fixed warnings, some silently returnNone. Do not invent exact cause counts from aggregate parse gap.",
+      "references": [
+        {
+          "end_line": 269,
+          "line": 241,
+          "path": "src/reprollm/core/scanner.py"
+        },
+        {
+          "end_line": 332,
+          "line": 313,
+          "path": "src/reprollm/core/scanner.py"
+        }
+      ]
+    },
+    {
+      "channel": "dependency parsing/R06-B",
+      "fact": "Independent parser uses same static candidate/read limits, supports only bounded grammar, stores unparsed diagnostics and observed project barriers, and does not expose a complete per-source typed coverage ledger. R06-B existential credit and R06-P closures remain accepted independent policies.",
+      "references": [
+        {
+          "end_line": 211,
+          "line": 98,
+          "path": "src/reprollm/core/deps.py"
+        },
+        {
+          "end_line": 736,
+          "line": 555,
+          "path": "src/reprollm/core/deps.py"
+        }
+      ]
+    },
+    {
+      "channel": "profile detection",
+      "fact": "Imports/deps plus non-Python README/config keys/filename/directory and framework sources feed detection. Some non-Python malformed/unreadable content is silently skipped; inspect decorator detection separately loops selected Python text. Python counters alone do not certify all detection channels.",
+      "references": [
+        {
+          "end_line": 178,
+          "line": 90,
+          "path": "src/reprollm/profiles/detect.py"
+        },
+        {
+          "end_line": 303,
+          "line": 256,
+          "path": "src/reprollm/profiles/detect.py"
+        },
+        {
+          "end_line": 131,
+          "line": 98,
+          "path": "src/reprollm/integrations/_static.py"
+        },
+        {
+          "line": 34,
+          "path": "src/reprollm/integrations/inspect_ai.py"
+        }
+      ]
+    },
+    {
+      "channel": "Git",
+      "fact": "Separate proc results, not capped Python. Current GitInfo collapses some command failures into empty/None; a general unknown-Git redesign would need its own explicit decision, not an incidental AST hook.",
+      "references": [
+        {
+          "end_line": 115,
+          "line": 49,
+          "path": "src/reprollm/core/git.py"
+        },
+        {
+          "end_line": 136,
+          "line": 128,
+          "path": "src/reprollm/core/git.py"
+        }
+      ]
+    }
+  ],
+  "dynamic_project_family": {
+    "applies_when": "manifest exists",
+    "emission_behavior": "present gives check=[] then one synthesized PASS with severity_origin=project_rule; missing gives one FAIL; no static scanner dependence",
+    "fact_dependencies": [
+      "accepted rule field/reason/severity",
+      "manifest.model_dump dotted dict traversal"
+    ],
+    "fail_condition": "accepted manifest dotted field is absent or None",
+    "min_level": 1,
+    "proposal_recommendation": {
+      "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+      "on_incomplete_scan": "Keep accepted field presence evaluation; do not downgrade due only to Python cap and do not infer runtime consumption or all custom parameter discovery. Preserve every actual absent/null FAIL."
+    },
+    "references": [
+      {
+        "end_line": 63,
+        "line": 22,
+        "path": "src/reprollm/rules/project.py"
+      },
+      {
+        "end_line": 98,
+        "line": 88,
+        "path": "src/reprollm/rules/project.py"
+      },
+      {
+        "end_line": 252,
+        "line": 229,
+        "path": "src/reprollm/core/engine.py"
+      }
+    ],
+    "rule_id_pattern": "project.* (one per accepted .reprollm/project-rules.yaml rule)",
+    "successful_conclusion": "accepted field declared non-None, including false/zero/empty scalar/list/dict; this is declaration presence only"
+  },
+  "engine_semantics": [
+    {
+      "fact": "Only rules chosen by resolve(core + manifest/CLI profiles), plus sorted dynamic rules, execute. No detected-profile auto-enrollment for audit.",
+      "references": [
+        {
+          "line": 207,
+          "path": "src/reprollm/core/engine.py"
+        },
+        {
+          "line": 234,
+          "path": "src/reprollm/core/engine.py"
+        },
+        {
+          "line": 161,
+          "path": "src/reprollm/profiles/loader.py"
+        }
+      ]
+    },
+    {
+      "fact": "min_level above effective emits nothing; applies=false becomes SKIPPED INFO; stub becomes SKIPPED; nonempty check output is retained; only check=[] synthesizes PASS with empty evidence and rule description.",
+      "references": [
+        {
+          "end_line": 269,
+          "line": 234,
+          "path": "src/reprollm/core/engine.py"
+        },
+        {
+          "end_line": 151,
+          "line": 125,
+          "path": "src/reprollm/core/engine.py"
+        },
+        {
+          "end_line": 25,
+          "line": 19,
+          "path": "src/reprollm/core/registry.py"
+        }
+      ]
+    },
+    {
+      "fact": "Explicit field_result PASS/FAIL, skipped_field, mixed role results and chat-template absent PASS are nonempty and bypass the empty-result branch. R07-C must not accidentally erase such evidence.",
+      "references": [
+        {
+          "end_line": 68,
+          "line": 35,
+          "path": "src/reprollm/rules/_presence.py"
+        },
+        {
+          "end_line": 192,
+          "line": 134,
+          "path": "src/reprollm/rules/model.py"
+        }
+      ]
+    },
+    {
+      "fact": "Severity overrides apply only to FAIL; suppressions apply after rule execution; summary counts current resulting statuses. Existing fail-on uses failure severities, so pure PASS->SKIP does not add failures.",
+      "references": [
+        {
+          "end_line": 303,
+          "line": 270,
+          "path": "src/reprollm/core/engine.py"
+        }
+      ]
+    },
+    {
+      "fact": "Diagnostics merge scanner warnings, AST warnings, deps.unparsed and run warnings only when requested; they do not affect applicability or PASS now and are not persisted report fields.",
+      "references": [
+        {
+          "end_line": 293,
+          "line": 280,
+          "path": "src/reprollm/core/engine.py"
+        }
+      ]
+    }
+  ],
+  "existing_differences_not_fixed": [
+    {
+      "fact": "Spec says peft import or dependency; actual adapter hint only includes parsed import. Profile dependency detection is separate. Expanding hint sources is a semantic change and must not be slipped into coverage handling.",
+      "id": "ADAPTER_SPEC_IMPLEMENTATION_DRIFT",
+      "references": [
+        {
+          "line": 965,
+          "path": "docs/plan/01_specification.md"
+        },
+        {
+          "line": 81,
+          "path": "src/reprollm/integrations/providers.py"
+        },
+        {
+          "end_line": 35,
+          "line": 34,
+          "path": "src/reprollm/integrations/peft.py"
+        },
+        {
+          "end_line": 56,
+          "line": 48,
+          "path": "src/reprollm/integrations/_static.py"
+        },
+        {
+          "end_line": 151,
+          "line": 134,
+          "path": "src/reprollm/profiles/detect.py"
+        }
+      ],
+      "status": "EXISTING_DIFFERENCE_NOT_FIXED"
+    },
+    {
+      "fact": "prompt.file_exists and metric implementation existence call direct is_file, not static content collection. Python coverage policy must not silently change path/symlink/readability/hash semantics.",
+      "id": "DIRECT_PATH_EXISTENCE",
+      "references": [
+        {
+          "end_line": 236,
+          "line": 235,
+          "path": "src/reprollm/core/scanner.py"
+        },
+        {
+          "end_line": 93,
+          "line": 74,
+          "path": "src/reprollm/rules/prompt.py"
+        },
+        {
+          "end_line": 106,
+          "line": 79,
+          "path": "src/reprollm/rules/eval_.py"
+        }
+      ],
+      "status": "SEPARATE_PATH_POLICY_NOT_CHANGED"
+    },
+    {
+      "fact": "Consistency compares current declarations and recorded latest-run observations; recorded agreement is explicitly not child consumption. Missing observations, incompatible recorder contexts and run reader warnings have their own existing applicability/provenance behavior.",
+      "id": "STATE_RUNTIME_EVIDENCE_SCOPE",
+      "references": [
+        {
+          "end_line": 86,
+          "line": 54,
+          "path": "src/reprollm/core/audit_state.py"
+        },
+        {
+          "end_line": 210,
+          "line": 196,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 390,
+          "line": 359,
+          "path": "src/reprollm/rules/consistency.py"
+        }
+      ],
+      "status": "PRESERVE_ACCEPTED_R04_S"
+    },
+    {
+      "fact": "This inventory does not approve engine/PASS/schema changes. R07-C remains concrete proposal work; D-41 requires explicit maintainer review of engine changes.",
+      "id": "D41_ENGINE_REVIEW",
+      "references": [
+        {
+          "line": 269,
+          "path": "docs/plan/00_architecture_and_decisions.md"
+        },
+        {
+          "end_line": 192,
+          "line": 162,
+          "path": "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md"
+        }
+      ],
+      "status": "REQUIRED_BEFORE_IMPLEMENTATION"
+    }
+  ],
+  "rules": [
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency; empty status is collection-scoped.",
+      "applies_when": "ctx.git.is_repo",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.modified from git status --porcelain"
+      ],
+      "fail_condition": "ctx.git.modified is nonempty",
+      "implementation": {
+        "class": "CleanTreeRule",
+        "end_line": 117,
+        "line": 90,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.clean_tree",
+      "scan_dependency_class": "git_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "No modified tracked paths in the collected git status result."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency.",
+      "applies_when": "ctx.git.is_repo",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.is_repo",
+        "ctx.git.commit/branch"
+      ],
+      "fail_condition": "commit is None",
+      "implementation": {
+        "class": "GitCommitRule",
+        "end_line": 76,
+        "line": 46,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.git_commit",
+      "scan_dependency_class": "git_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "HEAD command returned a commit string."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency.",
+      "applies_when": "always",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.is_repo from proc.run_cmd git rev-parse"
+      ],
+      "fail_condition": "GitInfo.is_repo is false",
+      "implementation": {
+        "class": "GitRepoRule",
+        "end_line": 42,
+        "line": 16,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.git_repo",
+      "scan_dependency_class": "git_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "The Git rev-parse probe positively identifies a work tree."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency; empty status is collection-scoped.",
+      "applies_when": "ctx.git.is_repo",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.untracked from git status --porcelain"
+      ],
+      "fail_condition": "ctx.git.untracked is nonempty",
+      "implementation": {
+        "class": "NoUntrackedRule",
+        "end_line": 148,
+        "line": 121,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.no_untracked",
+      "scan_dependency_class": "git_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "No untracked paths in the collected git status result."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency.",
+      "applies_when": "ctx.git.is_repo",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.remote_origin"
+      ],
+      "fail_condition": "remote_origin is None",
+      "implementation": {
+        "class": "RemoteRecordedRule",
+        "end_line": 212,
+        "line": 189,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.remote_recorded",
+      "scan_dependency_class": "git_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "Collected git origin string is present."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency.",
+      "applies_when": "Git work tree and direct .gitmodules is_file()",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.git.submodules",
+        "direct .gitmodules file existence"
+      ],
+      "fail_condition": "Collected submodule has initialized=false",
+      "implementation": {
+        "class": "SubmodulesInitializedRule",
+        "end_line": 185,
+        "line": 152,
+        "path": "src/reprollm/rules/code.py"
+      },
+      "min_level": 0,
+      "module": "code",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "code.submodules_initialized",
+      "scan_dependency_class": "git_and_direct_file_fact",
+      "scope_limits_and_edge_cases": [
+        "Python count/read/parse limits do not affect Git commands.",
+        "GitInfo currently has no typed command-completeness status; rev-parse/status/remote/submodule failures are mapped to false/None/empty facts. That separate collection failure is not proof of complete Git knowledge."
+      ],
+      "successful_conclusion": "No uninitialized submodules in collected status."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "at least one accepted custom.* project rule has nonempty bindings and eligible latest-run observation; manifest/latest run/project rules exist",
+      "emission_behavior": "Mismatch failures use project-rule severity and evidence; all agree gives check=[] synthesized PASS. No qualifying accepted observed binding yields SKIPPED.",
+      "fact_dependencies": [
+        "accepted project rules custom.* field/bindings/severity",
+        "current manifest custom value",
+        "latest-run State cli/config/env binding observations and alternatives"
+      ],
+      "fail_condition": "Any observed eligible custom value differs from declared manifest custom value.",
+      "implementation": {
+        "class": "CustomFieldsRule",
+        "end_line": 483,
+        "line": 441,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.custom_fields",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Accepted project rule without runtime observation is excluded from this consistency rule; its independent project.* presence rule still executes.",
+        "Does not infer all custom values were observed."
+      ],
+      "successful_conclusion": "All recorded eligible custom observations agree with declarations under accepted rules; child consumption unverified.",
+      "supporting_references": [
+        {
+          "end_line": 437,
+          "line": 424,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 210,
+          "line": 196,
+          "path": "src/reprollm/rules/consistency.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock and latest run have environment; all relevant State sources have compatible recorder contexts",
+      "emission_behavior": "Package mismatch emits WARNING, presence difference INFO (both FAIL status). Full match yields check=[] synthesized recorder-scoped PASS. Unknown/incompatible context yields applies=false SKIPPED.",
+      "fact_dependencies": [
+        "lock and latest run environment packages maps",
+        "Python source anchors and each present critical package source context: recorder subject and lock_resolution/post_child respectively",
+        "LLM_CRITICAL_PACKAGES fixed set"
+      ],
+      "fail_condition": "For any critical package, recorded lock and run versions differ, including only-lock/only-run presence difference.",
+      "implementation": {
+        "class": "EnvVsLockRule",
+        "end_line": 421,
+        "line": 345,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.env_vs_lock",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Absent on both maps compares equal for that package; no installed-child completeness claim.",
+        "check has defensive [] if called without applies, but engine skips first; must not confuse with normal synthesized PASS."
+      ],
+      "successful_conclusion": "Recorded critical-package metadata agrees in compatible recorder contexts; child environment explicitly unverified.",
+      "supporting_references": [
+        {
+          "end_line": 390,
+          "line": 359,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 125,
+          "line": 110,
+          "path": "src/reprollm/diff/state.py"
+        },
+        {
+          "end_line": 185,
+          "line": 163,
+          "path": "src/reprollm/diff/state.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock exists",
+      "emission_behavior": "Failure-only list; no violations gives check=[] synthesized PASS, including vacuous empty selected file set.",
+      "fact_dependencies": [
+        "State files.<path>.sha256 lock/working_tree/run alternatives",
+        "audit_state constructs supported prompt/file entries from lock and directly validates in-root path, hashes current file or records missing/unreadable",
+        "latest run file hashes if available"
+      ],
+      "fail_condition": "A comparable locked path is invalid, missing, unreadable, current digest differs, or a present run digest differs.",
+      "implementation": {
+        "class": "FileHashesRule",
+        "end_line": 150,
+        "line": 85,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.file_hashes",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Files with no lock or working_tree source leaf are skipped inside check; normal audit_state projects both for every supported lock entry.",
+        "Missing run hash does not fail; matching tree alone satisfies that path. This is not capture completeness or runtime consumption.",
+        "No directory-wide file discovery; never infer every repository file was checked."
+      ],
+      "successful_conclusion": "All comparable declared lock prompt/file digests agree with current tree and optional run digest.",
+      "supporting_references": [
+        {
+          "end_line": 31,
+          "line": 17,
+          "path": "src/reprollm/core/audit_state.py"
+        },
+        {
+          "end_line": 86,
+          "line": 54,
+          "path": "src/reprollm/core/audit_state.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists and State has run cli/config/env observations for generation.*",
+      "emission_behavior": "Failure-only per-field list; matching observations yields check=[] synthesized PASS. No eligible observation means applies=false SKIPPED.",
+      "fact_dependencies": [
+        "current manifest generation fields retained as State source alternatives",
+        "latest-run bindings_observed projected to run cli/config/env leaves and all alternatives",
+        "values_equal normalization"
+      ],
+      "fail_condition": "Any captured eligible observation differs from current manifest value for its field.",
+      "implementation": {
+        "class": "GenerationParamsRule",
+        "end_line": 287,
+        "line": 262,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.generation_params",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Absence of an observation cannot assert a parameter was unused or child consumed declaration.",
+        "No Python scanner involvement; binding capture phase limits are separate provenance facts."
+      ],
+      "successful_conclusion": "All recorded eligible generation observations agree with declarations; child consumption remains unverified.",
+      "supporting_references": [
+        {
+          "end_line": 210,
+          "line": 196,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 258,
+          "line": 219,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 211,
+          "line": 163,
+          "path": "src/reprollm/diff/state.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock exists",
+      "emission_behavior": "Failure-only list; equality gives check=[] synthesized PASS.",
+      "fact_dependencies": [
+        "lock manifest_sha256/project_rules_sha256",
+        "direct current reprollm.yaml and .reprollm/project-rules.yaml sha256 or absent None"
+      ],
+      "fail_condition": "Either current document digest differs from corresponding lock digest.",
+      "implementation": {
+        "class": "LockFreshRule",
+        "end_line": 81,
+        "line": 23,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.lock_fresh",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Direct exact files, not static content enumeration. Read failures can propagate; no new coverage policy should mask them."
+      ],
+      "successful_conclusion": "Both document digests agree with lock."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest or lock exists and State has run cli/config/env observations for models.<role>.id/revision",
+      "emission_behavior": "Failures only; agreeing observed fields give check=[] synthesized PASS. No eligible observations gives SKIPPED.",
+      "fact_dependencies": [
+        "current manifest and lock State source alternatives",
+        "latest-run eligible bindings observations",
+        "exact 40-hex declared revision predicate and values_equal normalization"
+      ],
+      "fail_condition": "Observed id differs from required declared/locked identities; observed revision differs from resolved lock revision when available, otherwise declaration, and also from exact 40-hex declaration when one is present.",
+      "implementation": {
+        "class": "ModelIdentityRule",
+        "end_line": 341,
+        "line": 291,
+        "path": "src/reprollm/rules/consistency.py"
+      },
+      "min_level": 2,
+      "module": "consistency",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "consistency.model_identity",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Only observed roles/fields are compared. No claim all actual model loading was observed or scanner-complete.",
+        "Mutable declared revision is compared via exact locked resolution when available, rather than expecting branch text equal commit."
+      ],
+      "successful_conclusion": "Recorded observed model identity values agree with applicable expected declarations/resolved lock identities; child consumption remains unverified.",
+      "supporting_references": [
+        {
+          "end_line": 210,
+          "line": 196,
+          "path": "src/reprollm/rules/consistency.py"
+        },
+        {
+          "end_line": 258,
+          "line": 219,
+          "path": "src/reprollm/rules/consistency.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field_result PASS/FAIL, not synthesized.",
+      "fact_dependencies": [
+        "manifest.datasets"
+      ],
+      "fail_condition": "datasets mapping empty.",
+      "implementation": {
+        "class": "DeclaredRule",
+        "end_line": 104,
+        "line": 95,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 1,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "At least one dataset role is declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest and lock exist and manifest has provider=local dataset",
+      "emission_behavior": "Only failures returned; check=[] yields synthesized PASS.",
+      "fact_dependencies": [
+        "manifest local dataset roles/files",
+        "same-role lock dataset.files with nonempty sha256 strings"
+      ],
+      "fail_condition": "A local dataset has no same-role lock dataset, or locked.files is None, or any declared file is absent from nonempty locked hash map.",
+      "implementation": {
+        "class": "LocalFilesHashedRule",
+        "end_line": 91,
+        "line": 42,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 2,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.local_files_hashed",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Empty declared files with existing locked.files=[] currently passes; no independent scan discovers local files.",
+        "Presence of recorded hashes does not recompute current content in this rule."
+      ],
+      "successful_conclusion": "Every declared file has a nonempty locked sha256 and locked files list exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.datasets nonempty",
+      "emission_behavior": "Explicit per-role field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest datasets.<role>.preprocessing"
+      ],
+      "fail_condition": "A declared dataset preprocessing is None.",
+      "implementation": {
+        "class": "PreprocessingDeclaredRule",
+        "end_line": 163,
+        "line": 150,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 1,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.preprocessing_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Preprocessing is declared for each declared dataset."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock contains provider=huggingface dataset",
+      "emission_behavior": "Failure-only comprehension; check=[] yields synthesized PASS.",
+      "fact_dependencies": [
+        "lock.datasets provider and revision.confidence"
+      ],
+      "fail_condition": "Any locked Hugging Face dataset revision confidence != exact.",
+      "implementation": {
+        "class": "RevisionPinnedRule",
+        "end_line": 38,
+        "line": 16,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 2,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.revision_pinned",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Every locked HF dataset has exact revision confidence."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.datasets nonempty",
+      "emission_behavior": "Explicit per-role field PASS/FAIL/SKIPPED; no empty-list PASS under normal applicability.",
+      "fact_dependencies": [
+        "manifest datasets.<role>.sampling.n and .seed"
+      ],
+      "fail_condition": "A declared sampling.n exists but its seed is None.",
+      "implementation": {
+        "class": "SamplingSeedDeclaredRule",
+        "end_line": 183,
+        "line": 167,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 1,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.sampling_seed_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Declared sampled roles have a seed; no sampling.n produces per-role SKIPPED."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.datasets nonempty",
+      "emission_behavior": "Explicit PASS/FAIL/SKIPPED per declared dataset; mixed list suppresses synthesized PASS.",
+      "fact_dependencies": [
+        "declared per-role provider and split"
+      ],
+      "fail_condition": "Any declared Hugging Face dataset has split=None.",
+      "implementation": {
+        "class": "SplitDeclaredRule",
+        "end_line": 137,
+        "line": 132,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 1,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.split_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Every declared HF dataset has split; non-HF roles explicitly SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 128,
+          "line": 107,
+          "path": "src/reprollm/rules/dataset.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.datasets nonempty",
+      "emission_behavior": "Explicit PASS/FAIL/SKIPPED per declared dataset; mixed list suppresses synthesized PASS.",
+      "fact_dependencies": [
+        "declared per-role provider and subset"
+      ],
+      "fail_condition": "Any declared Hugging Face dataset has subset=None.",
+      "implementation": {
+        "class": "SubsetDeclaredRule",
+        "end_line": 146,
+        "line": 141,
+        "path": "src/reprollm/rules/dataset.py"
+      },
+      "min_level": 1,
+      "module": "dataset",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "dataset.subset_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Every declared HF dataset has subset; non-HF roles explicitly SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 128,
+          "line": 107,
+          "path": "src/reprollm/rules/dataset.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "Python cap does not affect this independent scan. A missing/unreadable/oversize candidate may reduce inventory or pyproject qualification; it is not a Python-coverage cause.",
+      "applies_when": "always",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "scanner.analysis_files()",
+        "deps manifest qualification and candidate names"
+      ],
+      "fail_condition": "deps.manifest_present=false",
+      "implementation": {
+        "class": "DependencyManifestPresentRule",
+        "end_line": 56,
+        "line": 30,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.dependency_manifest_present",
+      "scan_dependency_class": "dependency_inventory_presence",
+      "scope_limits_and_edge_cases": [
+        "Presence is not a proof of complete environment/declaration contents.",
+        "environment/Pipfile/requirements and uv/Poetry artifact name-presence can qualify without complete supported declarations."
+      ],
+      "successful_conclusion": "At least one supported dependency-manifest/artifact candidate qualifies under existing presence policy."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Omitted imports can reveal a new uncovered package and defeat current aggregate PASS. They can also supply the only associated nested-project origin and turn a current WARNING into PASS. Unread exact declarations similarly can remove WARNING. No observed use yields applies=false/SKIPPED rather than PASS.",
+      "applies_when": "At least one supported critical dependency declaration or parsed critical import is observed",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "deps declarations/exact flags and format lock package inventory",
+        "R06-B manager pairs/logical roots/uncertain barriers",
+        "pyscan.imports for both in-use package set and qualified import origins",
+        "installed_versions for suggestion only"
+      ],
+      "fail_condition": "For each observed canonical in-use critical package, neither any repository exact declaration nor a qualified lock-origin association supplies credit.",
+      "implementation": {
+        "class": "LlmCriticalDepsPinnedRule",
+        "end_line": 173,
+        "line": 99,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Recommended bounded A: only on check=[] and candidate>parsed, opt into coverage SKIPPED. Keep existing nonempty findings and applies=false behavior, with explicit compatibility/absence caveat; do not rewrite R06-B credit.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.llm_critical_deps_pinned",
+      "scan_dependency_class": "mixed_python_import_and_dependency_aggregation",
+      "scope_limits_and_edge_cases": [
+        "Any nested/conflicting exact declaration is sufficient by accepted R06-B; do not change to all-origins or root-only.",
+        "Observed unreadable owner manifests already create R06-B barriers; unlisted/unobserved roots are not invented as barriers.",
+        "A seen loose declaration is not a standalone positive pinning violation when another unobserved source may supply existential credit.",
+        "Python count completion does not prove deps parsing/requirements syntax was complete."
+      ],
+      "successful_conclusion": "Every currently observed in-use critical package has repository-existential credit; current empty result is a rule-level aggregate, not all real imports or one selected environment."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Python cap cannot invalidate a known artifact or the independent captured requirements closure.",
+      "applies_when": "deps.manifest_present",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "deps.lockfiles",
+        "R06-P complete exact include closures",
+        "format lock candidate presence"
+      ],
+      "fail_condition": "deps.lockfiles is empty",
+      "implementation": {
+        "class": "LockfilePresentRule",
+        "end_line": 95,
+        "line": 60,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.lockfile_present",
+      "scan_dependency_class": "dependency_inventory_presence",
+      "scope_limits_and_edge_cases": [
+        "R06-B intentionally retains presence for empty/malformed/unowned format locks.",
+        "Incomplete or unsupported requirements prevent only the relevant closure lock qualification; exact declarations stay independently usable."
+      ],
+      "successful_conclusion": "Existing format-lock artifact inventory or an independently qualified exact requirements closure exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Python AST cap is irrelevant. An unreadable possible declaration can cause current missing-version WARNING, so absence is not the same as a positive violation.",
+      "applies_when": "always",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "scanner.analysis_files()",
+        "scanner.read_text(pyproject/environment)",
+        "existing Python declaration heuristics"
+      ],
+      "fail_condition": "No supported Python declaration witness found",
+      "implementation": {
+        "class": "PythonVersionDeclaredRule",
+        "end_line": 233,
+        "line": 177,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.python_version_declared",
+      "scan_dependency_class": "independent_non_python_content_presence",
+      "scope_limits_and_edge_cases": [
+        "A .python-version name alone is sufficient currently; environment text substring python= is current bounded heuristic, not solved Conda semantics."
+      ],
+      "successful_conclusion": "At least one readable project requires-python, listed .python-version, or readable environment python= witness is found."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Python cap can change suggested profile names in an already supported failure, not whether initialization exists.",
+      "applies_when": "effective level=0",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "direct is_file()/is_dir()",
+        "ctx.detection only enriches the failure hint"
+      ],
+      "fail_condition": "Neither direct reprollm.yaml file nor .reprollm directory exists",
+      "implementation": {
+        "class": "ReprollmInitializedRule",
+        "end_line": 333,
+        "line": 297,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.reprollm_initialized",
+      "scan_dependency_class": "direct_file_fact_with_advisory_detection",
+      "scope_limits_and_edge_cases": [
+        "At level>0 current applies=false reason is retained; no need to make this a coverage-gated rule."
+      ],
+      "successful_conclusion": "Direct owned artifact existence suffices."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Do not degrade this known filename finding because of unrelated Python limits. Its own listing limitations are separate.",
+      "applies_when": "always",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "ctx.fs.files() rather than analysis_files/python_files",
+        "forbidden filename matcher",
+        "ctx.git.is_repo"
+      ],
+      "fail_condition": "A filename matching forbidden patterns appears in ctx.fs.files(); CRITICAL in Git, WARNING outside Git",
+      "implementation": {
+        "class": "SecretFilesIgnoredRule",
+        "end_line": 293,
+        "line": 237,
+        "path": "src/reprollm/rules/env.py"
+      },
+      "min_level": 0,
+      "module": "env",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "env.secret_files_ignored",
+      "scan_dependency_class": "security_filename_inventory",
+      "scope_limits_and_edge_cases": [
+        "files() retains Git/security facts across static-candidate exclusions but still drops files >2 MiB, failed stat and broken/non-file paths; git ls-files failure can return empty.",
+        "A known forbidden filename is sufficient positive evidence and does not require reading contents.",
+        "Changing large-file/security inventory is not silently authorized by the narrow R07-C hook."
+      ],
+      "successful_conclusion": "No forbidden path appears in the existing file listing; no content secret search is performed."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest evaluation.metrics nonempty",
+      "emission_behavior": "Explicit field PASS/FAIL; no metrics gives applies=false SKIPPED.",
+      "fact_dependencies": [
+        "manifest evaluation.aggregation"
+      ],
+      "fail_condition": "evaluation.aggregation=None.",
+      "implementation": {
+        "class": "AggregationDeclaredRule",
+        "end_line": 133,
+        "line": 129,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.aggregation_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "aggregation is declared.",
+      "supporting_references": [
+        {
+          "end_line": 56,
+          "line": 50,
+          "path": "src/reprollm/rules/eval_.py"
+        },
+        {
+          "end_line": 125,
+          "line": 114,
+          "path": "src/reprollm/rules/eval_.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest evaluation.definitions keys"
+      ],
+      "fail_condition": "evaluation definitions lacks both refusal and asr keys.",
+      "implementation": {
+        "class": "DefinitionsDeclaredRule",
+        "end_line": 168,
+        "line": 145,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.definitions_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Key existence is used; no independent audit of prose meaning or all observed safety behavior."
+      ],
+      "successful_conclusion": "At least refusal or asr definition key exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "This rule checks explicit declared paths with direct is_file; Python enumeration/read/parse coverage is not used.",
+      "applies_when": "manifest evaluation.metrics nonempty",
+      "emission_behavior": "Explicit per-metric field PASS/FAIL plus relevant file evidence.",
+      "fact_dependencies": [
+        "manifest each metric.implementation",
+        "relative-path validation and package==valid-version parser",
+        "direct file is_file for declared reference"
+      ],
+      "fail_condition": "Any implementation missing, invalid relative file grammar/URL, or nonexistent relative file that is not valid package==version pin.",
+      "implementation": {
+        "class": "MetricImplementationReferencedRule",
+        "end_line": 111,
+        "line": 60,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep per-declared-path result; do not tie is_file existence to Python coverage, and do not strengthen it to content readability or safe capture.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.metric_implementation_referenced",
+      "scan_dependency_class": "explicit_path_is_file",
+      "scope_limits_and_edge_cases": [
+        "Does not inspect implementation bytes or resolve/check installed package pins.",
+        "Existing file named like package==version is treated as file first."
+      ],
+      "successful_conclusion": "Every declared metric references an existing file or syntactically valid exact package pin.",
+      "supporting_references": [
+        {
+          "end_line": 29,
+          "line": 17,
+          "path": "src/reprollm/rules/eval_.py"
+        },
+        {
+          "end_line": 236,
+          "line": 235,
+          "path": "src/reprollm/core/scanner.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest evaluation.metrics"
+      ],
+      "fail_condition": "evaluation absent or metrics list empty.",
+      "implementation": {
+        "class": "MetricsDeclaredRule",
+        "end_line": 47,
+        "line": 33,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.metrics_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "At least one evaluation metric is declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest evaluation.query_budget"
+      ],
+      "fail_condition": "evaluation absent or query_budget=None.",
+      "implementation": {
+        "class": "QueryBudgetDeclaredRule",
+        "end_line": 188,
+        "line": 172,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.query_budget_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Query budget declaration exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest evaluation.metrics nonempty",
+      "emission_behavior": "Explicit field PASS/FAIL; no metrics gives applies=false SKIPPED.",
+      "fact_dependencies": [
+        "manifest evaluation.repetitions"
+      ],
+      "fail_condition": "evaluation.repetitions=None.",
+      "implementation": {
+        "class": "RepetitionsDeclaredRule",
+        "end_line": 141,
+        "line": 137,
+        "path": "src/reprollm/rules/eval_.py"
+      },
+      "min_level": 1,
+      "module": "eval_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "eval.repetitions_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "repetitions is declared.",
+      "supporting_references": [
+        {
+          "end_line": 56,
+          "line": 50,
+          "path": "src/reprollm/rules/eval_.py"
+        },
+        {
+          "end_line": 125,
+          "line": 114,
+          "path": "src/reprollm/rules/eval_.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "No source discovery is required by its declaration contract.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "manifest.execution.command"
+      ],
+      "fail_condition": "execution or execution.command is None",
+      "implementation": {
+        "class": "CommandDeclaredRule",
+        "end_line": 43,
+        "line": 15,
+        "path": "src/reprollm/rules/exec_.py"
+      },
+      "min_level": 1,
+      "module": "exec_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "exec.command_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Manifest execution.command is non-null."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Hidden signal can create direction2 violation; hidden evidence can remove direction1 violation. Conversely existing positive undeclared-high finding remains justified. Some incomplete inputs already satisfy every possible obligation and could soundly retain PASS under a richer proof policy.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "declared/effective profiles from manifest or CLI loader.resolve",
+        "detection profiles from parsed imports, deps, framework/README/config/directory/file-stem signals",
+        "actual loaded profile detect definitions/overrides and shipped flags"
+      ],
+      "fail_condition": "Direction1: declared non-core profile absent from detection (negative evidence). Direction2: positively detected high-confidence shipped profile absent from effective/resolved declarations (positive evidence).",
+      "implementation": {
+        "class": "ProfileDetectionMismatchRule",
+        "end_line": 184,
+        "line": 116,
+        "path": "src/reprollm/rules/exec_.py"
+      },
+      "min_level": 1,
+      "module": "exec_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Recommended bounded A: only check=[] plus candidate>parsed opts into coverage SKIPPED, even when finite obligations might already prove sufficiency. That conservative compatibility cost is an explicit maintainer choice, not a logically inevitable delta.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "exec.profile_detection_mismatch",
+      "scan_dependency_class": "mixed_positive_and_absence_detection",
+      "scope_limits_and_edge_cases": [
+        "audit rules are resolved from declared/explicit profiles; detected profiles do not automatically select audit rules.",
+        "Finite sufficiency proof must use actual loaded profile overrides/signals, not hard-code builtin defaults.",
+        "Non-Python detection reads and custom-profile provenance are not described completely by Python counts.",
+        "The narrow proposed A deliberately keeps all nonempty findings, including existing negative-evidence branch; it must not call those all monotonic positive evidence."
+      ],
+      "successful_conclusion": "All declared non-core profiles have some detected evidence, and all detected high shipped profiles are effective. Empty result currently synthesizes aggregate PASS."
+    },
+    {
+      "absence_under_incomplete_python_scan": "Independent of Python static scan. Run parse failures are current run diagnostics and are not AST coverage gaps.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "run.reader.list_runs result",
+        "manifest presence"
+      ],
+      "fail_condition": "No readable/valid run record is in ctx.runs",
+      "implementation": {
+        "class": "RunRecordedRule",
+        "end_line": 112,
+        "line": 89,
+        "path": "src/reprollm/rules/exec_.py"
+      },
+      "min_level": 1,
+      "module": "exec_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "exec.run_recorded",
+      "scan_dependency_class": "loaded_run_inventory",
+      "scope_limits_and_edge_cases": [
+        "Existence of one valid run does not claim all runtime input consumption was captured."
+      ],
+      "successful_conclusion": "At least one loaded run record exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No source discovery is required; this does not prove runtime seeding.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "manifest execution/generation/training seed fields"
+      ],
+      "fail_condition": "All execution/generation/training seeds are None",
+      "implementation": {
+        "class": "SeedDeclaredRule",
+        "end_line": 85,
+        "line": 47,
+        "path": "src/reprollm/rules/exec_.py"
+      },
+      "min_level": 1,
+      "module": "exec_",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "exec.seed_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Any declared seed is non-null, including zero."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest inference.backend=vllm",
+      "emission_behavior": "One explicit field PASS/FAIL per field; mixed list is meaningful and must survive.",
+      "fact_dependencies": [
+        "manifest inference dtype/gpu_memory_utilization/quantization/tensor_parallel_size"
+      ],
+      "fail_condition": "Any required vLLM configuration field is None.",
+      "implementation": {
+        "class": "BackendConfigDeclaredRule",
+        "end_line": 136,
+        "line": 115,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 1,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.backend_config_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Only declared backend activates applicability, no backend discovery or runtime check."
+      ],
+      "successful_conclusion": "The four required configuration fields are declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest inference.backend"
+      ],
+      "fail_condition": "inference or backend absent.",
+      "implementation": {
+        "class": "BackendDeclaredRule",
+        "end_line": 111,
+        "line": 97,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 1,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.backend_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Inference backend declaration exists."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock exists and manifest.inference.backend is declared and != openai",
+      "emission_behavior": "Exact returns check=[] and synthesized PASS; missing/unresolved returns FAIL.",
+      "fact_dependencies": [
+        "manifest inference.backend",
+        "lock.inference.version confidence"
+      ],
+      "fail_condition": "lock.inference absent or its version confidence != exact.",
+      "implementation": {
+        "class": "BackendVersionLockedRule",
+        "end_line": 49,
+        "line": 14,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 2,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.backend_version_locked",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Applicability literally excludes openai; it does not reuse per-model API classifier or scan backend imports."
+      ],
+      "successful_conclusion": "Declared eligible backend has exact recorded version confidence."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "required_fields emits one FAIL with missing fields or check=[] giving synthesized PASS.",
+      "fact_dependencies": [
+        "manifest generation.temperature/top_p/max_tokens"
+      ],
+      "fail_condition": "Any of three required generation fields is None.",
+      "implementation": {
+        "class": "ParamsDeclaredRule",
+        "end_line": 73,
+        "line": 53,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 1,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.params_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "All three fields are explicitly declared; zero temperature is present.",
+      "supporting_references": [
+        {
+          "end_line": 30,
+          "line": 19,
+          "path": "src/reprollm/rules/_presence.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest generation exists and do_sample=true or temperature>0",
+      "emission_behavior": "Explicit field PASS/FAIL; no declared sampling predicate gives SKIPPED.",
+      "fact_dependencies": [
+        "manifest generation.do_sample/temperature/seed"
+      ],
+      "fail_condition": "Applicable declared sampling has seed=None.",
+      "implementation": {
+        "class": "SeedDeclaredRule",
+        "end_line": 93,
+        "line": 77,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 1,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.seed_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "It does not search for sampled calls or prove a child used the seed."
+      ],
+      "successful_conclusion": "Declared sampling has a declared seed."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest generation.stop"
+      ],
+      "fail_condition": "generation absent or stop=None.",
+      "implementation": {
+        "class": "StopDeclaredRule",
+        "end_line": 154,
+        "line": 140,
+        "path": "src/reprollm/rules/gen.py"
+      },
+      "min_level": 1,
+      "module": "gen",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "gen.stop_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Stop declared, including explicit empty list."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "referenced/default judge model role in manifest",
+        "explicit shipped judge_only profile predicate"
+      ],
+      "fail_condition": "Outside judge_only exception, referenced model role absent. Within exact exception, role missing or id absent/empty/whitespace-only.",
+      "implementation": {
+        "class": "ModelDeclaredRule",
+        "end_line": 116,
+        "line": 94,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 1,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.model_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Invalid explicit references are normally rejected in manifest validation before rules.",
+        "No scanner hint activates judge_only exception."
+      ],
+      "successful_conclusion": "Judge role declared; stronger id check only under explicit narrow profile exception.",
+      "supporting_references": [
+        {
+          "end_line": 18,
+          "line": 11,
+          "path": "src/reprollm/profiles/policy.py"
+        },
+        {
+          "end_line": 379,
+          "line": 367,
+          "path": "src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "required_fields emits one FAIL or check=[] synthesized PASS.",
+      "fact_dependencies": [
+        "manifest evaluation.judge.params temperature/max_tokens"
+      ],
+      "fail_condition": "Judge absent or either required parameter is None.",
+      "implementation": {
+        "class": "ParamsDeclaredRule",
+        "end_line": 166,
+        "line": 146,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 1,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.params_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Both judge parameters explicitly declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest/lock exist and referenced model role exists in manifest.models",
+      "emission_behavior": "Present lock role returns check=[] and synthesized PASS; absent returns one FAIL.",
+      "fact_dependencies": [
+        "evaluation.judge.model_ref if judge exists, else literal judge role",
+        "same role presence in lock.models with schema-required pinnability"
+      ],
+      "fail_condition": "Referenced role absent from lock.models.",
+      "implementation": {
+        "class": "PinnabilityRecordedRule",
+        "end_line": 84,
+        "line": 55,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 2,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.pinnability_recorded",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Does not require pinnability=exact or evaluate provider alias immutability; model.revision_pinned owns that distinction."
+      ],
+      "successful_conclusion": "The judge model role has a lock entry (ModelLock schema requires pinnability).",
+      "supporting_references": [
+        {
+          "end_line": 92,
+          "line": 86,
+          "path": "src/reprollm/schemas/lock.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "referenced/default judge prompt role in manifest",
+        "explicit shipped judge_only profile predicate"
+      ],
+      "fail_condition": "Outside judge_only exception, referenced prompt role absent. Within exact exception, role missing or both path and inline text absent.",
+      "implementation": {
+        "class": "PromptDeclaredRule",
+        "end_line": 142,
+        "line": 120,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 1,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.prompt_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Existence, hashing and runtime consumption remain separate checks."
+      ],
+      "successful_conclusion": "Judge prompt role declared; exact judge_only exception additionally requires source declaration. Explicit empty inline string counts.",
+      "supporting_references": [
+        {
+          "end_line": 18,
+          "line": 11,
+          "path": "src/reprollm/profiles/policy.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest/lock exist and referenced prompt role exists in manifest.prompts",
+      "emission_behavior": "Truthy hash returns check=[] and synthesized PASS; otherwise one FAIL.",
+      "fact_dependencies": [
+        "evaluation.judge.prompt_ref if judge exists, else literal judge role",
+        "manifest prompt path-vs-inline source",
+        "same-role locked hash"
+      ],
+      "fail_condition": "Appropriate hash missing or falsey in lock.",
+      "implementation": {
+        "class": "PromptHashedRule",
+        "end_line": 51,
+        "line": 15,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 2,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.prompt_hashed",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "No hash recomputation or static judge-prompt discovery."
+      ],
+      "successful_conclusion": "Referenced judge prompt has a corresponding recorded hash."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest evaluation.judge.repetitions"
+      ],
+      "fail_condition": "Judge absent or repetitions=None.",
+      "implementation": {
+        "class": "RepetitionsDeclaredRule",
+        "end_line": 185,
+        "line": 170,
+        "path": "src/reprollm/rules/judge.py"
+      },
+      "min_level": 1,
+      "module": "judge",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "judge.repetitions_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Judge repetitions declared; zero remains a declaration."
+    },
+    {
+      "absence_under_incomplete_python_scan": "A positive parsed Python signal makes the rule applicable and remains sufficient despite unrelated omitted/unreadable files. A missed signal makes applies false and produces SKIPPED, not an empty-list PASS; absence of a hint is not proof the behavior is unused.",
+      "applies_when": "manifest exists and detection.hints.adapter is true",
+      "emission_behavior": "On applicability, any adapter gives check=[] then synthesized PASS; missing adapters produce one FAIL. No signal gives applies=false and SKIPPED.",
+      "fact_dependencies": [
+        "positive scanned Python peft import via PeftIntegration.detect/import_evidence",
+        "manifest any model.adapter object"
+      ],
+      "fail_condition": "Applicable detected peft use and no manifest model has adapter.",
+      "implementation": {
+        "class": "AdapterDeclaredRule",
+        "end_line": 333,
+        "line": 309,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Retain sufficient discovered signal and resulting declaration PASS/FAIL. With no signal and a known gap, preserve no-use uncertainty and design an explanatory coverage-aware SKIPPED reason without inferring no use.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.adapter_declared",
+      "scan_dependency_class": "positive_python_hint",
+      "scope_limits_and_edge_cases": [
+        "Actual adapter hint is peft import only. Spec §12.4 additionally says dependency; pure dependency profile detection does not set adapter hint in current implementation.",
+        "A hidden import after cap, unreadable selected file, syntax error, or unsupported dynamic use can leave hint false. Current SKIPPED reason is generic no applicable declarations.",
+        "A found peft import plus absent adapter is sufficient FAIL even if scan incomplete."
+      ],
+      "successful_conclusion": "At least one adapter declaration exists for a positive detected signal; no role-to-import binding is checked.",
+      "supporting_references": [
+        {
+          "end_line": 82,
+          "line": 51,
+          "path": "src/reprollm/integrations/providers.py"
+        },
+        {
+          "end_line": 35,
+          "line": 34,
+          "path": "src/reprollm/integrations/peft.py"
+        },
+        {
+          "end_line": 56,
+          "line": 48,
+          "path": "src/reprollm/integrations/_static.py"
+        },
+        {
+          "end_line": 107,
+          "line": 78,
+          "path": "src/reprollm/core/pyscan.py"
+        },
+        {
+          "line": 965,
+          "path": "docs/plan/01_specification.md"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock contains at least one Hugging Face or local model",
+      "emission_behavior": "status=absent produces explicit PASS per role with lock evidence. Exact present/custom_file produces no finding. If any explicit absent PASS/FAIL exists, engine does not synthesize a whole-rule PASS; fully exact non-absent set produces check=[] and synthesized PASS.",
+      "fact_dependencies": [
+        "lock.models provider and chat_template presence/status/sha256.confidence"
+      ],
+      "fail_condition": "A qualifying model has no chat_template, or non-absent template sha256 confidence != exact.",
+      "implementation": {
+        "class": "ChatTemplateHashedRule",
+        "end_line": 192,
+        "line": 135,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 2,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.chat_template_hashed",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Explicit absent PASS proves recorded absence, not a fresh static repository search.",
+        "Mixed absent/exact/failing roles must not be collapsed into a blanket coverage outcome."
+      ],
+      "successful_conclusion": "Recorded absent status is itself a positive lock fact; present/custom_file must have exact hash confidence.",
+      "supporting_references": [
+        {
+          "end_line": 38,
+          "line": 21,
+          "path": "src/reprollm/rules/_lock.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.models nonempty",
+      "emission_behavior": "Explicit per-role field PASS/FAIL/API SKIPPED; mixed lists never invoke synthesized PASS.",
+      "fact_dependencies": [
+        "manifest models.<role>.dtype and inference.dtype fallback",
+        "declared provider/endpoint API classifier"
+      ],
+      "fail_condition": "Any non-API declared role has neither role dtype nor inference.dtype.",
+      "implementation": {
+        "class": "DtypeDeclaredRule",
+        "end_line": 296,
+        "line": 291,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.dtype_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Presence includes explicit non-None values; this does not verify child consumption."
+      ],
+      "successful_conclusion": "Every non-API role has a dtype declaration or fallback; API roles explicitly SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 287,
+          "line": 262,
+          "path": "src/reprollm/rules/model.py"
+        },
+        {
+          "end_line": 46,
+          "line": 16,
+          "path": "src/reprollm/rules/_api.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Always explicit field PASS/FAIL or SKIPPED; no ordinary empty-list PASS.",
+      "fact_dependencies": [
+        "manifest.models.primary.id",
+        "explicit declared/resolved shipped judge_only profile predicate and user profile override presence"
+      ],
+      "fail_condition": "Outside exact judge_only exception, primary role or its id is None.",
+      "implementation": {
+        "class": "PrimaryDeclaredRule",
+        "end_line": 216,
+        "line": 196,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.primary_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Checks id is not None, not every actual model use.",
+        "judge_only exception requires explicit declared profile and compatible shipped closure; detection alone cannot activate it."
+      ],
+      "successful_conclusion": "Declared primary id is present; exact explicit judge_only exception returns SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 18,
+          "line": 11,
+          "path": "src/reprollm/profiles/policy.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.models nonempty",
+      "emission_behavior": "Explicit per-role PASS/FAIL/SKIPPED list. No aggregate synthesized PASS when list nonempty.",
+      "fact_dependencies": [
+        "manifest per-model provider",
+        "endpoint declaration only for tailored API fix hint"
+      ],
+      "fail_condition": "Any declared provider equals other.",
+      "implementation": {
+        "class": "ProviderKnownRule",
+        "end_line": 259,
+        "line": 220,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.provider_known",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Opaque safe API endpoint for provider=other changes guidance, not its FAILURE status.",
+        "Known provider proves declaration vocabulary, not an installed or available provider."
+      ],
+      "successful_conclusion": "Each explicitly declared non-other provider is known; provider None is SKIPPED."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest.models nonempty",
+      "emission_behavior": "Explicit per-role field PASS/FAIL/API SKIPPED; mixed lists never invoke synthesized PASS.",
+      "fact_dependencies": [
+        "manifest models.<role>.quantization and inference.quantization fallback",
+        "declared provider/endpoint API classifier"
+      ],
+      "fail_condition": "Any non-API declared role has neither role quantization nor inference.quantization.",
+      "implementation": {
+        "class": "QuantizationDeclaredRule",
+        "end_line": 305,
+        "line": 300,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.quantization_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Presence includes explicit non-None values; this does not verify child consumption."
+      ],
+      "successful_conclusion": "Every non-API role has a quantization declaration or fallback; API roles explicitly SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 287,
+          "line": 262,
+          "path": "src/reprollm/rules/model.py"
+        },
+        {
+          "end_line": 46,
+          "line": 16,
+          "path": "src/reprollm/rules/_api.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock exists and lock.models is nonempty",
+      "emission_behavior": "No explicit successful per-role finding. check=[] gives one rule-level synthesized PASS; any violation list suppresses synthesized PASS for successful roles.",
+      "fact_dependencies": [
+        "lock.models roles/provider/revision confidence/pinnability/local.config_sha256",
+        "effective State provider and endpoint leaves, with fallback to locked provider; API classifier"
+      ],
+      "fail_condition": "API role: pinnability is snapshot_alias (INFO failure) or anything other than exact (WARNING failure); local role: local.config_sha256 object is absent; remaining non-API role: revision.confidence != exact.",
+      "implementation": {
+        "class": "RevisionPinnedRule",
+        "end_line": 92,
+        "line": 18,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 2,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.revision_pinned",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Local check tests hash object presence, not its confidence or bytes.",
+        "Models omitted from lock are not scanned/discovered by this rule."
+      ],
+      "successful_conclusion": "No violations among locked model roles under effective API classification. This is lock identity bookkeeping, not discovery of all real model uses.",
+      "supporting_references": [
+        {
+          "end_line": 73,
+          "line": 65,
+          "path": "src/reprollm/core/context.py"
+        },
+        {
+          "end_line": 46,
+          "line": 16,
+          "path": "src/reprollm/rules/_api.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "lock contains at least one provider=huggingface model",
+      "emission_behavior": "Only failures returned; check=[] gives one synthesized PASS. Other model providers are ignored.",
+      "fact_dependencies": [
+        "lock.models provider, tokenizer presence, tokenizer.revision.confidence"
+      ],
+      "fail_condition": "Any locked Hugging Face model has no tokenizer or tokenizer revision confidence != exact.",
+      "implementation": {
+        "class": "TokenizerPinnedRule",
+        "end_line": 131,
+        "line": 96,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 2,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.tokenizer_pinned",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "All locked Hugging Face models have an exact tokenizer revision."
+    },
+    {
+      "absence_under_incomplete_python_scan": "A positive parsed Python signal makes the rule applicable and remains sufficient despite unrelated omitted/unreadable files. A missed signal makes applies false and produces SKIPPED, not an empty-list PASS; absence of a hint is not proof the behavior is unused.",
+      "applies_when": "manifest exists and detection.hints.trust_remote_code is true",
+      "emission_behavior": "On applicability, any explicit value yields check=[] and synthesized PASS; no declaration yields FAIL. No detected signal gives SKIPPED, not synthesized PASS.",
+      "fact_dependencies": [
+        "parsed Python call keyword trust_remote_code with literal true",
+        "manifest any model.trust_remote_code non-None"
+      ],
+      "fail_condition": "Positive detected trust_remote_code=True and no declared model has true or false trust_remote_code.",
+      "implementation": {
+        "class": "TrustRemoteCodeDeclaredRule",
+        "end_line": 368,
+        "line": 337,
+        "path": "src/reprollm/rules/model.py"
+      },
+      "min_level": 1,
+      "module": "model",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Retain sufficient discovered signal and resulting declaration PASS/FAIL. With no signal and a known gap, preserve no-use uncertainty and design an explanatory coverage-aware SKIPPED reason without inferring no use.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "model.trust_remote_code_declared",
+      "scan_dependency_class": "positive_python_hint",
+      "scope_limits_and_edge_cases": [
+        "False boolean is intentionally sufficient declaration.",
+        "No trust signal after incomplete scan cannot prove no such call; only positive literal calls are recognized.",
+        "Existing hint is boolean without path/line retained by this rule."
+      ],
+      "successful_conclusion": "At least one explicit boolean declaration accompanies a detected positive signal; value matching/role binding is not checked.",
+      "supporting_references": [
+        {
+          "end_line": 82,
+          "line": 81,
+          "path": "src/reprollm/integrations/providers.py"
+        },
+        {
+          "end_line": 131,
+          "line": 128,
+          "path": "src/reprollm/core/pyscan.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency; applies=false if no attack is declared is not a discovery guarantee.",
+      "applies_when": "Manifest privacy.attack exists",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "manifest.privacy.attack.method/query_budget"
+      ],
+      "fail_condition": "attack.method or query_budget is None",
+      "implementation": {
+        "class": "AttackConfigDeclaredRule",
+        "end_line": 98,
+        "line": 77,
+        "path": "src/reprollm/rules/privacy.py"
+      },
+      "min_level": 1,
+      "module": "privacy",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "privacy.attack_config_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Both declared attack fields are non-null."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency; unknown real experiment parameters are not inferred by this declaration rule.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "check=[] synthesizes one evidence-empty rule-level PASS; nonempty FAIL list is retained",
+      "fact_dependencies": [
+        "manifest.privacy.mechanism.name/params"
+      ],
+      "fail_condition": "privacy mechanism name missing or params empty/absent",
+      "implementation": {
+        "class": "MechanismDeclaredRule",
+        "end_line": 57,
+        "line": 32,
+        "path": "src/reprollm/rules/privacy.py"
+      },
+      "min_level": 1,
+      "module": "privacy",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "privacy.mechanism_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Both mechanism name and nonempty params are declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "Returns explicit field_result PASS/FAIL, not engine empty-list PASS.",
+      "fact_dependencies": [
+        "manifest.privacy.metrics"
+      ],
+      "fail_condition": "privacy metrics is empty/absent",
+      "implementation": {
+        "class": "MetricsDeclaredRule",
+        "end_line": 73,
+        "line": 61,
+        "path": "src/reprollm/rules/privacy.py"
+      },
+      "min_level": 1,
+      "module": "privacy",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "privacy.metrics_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Nonempty manifest privacy.metrics."
+    },
+    {
+      "absence_under_incomplete_python_scan": "No Python dependency; absence is directly known in loaded manifest.",
+      "applies_when": "manifest loaded",
+      "emission_behavior": "Returns explicit field_result PASS/FAIL, not engine empty-list PASS.",
+      "fact_dependencies": [
+        "manifest.privacy.threat_model"
+      ],
+      "fail_condition": "privacy/threat_model is None",
+      "implementation": {
+        "class": "ThreatModelDeclaredRule",
+        "end_line": 28,
+        "line": 12,
+        "path": "src/reprollm/rules/privacy.py"
+      },
+      "min_level": 1,
+      "module": "privacy",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep current evaluation for this slice; Python incompleteness alone is not a reason to change direct facts.",
+        "preserve_discovered_fail": "Retain supported concrete findings. If a failure itself relies on absence, distinguish its current-policy compatibility status from a monotonic positive counterexample."
+      },
+      "rule_id": "privacy.threat_model_declared",
+      "scan_dependency_class": "manifest_fact",
+      "scope_limits_and_edge_cases": [],
+      "successful_conclusion": "Manifest privacy.threat_model is non-null."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest.prompts"
+      ],
+      "fail_condition": "prompts mapping empty.",
+      "implementation": {
+        "class": "DeclaredRule",
+        "end_line": 57,
+        "line": 48,
+        "path": "src/reprollm/rules/prompt.py"
+      },
+      "min_level": 1,
+      "module": "prompt",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "prompt.declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "At least one prompt role declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Any object produces check=[] and synthesized PASS; otherwise one FAIL.",
+      "fact_dependencies": [
+        "any declared prompt.few_shot object"
+      ],
+      "fail_condition": "No prompt role has few_shot object.",
+      "implementation": {
+        "class": "FewShotDeclaredRule",
+        "end_line": 119,
+        "line": 98,
+        "path": "src/reprollm/rules/prompt.py"
+      },
+      "min_level": 1,
+      "module": "prompt",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "prompt.few_shot_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Existential declaration, not completeness of each prompt or discovered prompt uses."
+      ],
+      "successful_conclusion": "At least one prompt explicitly declares few_shot, including n=0."
+    },
+    {
+      "absence_under_incomplete_python_scan": "This rule checks explicit declared paths with direct is_file; Python enumeration/read/parse coverage is not used.",
+      "applies_when": "manifest.prompts nonempty",
+      "emission_behavior": "Explicit per-role field PASS/FAIL/SKIPPED and file evidence, no ordinary empty-list PASS.",
+      "fact_dependencies": [
+        "manifest prompts.<role>.text/path",
+        "ctx.fs.exists uses direct (root/path).is_file"
+      ],
+      "fail_condition": "A declared path with no inline text is not a file.",
+      "implementation": {
+        "class": "FileExistsRule",
+        "end_line": 94,
+        "line": 61,
+        "path": "src/reprollm/rules/prompt.py"
+      },
+      "min_level": 1,
+      "module": "prompt",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep per-declared-path result; do not tie is_file existence to Python coverage, and do not strengthen it to content readability or safe capture.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "prompt.file_exists",
+      "scan_dependency_class": "explicit_path_is_file",
+      "scope_limits_and_edge_cases": [
+        "Direct is_file is independent of scanner.files/analysis_files and size cap.",
+        "Existence does not prove readability, in-root symlink target, hash, or child use; changing these is separate scope."
+      ],
+      "successful_conclusion": "Inline text exists, including explicit empty string, or referenced path is a file; absent both gives SKIPPED.",
+      "supporting_references": [
+        {
+          "end_line": 236,
+          "line": 235,
+          "path": "src/reprollm/core/scanner.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest/lock exist and manifest.prompts nonempty",
+      "emission_behavior": "Failure-only list; check=[] gives synthesized PASS.",
+      "fact_dependencies": [
+        "manifest prompt role/path-vs-inline selection",
+        "lock same-role sha256 or text_sha256"
+      ],
+      "fail_condition": "Any declared prompt lacks truthy appropriate lock hash.",
+      "implementation": {
+        "class": "HashedRule",
+        "end_line": 44,
+        "line": 13,
+        "path": "src/reprollm/rules/prompt.py"
+      },
+      "min_level": 2,
+      "module": "prompt",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "prompt.hashed",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "No hash recomputation here; does not discover prompts absent from manifest."
+      ],
+      "successful_conclusion": "All declared prompt roles have corresponding recorded hash."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "One combined missing-fields FAIL or check=[] synthesized PASS.",
+      "fact_dependencies": [
+        "manifest training.learning_rate/batch_size/epochs/max_steps"
+      ],
+      "fail_condition": "learning_rate or batch_size absent, or both epochs and max_steps absent.",
+      "implementation": {
+        "class": "HyperparametersDeclaredRule",
+        "end_line": 74,
+        "line": 39,
+        "path": "src/reprollm/rules/train.py"
+      },
+      "min_level": 1,
+      "module": "train",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "train.hyperparameters_declared",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "No static training-call extraction or child consumption guarantee."
+      ],
+      "successful_conclusion": "Learning rate and batch size declared with at least one duration declaration."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest training.method is lora or qlora",
+      "emission_behavior": "First complete adapter yields check=[] synthesized PASS; otherwise one FAIL with missing-field evidence.",
+      "fact_dependencies": [
+        "declared training.method",
+        "manifest each model.adapter alpha/rank/target_modules"
+      ],
+      "fail_condition": "No single adapter has all three fields non-None.",
+      "implementation": {
+        "class": "LoraConfigCompleteRule",
+        "end_line": 146,
+        "line": 106,
+        "path": "src/reprollm/rules/train.py"
+      },
+      "min_level": 1,
+      "module": "train",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "train.lora_config_complete",
+      "scan_dependency_class": "document_facts",
+      "scope_limits_and_edge_cases": [
+        "Does not combine fields across adapters, require every adapter complete, discover adapter use, or verify consumption."
+      ],
+      "successful_conclusion": "One adapter has alpha, rank and target_modules together."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest training.method"
+      ],
+      "fail_condition": "training absent or method=None.",
+      "implementation": {
+        "class": "MethodDeclaredRule",
+        "end_line": 35,
+        "line": 31,
+        "path": "src/reprollm/rules/train.py"
+      },
+      "min_level": 1,
+      "module": "train",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "train.method_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Training method is declared.",
+      "supporting_references": [
+        {
+          "end_line": 27,
+          "line": 13,
+          "path": "src/reprollm/rules/train.py"
+        }
+      ]
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "required_fields produces one FAIL or check=[] synthesized PASS.",
+      "fact_dependencies": [
+        "manifest training.optimizer/scheduler"
+      ],
+      "fail_condition": "training absent or optimizer/scheduler is None.",
+      "implementation": {
+        "class": "OptimizerDeclaredRule",
+        "end_line": 94,
+        "line": 78,
+        "path": "src/reprollm/rules/train.py"
+      },
+      "min_level": 1,
+      "module": "train",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "train.optimizer_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Both optimizer and scheduler are declared."
+    },
+    {
+      "absence_under_incomplete_python_scan": "The Python cap/read/parse gap does not change the directly declared or captured facts this rule checks. It does not prove every real execution input/model/file was declared.",
+      "applies_when": "manifest exists",
+      "emission_behavior": "Explicit field PASS/FAIL.",
+      "fact_dependencies": [
+        "manifest training.precision"
+      ],
+      "fail_condition": "training absent or precision=None.",
+      "implementation": {
+        "class": "PrecisionDeclaredRule",
+        "end_line": 102,
+        "line": 98,
+        "path": "src/reprollm/rules/train.py"
+      },
+      "min_level": 1,
+      "module": "train",
+      "proposal_recommendation": {
+        "approval_status": "UNAPPROVED_DESIGN_INPUT_ONLY",
+        "on_incomplete_scan": "Keep direct document/captured-fact evaluation and its current scoped conclusion; do not blanket-convert results based only on Python truncation.",
+        "preserve_discovered_fail": "Retain every concrete FAIL and its complete evidence. A coverage limitation must not suppress or convert already established missing declaration, mismatch, invalid path or unresolved pin findings."
+      },
+      "rule_id": "train.precision_declared",
+      "scan_dependency_class": "document_facts",
+      "successful_conclusion": "Training precision is declared.",
+      "supporting_references": [
+        {
+          "end_line": 27,
+          "line": 13,
+          "path": "src/reprollm/rules/train.py"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_commit": "055c5fb880f4e374555a1d229b79d0d612c80350",
+  "source_identity": [
+    {
+      "bytes": 27331,
+      "path": "docs/plan/00_architecture_and_decisions.md",
+      "sha256": "159bbfb6a89eb66c23150731a4e5f305cd4b30e48d138f82291efb8a70015e17"
+    },
+    {
+      "bytes": 118617,
+      "path": "docs/plan/01_specification.md",
+      "sha256": "a0a5940db8308f9b5602c683c5edbbd6a4a9ccd2ec7e1d48eec6c2214501f9ca"
+    },
+    {
+      "bytes": 19496,
+      "path": "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md",
+      "sha256": "e259850b74e30e6841359d0c8df085d6abb6fd9449be206c0a273c57663cef24"
+    },
+    {
+      "bytes": 3713,
+      "path": "src/reprollm/core/audit_state.py",
+      "sha256": "0d4af286f038fc3017046f04bc91db524c6efca931c7fae2a291481dfda8b734"
+    },
+    {
+      "bytes": 4096,
+      "path": "src/reprollm/core/context.py",
+      "sha256": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b"
+    },
+    {
+      "bytes": 33037,
+      "path": "src/reprollm/core/deps.py",
+      "sha256": "9985b8595fdad7285e82309d33a7913978980e5a02fc913658aa6713864bf6c5"
+    },
+    {
+      "bytes": 10903,
+      "path": "src/reprollm/core/engine.py",
+      "sha256": "ab88fea3faef70f2d682e13b0d67d6bc34a731e991fc65d1dd5724bc784d6acc"
+    },
+    {
+      "bytes": 4600,
+      "path": "src/reprollm/core/git.py",
+      "sha256": "40e013ffbebf0cc31ea464d288d49cdfe3d6998676757ab719b93c5a48347284"
+    },
+    {
+      "bytes": 19911,
+      "path": "src/reprollm/core/manifest_scaffold.py",
+      "sha256": "3061258011ba6dadb7e2e3c1d0c38f1805f96ea31426e3473fe6c1b79c8b266c"
+    },
+    {
+      "bytes": 6378,
+      "path": "src/reprollm/core/pyscan.py",
+      "sha256": "6c0a6381eb025e8b45cdb20b48744e11d95fec41d3d7ecd7196f00b78918ad70"
+    },
+    {
+      "bytes": 3839,
+      "path": "src/reprollm/core/registry.py",
+      "sha256": "7fff4920596095e93a8f467be0ec14173dedc74e670f1a7ce5bd4c85654e489e"
+    },
+    {
+      "bytes": 15377,
+      "path": "src/reprollm/core/scanner.py",
+      "sha256": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503"
+    },
+    {
+      "bytes": 11708,
+      "path": "src/reprollm/diff/state.py",
+      "sha256": "ef2356df5363a65420bab25156eea9816fe8b447b34c3ca2e7118ce9af13b5e2"
+    },
+    {
+      "bytes": 4327,
+      "path": "src/reprollm/integrations/_static.py",
+      "sha256": "a0117409abfd75fc600f800d0b19fa7a7823c91b7b4070391cec68897eaba516"
+    },
+    {
+      "bytes": 2404,
+      "path": "src/reprollm/integrations/inspect_ai.py",
+      "sha256": "2b4eccf57b16e7e81911bea40cb0175e659e81668af099d7511c84cf7b744824"
+    },
+    {
+      "bytes": 1411,
+      "path": "src/reprollm/integrations/lighteval.py",
+      "sha256": "95df8c6bab00004bd053b72bee32fae8e6a8887cca431dc5dae69a4c46947ace"
+    },
+    {
+      "bytes": 2982,
+      "path": "src/reprollm/integrations/lm_eval.py",
+      "sha256": "48fa2327c9d5cb8a8e5a77d63941e67f8607fe693d24572c9839a70cce766cd3"
+    },
+    {
+      "bytes": 1830,
+      "path": "src/reprollm/integrations/peft.py",
+      "sha256": "7e18b5f59e6a914a37a789940c83661c25a6c7953ae514c8f3aea3d075bc79ed"
+    },
+    {
+      "bytes": 3473,
+      "path": "src/reprollm/integrations/providers.py",
+      "sha256": "4619737e585cb772dc3e932c7577d40beeb1fbb6b79dbccfdd2a417f9cbb2790"
+    },
+    {
+      "bytes": 11326,
+      "path": "src/reprollm/profiles/detect.py",
+      "sha256": "7f9e72d61e59abcac5819fc8b028c9ca30c06b8be96c334fb7df4109f9a2e403"
+    },
+    {
+      "bytes": 8108,
+      "path": "src/reprollm/profiles/loader.py",
+      "sha256": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758"
+    },
+    {
+      "bytes": 665,
+      "path": "src/reprollm/profiles/policy.py",
+      "sha256": "3a5704f059ad5a395a62bdfc0b40c23f57adcafa795f2045e17941d0615f8838"
+    },
+    {
+      "bytes": 1555,
+      "path": "src/reprollm/rules/_api.py",
+      "sha256": "c0877c2dfeb92fde676f0488d76094d4c340a204a1e1bae88c63ad8b62b8769a"
+    },
+    {
+      "bytes": 1699,
+      "path": "src/reprollm/rules/_lock.py",
+      "sha256": "95cb9491023c676a918a600ed7366b51da9a4bf24ac2683e57254f4391bdea1a"
+    },
+    {
+      "bytes": 2570,
+      "path": "src/reprollm/rules/_presence.py",
+      "sha256": "06460fcaf3873be25d4f5659e0cc3e5105e3d5bf0d53998c91243a28628a5b41"
+    },
+    {
+      "bytes": 7101,
+      "path": "src/reprollm/rules/code.py",
+      "sha256": "306db335dfbf2d18a23cf5070ec734c9f2e0045c603e1c5e1064d58a16a30060"
+    },
+    {
+      "bytes": 18679,
+      "path": "src/reprollm/rules/consistency.py",
+      "sha256": "8a8ef534a8031a91941b4d5f3565c406d0dbca19e1e555c3d8614fc2287fa667"
+    },
+    {
+      "bytes": 6905,
+      "path": "src/reprollm/rules/dataset.py",
+      "sha256": "d46cea065b332a883579ae6c122ebe246eb09b36005c82859092846e7c74c239"
+    },
+    {
+      "bytes": 12582,
+      "path": "src/reprollm/rules/env.py",
+      "sha256": "3ddab17d76725f0e4538a4ea47a6d483b6870c9a08fca0c54691f71217622430"
+    },
+    {
+      "bytes": 6927,
+      "path": "src/reprollm/rules/eval_.py",
+      "sha256": "32e6f420daeffec6570cf2ed91226d7ca9296363ea9585e77d104485a1299b15"
+    },
+    {
+      "bytes": 6690,
+      "path": "src/reprollm/rules/exec_.py",
+      "sha256": "2b5f18b6e3306f77f56e9c6d3ad782c2519ce23d3077d6dc0bd675bb803677fe"
+    },
+    {
+      "bytes": 5672,
+      "path": "src/reprollm/rules/gen.py",
+      "sha256": "541c358b20a2855c3f05cff31a4eea22389587939b63bb810c5406e7a0a417be"
+    },
+    {
+      "bytes": 6592,
+      "path": "src/reprollm/rules/judge.py",
+      "sha256": "4207e0c887a0616108aa5ded8cf8ccbda8c89953a7bacc1aedc3edbf395f80b5"
+    },
+    {
+      "bytes": 15003,
+      "path": "src/reprollm/rules/model.py",
+      "sha256": "84d6f31cf7ff31fb1f3e257a269f5e0a55c3194b1aed4f722cdf9698b196e4f5"
+    },
+    {
+      "bytes": 3602,
+      "path": "src/reprollm/rules/privacy.py",
+      "sha256": "34fe77a6b3b89a6d8414b297fbd408bd42f84cdd43081cdc11df5d1e3b35a4b4"
+    },
+    {
+      "bytes": 3381,
+      "path": "src/reprollm/rules/project.py",
+      "sha256": "f715ff27627f12bcfb91818515351fc628ac8f9fdc3af60da51d332e45c2fc27"
+    },
+    {
+      "bytes": 4737,
+      "path": "src/reprollm/rules/prompt.py",
+      "sha256": "bebe9bbb0285df58b288ee43caff58f0caedd4a08651fd4850e5015634a0a460"
+    },
+    {
+      "bytes": 5459,
+      "path": "src/reprollm/rules/train.py",
+      "sha256": "53610587ff81519f081c7938a2d9cfd296962bf551cfbbcf34944627a99c9343"
+    },
+    {
+      "bytes": 6107,
+      "path": "src/reprollm/schemas/lock.py",
+      "sha256": "f2683162dfee51eee62cb83cd093521ae6249be236e596b99ee4a7ca51d982a2"
+    },
+    {
+      "bytes": 16741,
+      "path": "src/reprollm/schemas/manifest.py",
+      "sha256": "623f94fb62cbd6fef4415d5c10ab48e083ddacb3e21bd5ba2bf3cbb2bf109c90"
+    }
+  ],
+  "validation": {
+    "all_69_builtin_ids_equal_static_registered_id_inventory": true,
+    "all_class_lines_match_current_source": true,
+    "all_source_bytes_match_pinned_git_commit": true,
+    "future_policy_implemented_or_approved": false,
+    "product_or_repository_files_modified": false
+  }
+}

@@ -161,6 +161,15 @@ import 最近项目根、unknown barrier、workspace 兼容成本及后续验收
 
 ## 5. R07-C：扫描不完整时，哪些结论仍成立
 
+2026-10-20 P-A：[具体局部方案](proposals/R07-C/R07-C_incomplete_scan_conclusions.md)、
+[逐规则证据](proposals/R07-C/rule-evidence.md)、
+[四格与混合反例](proposals/R07-C/acceptance-cases.md)、
+[五项目完整条件差异](proposals/R07-C/portfolio/portfolio-evidence.md)、
+[规范 patch](proposals/R07-C/spec-proposed.patch)及
+[D-41 engine / 内部接口 patch](proposals/R07-C/implementation-proposed.patch)均可审阅、尚未应用。
+[决定](proposals/R07-C/decision.json)仍为 PROPOSED。推荐 A 仅对两规则空结果应用已知 primary-Python gap / unavailable veto，
+保留其他现合同；不是完整 R07-C 的关闭。未接受前不改产品行为；P-B 需具体政策和 D-41 审阅。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。
