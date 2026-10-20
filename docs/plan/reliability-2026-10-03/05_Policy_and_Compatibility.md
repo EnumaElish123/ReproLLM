@@ -234,6 +234,15 @@ P-B 仅实施两规则空结果的 primary-Python gap / unavailable veto，见[�
 
 本项先产出清单和窄范围提案，不将所有深层字段统一 HIGH，也不改变 `*` 成递归匹配。
 
+2026-10-20 P-A 已准备[四条精确路径 A4 提案](proposals/R08-B/R08-B_exact_parameter_risk.md)、
+[来源清单与条件实验报告](../../dogfooding/2026-10-20-r08b-pa/README.md)及
+[PROPOSED 决定](proposals/R08-B/decision.json)。真实 DP manifest 中的
+`privacy.mechanism.params.target_epsilon` / `target_delta` / `max_grad_norm`
+和 `training.params.num_train_epochs` 各有来源；只有这四条拟默认 HIGH。
+这是有界风险清单与未应用补丁，不是已接受政策；LOW/NONE、first-match、其他参数及历史 gold 保持。
+具体规范和前瞻 gold 决定之后才执行 P-B。
+
+
 ### 动作
 
 1. 从当前 schemas、profiles、实际 examples 和 formal DP 案例收集允许的自由参数路径；不要凭空列不存在的字段。

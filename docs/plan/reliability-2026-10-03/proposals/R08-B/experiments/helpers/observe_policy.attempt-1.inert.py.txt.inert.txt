@@ -1,0 +1,544 @@
+"""Offline P-A conditional experiment; defaults and repository files stay intact."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def write_json(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def git(root: Path, *args: str) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(root), *args], capture_output=True, check=True, text=True
+    )
+    return result.stdout.strip()
+
+
+def inventory(root: Path) -> dict:
+    names = git(root, "ls-files", "src", "tests", "schemas", "pyproject.toml", "uv.lock")
+    files = {
+        name: {
+            "disk_sha256": sha((root / name).read_bytes()),
+            "git_blob": git(root, "rev-parse", f"HEAD:{name}"),
+        }
+        for name in names.splitlines()
+    }
+    wip = {}
+    for name in (
+        "README.md",
+        "docs/index.md",
+        "docs/dogfooding/2026-10-13-additional-cases-gold.md",
+    ):
+        path = root / name
+        wip[name] = sha(path.read_bytes()) if path.is_file() else None
+    return {
+        "head": git(root, "rev-parse", "HEAD"),
+        "protected_files": files,
+        "user_wip_sha256": wip,
+    }
+
+
+def manifest_input(path: str, value: object) -> dict:
+    data = {
+        "schema_version": 1,
+        "project": {"name": "r08b-synthetic"},
+        "experiment": {"profiles": []},
+    }
+    if path.startswith("privacy."):
+        data["privacy"] = {"mechanism": {"name": "synthetic-dp-declaration", "params": {}}}
+    if path.startswith("evaluation.judge."):
+        data.update(
+            models={"judge": {"provider": "other", "id": "synthetic-judge"}},
+            prompts={"judge": {"text": "synthetic"}},
+        )
+        data["evaluation"] = {"judge": {}}
+    if value is not None:
+        node = data
+        parts = path.split(".")
+        for key in parts[:-1]:
+            node = node.setdefault(key, {})
+        node[parts[-1]] = value
+    return data
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--worktree", type=Path, required=True)
+    parser.add_argument("--main-worktree", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    worktree, main_root, out = (
+        args.worktree.resolve(),
+        args.main_worktree.resolve(),
+        args.output.resolve(),
+    )
+    if out.exists():
+        raise SystemExit("fresh output directory required")
+    out.mkdir(parents=True)
+    start = time.monotonic()
+    expected_path = Path(__file__).with_name("independent-inputs-and-expectations.json")
+    expected = json.loads(expected_path.read_text())
+    before = {"candidate": inventory(worktree), "main": inventory(main_root)}
+    assert before["candidate"]["head"] == expected["base_commit"]
+    assert git(worktree, "status", "--porcelain", "--untracked-files=all") == ""
+    write_json(out / "before-protected-inventory.json", before)
+    sys.path.insert(0, str(worktree / "src"))
+
+    import jsonschema
+    import yaml
+
+    import reprollm
+    import reprollm.diff.severity as severity_module
+    from reprollm.core.yaml_io import load_manifest
+    from reprollm.diff.differ import diff_states
+    from reprollm.diff.severity import DriftRule, SeverityResolver, SeverityTable, matches
+    from reprollm.profiles.loader import resolve
+    from reprollm.schemas.manifest import Manifest
+    from reprollm.schemas.run_record import RunRecord
+    from reprollm.schemas.state import State
+
+    assert Path(reprollm.__file__).resolve().is_relative_to(worktree / "src")
+    assert Path(severity_module.__file__).resolve().is_relative_to(worktree / "src")
+    schema = json.loads((worktree / "schemas/diff_report.schema.json").read_text())
+    table = SeverityResolver().table
+    table_before = table.model_dump(mode="json")
+    targets = expected["conditional_A_exact_paths"]
+    conditional = SeverityTable(
+        schema_version=table.schema_version,
+        default=table.default,
+        rules=[*[DriftRule(path=path, severity="HIGH") for path in targets], *table.rules],
+    )
+    write_json(out / "current-severity-table.json", table_before)
+    write_json(out / "conditional-A-severity-table.json", conditional.model_dump(mode="json"))
+    checks = []
+
+    def check(label: str, ok: bool) -> None:
+        checks.append({"id": label, "passed": bool(ok)})
+        if not ok:
+            write_json(out / "checks.partial.json", checks)
+            raise AssertionError(label)
+
+    for case in expected["cases"]:
+        folder = out / "state-cases" / case["id"]
+        documents = [manifest_input(case["path"], case[side]) for side in ("a", "b")]
+        for side, document in zip(("a", "b"), documents, strict=True):
+            write_json(folder / f"{side}.manifest.json", document)
+        states = [State.merge(Manifest.model_validate(document)) for document in documents]
+        for side, state in zip(("a", "b"), states, strict=True):
+            write_json(folder / f"{side}.state.json", state.model_dump(mode="json"))
+        for policy, resolver, severity_key in (
+            ("current", SeverityResolver(), "current_severity"),
+            ("conditional-A", SeverityResolver(table=conditional), "conditional_A_severity"),
+        ):
+            report = diff_states(*states, resolver)
+            raw = report.model_dump(mode="json")
+            write_json(folder / f"{policy}.report.json", raw)
+            jsonschema.validate(raw, schema)
+            check(
+                case["id"] + ":" + policy,
+                raw["changes"]
+                == [
+                    {
+                        "path": case["path"],
+                        "status": case["status"],
+                        "a": case["a"],
+                        "b": case["b"],
+                        "severity": case[severity_key],
+                        "note": None,
+                    }
+                ],
+            )
+            check(
+                case["id"] + ":" + policy + ":summary",
+                raw["summary"]["highest"] == case[severity_key]
+                and sum(raw["summary"]["counts"].values()) == 1,
+            )
+            same = diff_states(states[0], states[0], resolver).model_dump(mode="json")
+            write_json(folder / f"{policy}.selfdiff.json", same)
+            check(
+                case["id"] + ":" + policy + ":selfdiff",
+                same["changes"] == [] and same["summary"]["highest"] == "NONE",
+            )
+        if case["path"] in targets:
+            for override in expected["precise_overrides"]:
+                for policy, source in (("current", table), ("conditional-A", conditional)):
+                    report = diff_states(
+                        *states,
+                        SeverityResolver(table=source, profile_overrides={case["path"]: override}),
+                    ).model_dump(mode="json")
+                    write_json(folder / f"{policy}.override-{override}.json", report)
+                    check(
+                        case["id"] + ":" + policy + ":override-" + override,
+                        report["changes"][0]["severity"] == override
+                        and report["summary"]["highest"] == override,
+                    )
+
+    first_match = []
+    for case in expected["first_match_cases"]:
+        path = case["rows"][-1][0] if "*" not in case["rows"][-1][0] else case["rows"][0][0]
+        overrides = dict(case["rows"])
+        for policy, source in (("current", table), ("conditional-A", conditional)):
+            actual = (
+                SeverityResolver(table=source, profile_overrides=overrides)
+                .resolve(path, 1, 2)
+                .severity
+            )
+            check(
+                "first-match:" + path + ":" + policy + ":" + case["expected"],
+                actual == case["expected"],
+            )
+            first_match.append({"policy": policy, **case, "path": path, "actual": actual})
+    write_json(out / "first-match-observations.json", first_match)
+    check(
+        "single-segment-privacy-unchanged",
+        not matches("privacy.*", "privacy.mechanism.params.target_epsilon"),
+    )
+    check(
+        "single-segment-training-unchanged",
+        not matches("training.*", "training.params.num_train_epochs"),
+    )
+    for path in targets:
+        check("exact-not-descendant:" + path, not matches(path, path + ".nested"))
+
+    profile_root = out / "profile-fixtures"
+    profile_dir = profile_root / ".reprollm/profiles"
+    profile_dir.mkdir(parents=True)
+    inherited = []
+    for override in ("LOW", "NONE"):
+        (profile_dir / "parent_policy.yaml").write_text(
+            yaml.safe_dump(
+                {
+                    "schema_version": 1,
+                    "name": "parent_policy",
+                    "description": "synthetic inheritance parent",
+                    "drift_overrides": dict.fromkeys(targets, "HIGH"),
+                }
+            )
+        )
+        (profile_dir / "child_policy.yaml").write_text(
+            yaml.safe_dump(
+                {
+                    "schema_version": 1,
+                    "name": "child_policy",
+                    "description": "synthetic inheritance child",
+                    "extends": ["parent_policy"],
+                    "drift_overrides": dict.fromkeys(targets, override),
+                }
+            )
+        )
+        resolved = resolve(["child_policy"], profile_root)
+        for path in targets:
+            for policy, source in (("current", table), ("conditional-A", conditional)):
+                severity = (
+                    SeverityResolver(table=source, profile_overrides=resolved.drift_overrides)
+                    .resolve(path, 1, 2)
+                    .severity
+                )
+                check(
+                    "inherited-child:" + path + ":" + override + ":" + policy, severity == override
+                )
+                inherited.append(
+                    {
+                        "path": path,
+                        "policy": policy,
+                        "override": override,
+                        "actual": severity,
+                        "profile_order": resolved.names,
+                        "effective_overrides": resolved.drift_overrides,
+                    }
+                )
+        write_json(
+            out / "inherited-profiles" / override / "parent.json",
+            yaml.safe_load((profile_dir / "parent_policy.yaml").read_text()),
+        )
+        write_json(
+            out / "inherited-profiles" / override / "child.json",
+            yaml.safe_load((profile_dir / "child_policy.yaml").read_text()),
+        )
+    write_json(out / "inherited-profile-observations.json", inherited)
+
+    evidence_path = (
+        "docs/dogfooding/2026-10-20-validation-followup/native/"
+        "runtime/llm-dp-finetune/a/run/manifest.yaml"
+    )
+    actual_manifest = load_manifest(worktree / evidence_path)
+    actual_flat = State.merge(actual_manifest).flatten()
+    actual_values = {
+        "privacy.mechanism.params.target_epsilon": 8.0,
+        "privacy.mechanism.params.target_delta": 0.001,
+        "privacy.mechanism.params.max_grad_norm": 1.0,
+        "training.params.num_train_epochs": 0.125,
+    }
+    leaves = {path: actual_flat[path].model_dump(mode="json") for path in targets}
+    check(
+        "formal-manifest-four-leaves",
+        {path: actual_flat[path].value for path in targets} == actual_values,
+    )
+    write_json(
+        out / "formal-manifest-leaf-observation.json",
+        {
+            "source": evidence_path,
+            "sha256": sha((worktree / evidence_path).read_bytes()),
+            "leaves": leaves,
+            "scope": (
+                "Existing declared manifest only; no model import or runtime replay; "
+                "no effectiveness/budget claim."
+            ),
+        },
+    )
+
+    fixture = out / "cli-fixture"
+    fixture.mkdir()
+    (fixture / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: r08b-synthetic}\nexperiment: {profiles: []}\n"
+    )
+    (fixture / ".gitignore").write_text("cases/\n.reprollm/\n")
+    git(fixture, "init", "-q")
+    git(fixture, "add", "reprollm.yaml", ".gitignore")
+    git(
+        fixture,
+        "-c",
+        "user.name=Synthetic",
+        "-c",
+        "user.email=synthetic@example.invalid",
+        "commit",
+        "-qm",
+        "synthetic fixture",
+    )
+    fixture_commit = git(fixture, "rev-parse", "HEAD")
+    check(
+        "cli-disposable-git-clean-before",
+        git(fixture, "status", "--porcelain", "--untracked-files=all") == "",
+    )
+    commands = []
+    cli_env = {
+        "PATH": os.defpath,
+        "PYTHONPATH": str(worktree / "src"),
+        "PYTHONUTF8": "1",
+        "NO_COLOR": "1",
+    }
+    fixed_manifest = {
+        "schema_version": 1,
+        "project": {"name": "r08b-synthetic"},
+        "experiment": {"profiles": []},
+    }
+
+    def run_pair(case: dict, profile: str | None = None) -> tuple[str, str]:
+        refs = []
+        for side in ("a", "b"):
+            folder = fixture / "cases" / case["id"] / (profile or "default") / side
+            folder.mkdir(parents=True)
+            document = json.loads(json.dumps(fixed_manifest))
+            if profile:
+                document["experiment"]["profiles"] = [profile]
+            payload = yaml.safe_dump(document, sort_keys=True).encode()
+            (folder / "manifest.yaml").write_bytes(payload)
+            digest = "sha256:" + sha(payload)
+            data = {
+                "schema_version": 2,
+                "reprollm_version": reprollm.__version__,
+                "run_id": "20261020T000000Z-abcdef",
+                "status": "completed",
+                "exit_code": 0,
+                "command": {"argv": ["python", "-c", "pass"], "cwd": "."},
+                "code": {"commit": fixture_commit, "dirty": False},
+                "manifest": {
+                    "path": "reprollm.yaml",
+                    "sha256": digest,
+                    "snapshot": "manifest.yaml",
+                },
+                "input_capture": {
+                    "checks": [
+                        {
+                            "path": "reprollm.yaml",
+                            "origin": "manifest",
+                            "before": {
+                                "availability": "present",
+                                "sha256": digest,
+                                "size_bytes": len(payload),
+                            },
+                            "after": {
+                                "availability": "present",
+                                "sha256": digest,
+                                "size_bytes": len(payload),
+                            },
+                            "change": "unchanged",
+                        }
+                    ]
+                },
+                "bindings_observed": {},
+            }
+            if case[side] is not None:
+                data["bindings_observed"][case["path"]] = [
+                    {"value": case[side], "source": {"type": "cli", "key": "--synthetic-value"}}
+                ]
+            record = RunRecord.model_validate(data)
+            write_json(folder / "run.json", record.model_dump(mode="json"))
+            refs.append((folder / "run.json").relative_to(fixture).as_posix())
+        return refs[0], refs[1]
+
+    def command(label: str, refs: tuple[str, str], options: list[str], expected_exit: int) -> dict:
+        args_cli = ["-m", "reprollm", "diff", *refs, *options, "--format", "json"]
+        started = time.monotonic()
+        result = subprocess.run(
+            [sys.executable, *args_cli], cwd=fixture, env=cli_env, capture_output=True
+        )
+        elapsed = time.monotonic() - started
+        folder = out / "cli-commands" / label
+        folder.mkdir(parents=True)
+        (folder / "stdout.txt").write_bytes(result.stdout)
+        (folder / "stderr.txt").write_bytes(result.stderr)
+        commands.append(
+            {
+                "label": label,
+                "argv": ["<CANDIDATE_PYTHON>", *args_cli],
+                "cwd": "cli-fixture",
+                "exit_code": result.returncode,
+                "expected_exit": expected_exit,
+                "wall_seconds": elapsed,
+                "stdout": (folder / "stdout.txt").relative_to(out).as_posix(),
+                "stderr": (folder / "stderr.txt").relative_to(out).as_posix(),
+                "stdout_sha256": sha(result.stdout),
+                "stderr_sha256": sha(result.stderr),
+            }
+        )
+        write_json(out / "commands.json", {"commands": commands})
+        check("cli-exit:" + label, result.returncode == expected_exit)
+        check("cli-stderr:" + label, result.stderr == b"")
+        report = json.loads(result.stdout)
+        jsonschema.validate(report, schema)
+        return report
+
+    for case in expected["cases"][:12]:
+        refs = run_pair(case)
+        report = command(case["id"] + "-default-high", refs, ["--fail-on", "HIGH"], 0)
+        check(
+            "cli-isolated:" + case["id"],
+            len(report["changes"]) == 1
+            and report["changes"][0]["path"] == case["path"]
+            and report["changes"][0]["status"] == case["status"]
+            and report["changes"][0]["severity"] == "MEDIUM"
+            and report["summary"]["highest"] == "MEDIUM",
+        )
+        if case["status"] == "changed":
+            repeated = command(case["id"] + "-repeat", refs, ["--fail-on", "HIGH"], 0)
+            check("cli-repeat-bytes:" + case["id"], report == repeated)
+            filtered = command(
+                case["id"] + "-filter-high-fail-medium",
+                refs,
+                ["--min-severity", "HIGH", "--fail-on", "MEDIUM"],
+                1,
+            )
+            check(
+                "cli-complete-summary:" + case["id"],
+                filtered["changes"] == []
+                and filtered["summary"] == report["summary"]
+                and filtered["filtered_below"] == "HIGH",
+            )
+            same = command(case["id"] + "-selfdiff", (refs[0], refs[0]), ["--fail-on", "HIGH"], 0)
+            check(
+                "cli-selfdiff:" + case["id"],
+                same["changes"] == [] and same["summary"]["highest"] == "NONE",
+            )
+            profiles = fixture / ".reprollm/profiles"
+            profiles.mkdir(parents=True, exist_ok=True)
+            for override in ("LOW", "NONE"):
+                profile = "policy_" + override.lower()
+                (profiles / (profile + ".yaml")).write_text(
+                    yaml.safe_dump(
+                        {
+                            "schema_version": 1,
+                            "name": profile,
+                            "description": "synthetic precise override",
+                            "drift_overrides": {case["path"]: override},
+                        }
+                    )
+                )
+                override_refs = run_pair(case, profile)
+                observed = command(
+                    case["id"] + "-override-" + override, override_refs, ["--fail-on", "HIGH"], 0
+                )
+                check(
+                    "cli-override:" + case["id"] + ":" + override,
+                    observed["changes"][0]["severity"] == override
+                    and observed["summary"]["highest"] == override,
+                )
+    check(
+        "cli-disposable-git-clean-after",
+        git(fixture, "status", "--porcelain", "--untracked-files=all") == "",
+    )
+    check(
+        "actual-default-table-unchanged",
+        SeverityResolver().table.model_dump(mode="json") == table_before,
+    )
+    check(
+        "conditional-exactly-four-extra-rows",
+        len(conditional.rules) == len(table.rules) + 4 and conditional.rules[4:] == table.rules,
+    )
+    after = {"candidate": inventory(worktree), "main": inventory(main_root)}
+    write_json(out / "after-protected-inventory.json", after)
+    check("protected-main-and-candidate-identical", before == after)
+    check(
+        "candidate-still-clean",
+        git(worktree, "status", "--porcelain", "--untracked-files=all") == "",
+    )
+    write_json(out / "checks.json", checks)
+    input_files = {
+        p.relative_to(out).as_posix(): {"sha256": sha(p.read_bytes()), "bytes": p.stat().st_size}
+        for p in sorted(out.rglob("*.json"))
+        if "cli-fixture" not in p.parts
+    }
+    write_json(out / "input-output-index.json", input_files)
+    summary = {
+        "schema_version": 1,
+        "task": "R08-B",
+        "status": "P-A_CURRENT_OBSERVED_CONDITIONAL_A_QUALIFIED_NOT_IMPLEMENTED",
+        "candidate_commit": expected["base_commit"],
+        "source_origin": {
+            "reprollm_relative": "src/reprollm/__init__.py",
+            "severity_relative": "src/reprollm/diff/severity.py",
+            "candidate_source_assertions": True,
+            "python_version": sys.version.split()[0],
+        },
+        "independent_expectation_sha256": sha(expected_path.read_bytes()),
+        "conditional_A_exact_paths": targets,
+        "current_target_default": "MEDIUM",
+        "conditional_A_target_default": "HIGH",
+        "state_input_cases": len(expected["cases"]),
+        "state_target_status_cases": 12,
+        "state_unchanged_controls": 18,
+        "checks": len(checks),
+        "all_checks_passed": all(c["passed"] for c in checks),
+        "cli_command_count": len(commands),
+        "cli_child_count": 0,
+        "gpu_commands": 0,
+        "paid_requests": 0,
+        "network_requests": 0,
+        "cli_fixture": "SYNTHETIC_RUN_V2_WITH_TYPED_INPUT_FINGERPRINTS_NO_CHILD_EXECUTED",
+        "cli_conditional_default": "NOT_EXECUTED_NO_PUBLIC_TABLE_INJECTION_INTERFACE",
+        "proposed_default_installed": False,
+        "source_tests_schemas_dependencies_and_user_wip_unchanged": before == after,
+        "command_wall_seconds": sum(c["wall_seconds"] for c in commands),
+        "total_wall_seconds": time.monotonic() - start,
+        "semantic_limitations": expected["semantic_limitations"],
+    }
+    write_json(out / "summary.json", summary)
+    print(json.dumps(summary, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

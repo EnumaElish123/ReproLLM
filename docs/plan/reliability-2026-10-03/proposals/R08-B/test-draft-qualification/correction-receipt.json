@@ -1,0 +1,109 @@
+{
+  "added_test_case_counts": {
+    "cli": 26,
+    "new_test_functions": 9,
+    "severity": 60,
+    "total": 86
+  },
+  "base_commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+  "commands": [
+    {
+      "argv": [
+        "<PYTHON>",
+        "-m",
+        "ruff",
+        "check",
+        "--config",
+        "<CANDIDATE>/pyproject.toml",
+        "<FINAL_SEVERITY_DRAFT>",
+        "<FINAL_CLI_DRAFT>"
+      ],
+      "exit": 0,
+      "stderr": "check-1.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "check-1.stdout.txt",
+      "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "wall_seconds": 0.07690690085291862
+    },
+    {
+      "argv": [
+        "<PYTHON>",
+        "-m",
+        "ruff",
+        "format",
+        "--config",
+        "<CANDIDATE>/pyproject.toml",
+        "--check",
+        "<FINAL_SEVERITY_DRAFT>",
+        "<FINAL_CLI_DRAFT>"
+      ],
+      "exit": 0,
+      "stderr": "check-2.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "check-2.stdout.txt",
+      "stdout_sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+      "wall_seconds": 0.0781681016087532
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "tests-proposed.patch"
+      ],
+      "exit": 0,
+      "stderr": "check-3.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "check-3.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.007943065837025642
+    }
+  ],
+  "corrections": [
+    {
+      "change": "Explicit public import reprollm.rules registration before profile resolution.",
+      "finding": "Standalone severity-file collection does not bootstrap rule registration via conftest; inherited profile resolution can fail.",
+      "source_semantics": "Product/defaults unchanged; test bootstrap only."
+    },
+    {
+      "change": "Restored original CLI tests/typer import grouping. All complete draft files checked/formatted with explicit candidate pyproject.toml; existing empty package markers mirrored in scratch to match same-package detection.",
+      "finding": "Earlier external scratch Ruff qualification omitted explicit repository configuration and package context, causing unrelated tests import relocation.",
+      "package_markers": [
+        "tests/__init__.py",
+        "tests/unit/__init__.py",
+        "tests/unit/cli/__init__.py"
+      ],
+      "qualification_scope": "No repository lint configuration override or product/test application."
+    }
+  ],
+  "files": [
+    {
+      "base_sha256": "c8939e07c0686e50420d0e9573c6aca2fae1c9e2744e772c148be6ac0aff8632",
+      "final_draft_sha256": "297d8e2ca2b639678448035fc3b4ea3bce8de550cee4b72b731b483c6925adff",
+      "inert_full_target": "test_severity.proposed.inert.py.txt",
+      "original_draft_sha256": "4315087b61d8ee12ad002f245a57e1c8767ed1ca35dcd1a7368eae514e581e99",
+      "path": "tests/unit/diff/test_severity.py",
+      "python310_syntax": "PASS",
+      "test_bodies_decorators_inputs_and_assertions_unchanged": true
+    },
+    {
+      "base_sha256": "6986902d0bb89118218f48472458987117a1afc39110f15d225381ca5b6031b2",
+      "final_draft_sha256": "34269e4a5727b37afed993876dcfc2a51a73a35c4e9e3bce9b5b47632206cf58",
+      "inert_full_target": "test_diff.proposed.inert.py.txt",
+      "original_draft_sha256": "c5c2e1f5fecd93a04370b675697d9cf9fc58317baca6ca7e99802242549c3609",
+      "path": "tests/unit/cli/test_diff.py",
+      "python310_syntax": "PASS",
+      "test_bodies_decorators_inputs_and_assertions_unchanged": true
+    }
+  ],
+  "final_patch_sha256": "d40a587b6be96e25f79ffb4bd8bbecf4dc38205f9e5ec302633283a5438f2ab7",
+  "frozen_portable_478_files_byte_identical": true,
+  "future_high_default_tests_executed": false,
+  "isolated_import_qualification": "isolated-registry-qualification.json",
+  "original_patch_sha256": "a112f694b13aea18b2f6b8b4966a525b10e0745e8f8dececf2b55cfe14ffc0db",
+  "repository_product_or_test_files_modified": false,
+  "schema_version": 1,
+  "status": "CORRECTED_FUTURE_TEST_DRAFT_NOT_APPLIED",
+  "supersedes_original_experiment_test_draft_only": true,
+  "task": "R08-B"
+}

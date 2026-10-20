@@ -1,0 +1,44 @@
+{
+  "defaults_installed": false,
+  "explicit_existing_assertion_change": {
+    "before": "MEDIUM",
+    "path": "tests/unit/diff/test_severity.py",
+    "proposed": "HIGH",
+    "row": "privacy.mechanism.params.target_epsilon",
+    "test": "test_r08a_keeps_other_policy"
+  },
+  "files": [
+    {
+      "added_test_functions": [
+        "test_r08b_four_exact_manifest_paths_are_high",
+        "test_r08b_keeps_neighboring_and_existing_policy",
+        "test_r08b_user_override_precedes_four_exact_defaults",
+        "test_r08b_inherited_profile_child_wins",
+        "test_r08b_override_order_remains_first_match",
+        "test_r08b_default_has_only_four_exact_additions_and_no_recursive_glob"
+      ],
+      "before_sha256": "c8939e07c0686e50420d0e9573c6aca2fae1c9e2744e772c148be6ac0aff8632",
+      "path": "tests/unit/diff/test_severity.py",
+      "proposed_sha256": "4315087b61d8ee12ad002f245a57e1c8767ed1ca35dcd1a7368eae514e581e99",
+      "syntax": "PASS"
+    },
+    {
+      "added_test_functions": [
+        "test_r08b_cli_isolated_binding_default_is_high",
+        "test_r08b_cli_precise_override_and_complete_filtered_policy",
+        "test_r08b_cli_neighbors_keep_medium"
+      ],
+      "before_sha256": "6986902d0bb89118218f48472458987117a1afc39110f15d225381ca5b6031b2",
+      "path": "tests/unit/cli/test_diff.py",
+      "proposed_sha256": "c5c2e1f5fecd93a04370b675697d9cf9fc58317baca6ca7e99802242549c3609",
+      "syntax": "PASS"
+    }
+  ],
+  "patch_sha256": "a112f694b13aea18b2f6b8b4966a525b10e0745e8f8dececf2b55cfe14ffc0db",
+  "runtime_tests_executed": false,
+  "schema_version": 1,
+  "scope": "Only four exact default rows proposed HIGH; independent Manifest/State and standard synthetic run-v2 tests; neighboring policy, LOW/NONE, ordered/inherited overrides, filtering/fail-on, schema, deterministic/read-only output.",
+  "status": "P-A_FUTURE_TEST_DRAFT_NOT_APPLIED_NOT_PB_PASS",
+  "target_commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+  "task": "R08-B"
+}

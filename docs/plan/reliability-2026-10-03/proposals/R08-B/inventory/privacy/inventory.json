@@ -1,0 +1,2747 @@
+{
+  "A4_assessment": {
+    "cautions": [
+      "Compare recorded settings only, not a computed privacy proof.",
+      "Supplied sigma can override epsilon; unchanged nullable/default inputs must not be invented as State leaves.",
+      "Only exact max_grad_norm path has formal manifest evidence; *_dp and per_sample spellings are distinct.",
+      "Example delta1.5 is additive offset, not target_delta.",
+      "Proposed HIGH applies prospectively only after a concrete decision; preserve historical pair byte-for-byte."
+    ],
+    "counterevidence_to_exact_A4": [],
+    "privacy_exact_HIGH_candidates": [
+      "privacy.mechanism.params.target_epsilon",
+      "privacy.mechanism.params.target_delta",
+      "privacy.mechanism.params.max_grad_norm"
+    ],
+    "training_cross_reference": {
+      "actual_value": 0.125,
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "finding": "Active engine receives epochs=train_args.num_train_epochs; source-derived two-step calibration horizon supports the separately owned training inventory. No duplicate training-policy decision is made here.",
+      "path": "training.params.num_train_epochs",
+      "sources": [
+        "formal_a_manifest",
+        "formal_entry",
+        "dp_active_call",
+        "runtime_gold"
+      ]
+    }
+  },
+  "excluded_or_unmapped_names": [
+    {
+      "name": "privacy.mechanism.params.noise_multiplier",
+      "reason": "Real active argument/effective output exists, but formal manifest records no such leaf; current sigma observations do not manufacture a declared State input. Non-null value overrides target epsilon.",
+      "recommendation": "Do not add this default in A4; retain current MEDIUM if explicitly recorded in a future manifest.",
+      "source_field": "PrivacyArgs.noise_multiplier",
+      "sources": [
+        "dp_arguments",
+        "dp_active_call",
+        "formal_a_output-check",
+        "formal_b_output-check"
+      ],
+      "status": "SCHEMA_LEGAL_BUT_NOT_FOUND_IN_REVIEWED_FORMAL_OR_EXAMPLE_MANIFESTS"
+    },
+    {
+      "name": "privacy.mechanism.params.max_grad_norm_dp",
+      "recommendation": "No alias default; actual formal path ends max_grad_norm.",
+      "sources": [
+        "formal_a_manifest",
+        "formal_entry",
+        "dp_active_call"
+      ],
+      "status": "NO_SUCH_ACTUAL_FORMAL_MANIFEST_LEAF"
+    },
+    {
+      "name": "privacy.mechanism.params.per_sample_max_grad_norm",
+      "reason": "The sole spelling occurs in commented-out dp_transformers construction at source line324; active fastDP calls use max_grad_norm.",
+      "recommendation": "No invented policy row.",
+      "sources": [
+        "dp_active_call"
+      ],
+      "status": "COMMENTED_OUT_LEGACY_CODE_ONLY_NO_OBSERVED_MANIFEST_PATH"
+    },
+    {
+      "name": "privacy.mechanism.params.delta",
+      "recommendation": "Retain MEDIUM; do not globally promote it by treating its name as DP delta.",
+      "sources": [
+        "example_manifest",
+        "example_method",
+        "formal_entry"
+      ],
+      "status": "REAL_EXAMPLE_PATH_BUT_NOT_AN_ALIAS_FOR_TARGET_DELTA"
+    },
+    {
+      "name": "custom.privacy.{noise_multiplier,target_delta,target_epsilon}",
+      "reason": "Source-supported concepts had proposed nested YAML bindings not verified from sent content; unselected candidates are not operator manifests or consumed fields.",
+      "recommendation": "Do not silently accept these candidates or turn them into privacy.mechanism defaults.",
+      "sources": [
+        "candidate_review"
+      ],
+      "status": "MODEL_SUGGESTIONS_ONLY_IN_CURRENT_DISCOVER_REVIEW"
+    },
+    {
+      "name": "PrivacyArgs.eps_error and PrivacyArgs.no_accountant",
+      "recommendation": "Do not invent privacy params aliases or infer active consumption from dataclass existence alone.",
+      "sources": [
+        "dp_arguments",
+        "dp_active_call"
+      ],
+      "status": "DECLARED_UPSTREAM_ARGUMENTS_WITHOUT_OBSERVED_FORMAL_MANIFEST_PATH"
+    }
+  ],
+  "historical_formal_pair": {
+    "config_hash_change": {
+      "a": "sha256:ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951",
+      "b": "sha256:5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c",
+      "explanation": "original configuration bytes changed",
+      "note": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
+      "path": "files.validation/train.yaml.sha256",
+      "severity": "HIGH",
+      "status": "changed"
+    },
+    "epsilon_change": {
+      "a": 8.0,
+      "b": 4.0,
+      "explanation": "the predeclared experimental parameter",
+      "note": "a: input_file/pre_child; child unverified; b: input_file/pre_child; child unverified",
+      "path": "privacy.mechanism.params.target_epsilon",
+      "severity": "MEDIUM",
+      "status": "changed"
+    },
+    "existing_gold_must_remain": true,
+    "full_observed_delta_count": 7,
+    "limitation": "Two synthetic-data engineering steps are not original gated Llama2/ECHR/ZeRO completion or a production privacy guarantee; recorder input context remains child-unverified, independent native observation is separately scoped.",
+    "observed_effective_outputs": {
+      "a": {
+        "clip_calls": 2,
+        "noise_multiplier": 0.39421386718749996,
+        "positive_noise_draws": 152,
+        "privacy_spent": {
+          "alpha_rdp": 2.0,
+          "eps_rdp": 7.986783183167738
+        },
+        "steps": 2,
+        "target_epsilon": 8.0
+      },
+      "b": {
+        "clip_calls": 2,
+        "noise_multiplier": 0.5475097656250001,
+        "positive_noise_draws": 152,
+        "privacy_spent": {
+          "alpha_rdp": 2.7,
+          "eps_rdp": 3.9982670621285883
+        },
+        "steps": 2,
+        "target_epsilon": 4.0
+      }
+    },
+    "product_binding": "948d164; existing 2026-10-20 supplementary public runtime evidence only",
+    "source": "formal_pair",
+    "status": "PASS"
+  },
+  "manifest_state_fields": [
+    {
+      "active_mapping": {
+        "config_key": "target_epsilon",
+        "constructor_native_observation": "Recorded directly in both historical consumption-check receipts.",
+        "engine_keyword": "target_epsilon",
+        "privacy_args_member": "target_epsilon",
+        "upstream_active_line": 448,
+        "upstream_source": "dp_active_call",
+        "wrapper_line": 87,
+        "wrapper_source": "formal_entry"
+      },
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            43
+          ],
+          "locator_kind": "full dotted path",
+          "source": "formal_a_manifest",
+          "source_sha256": "95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2"
+        },
+        {
+          "lines": [
+            43
+          ],
+          "locator_kind": "full dotted path",
+          "source": "formal_b_manifest",
+          "source_sha256": "6bd599ba0d45e57193cc9a9fcfcf3a05b656c9cf258fe5c5c30d7a2449415258"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_a",
+          "source_sha256": "ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+        },
+        {
+          "lines": [
+            9
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_b",
+          "source_sha256": "5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c"
+        }
+      ],
+      "actual_occurrences": [
+        "formal_a_manifest",
+        "formal_b_manifest",
+        "formal_config_a",
+        "formal_config_b"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "PrivacyArgs explicitly says a supplied noise_multiplier overrides target_epsilon. This row compares the request even if an explicit sigma makes it inactive. Formal pair uses default None for noise_multiplier, observes recalibration separately, and does not assert epsilon exactly equals target or certify production privacy.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.target_epsilon",
+      "meaning": "Requested epsilon supplied through PrivacyArgs to the active fastDP constructor; positive epsilon also selects DP in the normal dispatcher, whereas the formal wrapper explicitly calls its single-GPU method.",
+      "meaning_sources": [
+        "dp_arguments",
+        "dp_active_call",
+        "formal_entry",
+        "runtime_gold",
+        "formal_a_consumption-check",
+        "formal_b_consumption-check"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.target_epsilon": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.target_epsilon": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Formal pair deliberately changes this exact recorded experimental request 8.0→4.0; input/output comparability and calibration depend on it.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "HIGH",
+      "state_path": "privacy.mechanism.params.target_epsilon",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "active_mapping": {
+        "config_key": "target_delta",
+        "constructor_native_observation": "Recorded directly in both historical consumption-check receipts.",
+        "engine_keyword": "target_delta",
+        "privacy_args_member": "target_delta",
+        "upstream_active_line": 449,
+        "upstream_source": "dp_active_call",
+        "wrapper_line": 87,
+        "wrapper_source": "formal_entry"
+      },
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            33
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_a_manifest",
+          "source_sha256": "95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2"
+        },
+        {
+          "lines": [
+            33
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_b_manifest",
+          "source_sha256": "6bd599ba0d45e57193cc9a9fcfcf3a05b656c9cf258fe5c5c30d7a2449415258"
+        },
+        {
+          "lines": [
+            10
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_a",
+          "source_sha256": "ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+        },
+        {
+          "lines": [
+            10
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_b",
+          "source_sha256": "5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c"
+        }
+      ],
+      "actual_occurrences": [
+        "formal_a_manifest",
+        "formal_b_manifest",
+        "formal_config_a",
+        "formal_config_b"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "No alias relationship to example params.delta is assumed. Formal delta is constant across A/B, so historical pair does not validate the severity of a delta mutation. A non-null supplied sigma and defaults still require independent effective-accountant interpretation.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.target_delta",
+      "meaning": "Explicit delta passed to PrivacyArgs and active PrivacyEngine. Upstream default None delegates an effective value, documented as 1/training-set-size; explicit formal value is 0.001.",
+      "meaning_sources": [
+        "dp_arguments",
+        "dp_active_call",
+        "formal_entry",
+        "runtime_gold",
+        "formal_a_consumption-check"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.target_delta": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.target_delta": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "This exact formal declaration is part of DP calibration/accountant assumptions and must remain comparable independently of epsilon.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "HIGH",
+      "state_path": "privacy.mechanism.params.target_delta",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "active_mapping": {
+        "config_key": "max_grad_norm",
+        "constructor_native_observation": "Not separately recorded by consumption-check; source mapping and executed clipping evidence are retained. Do not upgrade this to an explicit native constructor observation.",
+        "engine_keyword": "max_grad_norm",
+        "privacy_args_member": "max_grad_norm_dp",
+        "upstream_active_line": 446,
+        "upstream_source": "dp_active_call",
+        "wrapper_line": 87,
+        "wrapper_source": "formal_entry"
+      },
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            33
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_a_manifest",
+          "source_sha256": "95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2"
+        },
+        {
+          "lines": [
+            33
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_b_manifest",
+          "source_sha256": "6bd599ba0d45e57193cc9a9fcfcf3a05b656c9cf258fe5c5c30d7a2449415258"
+        },
+        {
+          "lines": [
+            11
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_a",
+          "source_sha256": "ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+        },
+        {
+          "lines": [
+            11
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "formal_config_b",
+          "source_sha256": "5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c"
+        }
+      ],
+      "actual_occurrences": [
+        "formal_a_manifest",
+        "formal_b_manifest",
+        "formal_config_a",
+        "formal_config_b"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "The source argument name is max_grad_norm_dp, the engine keyword and actual formal manifest leaf are max_grad_norm. This does not create privacy.mechanism.params.max_grad_norm_dp or per_sample_max_grad_norm. It is unchanged at1.0 in the historical pair.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.max_grad_norm",
+      "meaning": "Formal config clipping threshold maps config['max_grad_norm'] to PrivacyArgs.max_grad_norm_dp and then active fastDP max_grad_norm.",
+      "meaning_sources": [
+        "dp_arguments",
+        "dp_active_call",
+        "formal_entry",
+        "runtime_gold"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.max_grad_norm": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.max_grad_norm": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "The recorded bound controls the clipping/noise mechanism; the exact active mapping and formal manifest exist, so no invented *_dp alias is needed.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "HIGH",
+      "state_path": "privacy.mechanism.params.max_grad_norm",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            45
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            45
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            412,
+            769,
+            1742
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": "privacy.*",
+        "severity": "HIGH",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.threat_model",
+      "meaning": "Declared adversary/engineering scope; formal case explicitly limits itself to synthetic nonprivate validation.",
+      "meaning_sources": [
+        "privacy_profile",
+        "privacy_rules"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.threat_model": "LOW"
+        },
+        "NONE": {
+          "privacy.threat_model": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Document existing non-free-form privacy paths; narrow A4 proposal does not change them.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_HIGH",
+      "state_path": "privacy.threat_model",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            3,
+            37,
+            38,
+            47
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            3,
+            37,
+            38,
+            47
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            358,
+            715,
+            1616
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.name",
+      "meaning": "Mechanism identity: orthogonal_noise in the fixture, fastDP-single-gpu in the formal runtime manifest.",
+      "meaning_sources": [
+        "privacy_profile",
+        "privacy_rules",
+        "formal_a_manifest"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.name": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.name": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Document existing non-free-form privacy paths; narrow A4 proposal does not change them.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.mechanism.name",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            36,
+            53
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            36,
+            53
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            401,
+            758,
+            1719
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": "privacy.*",
+        "severity": "HIGH",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.metrics",
+      "meaning": "Names of reported privacy/utility metrics; list remains one State leaf rather than indexed children.",
+      "meaning_sources": [
+        "state_projection",
+        "privacy_rules"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.metrics": "LOW"
+        },
+        "NONE": {
+          "privacy.metrics": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Document existing non-free-form privacy paths; narrow A4 proposal does not change them.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_HIGH",
+      "state_path": "privacy.metrics",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            21,
+            54
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            21,
+            54
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            342,
+            699,
+            1582
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.attack.method",
+      "meaning": "Declared membership-inference method label; the example does not dispatch multiple methods based on this label.",
+      "meaning_sources": [
+        "privacy_rules",
+        "example_attack"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.attack.method": "LOW"
+        },
+        "NONE": {
+          "privacy.attack.method": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Document existing non-free-form privacy paths; narrow A4 proposal does not change them.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.attack.method",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            43,
+            54
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            43,
+            54
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            350,
+            707,
+            1599
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.attack.query_budget",
+      "meaning": "Declared attack budget; example load_budget reads the config value and membership_inference truncates observed losses by budget.",
+      "meaning_sources": [
+        "example_attack",
+        "privacy_rules"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.attack.query_budget": "LOW"
+        },
+        "NONE": {
+          "privacy.attack.query_budget": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Document existing non-free-form privacy paths; narrow A4 proposal does not change them.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.attack.query_budget",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            60
+          ],
+          "locator_kind": "full dotted path",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            3
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_config",
+          "source_sha256": "50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253"
+        },
+        {
+          "lines": [
+            60
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            366,
+            723,
+            1633
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "example_config",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.alpha",
+      "meaning": "Noise amplitude in torch.randn_like(hidden)*alpha, then attenuated by orth_loss.",
+      "meaning_sources": [
+        "example_method"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.alpha": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.alpha": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Real fixture demonstrates mechanism-specific semantics, but a path name alone cannot identify a DP accountant quantity. Retain current MEDIUM outside the exact A4 set.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.mechanism.params.alpha",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            50,
+            65
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            4
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_config",
+          "source_sha256": "50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253"
+        },
+        {
+          "lines": [
+            50,
+            65
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            374,
+            731,
+            1662
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "example_config",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.delta",
+      "meaning": "An additive offset added to protected hidden state; actual example value1.5 is not the DP failure-probability delta used by fastDP.",
+      "meaning_sources": [
+        "example_method"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.delta": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.delta": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Real fixture demonstrates mechanism-specific semantics, but a path name alone cannot identify a DP accountant quantity. Retain current MEDIUM outside the exact A4 set.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.mechanism.params.delta",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            51
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            5
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_config",
+          "source_sha256": "50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253"
+        },
+        {
+          "lines": [
+            51
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            390,
+            747,
+            1696
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "example_config",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.safe_interval",
+      "meaning": "Two bounds used by torch.clamp; this list is a single State leaf.",
+      "meaning_sources": [
+        "example_method"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.safe_interval": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.safe_interval": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Real fixture demonstrates mechanism-specific semantics, but a path name alone cannot identify a DP accountant quantity. Retain current MEDIUM outside the exact A4 set.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.mechanism.params.safe_interval",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            52
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            6
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_config",
+          "source_sha256": "50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253"
+        },
+        {
+          "lines": [
+            52
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            382,
+            739,
+            1679
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "example_config",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "Privacy/MechanismSpec/AttackSpec typed containers; params is dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "privacy.mechanism.params.orth_loss",
+      "meaning": "Attenuation factor in noise*(1.0-orth_loss); no accountant or formal DP guarantee is computed by the example.",
+      "meaning_sources": [
+        "example_method"
+      ],
+      "override": {
+        "LOW": {
+          "privacy.mechanism.params.orth_loss": "LOW"
+        },
+        "NONE": {
+          "privacy.mechanism.params.orth_loss": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Real fixture demonstrates mechanism-specific semantics, but a path name alone cannot identify a DP accountant quantity. Retain current MEDIUM outside the exact A4 set.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "privacy.mechanism.params.orth_loss",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            49,
+            60,
+            64
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            49,
+            60,
+            64
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            446,
+            867
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "custom: dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "custom.privacy_method.alpha",
+      "meaning": "Separate custom declaration mirrors the orthogonal-noise fixture's alpha value; no automatic alias or runtime-consumption relationship follows.",
+      "meaning_sources": [
+        "example_method",
+        "schema_tests"
+      ],
+      "override": {
+        "LOW": {
+          "custom.privacy_method.alpha": "LOW"
+        },
+        "NONE": {
+          "custom.privacy_method.alpha": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "custom.* is intentionally arbitrary and no global privacy reclassification follows from its name; preserve exact custom path and current fallback.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "custom.privacy_method.alpha",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            50,
+            65
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "example_manifest",
+          "source_sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+        },
+        {
+          "lines": [
+            50,
+            65
+          ],
+          "locator_kind": "field-name lines in complete structured source; ancestor context is retained in source",
+          "source": "fixture_manifest",
+          "source_sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+        },
+        {
+          "lines": [
+            454,
+            875
+          ],
+          "locator_kind": "full dotted path",
+          "source": "fixture_state",
+          "source_sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+        }
+      ],
+      "actual_occurrences": [
+        "example_manifest",
+        "fixture_manifest",
+        "fixture_state"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "custom: dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "custom.privacy_method.delta",
+      "meaning": "Separate custom declaration mirrors the orthogonal-noise fixture's delta value; no automatic alias or runtime-consumption relationship follows.",
+      "meaning_sources": [
+        "example_method",
+        "schema_tests"
+      ],
+      "override": {
+        "LOW": {
+          "custom.privacy_method.delta": "LOW"
+        },
+        "NONE": {
+          "custom.privacy_method.delta": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "custom.* is intentionally arbitrary and no global privacy reclassification follows from its name; preserve exact custom path and current fallback.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "custom.privacy_method.delta",
+      "status": "OBSERVED_MANIFEST_AND_STATE_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            161
+          ],
+          "locator_kind": "full dotted path",
+          "source": "m5_second",
+          "source_sha256": "3c966798c39d6d7de03326b383e359147a7b9d4c6ed0307151aa4dda8726af92"
+        }
+      ],
+      "actual_occurrences": [
+        "m5_second"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "custom: dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "custom.privacy.alpha",
+      "meaning": "Historical M5 synthetic runtime-binding exercise; declared0.25 and accepted audit WARNING are project-rule facts, not a builtin drift-policy override or native DP epsilon.",
+      "meaning_sources": [
+        "m5_second"
+      ],
+      "override": {
+        "LOW": {
+          "custom.privacy.alpha": "LOW"
+        },
+        "NONE": {
+          "custom.privacy.alpha": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "Historical custom parameter is distinct from fixture mechanism alpha and all formal DP fields; retain MEDIUM. Audit WARNING and drift MEDIUM are different severity systems.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "custom.privacy.alpha",
+      "status": "HISTORICALLY_RECORDED_CUSTOM_PATH"
+    },
+    {
+      "actual_occurrence_locations": [
+        {
+          "lines": [
+            81,
+            85
+          ],
+          "locator_kind": "full dotted path",
+          "source": "old_discover",
+          "source_sha256": "9436bf15503e3f1e22b904a75b0c93d9b09ce68f3092747260eb3a30aa9b4a9c"
+        }
+      ],
+      "actual_occurrences": [
+        "old_discover"
+      ],
+      "current_drift": {
+        "basis": "Exact current table plus single-segment whole-path matching; privacy profile has no drift overrides.",
+        "first_matching_default_pattern": null,
+        "severity": "MEDIUM",
+        "sources": [
+          "severity_table",
+          "severity",
+          "privacy_profile"
+        ]
+      },
+      "evidence_limit": "Recorded declarations or observations are not proof of child consumption or a calculated privacy guarantee; no fresh run was executed for this inventory.",
+      "legal_container": "custom: dict[str, Any]",
+      "legality_sources": [
+        "manifest_schema",
+        "state_schema",
+        "state_projection"
+      ],
+      "manifest_path": "custom.privacy.max_grad_norm_dp",
+      "meaning": "Historical live-discover operator explicitly declared source default1.0 only to demonstrate accepted project-rule missing→PASS; original source defines a clipping norm.",
+      "meaning_sources": [
+        "dp_arguments",
+        "old_discover",
+        "candidate_review"
+      ],
+      "override": {
+        "LOW": {
+          "custom.privacy.max_grad_norm_dp": "LOW"
+        },
+        "NONE": {
+          "custom.privacy.max_grad_norm_dp": "NONE"
+        },
+        "sources": [
+          "profile_schema",
+          "profile_loader",
+          "diff_cli",
+          "severity",
+          "spec"
+        ],
+        "user_profile": "Edit drift_overrides in an already resolved user profile; user privacy profile overrides the selected built-in while preserving its existing content."
+      },
+      "recommendation_reason": "The accepted presence rule is WARNING, not a default drift policy. Do not move custom fields into privacy or silently treat operator validation intent as executed training.",
+      "recommendation_status": "PROPOSED_ONLY_NOT_APPROVED",
+      "recommended_policy": "RETAIN_MEDIUM",
+      "state_path": "custom.privacy.max_grad_norm_dp",
+      "status": "HISTORICALLY_DECLARED_CUSTOM_PATH"
+    }
+  ],
+  "method": "Read public source/schema/profile/fixture/historical typed artifacts only; derive existing severity statically from unchanged ordered table and single-segment matcher. Do not import or run product code.",
+  "network_gpu_provider_product_or_test_executions": 0,
+  "pinned_dp_checkout_clean": true,
+  "pinned_dp_commit": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+  "repository_base": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+  "repository_or_historical_evidence_mutations": 0,
+  "schema_version": 1,
+  "scope": "Actual privacy/custom manifest and State paths, active pinned DP source mappings and existing historical formal evidence; no product behavior or historical gold changed.",
+  "sources": {
+    "candidate_review": {
+      "anchors": [
+        {
+          "line": 228,
+          "literal": "      \"field\": \"custom.privacy.max_grad_norm_dp\","
+        },
+        {
+          "line": 356,
+          "literal": "      \"field\": \"custom.privacy.noise_multiplier\","
+        },
+        {
+          "line": 542,
+          "literal": "      \"field\": \"custom.privacy.target_delta\","
+        },
+        {
+          "line": 575,
+          "literal": "      \"field\": \"custom.privacy.target_epsilon\","
+        },
+        {
+          "line": 96,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 205,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 238,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 271,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 304,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 366,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 519,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 552,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        },
+        {
+          "line": 585,
+          "literal": "      \"status\": \"CONCEPT_SOURCE_SUPPORTED_BINDING_NOT_VERIFIED_FROM_SENT_CONTENT\""
+        }
+      ],
+      "bytes": 25390,
+      "line_count": 667,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/discover/review/complete-candidate-source-review.json",
+      "root": "repository",
+      "sha256": "15b1f27fb58e6679e3a523708fbf896ddf6185d4f6302fda2510df77a8fe2ce7"
+    },
+    "diff_cli": {
+      "anchors": [
+        {
+          "line": 42,
+          "literal": "        left.state, right.state, SeverityResolver(profile_overrides=profiles.drift_overrides)"
+        }
+      ],
+      "bytes": 5304,
+      "line_count": 127,
+      "path": "src/reprollm/cli/diff.py",
+      "root": "repository",
+      "sha256": "85c5adcfacb700cd4e67dcdd93742ba67cde40a1fab6526665a665a098335a82"
+    },
+    "dp8_config": {
+      "anchors": [
+        {
+          "line": 39,
+          "literal": "privacy_args:"
+        },
+        {
+          "line": 40,
+          "literal": "  target_epsilon: 8"
+        }
+      ],
+      "bytes": 1656,
+      "exact_bytes_match_pinned_git_blob": true,
+      "line_count": 55,
+      "path": "configs/fine-tune/echr-llama2-7b-dp8.yml",
+      "root": "pinned-dp",
+      "sha256": "20c9c1ab6bd19f5b92789d394beee9a4131d28a841d2c80ee93235271490fc12"
+    },
+    "dp_active_call": {
+      "anchors": [
+        {
+          "line": 359,
+          "literal": "        if privacy_args.target_epsilon > 0:"
+        },
+        {
+          "line": 324,
+          "literal": "    #                                                         per_sample_max_grad_norm=privacy_args.max_grad_norm_dp)"
+        },
+        {
+          "line": 365,
+          "literal": "    def _fine_tune_fast_dp(self,"
+        },
+        {
+          "line": 445,
+          "literal": "            epochs=train_args.num_train_epochs,"
+        },
+        {
+          "line": 559,
+          "literal": "            epochs=train_args.num_train_epochs,"
+        },
+        {
+          "line": 324,
+          "literal": "    #                                                         per_sample_max_grad_norm=privacy_args.max_grad_norm_dp)"
+        },
+        {
+          "line": 446,
+          "literal": "            max_grad_norm=privacy_args.max_grad_norm_dp,"
+        },
+        {
+          "line": 560,
+          "literal": "            max_grad_norm=privacy_args.max_grad_norm_dp,"
+        },
+        {
+          "line": 321,
+          "literal": "    #     dpt_privacy_args = dp_transformers.PrivacyArguments(noise_multiplier=privacy_args.noise_multiplier,"
+        },
+        {
+          "line": 447,
+          "literal": "            noise_multiplier=privacy_args.noise_multiplier,"
+        },
+        {
+          "line": 561,
+          "literal": "            noise_multiplier=privacy_args.noise_multiplier,"
+        },
+        {
+          "line": 322,
+          "literal": "    #                                                         target_epsilon=privacy_args.target_epsilon,"
+        },
+        {
+          "line": 448,
+          "literal": "            target_epsilon=privacy_args.target_epsilon,"
+        },
+        {
+          "line": 562,
+          "literal": "            target_epsilon=privacy_args.target_epsilon,"
+        },
+        {
+          "line": 323,
+          "literal": "    #                                                         target_delta=privacy_args.target_delta,"
+        },
+        {
+          "line": 449,
+          "literal": "            target_delta=privacy_args.target_delta,"
+        },
+        {
+          "line": 563,
+          "literal": "            target_delta=privacy_args.target_delta,"
+        },
+        {
+          "line": 461,
+          "literal": "        privacy_args.noise_multiplier = privacy_engine.noise_multiplier"
+        },
+        {
+          "line": 575,
+          "literal": "        privacy_args.noise_multiplier = privacy_engine.noise_multiplier"
+        },
+        {
+          "line": 462,
+          "literal": "        privacy_args.target_delta = privacy_engine.target_delta"
+        },
+        {
+          "line": 576,
+          "literal": "        privacy_args.target_delta = privacy_engine.target_delta"
+        }
+      ],
+      "bytes": 28860,
+      "exact_bytes_match_pinned_git_blob": true,
+      "line_count": 627,
+      "path": "src/llm_pft/models/language_model.py",
+      "root": "pinned-dp",
+      "sha256": "b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896"
+    },
+    "dp_arguments": {
+      "anchors": [
+        {
+          "line": 10,
+          "literal": "    target_epsilon: float = field(default=-1, metadata={"
+        },
+        {
+          "line": 14,
+          "literal": "    target_delta: float = field(default=None, metadata={"
+        },
+        {
+          "line": 18,
+          "literal": "    noise_multiplier: float = field(default=None, metadata={"
+        },
+        {
+          "line": 19,
+          "literal": "        \"help\": \"[OPTIONAL] Fix a value for the noise multiplier. If value is set, target_epsilon is ignored. \""
+        },
+        {
+          "line": 26,
+          "literal": "    max_grad_norm_dp: float = field(default=1.0, metadata={"
+        },
+        {
+          "line": 22,
+          "literal": "    eps_error: float = field(default=0.1, metadata={"
+        },
+        {
+          "line": 42,
+          "literal": "    no_accountant: bool = field(default=False, metadata={"
+        }
+      ],
+      "bytes": 1357,
+      "exact_bytes_match_pinned_git_blob": true,
+      "line_count": 44,
+      "path": "src/llm_pft/arguments/privacy_args.py",
+      "root": "pinned-dp",
+      "sha256": "39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7"
+    },
+    "example_attack": {
+      "anchors": [
+        {
+          "line": 9,
+          "literal": "    return int(config[\"attack\"][\"query_budget\"])"
+        },
+        {
+          "line": 13,
+          "literal": "    observed = loss_values[:budget]"
+        }
+      ],
+      "bytes": 604,
+      "line_count": 23,
+      "path": "examples/privacy_custom_params/attack.py",
+      "root": "repository",
+      "sha256": "614947e914d8b292f28fd8731743f555057d33b92c504acc423996195efc763c"
+    },
+    "example_config": {
+      "anchors": [
+        {
+          "line": 3,
+          "literal": "  alpha: 0.25"
+        },
+        {
+          "line": 4,
+          "literal": "  delta: 1.5"
+        },
+        {
+          "line": 5,
+          "literal": "  safe_interval: [0.1, 0.9]"
+        },
+        {
+          "line": 6,
+          "literal": "  orth_loss: 0.1"
+        },
+        {
+          "line": 9,
+          "literal": "  query_budget: 1000"
+        }
+      ],
+      "bytes": 148,
+      "line_count": 9,
+      "path": "examples/privacy_custom_params/configs/privacy.yaml",
+      "root": "repository",
+      "sha256": "50eb9869d1bd80611279a3d011f58b2a196f97013671aa43fb3e143b3814b253"
+    },
+    "example_manifest": {
+      "anchors": [
+        {
+          "line": 44,
+          "literal": "privacy:"
+        },
+        {
+          "line": 49,
+          "literal": "      alpha: 0.25"
+        },
+        {
+          "line": 60,
+          "literal": "  privacy.mechanism.params.alpha:"
+        },
+        {
+          "line": 64,
+          "literal": "    alpha: 0.25"
+        },
+        {
+          "line": 50,
+          "literal": "      delta: 1.5"
+        },
+        {
+          "line": 65,
+          "literal": "    delta: 1.5"
+        },
+        {
+          "line": 51,
+          "literal": "      safe_interval: [0.1, 0.9]"
+        },
+        {
+          "line": 52,
+          "literal": "      orth_loss: 0.1"
+        },
+        {
+          "line": 63,
+          "literal": "  privacy_method:"
+        }
+      ],
+      "bytes": 1514,
+      "line_count": 66,
+      "path": "examples/privacy_custom_params/reprollm.yaml",
+      "root": "repository",
+      "sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+    },
+    "example_method": {
+      "anchors": [
+        {
+          "line": 13,
+          "literal": "def protect_hidden_state(hidden, alpha, delta, safe_interval, orth_loss):"
+        },
+        {
+          "line": 14,
+          "literal": "    noise = torch.randn_like(hidden) * alpha"
+        },
+        {
+          "line": 16,
+          "literal": "    clipped = torch.clamp(hidden, floor, ceiling)"
+        },
+        {
+          "line": 17,
+          "literal": "    return clipped + noise * (1.0 - orth_loss) + delta"
+        },
+        {
+          "line": 29,
+          "literal": "        alpha=method[\"alpha\"],"
+        },
+        {
+          "line": 30,
+          "literal": "        delta=method[\"delta\"],"
+        },
+        {
+          "line": 31,
+          "literal": "        safe_interval=method[\"safe_interval\"],"
+        },
+        {
+          "line": 32,
+          "literal": "        orth_loss=method[\"orth_loss\"],"
+        }
+      ],
+      "bytes": 1175,
+      "line_count": 39,
+      "path": "examples/privacy_custom_params/method.py",
+      "root": "repository",
+      "sha256": "a2390d6d6f1bf5a111f24175fef68bbd50210a5bf373d20e895fce4043a5c9fb"
+    },
+    "fixture_manifest": {
+      "anchors": [
+        {
+          "line": 44,
+          "literal": "privacy:"
+        },
+        {
+          "line": 49,
+          "literal": "      alpha: 0.25"
+        },
+        {
+          "line": 60,
+          "literal": "  privacy.mechanism.params.alpha:"
+        },
+        {
+          "line": 64,
+          "literal": "    alpha: 0.25"
+        },
+        {
+          "line": 50,
+          "literal": "      delta: 1.5"
+        },
+        {
+          "line": 65,
+          "literal": "    delta: 1.5"
+        },
+        {
+          "line": 51,
+          "literal": "      safe_interval: [0.1, 0.9]"
+        },
+        {
+          "line": 52,
+          "literal": "      orth_loss: 0.1"
+        },
+        {
+          "line": 63,
+          "literal": "  privacy_method:"
+        }
+      ],
+      "bytes": 1513,
+      "line_count": 65,
+      "path": "tests/fixtures/repos/privacy_custom_params/manifests/complete.yaml",
+      "root": "repository",
+      "sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+    },
+    "fixture_state": {
+      "anchors": [
+        {
+          "line": 374,
+          "literal": "    \"privacy.mechanism.params.delta\": {"
+        },
+        {
+          "line": 731,
+          "literal": "    \"privacy.mechanism.params.delta\": {"
+        },
+        {
+          "line": 1662,
+          "literal": "    \"privacy.mechanism.params.delta\": {"
+        },
+        {
+          "line": 366,
+          "literal": "    \"privacy.mechanism.params.alpha\": {"
+        },
+        {
+          "line": 723,
+          "literal": "    \"privacy.mechanism.params.alpha\": {"
+        },
+        {
+          "line": 1633,
+          "literal": "    \"privacy.mechanism.params.alpha\": {"
+        },
+        {
+          "line": 454,
+          "literal": "    \"custom.privacy_method.delta\": {"
+        },
+        {
+          "line": 875,
+          "literal": "    \"custom.privacy_method.delta\": {"
+        }
+      ],
+      "bytes": 44314,
+      "line_count": 1817,
+      "path": "tests/fixtures/repos/privacy_custom_params/expected/state_flat.json",
+      "root": "repository",
+      "sha256": "ebbe586dedc7861a46d2926150ccebe56d67ecaac2c5b277972138db3a9c41c2"
+    },
+    "followup_report": {
+      "anchors": [
+        {
+          "line": 55,
+          "literal": "| llm-dp-finetune | epsilon 8 → 4, MEDIUM | Two DP steps; clipping/noise/accountant/weights and larger B noise multiplier |"
+        },
+        {
+          "line": 59,
+          "literal": "Self-diffs are empty and threshold exits are checked. DP's epsilon leaf is"
+        },
+        {
+          "line": 60,
+          "literal": "independently required to be MEDIUM; an unrelated HIGH config hash cannot mask"
+        }
+      ],
+      "bytes": 9862,
+      "line_count": 142,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/README.md",
+      "root": "repository",
+      "sha256": "5f49f0a1042ed0a9f417a485b6de71db13b0b75e2e41e9ecdc04d298071d0924"
+    },
+    "formal_a_consumption-check": {
+      "anchors": [
+        {
+          "line": 14,
+          "literal": "  \"recorder_consumption_claim\": \"unverified; independent native observation only\","
+        },
+        {
+          "line": 7,
+          "literal": "      \"target_epsilon\": 8.0"
+        },
+        {
+          "line": 6,
+          "literal": "      \"target_delta\": 0.001,"
+        }
+      ],
+      "bytes": 450,
+      "line_count": 18,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/consumption-check.json",
+      "root": "repository",
+      "sha256": "16c5cb5053a22b859b15397a5e3dd24bc2b2ae5c3bc095e6a6e07bd65187c57b"
+    },
+    "formal_a_manifest": {
+      "anchors": [
+        {
+          "line": 28,
+          "literal": "  params: {num_train_epochs: 0.125}"
+        },
+        {
+          "line": 33,
+          "literal": "    params: {target_epsilon: 8.0, target_delta: 0.001, max_grad_norm: 1.0}"
+        },
+        {
+          "line": 43,
+          "literal": "  privacy.mechanism.params.target_epsilon: {config: 'validation/train.yaml:target_epsilon'}"
+        },
+        {
+          "line": 43,
+          "literal": "  privacy.mechanism.params.target_epsilon: {config: 'validation/train.yaml:target_epsilon'}"
+        }
+      ],
+      "bytes": 1600,
+      "line_count": 48,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml",
+      "root": "repository",
+      "sha256": "95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2"
+    },
+    "formal_a_output-check": {
+      "anchors": [
+        {
+          "line": 24,
+          "literal": "  \"target_epsilon\": 8.0,"
+        },
+        {
+          "line": 15,
+          "literal": "  \"noise_multiplier\": 0.39421386718749996,"
+        }
+      ],
+      "bytes": 777,
+      "line_count": 26,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/output-check.json",
+      "root": "repository",
+      "sha256": "491174c9ecddee712d4765daaab7d0b90725494655fad604918c3afebaf94e86"
+    },
+    "formal_b_consumption-check": {
+      "anchors": [
+        {
+          "line": 14,
+          "literal": "  \"recorder_consumption_claim\": \"unverified; independent native observation only\","
+        },
+        {
+          "line": 7,
+          "literal": "      \"target_epsilon\": 4.0"
+        },
+        {
+          "line": 6,
+          "literal": "      \"target_delta\": 0.001,"
+        }
+      ],
+      "bytes": 450,
+      "line_count": 18,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/consumption-check.json",
+      "root": "repository",
+      "sha256": "306117cbf7190534b45452c0e94722df0b47749fa13623473d4fd341c49e7e82"
+    },
+    "formal_b_manifest": {
+      "anchors": [
+        {
+          "line": 28,
+          "literal": "  params: {num_train_epochs: 0.125}"
+        },
+        {
+          "line": 33,
+          "literal": "    params: {target_epsilon: 4.0, target_delta: 0.001, max_grad_norm: 1.0}"
+        },
+        {
+          "line": 43,
+          "literal": "  privacy.mechanism.params.target_epsilon: {config: 'validation/train.yaml:target_epsilon'}"
+        },
+        {
+          "line": 43,
+          "literal": "  privacy.mechanism.params.target_epsilon: {config: 'validation/train.yaml:target_epsilon'}"
+        }
+      ],
+      "bytes": 1600,
+      "line_count": 48,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/manifest.yaml",
+      "root": "repository",
+      "sha256": "6bd599ba0d45e57193cc9a9fcfcf3a05b656c9cf258fe5c5c30d7a2449415258"
+    },
+    "formal_b_output-check": {
+      "anchors": [
+        {
+          "line": 24,
+          "literal": "  \"target_epsilon\": 4.0,"
+        },
+        {
+          "line": 15,
+          "literal": "  \"noise_multiplier\": 0.5475097656250001,"
+        }
+      ],
+      "bytes": 777,
+      "line_count": 26,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/output-check.json",
+      "root": "repository",
+      "sha256": "6d733f3ad0820958ee5fd871707a5bd825adf29e521dc36ac3d544a06a86e10b"
+    },
+    "formal_config_a": {
+      "anchors": [
+        {
+          "line": 9,
+          "literal": "target_epsilon: 8.0"
+        },
+        {
+          "line": 10,
+          "literal": "target_delta: 0.001"
+        },
+        {
+          "line": 11,
+          "literal": "max_grad_norm: 1.0"
+        }
+      ],
+      "bytes": 274,
+      "line_count": 12,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951",
+      "root": "repository",
+      "sha256": "ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+    },
+    "formal_config_b": {
+      "anchors": [
+        {
+          "line": 9,
+          "literal": "target_epsilon: 4.0"
+        },
+        {
+          "line": 10,
+          "literal": "target_delta: 0.001"
+        },
+        {
+          "line": 11,
+          "literal": "max_grad_norm: 1.0"
+        }
+      ],
+      "bytes": 274,
+      "line_count": 12,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/files/5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c",
+      "root": "repository",
+      "sha256": "5e659c0ce65e4d77f6249e7e646c9ec35adc36a983d4f32518312fae83deaf6c"
+    },
+    "formal_entry": {
+      "anchors": [
+        {
+          "line": 87,
+          "literal": "privacy_args = PrivacyArgs(target_epsilon=config['target_epsilon'], target_delta=config['target_delta'], max_grad_norm_dp=config['max_grad_norm'])"
+        },
+        {
+          "line": 85,
+          "literal": "train_args = TrainerArgs(output_dir=config['output_dir'], max_steps=config['max_steps'], num_train_epochs=0.125, per_device_train_batch_size=config['batch_size'], gradient_accumulation_steps=config['gradient_accumulation'], learning_rate=config['learning_rate'], limit_eval_dataset=2, remove_unused_columns=False, logging_steps=1, report_to=[], save_strategy='no', evaluation_strategy='no', dataloader_num_workers=0, seed=config['seed'], data_seed=config['seed'], fp16=False, bf16=False, disable_tqdm=True, optim='adamw_torch')"
+        },
+        {
+          "line": 92,
+          "literal": "    model._fine_tune_fast_dp(data, data, train_args, privacy_args, extra_callbacks=[LossObserver()])"
+        },
+        {
+          "line": 106,
+          "literal": "spent = {key: float(value) for key, value in engine.get_privacy_spent().items()}"
+        },
+        {
+          "line": 108,
+          "literal": "result = dict(schema_version=1, scenario='supplementary-public-single-gpu-dp', model_id=config['model_id'], model_revision=config['model_revision'], steps=engine.steps, intended_parameter_tensors=len(intended_names), covered_parameter_tensors=len(engine.named_params), initial_parameters_sha256=initial_hash, final_parameters_sha256=final_hash, target_epsilon=config['target_epsilon'], noise_multiplier=engine.noise_multiplier, privacy_spent=spent, **observations)"
+        }
+      ],
+      "bytes": 5629,
+      "line_count": 110,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a",
+      "root": "repository",
+      "sha256": "21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a"
+    },
+    "formal_pair": {
+      "anchors": [
+        {
+          "line": 37,
+          "literal": "      \"path\": \"privacy.mechanism.params.target_epsilon\","
+        },
+        {
+          "line": 89,
+          "literal": "      \"field\": \"privacy.mechanism.params.target_epsilon\","
+        },
+        {
+          "line": 95,
+          "literal": "      \"field\": \"privacy.mechanism.params.target_epsilon\","
+        },
+        {
+          "line": 28,
+          "literal": "      \"path\": \"files.validation/train.yaml.sha256\","
+        },
+        {
+          "line": 38,
+          "literal": "      \"severity\": \"MEDIUM\","
+        },
+        {
+          "line": 47,
+          "literal": "      \"severity\": \"MEDIUM\","
+        },
+        {
+          "line": 29,
+          "literal": "      \"severity\": \"HIGH\","
+        }
+      ],
+      "bytes": 2969,
+      "line_count": 107,
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/pair-check.json",
+      "root": "repository",
+      "sha256": "5dd6262f7836dbb6a8712a6ae2fe32e0092c16fa6b681fa296e04b23b783b1e4"
+    },
+    "m5_second": {
+      "anchors": [
+        {
+          "line": 161,
+          "literal": "for the first run and `0` for the second. `custom.privacy.alpha` is declared"
+        },
+        {
+          "line": 159,
+          "literal": "The bounded child prints its run ID and a synthetic HF token; it does no model"
+        },
+        {
+          "line": 159,
+          "literal": "The bounded child prints its run ID and a synthetic HF token; it does no model"
+        }
+      ],
+      "bytes": 12739,
+      "line_count": 223,
+      "path": "docs/dogfooding/m5-second-half.md",
+      "root": "repository",
+      "sha256": "3c966798c39d6d7de03326b383e359147a7b9d4c6ed0307151aa4dda8726af92"
+    },
+    "m6_first": {
+      "anchors": [
+        {
+          "line": 86,
+          "literal": "  privacy fixtures. They do not claim model/API execution."
+        },
+        {
+          "line": 117,
+          "literal": "| llm-dp-finetune | `7f8b5dff4b92aae90ceccce3ec959b48307bed9e` | 0.292 | 2.276 | 0 |"
+        }
+      ],
+      "bytes": 10594,
+      "line_count": 180,
+      "path": "docs/dogfooding/m6-first-half.md",
+      "root": "repository",
+      "sha256": "9b042cd982a28231d17166b4ea97de5c0c2592522d133898cdf4f7be9d19ead7"
+    },
+    "manifest_schema": {
+      "anchors": [
+        {
+          "line": 281,
+          "literal": "class MechanismSpec(BaseModel):"
+        },
+        {
+          "line": 288,
+          "literal": "class AttackSpec(BaseModel):"
+        },
+        {
+          "line": 296,
+          "literal": "class Privacy(BaseModel):"
+        },
+        {
+          "line": 128,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 136,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 216,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 239,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 247,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 285,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 292,
+          "literal": "    params: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 350,
+          "literal": "    custom: dict[str, Any] = Field(default_factory=dict)"
+        },
+        {
+          "line": 445,
+          "literal": "def validate_field_path(path: str) -> None:"
+        }
+      ],
+      "bytes": 16741,
+      "line_count": 509,
+      "path": "src/reprollm/schemas/manifest.py",
+      "root": "repository",
+      "sha256": "623f94fb62cbd6fef4415d5c10ab48e083ddacb3e21bd5ba2bf3cbb2bf109c90"
+    },
+    "old_discover": {
+      "anchors": [
+        {
+          "line": 81,
+          "literal": "`field: custom.privacy.max_grad_norm_dp`, and no bindings. The rule ID was"
+        },
+        {
+          "line": 85,
+          "literal": "The operator then explicitly declared `custom.privacy.max_grad_norm_dp: 1.0`"
+        },
+        {
+          "line": 87,
+          "literal": "AST default at line 26. This is validation intent, not a claim that a real training"
+        },
+        {
+          "line": 82,
+          "literal": "`project.max_grad_norm_dp`, severity WARNING. With the field absent, audit exited"
+        },
+        {
+          "line": 83,
+          "literal": "0 under `--fail-on never` and emitted FAIL/WARNING with `severity_origin: project_rule`."
+        },
+        {
+          "line": 100,
+          "literal": "| Audit missing field | 0 / 0 | FAIL / WARNING | 0.156 |"
+        },
+        {
+          "line": 107,
+          "literal": "(CRITICAL/WARNING/INFO/PASS/SKIPPED); this does not claim that the entire experiment"
+        }
+      ],
+      "bytes": 10461,
+      "line_count": 175,
+      "path": "docs/dogfooding/2026-10-01-discover-live.md",
+      "root": "repository",
+      "sha256": "9436bf15503e3f1e22b904a75b0c93d9b09ce68f3092747260eb3a30aa9b4a9c"
+    },
+    "plan": {
+      "anchors": [
+        {
+          "line": 233,
+          "literal": "## 7. R08-B：privacy / training 自由参数风险分级"
+        },
+        {
+          "line": 241,
+          "literal": "3. 优先分析 `privacy.mechanism.params.target_epsilon` 等已用于真实 paired run 的字段。保持历史 formal DP epsilon 8 → 4 的 MEDIUM 记录，未来变化另立 gold 补充。"
+        }
+      ],
+      "bytes": 20459,
+      "line_count": 258,
+      "path": "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md",
+      "root": "repository",
+      "sha256": "2830f645d5d4c26a75120d5924de173a825c9e272f5dae4d2136fd2a158404e7"
+    },
+    "privacy_profile": {
+      "anchors": [
+        {
+          "line": 5,
+          "literal": "extends: [core]"
+        },
+        {
+          "line": 15,
+          "literal": "drift_overrides: {}"
+        },
+        {
+          "line": 13,
+          "literal": "  - privacy.mechanism.name"
+        }
+      ],
+      "bytes": 598,
+      "line_count": 20,
+      "path": "src/reprollm/profiles/privacy.yaml",
+      "root": "repository",
+      "sha256": "9e8d11781317bd05da7e574dc3220798e6f9090c26ad917e8f0877de53f37c3b"
+    },
+    "privacy_rules": {
+      "anchors": [
+        {
+          "line": 12,
+          "literal": "class ThreatModelDeclaredRule(PresenceRule):"
+        },
+        {
+          "line": 32,
+          "literal": "class MechanismDeclaredRule(PresenceRule):"
+        },
+        {
+          "line": 61,
+          "literal": "class MetricsDeclaredRule(PresenceRule):"
+        },
+        {
+          "line": 77,
+          "literal": "class AttackConfigDeclaredRule(PresenceRule):"
+        },
+        {
+          "line": 15,
+          "literal": "    default_severity = Severity.CRITICAL"
+        },
+        {
+          "line": 35,
+          "literal": "    default_severity = Severity.CRITICAL"
+        },
+        {
+          "line": 64,
+          "literal": "    default_severity = Severity.WARNING"
+        },
+        {
+          "line": 80,
+          "literal": "    default_severity = Severity.WARNING"
+        },
+        {
+          "line": 37,
+          "literal": "    fix_hint = \"Set privacy.mechanism.name and nonempty privacy.mechanism.params in reprollm.yaml.\""
+        },
+        {
+          "line": 47,
+          "literal": "                \"privacy.mechanism.params\": mechanism.params"
+        },
+        {
+          "line": 54,
+          "literal": "                if item.field == \"privacy.mechanism.params\":"
+        },
+        {
+          "line": 82,
+          "literal": "    fix_hint = \"Set privacy.attack.method and privacy.attack.query_budget in reprollm.yaml.\""
+        },
+        {
+          "line": 96,
+          "literal": "                \"privacy.attack.query_budget\": attack.query_budget,"
+        }
+      ],
+      "bytes": 3602,
+      "line_count": 98,
+      "path": "src/reprollm/rules/privacy.py",
+      "root": "repository",
+      "sha256": "34fe77a6b3b89a6d8414b297fbd408bd42f84cdd43081cdc11df5d1e3b35a4b4"
+    },
+    "profile_loader": {
+      "anchors": [
+        {
+          "line": 207,
+          "literal": "        drift_overrides.update(profile.drift_overrides)"
+        }
+      ],
+      "bytes": 8108,
+      "line_count": 226,
+      "path": "src/reprollm/profiles/loader.py",
+      "root": "repository",
+      "sha256": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758"
+    },
+    "profile_schema": {
+      "anchors": [
+        {
+          "line": 18,
+          "literal": "DriftSeverity = Literal[\"HIGH\", \"MEDIUM_HIGH\", \"MEDIUM\", \"LOW\", \"NONE\"]"
+        },
+        {
+          "line": 50,
+          "literal": "    drift_overrides: dict[str, DriftSeverity] = Field(default_factory=dict)"
+        }
+      ],
+      "bytes": 1949,
+      "line_count": 51,
+      "path": "src/reprollm/schemas/profile.py",
+      "root": "repository",
+      "sha256": "a14765775c8b258695ec87d7b8b3087587076ecade49732cba0e72e421c73b9b"
+    },
+    "runtime_gold": {
+      "anchors": [
+        {
+          "line": 47,
+          "literal": "| supplementary DP | target epsilon 8 → 4, recalibrated noise | `privacy.mechanism.params.target_epsilon` | **MEDIUM** |"
+        },
+        {
+          "line": 262,
+          "literal": "Privacy arguments: `target_epsilon: 8.0` versus `4.0`, explicit identical"
+        },
+        {
+          "line": 263,
+          "literal": "`target_delta`, `noise_multiplier: null`, `max_grad_norm_dp: 1.0`. The original"
+        },
+        {
+          "line": 264,
+          "literal": "method maps these to the fastDP engine's `target_epsilon`, `target_delta`,"
+        },
+        {
+          "line": 366,
+          "literal": "  requested `max_steps=2`. Sixteen synthetic texts, `target_delta=0.001` and"
+        },
+        {
+          "line": 263,
+          "literal": "`target_delta`, `noise_multiplier: null`, `max_grad_norm_dp: 1.0`. The original"
+        },
+        {
+          "line": 367,
+          "literal": "  `max_grad_norm_dp=1.0` are explicit; the loss/step/coverage/noise/weight-change"
+        },
+        {
+          "line": 296,
+          "literal": "Bind the actual config epsilon to `privacy.mechanism.params.target_epsilon`."
+        },
+        {
+          "line": 365,
+          "literal": "  computes `ceil(0.125 / (1/16)) = 2` calibration steps, agreeing with actual"
+        },
+        {
+          "line": 409,
+          "literal": "these validation-only commits. The DP semantic epsilon leaf remains MEDIUM under"
+        }
+      ],
+      "bytes": 38618,
+      "line_count": 567,
+      "path": "docs/dogfooding/m5-m6-runtime-gold.md",
+      "root": "repository",
+      "sha256": "b0ae373a614b1fce5bc48325e3ecda5a3c8c0d804670984624e404a0249f9dee"
+    },
+    "schema_tests": {
+      "anchors": [
+        {
+          "line": 165,
+          "literal": "        \"privacy.mechanism.params.alpha\","
+        },
+        {
+          "line": 162,
+          "literal": "        \"custom.privacy_method.alpha\","
+        },
+        {
+          "line": 287,
+          "literal": "def test_custom_accepts_arbitrary_structure() -> None:"
+        }
+      ],
+      "bytes": 13644,
+      "line_count": 408,
+      "path": "tests/unit/schemas/test_manifest.py",
+      "root": "repository",
+      "sha256": "227ad871b703bc0a014f7fb6f2fbd741cc9ea89fc4b47c9ef30b07c91635cc6f"
+    },
+    "severity": {
+      "anchors": [
+        {
+          "line": 41,
+          "literal": "def matches(pattern: str, path: str) -> bool:"
+        },
+        {
+          "line": 45,
+          "literal": "    expression = re.escape(pattern).replace(r\"\\*\", r\"[^.]+\")"
+        },
+        {
+          "line": 61,
+          "literal": "            for path, severity in (profile_overrides or {}).items()"
+        },
+        {
+          "line": 68,
+          "literal": "            (rule.severity for rule in self.rules if matches(rule.path, path)), self.table.default"
+        }
+      ],
+      "bytes": 3135,
+      "line_count": 90,
+      "path": "src/reprollm/diff/severity.py",
+      "root": "repository",
+      "sha256": "c907ddb66a35b7420c4b8805a47a2b427425aec06e1654c8970d7939fd864483"
+    },
+    "severity_table": {
+      "anchors": [
+        {
+          "line": 2,
+          "literal": "default: MEDIUM"
+        },
+        {
+          "line": 34,
+          "literal": "  - { path: \"privacy.*\",                           severity: HIGH }"
+        },
+        {
+          "line": 35,
+          "literal": "  - { path: \"custom.*\",                            severity: MEDIUM }"
+        },
+        {
+          "line": 28,
+          "literal": "  - { path: \"training.*\",                          severity: HIGH }"
+        },
+        {
+          "line": 36,
+          "literal": "  - { path: \"files.*.sha256\",                      severity: HIGH }"
+        }
+      ],
+      "bytes": 3649,
+      "line_count": 55,
+      "path": "src/reprollm/diff/drift_severity.yaml",
+      "root": "repository",
+      "sha256": "ff45045d1f3c3bd8cf2dfa46c2fe26950e5111c2b16ec5b12e612493130dae01"
+    },
+    "severity_tests": {
+      "anchors": [
+        {
+          "line": 151,
+          "literal": "        (\"privacy.mechanism.params.target_epsilon\", \"MEDIUM\"),"
+        },
+        {
+          "line": 109,
+          "literal": "        profile_overrides={\"generation.*\": \"LOW\", \"generation.seed\": \"HIGH\"}"
+        },
+        {
+          "line": 160,
+          "literal": "@pytest.mark.parametrize(\"override\", [\"LOW\", \"NONE\"])"
+        }
+      ],
+      "bytes": 7394,
+      "line_count": 173,
+      "path": "tests/unit/diff/test_severity.py",
+      "root": "repository",
+      "sha256": "c8939e07c0686e50420d0e9573c6aca2fae1c9e2744e772c148be6ac0aff8632"
+    },
+    "spec": {
+      "anchors": [
+        {
+          "line": 1391,
+          "literal": "Flatten both; for each path in the union: `same | changed | added | removed`. Severity from `drift_severity.yaml`: first matching pattern in file order wins; profile `drift_overrides` are prepended. Package versions (`environment.packages.*`, `inference.version`) are compared with `packaging.version`: differing major/minor → the listed severity; differing patch only → one level lower (min LOW). `code.commit` changed is reported as `MEDIUM` with note \"code changed\" unless `code.dirty` is true on either side (→ HIGH). Paths matching no pattern → `MEDIUM`."
+        },
+        {
+          "line": 1393,
+          "literal": "Equality means equality of recorded effective values within the stated"
+        },
+        {
+          "line": 1405,
+          "literal": "remain before defaults in first-match order, including explicit LOW/NONE. A direct"
+        },
+        {
+          "line": 1486,
+          "literal": "semantics, with duplicate names removed. The current project's profile files"
+        }
+      ],
+      "bytes": 121172,
+      "line_count": 1724,
+      "path": "docs/plan/01_specification.md",
+      "root": "repository",
+      "sha256": "321b1c5ac854796aad6e1b0ff4daf9eed1b033c2ce9b82347a47d4ab78c9f45a"
+    },
+    "state_projection": {
+      "anchors": [
+        {
+          "line": 54,
+          "literal": "def _project(value: Any, path: str, source: Any, result: dict[str, Leaf]) -> None:"
+        },
+        {
+          "line": 64,
+          "literal": "    elif isinstance(value, dict):"
+        },
+        {
+          "line": 67,
+          "literal": "    elif value is not None:"
+        },
+        {
+          "line": 103,
+          "literal": "def from_manifest(manifest: Manifest) -> State:"
+        },
+        {
+          "line": 150,
+          "literal": "def from_run(run: RunRecord, *, run_dir: Path | None = None) -> State:"
+        },
+        {
+          "line": 159,
+          "literal": "                        leaf.context = input_context(run, \"file\")"
+        },
+        {
+          "line": 191,
+          "literal": "            context=input_context(run, \"file\"),"
+        }
+      ],
+      "bytes": 11708,
+      "line_count": 301,
+      "path": "src/reprollm/diff/state.py",
+      "root": "repository",
+      "sha256": "ef2356df5363a65420bab25156eea9816fe8b447b34c3ca2e7118ce9af13b5e2"
+    },
+    "state_schema": {
+      "anchors": [
+        {
+          "line": 23,
+          "literal": "class Leaf(BaseModel):"
+        },
+        {
+          "line": 38,
+          "literal": "class State(BaseModel):"
+        },
+        {
+          "line": 54,
+          "literal": "    privacy: Branch = Field(default_factory=Branch)"
+        },
+        {
+          "line": 56,
+          "literal": "    custom: Branch = Field(default_factory=Branch)"
+        },
+        {
+          "line": 101,
+          "literal": "    def flatten(self) -> dict[str, Leaf]:"
+        }
+      ],
+      "bytes": 3936,
+      "line_count": 115,
+      "path": "src/reprollm/schemas/state.py",
+      "root": "repository",
+      "sha256": "f8426b85334971fc4d0120c865edf1c60210ee75d90addbed72bd063e242eb75"
+    },
+    "state_tests": {
+      "anchors": [
+        {
+          "line": 18,
+          "literal": "FIXTURE_NAMES = (\"hf_vllm_eval\", \"openai_judge_eval\", \"privacy_custom_params\")"
+        },
+        {
+          "line": 53,
+          "literal": "@pytest.mark.parametrize(\"name\", FIXTURE_NAMES)"
+        },
+        {
+          "line": 54,
+          "literal": "def test_three_document_projections(name: str, tmp_path: Path) -> None:"
+        }
+      ],
+      "bytes": 8604,
+      "line_count": 201,
+      "path": "tests/unit/diff/test_state.py",
+      "root": "repository",
+      "sha256": "3588d72999c37be87d4089407337f371dc6815e854ae9f4db7a812e32007201e"
+    },
+    "val": {
+      "anchors": [
+        {
+          "line": 441,
+          "literal": "| llm-dp-finetune | `python validation/train_entry.py` | Original single-GPU fastDP method, public DistilGPT2, 16 synthetic texts, 2 updates; target epsilon 8 → 4; `privacy.mechanism.params.target_epsilon` MEDIUM under current policy |"
+        },
+        {
+          "line": 772,
+          "literal": "- `PrivacyArgs`, sent from `src/llm_pft/arguments/privacy_args.py#L7`, declares"
+        },
+        {
+          "line": 774,
+          "literal": "  `eps_error` (22), and `max_grad_norm_dp` (26). At least one candidate must have"
+        },
+        {
+          "line": 794,
+          "literal": "returned ten candidates, and the independently reviewed `max_grad_norm_dp`"
+        },
+        {
+          "line": 441,
+          "literal": "| llm-dp-finetune | `python validation/train_entry.py` | Original single-GPU fastDP method, public DistilGPT2, 16 synthetic texts, 2 updates; target epsilon 8 → 4; `privacy.mechanism.params.target_epsilon` MEDIUM under current policy |"
+        },
+        {
+          "line": 718,
+          "literal": "  16 synthetic texts, 2 optimizer updates, target epsilon 8 → 4"
+        }
+      ],
+      "bytes": 55753,
+      "line_count": 842,
+      "path": "val.md",
+      "root": "repository",
+      "sha256": "3313fc33e04426628fec7bf4214452b1dd283b886ff7bbc5bd9296e7de8181e8"
+    }
+  },
+  "status": "R08_B_P_A_INVENTORY_PROPOSED_ONLY"
+}

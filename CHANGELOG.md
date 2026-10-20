@@ -27,6 +27,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- P-A / R08-B (spec §18): inventory actual privacy/training free-form fields,
+  prepare four exact default-HIGH paths with source mappings, compatibility,
+  independent conditional experiments and unapplied default/spec/test/gold
+  patches. The concrete policy is PROPOSED; current severities, schema,
+  historical records and release behavior remain unchanged.
+
 - P-A / R07-C (spec §§11–13): prepare all-rule evidence, eleven original-policy
   observations, complete five-project conditional comparisons, and unapplied
   specification/engine patches for a bounded two-rule synthetic-PASS veto.

@@ -1,0 +1,41 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -1406,6 +1406,21 @@
+ judge-parameter change alone can therefore make explicit `--fail-on HIGH` exit 1;
+ omitting `--fail-on` still reports without a drift-triggered nonzero exit.
+ 
++The exact flattened paths `privacy.mechanism.params.target_epsilon`,
++`privacy.mechanism.params.target_delta`, `privacy.mechanism.params.max_grad_norm`
++and `training.params.num_train_epochs` use HIGH for changed, added and removed
++values (R08-B A4). No alias, prefix, recursive wildcard or other parameter path
++is added. This is the default comparison policy for recorded experimental values;
++it does not compute a privacy guarantee, verify child consumption, or establish
++that each change affected execution. Non-null explicit noise may bypass epsilon
++calibration; an epoch horizon may affect calibration even when max_steps limits
++training. Value validation, State flattening and source precedence remain unchanged.
++The existing first-match profile overrides still precede defaults, including
++winning LOW/NONE entries. Any one of these leaves alone can make explicit
++`--fail-on HIGH` exit 1; the default without --fail-on still exits 0 for drift.
++Historical reports retain their original severities; new comparisons of supported
++old inputs use the current policy without rewriting those inputs or reports.
++
+ ### 18.2 `drift_severity.yaml` (initial contents)
+ 
+ ```yaml
+@@ -1436,12 +1451,16 @@
+   - { path: "inference.tensor_parallel_size",      severity: MEDIUM }
+   - { path: "inference.max_model_len",             severity: MEDIUM }
+   - { path: "inference.gpu_memory_utilization",    severity: LOW }
++  - { path: "training.params.num_train_epochs",      severity: HIGH }
+   - { path: "training.*",                          severity: HIGH }
+   - { path: "evaluation.judge.params.*",           severity: HIGH }
+   - { path: "evaluation.judge.*",                  severity: HIGH }
+   - { path: "evaluation.metrics",                  severity: HIGH }
+   - { path: "evaluation.definitions.*",            severity: HIGH }
+   - { path: "evaluation.*",                        severity: MEDIUM_HIGH }
++  - { path: "privacy.mechanism.params.max_grad_norm", severity: HIGH }
++  - { path: "privacy.mechanism.params.target_delta",  severity: HIGH }
++  - { path: "privacy.mechanism.params.target_epsilon", severity: HIGH }
+   - { path: "privacy.*",                           severity: HIGH }
+   - { path: "custom.*",                            severity: MEDIUM }
+   - { path: "files.*.sha256",                      severity: HIGH }

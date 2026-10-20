@@ -1,0 +1,19 @@
+--- a/src/reprollm/diff/drift_severity.yaml
++++ b/src/reprollm/diff/drift_severity.yaml
+@@ -25,12 +25,16 @@
+   - { path: "inference.tensor_parallel_size",      severity: MEDIUM }
+   - { path: "inference.max_model_len",             severity: MEDIUM }
+   - { path: "inference.gpu_memory_utilization",    severity: LOW }
++  - { path: "training.params.num_train_epochs",      severity: HIGH }
+   - { path: "training.*",                          severity: HIGH }
+   - { path: "evaluation.judge.params.*",           severity: HIGH }
+   - { path: "evaluation.judge.*",                  severity: HIGH }
+   - { path: "evaluation.metrics",                  severity: HIGH }
+   - { path: "evaluation.definitions.*",            severity: HIGH }
+   - { path: "evaluation.*",                        severity: MEDIUM_HIGH }
++  - { path: "privacy.mechanism.params.max_grad_norm", severity: HIGH }
++  - { path: "privacy.mechanism.params.target_delta",  severity: HIGH }
++  - { path: "privacy.mechanism.params.target_epsilon", severity: HIGH }
+   - { path: "privacy.*",                           severity: HIGH }
+   - { path: "custom.*",                            severity: MEDIUM }
+   - { path: "files.*.sha256",                      severity: HIGH }

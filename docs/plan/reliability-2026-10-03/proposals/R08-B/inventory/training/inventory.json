@@ -1,0 +1,1574 @@
+{
+  "actual_training_freeform_candidates": [
+    {
+      "capture_limit": "The manifest declares this field but no runtime binding is declared for it; the archived entry source corroborates the fixed constructor constant. This is not a bindings_observed or child-verification claim.",
+      "comparability_reason": "Pinned native implementation uses train_args.num_train_epochs for planned update count and PrivacyEngine noise calibration (epochs); changing the declared/source value can change training or privacy calibration even if max_steps remains fixed.",
+      "current": {
+        "matched_pattern": null,
+        "severity": "MEDIUM"
+      },
+      "evidence": [
+        {
+          "lines": [
+            18,
+            28
+          ],
+          "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml"
+        },
+        {
+          "lines": [
+            85,
+            92
+          ],
+          "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a"
+        },
+        {
+          "lines": [
+            64,
+            69
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py"
+        },
+        {
+          "lines": [
+            426,
+            448
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/models/language_model.py"
+        },
+        {
+          "lines": [
+            1,
+            299
+          ],
+          "purpose": "run file identity and snapshot hash binding",
+          "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/run.json"
+        }
+      ],
+      "historical_pair": "A and B have the same num_train_epochs 0.125. No retrospective report change is needed or authorized. Any future changed-field gold must be separately reviewed.",
+      "kind": "observed_actual_manifest_freeform_leaf",
+      "meaning": "Number of training epochs supplied to the native TrainerArgs; this validation uses fractional 0.125 epochs",
+      "path": "training.params.num_train_epochs",
+      "policy_decision_required": true,
+      "proposed_severity": "HIGH",
+      "recommendation": "PROPOSE_EXACT_HIGH_ONLY_OR_DEFER_TRAINING_SUBSET",
+      "typed_relation": "training.epochs is a distinct existing int field already HIGH. This inventory does not alias, migrate, normalize, change schema, or repair the spec sketch number-vs-int mismatch.",
+      "user_override": {
+        "drift_overrides_LOW": {
+          "training.params.num_train_epochs": "LOW"
+        },
+        "drift_overrides_NONE": {
+          "training.params.num_train_epochs": "NONE"
+        },
+        "extends": [
+          "finetuning"
+        ],
+        "precedence": "profile overrides are prepended; first matching rule wins; inherited exact-key child values replace parent values",
+        "profile_location": ".reprollm/profiles/<chosen_name>.yaml",
+        "profile_must_be_selected": true
+      }
+    }
+  ],
+  "artificial_test_controls": [
+    {
+      "current": {
+        "matched_pattern": null,
+        "severity": "MEDIUM"
+      },
+      "evidence": [
+        {
+          "lines": [
+            330,
+            355
+          ],
+          "source": "ReproLLM:tests/unit/cli/test_run_preflight.py"
+        }
+      ],
+      "path": "training.params.x",
+      "recommendation": "KEEP_MEDIUM; synthetic unbound-declaration test control has no shared experimental meaning"
+    }
+  ],
+  "base_commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+  "corpus": {
+    "actual_training_freeform_observations": [
+      {
+        "binding_declared": false,
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "evidence": {
+          "lines": [
+            28,
+            28
+          ],
+          "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml"
+        },
+        "path": "training.params.num_train_epochs",
+        "value": 0.125
+      },
+      {
+        "binding_declared": false,
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "evidence": {
+          "lines": [
+            28,
+            28
+          ],
+          "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/manifest.yaml"
+        },
+        "path": "training.params.num_train_epochs",
+        "value": 0.125
+      }
+    ],
+    "manifest_count": 20,
+    "manifests": [
+      {
+        "category": "example",
+        "source": "ReproLLM:examples/hf_vllm_eval/reprollm.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "example",
+        "source": "ReproLLM:examples/lm_eval_replay/reprollm.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "example",
+        "source": "ReproLLM:examples/openai_judge_eval/reprollm.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "example",
+        "source": "ReproLLM:examples/privacy_custom_params/reprollm.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/hf_vllm_eval/manifests/complete.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/hf_vllm_eval/manifests/gaps.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/openai_judge_eval/manifests/complete.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/openai_judge_eval/manifests/gaps.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/privacy_custom_params/manifests/complete.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "fixture_manifest",
+        "source": "ReproLLM:tests/fixtures/repos/privacy_custom_params/manifests/gaps.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/a/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/b/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/a/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/b/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/a/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": [
+          "training.batch_size",
+          "training.epochs",
+          "training.gradient_accumulation",
+          "training.learning_rate",
+          "training.max_steps",
+          "training.method",
+          "training.optimizer",
+          "training.precision",
+          "training.scheduler",
+          "training.seed"
+        ]
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/b/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": [
+          "training.batch_size",
+          "training.epochs",
+          "training.gradient_accumulation",
+          "training.learning_rate",
+          "training.max_steps",
+          "training.method",
+          "training.optimizer",
+          "training.precision",
+          "training.scheduler",
+          "training.seed"
+        ]
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml",
+        "training_freeform_leaf_paths": [
+          "training.params.num_train_epochs"
+        ],
+        "training_nonnull_leaf_paths": [
+          "training.batch_size",
+          "training.gradient_accumulation",
+          "training.learning_rate",
+          "training.max_steps",
+          "training.method",
+          "training.optimizer",
+          "training.params.num_train_epochs",
+          "training.precision",
+          "training.scheduler",
+          "training.seed"
+        ]
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/manifest.yaml",
+        "training_freeform_leaf_paths": [
+          "training.params.num_train_epochs"
+        ],
+        "training_nonnull_leaf_paths": [
+          "training.batch_size",
+          "training.gradient_accumulation",
+          "training.learning_rate",
+          "training.max_steps",
+          "training.method",
+          "training.optimizer",
+          "training.params.num_train_epochs",
+          "training.precision",
+          "training.scheduler",
+          "training.seed"
+        ]
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/a/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      },
+      {
+        "category": "runtime_snapshot",
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/b/run/manifest.yaml",
+        "training_freeform_leaf_paths": [],
+        "training_nonnull_leaf_paths": []
+      }
+    ],
+    "runtime_manifest_count": 10
+  },
+  "finetuning_profile_evidence": [
+    {
+      "lines": [
+        1,
+        24
+      ],
+      "source": "ReproLLM:src/reprollm/profiles/finetuning.yaml"
+    }
+  ],
+  "independent_four_exact_path_review": {
+    "decision_state": "PENDING_SPECIFIC_MAINTAINER_ACCEPTANCE",
+    "evidence": [
+      {
+        "lines": [
+          85,
+          92
+        ],
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a"
+      },
+      {
+        "lines": [
+          9,
+          11
+        ],
+        "source": "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+      },
+      {
+        "lines": [
+          10,
+          27
+        ],
+        "source": "llm-dp-finetune:src/llm_pft/arguments/privacy_args.py"
+      },
+      {
+        "lines": [
+          441,
+          449
+        ],
+        "source": "llm-dp-finetune:src/llm_pft/models/language_model.py"
+      }
+    ],
+    "limitations": [
+      "Risk classification is not causal outcome proof or privacy verification.",
+      "Fixed noise_multiplier can override target_epsilon, as the pinned PrivacyArgs explicitly documents.",
+      "max_steps can set actual training stop, but native PrivacyEngine still receives fractional num_train_epochs for calibration.",
+      "training.params.num_train_epochs has no binding; declaration plus captured source constant must not be described as bindings_observed.",
+      "Raw config max_grad_norm is explicitly mapped to PrivacyArgs.max_grad_norm_dp and PrivacyEngine.max_grad_norm; field names are not automatically interchangeable.",
+      "No recursive wildcard or blanket params promotion; user profiles retain original first-match and exact-key child override semantics; broader earlier patterns can still win.",
+      "Keep all historical reports byte-identical; any future changed-field gold is a separately reviewed supplement."
+    ],
+    "proposed_paths": [
+      {
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "path": "privacy.mechanism.params.target_epsilon",
+        "proposed_severity": "HIGH"
+      },
+      {
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "path": "privacy.mechanism.params.target_delta",
+        "proposed_severity": "HIGH"
+      },
+      {
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "path": "privacy.mechanism.params.max_grad_norm",
+        "proposed_severity": "HIGH"
+      },
+      {
+        "current": {
+          "matched_pattern": null,
+          "severity": "MEDIUM"
+        },
+        "path": "training.params.num_train_epochs",
+        "proposed_severity": "HIGH"
+      }
+    ],
+    "result": "NO_BLOCKING_COUNTEREVIDENCE_FOR_PREPARING_EXACT_PATH_PROPOSAL"
+  },
+  "method": "Read committed files only; independently evaluate existing ordered single-segment patterns without importing or running ReproLLM, tests, network, GPU or credentials.",
+  "override_evidence": [
+    {
+      "lines": [
+        32,
+        50
+      ],
+      "source": "ReproLLM:src/reprollm/schemas/profile.py"
+    },
+    {
+      "lines": [
+        194,
+        207
+      ],
+      "source": "ReproLLM:src/reprollm/profiles/loader.py"
+    },
+    {
+      "lines": [
+        33,
+        43
+      ],
+      "source": "ReproLLM:src/reprollm/cli/diff.py"
+    },
+    {
+      "lines": [
+        628,
+        646
+      ],
+      "source": "ReproLLM:docs/plan/01_specification.md"
+    }
+  ],
+  "phase": "P-A_TRAINING_INVENTORY",
+  "policy_evidence": [
+    {
+      "lines": [
+        225,
+        239
+      ],
+      "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+    },
+    {
+      "lines": [
+        452,
+        470
+      ],
+      "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+    },
+    {
+      "lines": [
+        54,
+        72
+      ],
+      "source": "ReproLLM:src/reprollm/diff/state.py"
+    },
+    {
+      "lines": [
+        41,
+        68
+      ],
+      "source": "ReproLLM:src/reprollm/diff/severity.py"
+    },
+    {
+      "lines": [
+        1,
+        35
+      ],
+      "source": "ReproLLM:src/reprollm/diff/drift_severity.yaml"
+    }
+  ],
+  "recommendation": {
+    "excluded": "No source-only key receives a new manifest path or severity; no generic nested params or logs/resources/output fields elevated.",
+    "minimum_training_delta": "At most the exact existing training.params.num_train_epochs path, MEDIUM -> HIGH, after explicit policy acceptance.",
+    "safe_deferral": "Training subset may remain MEDIUM for now if a narrowly privacy-only proposal is preferred; explain the actual fractional epoch field and pending decision rather than claiming no real training freeform field exists."
+  },
+  "related_freeform_containers": [
+    {
+      "container": "models.<role>.params",
+      "detail": "Schema-allowed freeform; any concrete key requires actual declaration and source meaning.",
+      "evidence": [
+        {
+          "lines": [
+            113,
+            128
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "datasets.<role>.preprocessing.params",
+      "detail": "Schema-allowed freeform; preprocessing level does not make arbitrary nested keys HIGH.",
+      "evidence": [
+        {
+          "lines": [
+            131,
+            136
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "inference.params",
+      "detail": "Schema-allowed freeform; no recursive inheritance from inference.* paths.",
+      "evidence": [
+        {
+          "lines": [
+            204,
+            216
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "training.params",
+      "detail": "Schema-allowed freeform; one actual concrete field found in bounded formal corpus.",
+      "evidence": [
+        {
+          "lines": [
+            225,
+            239
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "evaluation.metrics[].params",
+      "detail": "Schema-allowed but list remains atomic evaluation.metrics in State; do not invent metrics.0.params binding syntax.",
+      "evidence": [
+        {
+          "lines": [
+            242,
+            247
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "privacy.mechanism.params",
+      "detail": "Schema-allowed freeform; privacy agent handles individual DP evidence and proposal.",
+      "evidence": [
+        {
+          "lines": [
+            281,
+            285
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "privacy.attack.params",
+      "detail": "Schema-allowed freeform; no concrete proposal from training inventory.",
+      "evidence": [
+        {
+          "lines": [
+            288,
+            293
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "artifacts.metadata",
+      "detail": "Schema-allowed freeform but artifacts is not projected into experimental State _SECTIONS; not a training params severity target.",
+      "evidence": [
+        {
+          "lines": [
+            324,
+            331
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    },
+    {
+      "container": "custom",
+      "detail": "Schema-allowed project-specific freeform; nested custom leaves fall through to MEDIUM with current single-segment custom.*.",
+      "evidence": [
+        {
+          "lines": [
+            333,
+            351
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ]
+    }
+  ],
+  "repository_pins": {
+    "FastChat": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+    "HarmBench": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+    "LlamaFactory": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+    "ReproLLM": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+    "llm-dp-finetune": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+    "lm-evaluation-harness": "b954108c9baaaa934b4ad842033b31a97ee30816"
+  },
+  "schema_version": 1,
+  "scope_and_limits": [
+    "Bounded complete manifest corpus listed below; archived manifests are historical declarations, not evidence of fresh validation.",
+    "Raw pinned upstream source keys do not automatically become built-in manifest paths or policy defaults.",
+    "Wildcard * matches exactly one dot-delimited segment; first match in file order wins; unmatched paths MEDIUM.",
+    "No blanket training.params.* / recursive wildcard / metadata severity proposal; no schema change or historical report rewriting."
+  ],
+  "sources": {
+    "FastChat:docs/training.md": {
+      "byte_size": 4326,
+      "commit": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "path": "docs/training.md",
+      "repository": "FastChat",
+      "sha256": "fe543da5bfc4568beaf1ea2244ebfe4ba19cac6dd9ac3bebbdc3ebdb235a6631"
+    },
+    "FastChat:fastchat/train/train_lora.py": {
+      "byte_size": 7803,
+      "commit": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+      "path": "fastchat/train/train_lora.py",
+      "repository": "FastChat",
+      "sha256": "75005b8fb163c584ff2bec51da1ed436819b2b6117273bedd0758bf87c46e8e5"
+    },
+    "HarmBench:adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml": {
+      "byte_size": 896,
+      "commit": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+      "path": "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml",
+      "repository": "HarmBench",
+      "sha256": "4bf5f0bbf1aa608630a784f8e9292540758cd8e7d9b1cd419f4fbe8503db10ce"
+    },
+    "LlamaFactory:examples/train_lora/qwen3_lora_sft.yaml": {
+      "byte_size": 907,
+      "commit": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+      "path": "examples/train_lora/qwen3_lora_sft.yaml",
+      "repository": "LlamaFactory",
+      "sha256": "783c247613e0c46c4b4ea5c6627acd5387d939af91f22a9d6a9efdb4996147ae"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/a/run/manifest.yaml": {
+      "byte_size": 1230,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/a/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "af09864e2e27731fb52275b73c12f953b8dffd48ef7b99cb94f777e46fcf9fec"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/b/run/manifest.yaml": {
+      "byte_size": 1230,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/FastChat/b/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "58f2d17f8abf79e0ebbadb4d2744c9fa4b8716e520c88e3238d315487c6ace71"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/a/run/manifest.yaml": {
+      "byte_size": 2169,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/a/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "a352d0fa09c1fe8bbf9194ae76d4c3aa9d59da90a927e5eee1da76d199dd72fa"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/b/run/manifest.yaml": {
+      "byte_size": 2169,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/HarmBench/b/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "134d7b828fd4f8faaae128632f9094a38a3ed3aa2ef1a6f9907415ac21f96223"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/a/run/manifest.yaml": {
+      "byte_size": 1426,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/a/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "d201b66e2992e21d4e20d11181dbe9ba4911b901b8cbfbe66f59c569a7e503f3"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/b/run/manifest.yaml": {
+      "byte_size": 1426,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/LlamaFactory/b/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "bbcfe31c4f66577e7293855308587eca7d8f0202a6c7cd9c2e48672b3bd73bb5"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a": {
+      "byte_size": 5629,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a",
+      "repository": "ReproLLM",
+      "sha256": "21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951": {
+      "byte_size": 274,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/files/ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951",
+      "repository": "ReproLLM",
+      "sha256": "ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml": {
+      "byte_size": 1600,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/run.json": {
+      "byte_size": 9020,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/a/run/run.json",
+      "repository": "ReproLLM",
+      "sha256": "975cf1f8411ed125b606d4d65c63b0eba4bfd10e0d341ba7f7109aaced87d5a5"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/manifest.yaml": {
+      "byte_size": 1600,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/llm-dp-finetune/b/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "6bd599ba0d45e57193cc9a9fcfcf3a05b656c9cf258fe5c5c30d7a2449415258"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/a/run/manifest.yaml": {
+      "byte_size": 1669,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/a/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "ac4bfde5a7538bfa6058746b51c3e00d25cc327b82c6311fa734f2f33da25775"
+    },
+    "ReproLLM:docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/b/run/manifest.yaml": {
+      "byte_size": 1669,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/dogfooding/2026-10-20-validation-followup/native/runtime/lm-evaluation-harness/b/run/manifest.yaml",
+      "repository": "ReproLLM",
+      "sha256": "f9567b0169ae16b75528b9bdd3373d2c70785b52f90b21893145c937117c7c76"
+    },
+    "ReproLLM:docs/plan/01_specification.md": {
+      "byte_size": 121172,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "docs/plan/01_specification.md",
+      "repository": "ReproLLM",
+      "sha256": "321b1c5ac854796aad6e1b0ff4daf9eed1b033c2ce9b82347a47d4ab78c9f45a"
+    },
+    "ReproLLM:examples/hf_vllm_eval/reprollm.yaml": {
+      "byte_size": 1264,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "examples/hf_vllm_eval/reprollm.yaml",
+      "repository": "ReproLLM",
+      "sha256": "d38b8c948e2491b62bf15df9d6157b50400d3574f0f67f579c16e8d0846bd3f3"
+    },
+    "ReproLLM:examples/lm_eval_replay/reprollm.yaml": {
+      "byte_size": 1669,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "examples/lm_eval_replay/reprollm.yaml",
+      "repository": "ReproLLM",
+      "sha256": "ac4bfde5a7538bfa6058746b51c3e00d25cc327b82c6311fa734f2f33da25775"
+    },
+    "ReproLLM:examples/openai_judge_eval/reprollm.yaml": {
+      "byte_size": 994,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "examples/openai_judge_eval/reprollm.yaml",
+      "repository": "ReproLLM",
+      "sha256": "16cb38c03805cd66c853e7395e30c078aee5e8c018f7ca1606971059deb38e6c"
+    },
+    "ReproLLM:examples/privacy_custom_params/reprollm.yaml": {
+      "byte_size": 1514,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "examples/privacy_custom_params/reprollm.yaml",
+      "repository": "ReproLLM",
+      "sha256": "891fdacd30dafc71aa23ec97605d1c9f32c2ed412e0fb28b6dfbb0a480864e0e"
+    },
+    "ReproLLM:src/reprollm/cli/diff.py": {
+      "byte_size": 5304,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/cli/diff.py",
+      "repository": "ReproLLM",
+      "sha256": "85c5adcfacb700cd4e67dcdd93742ba67cde40a1fab6526665a665a098335a82"
+    },
+    "ReproLLM:src/reprollm/diff/drift_severity.yaml": {
+      "byte_size": 3649,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/diff/drift_severity.yaml",
+      "repository": "ReproLLM",
+      "sha256": "ff45045d1f3c3bd8cf2dfa46c2fe26950e5111c2b16ec5b12e612493130dae01"
+    },
+    "ReproLLM:src/reprollm/diff/severity.py": {
+      "byte_size": 3135,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/diff/severity.py",
+      "repository": "ReproLLM",
+      "sha256": "c907ddb66a35b7420c4b8805a47a2b427425aec06e1654c8970d7939fd864483"
+    },
+    "ReproLLM:src/reprollm/diff/state.py": {
+      "byte_size": 11708,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/diff/state.py",
+      "repository": "ReproLLM",
+      "sha256": "ef2356df5363a65420bab25156eea9816fe8b447b34c3ca2e7118ce9af13b5e2"
+    },
+    "ReproLLM:src/reprollm/profiles/finetuning.yaml": {
+      "byte_size": 781,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/profiles/finetuning.yaml",
+      "repository": "ReproLLM",
+      "sha256": "564600d9abaf0e902b590983fca5dc8fd35ca0cf9999d74ced9e6d2bc862a2a2"
+    },
+    "ReproLLM:src/reprollm/profiles/loader.py": {
+      "byte_size": 8108,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/profiles/loader.py",
+      "repository": "ReproLLM",
+      "sha256": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758"
+    },
+    "ReproLLM:src/reprollm/schemas/manifest.py": {
+      "byte_size": 16741,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/schemas/manifest.py",
+      "repository": "ReproLLM",
+      "sha256": "623f94fb62cbd6fef4415d5c10ab48e083ddacb3e21bd5ba2bf3cbb2bf109c90"
+    },
+    "ReproLLM:src/reprollm/schemas/profile.py": {
+      "byte_size": 1949,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "src/reprollm/schemas/profile.py",
+      "repository": "ReproLLM",
+      "sha256": "a14765775c8b258695ec87d7b8b3087587076ecade49732cba0e72e421c73b9b"
+    },
+    "ReproLLM:tests/fixtures/repos/hf_vllm_eval/manifests/complete.yaml": {
+      "byte_size": 1263,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/hf_vllm_eval/manifests/complete.yaml",
+      "repository": "ReproLLM",
+      "sha256": "e48ce55c71f7afa15b43eb35b6f6342cc8599b3e41d2a87c5691bb78295764c4"
+    },
+    "ReproLLM:tests/fixtures/repos/hf_vllm_eval/manifests/gaps.yaml": {
+      "byte_size": 1338,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/hf_vllm_eval/manifests/gaps.yaml",
+      "repository": "ReproLLM",
+      "sha256": "2ab6e4be9927f3def9f2fecc44dd7211f3b50d9c05a556610566012bea920655"
+    },
+    "ReproLLM:tests/fixtures/repos/openai_judge_eval/manifests/complete.yaml": {
+      "byte_size": 993,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/openai_judge_eval/manifests/complete.yaml",
+      "repository": "ReproLLM",
+      "sha256": "d9173a11b54f2002e78c1e243c63aaae2284b915c0505e1dc4fd1f219546b0ca"
+    },
+    "ReproLLM:tests/fixtures/repos/openai_judge_eval/manifests/gaps.yaml": {
+      "byte_size": 1130,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/openai_judge_eval/manifests/gaps.yaml",
+      "repository": "ReproLLM",
+      "sha256": "c41c456b54aab4ad451569da7a64ec1b6007de60057f75e031b43d40290320ab"
+    },
+    "ReproLLM:tests/fixtures/repos/privacy_custom_params/manifests/complete.yaml": {
+      "byte_size": 1513,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/privacy_custom_params/manifests/complete.yaml",
+      "repository": "ReproLLM",
+      "sha256": "bc3c9276aec960d0922888c48ea54437f980da939f1d26994082b5c6edf2a67a"
+    },
+    "ReproLLM:tests/fixtures/repos/privacy_custom_params/manifests/gaps.yaml": {
+      "byte_size": 1607,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/fixtures/repos/privacy_custom_params/manifests/gaps.yaml",
+      "repository": "ReproLLM",
+      "sha256": "e0459f5847ad2a7a506b0b918804cd641e29ad45ab0946594364b8e7f26f262a"
+    },
+    "ReproLLM:tests/unit/cli/test_run_preflight.py": {
+      "byte_size": 26100,
+      "commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+      "path": "tests/unit/cli/test_run_preflight.py",
+      "repository": "ReproLLM",
+      "sha256": "923c88a11b0270ca325dd211051eb575aadce80da690f4606369632da6645410"
+    },
+    "llm-dp-finetune:configs/fine-tune/echr-llama2-7b-dp8.yml": {
+      "byte_size": 1656,
+      "commit": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "path": "configs/fine-tune/echr-llama2-7b-dp8.yml",
+      "repository": "llm-dp-finetune",
+      "sha256": "20c9c1ab6bd19f5b92789d394beee9a4131d28a841d2c80ee93235271490fc12"
+    },
+    "llm-dp-finetune:src/llm_pft/arguments/privacy_args.py": {
+      "byte_size": 1357,
+      "commit": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "path": "src/llm_pft/arguments/privacy_args.py",
+      "repository": "llm-dp-finetune",
+      "sha256": "39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7"
+    },
+    "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py": {
+      "byte_size": 3149,
+      "commit": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "path": "src/llm_pft/arguments/trainer_args.py",
+      "repository": "llm-dp-finetune",
+      "sha256": "3b55c96ad11f140424f786c0d4af12f4aa3d372a14aaa119fbebe665018ef2a0"
+    },
+    "llm-dp-finetune:src/llm_pft/models/language_model.py": {
+      "byte_size": 28860,
+      "commit": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+      "path": "src/llm_pft/models/language_model.py",
+      "repository": "llm-dp-finetune",
+      "sha256": "b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896"
+    },
+    "lm-evaluation-harness:README.md": {
+      "byte_size": 58572,
+      "commit": "b954108c9baaaa934b4ad842033b31a97ee30816",
+      "path": "README.md",
+      "repository": "lm-evaluation-harness",
+      "sha256": "1209195d30263f119c1b81c348f2afa23f5bbd503c3914b5f530365e4e79e1a6"
+    }
+  },
+  "status": "PROPOSED_NO_PRODUCT_CHANGES",
+  "task": "R08-B",
+  "typed_training_paths": [
+    {
+      "comparability_reason": "full/lora/qlora selects different trainable parameters",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            228,
+            228
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Optimization/adaptation method",
+      "path": "training.method",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes gradient update magnitude",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            229,
+            229
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Optimizer learning rate",
+      "path": "training.learning_rate",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes optimization dynamics",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            230,
+            230
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Optimizer algorithm",
+      "path": "training.optimizer",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes update schedule",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            231,
+            231
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Learning-rate schedule",
+      "path": "training.scheduler",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes update composition; framework per-device/global meaning needs an explicit binding",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            232,
+            232
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Declared training batch size",
+      "path": "training.batch_size",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes effective batch/update cadence",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            233,
+            233
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Gradient accumulation factor",
+      "path": "training.gradient_accumulation",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes data passes; current schema uses int, despite specification sketch number",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            234,
+            234
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Declared whole training epochs",
+      "path": "training.epochs",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes optimization duration",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            235,
+            235
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Training update limit",
+      "path": "training.max_steps",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes numerical behavior",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            236,
+            236
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Training arithmetic precision",
+      "path": "training.precision",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "changes initialization/sampling/dropout trajectory",
+      "current": {
+        "matched_pattern": "training.*",
+        "severity": "HIGH"
+      },
+      "evidence": [
+        {
+          "lines": [
+            237,
+            237
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_schema_field",
+      "meaning": "Training random seed",
+      "path": "training.seed",
+      "proposed_severity": null,
+      "recommendation": "KEEP_HIGH",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    },
+    {
+      "comparability_reason": "Path identity differs from configuration content; declared file hashing already creates a separate files.<path>.sha256 HIGH leaf. No new blanket training deep policy is justified by a pathname alone.",
+      "current": {
+        "matched_pattern": null,
+        "severity": "MEDIUM"
+      },
+      "evidence": [
+        {
+          "lines": [
+            219,
+            222
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        },
+        {
+          "lines": [
+            238,
+            238
+          ],
+          "source": "ReproLLM:src/reprollm/schemas/manifest.py"
+        }
+      ],
+      "kind": "typed_nested_schema_field",
+      "meaning": "Relative path to DeepSpeed configuration",
+      "path": "training.deepspeed.config",
+      "proposed_severity": null,
+      "recommendation": "KEEP_MEDIUM",
+      "user_override": {
+        "allowed_examples": [
+          "LOW",
+          "NONE"
+        ],
+        "mechanism": "selected user profile drift_overrides exact path"
+      }
+    }
+  ],
+  "upstream_source_keys_without_new_manifest_mapping": [
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            7,
+            27
+          ],
+          "source": "FastChat:docs/training.md"
+        },
+        {
+          "lines": [
+            37,
+            59
+          ],
+          "source": "FastChat:docs/training.md"
+        }
+      ],
+      "group": "training_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Native Trainer CLI optimization/numerical inputs; some have typed manifest counterparts but aliases require bindings.",
+      "raw_keys": [
+        "num_train_epochs",
+        "per_device_train_batch_size",
+        "gradient_accumulation_steps",
+        "learning_rate",
+        "weight_decay",
+        "warmup_ratio",
+        "lr_scheduler_type",
+        "model_max_length",
+        "tf32"
+      ],
+      "recommendation": "SOURCE_CONTEXT_ONLY; no automatic freeform default additions",
+      "repository": "FastChat",
+      "source_path": "docs/training.md"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            8,
+            8
+          ],
+          "source": "FastChat:docs/training.md"
+        },
+        {
+          "lines": [
+            13,
+            16
+          ],
+          "source": "FastChat:docs/training.md"
+        },
+        {
+          "lines": [
+            21,
+            23
+          ],
+          "source": "FastChat:docs/training.md"
+        },
+        {
+          "lines": [
+            42,
+            55
+          ],
+          "source": "FastChat:docs/training.md"
+        }
+      ],
+      "group": "logging_resource_output",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Checkpoint/logging/output/distribution controls; resource/numerical relevance is contextual.",
+      "raw_keys": [
+        "output_dir",
+        "logging_steps",
+        "save_steps",
+        "save_total_limit",
+        "fsdp"
+      ],
+      "recommendation": "NO_BLANKET_HIGH; no newly invented manifest paths",
+      "repository": "FastChat",
+      "source_path": "docs/training.md"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            43,
+            65
+          ],
+          "source": "FastChat:fastchat/train/train_lora.py"
+        },
+        {
+          "lines": [
+            147,
+            153
+          ],
+          "source": "FastChat:fastchat/train/train_lora.py"
+        }
+      ],
+      "group": "training_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Sequence truncation and LoRA/QLoRA construction. Existing typed models.<role>.adapter fields already cover rank/alpha/dropout/target_modules when explicitly declared.",
+      "raw_keys": [
+        "model_max_length",
+        "lora_r",
+        "lora_alpha",
+        "lora_dropout",
+        "lora_target_modules",
+        "lora_bias",
+        "q_lora"
+      ],
+      "recommendation": "SOURCE_CONTEXT_ONLY; do not duplicate as training.params aliases",
+      "repository": "FastChat",
+      "source_path": "fastchat/train/train_lora.py"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            5,
+            18
+          ],
+          "source": "LlamaFactory:examples/train_lora/qwen3_lora_sft.yaml"
+        },
+        {
+          "lines": [
+            29,
+            38
+          ],
+          "source": "LlamaFactory:examples/train_lora/qwen3_lora_sft.yaml"
+        }
+      ],
+      "group": "training_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Training method, sample/token selection, update schedule, precision and resume controls.",
+      "raw_keys": [
+        "finetuning_type",
+        "lora_rank",
+        "lora_target",
+        "cutoff_len",
+        "max_samples",
+        "per_device_train_batch_size",
+        "gradient_accumulation_steps",
+        "learning_rate",
+        "num_train_epochs",
+        "lr_scheduler_type",
+        "warmup_ratio",
+        "bf16",
+        "resume_from_checkpoint"
+      ],
+      "recommendation": "SOURCE_CONTEXT_ONLY; latest formal manifest uses typed training/model/dataset fields, not these raw config keys as freeform fields",
+      "repository": "LlamaFactory",
+      "source_path": "examples/train_lora/qwen3_lora_sft.yaml"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            17,
+            27
+          ],
+          "source": "LlamaFactory:examples/train_lora/qwen3_lora_sft.yaml"
+        },
+        {
+          "lines": [
+            37,
+            38
+          ],
+          "source": "LlamaFactory:examples/train_lora/qwen3_lora_sft.yaml"
+        }
+      ],
+      "group": "logging_resource_output",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Workers, logs, output retention and distributed timeout.",
+      "raw_keys": [
+        "preprocessing_num_workers",
+        "dataloader_num_workers",
+        "output_dir",
+        "logging_steps",
+        "save_steps",
+        "plot_loss",
+        "overwrite_output_dir",
+        "save_only_model",
+        "report_to",
+        "ddp_timeout"
+      ],
+      "recommendation": "NO_BLANKET_HIGH; keep current resolver contract for any separately declared values",
+      "repository": "LlamaFactory",
+      "source_path": "examples/train_lora/qwen3_lora_sft.yaml"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            15,
+            42
+          ],
+          "source": "HarmBench:adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml"
+        }
+      ],
+      "group": "training_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Native supervised fine-tuning optimizer/data-length/duration and numeric controls.",
+      "raw_keys": [
+        "gradient_accumulation_steps",
+        "learning_rate",
+        "lr_scheduler_type",
+        "max_seq_length",
+        "max_steps",
+        "num_train_epochs",
+        "per_device_train_batch_size",
+        "seed",
+        "tf32"
+      ],
+      "recommendation": "SOURCE_CONTEXT_ONLY; formal current HarmBench validation is evaluation and does not establish corresponding training.params leaves",
+      "repository": "HarmBench",
+      "source_path": "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            21,
+            26
+          ],
+          "source": "HarmBench:adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml"
+        },
+        {
+          "lines": [
+            31,
+            40
+          ],
+          "source": "HarmBench:adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml"
+        }
+      ],
+      "group": "logging_resource_output",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Logging/checkpoint/output/publishing controls.",
+      "raw_keys": [
+        "hub_model_id",
+        "hub_strategy",
+        "log_level",
+        "logging_steps",
+        "logging_strategy",
+        "output_dir",
+        "overwrite_output_dir",
+        "push_to_hub",
+        "report_to",
+        "save_strategy",
+        "save_total_limit"
+      ],
+      "recommendation": "NO_BLANKET_HIGH; neither path spelling nor source location establishes a shared numerical meaning",
+      "repository": "HarmBench",
+      "source_path": "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            10,
+            36
+          ],
+          "source": "llm-dp-finetune:configs/fine-tune/echr-llama2-7b-dp8.yml"
+        }
+      ],
+      "group": "training_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Nested source configuration for native training; trainer_args is not a manifest section.",
+      "raw_keys": [
+        "trainer_args.num_train_epochs",
+        "trainer_args.gradient_accumulation_steps",
+        "trainer_args.per_device_train_batch_size",
+        "trainer_args.learning_rate",
+        "trainer_args.bf16",
+        "trainer_args.resume_from_checkpoint",
+        "trainer_args.deepspeed"
+      ],
+      "recommendation": "SOURCE_CONTEXT_ONLY; formal supplemental validation is separately mapped with a captured entrypoint",
+      "repository": "llm-dp-finetune",
+      "source_path": "configs/fine-tune/echr-llama2-7b-dp8.yml"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            16,
+            40
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py"
+        },
+        {
+          "lines": [
+            78,
+            83
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py"
+        },
+        {
+          "lines": [
+            99,
+            111
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py"
+        },
+        {
+          "lines": [
+            114,
+            124
+          ],
+          "source": "llm-dp-finetune:src/llm_pft/arguments/trainer_args.py"
+        }
+      ],
+      "group": "mixed_semantics",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Mixed controls: dry_run changes actual step count, callbacks can evaluate, while this subclass documents output_dir as unused. Semantics cannot be inferred from a broad params prefix.",
+      "raw_keys": [
+        "dry_run",
+        "save_steps",
+        "callback_after_n_steps",
+        "output_dir",
+        "report_to",
+        "save_total_limit"
+      ],
+      "recommendation": "NO_BLANKET_HIGH; exact individually evidenced mappings required",
+      "repository": "llm-dp-finetune",
+      "source_path": "src/llm_pft/arguments/trainer_args.py"
+    },
+    {
+      "current_manifest_severity": null,
+      "evidence": [
+        {
+          "lines": [
+            42,
+            55
+          ],
+          "source": "lm-evaluation-harness:README.md"
+        }
+      ],
+      "group": "evaluation_scope",
+      "manifest_field_path": null,
+      "manifest_mapping": "NOT_ESTABLISHED_BY_THIS_SOURCE",
+      "meaning": "Evaluation framework overview; no training.params mapping found in the bounded latest runtime corpus. This does not claim the entire upstream repository lacks every training-related script.",
+      "raw_keys": [],
+      "recommendation": "NO_TRAINING_DEFAULT_PROPOSAL_FROM_THIS_REPOSITORY",
+      "repository": "lm-evaluation-harness",
+      "source_path": "README.md"
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+"""Build a fail-closed portable P-A evidence copy; never edit original evidence."""
+
+from __future__ import annotations
+
+import argparse
+import getpass
+import hashlib
+import json
+import re
+import socket
+from pathlib import Path
+
+
+def digest(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def encoded(value: object) -> bytes:
+    return (json.dumps(value, indent=2, sort_keys=True) + "\n").encode()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--experiments", type=Path, required=True)
+    parser.add_argument("--worktree", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    experiments, worktree, out = (
+        args.experiments.resolve(),
+        args.worktree.resolve(),
+        args.output.resolve(),
+    )
+    if out.exists():
+        raise SystemExit("fresh output required")
+    out.mkdir(parents=True)
+    sources = []
+    retained = {}
+
+    def retain(
+        path: Path, destination: str, transform: bool = False, note: str | None = None
+    ) -> None:
+        original = path.read_bytes()
+        payload = original
+        if transform:
+            text = original.decode()
+            for before, after in (
+                (str(experiments), "<EXPERIMENTS>"),
+                (str(worktree), "<CANDIDATE>"),
+            ):
+                text = text.replace(before, after)
+            payload = text.encode()
+        target = out / destination
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(payload)
+        sources.append(
+            {
+                "source": "<EXPERIMENTS>/" + path.relative_to(experiments).as_posix(),
+                "original_sha256": digest(original),
+                "original_bytes": len(original),
+                "retained": destination,
+                "retained_sha256": digest(payload),
+                "retained_bytes": len(payload),
+                "sharing_transform": (
+                    "Explicit local candidate/experiment root replacement only"
+                    if transform
+                    else "NONE_BYTE_IDENTICAL"
+                ),
+                "note": note,
+            }
+        )
+
+    for name in (
+        "independent-inputs-and-expectations.json",
+        "tests-proposed.patch",
+        "tests-proposed-receipt.json",
+        "observer-correction-attempt-1.json",
+        "observer-correction-attempt-2.json",
+        "tool-static-checks.json",
+        "tool-static-checks.stdout.txt",
+        "tool-static-checks.stderr.txt",
+        "tests-proposed-peer-review.json",
+        "controller-attempt-3.stdout.txt",
+        "controller-attempt-3.stderr.txt",
+    ):
+        retain(experiments / name, name)
+    for name in (
+        "observe_policy.py",
+        "observe_policy.attempt-1.inert.py.txt",
+        "observe_policy.attempt-2.inert.py.txt",
+        "package_experiment.py",
+    ):
+        retain(experiments / name, "helpers/" + name + ".inert.txt")
+    for path in sorted((experiments / "observation-3").rglob("*")):
+        relative = path.relative_to(experiments)
+        if path.is_file() and ".git" not in relative.parts:
+            retain(path, relative.as_posix())
+    for name in ("controller-attempt-2.stdout.txt", "controller-attempt-2.stderr.txt"):
+        retain(experiments / name, "attempt-2/" + name + ".sharing.txt", transform=True)
+    failed = (
+        experiments
+        / "observation-2/cli-commands"
+        / "privacy-mechanism-params-target_epsilon-changed-default-high"
+    )
+    for name in ("stdout.txt", "stderr.txt"):
+        retain(failed / name, "attempt-2/first-launch-" + name + ".sharing.txt", transform=True)
+    retain(experiments / "observation-2/commands.json", "attempt-2/commands.json")
+    for attempt in (1, 2):
+        for path in sorted((experiments / f"observation-{attempt}").rglob("*")):
+            relative = path.relative_to(experiments)
+            if path.is_file() and ".git" not in relative.parts:
+                raw = path.read_bytes()
+                sources.append(
+                    {
+                        "source": "<EXPERIMENTS>/" + relative.as_posix(),
+                        "original_sha256": digest(raw),
+                        "original_bytes": len(raw),
+                        "retained": None,
+                        "sharing_transform": "HASH_ONLY_PRIOR_TOOL_ATTEMPT",
+                        "note": (
+                            "Prior CPU observer attempt, not a product failure; "
+                            "final full observations and failure/correction "
+                            "are retained separately."
+                        ),
+                    }
+                )
+    observed = json.loads((experiments / "observation-3/summary.json").read_text())
+    summary = {
+        **observed,
+        "evidence_phase": "P-A_CONDITIONAL_EXPERIMENT_NOT_P-B_PASS",
+        "cli_proposed_default": "NOT_EXECUTED_NOT_INJECTABLE_THROUGH_PUBLIC_CLI",
+        "attempts": [
+            {
+                "attempt": 1,
+                "status": "OBSERVER_REGISTRY_BOOTSTRAP_MISSING",
+                "product_cli_entered": 0,
+                "correction": "observer-correction-attempt-1.json",
+                "original_tool_response": (
+                    "Conversation response only; no original stderr-file hash was recorded. "
+                    "No reconstructed text is labeled an original stream."
+                ),
+            },
+            {
+                "attempt": 2,
+                "status": "OBSERVER_CLI_LAUNCHER_REJECTED",
+                "product_cli_entered": 0,
+                "python_launcher_attempts": 1,
+                "correction": "observer-correction-attempt-2.json",
+            },
+            {"attempt": 3, "status": "COMPLETE", "controller_exit": 0},
+        ],
+        "complete_success_reports": "observation-3/state-cases",
+        "complete_cli_inputs": "observation-3/cli-fixture/cases",
+        "complete_cli_raw_streams_and_exits": "observation-3/commands.json",
+        "source_hash_retention": "source-index.json",
+        "test_draft": "tests-proposed.patch",
+        "note": (
+            "Same synthetic run_id, metadata and command on both sides intentionally isolate "
+            "one binding leaf. These records are typed fixtures, not captured child executions."
+        ),
+    }
+    (out / "current-resolver-evidence.json").write_bytes(encoded(summary))
+    (out / "source-index.json").write_bytes(encoded({"schema_version": 1, "sources": sources}))
+    (out / "README.md").write_text(
+        "# R08-B P-A conditional experiment\n\n"
+        "Base: `30dc9cae41b2fbcc1657357eff34b3e5a7f26322`. "
+        "This is a proposal experiment, not implementation acceptance. "
+        "The four proposed exact defaults remain uninstalled and unapproved.\n\n"
+        "Independent inputs and expected results were frozen before observation. "
+        "Thirty Manifest→State cases, public resolver/profile checks, and 32 current-policy "
+        "CLI calls passed 359 checks. Four exact paths are MEDIUM currently and HIGH only "
+        "with a public in-memory SeverityTable. CLI has no public table-injection option; "
+        "the proposed CLI result was not executed. Full reports, input bytes, exit codes, "
+        "stdout/stderr and hashes are retained.\n\n"
+        "CLI inputs are synthetic standard run v2 records with identical metadata, command, "
+        "manifest snapshot and run_id. Only one observed binding differs; no file digest "
+        "or dirty-code HIGH masks its severity. No child, model, GPU, provider, network "
+        "or paid request ran. Declared intent severity does not prove effective DP budget "
+        "or input consumption.\n\n"
+        "Two tool qualification failures remain explicit: missing rule registration and "
+        "an unsupported package launcher. They entered zero product CLI calls. "
+        "Prior local files are hash-indexed; the launcher's private-path diagnostics have "
+        "explicit sharing transforms with original/retained hashes. The first traceback "
+        "exists only in the conversation; no invented original-stream hash is supplied.\n\n"
+        "`tests-proposed.patch` is an unapplied future test draft: syntax/lint/format and "
+        "patch applicability were checked; future HIGH tests were not run as P-B. "
+        "The test draft explicitly changes the existing epsilon MEDIUM assertion to HIGH. "
+        "Before/after inventories bind all protected source, tests, schemas, dependencies "
+        "and the three user work-in-progress files without copying their contents.\n"
+    )
+    violations = []
+    identities = {socket.gethostname(), getpass.getuser()}
+    for path in sorted(out.rglob("*")):
+        if not path.is_file():
+            continue
+        raw = path.read_bytes()
+        text = raw.decode("utf-8")
+        if any(
+            value in text
+            for value in (str(worktree), str(experiments), "/" + "home" + "/", "/" + "tmp" + "/")
+        ):
+            violations.append({"file": path.relative_to(out).as_posix(), "reason": "local-path"})
+        if any(
+            len(value) > 2 and re.search(r"(?<![\w])" + re.escape(value) + r"(?![\w])", text)
+            for value in identities
+        ):
+            violations.append(
+                {"file": path.relative_to(out).as_posix(), "reason": "local-identity"}
+            )
+        retained[path.relative_to(out).as_posix()] = {"sha256": digest(raw), "bytes": len(raw)}
+    if violations:
+        (out / "audit.failed.json").write_bytes(
+            encoded({"schema_version": 1, "status": "FAIL", "violations": violations})
+        )
+        raise SystemExit("portable evidence privacy check failed; no values are printed")
+    (out / "retained-index.json").write_bytes(encoded({"schema_version": 1, "files": retained}))
+    audit = {
+        "schema_version": 1,
+        "status": "PASS",
+        "retained_files_excluding_indexes_and_audit": len(retained),
+        "original_source_mappings": len(sources),
+        "privacy_violations": [],
+        "source_roots_and_machine_identity_not_persisted": True,
+        "originals_unchanged": all(
+            digest((experiments / item["source"].removeprefix("<EXPERIMENTS>/")).read_bytes())
+            == item["original_sha256"]
+            for item in sources
+        ),
+        "scope": (
+            "Local path and identity audit; no credential file or environment secret read. "
+            "Parent performs any final exact-token scan."
+        ),
+    }
+    (out / "audit.json").write_bytes(encoded(audit))
+    print(json.dumps(audit, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
