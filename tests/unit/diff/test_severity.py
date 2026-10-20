@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+import reprollm.rules  # noqa: F401 — register built-ins for isolated profile resolution
+from reprollm.diff.differ import diff_states
 from reprollm.diff.severity import SeverityResolver, matches
+from reprollm.profiles.loader import resolve
+from reprollm.schemas.manifest import Manifest
+from reprollm.schemas.state import State
 
 CASES = [
     ("models.primary.id", "HIGH"),
@@ -148,7 +155,7 @@ def test_r08a_direct_judge_parameters(field: str, a: object, b: object) -> None:
     ("path", "expected"),
     [
         ("evaluation.judge.params.nested.x", "MEDIUM"),
-        ("privacy.mechanism.params.target_epsilon", "MEDIUM"),
+        ("privacy.mechanism.params.target_epsilon", "HIGH"),
         ("training.params.custom_option", "MEDIUM"),
         ("evaluation.judge.model_ref", "HIGH"),
     ],
@@ -171,3 +178,135 @@ def test_r08a_default_order_and_single_segment() -> None:
     assert rows.index("evaluation.judge.params.*") < rows.index("evaluation.judge.*")
     assert matches("evaluation.judge.params.*", "evaluation.judge.params.vendor_option")
     assert not matches("evaluation.judge.params.*", "evaluation.judge.params.nested.x")
+
+
+R08B_TARGETS = [
+    ("privacy.mechanism.params.target_epsilon", 8.0, 4.0),
+    ("privacy.mechanism.params.target_delta", 0.001, 0.0001),
+    ("privacy.mechanism.params.max_grad_norm", 1.0, 0.5),
+    ("training.params.num_train_epochs", 0.125, 0.25),
+]
+
+
+def r08b_manifest(path: str, value: object) -> Manifest:
+    data = {
+        "schema_version": 1,
+        "project": {"name": "r08b-synthetic"},
+        "experiment": {"profiles": []},
+        "privacy": {"mechanism": {"name": "synthetic-declaration", "params": {}}},
+        "training": {"params": {}},
+    }
+    if value is not None:
+        node = data
+        parts = path.split(".")
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+        node[parts[-1]] = value
+    return Manifest.model_validate(data)
+
+
+@pytest.mark.parametrize(("path", "before", "after"), R08B_TARGETS)
+@pytest.mark.parametrize("status", ["changed", "added", "removed"])
+def test_r08b_four_exact_manifest_paths_are_high(
+    path: str, before: object, after: object, status: str
+) -> None:
+    a = None if status == "added" else before
+    b = None if status == "removed" else after
+    states = [State.merge(r08b_manifest(path, value)) for value in (a, b)]
+    report = diff_states(*states, SeverityResolver())
+    assert [change.model_dump(mode="json") for change in report.changes] == [
+        {"path": path, "status": status, "a": a, "b": b, "severity": "HIGH", "note": None}
+    ]
+    assert report.summary.highest == "HIGH"
+    assert report.summary.counts == {"HIGH": 1, "MEDIUM_HIGH": 0, "MEDIUM": 0, "LOW": 0, "NONE": 0}
+    same = diff_states(states[0], states[0], SeverityResolver())
+    assert same.changes == []
+    assert same.summary.highest == "NONE"
+    assert all(count == 0 for count in same.summary.counts.values())
+
+
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        ("privacy.mechanism.params.target_epsilon.nested", "MEDIUM"),
+        ("privacy.mechanism.params.target_delta.nested", "MEDIUM"),
+        ("privacy.mechanism.params.max_grad_norm.nested", "MEDIUM"),
+        ("training.params.num_train_epochs.nested", "MEDIUM"),
+        ("privacy.mechanism.params.noise_multiplier", "MEDIUM"),
+        ("privacy.mechanism.params.epsilon", "MEDIUM"),
+        ("privacy.mechanism.params.delta", "MEDIUM"),
+        ("privacy.mechanism.params.logging.steps", "MEDIUM"),
+        ("privacy.mechanism.params.unknown_option", "MEDIUM"),
+        ("training.params.target_epsilon", "MEDIUM"),
+        ("training.params.custom_option", "MEDIUM"),
+        ("custom.target_epsilon", "MEDIUM"),
+        ("custom.target_delta", "MEDIUM"),
+        ("custom.max_grad_norm", "MEDIUM"),
+        ("custom.num_train_epochs", "MEDIUM"),
+        ("training.learning_rate", "HIGH"),
+        ("training.epochs", "HIGH"),
+        ("evaluation.judge.params.max_tokens", "HIGH"),
+        ("evaluation.judge.params.nested.x", "MEDIUM"),
+    ],
+)
+def test_r08b_keeps_neighboring_and_existing_policy(path: str, expected: str) -> None:
+    assert SeverityResolver().resolve(path, 1, 2).severity == expected
+
+
+@pytest.mark.parametrize(("path", "before", "after"), R08B_TARGETS)
+@pytest.mark.parametrize("status", ["changed", "added", "removed"])
+@pytest.mark.parametrize("override", ["LOW", "NONE"])
+def test_r08b_user_override_precedes_four_exact_defaults(
+    path: str, before: object, after: object, status: str, override: str
+) -> None:
+    a = None if status == "added" else before
+    b = None if status == "removed" else after
+    resolver = SeverityResolver(profile_overrides={path: override})
+    assert resolver.resolve(path, a, b).severity == override
+
+
+@pytest.mark.parametrize("override", ["LOW", "NONE"])
+def test_r08b_inherited_profile_child_wins(tmp_path: Path, override: str) -> None:
+    folder = tmp_path / ".reprollm/profiles"
+    folder.mkdir(parents=True)
+    targets = [path for path, _, _ in R08B_TARGETS]
+    parent_rows = "".join(f"  {path}: HIGH\n" for path in targets)
+    child_rows = "".join(f"  {path}: {override}\n" for path in targets)
+    (folder / "parent_policy.yaml").write_text(
+        "schema_version: 1\nname: parent_policy\ndescription: parent\n"
+        "drift_overrides:\n" + parent_rows
+    )
+    (folder / "child_policy.yaml").write_text(
+        "schema_version: 1\nname: child_policy\ndescription: child\n"
+        "extends: [parent_policy]\ndrift_overrides:\n" + child_rows
+    )
+    profiles = resolve(["child_policy"], tmp_path)
+    assert profiles.names == ["core", "parent_policy", "child_policy"]
+    assert profiles.drift_overrides == dict.fromkeys(targets, override)
+    resolver = SeverityResolver(profile_overrides=profiles.drift_overrides)
+    assert [resolver.resolve(path, 1, 2).severity for path in targets] == [override] * 4
+
+
+@pytest.mark.parametrize(
+    ("broad", "exact"),
+    [
+        ("privacy.mechanism.params.*", "privacy.mechanism.params.target_epsilon"),
+        ("training.params.*", "training.params.num_train_epochs"),
+    ],
+)
+def test_r08b_override_order_remains_first_match(broad: str, exact: str) -> None:
+    broad_first = SeverityResolver(profile_overrides={broad: "LOW", exact: "NONE"})
+    exact_first = SeverityResolver(profile_overrides={exact: "NONE", broad: "LOW"})
+    assert broad_first.resolve(exact, 1, 2).severity == "LOW"
+    assert exact_first.resolve(exact, 1, 2).severity == "NONE"
+
+
+def test_r08b_default_has_only_four_exact_additions_and_no_recursive_glob() -> None:
+    rows = [row.path for row in SeverityResolver().table.rules]
+    for path, _, _ in R08B_TARGETS:
+        assert rows.count(path) == 1
+        assert not matches(path, path + ".nested")
+    assert "privacy.mechanism.params.*" not in rows
+    assert "training.params.*" not in rows
+    assert not matches("privacy.*", "privacy.mechanism.params.target_epsilon")
+    assert not matches("training.*", "training.params.num_train_epochs")

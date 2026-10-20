@@ -78,13 +78,15 @@ or unavailable internal coverage. Follow the
 and validation status. The [P-A packet](reliability-2026-10-03/proposals/R07-C/R07-C_incomplete_scan_conclusions.md)
 and its original PROPOSED decision remain preparation-time snapshots;
 [P-A acceptance checks](../dogfooding/2026-10-20-r07c-pa/README.md) are distinct from P-B product gates.
-Wider R07-C mixed-evidence work remains OPEN. The next R08-B P-A
-[concrete A4 proposal](reliability-2026-10-03/proposals/R08-B/R08-B_exact_parameter_risk.md)
-and [session report](../dogfooding/2026-10-20-r08b-pa/README.md) now prepare four
-source-backed exact parameter paths, conditional CPU evidence and unapplied
-policy/specification/prospective-gold patches. R08-B remains PROPOSED; only a
-specific decision can advance its P-B implementation. Current defaults and
-historical resource results remain unchanged.
+Wider R07-C mixed-evidence work remains OPEN. The maintainer has now
+[accepted R08-B A4 and its concrete specification/prospective-gold patches](reliability-2026-10-03/proposals/R08-B/decision-accepted.json).
+P-B promotes only the three exact privacy parameter paths and
+`training.params.num_train_epochs` to default HIGH. Follow the
+[P-B session report](../dogfooding/2026-10-20-r08b-pb/README.md) for the exact candidate
+and validation status. The original [P-A proposal](reliability-2026-10-03/proposals/R08-B/R08-B_exact_parameter_risk.md),
+PROPOSED decision and [conditional evidence report](../dogfooding/2026-10-20-r08b-pa/README.md)
+retain their preparation-time state. Historical resource results and gold remain
+bound to their original candidates.
 
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and

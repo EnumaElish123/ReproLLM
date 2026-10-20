@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -11,6 +12,8 @@ import pytest
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app
+from reprollm.schemas.manifest import Manifest
+from reprollm.schemas.run_record import RunRecord
 from tests.conftest import CmdStub
 from tests.unit.diff.test_state import saved_run, snapshot_dir
 
@@ -266,3 +269,174 @@ def test_no_input_or_report_files_are_modified(tmp_path: Path) -> None:
     json_report([a, b])
     after = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
     assert after == before
+
+
+R08B_BINDINGS = [
+    ("privacy.mechanism.params.target_epsilon", 8.0, 4.0),
+    ("privacy.mechanism.params.target_delta", 0.001, 0.0001),
+    ("privacy.mechanism.params.max_grad_norm", 1.0, 0.5),
+    ("training.params.num_train_epochs", 0.125, 0.25),
+]
+
+
+def r08b_binding_pair(
+    tmp_path: Path, path: str, a: object, b: object, *, profile: str | None = None
+) -> tuple[str, str]:
+    # Standard synthetic v2 input evidence; this does not claim a child consumed it.
+    manifest = Manifest.model_validate(
+        {
+            "schema_version": 1,
+            "project": {"name": "r08b-synthetic"},
+            "experiment": {"profiles": [profile] if profile else []},
+        }
+    )
+    payload = json.dumps(manifest.model_dump(mode="json"), sort_keys=True).encode()
+    digest = "sha256:" + hashlib.sha256(payload).hexdigest()
+    refs = []
+    for side, value in (("a", a), ("b", b)):
+        folder = tmp_path / side
+        folder.mkdir()
+        (folder / "manifest.yaml").write_bytes(payload)
+        record = RunRecord.model_validate(
+            {
+                "schema_version": 2,
+                "reprollm_version": "0.7.0",
+                "run_id": "20261020T000000Z-abcdef",
+                "status": "completed",
+                "exit_code": 0,
+                "command": {"argv": ["python", "-c", "pass"], "cwd": "."},
+                "code": {"commit": "a" * 40, "dirty": False},
+                "manifest": {
+                    "path": "reprollm.yaml",
+                    "sha256": digest,
+                    "snapshot": "manifest.yaml",
+                },
+                "bindings_observed": {
+                    path: [{"value": value, "source": {"type": "cli", "key": "--value"}}]
+                }
+                if value is not None
+                else {},
+                "input_capture": {
+                    "checks": [
+                        {
+                            "path": "reprollm.yaml",
+                            "origin": "manifest",
+                            "before": {
+                                "availability": "present",
+                                "sha256": digest,
+                                "size_bytes": len(payload),
+                            },
+                            "after": {
+                                "availability": "present",
+                                "sha256": digest,
+                                "size_bytes": len(payload),
+                            },
+                            "change": "unchanged",
+                        }
+                    ]
+                },
+            }
+        )
+        (folder / "run.json").write_text(record.model_dump_json())
+        refs.append(f"{side}/run.json")
+    return refs[0], refs[1]
+
+
+@pytest.mark.parametrize(("path", "before", "after"), R08B_BINDINGS)
+@pytest.mark.parametrize("status", ["changed", "added", "removed"])
+def test_r08b_cli_isolated_binding_default_is_high(
+    tmp_path: Path, path: str, before: object, after: object, status: str
+) -> None:
+    a = None if status == "added" else before
+    b = None if status == "removed" else after
+    refs = r08b_binding_pair(tmp_path, path, a, b)
+    inputs = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    report = json_report([*refs])
+    notes = {
+        "changed": (
+            "a: recorder/pre_child; child unverified; b: recorder/pre_child; child unverified"
+        ),
+        "added": "b: recorder/pre_child; child unverified",
+        "removed": "a: recorder/pre_child; child unverified",
+    }
+    assert report["changes"] == [
+        {"path": path, "status": status, "a": a, "b": b, "severity": "HIGH", "note": notes[status]}
+    ]
+    assert report["summary"]["highest"] == "HIGH"
+    assert report["summary"]["counts"] == {
+        "HIGH": 1,
+        "MEDIUM_HIGH": 0,
+        "MEDIUM": 0,
+        "LOW": 0,
+        "NONE": 0,
+    }
+    assert json_report([*refs, "--fail-on", "HIGH"], exit_code=1) == report
+    filtered = json_report([*refs, "--min-severity", "HIGH", "--fail-on", "HIGH"], exit_code=1)
+    assert filtered["changes"] == report["changes"]
+    assert filtered["summary"] == report["summary"]
+    assert filtered["filtered_below"] == "HIGH"
+    first = runner.invoke(app, ["diff", *refs, "--format", "json"])
+    second = runner.invoke(app, ["diff", *refs, "--format", "json"])
+    assert first.exit_code == second.exit_code == 0
+    assert first.stdout == second.stdout
+    same = json_report([refs[0], refs[0], "--fail-on", "HIGH"])
+    assert same["changes"] == [] and same["summary"]["highest"] == "NONE"
+    assert all(value == 0 for value in same["summary"]["counts"].values())
+    assert {
+        p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()
+    } == inputs
+
+
+@pytest.mark.parametrize(("path", "before", "after"), R08B_BINDINGS)
+@pytest.mark.parametrize("override", ["LOW", "NONE"])
+def test_r08b_cli_precise_override_and_complete_filtered_policy(
+    tmp_path: Path, path: str, before: object, after: object, override: str
+) -> None:
+    profiles = tmp_path / ".reprollm/profiles"
+    profiles.mkdir(parents=True)
+    (profiles / "r08b_policy.yaml").write_text(
+        "schema_version: 1\nname: r08b_policy\ndescription: synthetic override\n"
+        f"drift_overrides:\n  {path}: {override}\n"
+    )
+    refs = r08b_binding_pair(tmp_path, path, before, after, profile="r08b_policy")
+    report = json_report([*refs, "--fail-on", "HIGH"])
+    assert len(report["changes"]) == 1
+    assert report["changes"][0]["path"] == path
+    assert report["changes"][0]["severity"] == override
+    assert report["summary"]["highest"] == override
+    assert report["summary"]["counts"][override] == 1
+    assert sum(report["summary"]["counts"].values()) == 1
+    filtered = json_report(
+        [*refs, "--min-severity", "HIGH", "--fail-on", "LOW"],
+        exit_code=1 if override == "LOW" else 0,
+    )
+    assert filtered["changes"] == []
+    assert filtered["summary"] == report["summary"]
+    assert filtered["filtered_below"] == "HIGH"
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "privacy.mechanism.params.target_epsilon.nested",
+        "privacy.mechanism.params.noise_multiplier",
+        "privacy.mechanism.params.logging.steps",
+        "training.params.num_train_epochs.nested",
+        "training.params.custom_option",
+        "custom.target_epsilon",
+    ],
+)
+def test_r08b_cli_neighbors_keep_medium(tmp_path: Path, path: str) -> None:
+    refs = r08b_binding_pair(tmp_path, path, 1, 2)
+    report = json_report([*refs, "--fail-on", "HIGH"])
+    assert len(report["changes"]) == 1
+    assert report["changes"][0]["path"] == path
+    assert report["changes"][0]["severity"] == "MEDIUM"
+    assert report["summary"]["highest"] == "MEDIUM"
+    assert report["summary"]["counts"] == {
+        "HIGH": 0,
+        "MEDIUM_HIGH": 0,
+        "MEDIUM": 1,
+        "LOW": 0,
+        "NONE": 0,
+    }

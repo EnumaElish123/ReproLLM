@@ -523,6 +523,34 @@ under `training.params.num_train_epochs` with `max_steps: 2`. The normative
 passing test of fractional-epoch support. Original Llama-2/ECHR/ZeRO remains
 blocked; this public single-GPU supplement makes no production privacy claim.
 
+### 8.3.1 Prospective R08-B exact-parameter policy supplement
+
+Applies only after R08-B option A4 and this supplement are explicitly accepted
+and implemented. Preserve the historical §8.3 DP epsilon 8 → 4 MEDIUM leaf,
+its independent config hash HIGH, and all original reports and inputs. For a
+new native DP replay with the same approved fixed inputs and epsilon pair,
+expect `privacy.mechanism.params.target_epsilon` HIGH. Keep pins, input hashes,
+all other values, native clipping/noise/accountant checks and every other
+expected delta unchanged. The recorded target_delta, max_grad_norm and
+num_train_epochs are equal across that pair, so the new policy adds no drift
+for those three leaves. Their exact paths and ordinary changed/added/removed
+behavior are verified separately by the four-field acceptance matrix.
+
+The policy also makes exactly `privacy.mechanism.params.target_delta`,
+`privacy.mechanism.params.max_grad_norm` and `training.params.num_train_epochs`
+HIGH when their recorded leaves differ. It adds no aliases or blanket params
+rule. A local CLI pair must prove each target's independent HIGH gate with
+no changed config hash, dirty tree or other HIGH, including effective LOW/NONE
+overrides, filtering, repeat JSON and self-diff. Such CPU plumbing or a new
+policy projection of retained records does not replace native execution or
+rebind historical resource acceptance to a new product candidate. No privacy
+guarantee or verified child consumption follows solely from HIGH severity.
+
+This supplement changes only future default diff expectations. Existing
+user overrides follow the unchanged first-match profile contract. §9 baseline
+review, historical preservation and all applicable resource gates still apply.
+It does not authorize a release, paid requests or input replacement.
+
 ### 8.4 Approved DeepSeek/FastChat supplementary judge (2026-09-27)
 
 > Promoted to the **formal** FastChat-judge acceptance standard by the

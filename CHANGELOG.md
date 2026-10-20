@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- P-B / R08-B A4 (spec §18): classify exactly the recorded target_epsilon,
+  target_delta and max_grad_norm leaves under privacy.mechanism.params, plus
+  training.params.num_train_epochs, as HIGH in newly computed diffs. Existing
+  first-match profile LOW/NONE overrides and historical reports are preserved.
+  A target-only change can now make explicit --fail-on HIGH exit 1; this does
+  not certify privacy guarantees or child consumption. No schema or alias change.
+
 - P-B / R07-C partial A (spec §§11–13): when primary Python candidate analysis
   is incomplete or its internal coverage is unavailable, an empty result from
   `env.llm_critical_deps_pinned` or `exec.profile_detection_mismatch` now yields
