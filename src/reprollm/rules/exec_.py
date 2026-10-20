@@ -182,3 +182,6 @@ class ProfileDetectionMismatchRule(Rule):
                 )
             )
         return findings
+
+    def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+        return ctx.pyscan.coverage().pass_skip_reason()

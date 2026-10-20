@@ -70,15 +70,15 @@ existential exact declarations and presence semantics. Follow its
 [session report](../dogfooding/2026-10-20-r06b/README.md) for final candidate,
 quality, fresh Gate A and affected consumer acceptance. The original
 [proposal snapshot](reliability-2026-10-03/proposals/R06-B/R06-B_dependency_lock_scope.md)
-retains its preparation-time state. R07-C and R08-B still require their own
-concrete decisions; R06-B does not approve them. The
-[R07-C P-A material](reliability-2026-10-03/proposals/R07-C/R07-C_incomplete_scan_conclusions.md)
-now includes all-rule evidence, 11 original-policy observations, complete five-project
-conditional comparisons, and unapplied specification/engine patches. Recommended A is
-only a two-rule empty-result veto under known primary-Python gaps (or unavailable
-internal coverage), deliberately conservative; wider mixed-evidence work remains OPEN.
-Neither A nor its D-41 patch is approved or implemented. See the
-[P-A session report](../dogfooding/2026-10-20-r07c-pa/README.md).
+retains its preparation-time state. The maintainer has now explicitly accepted
+[R07-C partial A and its concrete specification/D-41 patches](reliability-2026-10-03/proposals/R07-C/decision-accepted.json).
+P-B implements only the two-rule empty-result veto for known primary-Python gaps
+or unavailable internal coverage. Follow the
+[P-B session report](../dogfooding/2026-10-20-r07c-pb/README.md) for the exact candidate
+and validation status. The [P-A packet](reliability-2026-10-03/proposals/R07-C/R07-C_incomplete_scan_conclusions.md)
+and its original PROPOSED decision remain preparation-time snapshots;
+[P-A acceptance checks](../dogfooding/2026-10-20-r07c-pa/README.md) are distinct from P-B product gates.
+Wider R07-C mixed-evidence work remains OPEN; R08-B still needs its own concrete decision.
 
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and

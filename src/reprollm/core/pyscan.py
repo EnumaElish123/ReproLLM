@@ -39,6 +39,32 @@ class EndpointInfo:
     line: int
 
 
+@dataclass(frozen=True)
+class PythonCandidateCoverage:
+    """Coverage of the captured primary-Python candidate view, not the repository."""
+
+    observed: bool
+    candidate_count: int
+    selected_count: int
+    parsed_count: int
+    file_limit: int
+
+    def pass_skip_reason(self) -> str | None:
+        if not self.observed or not (
+            0 <= self.parsed_count <= self.selected_count <= self.candidate_count
+            and self.file_limit >= 0
+            and self.selected_count <= self.file_limit
+        ):
+            return "Python candidate coverage is unavailable; no rule-wide PASS is established."
+        if self.parsed_count == self.candidate_count:
+            return None
+        return (
+            f"Python candidate analysis incomplete: parsed {self.parsed_count} of "
+            f"{self.candidate_count} candidate files; selected {self.selected_count} "
+            f"(limit {self.file_limit}); no rule-wide PASS is established."
+        )
+
+
 @dataclass
 class PyScanResult:
     imports: list[ImportInfo] = field(default_factory=list)
@@ -51,6 +77,16 @@ class PyScanResult:
     python_selected_count: int = 0
     python_parsed_count: int = 0
     python_file_limit: int = 0
+    coverage_observed: bool = False
+
+    def coverage(self) -> PythonCandidateCoverage:
+        return PythonCandidateCoverage(
+            observed=self.coverage_observed,
+            candidate_count=self.python_candidate_count,
+            selected_count=self.python_selected_count,
+            parsed_count=self.python_parsed_count,
+            file_limit=self.python_file_limit,
+        )
 
     def file_limit_diagnostic(self) -> str | None:
         if self.python_candidate_count <= self.python_file_limit:
@@ -106,6 +142,7 @@ def scan_python(scanner: RepoScanner) -> PyScanResult:
     result.hf_ids.sort(key=lambda hint: (hint.path, hint.line, hint.value))
     result.imports.sort(key=lambda info: (info.path, info.line, info.module))
     result.endpoints.sort(key=lambda info: (info.path, info.line, info.provider))
+    result.coverage_observed = True
     return result
 
 

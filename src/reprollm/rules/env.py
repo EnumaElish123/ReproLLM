@@ -143,6 +143,9 @@ class LlmCriticalDepsPinnedRule(Rule):
             findings.append(finding)
         return findings
 
+    def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+        return ctx.pyscan.coverage().pass_skip_reason()
+
     def _critical_in_use(self, ctx: AuditContext) -> list[str]:
         deps = ctx.deps
         declared = {d.name for d in deps.declarations}

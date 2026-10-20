@@ -1,0 +1,48 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_capped_python_view_cannot_pass_rules_that_depend_on_unseen_imports ____
+
+tmp_path = PosixPath('<LOCAL_PATH>')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at <OBJECT_ADDRESS>>
+stub_run_cmd = CmdStub(calls=[('git', 'rev-parse', '--is-inside-work-tree')], _rules=[(('git',), CmdResult(returncode=1, stdout='', stderr=''))])
+
+    def test_capped_python_view_cannot_pass_rules_that_depend_on_unseen_imports(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, stub_run_cmd
+    ) -> None:
+        from reprollm.core import scanner
+    
+        repo = tmp_path / "incomplete"
+        repo.mkdir()
+        (repo / "reprollm.yaml").write_text(
+            "schema_version: 1\nproject: {name: incomplete}\nexperiment: {profiles: []}\n",
+            encoding="utf-8",
+        )
+        (repo / "requirements.txt").write_text("torch==1.0\n", encoding="utf-8")
+        (repo / "a.py").write_text("import torch\n", encoding="utf-8")
+        (repo / "z.py").write_text("import vllm\n", encoding="utf-8")
+        stub_run_cmd.on("git", returncode=1)
+        monkeypatch.setattr(scanner, "MAX_PYTHON_FILES", 1)
+    
+        report = run_audit(repo, level=1, target=".")
+        selected = [
+            finding
+            for finding in report.findings
+            if finding.rule_id
+            in {"env.llm_critical_deps_pinned", "exec.profile_detection_mismatch"}
+        ]
+        assert len(selected) == 2
+>       assert {(finding.status.value, finding.severity.value) for finding in selected} == {
+            ("skipped", "INFO")
+        }
+E       AssertionError: assert {('pass', 'PASS')} == {('skipped', 'INFO')}
+E         
+E         Extra items in the left set:
+E         ('pass', 'PASS')
+E         Extra items in the right set:
+E         ('skipped', 'INFO')
+E         Use -v to get more diff
+
+tests/unit/core/test_engine.py:110: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_engine.py::test_capped_python_view_cannot_pass_rules_that_depend_on_unseen_imports
+1 failed in 0.42s

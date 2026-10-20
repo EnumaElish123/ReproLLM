@@ -6,11 +6,13 @@ import json
 import os
 from pathlib import Path
 
+import jsonschema
 import pytest
 from typer.testing import CliRunner
 
 from reprollm.cli.main import app
-from tests.conftest import materialize_repo
+from reprollm.core import scanner as scanner_mod
+from tests.conftest import commit_all, make_git_repo, materialize_repo
 
 runner = CliRunner()
 
@@ -174,6 +176,89 @@ def test_export_embeds_real_audit_summary(tmp_path: Path) -> None:
     assert "critical" in document
     # warnings present in the audit must appear verbatim
     assert "env.llm_critical_deps_pinned" in document
+
+
+def test_default_export_embeds_gap_audit_with_unchanged_schema_and_deterministic_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = make_git_repo(tmp_path / "coverage")
+    profiles = repo / ".reprollm" / "profiles"
+    profiles.mkdir(parents=True)
+    (profiles / "core.yaml").write_text(
+        "schema_version: 1\nname: core\ndescription: Export coverage regression.\n"
+        "rules:\n  - code.git_repo\n  - env.llm_critical_deps_pinned\n"
+        "  - exec.profile_detection_mismatch\n",
+        encoding="utf-8",
+    )
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: coverage}\nexperiment: {profiles: []}\n",
+        encoding="utf-8",
+    )
+    (repo / "requirements.txt").write_text("torch==2.5.1\n", encoding="utf-8")
+    (repo / "a.py").write_text("value = 1\n", encoding="utf-8")
+    (repo / "z.py").write_text("value = 2\n", encoding="utf-8")
+    commit_all(repo)
+    original_inputs = {
+        path: path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.parts
+    }
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+
+    audit = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "warning"])
+    assert audit.exit_code == 0, audit.output
+    report = json.loads(audit.stdout)
+    schema_path = Path(__file__).resolve().parents[3] / "schemas" / "audit_report.schema.json"
+    jsonschema.validate(report, json.loads(schema_path.read_text(encoding="utf-8")))
+    assert report["schema_version"] == 1
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 1,
+        "suppressed": 0,
+        "skipped": 2,
+    }
+    assert {
+        finding["rule_id"] for finding in report["findings"] if finding["status"] == "skipped"
+    } == {
+        "env.llm_critical_deps_pinned",
+        "exec.profile_detection_mismatch",
+    }
+
+    first = runner.invoke(app, ["export", str(repo)])
+    assert first.exit_code == 0, first.output
+    assert (
+        first.stderr
+        == audit.stderr
+        == (
+            "scan: Python analysis incomplete: parsed 1 of 2 candidate files; "
+            "selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.\n"
+        )
+    )
+    output = repo / "REPRODUCIBILITY.md"
+    gap_bytes = output.read_bytes()
+    gap_document = gap_bytes.decode("utf-8")
+    assert "0 critical · 0 warning ·\n0 info · 1 passed." in gap_document
+    assert "schema versions: manifest 1,\nlock n/a,\nrun record n/a." in gap_document
+    assert "Python candidate analysis incomplete:" not in gap_document
+    assert "Python analysis incomplete:" not in gap_document
+    output.unlink()
+
+    repeated = runner.invoke(app, ["export", str(repo)])
+    assert repeated.exit_code == 0, repeated.output
+    assert repeated.stderr == first.stderr
+    assert output.read_bytes() == gap_bytes
+    output.unlink()
+
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 2)
+    complete = runner.invoke(app, ["export", str(repo)])
+    assert complete.exit_code == 0, complete.output
+    assert complete.stderr == ""
+    assert output.read_bytes() == gap_bytes.replace(
+        b"0 info \xc2\xb7 1 passed.", b"0 info \xc2\xb7 3 passed."
+    )
+    assert all(path.read_bytes() == contents for path, contents in original_inputs.items())
 
 
 def test_export_no_lock_marks_not_locked(tmp_path: Path) -> None:

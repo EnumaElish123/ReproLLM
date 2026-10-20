@@ -19,8 +19,9 @@ _RULE_ID_RE = re.compile(r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")
 class Rule:
     """Base class for deterministic audit rules.
 
-    ``check`` returns findings for the FAIL case (zero findings ⇒ PASS is
-    synthesized by the engine). A rule may emit a severity lower than its
+    ``check`` returns findings (zero findings ⇒ PASS is synthesized unless
+    ``pass_skip_reason`` supplies a reason for SKIPPED). A rule may emit a severity
+    lower than its
     ``default_severity`` (e.g. provider-specific downgrades); the engine applies
     profile overrides on top (spec §11 step 6).
     """
@@ -40,6 +41,10 @@ class Rule:
 
     def skip_reason(self, ctx: AuditContext) -> str | None:
         """Optional human-readable reason shown when the rule is skipped."""
+        return None
+
+    def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+        """Optional veto of synthetic PASS, queried only after an empty check result."""
         return None
 
     def check(self, ctx: AuditContext) -> list[Finding]:  # pragma: no cover - interface

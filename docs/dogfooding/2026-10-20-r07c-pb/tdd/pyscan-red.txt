@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_syntax_skip_prevents_complete_coverage_below_file_limit _________
+
+tmp_path = PosixPath('/tmp/pytest-of-czy/pytest-537/test_syntax_skip_prevents_comp0')
+
+    def test_syntax_skip_prevents_complete_coverage_below_file_limit(tmp_path: Path) -> None:
+        repo = tmp_path / "parse_gap"
+        repo.mkdir()
+        (repo / "broken.py").write_text("def f(:\n", encoding="utf-8")
+        (repo / "ok.py").write_text("import os\n", encoding="utf-8")
+    
+        result = _scan(repo)
+    
+        assert result.file_limit_diagnostic() is None
+>       assert result.coverage().pass_skip_reason() == (
+               ^^^^^^^^^^^^^^^
+            "Python candidate analysis incomplete: parsed 1 of 2 candidate files; "
+            "selected 2 (limit 500); no rule-wide PASS is established."
+        )
+E       AttributeError: 'PyScanResult' object has no attribute 'coverage'
+
+tests/unit/core/test_pyscan.py:45: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_pyscan.py::test_syntax_skip_prevents_complete_coverage_below_file_limit
+1 failed in 0.90s

@@ -266,7 +266,15 @@ def run_audit(
             findings.append(_skipped_finding(rule_class, ctx, reason))
             continue
         produced = rule.check(ctx)
-        findings.extend(produced if produced else [_pass_finding(rule_class, ctx)])
+        if produced:
+            findings.extend(produced)
+        else:
+            reason = rule.pass_skip_reason(ctx)
+            findings.append(
+                _skipped_finding(rule_class, ctx, reason)
+                if reason is not None
+                else _pass_finding(rule_class, ctx)
+            )
     for finding in findings:
         # PASS and SKIPPED describe execution outcomes, not failure severity.
         if finding.status != FindingStatus.FAIL or finding.severity_origin == "project_rule":

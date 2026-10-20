@@ -9,6 +9,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- P-B / R07-C partial A (spec §§11–13): when primary Python candidate analysis
+  is incomplete or its internal coverage is unavailable, an empty result from
+  `env.llm_critical_deps_pinned` or `exec.profile_detection_mismatch` now yields
+  SKIPPED/INFO with a bounded coverage reason instead of a synthetic PASS.
+  Existing nonempty findings, all other rules, generated project rules, schemas,
+  failure thresholds and R07-B diagnostics keep their contracts. This deliberately
+  conservative policy is unreleased; broader mixed-evidence coverage remains open.
+
 - P-B / R06-B (spec §12.2): retain repository-wide exact declaration evidence,
   while format-lock package credit requires a paired manager manifest and an
   actual declaration or nearest-project import origin. Foreign locks and
@@ -22,8 +30,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - P-A / R07-C (spec §§11–13): prepare all-rule evidence, eleven original-policy
   observations, complete five-project conditional comparisons, and unapplied
   specification/engine patches for a bounded two-rule synthetic-PASS veto.
-  The proposed policy and D-41 change remain unapproved; broader mixed-evidence
-  coverage remains open. Product behavior, schemas and historical gold do not change.
+  The policy and D-41 patch were unapproved at P-A preparation. The later
+  specific acceptance and bounded P-B change are recorded above; the original
+  proposal/evidence remain historical snapshots and gold is not rewritten.
 
 - P-A / R06-B (spec §12.2): prepare source-linked dependency and lock-scope
   evidence, a concrete association proposal, compatibility limits and future

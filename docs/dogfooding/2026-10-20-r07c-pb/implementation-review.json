@@ -1,0 +1,99 @@
+{
+  "GPU_jobs": 0,
+  "accepted_decision": "docs/plan/reliability-2026-10-03/proposals/R07-C/decision-accepted.json",
+  "accepted_patch_hashes": {
+    "implementation-proposed.patch": "6340be475ccb64ecce6d1361fdeda8699d8acca3735c8e5c78ef4a88644cd222",
+    "spec-proposed.patch": "e16e8bbbc64acac3af352c85ecf7a8df013c1d95f3b24cae3384caa450164b12"
+  },
+  "base_commit": "1ce5d18ec49b1b8ed4110586de1e24fd2fdb2cc4",
+  "documentation": {
+    "accepted_record_is_separate_from_original_PROPOSED_record": true,
+    "broader_R07_C_remains_OPEN": true,
+    "candidate_report_does_not_claim_unfinished_quality_gate_Gate_A_push_or_CI_pass": true,
+    "no_release_or_new_resource_authorization_claimed": true,
+    "original_P_A_proposal_decision_and_evidence_unchanged": true,
+    "partial_A_is_deliberately_conservative_not_full_coverage_assurance": true,
+    "status": "PASS"
+  },
+  "engine_test_assessment": {
+    "all_rule_comparison": "Valid metamorphic comparison: the full fixture executes 69 built-in IDs; only two opt-ins are excluded from equality, while every finding object and its relative order for the other 67 IDs is compared. The capped first source preserves the same known AST signals, isolating coverage policy.",
+    "four_grid_and_absence_control": "Valid public run_audit cases cover positive signal inside cap, hidden signal after cap, truly absent complete input, unreadable selection, and preserved declared-but-undetected legacy finding.",
+    "generated_and_mixed_results": "Both manual generated rules retain expected PASS/FAIL; model.dtype_declared is explicitly required to contain mixed per-role PASS and FAIL, all compared as complete finding objects.",
+    "non_blocking_note": "Closed after review: the added public-hook protocol probe detects early calls for real nonempty FAIL and inapplicable rule paths without replacing check/detection. Existing mixed-role complete comparisons separately guard explicit PASS preservation; no claim of a separate explicit-PASS hook-count test is made."
+  },
+  "full_suites_run": 0,
+  "network_requests": 0,
+  "patch_readback": {
+    "all_five_source_files_equal_accepted_patch_after_declared_equivalence": true,
+    "engine_equals_D41_accepted_hunk_exactly": true,
+    "exact_source_file_set": [
+      "src/reprollm/core/engine.py",
+      "src/reprollm/core/pyscan.py",
+      "src/reprollm/core/registry.py",
+      "src/reprollm/rules/env.py",
+      "src/reprollm/rules/exec_.py"
+    ],
+    "normative_specification_equals_accepted_spec_patch_exactly": true,
+    "only_equivalent_source_adjustment": "PyScan uses self.file_limit >= 0 instead of 0 <= self.file_limit for SIM300; the count predicate and all other source bytes match the accepted patch application."
+  },
+  "product_implementation_status": "PASS",
+  "qualification": "The reviewer previously authored the focused pyscan and CLI tests. Two additional read-only reviewers independently examined standards/spec behavior; root-owned engine tests and all product changes were independently inspected here.",
+  "repository_files_modified_by_review": false,
+  "review_method": "Read-only two-axis code-review plus independent in-memory application of the accepted patches to the base files. No product tests or full validation gates were run by this review.",
+  "review_target": "Uncommitted working-tree diff against the fixed base; no newer implementation commit is claimed.",
+  "review_update": {
+    "added_test": "tests/unit/core/test_engine.py::test_pass_hook_is_not_queried_for_failures_or_inapplicable_rules",
+    "changed_reviewed_files_since_initial_hash_capture": [],
+    "prior_review_sha256": "6ac068e1438ee8d346ffdbe144759577f671f621a520a179d63fc386894b0ffa",
+    "result": "No active findings remain. Public-hook lifecycle regression protection was added by root and read back statically; the review did not rerun tests.",
+    "source_unchanged": true
+  },
+  "reviewed_file_sha256": {
+    "CHANGELOG.md": "4a836edd51099f7348f49e9595eed4964a522e01d976b5c3795d6aa72ceace17",
+    "docs/plan/01_specification.md": "321b1c5ac854796aad6e1b0ff4daf9eed1b033c2ce9b82347a47d4ab78c9f45a",
+    "docs/plan/README.md": "eaeaa0d0e3486c2c05f4fec7e85636afad8f7632e3a5fbe80d4eaa93ee0e004a",
+    "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md": "2830f645d5d4c26a75120d5924de173a825c9e272f5dae4d2136fd2a158404e7",
+    "docs/plan/reliability-2026-10-03/README.md": "e7664f1713a67f5b56f3cfff4141c2c619114e42ea7a494edbd9ffa8ef3ae34b",
+    "src/reprollm/core/engine.py": "27776bf0955c58005a5c48d7f12ed469c09bf4722027efeeaef7c8cacbdd8500",
+    "src/reprollm/core/pyscan.py": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273",
+    "src/reprollm/core/registry.py": "91b86c0cf771df769ee8f48d8fb1b33307182c13510c3e1c3aa0f047e8107638",
+    "src/reprollm/rules/env.py": "5127048f17bfaaa3b4e965eed4a200f3df37a805a0d197f6209d1500870687a1",
+    "src/reprollm/rules/exec_.py": "89e2b86089ad85b93ac3dfcc4918312dfc1335054d3c29337ff4a5bcba6d44bb",
+    "tests/unit/cli/test_audit.py": "e942935f4ac8907b8489763ddfe8df024d9e5e5994e1022647c1a69ebdfc1c4c",
+    "tests/unit/cli/test_export.py": "709140845e3ca810d38acc2d84b12949dbf5fafada7e93b8a3abb3cc68b2bf58",
+    "tests/unit/core/test_engine.py": "24931bdb76ae666c156128544a22e9b1c9fa7742ee55aa870607c9c285aba6c2",
+    "tests/unit/core/test_pyscan.py": "594fa50418d9bed8a2bd6bc83f92b5712ca93264c385e7306319be73daee47ea"
+  },
+  "schema_version": 1,
+  "specification": {
+    "product_findings": [],
+    "status": "PASS",
+    "verified": [
+      "Only the two accepted built-ins opt in; the default Rule hook returns no reason and does not inspect context.",
+      "Engine asks the hook only after applicable, non-stub built-in checks return an empty result. Nonempty PASS/FAIL/SKIPPED, inapplicability and generated-rule paths bypass this new branch.",
+      "New skip uses existing identity/fix_hint construction with INFO, skipped, fixed count or unavailable reason and empty evidence; ordering and summary code remain untouched.",
+      "Profile severity overrides remain restricted to FAIL; suppression keeps its original post-override behavior. A suppressed skip cannot become a failure.",
+      "Unknown and inconsistent counts use the accepted fixed unavailable text. Consistent observed zero candidates and zero file budget are valid; a zero budget with candidates is an observed gap.",
+      "Coverage is a frozen snapshot, normal completed scans mark observation, warning prose is never parsed into facts, and parse/read skips count only actual AST successes.",
+      "No schema, profile bundle, dependency/version or historical gold files changed."
+    ]
+  },
+  "standards": {
+    "findings": [],
+    "status": "PASS",
+    "summary": "No actionable documented-standard breach or code smell. Python >=3.10, lightweight dependencies, no network/model endpoint, deterministic integer-only messages, immutable internal coverage, no persisted schema or redaction changes; explicit D-41 acceptance is recorded."
+  },
+  "status": "PASS",
+  "test_protection_observations": [
+    {
+      "file": "tests/unit/core/test_engine.py",
+      "line": 260,
+      "observation": "Complete output equality cannot detect an extra early hook call whose result is discarded. This is a regression-protection gap, not a demonstrated defect in the current engine.",
+      "priority": "P3",
+      "requirement": "docs/plan/reliability-2026-10-03/proposals/R07-C/acceptance-cases.md:44-46",
+      "resolution": "The added test_pass_hook_is_not_queried_for_failures_or_inapplicable_rules creates actual vllm source and a manifest, then attaches throwing public-hook probes to both opted-in rules and the genuinely inapplicable trust-remote rule. Actual checks/detection remain unchanged. Assertions establish the first two outputs are nonempty FAIL and the third follows applies=false. This detects an extra early hook call; the same source truthiness branch preserves nonempty explicit PASS/SKIPPED regardless of their status.",
+      "status": "CLOSED_BY_ADDED_PUBLIC_HOOK_PROTOCOL_PROBE",
+      "suggested_action": "If strengthening this explicit interface contract, use a controlled public Rule.pass_skip_reason probe to reject calls on applies=false or nonempty results and observe the empty-result call, without replacing rules/detection to manufacture a successful audit."
+    }
+  ]
+}
