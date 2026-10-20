@@ -82,8 +82,7 @@ class PythonCandidateCoverage:
     parsed_count: int
     file_limit: int
 
-    def pass_skip_reason(self) -> str | None:
-        ...
+    def pass_skip_reason(self) -> str | None: ...
 ```
 
 `omitted_count` is candidate minus selected; `selected_unparsed_count` is

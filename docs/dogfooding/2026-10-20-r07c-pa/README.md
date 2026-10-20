@@ -61,5 +61,17 @@ P-A 审阅材料提交与报告收尾提交分开：
 | R07-C P-A | `3a46b58685e6a0d11a0b43ccbedb65b706c8c473` | 47 个材料文件哈希、38 个 JSON、72 个本地链接、21 份既有 schema 报告验证通过；534 个产品/配置等文件与基线相同 |
 | 共享报告收尾 | 本报告所在后续提交，精确 hash 见交付回复 | 只记录上述材料结果和交接，不变更产品 |
 
-最终材料检查耗时 4.784687 秒；两份 patch 仅做 apply-check 与虚拟文本语法解析，未应用或执行。
+初次 P-A 材料检查耗时 4.784687 秒；两份 patch 仅做 apply-check 与虚拟文本语法解析，未应用或执行。
 提交后的精确 CI 仍待推送后核对，不能将此处写成预先通过。
+
+
+## 推送后 CI 格式修正
+
+首次报告提交 `f336756788b70427a82b5b6de19f97c374a8943a` 的
+[CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/39365111686)五项均停在 Format check，后续测试未执行；
+原始失败保留在 [failed-ci.json](ci-format-followup/failed-ci.json)，不回写为通过。
+本地同一 `ruff format --check .` 复现唯一失败：覆盖设计文档内 `pass_skip_reason` 的 Python stub 应写成单行。
+只修正该 Markdown 示例排版后，同一检查返回 0、666 files already formatted。
+[修正记录](ci-format-followup/format-correction.json)绑定前后字节与原失败；两份具体 proposed patch、实际 engine / policy / schema 均不变。
+材料哈希及文档检查随这次文档修正更新（74 个本地链接、4.871457 秒）；原 P-A 检查与文件可从 `3a46b58` 读取。
+再次推送后的精确 HEAD CI 在最终交付回复中确认，不用本地格式通过替代跨平台测试。
