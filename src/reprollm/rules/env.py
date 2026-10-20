@@ -117,7 +117,10 @@ class LlmCriticalDepsPinnedRule(Rule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         findings: list[Finding] = []
         deps = ctx.deps
-        locked = {name for lock in deps.lockfiles for name in lock.packages}
+        locked = deps.qualified_lock_packages(
+            (canonical_dep_name(info.module.split(".", 1)[0]), info.path)
+            for info in ctx.pyscan.imports
+        )
         installed = installed_versions()
         for canonical in self._critical_in_use(ctx):
             if canonical in locked:

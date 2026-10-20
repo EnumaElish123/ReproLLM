@@ -72,6 +72,38 @@ Closed-source API models cannot be pinned to an immutable artifact. ReproLLM
 never fakes it: dated snapshot ids (`gpt-4o-2024-08-06`) are
 `snapshot_alias`; bare aliases are `unpinnable`; HF commit SHAs are `exact`.
 
+## Dependency evidence in a repository
+
+The L0 `env.llm_critical_deps_pinned` check aggregates supported declarations
+and scanned imports across the repository. Any exact declaration of a package,
+including one in a nested project, remains sufficient for that package. Two
+different exact versions do not create a new conflict finding. This does not
+select an experiment environment or verify that its dependencies install together.
+
+Starting with the accepted R06-B policy in unreleased 0.7.0, a format lock can
+provide package credit only through an actual associated declaration or import.
+A `uv.lock` needs a valid same-directory `[project]` pyproject;
+`poetry.lock` accepts `[project]` or `[tool.poetry]`; `Pipfile.lock` needs a
+same-directory packages or dev-packages table; `conda-lock.yml` needs one unambiguous
+same-directory environment dependencies list. Declarations must come from that
+paired manifest. Imports use the nearest valid runtime project ancestor;
+unreadable or malformed candidate manifests block inferred credit across that
+boundary. A deeper independent project may still use its own pair.
+
+For example, a root `torch>=2` declaration is no longer covered solely because
+`tools/uv.lock` happens to contain torch. If the tools project itself declares
+or imports torch and has a qualified pair, its evidence can still satisfy the
+repository-wide check. Workspace members do not inherit a parent lock under
+this bounded policy. Users relying on that inference may see a new WARNING.
+
+Lock inventory and `env.lockfile_present` retain their presence semantics.
+Exact requirements use their actual include closure. A presence PASS and a
+critical-package WARNING can therefore coexist. Format-lock versions,
+freshness, platform compatibility and installation are not newly verified.
+See [specification §12.2](plan/01_specification.md#122-env-l0-m2) for the complete
+pairing, uncertainty and safe-path contract. Rule IDs, severity, thresholds and
+persisted schemas are unchanged.
+
 ## Why no score?
 
 A number would hide *which* identity is ambiguous. ReproLLM tells you exactly

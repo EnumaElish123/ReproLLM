@@ -120,12 +120,12 @@
 
 2026-10-19 P-A 材料：[具体提案](proposals/R06-B/R06-B_dependency_lock_scope.md)、
 [源码/离线观察](proposals/R06-B/implementation-evidence.md)、
-[五项目来源](proposals/R06-B/portfolio-evidence.md)与[待决记录](proposals/R06-B/decision.json)。
-状态 **PROPOSED**；本轮只准备材料并同步计划，未批准或实施依赖政策。
-推荐 A 保留全仓 existential exact 汇总，只收紧有明确来源关联的格式 lock 包名信用；
+[五项目来源](proposals/R06-B/portfolio-evidence.md)保留准备时身份。
+2026-10-20：维护者明确[接受方案 A](proposals/R06-B/decision.json)及原规范补丁；P-B 实施与验收见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)。
+接受的 A 保留全仓 existential exact 汇总，只收紧有明确来源关联的格式 lock 包名信用；
 `env.lockfile_present` 的存在性合同保持独立。旧/新行为、同目录 manager 边界、
 import 最近项目根、unknown barrier、workspace 兼容成本及后续验收均在具体提案中定义。
-下列原验收是批准后 P-B 的合同，不把本轮原程序观察写成未来政策已通过。
+下列验收由 P-B 独立验证；原 P-A 观察不冒充新政策结果。
 
 ### 当前需要解决的歧义
 
@@ -152,10 +152,10 @@ import 最近项目根、unknown barrier、workspace 兼容成本及后续验收
 
 为根 pyproject + 根 lock、根 requirements include、两个独立子项目、工具-only pyproject、嵌套研究依赖、跨文件冲突版本逐一写 expected source / covered packages / warning set。对 HarmBench 从固定源码逐包列出 pin 位置与包含关系。
 
-- [ ] 同一 input 的 inventory 与 lock 覆盖解释不会相互矛盾。
-- [ ] 决策明确默认 L0 的语义，而不是在实现中临时猜选一个根。
-- [ ] 未选择方案 B 时，不新增 workspace / monorepo schema。
-- [ ] 如 gold 需要改变，独立依据、当前与新预期集合、历史保留方式齐全，单独审阅。
+- [x] 同一 input 的 inventory 与 lock 覆盖解释不会相互矛盾。
+- [x] 决策明确默认 L0 的语义，而不是在实现中临时猜选一个根。
+- [x] 未选择方案 B 时，不新增 workspace / monorepo schema。
+- [x] 如 gold 需要改变，独立依据、当前与新预期集合、历史保留方式齐全，单独审阅。
 
 建议提案提交：`docs(spec): define dependency and lock scope (R06-B)`。实施提交名按最终接受范围确定。
 

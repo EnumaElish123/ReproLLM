@@ -7,6 +7,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- P-B / R06-B (spec §12.2): retain repository-wide exact declaration evidence,
+  while format-lock package credit requires a paired manager manifest and an
+  actual declaration or nearest-project import origin. Foreign locks and
+  uncertain manifest boundaries can now leave a critical package WARNING;
+  workspace parent-lock delegation is not inferred. Lock presence, requirements
+  closures, rule IDs, severities, thresholds, schemas and five-project gold are
+  unchanged. This policy is unreleased; no version or dependencies change.
+
 ### Development workflow
 
 - P-A / R06-B (spec §12.2): prepare source-linked dependency and lock-scope

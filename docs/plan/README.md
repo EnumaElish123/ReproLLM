@@ -54,27 +54,33 @@ remain those of `75d1b0`. The preceding progress check confirmed
 [all five CI jobs on `af8adea`](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)
 successful on 2026-10-19. This is that commit's CI result; later commits require
 their own check, and historical CI receipts remain unchanged.
-HF authenticated small-file access last returned 403; original metadata and
-successful model-access requirements remain independent. Follow the maintainer's
-updated resource guidance in `val.md §8.3` without reinstating old artificial
-GPU thresholds. Continue A01 recovery and remaining acceptance, with
-policy proposals and adoption materials tracked separately. For work independent
-of these resources, continue with the [A02 local trial materials](../trials/a02-local/README.md),
-[A03 sourced facts and provisional narrative](../adoption/a03-2026-10-18.md), then
-P-A's concrete policy proposals. Actual independent trials remain PENDING;
-application form checks and any submission are separate from local drafting.
-The current [R06-B dependency/lock-scope proposal](reliability-2026-10-03/proposals/R06-B/R06-B_dependency_lock_scope.md)
-is **PROPOSED**, not approved or implemented. Its preparation does not change
-scope, dependency gold or lock ownership; other proposals need their own decisions.
-The maintainer accepted R08-A option A on 2026-10-18. Its direct judge-param
-HIGH default is implemented, unreleased; read the
+The [2026-10-20 validation follow-up](../dogfooding/2026-10-20-validation-followup/README.md)
+completes fresh quality, five-project Gate A, supplementary Linux H2 and all ten
+native GPU children/five semantic pairs/20 export states at `948d164`. A newly
+accepted current-input discover case completes one real request and reviewed
+candidate acceptance. Historical input hashes/gold and formal judge acceptance
+at `75d1b0` remain separate; no paid judge replay is claimed. Original metadata
+manifests remain missing and the fresh authenticated HF small-file preflight
+still returns 403. Release readiness remains outstanding.
+
+The maintainer accepted [R06-B option A](reliability-2026-10-03/proposals/R06-B/decision.json)
+on 2026-10-20, after reviewing the concrete proposal and specification patch.
+P-B implements bounded format-lock origin credit while retaining repository-wide
+existential exact declarations and presence semantics. Follow its
+[session report](../dogfooding/2026-10-20-r06b/README.md) for final candidate,
+quality, fresh Gate A and affected consumer acceptance. The original
+[proposal snapshot](reliability-2026-10-03/proposals/R06-B/R06-B_dependency_lock_scope.md)
+retains its preparation-time state. R07-C and R08-B still require their own
+concrete decisions; R06-B does not approve them.
+
+R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
-Other policy proposals and resource gates remain independent.
-All five native scenarios have acceptance at `750270b`; the `75d1b0` CPU/judge
-follow-up does not claim a new native GPU or H2 matrix. Successful gated access
-and a complete same-candidate release matrix remain outstanding; no release is
-authorized.
+For work independent of outstanding resources, the
+[A02 local trial materials](../trials/a02-local/README.md) and
+[A03 sourced facts](../adoption/a03-2026-10-18.md) remain available. Independent
+trials are PENDING; form matching and any submission remain separate from
+local drafting. No release is authorized. Resource results stay candidate-bound.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI

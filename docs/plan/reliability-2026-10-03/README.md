@@ -6,6 +6,8 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+2026-10-20：[先行补验报告](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成 fresh quality、五项目 Gate A、H2、10 原生 child / 5 pair / 20 export 和新输入 discover 接受链。正式 judge 仍绑定 `75d1b0`；原始 metadata 缺失及 HF 403 保持 BLOCKED。后续 R06-B 不把这些资源执行改绑到新产品提交。
+
 ## 从这里开始
 
 1. 阅读 [统一执行总则](00_Execution_Guide.md) 以及仓库 [AGENTS.md](../../../AGENTS.md)、[架构决策](../00_architecture_and_decisions.md)、[规格](../01_specification.md)、[val.md](../../../val.md)。
@@ -15,7 +17,7 @@
 5. [A01 本地证据报告](../../dogfooding/2026-10-18-a01-local/README.md)保留 10-18 当地环境的 12/50 恢复及两路径 stdlib 回放。后续 [10-19 资源实跑](../../dogfooding/2026-10-19-resource-completion/README.md)在已提供的 Linux 节点恢复 45/50 个精确 slot，节点上 0 ACCESS_BLOCKED、5 个原始 metadata manifest 仍 MISSING；不代表本机已持有这些文件。Linux H2、五项目原生 GPU A/B 和 20 个默认 export 状态在 `750270b` 通过，VAL-R01 对这些产品字节关闭。
 6. [R02-R snapshot 修复与新 judge A/B](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)在 `75d1b0` 通过完整捕获、语义配对及已授权 provider 验收，关闭 VAL-R02；旧 `750270b` judge A FAIL / B NOT_RUN 原样保留。[Windows 测试 ID 跟进](../../dogfooding/2026-10-19-judge-snapshot-fix/windows-ci/README.md)的 `409a1a7` 仅改测试元数据，产品不变。前一进度核对已确认 [`af8adea` 五项 CI 成功](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)；后续提交另行核对，不改写历史 CI receipt。VAL-R03 仍因 HF 小文件 403 和原始 manifest 缺口阻塞；`75d1b0` 未重跑 GPU/H2，完整同候选发布矩阵仍未完成。
 7. 不依赖新增资源的接续路线是 **A02 试用材料 → A03 本地事实整理 → P-A/P-B**。读取 [A02 任务卡和反馈入口](../../trials/a02-local/README.md)、[A03 事实与草稿](../../adoption/a03-2026-10-18.md)和[A02/A03 接续报告](../../dogfooding/2026-10-18-a02-a03-local.md)。材料可审阅、真实试用 PENDING、持续采用未观察到，三种状态分别记录。A03 当前表单核验尚未完成。
-8. 维护者已于 2026-10-18 [接受 R08-A 方案 A](proposals/R08-A/decision.json)，并按 P-B 实施直接 judge params 叶子默认 HIGH，保留用户 LOW/NONE 与历史记录。验收/资源状态见 [P-B 报告](../../dogfooding/2026-10-18-r08a/README.md)；[原提案快照](proposals/R08-A/R08-A_direct_judge_params.md)继续保留当时状态。[R06-B dependency/lock scope 提案](proposals/R06-B/R06-B_dependency_lock_scope.md)为 **PROPOSED**，未批准、未实施；R07-C / R08-B 仍分别准备、审议，不因 R08-A 获准而自动生效。
+8. 维护者已于 2026-10-18 [接受 R08-A 方案 A](proposals/R08-A/decision.json)，并按 P-B 实施直接 judge params 叶子默认 HIGH，保留用户 LOW/NONE 与历史记录。验收/资源状态见 [P-B 报告](../../dogfooding/2026-10-18-r08a/README.md)；[原提案快照](proposals/R08-A/R08-A_direct_judge_params.md)继续保留当时状态。R06-B 方案 A 已于 2026-10-20 [获具体批准](proposals/R06-B/decision.json)，P-B 实施及独立 CPU 验收见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)；[原提案](proposals/R06-B/R06-B_dependency_lock_scope.md)保持准备时快照。R07-C / R08-B 仍分别准备、审议，不因其他决定获准而自动生效。
 
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 

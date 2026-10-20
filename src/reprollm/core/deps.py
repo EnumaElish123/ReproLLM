@@ -13,7 +13,7 @@ import json
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from pathlib import Path, PureWindowsPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import yaml
 from packaging.requirements import Requirement
@@ -100,6 +100,49 @@ class Declarations:
     unparsed: list[str] = field(default_factory=list)
     lockfiles: list[Lockfile] = field(default_factory=list)
     manifest_present: bool = False
+    _project_manifests: dict[str, frozenset[str]] = field(default_factory=dict, repr=False)
+    _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
+
+    def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
+        """Return lock credit supported by an associated actual package origin."""
+        qualified = {
+            name
+            for lock in self.lockfiles
+            if _is_requirements_name(lock.path)
+            for name in lock.packages
+        }
+        paired: dict[PurePosixPath, set[Lockfile]] = {}
+        for lock in self.lockfiles:
+            location = PurePosixPath(lock.path)
+            for manifest, formats in self._project_manifests.items():
+                if (
+                    location.name not in formats
+                    or PurePosixPath(manifest).parent != location.parent
+                ):
+                    continue
+                paired.setdefault(location.parent, set()).add(lock)
+                qualified.update(
+                    declaration.name
+                    for declaration in self.declarations
+                    if declaration.source_file == manifest and declaration.name in lock.packages
+                )
+        project_roots = {PurePosixPath(path).parent for path in self._project_manifests}
+        boundaries = project_roots | self._uncertain_directories
+        for name, source in import_origins:
+            normalized = content_source_path(source)
+            if normalized is None:
+                continue
+            owner = next(
+                (parent for parent in PurePosixPath(normalized).parents if parent in boundaries),
+                None,
+            )
+            if (
+                owner is not None
+                and owner not in self._uncertain_directories
+                and any(name in lock.packages for lock in paired.get(owner, ()))
+            ):
+                qualified.add(name)
+        return frozenset(qualified)
 
 
 def dependency_file_paths(files: Iterable[str], *basenames: str) -> list[str]:
@@ -141,6 +184,17 @@ def scan_dependencies(scanner: RepoScanner) -> Declarations:
 
     for environment in environments:
         _parse_environment(environment, scanner, result)
+
+    environment_paths = {PurePosixPath(path) for path in environments}
+    for environment in environments:
+        path = PurePosixPath(environment)
+        if (
+            path.with_name("environment.yml") in environment_paths
+            and path.with_name("environment.yaml") in environment_paths
+            and environment in result._project_manifests
+        ):
+            # Keep the project boundary while withholding the ambiguous Conda pair.
+            result._project_manifests[environment] = frozenset()
 
     for pipfile in pipfiles:
         _parse_pipfile(pipfile, scanner, result)
@@ -501,13 +555,22 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
     text = scanner.read_text(path)
     if text is None:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return False
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return False
+    if "project" in doc and not isinstance(doc["project"], dict):
+        result._uncertain_directories.add(PurePosixPath(path).parent)
+    raw_tool = doc.get("tool", {})
+    if not isinstance(raw_tool, dict) or (
+        "poetry" in raw_tool and not isinstance(raw_tool["poetry"], dict)
+    ):
+        result._uncertain_directories.add(PurePosixPath(path).parent)
     tool = doc.get("tool") or {}
     if not isinstance(tool, dict):
         result.unparsed.append(f"{path}:0: invalid tool table")
@@ -516,6 +579,10 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     qualified = isinstance(doc.get("project"), dict) or isinstance(tool.get("poetry"), dict)
     if not qualified:
         return False  # tool-only pyproject (e.g. [tool.ruff]) is not a manifest
+
+    result._project_manifests[path] = frozenset(
+        {"uv.lock", "poetry.lock"} if isinstance(doc.get("project"), dict) else {"poetry.lock"}
+    )
 
     index = _TomlLineIndex(text)
 
@@ -576,19 +643,25 @@ _CONDA_RANGE_RE = re.compile(r"(?:>=|<=|!=|>|<|~=)[0-9]+(?:\.[0-9]+)*")
 def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
     text = scanner.read_text(path)
     if text is None:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return
     try:
         doc = yaml.safe_load(text)
     except yaml.YAMLError as exc:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return
     if not isinstance(doc, dict):
         return
+    if "dependencies" in doc and not isinstance(doc["dependencies"], list):
+        result._uncertain_directories.add(PurePosixPath(path).parent)
     dependencies = doc.get("dependencies") or []
     if not isinstance(dependencies, list):
         result.unparsed.append(f"{path}:0: invalid dependencies collection")
         return
+    if isinstance(doc.get("dependencies"), list):
+        result._project_manifests[path] = frozenset({"conda-lock.yml"})
     for lineno, entry in enumerate(dependencies, start=1):
         if isinstance(entry, str):
             _add_conda_entry(entry, path, lineno, result)
@@ -631,13 +704,22 @@ def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -
 def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> None:
     text = scanner.read_text(path)
     if text is None:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
+        result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return
+    if any(
+        section in doc and not isinstance(doc[section], dict)
+        for section in ("packages", "dev-packages")
+    ):
+        result._uncertain_directories.add(PurePosixPath(path).parent)
+    if any(isinstance(doc.get(section), dict) for section in ("packages", "dev-packages")):
+        result._project_manifests[path] = frozenset({"Pipfile.lock"})
     index = _TomlLineIndex(text)
     header = index.header_line("pipfile.packages")
     for section in ("packages", "dev-packages"):

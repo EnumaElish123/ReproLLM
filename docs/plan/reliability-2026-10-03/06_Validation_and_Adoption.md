@@ -1,6 +1,6 @@
 # 专项方案：可重放证据、独立试用与申请材料
 
-版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-19 更新）
+版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-20 更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -23,7 +23,9 @@
 - **VAL-R01 PASS，绑定 `750270b`**：Linux H2、五项目原生 GPU A/B、完整捕获/消费/diff 与 20 个默认 export 状态。**VAL-R02 PASS，绑定 `75d1b0`**：[R02-R 修复后的新 formal judge A/B](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)通过真实 provider、完整捕获与语义验收；旧 `750270b` A FAIL / B NOT_RUN 继续保留。
 - [Windows 测试 ID 修正](../../dogfooding/2026-10-19-judge-snapshot-fix/windows-ci/README.md)的 `409a1a7` 仅改测试元数据，产品和正式 wheel 不变。前一进度核对确认 [`af8adea` 的五项 CI 成功](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)；本次及后续提交需另核对 CI，不覆盖旧 receipt。
 - **VAL-R03 BLOCKED**：HF 认证成功但限定小文件仍 403，原始 metadata 输入仍有缺口。`75d1b0` 的 CPU/judge 跟进没有重跑 GPU/H2；完整同候选发布矩阵未完成，未授权发布。详见[资源账本](../../dogfooding/pending-resource-validation.md)。
-- [A02 材料](../../trials/a02-local/README.md)可审阅，独立试用 PENDING；[A03 本地事实与叙述](../../adoption/a03-2026-10-18.md)已整理，当前官方表单核验尚未执行。[R06-B scope 提案](proposals/R06-B/R06-B_dependency_lock_scope.md)为 **PROPOSED**，不改变产品或 gold，等待单项审议。
+- [A02 材料](../../trials/a02-local/README.md)可审阅，独立试用 PENDING；[A03 本地事实与叙述](../../adoption/a03-2026-10-18.md)已整理，当前官方表单核验尚未执行。R06-B 方案 A 已于 2026-10-20 [具体批准](proposals/R06-B/decision.json)，后续 P-B 的独立验证见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)。
+
+2026-10-20 接续：[先行补验](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成质量、Gate A、H2、五原生 GPU pairs 和20 exports。新输入 discover 案例亦完成一次 provider 和候选接受；其三个变化 hash 经维护者单独接受，历史 gold 不变。VAL-R02 继续绑定 `75d1b0`，没有新 judge 请求；原始五 metadata 与 gated HF 403 仍阻塞。后续 R06-B 的静态 policy 验证单独绑定，不声称新 GPU/付费/HF 成功。
 
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
@@ -46,7 +48,7 @@
 
 | 项目 | 已有验收 / 当前缺口 | 后续验收边界 |
 |---|---|---|
-| VAL-R01 | `750270b` 已通过 Linux H2 与五项目真实 A/B；不声称 `75d1b0` 有新的 GPU/H2 矩阵 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
+| VAL-R01 | `948d164` 新通过可执行 H2 与五项目真实 A/B；原始 §8.1 metadata 身份仍独立 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
 | VAL-R02 | `75d1b0` 已通过原始 formal 输入的新 provider A/B、完整捕获与语义配对 | 后续付费回放仍核对输入、当轮 provider/凭据和有效预算；保留旧失败，不复用历史成功冒充新执行 |
 | VAL-R03 | 原始 Project C metadata manifest 仍缺失；已提供 token 能认证但限定文件仍 403 | 恢复并核验原始输入，获得模型作者允许的小文件访问；成功解析并验证 revision/hash/provenance，401/403 安全处理不能替代成功访问 |
 

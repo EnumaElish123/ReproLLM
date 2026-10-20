@@ -2,7 +2,7 @@
 
 版本：v1.2 · 日期：2026-10-03 · 状态：COMPLETED（2026-10-10）
 
-交付：[S2-A](../../dogfooding/2026-10-10-reliability-s2/s2a-session.md)、[S2-B](../../dogfooding/2026-10-10-reliability-s2/s2b-session.md)、[后续scope/来源交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。具体任务提交、实际完整比较和已接受 R05-S A/P+C 均在报告中；[R06-B 提案](proposals/R06-B/R06-B_dependency_lock_scope.md)仍为 PROPOSED，未批准、未实施。资源 Gate B 以[当前账本](../../dogfooding/pending-resource-validation.md)的候选绑定为准，不沿用 S2 时点的统一 BLOCKED 描述。
+交付：[S2-A](../../dogfooding/2026-10-10-reliability-s2/s2a-session.md)、[S2-B](../../dogfooding/2026-10-10-reliability-s2/s2b-session.md)、[后续scope/来源交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。具体任务提交、实际完整比较和已接受 R05-S A/P+C 均在报告中；R06-B 方案 A 已于 2026-10-20 [具体批准](proposals/R06-B/decision.json)，P-B 的来源关联实现与验收见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)；[原提案](proposals/R06-B/R06-B_dependency_lock_scope.md)保留准备时状态。资源 Gate B 以[当前账本](../../dogfooding/pending-resource-validation.md)的候选绑定为准，不沿用 S2 时点的统一 BLOCKED 描述。
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
