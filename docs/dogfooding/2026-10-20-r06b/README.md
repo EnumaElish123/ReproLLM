@@ -7,10 +7,12 @@ then directed completion of executable prior validation before P-B.
 [That validation](../2026-10-20-validation-followup/README.md) is complete for its
 available inputs; original metadata and HF-access blockers remain explicit.
 
-Product implementation and focused acceptance are complete. Final shared
-quality, fresh five-project Gate A, affected consumers and pushed-HEAD CI are
-**PENDING** at this provisional task commit. The final evidence is added in a
-report-only closure after those checks. No release is authorized.
+**Final local acceptance PASS** on product commit
+`5d5e104bfc1cc187a00c50448c4a5ca5fa910937`: complete quality, fresh five-project
+Gate A and all affected non-resource consumers. The report-only closure leaves
+those tested product bytes unchanged. Final CI is checked against the actual
+pushed main HEAD at delivery; the final response links that exact run rather
+than inferring it from earlier CI. No release is authorized.
 
 ## Resulting behavior and compatibility
 
@@ -41,7 +43,8 @@ and CHANGELOG describe the potential new WARNING for unsupported lock inference.
 ## Acceptance and affected matrix
 
 Tests use actual `RepoScanner` / `AuditContext` / rule findings and the public
-CLI. Five vertical RED→GREEN slices precede implementation. Sixty new unit
+CLI. Five vertical RED→GREEN slices drive implementation, alternating each failing
+behavior with the minimal change that satisfies it. Sixty new unit
 cases cover four managers, orphan and cross-manager locks, empty valid project
 roots, nearest roots, malformed/unreadable barriers, same-directory explicit
 credit, Conda ambiguity, deeper projects, workspace nondelegation, repository
@@ -87,3 +90,52 @@ Five-project gold, fixtures and historical reports are not regenerated. HarmBenc
 retains its nine nested exact exemptions. DP setup.cfg remains unsupported.
 Validation commands mutate only disposable clones; credentials are absent from
 this consumer environment and network/heavy imports are denied.
+
+## Final shared evidence and delivery boundary
+
+| Check | Current result |
+|---|---|
+| Complete quality | 24/24 PASS; 3,065 tests, two slow deselected; 345 security tests; coverage 94.191805493%; redaction 59/59 lines and 24/24 branches |
+| Quality elapsed | 584.895896 seconds wall; pytest 453.12 seconds; no input bytes change during checks |
+| Fresh Gate A | Five exact clean pins, 10 complete JSON comparisons, 32 checks, 51 commands; zero gold deltas; 90.297525 seconds wall |
+| Affected five-project consumers | 30 real product commands plus 20 strict complete JSON comparisons; 115 commands / 100 checks total; 193.365951 seconds wall |
+| Built/isolated installation | New wheel SHA `82eb3db98d68a6bab4d9b3b432ecd5e7de557f06886f4c152dade9870052984d`; offline distribution acceptance PASS |
+| Independent comparator qualification | 63 CPU controls PASS; final strengthening preserves all reviewed normalizers; no baseline product rerun |
+| Source integrity | Original wheel's entire 148-file set/bytes verified; 465 current source/test/dependency/schema/workflow/tool files match the committed candidate |
+
+[Focused tests and review](evidence/README.md) retain the TDD sequence and CLI
+oracle corrections. [Final quality, Gate A and consumer evidence](final/README.md)
+retain complete safe outputs, strict differences, command/stream hashes and
+sharing transformations. Baseline-time all-distribution inventory was not
+independently captured; candidate-time environment observation is explicitly
+qualified. Both consumer phases use the same unchanged environment and locked
+dependencies, and the old wheel payload is independently verified.
+
+The quality runner is the already reviewed unchanged generic runner; its task
+label is not the source binding. The explicit invocation, clean commit, full
+input inventory, origin guards and new output directory bind these results to
+`5d5e104`. Resource acceptance remains the earlier `948d164` matrix and formal
+judge `75d1b0`, as documented in the preceding report.
+
+Three documentation-only findings are resolved in closure: the current mutable
+decision's checksum index now matches, with the exact original PROPOSED decision
+retained as `decision-pre-acceptance.json`; the P-A CHANGELOG uses its historical
+time; and TDD wording describes vertical alternation. Original proposal and
+patch hashes remain unchanged. No fixture, gold, source, tests, schema,
+dependency, workflow or executable validation tool changes after final quality.
+Under validation workflow §§3–5, pure report/navigation additions do not repeat
+product commands. New report data preserve original-byte whitespace where
+required by hashes; authored source and documentation are checked separately.
+
+Task commits are `71c01e89d33643ecffd32dff5e6dc2287b50c9dc` for A01-B prior
+validation evidence and `5d5e104bfc1cc187a00c50448c4a5ca5fa910937` for R06-B P-B.
+This report-only closure is identified by the final pushed HEAD in the delivery
+receipt and final response. Credentials are checked against final Git
+blobs before pushing; protected pre-existing maintainer edits remain untouched.
+No release, model request, GPU work or authenticated HF success is added by P-B.
+
+Human command stdout is retained and hash-bound, but the extension does not
+independently assert every stdout byte. Complete typed artifacts, reports,
+strict differences and diagnostics form its oracle; the focused CLI regression
+separately covers message rendering and thresholds. This limitation is preserved
+in the evidence package rather than claiming a broader text-format matrix.

@@ -1,0 +1,202 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_________ test_lock_credits_its_same_directory_manager_declaration[uv] _________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml'
+declaration = '[project]\ndependencies = ["torch"]\n', lock = 'uv.lock'
+packages = '[[package]]\nname = "torch"\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "declaration", "lock", "packages"),
+        [
+            (
+                "pyproject.toml",
+                '[project]\ndependencies = ["torch"]\n',
+                "uv.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "pyproject.toml",
+                '[tool.poetry.dependencies]\ntorch = "*"\n',
+                "poetry.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "Pipfile",
+                '[packages]\ntorch = "*"\n',
+                "Pipfile.lock",
+                '{"default": {"torch": {}}}\n',
+            ),
+            (
+                "environment.yml",
+                "dependencies:\n  - pytorch\n",
+                "conda-lock.yml",
+                "package:\n  - name: torch\n",
+            ),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_lock_credits_its_same_directory_manager_declaration(
+        tmp_path: Path, manifest: str, declaration: str, lock: str, packages: str
+    ) -> None:
+        _write(tmp_path, {f"project/{manifest}": declaration, f"project/{lock}": packages})
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:101: AssertionError
+_______ test_lock_credits_its_same_directory_manager_declaration[poetry] _______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml'
+declaration = '[tool.poetry.dependencies]\ntorch = "*"\n', lock = 'poetry.lock'
+packages = '[[package]]\nname = "torch"\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "declaration", "lock", "packages"),
+        [
+            (
+                "pyproject.toml",
+                '[project]\ndependencies = ["torch"]\n',
+                "uv.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "pyproject.toml",
+                '[tool.poetry.dependencies]\ntorch = "*"\n',
+                "poetry.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "Pipfile",
+                '[packages]\ntorch = "*"\n',
+                "Pipfile.lock",
+                '{"default": {"torch": {}}}\n',
+            ),
+            (
+                "environment.yml",
+                "dependencies:\n  - pytorch\n",
+                "conda-lock.yml",
+                "package:\n  - name: torch\n",
+            ),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_lock_credits_its_same_directory_manager_declaration(
+        tmp_path: Path, manifest: str, declaration: str, lock: str, packages: str
+    ) -> None:
+        _write(tmp_path, {f"project/{manifest}": declaration, f"project/{lock}": packages})
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:101: AssertionError
+______ test_lock_credits_its_same_directory_manager_declaration[pipfile] _______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'Pipfile', declaration = '[packages]\ntorch = "*"\n'
+lock = 'Pipfile.lock', packages = '{"default": {"torch": {}}}\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "declaration", "lock", "packages"),
+        [
+            (
+                "pyproject.toml",
+                '[project]\ndependencies = ["torch"]\n',
+                "uv.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "pyproject.toml",
+                '[tool.poetry.dependencies]\ntorch = "*"\n',
+                "poetry.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "Pipfile",
+                '[packages]\ntorch = "*"\n',
+                "Pipfile.lock",
+                '{"default": {"torch": {}}}\n',
+            ),
+            (
+                "environment.yml",
+                "dependencies:\n  - pytorch\n",
+                "conda-lock.yml",
+                "package:\n  - name: torch\n",
+            ),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_lock_credits_its_same_directory_manager_declaration(
+        tmp_path: Path, manifest: str, declaration: str, lock: str, packages: str
+    ) -> None:
+        _write(tmp_path, {f"project/{manifest}": declaration, f"project/{lock}": packages})
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:101: AssertionError
+_______ test_lock_credits_its_same_directory_manager_declaration[conda] ________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'environment.yml', declaration = 'dependencies:\n  - pytorch\n'
+lock = 'conda-lock.yml', packages = 'package:\n  - name: torch\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "declaration", "lock", "packages"),
+        [
+            (
+                "pyproject.toml",
+                '[project]\ndependencies = ["torch"]\n',
+                "uv.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "pyproject.toml",
+                '[tool.poetry.dependencies]\ntorch = "*"\n',
+                "poetry.lock",
+                '[[package]]\nname = "torch"\n',
+            ),
+            (
+                "Pipfile",
+                '[packages]\ntorch = "*"\n',
+                "Pipfile.lock",
+                '{"default": {"torch": {}}}\n',
+            ),
+            (
+                "environment.yml",
+                "dependencies:\n  - pytorch\n",
+                "conda-lock.yml",
+                "package:\n  - name: torch\n",
+            ),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_lock_credits_its_same_directory_manager_declaration(
+        tmp_path: Path, manifest: str, declaration: str, lock: str, packages: str
+    ) -> None:
+        _write(tmp_path, {f"project/{manifest}": declaration, f"project/{lock}": packages})
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:101: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_lock_credits_its_same_directory_manager_declaration[uv]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_lock_credits_its_same_directory_manager_declaration[poetry]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_lock_credits_its_same_directory_manager_declaration[pipfile]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_lock_credits_its_same_directory_manager_declaration[conda]
+4 failed in 0.48s

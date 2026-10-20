@@ -1,0 +1,103 @@
+{
+  "actual_product_commands_executed": 0,
+  "baseline_stream_mismatches": [],
+  "baseline_streams_verified": 190,
+  "baseline_summary_sha256": "841057787231bceb821373cbcd95cf32ebd6f39a029eb86a186b491f9d9c1ed7",
+  "classification": "READ_ONLY_INITIAL_HARNESS_QUALIFICATION",
+  "current_old_wheel_payload_package_files_verified": 143,
+  "gpu_jobs": 0,
+  "historical_baseline_raw_or_helper_edited": false,
+  "network_requests": 0,
+  "normalizer_counterexamples": [
+    {
+      "actual_initial_oracle_result": "FALSE_EQUAL",
+      "case": "audit-schema-int-to-float",
+      "expected_oracle_result": "REJECT",
+      "normalizer_equal": true,
+      "strict_schema_scalar_type_changed": "int->float"
+    },
+    {
+      "actual_initial_oracle_result": "FALSE_EQUAL",
+      "case": "lock-schema-int-to-bool",
+      "expected_oracle_result": "REJECT",
+      "normalizer_equal": true,
+      "strict_schema_scalar_type_changed": "int->bool"
+    },
+    {
+      "actual_initial_oracle_result": "FALSE_EQUAL",
+      "case": "run-schema-int-to-float",
+      "expected_oracle_result": "REJECT",
+      "normalizer_equal": true,
+      "strict_schema_scalar_type_changed": "int->float"
+    },
+    {
+      "actual_initial_oracle_result": "FALSE_EQUAL",
+      "case": "extra-runid-line-payload",
+      "expected_oracle_result": "REJECT",
+      "input_is_synthetic_normalizer_control": true,
+      "normalizer_equal": true,
+      "qualification": "Independent whole-line masking weakness; real baseline currently first fails the timestamp-format precondition."
+    },
+    {
+      "actual_initial_oracle_result": "FALSE_EQUAL",
+      "case": "extra-time-line-payload",
+      "expected_oracle_result": "REJECT",
+      "input_is_synthetic_normalizer_control": true,
+      "normalizer_equal": true,
+      "qualification": "Independent whole-line masking weakness; real baseline currently first fails the timestamp-format precondition."
+    }
+  ],
+  "original_helper_snapshot": "peer-review-initial-source.inert.py.txt",
+  "payload_extra_noncache_files": [],
+  "payload_mismatches": [],
+  "real_baseline_export_positive_controls": [
+    {
+      "actual": "FALSE_REJECT",
+      "case": "lm-evaluation-harness",
+      "error": "AssertionError: initial normal_export searches raw ISO-Z timestamps inside rendered datetime text",
+      "expected": "ACCEPT",
+      "export_sha256": "d1e9f344a87ffc4b51c0f7fd417265fdc7e4cfd7b799569d235283b11bf33a91",
+      "run_sha256": "9b8a1ec68b339492b14df2b1789124e6c633ab664d2603fe2dbb76cb25131fa0",
+      "same_original_export_and_record": true
+    },
+    {
+      "actual": "FALSE_REJECT",
+      "case": "FastChat",
+      "error": "AssertionError: initial normal_export searches raw ISO-Z timestamps inside rendered datetime text",
+      "expected": "ACCEPT",
+      "export_sha256": "eba3189c124c3170068c6a9c3d9565012ae5ec7c64f434f3842f18d07c0539be",
+      "run_sha256": "8085ca40208a57d671df6c529270a9fb64ba0eb1f5cec786c803c16ddd46c79a",
+      "same_original_export_and_record": true
+    },
+    {
+      "actual": "FALSE_REJECT",
+      "case": "LlamaFactory",
+      "error": "AssertionError: initial normal_export searches raw ISO-Z timestamps inside rendered datetime text",
+      "expected": "ACCEPT",
+      "export_sha256": "772946cff09417f85260440e658a12c0367fa8734c5b19a5f4561c6ecb0d02c9",
+      "run_sha256": "ca6af22b87ee2b108b03ac44d1809499c83ce4d78af79b8be9999967a314ecd6",
+      "same_original_export_and_record": true
+    },
+    {
+      "actual": "FALSE_REJECT",
+      "case": "HarmBench",
+      "error": "AssertionError: initial normal_export searches raw ISO-Z timestamps inside rendered datetime text",
+      "expected": "ACCEPT",
+      "export_sha256": "03c52cf2e66fbfd32bb951031889c59eb103716a7d123b09ff1977fce09d1957",
+      "run_sha256": "5a56ed3e1f5277862623817361d33a5637c447480637743dcc042cade727acaa",
+      "same_original_export_and_record": true
+    },
+    {
+      "actual": "FALSE_REJECT",
+      "case": "llm-dp-finetune",
+      "error": "AssertionError: initial normal_export searches raw ISO-Z timestamps inside rendered datetime text",
+      "expected": "ACCEPT",
+      "export_sha256": "241a3bb26f3401eefaef74e661d6e12cb29023089c553887a9fbdd883c34e38b",
+      "run_sha256": "d7c1d02272c53c9199426b41b9d49c293774f71ecdf26a743bcaeb06e2b24572",
+      "same_original_export_and_record": true
+    }
+  ],
+  "reviewed_helper_original_sha256": "594a0087f1f2016617b1a6db7211e59425b7a1f73e2fa39d5cd47697de12feb3",
+  "schema_version": 1,
+  "wheel_sha256": "3d1b83b4488064664e776ddaae495776cd12847e9a0d8690d00e7263d877ece3"
+}

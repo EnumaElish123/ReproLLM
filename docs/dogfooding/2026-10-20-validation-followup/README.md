@@ -90,8 +90,9 @@ One real POST returns HTTP 200, finish `stop`, CLI exit 0 in 42.330705 seconds.
 Usage is 8,762 prompt and 10,811 completion tokens (19,573 total). The peak-tariff
 estimate is CNY 0.104012, not an account invoice. Reasoning content is not
 persisted; its reported token count is retained. No second provider request is
-made. A preceding isolated-controller import failure occurs before credentials
-or POST; it is preserved as setup failure, not a second paid attempt.
+made. A preceding isolated-controller import failure occurs before the controller can
+load its credential input or send a POST; it is preserved as setup failure,
+not a second paid attempt.
 
 All 21 final candidates are reviewed: eight source-supported without a binding
 restriction; nine concept-supported with unverified proposed bindings; three

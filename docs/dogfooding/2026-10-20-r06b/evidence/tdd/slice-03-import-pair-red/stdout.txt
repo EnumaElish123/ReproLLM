@@ -1,0 +1,148 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_________ test_import_uses_its_nearest_empty_runtime_project_pair[uv] __________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', empty_project = '[project]\n', lock = 'uv.lock'
+packages = '[[package]]\nname="torch"\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "empty_project", "lock", "packages"),
+        [
+            ("pyproject.toml", "[project]\n", "uv.lock", '[[package]]\nname="torch"\n'),
+            ("pyproject.toml", "[tool.poetry]\n", "poetry.lock", '[[package]]\nname="torch"\n'),
+            ("Pipfile", "[dev-packages]\n", "Pipfile.lock", '{"develop":{"torch":{}}}\n'),
+            ("environment.yaml", "dependencies: []\n", "conda-lock.yml", "package:\n - name: torch\n"),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_import_uses_its_nearest_empty_runtime_project_pair(
+        tmp_path: Path, manifest: str, empty_project: str, lock: str, packages: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                f"project/{manifest}": empty_project,
+                f"project/{lock}": packages,
+                "project/src/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:126: AssertionError
+_______ test_import_uses_its_nearest_empty_runtime_project_pair[poetry] ________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', empty_project = '[tool.poetry]\n'
+lock = 'poetry.lock', packages = '[[package]]\nname="torch"\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "empty_project", "lock", "packages"),
+        [
+            ("pyproject.toml", "[project]\n", "uv.lock", '[[package]]\nname="torch"\n'),
+            ("pyproject.toml", "[tool.poetry]\n", "poetry.lock", '[[package]]\nname="torch"\n'),
+            ("Pipfile", "[dev-packages]\n", "Pipfile.lock", '{"develop":{"torch":{}}}\n'),
+            ("environment.yaml", "dependencies: []\n", "conda-lock.yml", "package:\n - name: torch\n"),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_import_uses_its_nearest_empty_runtime_project_pair(
+        tmp_path: Path, manifest: str, empty_project: str, lock: str, packages: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                f"project/{manifest}": empty_project,
+                f"project/{lock}": packages,
+                "project/src/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:126: AssertionError
+_______ test_import_uses_its_nearest_empty_runtime_project_pair[pipfile] _______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'Pipfile', empty_project = '[dev-packages]\n', lock = 'Pipfile.lock'
+packages = '{"develop":{"torch":{}}}\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "empty_project", "lock", "packages"),
+        [
+            ("pyproject.toml", "[project]\n", "uv.lock", '[[package]]\nname="torch"\n'),
+            ("pyproject.toml", "[tool.poetry]\n", "poetry.lock", '[[package]]\nname="torch"\n'),
+            ("Pipfile", "[dev-packages]\n", "Pipfile.lock", '{"develop":{"torch":{}}}\n'),
+            ("environment.yaml", "dependencies: []\n", "conda-lock.yml", "package:\n - name: torch\n"),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_import_uses_its_nearest_empty_runtime_project_pair(
+        tmp_path: Path, manifest: str, empty_project: str, lock: str, packages: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                f"project/{manifest}": empty_project,
+                f"project/{lock}": packages,
+                "project/src/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:126: AssertionError
+________ test_import_uses_its_nearest_empty_runtime_project_pair[conda] ________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'environment.yaml', empty_project = 'dependencies: []\n'
+lock = 'conda-lock.yml', packages = 'package:\n - name: torch\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "empty_project", "lock", "packages"),
+        [
+            ("pyproject.toml", "[project]\n", "uv.lock", '[[package]]\nname="torch"\n'),
+            ("pyproject.toml", "[tool.poetry]\n", "poetry.lock", '[[package]]\nname="torch"\n'),
+            ("Pipfile", "[dev-packages]\n", "Pipfile.lock", '{"develop":{"torch":{}}}\n'),
+            ("environment.yaml", "dependencies: []\n", "conda-lock.yml", "package:\n - name: torch\n"),
+        ],
+        ids=["uv", "poetry", "pipfile", "conda"],
+    )
+    def test_import_uses_its_nearest_empty_runtime_project_pair(
+        tmp_path: Path, manifest: str, empty_project: str, lock: str, packages: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                f"project/{manifest}": empty_project,
+                f"project/{lock}": packages,
+                "project/src/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == []
+E       AssertionError: assert [Finding(rule..._reason=None)] == []
+E         
+E         Left contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:126: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_import_uses_its_nearest_empty_runtime_project_pair[uv]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_import_uses_its_nearest_empty_runtime_project_pair[poetry]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_import_uses_its_nearest_empty_runtime_project_pair[pipfile]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_import_uses_its_nearest_empty_runtime_project_pair[conda]
+4 failed in 0.48s

@@ -1,0 +1,563 @@
+{
+  "additional_nonfile_cases": [
+    "Observed malformed runtime structure types: decide narrow barrier interpretation before coding.",
+    "Safe internal alias/component ownership: isolate origins to avoid accidental legitimate existential coverage.",
+    "External symlink/absolute/root escape: existing scanner must never read sentinel; unchanged exclusion is not a newly observed barrier.",
+    "Actual requirements include/shared/cycle/depth/missing: retain existing closure assertions and exact declaration aggregation.",
+    "CLI full JSON, annotations, summary, export current audit, thresholds and determinism with fixed environment facts."
+  ],
+  "cases": [
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\ndependencies=[\"torch\"]\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "uv-paired-declaration",
+      "reason": "Same-directory supported manager declaration and package membership suffice."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "src/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "uv-paired-import",
+      "reason": "Qualified empty runtime manifest establishes nearest root for actual import."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/uv.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "uv-orphan-nested-lock",
+      "reason": "No paired manifest; lock inventory remains but provides no package credit."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/uv.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/pyproject.toml": "[project]\nname=\"demo\"\n",
+        "tools/uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "uv-owner-without-origin",
+      "reason": "Lock entry and empty owner do not prove same-package use at that owner."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "poetry.lock"
+      ],
+      "files": {
+        "poetry.lock": "[[package]]\nname=\"torch\"\n",
+        "pyproject.toml": "[tool.poetry.dependencies]\ntorch=\"*\"\n"
+      },
+      "id": "poetry-paired-declaration",
+      "reason": "Same-directory supported manager declaration and package membership suffice."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "poetry.lock"
+      ],
+      "files": {
+        "poetry.lock": "[[package]]\nname=\"torch\"\n",
+        "pyproject.toml": "[tool.poetry]\n",
+        "src/train.py": "import torch\n"
+      },
+      "id": "poetry-paired-import",
+      "reason": "Qualified empty runtime manifest establishes nearest root for actual import."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/poetry.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "poetry-orphan-nested-lock",
+      "reason": "No paired manifest; lock inventory remains but provides no package credit."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/poetry.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/poetry.lock": "[[package]]\nname=\"torch\"\n",
+        "tools/pyproject.toml": "[tool.poetry]\n"
+      },
+      "id": "poetry-owner-without-origin",
+      "reason": "Lock entry and empty owner do not prove same-package use at that owner."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "Pipfile.lock"
+      ],
+      "files": {
+        "Pipfile": "[packages]\ntorch=\"*\"\n",
+        "Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==1.0\"}},\"develop\":{}}\n"
+      },
+      "id": "pipfile-paired-declaration",
+      "reason": "Same-directory supported manager declaration and package membership suffice."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "Pipfile.lock"
+      ],
+      "files": {
+        "Pipfile": "[packages]\n",
+        "Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==1.0\"}},\"develop\":{}}\n",
+        "src/train.py": "import torch\n"
+      },
+      "id": "pipfile-paired-import",
+      "reason": "Qualified empty runtime manifest establishes nearest root for actual import."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/Pipfile.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==1.0\"}},\"develop\":{}}\n"
+      },
+      "id": "pipfile-orphan-nested-lock",
+      "reason": "No paired manifest; lock inventory remains but provides no package credit."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/Pipfile.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/Pipfile": "[packages]\n",
+        "tools/Pipfile.lock": "{\"default\":{\"torch\":{\"version\":\"==1.0\"}},\"develop\":{}}\n"
+      },
+      "id": "pipfile-owner-without-origin",
+      "reason": "Lock entry and empty owner do not prove same-package use at that owner."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "conda-lock.yml"
+      ],
+      "files": {
+        "conda-lock.yml": "package:\n  - name: torch\n",
+        "environment.yml": "dependencies:\n  - pytorch\n"
+      },
+      "id": "conda-paired-declaration",
+      "reason": "Same-directory supported manager declaration and package membership suffice."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "conda-lock.yml"
+      ],
+      "files": {
+        "conda-lock.yml": "package:\n  - name: torch\n",
+        "environment.yml": "dependencies: []\n",
+        "src/train.py": "import torch\n"
+      },
+      "id": "conda-paired-import",
+      "reason": "Qualified empty runtime manifest establishes nearest root for actual import."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/conda-lock.yml"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/conda-lock.yml": "package:\n  - name: torch\n"
+      },
+      "id": "conda-orphan-nested-lock",
+      "reason": "No paired manifest; lock inventory remains but provides no package credit."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "tools/conda-lock.yml"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/conda-lock.yml": "package:\n  - name: torch\n",
+        "tools/environment.yml": "dependencies: []\n"
+      },
+      "id": "conda-owner-without-origin",
+      "reason": "Lock entry and empty owner do not prove same-package use at that owner."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "tools/uv.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/pyproject.toml": "[project]\nname=\"demo\"\ndependencies=[\"torch\"]\n",
+        "tools/uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "nested-own-declaration-existential",
+      "reason": "Nested actual in-use origin is sufficient even though root origin is not covered."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "tools/uv.lock"
+      ],
+      "files": {
+        "requirements.txt": "torch\n",
+        "tools/pyproject.toml": "[project]\nname=\"demo\"\n",
+        "tools/train.py": "import torch\n",
+        "tools/uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "nested-own-import-existential",
+      "reason": "At least one correctly associated import provides repository-level evidence."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/Pipfile": "[packages]\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "nearer-root-blocks-ancestor",
+      "reason": "Nearest qualified root has no pair; ancestor UV cannot cover it."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/pyproject.toml": "[tool.ruff]\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "tool-only-does-not-block-ancestor",
+      "reason": "Valid non-runtime pyproject creates no boundary/barrier."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/pyproject.toml": "[build-system]\nrequires=[]\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "build-only-does-not-block-ancestor",
+      "reason": "Build-system-only pyproject creates no runtime root."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/requirements.txt": "requests\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "requirements-do-not-block-ancestor",
+      "reason": "Requirements are not format-project boundaries."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/pyproject.toml": "[project broken\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "malformed-pyproject-blocks-ancestor",
+      "reason": "Observed syntax-broken runtime candidate is an uncertain barrier."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/Pipfile": "[packages]\n",
+        "sub/train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "unreadable-pipfile-blocks-ancestor",
+      "reason": "Observed candidate with read_text=None blocks inferred ancestor credit.",
+      "unreadable_candidates": [
+        "sub/Pipfile"
+      ]
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "sub/uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project broken\n",
+        "sub/pyproject.toml": "[project]\nname=\"demo\"\n",
+        "sub/train.py": "import torch\n",
+        "sub/uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "outer-barrier-does-not-veto-deeper-own-pair",
+      "reason": "Deeper independent clean project uses own pair."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "Pipfile": "[packages broken\n",
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "train.py": "import torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "same-directory-barrier-vetoes-import",
+      "reason": "Another manager malformed at nearest root defeats inferred import credit."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "Pipfile": "[packages broken\n",
+        "pyproject.toml": "[project]\nname=\"demo\"\ndependencies=[\"torch\"]\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "same-directory-barrier-retains-explicit-declaration",
+      "reason": "Explicit same-manager declaration association remains proved."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "Pipfile": "[packages]\ntorch=\"*\"\n",
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "cross-manager-pipfile-does-not-borrow-uv",
+      "reason": "A declaration from a different manager cannot borrow UV credit."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n",
+        "requirements.txt": "torch\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "cross-manager-requirements-does-not-borrow-uv",
+      "reason": "Same directory alone does not associate requirements with UV."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[tool.poetry.dependencies]\ntorch=\"*\"\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "uv-requires-project-not-only-poetry",
+      "reason": "Poetry-only pyproject is a runtime root but is not a UV pair."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\n[tool.poetry.dependencies]\ntorch=\"*\"\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "dual-tables-uv-uses-supported-pyproject-declaration",
+      "reason": "Accepted table says supported declarations in the paired pyproject, not table-level scope."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "conda-lock.yml"
+      ],
+      "files": {
+        "conda-lock.yml": "package:\n  - name: torch\n",
+        "environment.yaml": "dependencies: []\n",
+        "environment.yml": "dependencies:\n - pytorch\n"
+      },
+      "id": "dual-conda-files-no-pair",
+      "reason": "Both basenames present are ambiguous regardless of declaration presence."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "conda-lock.yml"
+      ],
+      "files": {
+        "conda-lock.yml": "package:\n  - name: torch\n",
+        "environment.yaml": "[broken",
+        "environment.yml": "dependencies:\n - pytorch\n"
+      },
+      "id": "dual-conda-one-broken-still-no-pair",
+      "reason": "Ambiguity counts observed file presence, not only successfully parsed alternatives."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "app/uv.lock"
+      ],
+      "files": {
+        "app/pyproject.toml": "[project]\nname=\"demo\"\n",
+        "app/uv.lock": "[[package]]\nname=\"torch\"\n",
+        "app2/train.py": "import torch\n"
+      },
+      "id": "component-not-string-prefix",
+      "reason": "app is not an ancestor of app2."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "member/pyproject.toml": "[project]\nname=\"demo\"\ndependencies=[\"torch\"]\n",
+        "member/train.py": "import torch\n",
+        "pyproject.toml": "[project]\nname=\"demo\"\n[tool.uv.workspace]\nmembers=[\"member\"]\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "workspace-does-not-delegate",
+      "reason": "Parent workspace declaration is not delegated membership/lock coverage in A."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "orphan/uv.lock"
+      ],
+      "files": {
+        "one.py": "import torch\n",
+        "orphan/uv.lock": "[[package]]\nname=\"torch\"\n",
+        "requirements.txt": "torch\n",
+        "two.py": "from torch import nn\n"
+      },
+      "id": "multiple-imports-one-warning",
+      "reason": "One warning per canonical package; origins do not multiply findings."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [],
+      "files": {
+        "requirements.txt": "torch==1.0\n",
+        "sub/requirements.txt": "torch==2.0\n"
+      },
+      "id": "conflicting-exacts-remain-sufficient",
+      "reason": "A retains existential exact semantics and adds no conflict solver."
+    },
+    {
+      "expected_critical_package_warnings": [
+        "torch"
+      ],
+      "expected_format_inventory_paths": [
+        "uv.lock"
+      ],
+      "files": {
+        "pyproject.toml": "[project]\nname=\"demo\"\ndependencies=[\"torch\"]\n",
+        "uv.lock": "[[package broken\n"
+      },
+      "id": "malformed-format-lock-inventory-preserved",
+      "reason": "Artifact presence remains; parser exposes no package names, so no pin credit."
+    },
+    {
+      "expected_critical_package_warnings": [],
+      "expected_format_inventory_paths": [
+        "conda-lock.yml"
+      ],
+      "files": {
+        "conda-lock.yml": "package:\n - name: torch\n",
+        "environment.yml": "dependencies:\n - PyTorch\n"
+      },
+      "id": "canonical-conda-pytorch-lock-torch",
+      "reason": "Existing canonical mapping links package identities."
+    }
+  ],
+  "date": "2026-10-20",
+  "schema_version": 1,
+  "scope": "Accepted R06-B A independent acceptance inputs; no product imports or policy execution.",
+  "status": "DESIGN_ONLY_NOT_EXECUTED"
+}

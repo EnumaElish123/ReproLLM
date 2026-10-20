@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_orphan_nested_uv_lock_keeps_inventory_but_does_not_pin_root _______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+
+    def test_orphan_nested_uv_lock_keeps_inventory_but_does_not_pin_root(tmp_path: Path) -> None:
+        _write(
+            tmp_path,
+            {
+                "requirements.txt": "torch\n",
+                "tools/uv.lock": '[[package]]\nname = "torch"\n',
+            },
+        )
+        context = AuditContext(tmp_path)
+    
+>       assert LlmCriticalDepsPinnedRule().check(context) == [_torch_warning()]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:58: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_orphan_nested_uv_lock_keeps_inventory_but_does_not_pin_root
+1 failed in 0.55s

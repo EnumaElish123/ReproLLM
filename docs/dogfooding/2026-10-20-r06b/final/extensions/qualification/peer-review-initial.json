@@ -1,0 +1,84 @@
+{
+  "additional_minimal_qualification_recommendations": [
+    {
+      "recommendation": "Add current archive payload/buildmanifest/hash verification to the candidate preflight and record it with baseline raw hashes; initial controller checked wheel SHA and __init__ origin but did not itself hash a pre-existing payload directory.",
+      "topic": "baseline payload binding"
+    },
+    {
+      "recommendation": "Record interpreter version, uv.lock hash and distribution/version inventory for baseline qualification and candidate execution. Complete run.environment comparison already retains version differences; this documents unchanged dependency preconditions explicitly.",
+      "topic": "dependency environment"
+    },
+    {
+      "recommendation": "Compare symmetric initialized relative path sets before per-file bytes, rather than relying on the downstream deterministic Git commit to catch removals.",
+      "topic": "generated files"
+    },
+    {
+      "recommendation": "Where claiming whole CLI compatibility, compare deterministic init/lock/check/export stdout using exact expected case-path/run-id substitutions. Current main equality only compares stderr and resulting artifacts; user-facing stdout can regress independently.",
+      "topic": "text diagnostics"
+    }
+  ],
+  "artifacts_modified": [
+    "peer-review-initial-source.inert.py.txt",
+    "peer-review-initial-reproductions.json",
+    "peer-review-initial.json"
+  ],
+  "baseline_status_unchanged": "PASS_ORIGINAL_BASELINE_CAPTURE; candidate comparison not yet executed",
+  "findings": [
+    {
+      "evidence": "All5 retained baseline record timestamps are ISO8601 with T/Z; legal export renders datetime with space/+00:00. Raw string substring assertion fails even for each baseline compared with itself. Baseline mode never invokes this comparator, leaving its only positive path unqualified.",
+      "id": "EXT-ORACLE-01",
+      "location": "run_consumers.py:100",
+      "minimal_fix": "Build exact expected metadata lines from typed datetime values rendered as the template does; qualify every real baseline export before candidate product execution.",
+      "minimum_cpu_controls": [
+        "five retained baseline exports accepted without product rerun",
+        "changed actual started/ended value rejected",
+        "wrong or missing run-id/metadata line rejected"
+      ],
+      "priority": "P1",
+      "title": "Real baseline export fails the initial positive comparator"
+    },
+    {
+      "evidence": "AST-isolated normalizers on real baseline data accept audit schema_version1->1.0, generated-lock schema_version1->True, and run schema_version2->2.0. Reusing old lock after this equality can mask an actual generated-lock type difference.",
+      "id": "EXT-ORACLE-02",
+      "location": "run_consumers.py:213,232,234",
+      "minimal_fix": "Compare normalized raw structures using existing strict compare_gold logic, preserving scalar types, array order and all unlisted fields. Validate metadata separately rather than coerce whole documents before comparison.",
+      "minimum_cpu_controls": [
+        "bool versus int rejected",
+        "int versus float rejected",
+        "extra/missing/null fields and array order changes rejected",
+        "same valid document with only explicit schema metadata changes accepted"
+      ],
+      "priority": "P2",
+      "title": "Plain Python equality permits scalar type regressions and weakens old-lock refill prerequisite"
+    },
+    {
+      "evidence": "Synthetic isolated normalizer controls with a wrong run id plus the valid id in trailing text, or extra semantic payload on the time line, normalize equal. This is independent of EXT-ORACLE-01.",
+      "id": "EXT-ORACLE-03",
+      "location": "run_consumers.py:98-103",
+      "minimal_fix": "Require exact complete expected run-id and started/ended/duration lines before replacing them; reject extra or malformed line content.",
+      "minimum_cpu_controls": [
+        "extra/wrong run-id line payload rejected",
+        "extra started-line payload rejected",
+        "unrelated export prose changes retained and rejected"
+      ],
+      "priority": "P2",
+      "title": "Replacing entire metadata lines discards text beyond approved metadata fields"
+    }
+  ],
+  "old_baseline_or_existing_packages_modified": false,
+  "product_gpu_network_or_paid_executions": 0,
+  "reproduction_receipt": "peer-review-initial-reproductions.json",
+  "review_scope": "Independent read-only review of initial extension harness and completed baseline. These are observer/qualification findings, not evidence of a product failure.",
+  "reviewed_helper_sha256": "594a0087f1f2016617b1a6db7211e59425b7a1f73e2fa39d5cd47697de12feb3",
+  "schema_version": 1,
+  "status": "HARNESS_CORRECTIONS_REQUIRED_BEFORE_CANDIDATE_EXECUTION",
+  "verified_strengths": [
+    "Current extracted payload matches all143 package files and all wheel archive entries, with no extra noncache files; wheel SHA matches original948d build manifest.",
+    "Reviewed helper hash equals the original baseline summary helper hash. All95 original commands exited expected0 and all190 retained command-stream hashes match.",
+    "All five originals have before/after pin/origin/clean checks; disposable clones use the prescribed exact pins and final clean assertions.",
+    "Initializers generated exactly3 retained files per case. Current loop compares candidate-produced bytes; final full run code.commit comparison indirectly catches removed tracked generated files, though an explicit symmetric initialized file-set assertion is clearer.",
+    "The original candidate lock is saved before comparison; old baseline lock overwrite occurs only after comparison, then lock-check runs. No pre-comparison refill found.",
+    "Whole L1 audit, run record, all non-run.json snapshot/child-stream file path/hash maps, export text, and six stderr outputs are intended for full comparison.",
+    "Retained baseline records have exact noop argv, stdout marker r06b-consumer-ok plus newline, empty child stderr, statuscompleted/exit0 and the generated code commit. Actual source command is a bounded Python print child and parent API/heavy import guard is present."
+  ]
+}

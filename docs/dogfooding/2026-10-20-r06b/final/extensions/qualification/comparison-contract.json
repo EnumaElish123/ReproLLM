@@ -1,0 +1,24 @@
+{
+  "audit_normalization": "Remove only the root generated_at field; nested business fields are preserved.",
+  "baseline_commit": "948d16423023027fff77322b8a872acaba306691",
+  "baseline_time_distribution_inventory": "NOT_SEPARATELY_CAPTURED; do not backfill from candidate-time observations",
+  "candidate_commit": "5d5e104bfc1cc187a00c50448c4a5ca5fa910937",
+  "capture_lock_inputs": "First strictly compare complete normalized newly generated candidate lock against original baseline lock; only after PASS restore exact baseline lock bytes before lock-check and capture, making runtime snapshot inputs identical. The original generated candidate lock is retained separately.",
+  "environment_qualification": "Both phases deliberately use the same unchanged venv. Candidate-time all-distribution observation, old/current uv.lock equality and earlier original quality origin/version guards are separately retained. Current observation is not a historical measurement.",
+  "export_normalization": "Require exactly one run-id line and one started/ended/duration line, verify their complete exact text against the associated typed run record, then replace only those two whole metadata lines; all other bytes remain compared.",
+  "initial_observer_corrections": "Initial baseline collection and its 95 commands remain unchanged. Weak scalar equality and export prefix matching were corrected before candidate execution; 63 independent CPU controls qualify the corrected comparator, then symmetric initialized file sets and candidate-time environment observations were added without changing comparison functions.",
+  "lock_normalization": "Remove only root generated_at, model observed_at and schema-declared Provenance.resolved_at locations; do not recursively remove similarly named business keys.",
+  "origin_payload_observation": "Separate during-candidate observation verifies all 148 old wheel payload files including dist-info and 465 current product/test/dependency/schema/workflow/tool files against candidate commit. It is not a baseline-time environment capture; the older peer receipt's 143 count refers only to package payload files.",
+  "resource_scope": "No GPU/model/provider/HF execution; current project CI remains separate. No release is claimed.",
+  "run_normalization": {
+    "all_other_fields_and_types": "Preserved, including nested timing-like business fields",
+    "root_fields_only": [
+      "run_id",
+      "started_at",
+      "ended_at",
+      "duration_seconds"
+    ]
+  },
+  "schema_version": 1,
+  "stdout_compatibility_limit": "Command stdout sources remain hash-bound; product artifact and stderr equality are asserted. Whole stdout text compatibility is not independently asserted by this matrix."
+}

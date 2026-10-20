@@ -1,0 +1,348 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+______ test_uncertain_manifest_blocks_ancestor_import_credit[toml-syntax] ______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', broken = '[project broken\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+____ test_uncertain_manifest_blocks_ancestor_import_credit[pipfile-syntax] _____
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'Pipfile', broken = '[packages broken\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+______ test_uncertain_manifest_blocks_ancestor_import_credit[yaml-syntax] ______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'environment.yml', broken = 'dependencies: [broken\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+_____ test_uncertain_manifest_blocks_ancestor_import_credit[project-type] ______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', broken = 'project = 42\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+______ test_uncertain_manifest_blocks_ancestor_import_credit[poetry-type] ______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', broken = '[tool]\npoetry = 42\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+_______ test_uncertain_manifest_blocks_ancestor_import_credit[tool-type] _______
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'pyproject.toml', broken = 'tool = 0\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+_____ test_uncertain_manifest_blocks_ancestor_import_credit[packages-type] _____
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'Pipfile', broken = 'packages = 0\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+___ test_uncertain_manifest_blocks_ancestor_import_credit[dependencies-type] ___
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+manifest = 'environment.yaml', broken = 'dependencies: 0\n'
+
+    @pytest.mark.parametrize(
+        ("manifest", "broken"),
+        [
+            ("pyproject.toml", "[project broken\n"),
+            ("Pipfile", "[packages broken\n"),
+            ("environment.yml", "dependencies: [broken\n"),
+            ("pyproject.toml", "project = 42\n"),
+            ("pyproject.toml", "[tool]\npoetry = 42\n"),
+            ("pyproject.toml", "tool = 0\n"),
+            ("Pipfile", "packages = 0\n"),
+            ("environment.yaml", "dependencies: 0\n"),
+        ],
+        ids=["toml-syntax", "pipfile-syntax", "yaml-syntax", "project-type", "poetry-type",
+             "tool-type", "packages-type", "dependencies-type"],
+    )
+    def test_uncertain_manifest_blocks_ancestor_import_credit(
+        tmp_path: Path, manifest: str, broken: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "pyproject.toml": "[project]\n",
+                "uv.lock": '[[package]]\nname="torch"\n',
+                f"sub/{manifest}": broken,
+                "sub/train.py": "import torch\n",
+            },
+        )
+    
+>       assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
+            _torch_import_warning("sub/train.py")
+        ]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:163: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[toml-syntax]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[pipfile-syntax]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[yaml-syntax]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[project-type]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[poetry-type]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[tool-type]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[packages-type]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_uncertain_manifest_blocks_ancestor_import_credit[dependencies-type]
+8 failed in 0.64s

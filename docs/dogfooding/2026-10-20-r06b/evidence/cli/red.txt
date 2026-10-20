@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_unrelated_lock_warns_with_existing_evidence_and_thresholds ________
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at [PROCESS_ADDRESS]>
+
+    def test_unrelated_lock_warns_with_existing_evidence_and_thresholds(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        root = _foreign_lock_repo(tmp_path)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        result = runner.invoke(app, ["audit", str(root), "--format", "json"])
+        assert result.exit_code == 0, result.output
+        report = json.loads(result.stdout)
+        findings = [finding for finding in report["findings"] if finding["rule_id"] == RULE]
+        assert len(findings) == 1
+        finding = findings[0]
+>       assert finding["status"] == "fail"
+E       AssertionError: assert 'pass' == 'fail'
+E         
+E         - fail
+E         + pass
+
+tests/unit/cli/test_dependency_lock_scope.py:44: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_dependency_lock_scope.py::test_unrelated_lock_warns_with_existing_evidence_and_thresholds
+1 failed in 0.85s

@@ -1,0 +1,58 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_two_conda_environment_basenames_never_guess_a_lock_owner[dependencies: []\n] _
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+alternative = 'dependencies: []\n'
+
+    @pytest.mark.parametrize("alternative", ["dependencies: []\n", "dependencies: [broken\n"])
+    def test_two_conda_environment_basenames_never_guess_a_lock_owner(
+        tmp_path: Path, alternative: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "environment.yml": "dependencies:\n  - torch\n",
+                "environment.yaml": alternative,
+                "conda-lock.yml": "package:\n  - name: torch\n",
+            },
+        )
+        context = AuditContext(tmp_path)
+    
+>       assert LlmCriticalDepsPinnedRule().check(context) == [_torch_warning("environment.yml")]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:182: AssertionError
+_ test_two_conda_environment_basenames_never_guess_a_lock_owner[dependencies: [broken\n] _
+
+tmp_path = PosixPath('[PRIVATE_TEST_DIRECTORY]')
+alternative = 'dependencies: [broken\n'
+
+    @pytest.mark.parametrize("alternative", ["dependencies: []\n", "dependencies: [broken\n"])
+    def test_two_conda_environment_basenames_never_guess_a_lock_owner(
+        tmp_path: Path, alternative: str
+    ) -> None:
+        _write(
+            tmp_path,
+            {
+                "environment.yml": "dependencies:\n  - torch\n",
+                "environment.yaml": alternative,
+                "conda-lock.yml": "package:\n  - name: torch\n",
+            },
+        )
+        context = AuditContext(tmp_path)
+    
+>       assert LlmCriticalDepsPinnedRule().check(context) == [_torch_warning("environment.yml")]
+E       AssertionError: assert [] == [Finding(rule..._reason=None)]
+E         
+E         Right contains one more item: Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+E         Use -v to get more diff
+
+tests/unit/rules/test_dependency_lock_scope.py:182: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_two_conda_environment_basenames_never_guess_a_lock_owner[dependencies: []\n]
+FAILED tests/unit/rules/test_dependency_lock_scope.py::test_two_conda_environment_basenames_never_guess_a_lock_owner[dependencies: [broken\n]
+2 failed in 0.41s
