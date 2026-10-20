@@ -1,0 +1,35 @@
+schema_version: 1
+project:
+  name: fastchat-linux-metadata
+experiment:
+  profiles: [evaluation, llm_judge]
+models:
+  primary:
+    provider: huggingface
+    id: lmsys/vicuna-7b-v1.5
+  judge:
+    provider: openai
+    id: gpt-4o-2024-08-06
+datasets:
+  eval:
+    provider: local
+    id: fastchat/llm_judge/data/mt_bench
+    files:
+      - fastchat/llm_judge/data/mt_bench/question.jsonl
+      - fastchat/llm_judge/data/mt_bench/reference_answer/gpt-4.jsonl
+prompts:
+  judge:
+    path: fastchat/llm_judge/data/judge_prompts.jsonl
+evaluation:
+  judge:
+    model_ref: judge
+    prompt_ref: judge
+    params:
+      temperature: 0.0
+      max_tokens: 2048
+    repetitions: 1
+execution:
+  config_files:
+    - fastchat/llm_judge/common.py
+    - fastchat/llm_judge/gen_model_answer.py
+    - fastchat/llm_judge/gen_judgment.py

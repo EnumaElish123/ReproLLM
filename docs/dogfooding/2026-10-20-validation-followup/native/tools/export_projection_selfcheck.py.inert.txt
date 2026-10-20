@@ -1,0 +1,71 @@
+"""Exercise export-verifier rejection with retained real documents, without product runs."""
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+import subprocess
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SCRATCH = HERE.parent
+SOURCE = Path("<HISTORICAL_COMPLETION>/native/exports-nonrun-final-3")
+OUT = HERE / "qualification/nonrun"
+NATIVE = Path("<HISTORICAL_NATIVE>")
+CASE = "lm-evaluation-harness"
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def main() -> int:
+    assert not OUT.exists()
+    assert json.loads((SOURCE / "projections" / (CASE + "-manifest-only.json")).read_bytes())["status"] == "PASS"
+    OUT.mkdir()
+    original = NATIVE / "evidence/runtime" / CASE / "a"
+    markdown = (original / "manifest-only-REPRODUCIBILITY.md").read_text()
+    argv = [str(SCRATCH / "worktree/.venv/bin/python"), str(HERE / "verify_export_nonrun.py"), "--implementation-root", str(SCRATCH / "worktree"), "--project-root", str(NATIVE / "cases" / CASE), "--manifest", str(SOURCE / "sources" / CASE / "reprollm.yaml"), "--markdown", str(original / "manifest-only-REPRODUCIBILITY.md"), "--stdout", str(original / "manifest-export.log"), "--stderr", str(original / "manifest-export.stderr.log"), "--command-receipt", str(original / "manifest-export.command.json"), "--source-binding", str(HERE / "qualification/source-binding-fixture.json"), "--expected-stderr", str(SOURCE / "sources" / CASE / "expected-stderr.txt"), "--audit-json", str(SOURCE / "raw" / (CASE + "-independent-manifest-audit.stdout")), "--case", CASE, "--variant", "a"]
+    variants = {"positive": (markdown, None), "wrong-generation-cap": (markdown.replace("- `max_tokens`: 32", "- `max_tokens`: 96"), None), "wrong-model-id": (markdown.replace("Qwen/Qwen2.5-0.5B-Instruct", "Wrong/Model"), None), "wrong-provenance": (markdown.replace("declared (manifest)", "observed (run)"), None), "missing-audit-finding": (re.sub(r"^- \*\*(?:CRITICAL|WARNING)\*\*.*\n", "", markdown, count=1, flags=re.M), None), "false-runtime-claim": (markdown.replace("No run record exists for this experiment.", "A child execution was verified."), None), "unexpected-diagnostics": (markdown, "diagnostics"), "wrong-candidate-commit": (markdown, "binding")}
+    records = []
+    for label, (body, mode) in variants.items():
+        if label != "positive" and mode is None:
+            assert body != markdown, "Negative mutation did not change its intended field"
+        folder = OUT / label
+        folder.mkdir()
+        md = folder / "mutated.md"
+        md.write_text(body)
+        args = list(argv)
+        args[args.index("--markdown") + 1] = str(md)
+        report = folder / "projection.json"
+        args.extend(["--report", str(report)])
+        if mode == "diagnostics":
+            path = folder / "wrong-expected-stderr.txt"
+            path.write_text("unexpected\n")
+            args[args.index("--expected-stderr") + 1] = str(path)
+        if mode == "binding":
+            path = folder / "wrong-source-binding.json"
+            binding = json.loads((HERE / "qualification/source-binding-fixture.json").read_bytes())
+            binding["source_commit"] = "0" * 40
+            path.write_text(json.dumps(binding))
+            args[args.index("--source-binding") + 1] = str(path)
+        result = subprocess.run(args, capture_output=True)
+        (folder / "stdout").write_bytes(result.stdout)
+        (folder / "stderr").write_bytes(result.stderr)
+        expected_exit = 0 if label == "positive" else 1
+        assert result.returncode == expected_exit, label
+        failed_checks = []
+        if report.exists():
+            failed_checks = [r["label"] for r in json.loads(report.read_bytes())["checks"] if not r["equal"]]
+            assert bool(failed_checks) == (label != "positive")
+        else:
+            assert mode == "binding"
+        records.append({"case": label, "expected_exit": expected_exit, "actual_exit": result.returncode, "rejected_checks": failed_checks, "rejected_before_projection": not report.exists(), "markdown_sha256": sha(md.read_bytes()), "stdout_sha256": sha(result.stdout), "stderr_sha256": sha(result.stderr)})
+    summary = {"schema_version": 1, "status": "PASS", "positive_cases": 1, "negative_cases": len(records) - 1, "records": records, "checker_sha256": sha((HERE / "verify_export_nonrun.py").read_bytes()), "identity_projection_helper_sha256": sha((HERE / "verify_export_current.py").read_bytes()), "historical_fixture_only": True, "current_native_acceptance": False, "product_commands": 0, "resource_jobs": 0, "mutation_scope": "Disposable markdown, expected diagnostics and binding documents only; retained native evidence unchanged."}
+    (OUT / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=2) + "\n")
+    print(json.dumps(summary, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

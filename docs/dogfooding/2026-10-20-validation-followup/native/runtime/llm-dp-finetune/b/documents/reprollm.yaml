@@ -1,0 +1,48 @@
+schema_version: 1
+project: {name: dp-public-supplementary-runtime}
+experiment: {profiles: [finetuning, privacy]}
+models:
+  primary:
+    provider: huggingface
+    id: distilbert/distilgpt2
+    revision: 2290a62682d06624634c1f46a6ad5be0f47f38aa
+    dtype: float32
+    quantization: none
+    trust_remote_code: false
+datasets:
+  train:
+    provider: local
+    id: validation/texts.json
+    files: [validation/texts.json]
+    preprocessing: {description: 'Sixteen synthetic public sentences, tokenizer truncated at 64 tokens'}
+training:
+  method: full
+  learning_rate: 0.0001
+  optimizer: adamw_torch
+  scheduler: constant
+  batch_size: 1
+  gradient_accumulation: 1
+  max_steps: 2
+  precision: float32
+  seed: 42
+  params: {num_train_epochs: 0.125}
+privacy:
+  threat_model: Engineering validation with synthetic nonprivate text; not a production privacy claim
+  mechanism:
+    name: fastDP-single-gpu
+    params: {target_epsilon: 4.0, target_delta: 0.001, max_grad_norm: 1.0}
+  metrics: [epsilon, delta]
+execution:
+  command: python validation/train_entry.py
+  seed: 42
+  config_files:
+    - validation/train.yaml
+    - validation/train_entry.py
+    - src/llm_pft/models/language_model.py
+bindings:
+  privacy.mechanism.params.target_epsilon: {config: 'validation/train.yaml:target_epsilon'}
+  training.max_steps: {config: 'validation/train.yaml:max_steps'}
+  models.primary.id: {config: 'validation/train.yaml:model_id'}
+  models.primary.revision: {config: 'validation/train.yaml:model_revision'}
+artifacts:
+  outputs: ['outputs/current/*.json', 'outputs/current/*.bin', 'outputs/current/*.safetensors']

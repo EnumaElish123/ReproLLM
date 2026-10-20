@@ -1,0 +1,24 @@
+"""Stricter read-only privacy requalification of every original current native run tree."""
+from pathlib import Path
+import hashlib,json,sys
+import path_oracle_precise
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from session_config import CANDIDATE_COMMIT,NATIVE_ROOT,ensure_output
+from controller import CASES
+HERE=Path(__file__).resolve().parent
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def main():
+ out=ensure_output(HERE/'privacy-postcheck.json');assert not out.exists();records=[]
+ for name in CASES:
+  for variant in ['a','b']:
+   folder=NATIVE_ROOT/'evidence/runtime'/name/variant/'run';record=json.loads((folder/'run.json').read_bytes());python_snapshots={row['snapshot'] for row in record['files'] if row.get('snapshot') and row['path'].endswith('.py')};files=[]
+   for p in sorted(folder.rglob('*')):
+    assert not p.is_symlink()
+    if not p.is_file():continue
+    raw=p.read_bytes();text=raw.decode('utf-8');rel=p.relative_to(folder).as_posix();assert not path_oracle_precise.unsafe_matches(text,python_source=rel in python_snapshots),'Private path in original run artifact'
+    files.append({'path':rel,'sha256':sha(raw),'bytes':len(raw),'python_source_lexical_check':rel in python_snapshots})
+   records.append({'case':name,'variant':variant,'run_id':record['run_id'],'files':files})
+ result={'schema_version':1,'candidate_commit':CANDIDATE_COMMIT,'status':'PASS','original_run_trees':len(records),'files_checked':sum(len(r['files']) for r in records),'records':records,'precise_path_oracle_sha256':sha((HERE/'path_oracle_precise.py').read_bytes()),'qualification_sha256':sha((HERE/'privacy-observer-qualification.json').read_bytes()),'checker_sha256':sha(Path(__file__).read_bytes()),'original_evidence_modified':False,'product_gpu_api_or_network_commands':0,'scope':'Same-original-run path privacy requalification; does not replace the complete capture, identities/secrets, diff or export checks.'}
+ out.write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='records'},sort_keys=True))
+if __name__=='__main__':main()

@@ -1,0 +1,143 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-20T01:39:22Z'
+manifest_sha256: sha256:ac4bfde5a7538bfa6058746b51c3e00d25cc327b82c6311fa734f2f33da25775
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen2.5-0.5B-Instruct
+    pinnability: exact
+    revision:
+      value: 7ae557604adf67be50417f59c2c2f167def9a775
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T01:39:22Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: Qwen/Qwen2.5-0.5B-Instruct
+      revision:
+        value: 7ae557604adf67be50417f59c2c2f167def9a775
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T01:39:22Z'
+        note: null
+    chat_template:
+      sha256:
+        value: sha256:cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f
+        source: hf_file:tokenizer_config.json
+        confidence: exact
+        resolved_at: '2026-10-20T01:39:22Z'
+        note: null
+      status: present
+    config_sha256:
+      value: sha256:18e18afcaccafade98daf13a54092927904649e1dd4eba8299ab717d5d94ff45
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-10-20T01:39:22Z'
+      note: null
+    adapter: null
+    local: null
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: false
+datasets:
+  eval:
+    provider: huggingface
+    id: openai/gsm8k
+    revision:
+      value: 740312add88f781978c0658806c59bc2815b9866
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T01:39:22Z'
+      note: null
+    subset: main
+    split: test
+    content_fingerprint:
+      status: not_computed
+    files: null
+prompts:
+  task:
+    path: lm_eval/tasks/gsm8k/gsm8k.yaml
+    sha256: sha256:82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833
+    size_bytes: 1014
+    text_sha256: null
+files:
+- path: lm_eval/tasks/gsm8k/gsm8k.yaml
+  sha256: sha256:82eb1780b263bc040729032b3e076990c7933f42163c91e359f38820dd1d8833
+  size_bytes: 1014
+- path: validation/eval.yaml
+  sha256: sha256:a7bc8316852aac0e9a4b2fb0ea67b0bf10df9b7debc000cad1b0e1a997ad5467
+  size_bytes: 564
+- path: validation/tasks/gsm8k_validation.yaml
+  sha256: sha256:020ac469e598124888040f2bc0fa5f4d49902271d42015f220cfdd104f44fe8f
+  size_bytes: 138
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  top_k: null
+  max_tokens: 32
+  seed: 42
+  do_sample: false
+  stop:
+  - 'Question:'
+  - </s>
+  - <|im_end|>
+  repetition_penalty: null
+  n: null
+inference:
+  backend: vllm
+  version:
+    value: 0.18.0
+    source: importlib_metadata
+    confidence: exact
+    resolved_at: '2026-10-20T01:39:22Z'
+    note: null
+  mode: null
+  dtype: bfloat16
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.12
+  quantization: none
+  max_model_len: 4096
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation:
+  metrics:
+  - name: exact_match
+    implementation: lm_eval/api/metrics.py
+    implementation_sha256: sha256:f4794761c3f53fc036336e79c65dca355ea26a8d4cb00b27155ea2ab4846dbb2
+    implementation_version: null
+  aggregation: mean
+  repetitions: 1
+  thresholds: null
+  definitions: null
+  query_budget: null
+  judge: null
+privacy: null
+environment:
+  python: 3.11.12
+  platform: linux
+  packages:
+    accelerate: 1.11.0
+    anthropic: 1.8.0
+    datasets: 3.6.0
+    evaluate: 0.4.6
+    lm_eval: 0.4.14.dev0
+    numpy: 2.2.6
+    openai: 2.24.0
+    peft: 0.18.1
+    safetensors: 0.8.0
+    sentencepiece: 0.2.2
+    tokenizers: 0.22.2
+    torch: 2.10.0+cu129
+    transformers: 4.57.6
+    trl: 0.24.0
+    vllm: 0.18.0
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.9'
+    source: nvidia_smi

@@ -1,0 +1,119 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-20T01:53:15Z'
+manifest_sha256: sha256:95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: distilbert/distilgpt2
+    pinnability: exact
+    revision:
+      value: 2290a62682d06624634c1f46a6ad5be0f47f38aa
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T01:53:15Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: distilbert/distilgpt2
+      revision:
+        value: 2290a62682d06624634c1f46a6ad5be0f47f38aa
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T01:53:15Z'
+        note: null
+    chat_template:
+      sha256:
+        value: null
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T01:53:15Z'
+        note: model has no chat template
+      status: absent
+    config_sha256:
+      value: sha256:4ec5947c1d59fee6212cdf3b0ec1a53eac02092554c5ff0a733488cbd2c64f3a
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-10-20T01:53:15Z'
+      note: null
+    adapter: null
+    local: null
+    dtype: float32
+    quantization: none
+    trust_remote_code: false
+datasets:
+  train:
+    provider: local
+    id: validation/texts.json
+    revision:
+      value: null
+      source: filesystem
+      confidence: exact
+      resolved_at: '2026-10-20T01:53:15Z'
+      note: null
+    subset: null
+    split: null
+    content_fingerprint:
+      status: not_computed
+    files:
+    - path: validation/texts.json
+      sha256: sha256:1f9a355a543bef54a2bf73e9c9a73050e70b8fdc617c83796cd7c92c029b86ba
+      size_bytes: 1395
+prompts: {}
+files:
+- path: src/llm_pft/models/language_model.py
+  sha256: sha256:b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896
+  size_bytes: 28860
+- path: validation/train.yaml
+  sha256: sha256:ab9b5ab5be9289eccd4c967f2d9486075c60270a67ad315de7fed2a392f22951
+  size_bytes: 274
+- path: validation/train_entry.py
+  sha256: sha256:21d644d2596ae71f633196102561a0c5405fe0f220fc9bf3de895c458ef3e92a
+  size_bytes: 5629
+generation: null
+inference: null
+training:
+  method: full
+  learning_rate: 0.0001
+  optimizer: adamw_torch
+  scheduler: constant
+  batch_size: 1
+  gradient_accumulation: 1
+  epochs: null
+  max_steps: 2
+  precision: float32
+  seed: 42
+  deepspeed: null
+  params:
+    num_train_epochs: 0.125
+evaluation: null
+privacy:
+  threat_model: Engineering validation with synthetic nonprivate text; not a production privacy claim
+  mechanism:
+    name: fastDP-single-gpu
+    params:
+      target_epsilon: 8.0
+      target_delta: 0.001
+      max_grad_norm: 1.0
+  metrics:
+  - epsilon
+  - delta
+  attack: null
+environment:
+  python: 3.10.20
+  platform: linux
+  packages:
+    accelerate: 0.20.3
+    datasets: 2.18.0
+    numpy: 1.26.4
+    safetensors: 0.4.5
+    tokenizers: 0.13.3
+    torch: 2.2.0+cu121
+    transformers: 4.29.0
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.2'
+    source: nvidia_smi

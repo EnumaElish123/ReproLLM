@@ -1,0 +1,18 @@
+"""Qualify the supplementary pure parser against real retained logs and targeted mutations."""
+from pathlib import Path
+import hashlib,json
+import yaml
+from harmbench_log_observer import parse
+HERE=Path(__file__).resolve().parent
+OLD=Path('<HISTORICAL_NATIVE>')
+raw=(OLD/'evidence/runtime/HarmBench/a/run.log').read_bytes();log=raw.decode();cfg=yaml.safe_load((OLD/'cases/HarmBench/validation/pipeline.yaml').read_bytes());records=[]
+mutations={'positive':log,'wrong-target-fraction':log.replace("'gpu_memory_utilization': 0.28","'gpu_memory_utilization': 0.29",1),'wrong-classifier-fraction':log.replace("'gpu_memory_utilization': 0.45","'gpu_memory_utilization': 0.44",1),'wrong-tensor-parallel':log.replace('tensor_parallel_size=1','tensor_parallel_size=2',1),'wrong-engine-dtype':log.replace('dtype=torch.float16','dtype=torch.float32',1),'wrong-model-length':log.replace("'max_model_len': 2048","'max_model_len': 4096",1),'wrong-engine-length':log.replace('max_seq_len=2048','max_seq_len=4096',1),'wrong-device':log.replace('device_config=cuda','device_config=cpu',1),'missing-engine':'\n'.join(l for l in log.splitlines() if 'Initializing a V1 LLM engine' not in l),'wrong-revision':log.replace(cfg['target_revision'],'0'*40,1),'duplicated-stages':log+log}
+for label,value in mutations.items():
+    assert label=='positive' or value!=log
+    rejected=False
+    try:observations=parse(value,cfg)
+    except (AssertionError,KeyError,ValueError,SyntaxError):rejected=True
+    assert rejected==(label!='positive'),label
+    records.append({'label':label,'accepted':not rejected,'expected_accepted':label=='positive','synthetic_input_sha256':hashlib.sha256(value.encode()).hexdigest()})
+result={'schema_version':1,'status':'PASS','positive_cases':1,'negative_cases':len(records)-1,'records':records,'historical_fixture_original_sha256':hashlib.sha256(raw).hexdigest(),'checker_sha256':hashlib.sha256((HERE/'harmbench_log_observer.py').read_bytes()).hexdigest(),'resource_jobs_or_product_or_network_commands':0,'qualification_is_current_resource_acceptance':False}
+p=HERE/'qualification.json';assert not p.exists();p.write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='records'},sort_keys=True))

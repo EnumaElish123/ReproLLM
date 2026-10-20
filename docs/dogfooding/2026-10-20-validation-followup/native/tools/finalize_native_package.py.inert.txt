@@ -1,0 +1,35 @@
+"""Add reviewer guide/timing qualification, then independently audit all original and shared bytes."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,getpass,socket,re
+N=Path('<CURRENT_SESSION>/native');D=N.parent/'shareable-resource/native'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(p,x):p.write_text(json.dumps(x,indent=2,sort_keys=True)+'\n')
+start=N/'driver/setup/started.json';end=N/'driver/terminal/command.json';hold=N/'driver-observer-hold.json';resume=N/'driver-observer-resume.json'
+files=[start,end,hold,resume]
+timing={'schema_version':1,'classification':'RETROSPECTIVE_FILESYSTEM_EVIDENCE_INTERVAL','native_controller_evidence_interval_seconds':round((end.stat().st_mtime_ns-start.stat().st_mtime_ns)/1e9,6),'top_level_driver_observer_hold_seconds':round((resume.stat().st_mtime_ns-hold.stat().st_mtime_ns)/1e9,6),'qualification':'Original receipt file creation/mtime envelope, not an originally instrumented monotonic whole-driver stopwatch. The hold affected only our top-level orchestration, not the current controller/child. All underlying command elapsed times remain original and unmodified.','source_receipts':[{'file':'<NATIVE>/'+p.relative_to(N).as_posix(),'original_sha256':sha(p),'mtime_ns':p.stat().st_mtime_ns,'mtime_utc':datetime.fromtimestamp(p.stat().st_mtime_ns/1e9,timezone.utc).isoformat()} for p in files],'product_gpu_api_or_network_reruns':0}
+time_path=N/'packaging/timing-qualification.json';assert not time_path.exists();dump(time_path,timing)
+sources=json.loads((D/'source-index.json').read_bytes());retained=json.loads((D/'retained-files.json').read_bytes());summary=json.loads((D/'summary.json').read_bytes());old_audit=json.loads((D/'audit.json').read_bytes())
+identities=set([socket.gethostname(),getpass.getuser()])-set([''])
+def transform(text):
+ text=text.replace(str(N.parent),'<CURRENT_SESSION>')
+ for name in identities:text=re.sub(r'(?<![\w])'+re.escape(name)+r'(?![\w])','<LOCAL_IDENTITY>',text)
+ return text
+for original,target in [(N/'packaging/README.native.md','README.md'),(time_path,'timing-qualification.json'),(Path(__file__),'tools/finalize_native_package.py.inert.txt')]:
+ raw=original.read_bytes();out=transform(raw.decode()).encode();p=D/target;assert not p.exists();p.parent.mkdir(exist_ok=True,parents=True);p.write_bytes(out);key='<NATIVE>/'+original.relative_to(N).as_posix();mode='inert-sharing-projection' if target.endswith('.inert.txt') else 'safe-reviewer-guide-or-qualified-receipt'
+ sources['source_files'].append({'source':key,'original_sha256':hashlib.sha256(raw).hexdigest(),'original_bytes':len(raw),'retention':mode,'shared_files':[target]});retained['files'].append({'file':target,'retained_sha256':sha(p),'retained_bytes':len(out),'source':key,'original_sha256':hashlib.sha256(raw).hexdigest(),'original_bytes':len(raw),'byte_identical':out==raw,'sharing_transform':mode+'; exact original hash retained; no executable source claim'})
+summary['native_controller_evidence_interval_seconds']=timing['native_controller_evidence_interval_seconds'];summary['top_level_driver_observer_hold_seconds']=timing['top_level_driver_observer_hold_seconds'];summary['whole_driver_timing_qualification']=timing['qualification'];dump(D/'summary.json',summary)
+entry=next(r for r in retained['files'] if r['file']=='summary.json');entry['retained_sha256']=sha(D/'summary.json');entry['retained_bytes']=(D/'summary.json').stat().st_size;entry['derived_sources'].append('<NATIVE>/packaging/timing-qualification.json')
+sources['source_count']=len(sources['source_files']);retained['retained_count']=len(retained['files']);dump(D/'source-index.json',sources);dump(D/'retained-files.json',retained)
+# Full independent re-read of every indexed source and retained file. No credential files, weights cache, clones or historical tree traversal.
+for row in sources['source_files']:
+ p=N/row['source'].removeprefix('<NATIVE>/');assert sha(p)==row['original_sha256'] and p.stat().st_size==row['original_bytes']
+for row in retained['files']:
+ p=D/row['file'];assert sha(p)==row['retained_sha256'] and p.stat().st_size==row['retained_bytes'];text=p.read_text()
+ for identity in identities:assert re.search(r'(?<![\w])'+re.escape(identity)+r'(?![\w])',text) is None
+ for prefix in ['/home/ubuntu/<LOCAL_IDENTITY>','/home/<LOCAL_IDENTITY>','/mnt/share_data/<LOCAL_IDENTITY>','<CURRENT_SESSION>','<HISTORICAL_COMPLETION>','<HISTORICAL_JUDGE_FIX>']:assert prefix not in text
+expected={r['file'] for r in retained['files']}|{'source-index.json','retained-files.json','audit.json'};actual={p.relative_to(D).as_posix() for p in D.rglob('*') if p.is_file()};assert expected==actual
+assert len([r for r in retained['files'] if r.get('sharing_transform','').startswith('NONE:') and '/run/' in r['file']])==64
+assert all(not r['file'].endswith(('run/stdout.log','run/stderr.log')) for r in retained['files'])
+audit=dict(old_audit,source_count=len(sources['source_files']),retained_count=len(retained['files']),source_hashes_verified_unchanged=len(sources['source_files']),retained_hashes_verified=len(retained['files']),source_index_sha256=sha(D/'source-index.json'),retained_index_sha256=sha(D/'retained-files.json'),finalizer_original_sha256=sha(Path(__file__)),complete_independent_final_reread=True,README_present=True,index_filename='retained-files.json',package_files=len(actual),package_bytes_before_final_audit=sum(p.stat().st_size for p in D.rglob('*') if p.is_file()))
+dump(D/'audit.json',audit);print(json.dumps({'status':'PASS','source_count':audit['source_count'],'retained_count':audit['retained_count'],'files':len(actual),'native_evidence_interval_seconds':timing['native_controller_evidence_interval_seconds'],'driver_hold_seconds':timing['top_level_driver_observer_hold_seconds'],'command_seconds_sum':summary['command_elapsed_seconds_sum'],'native_cli_run_seconds_sum':summary['native_run_command_elapsed_seconds_sum'],'retained_index':'retained-files.json','independent_final_reread':True},sort_keys=True))

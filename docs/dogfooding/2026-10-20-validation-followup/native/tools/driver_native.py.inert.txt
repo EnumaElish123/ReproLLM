@@ -1,0 +1,30 @@
+"""One immutable, sequential execution of the authorized original native matrix."""
+from __future__ import annotations
+import hashlib,json,os,subprocess,sys,time
+from pathlib import Path
+from session_config import QUALITY_ROOT,ensure_output,require_acceptance
+from controller import CASES
+HERE=Path(__file__).resolve().parent;ROOT=HERE.parent;PYTHON=ROOT/'worktree/.venv/bin/python';OUT=HERE/'driver'
+def invoke(label,args):
+    folder=ensure_output(OUT/label);folder.mkdir(parents=True,exist_ok=False);argv=[str(PYTHON),str(HERE/'controller.py'),*map(str,args)];start=time.monotonic()
+    (folder/'started.json').write_text(json.dumps({'schema_version':1,'argv':argv,'automatic_retry':False},indent=2)+'\n')
+    env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
+    with (folder/'stdout.log').open('xb') as out,(folder/'stderr.log').open('xb') as err:p=subprocess.run(argv,env=env,stdout=out,stderr=err)
+    receipt={'schema_version':1,'argv':argv,'exit_code':p.returncode,'elapsed_seconds':round(time.monotonic()-start,6),'stdout_sha256':hashlib.sha256((folder/'stdout.log').read_bytes()).hexdigest(),'stderr_sha256':hashlib.sha256((folder/'stderr.log').read_bytes()).hexdigest(),'automatic_retry':False}
+    (folder/'command.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n');print(json.dumps({'label':label,'exit':p.returncode,'elapsed_seconds':receipt['elapsed_seconds']},sort_keys=True),flush=True)
+    if p.returncode:raise SystemExit(p.returncode)
+def main():
+    require_acceptance();wheel=QUALITY_ROOT/'dist/reprollm-0.7.0-py3-none-any.whl';manifest=QUALITY_ROOT/'build-manifest.json';assert wheel.exists() and manifest.exists()
+    invoke('setup',['setup'])
+    for name in CASES:
+        for variant in ['a','b']:
+            invoke(name+'-'+variant+'-prepare',['prepare',name,'--variant',variant])
+            invoke(name+'-'+variant+'-run',['run',name,'--variant',variant,'--wheel',wheel,'--manifest',manifest])
+            invoke(name+'-'+variant+'-selected-export',['verify-export',name,'--variant',variant])
+            if variant=='a':invoke(name+'-nonrun-exports',['verify-nonrun',name])
+        invoke(name+'-pair',['review',name]);print('CASE_COMPLETE '+name,flush=True)
+    # Observer is read-only; retain its own original streams and exit independently.
+    folder=ensure_output(OUT/'terminal');folder.mkdir(exist_ok=False);argv=[str(PYTHON),str(HERE/'terminal_observer.py')]
+    with (folder/'stdout.log').open('xb') as out,(folder/'stderr.log').open('xb') as err:p=subprocess.run(argv,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),stdout=out,stderr=err)
+    (folder/'command.json').write_text(json.dumps({'schema_version':1,'argv':argv,'exit_code':p.returncode,'stdout_sha256':hashlib.sha256((folder/'stdout.log').read_bytes()).hexdigest(),'stderr_sha256':hashlib.sha256((folder/'stderr.log').read_bytes()).hexdigest()},sort_keys=True,indent=2)+'\n');print('TERMINAL_EXIT '+str(p.returncode),flush=True);return p.returncode
+if __name__=='__main__':sys.exit(main())

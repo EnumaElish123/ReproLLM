@@ -1,0 +1,16 @@
+schema_version: 1
+project:
+  name: harmbench-linux-metadata
+experiment:
+  profiles: [safety]
+models:
+  primary:
+    provider: huggingface
+    id: lmsys/vicuna-7b-v1.5
+datasets:
+  eval:
+    provider: local
+    id: data/behavior_datasets
+    files: [data/behavior_datasets/harmbench_behaviors_text_all.csv]
+execution:
+  config_files: [configs/model_configs/models.yaml]

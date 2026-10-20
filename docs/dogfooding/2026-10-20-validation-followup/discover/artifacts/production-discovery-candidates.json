@@ -1,0 +1,453 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-20T01:49:38Z",
+  "model": "deepseek-flash",
+  "input_files": [
+    "README.md",
+    "reprollm.yaml",
+    "src/global_configs.py#L27",
+    "src/llm_pft/arguments/attack_args.py#L11",
+    "src/llm_pft/arguments/config_args.py#L22",
+    "src/llm_pft/arguments/dataset_args.py#L10",
+    "src/llm_pft/arguments/env_args.py#L7",
+    "src/llm_pft/arguments/evaluation_args.py#L7",
+    "src/llm_pft/arguments/model_args.py#L9",
+    "src/llm_pft/arguments/ner_args.py#L13",
+    "src/llm_pft/arguments/outdir_args.py#L9",
+    "src/llm_pft/arguments/privacy_args.py#L7",
+    "src/llm_pft/arguments/sampling_args.py#L9",
+    "src/llm_pft/arguments/trainer_args.py#L13",
+    "src/llm_pft/global_configs.py#L29",
+    "src/llm_pft/local_configs.py#L5",
+    "src/llm_pft/models/language_model.py#L28",
+    "src/llm_pft/models/language_model.py#L37",
+    "src/llm_pft/ner/pii_results.py#L11",
+    "src/llm_pft/ner/pii_results.py#L112",
+    "src/llm_pft/ner/pii_results.py#L70",
+    "src/local_configs.py#L5"
+  ],
+  "dropped_files": [],
+  "truncated_files": [],
+  "candidates": [
+    {
+      "id": "c-bafc37",
+      "kind": "dependency",
+      "name": "fastdp_version",
+      "suggested_field": "custom.environment.fastdp_version",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "fastDP supplies the DP optimizer/accountant; a different commit can change clipping, noise, and accounting, invalidating privacy claims.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "README.md",
+          "line": null,
+          "snippet": "pip install fastDP@git+https://github.com/jyhong836/fast-differential-privacy.git"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-404cca",
+      "kind": "dependency",
+      "name": "python_version",
+      "suggested_field": "custom.environment.python_version",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Different Python versions change dependency resolution and runtime semantics, which can break the documented 3.10 setup.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "README.md",
+          "line": null,
+          "snippet": "conda create -n llm-pft python=3.10 -y"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-0a8bf0",
+      "kind": "parameter",
+      "name": "dataset_mode",
+      "suggested_field": "custom.dataset.mode",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "Dataset mode selects undefended versus scrubbed data, which changes the training distribution and defense being evaluated.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/dataset_args.py",
+          "line": null,
+          "snippet": "dataset_mode: str = field(default=\"undefended\""
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-undefended.yml:dataset_args.dataset_mode",
+        "env": null
+      }
+    },
+    {
+      "id": "c-6b3901",
+      "kind": "parameter",
+      "name": "deepspeed_zero_stage",
+      "suggested_field": "custom.training.deepspeed_zero_stage",
+      "suggested_severity": "WARNING",
+      "confidence": "low",
+      "rationale": "ZeRO stage determines parameter partitioning and DP integration; stage 2 and stage 3 are not interchangeable for DP training.",
+      "evidence": [],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-d27322",
+      "kind": "parameter",
+      "name": "do_sample",
+      "suggested_field": "custom.sampling.do_sample",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Do_sample toggles stochastic versus greedy generation, changing sampled sequences used in evaluation.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/sampling_args.py",
+          "line": null,
+          "snippet": "do_sample: bool = field(default=True"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-debe72",
+      "kind": "parameter",
+      "name": "gradient_accumulation_steps",
+      "suggested_field": "custom.training.gradient_accumulation_steps",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Gradient accumulation determines the effective batch size used by DP accounting and optimization, so changing it changes privacy/utility results.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/trainer_args.py",
+          "line": null,
+          "snippet": "gradient_accumulation_steps: int = field(default=4"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:trainer_args.gradient_accumulation_steps",
+        "env": null
+      }
+    },
+    {
+      "id": "c-4edd09",
+      "kind": "parameter",
+      "name": "limit_dataset_size",
+      "suggested_field": "custom.dataset.limit_dataset_size",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Limiting the dataset changes the number of training examples and the implicit DP delta (1/len(train_set)).",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/dataset_args.py",
+          "line": null,
+          "snippet": "limit_dataset_size: int = field(default=1_000_000"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr_1k-llama2-7b-dp8.yml:dataset_args.limit_dataset_size",
+        "env": null
+      }
+    },
+    {
+      "id": "c-7b21e7",
+      "kind": "parameter",
+      "name": "max_grad_norm_dp",
+      "suggested_field": "custom.privacy.max_grad_norm_dp",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "The clipping norm changes the sensitivity and therefore the noise scale and utility of DP training.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/privacy_args.py",
+          "line": null,
+          "snippet": "max_grad_norm_dp: float = field(default=1.0"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:privacy_args.max_grad_norm_dp",
+        "env": null
+      }
+    },
+    {
+      "id": "c-18dc4a",
+      "kind": "parameter",
+      "name": "model_ckpt",
+      "suggested_field": "custom.model.checkpoint",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "The checkpoint determines the base model weights, tokenizer, and architecture, so a different checkpoint is a different experiment.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/model_args.py",
+          "line": null,
+          "snippet": "model_ckpt: str = field(default=None"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:model_args.model_ckpt",
+        "env": null
+      }
+    },
+    {
+      "id": "c-da7098",
+      "kind": "parameter",
+      "name": "ner_model",
+      "suggested_field": "custom.ner.model",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "The NER model determines which spans are detected as PII, so scrubbing and leakage measurements are not comparable across NER models.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/ner_args.py",
+          "line": null,
+          "snippet": "ner_model: str = field(default=\"flair/ner-english-ontonotes-large\""
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-scrubbed.yml:ner_args.ner_model",
+        "env": null
+      }
+    },
+    {
+      "id": "c-347cf5",
+      "kind": "parameter",
+      "name": "no_accountant",
+      "suggested_field": "custom.privacy.no_accountant",
+      "suggested_severity": "WARNING",
+      "confidence": "medium",
+      "rationale": "Disabling the accountant removes the computed epsilon accounting, making the effective privacy budget unreported.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/privacy_args.py",
+          "line": null,
+          "snippet": "no_accountant: bool = field(default=False"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-817944",
+      "kind": "parameter",
+      "name": "noise_multiplier",
+      "suggested_field": "custom.privacy.noise_multiplier",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "When set, noise_multiplier overrides target_epsilon and directly controls the DP noise, so omitting it makes the actual privacy level ambiguous.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/privacy_args.py",
+          "line": null,
+          "snippet": "noise_multiplier: float = field(default=None"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:privacy_args.noise_multiplier",
+        "env": null
+      }
+    },
+    {
+      "id": "c-8fb19f",
+      "kind": "parameter",
+      "name": "num_sequences",
+      "suggested_field": "custom.evaluation.num_sequences",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "The number of evaluated sequences affects the precision of leakage metrics and the reported attack success rate.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/evaluation_args.py",
+          "line": null,
+          "snippet": "num_sequences: int = field(default=100"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-e8e776",
+      "kind": "parameter",
+      "name": "num_train_epochs",
+      "suggested_field": "custom.training.num_train_epochs",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Epoch count changes the number of optimization steps and thus the privacy budget consumed.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/trainer_args.py",
+          "line": null,
+          "snippet": "num_train_epochs: int = field(default=4"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:trainer_args.num_train_epochs",
+        "env": null
+      }
+    },
+    {
+      "id": "c-571110",
+      "kind": "parameter",
+      "name": "peft",
+      "suggested_field": "custom.model.peft",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "PEFT strategy selects full fine-tuning versus LoRA, changing trainable parameters and DP clipping behavior.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/model_args.py",
+          "line": null,
+          "snippet": "peft: str = field(default=\"none\""
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-131ee0",
+      "kind": "parameter",
+      "name": "per_device_train_batch_size",
+      "suggested_field": "custom.training.per_device_train_batch_size",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Per-device batch size changes the effective batch size and DP noise calibration, affecting both utility and privacy accounting.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/trainer_args.py",
+          "line": null,
+          "snippet": "per_device_train_batch_size: int = field(default=16"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:trainer_args.per_device_train_batch_size",
+        "env": null
+      }
+    },
+    {
+      "id": "c-c9d9e0",
+      "kind": "parameter",
+      "name": "sample_duplication_rate",
+      "suggested_field": "custom.dataset.sample_duplication_rate",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Duplicating samples changes the effective training set size and DP delta default, affecting both utility and privacy accounting.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/dataset_args.py",
+          "line": null,
+          "snippet": "sample_duplication_rate: int = field(default=1"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr_1k-llama2-7b-dp8.yml:dataset_args.sample_duplication_rate",
+        "env": null
+      }
+    },
+    {
+      "id": "c-f19f32",
+      "kind": "parameter",
+      "name": "target_delta",
+      "suggested_field": "custom.privacy.target_delta",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "Delta is part of the (epsilon, delta)-DP guarantee; leaving it to the implicit 1/len(train_set) default couples the guarantee to dataset size.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/privacy_args.py",
+          "line": null,
+          "snippet": "target_delta: float = field(default=None"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:privacy_args.target_delta",
+        "env": null
+      }
+    },
+    {
+      "id": "c-3e92ab",
+      "kind": "parameter",
+      "name": "target_epsilon",
+      "suggested_field": "custom.privacy.target_epsilon",
+      "suggested_severity": "CRITICAL",
+      "confidence": "high",
+      "rationale": "Changing epsilon changes the formal DP guarantee and the noise calibrated by the accountant, so privacy/utility results are not comparable.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/privacy_args.py",
+          "line": null,
+          "snippet": "target_epsilon: float = field(default=-1"
+        }
+      ],
+      "suggested_bindings": {
+        "cli": null,
+        "config": "configs/fine-tune/echr-llama2-7b-dp8.yml:privacy_args.target_epsilon",
+        "env": null
+      }
+    },
+    {
+      "id": "c-de620e",
+      "kind": "parameter",
+      "name": "tokenizer_max_length",
+      "suggested_field": "custom.model.tokenizer_max_length",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Truncation length changes which tokens are trained/evaluated and therefore reported utility and leakage.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/model_args.py",
+          "line": null,
+          "snippet": "tokenizer_max_length: int = field(default=1024"
+        }
+      ],
+      "suggested_bindings": null
+    },
+    {
+      "id": "c-8914b9",
+      "kind": "parameter",
+      "name": "top_p",
+      "suggested_field": "custom.sampling.top_p",
+      "suggested_severity": "WARNING",
+      "confidence": "high",
+      "rationale": "Top-p controls sampling randomness; changing it alters generated attack/evaluation samples and leakage metrics.",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "src/llm_pft/arguments/sampling_args.py",
+          "line": null,
+          "snippet": "top_p: float = field(default=1.0"
+        }
+      ],
+      "suggested_bindings": null
+    }
+  ]
+}

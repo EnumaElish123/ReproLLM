@@ -1,0 +1,107 @@
+"""Independent conservative path checks with explicit Python lexical context.
+
+Arithmetic operators, the fixed [/INST] token, and f-string continuations
+of a demonstrably relative path are syntax rather than machine paths.
+"""
+import ast
+import io
+import re
+import tokenize
+import warnings
+warnings.filterwarnings("ignore", category=SyntaxWarning)
+
+LOCAL_PATH = re.compile(
+    r'(?i)\bfile:[/\\]{2}'
+    r'|(?<![\w])[A-Za-z]:[\\/](?=[^\s\"\x27<>;,\)\]}>])'
+    r'|(?<![\w:/\\*<.])/(?=[^\s\"\x27<>;,\)\]}>])[^\s\"\x27<>;,\)\]}>]*'
+    r'|\\\\[A-Za-z0-9_.-]+\\+[A-Za-z0-9_.-]+'
+)
+
+
+def _simple_name(node):
+    return isinstance(node, ast.Name) or isinstance(node, ast.Attribute) and _simple_name(node.value)
+
+
+def _safe_fstring(token):
+    try:
+        value=ast.parse(token, mode='eval').body
+    except SyntaxError:
+        return False
+    if not isinstance(value,ast.JoinedStr) or not value.values:
+        return False
+    first=value.values[0]
+    if not isinstance(first,ast.Constant) or not isinstance(first.value,str):
+        return False
+    if not re.match(r'^[A-Za-z0-9_.-]+/',first.value):
+        return False
+    for part in value.values:
+        if isinstance(part,ast.Constant):
+            if not isinstance(part.value,str) or re.fullmatch(r'[A-Za-z0-9_./{}-]*',part.value) is None:
+                return False
+        elif isinstance(part,ast.FormattedValue):
+            if not _simple_name(part.value) or part.format_spec is not None:
+                return False
+        else:
+            return False
+    return True
+
+
+def _python_spans(text):
+    try:
+        tree=ast.parse(text)
+    except (SyntaxError,ValueError,RecursionError):
+        return [],[],[]
+    offsets=[0]
+    for line in text.splitlines(keepends=True):
+        offsets.append(offsets[-1]+len(line))
+    def offset(position):
+        row,column=position
+        return offsets[row-1]+column
+    operators=[]
+    fstrings=[]
+    string_spans=[]
+    # Python3.12 exposes FSTRING tokens rather than one STRING. Parsed source
+    # boundaries still distinguish template continuation from literal paths.
+    source_lines=text.splitlines(keepends=True)
+    def ast_offset(row,column):
+        return offsets[row-1]+len(source_lines[row-1].encode("utf-8")[:column].decode("utf-8"))
+    for node in ast.walk(tree):
+        if isinstance(node,ast.JoinedStr) and node.end_lineno is not None:
+            string_spans.append((ast_offset(node.lineno,node.col_offset),ast_offset(node.end_lineno,node.end_col_offset)))
+    try:
+        for token in tokenize.generate_tokens(io.StringIO(text).readline):
+            start,end=offset(token.start),offset(token.end)
+            if token.type==tokenize.OP and token.string in {'/','//','/=','//='}:
+                operators.append((start,end))
+            elif token.type==tokenize.STRING:
+                string_spans.append((start,end))
+                if _safe_fstring(token.string):
+                    fstrings.append((start,end))
+    except (tokenize.TokenError,IndentationError,IndexError):
+        return [],[],[]
+    return operators,fstrings,string_spans
+
+
+def unsafe_matches(text, *, python_source=False):
+    operators,fstrings,string_spans=_python_spans(text) if python_source else ([],[],[])
+    # Mask only parsed slash operators. Keep comments/literals and every original
+    # offset intact so a regex match cannot swallow a later private comment path.
+    scan = list(text)
+    for left, right in operators:
+        scan[left:right] = ' ' * (right - left)
+    result=[]
+    for match in LOCAL_PATH.finditer(''.join(scan)):
+        start,end=match.span()
+        if match.group()=='/INST' and start>0 and text[start-1:end+1]=='[/INST]':
+            continue
+        if any(left<=start<end<=right for left,right in fstrings):
+            continue
+        if (
+            match.group().startswith("/")
+            and not any(char in match.group() for char in ("\\", ":"))
+            and any(left <= start < end <= right for left,right in string_spans)
+            and re.search(r"\{[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\}$", text[:start])
+        ):
+            continue
+        result.append(match)
+    return result

@@ -1,0 +1,459 @@
+#!/usr/bin/env python3
+"""Inspect retained selected-run/default export evidence; never execute ReproLLM."""
+from session_config import CANDIDATE_COMMIT, CANDIDATE_ROOT, NATIVE_ROOT, RESOURCE_ROOT, SESSION_ROOT, QUALITY_ROOT, GATE_A_ROOT, IPC_ROOT, GPU_INDEX, ensure_output, require_acceptance
+import argparse
+import copy
+import datetime
+import getpass
+import hashlib
+import html
+import json
+import re
+import socket
+import subprocess
+from pathlib import Path
+
+import yaml
+
+SECTIONS = ('models', 'datasets', 'prompts', 'generation', 'inference', 'training', 'evaluation', 'privacy', 'execution', 'custom')
+FIELDS = {
+    'lm-evaluation-harness': ('generation.max_tokens', [32, 48], 'Generation parameters', 'max_tokens'),
+    'FastChat': ('generation.max_tokens', [32, 48], 'Generation parameters', 'max_tokens'),
+    'LlamaFactory': ('training.learning_rate', [0.0001, 0.0002], 'Training', 'learning_rate'),
+    'HarmBench': ('generation.max_tokens', [16, 24], 'Generation parameters', 'max_tokens'),
+    'llm-dp-finetune': ('privacy.mechanism.params.target_epsilon', [8, 4], 'Privacy', 'mechanism.params.target_epsilon'),
+    'FastChat-deepseek': ('evaluation.judge.params.max_tokens', [256, 384], 'Judge', 'params.max_tokens'),
+}
+
+
+def digest(value):
+    body = value if isinstance(value, bytes) else json.dumps(value, sort_keys=True, ensure_ascii=False, default=str).encode()
+    return hashlib.sha256(body).hexdigest()
+
+
+def normalize(value, schema, root_schema):
+    if '$ref' in schema:
+        schema = root_schema['$defs'][schema['$ref'].split('/')[-1]]
+    if 'anyOf' in schema:
+        if value is None:
+            return None
+        candidates = [s for s in schema['anyOf'] if s.get('type') != 'null']
+        schema = candidates[0] if candidates else {}
+        return normalize(value, schema, root_schema)
+    if isinstance(value, dict):
+        result = copy.deepcopy(value)
+        # Exported JSON Schema omits factory defaults; MetricSpec.params is
+        # explicitly Field(default_factory=dict) in the bound manifest schema.
+        if schema.get('title') == 'MetricSpec':
+            result.setdefault('params', {})
+        for key, subschema in schema.get('properties', {}).items():
+            if key not in result and 'default' in subschema:
+                result[key] = copy.deepcopy(subschema['default'])
+            if key in result:
+                result[key] = normalize(result[key], subschema, root_schema)
+        for pattern, subschema in schema.get('patternProperties', {}).items():
+            for key in set(result) - set(schema.get('properties', {})):
+                if re.search(pattern, key):
+                    result[key] = normalize(result[key], subschema, root_schema)
+        extra = schema.get('additionalProperties')
+        if isinstance(extra, dict):
+            for key in set(result)-set(schema.get('properties', {})):
+                result[key] = normalize(result[key], extra, root_schema)
+        return result
+    if isinstance(value, list):
+        return [normalize(v, schema.get('items', {}), root_schema) for v in value]
+    if schema.get('type') == 'number' and isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    if schema.get('type') == 'integer' and isinstance(value, (int, float)) and not isinstance(value, bool):
+        assert int(value) == value, 'Bound integer schema rejects fractional values'
+        return int(value)
+    return value
+
+
+def plain(value):
+    if isinstance(value, dict):
+        if {'value', 'source', 'confidence'} <= set(value):
+            return plain(value['value'])
+        return {k:plain(v) for k,v in sorted(value.items()) if v is not None}
+    if isinstance(value, list):
+        return [plain(v) for v in value]
+    return value
+
+
+def project(value, prefix, source, flat):
+    if isinstance(value, dict):
+        if source == 'lock' and {'value', 'source', 'confidence'} <= set(value):
+            flat[prefix] = {'value':value['value'], 'source':source, 'confidence':value['confidence'], 'detail':value['source']}
+            return
+        for key, child in sorted(value.items()):
+            if source == 'lock' and key == 'observed_at':
+                continue
+            project(child, (prefix+'.'+key).lstrip('.'), source, flat)
+    elif value is not None:
+        flat[prefix] = {'value':plain(value), 'source':source, 'confidence':'observed' if source=='run' else 'declared', 'detail':None}
+
+
+def rank(leaf):
+    if leaf['source'] == 'run':
+        return {'cli':9, 'config':8, 'env':7}.get((leaf.get('detail') or '').split(':')[0], 6)
+    return {'lock':4, 'manifest':3}[leaf['source']]
+
+
+def key(leaf):
+    return (-rank(leaf), leaf.get('detail') or '', json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False))
+
+
+def snapshot_flat(manifest, lock, run):
+    declared = {};locked = {};observed = {}
+    for section in SECTIONS:
+        project(manifest.get(section), section, 'manifest', declared)
+        project(lock.get(section), section, 'lock', locked)
+    for name in ['python','platform','packages']:
+        project((lock.get('environment') or {}).get(name), 'environment.'+name, 'lock', locked)
+    project((lock.get('environment') or {}).get('gpu'), 'hardware', 'lock', locked)
+    for f in lock.get('files',[]):
+        locked['files.'+f['path']+'.sha256']={'value':f['sha256'],'source':'lock','confidence':'declared','detail':None}
+    for name in ['code','environment','command','run_id','started_at','ended_at','duration_seconds']:
+        project(run.get(name), name, 'run', observed)
+    hardware = copy.deepcopy(run.get('hardware') or {})
+    hardware['gpus'] = {str(g['index']):g for g in hardware.get('gpus', [])}
+    project(hardware, 'hardware', 'run', observed)
+    for f in run.get('files',[]):
+        observed['files.'+f['path']+'.sha256']={'value':f['sha256'],'source':'run','confidence':'observed','detail':None}
+    for field, items in sorted(run.get('bindings_observed',{}).items()):
+        leaves=[]
+        for item in items:
+            src=item['source'];where=(src.get('path','')+':') if src.get('path') else ''
+            leaves.append({'value':item['value'],'source':'run','confidence':'observed','detail':src['type']+':'+where+src['key']})
+        if not leaves:
+            continue
+        if field in observed:
+            leaves.append(observed[field])
+        cli=[n for n,l in enumerate(leaves) if rank(l)==9]
+        observed[field]=leaves[cli[-1]] if cli else min(leaves,key=key)
+    fields=set(declared)|set(locked)|set(observed)
+    return {f:min([d[f] for d in [declared,locked,observed] if f in d],key=key) for f in sorted(fields)}
+
+
+def section(document, title):
+    lines=document.splitlines();prefixes=['## '+title,'### '+title,'#### '+title]
+    hits=[n for n,l in enumerate(lines) if l in prefixes]
+    if not hits:
+        return ''
+    assert len(hits)==1, 'Repeated section '+title
+    n=hits[0];level=len(lines[n].split(' ')[0]);end=len(lines)
+    for i in range(n+1,len(lines)):
+        if re.match(r'^#{1,4} ',lines[i]) and len(lines[i].split(' ')[0])<=level:
+            end=i;break
+    return '\n'.join(lines[n+1:end])
+
+
+def literal(value):
+    return html.unescape(value).replace('<br>','\n').replace('\\|','|').replace('\\\\','\\')
+
+
+def table(text):
+    result=[]
+    for line in text.splitlines():
+        if not line.startswith('| ') or line.startswith('|---'):
+            continue
+        result.append([literal(x.strip()) for x in re.split(r'(?<!\\)\|',line)[1:-1]])
+    return result
+
+
+def first_table(text):
+    lines=text.splitlines();start=next((i for i,l in enumerate(lines) if l.startswith('| ')),None)
+    if start is None:return []
+    end=start
+    while end<len(lines) and lines[end].startswith('|'):end+=1
+    return table('\n'.join(lines[start:end]))
+
+
+def bullets(text):
+    result={}
+    for line in text.splitlines():
+        match=re.fullmatch(r'- (`+)(.*?)\1: (.*)',line)
+        if match:
+            assert match[2] not in result, 'Repeated bullet key'
+            result[match[2]]=literal(match[3])
+    return result
+
+
+def short(value):
+    text=str(value or '')
+    if re.fullmatch(r'sha256:[a-fA-F0-9]{64}',text):return text[:19]
+    if re.fullmatch(r'[a-fA-F0-9]{32,}',text):return text[:12]
+    return text
+
+
+def evidence(leaf):
+    return {'run':'observed (run)','manifest':'declared (manifest)'}.get(leaf['source'],'locked ('+leaf['confidence']+')')
+
+
+def revision(flat, field, detailed=True):
+    leaf=flat.get(field)
+    if leaf is None:return 'not locked'
+    if leaf['source']=='run':return short(leaf['value'])+' (observed)'
+    if leaf['source']=='lock':
+        if leaf['confidence']=='exact':return short(leaf['value'])
+        return 'not locked ('+leaf['confidence']+')' if detailed else 'not locked'
+    return 'not locked'
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    for name in ['implementation-root','project-root','run-id','markdown','stdout','stderr','audit-json','command-receipt','source-binding','report']:
+        parser.add_argument('--'+name,required=True,type=str if name=='run-id' else Path)
+    parser.add_argument('--case',choices=FIELDS,required=True)
+    parser.add_argument('--variant',choices=['a','b'],required=True)
+    parser.add_argument('--upstream-fidelity',choices=['PASS','FAIL','NOT_CHECKED'],required=True)
+    parser.add_argument('--upstream-fidelity-evidence',type=Path,required=True)
+    parser.add_argument('--expected-stderr',type=Path,required=True,help='Independently prepared exact diagnostics bytes; never copied from current actual stream')
+    args=parser.parse_args();out=ensure_output(args.report);assert not out.exists()
+    binding=json.loads(args.source_binding.read_bytes());implementation=args.implementation_root.resolve()
+    assert binding['schema_version'] == 1
+    assert binding['source_commit'] == CANDIDATE_COMMIT
+    assert binding['candidate_reprollm_version'] == '0.7.0'
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=implementation).decode().strip() == binding['source_commit']
+    upstream=json.loads(args.upstream_fidelity_evidence.read_bytes())
+    if args.upstream_fidelity == 'PASS':
+        assert upstream['schema_version'] == 1 and upstream['status'] == 'PASS'
+    for relative,expected in binding['files_sha256'].items():
+        assert digest((implementation/relative).read_bytes())==expected,'Candidate source byte binding changed'
+    source_root=args.project_root.resolve();run_dir=source_root/'.reprollm/runs'/args.run_id
+    run_bytes=(run_dir/'run.json').read_bytes();run=json.loads(run_bytes);assert run['schema_version']==2 and run['run_id']==args.run_id
+    documents={};document_hashes={}
+    for name in ['manifest','lock']:
+        ref=run.get(name);assert ref and re.fullmatch(r'sha256:[a-f0-9]{64}',ref['sha256'])
+        relative=Path(ref['snapshot']);assert not relative.is_absolute() and '..' not in relative.parts
+        path=(run_dir/relative).resolve();assert path.is_relative_to(run_dir.resolve()) and path.is_file()
+        body=path.read_bytes();raw=yaml.safe_load(body);schema=json.loads((implementation/'schemas'/('manifest.schema.json' if name=='manifest' else 'lock.schema.json')).read_bytes())
+        documents[name]=normalize(raw,schema,schema)
+        document_hashes[name]={'snapshot_original_bytes_sha256':digest(body),'raw_source_hash_reference':ref['sha256'],'owned_relative_snapshot':str(relative)}
+    flat=snapshot_flat(documents['manifest'],documents['lock'],run)
+    md_bytes=args.markdown.read_bytes();document=md_bytes.decode('utf-8');checks=[]
+    def check(label,actual,expected):checks.append({'label':label,'actual_sha256':digest(actual),'expected_sha256':digest(expected),'equal':actual==expected})
+    check('selected-run-source-explanation',"from the selected run's recorded observations and available manifest/lock snapshots." in document,True)
+    check('selected-snapshot-project-title',literal(document.splitlines()[0]),'# Reproducibility statement — '+documents['manifest']['project']['name'])
+    profiles=documents['manifest'].get('experiment',{}).get('profiles',[])
+    if profiles:check('complete-selected-declared-profiles','Declared profiles: '+', '.join(profiles)+'.' in literal(document),True)
+    check('current-tree-audit-scope-explanation',all(x in document for x in ['Audit scope: the current working tree and its available documents','latest valid run when available','not a separate audit of a selected historical run']),True)
+    parameter,values,title,suffix=FIELDS[args.case];expected_value=values[args.variant=='b']
+    check('independent-literal-variant-value',flat[parameter]['value'],expected_value)
+    check('main-parameter-observed-in-selected-run',flat[parameter]['source'],'run')
+    if title in {'Privacy', 'Judge'}:
+        check('selected-variant-rendered-main-parameter',[r for r in table(section(document,title)) if r[0]==suffix],[[suffix,str(flat[parameter]['value']),evidence(flat[parameter])]])
+    else:check('selected-variant-rendered-main-parameter',bullets(section(document,title)).get(suffix),str(flat[parameter]['value']))
+    for prefix,title in [('generation','Generation parameters'),('inference','Inference backend'),('training','Training')]:
+        actual=bullets(section(document,title))
+        complete = {path[len(prefix)+1:]:str(leaf['value']) for path,leaf in flat.items() if path.startswith(prefix+'.') and leaf['value'] is not None}
+        check('complete-effective-'+prefix+'-parameter-bullets',actual,complete)
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.'):
+                check('effective-'+path,actual.get(path[len(prefix)+1:]),str(leaf['value']))
+    for prefix,title in [('privacy','Privacy'),('evaluation.judge','Judge')]:
+        actual=table(section(document,title))
+        complete=[]
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.') and leaf['value'] is not None:
+                val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+                complete.append([path[len(prefix)+1:],val,evidence(leaf)])
+        check('complete-effective-'+prefix+'-parameter-rows',[r for r in actual if r[0]!='Field'],complete)
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.') and leaf['value'] is not None:
+                val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+                check('effective-'+path,[r for r in actual if r[0]==path[len(prefix)+1:]],[[path[len(prefix)+1:],val,evidence(leaf)]])
+    def value(path):return flat.get(path,{}).get('value')
+    roles=sorted({p.split('.')[1] for p in flat if p.startswith('models.')});model_rows=[]
+    for role in roles:
+        base='models.'+role;chat=flat.get(base+'.chat_template.sha256');chat_text='—'
+        if chat is not None:chat_text=short(chat['value']) if chat['confidence']=='exact' or chat['source']=='run' else str(value(base+'.chat_template.status'))+' (unresolved)'
+        model_rows.append([role,value(base+'.provider') or '—',value(base+'.id') or '—',revision(flat,base+'.revision'),value(base+'.pinnability') or '—',revision(flat,base+'.tokenizer.revision',False) if base+'.tokenizer.revision' in flat else '—',chat_text or '—'])
+    check('complete-effective-model-identity-rows',[r for r in first_table(section(document,'Models')) if r[0]!='Role'],model_rows)
+    dataset_rows=[]
+    for role in sorted({p.split('.')[1] for p in flat if p.startswith('datasets.')}):
+        base='datasets.'+role;dataset_rows.append([role,value(base+'.provider') or '—',value(base+'.id') or '—',revision(flat,base+'.revision'),value(base+'.content_fingerprint.status') or '—'])
+    check('complete-effective-dataset-identity-rows',[r for r in first_table(section(document,'Datasets')) if r[0]!='Role'],dataset_rows)
+    prompt_rows=[]
+    for role in sorted({p.split('.')[1] for p in flat if p.startswith('prompts.')}):
+        base='prompts.'+role;h=value(base+'.sha256') or value(base+'.text_sha256');prompt_rows.append([role,value(base+'.path') or '(inline text)',short(h) if h else 'not locked'])
+    check('complete-effective-prompt-identity-and-hash-rows',[r for r in first_table(section(document,'Prompts')) if r[0]!='Role'],prompt_rows)
+    for prefix,title,allowed in [('models','Models',('dtype','quantization','adapter')),('datasets','Datasets',('subset','split','preprocessing')),('prompts','Prompts',('format','few_shot'))]:
+        wanted=[]
+        for path,leaf in sorted(flat.items()):
+            if not path.startswith(prefix+'.') or leaf['value'] is None:continue
+            suffix=path.split('.',2)[2]
+            if not any(suffix==a or suffix.startswith(a+'.') for a in allowed):continue
+            val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+            wanted.append([path,val,evidence(leaf)])
+        actual=[r for r in table(section(document,title)) if len(r)==3 and r[0]!='Field']
+        if prefix=='prompts':actual=[r for r in actual if r[0].startswith('prompts.')]
+        check('complete-effective-'+prefix+'-detail-rows',actual,wanted)
+    evaluation=section(document,'Evaluation').split('#### Judge',1)[0]
+    wanted=[]
+    for path,leaf in sorted(flat.items()):
+        if not path.startswith('evaluation.') or path=='evaluation.metrics' or path.startswith('evaluation.judge.') or leaf['value'] is None:continue
+        val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+        wanted.append([path[len('evaluation.'):],val,evidence(leaf)])
+    check('complete-effective-evaluation-detail-rows',[r for r in table(evaluation) if len(r)==3 and r[0]!='Field'],wanted)
+    metrics=flat.get('evaluation.metrics');metric_rows=[]
+    if metrics and isinstance(metrics['value'],list):
+        for m in metrics['value']:
+            if isinstance(m,dict) and isinstance(m.get('name'),str):
+                params=m.get('params','not recorded');params=json.dumps(params,sort_keys=True,ensure_ascii=False) if isinstance(params,(dict,list)) else str(params)
+                metric_rows.append([m['name'],m.get('implementation') or 'not declared',short(m.get('implementation_sha256')) or 'not recorded',m.get('implementation_version') or 'not recorded',params,evidence(metrics)])
+    check('complete-effective-metric-evidence-rows',[r for r in table(evaluation) if len(r)==6 and r[0]!='Metric'],metric_rows)
+    env=section(document,'Environment');check('selected-run-python','- Python: '+str(run['environment'].get('packages',{}).get('python',run['environment']['python'])) in literal(env),True)
+    for package,version in sorted(run['environment']['packages'].items()):
+        if package!='python':check('selected-run-package-'+package,'- '+package+': '+str(version) in literal(env),True)
+    expected_env=[['Python evidence','recorder interpreter; after child completion.'],['Inherited environment','recorder inherited environment; before child launch.'],['Python',str(value('environment.packages.python') or value('environment.python') or 'unknown')]]
+    for field,label in [('platform','Platform'),('os','OS')]:
+        if value('environment.'+field):expected_env.append([label,str(value('environment.'+field))+' (recorder host; after child completion)'])
+    expected_env.extend([[p[len('environment.packages.'):],str(l['value'])+' (recorder interpreter; after child completion)'] for p,l in sorted(flat.items()) if p.startswith('environment.packages.') and p!='environment.packages.python'])
+    actual_env=[literal(line[2:]).split(': ',1) for line in env.splitlines() if line.startswith('- ')]
+    check('complete-selected-effective-environment-package-rows',actual_env,expected_env)
+    code=literal(section(document,'Code'))
+    for field in ['commit','branch','dirty','remote']:
+        v=value('code.'+field)
+        if v is None:v='not recorded' if field=='remote' else 'unknown'
+        check('selected-run-code-'+field,'- '+field+': '+('`'+str(v)+'`' if field=='commit' else str(v)) in code,True)
+    execution=literal(section(document,'Execution'))
+    check('selected-run-command','- command: `'+ ' '.join(run['command']['argv'])+'`' in execution,True)
+    check('selected-run-id','- run id: `'+args.run_id+'`' in execution,True)
+    check('selected-run-exit-status','- exit code: '+str(run['exit_code'])+' ('+run['status']+')' in execution,True)
+    started=str(datetime.datetime.fromisoformat(run['started_at'].replace('Z','+00:00')))
+    ended=str(datetime.datetime.fromisoformat(run['ended_at'].replace('Z','+00:00')))
+    check('selected-run-times-duration','- started: '+started+' · ended: '+ended+' · duration: '+str(float(run['duration_seconds']))+' s' in execution,True)
+    wanted_hardware=[[p[len('hardware.'):],str(l['value']),'recorder host; after child completion'] for p,l in sorted(flat.items()) if p.startswith('hardware.')]
+    check('complete-selected-hardware-rows',[r for r in table(section(document,'Hardware')) if r[0]!='Field'],wanted_hardware)
+    check('hardware-context-scope','- Collector evidence: recorder host; after child completion.' in section(document,'Hardware'),True)
+    capture=run['input_capture']
+    check('run2-input-phases',[capture['baseline_phase'],capture['check_phase'],capture['consumption']],['pre_child','post_child','unverified'])
+    check('run2-baseline-explanation','Input observation phase: before child launch (input baseline).' in execution,True)
+    check('run2-consumption-limit','Input changes were checked after child completion. Unchanged bytes do not prove consumption.' in execution,True)
+    expected_inputs=[]
+    for item in sorted(capture['checks'],key=lambda x:x['path']):
+        expected_inputs.append(['`'+item['path']+'`',item['before']['availability'],'`'+(item['before']['sha256'] or 'not available')+'`',item['after']['availability'],'`'+(item['after']['sha256'] or 'not available')+'`',item['change']])
+    check('complete-run2-input-change-table',[r for r in table(section(document,'Execution')) if r[0]!='Input'],expected_inputs)
+    audit_bytes=args.audit_json.read_bytes();audit=json.loads(audit_bytes);summary=audit['summary'];assert 'pass' in summary and 'pass_' not in summary
+    audit_text=literal(section(document,'Audit summary'));check('full-current-audit-counts',all(x in audit_text for x in [str(summary['critical'])+' critical',str(summary['warning'])+' warning',str(summary['info'])+' info',str(summary['pass'])+' passed']),True)
+    expected_notable=['- **'+f['severity']+'** `'+f['rule_id']+'`: '+f['message'] for f in audit['findings'] if f['severity'] in ['CRITICAL','WARNING']]
+    actual_notable=[literal(l) for l in section(document,'Audit summary').splitlines() if l.startswith('- **')]
+    check('complete-current-audit-critical-warning-messages',actual_notable,expected_notable)
+    limitations=literal(section(document,'Known limitations'))
+    complete_limits=[]
+    for role,item in sorted(documents['lock'].get('models',{}).items()):
+        rev=item['revision']
+        if rev['confidence']!='exact':
+            note='models.'+role+': revision unresolved ('+rev['source']+')'
+            if rev.get('note'):note+=' — '+rev['note']
+            complete_limits.append(note)
+        if item.get('pinnability')=='unpinnable':complete_limits.append('models.'+role+': closed-source API alias is unpinnable; identity is observation-based only')
+    for role,item in sorted(documents['lock'].get('datasets',{}).items()):
+        if item['revision']['confidence']!='exact':complete_limits.append('datasets.'+role+': revision unresolved ('+item['revision']['source']+')')
+        if item.get('content_fingerprint',{}).get('status')=='not_computed':complete_limits.append('datasets.'+role+': content fingerprint not computed')
+    if ((documents['lock'].get('environment') or {}).get('gpu') or {}).get('source')=='unavailable':complete_limits.append('hardware: GPU information unavailable at lock time')
+    if documents['manifest'].get('bindings'):complete_limits.append('bindings: '+', '.join(sorted(documents['manifest']['bindings']))+' — runtime agreement is only checked when run records exist')
+    complete_limits.extend(['Child Python and packages are unverified.','Input consumption by the child is unverified.'])
+    check('complete-selected-known-limitations',[literal(line[2:]) for line in section(document,'Known limitations').splitlines() if line.startswith('- ')],list(dict.fromkeys(complete_limits)))
+    for role,item in sorted(documents['lock'].get('datasets',{}).items()):
+        if item.get('content_fingerprint',{}).get('status')=='not_computed':check('dataset-fingerprint-limitation-'+role,'datasets.'+role+': content fingerprint not computed' in limitations,True)
+    for role,item in sorted(documents['lock'].get('models',{}).items()):
+        if item['revision']['confidence']!='exact':check('unresolved-model-limitation-'+role,'models.'+role+': revision unresolved ('+item['revision']['source']+')' in limitations,True)
+        if item.get('pinnability')=='unpinnable':check('unpinnable-model-limitation-'+role,'models.'+role+': closed-source API alias is unpinnable' in limitations,True)
+    if documents['manifest'].get('bindings'):check('bindings-limitation','bindings: '+', '.join(sorted(documents['manifest']['bindings']))+' — runtime agreement is only checked when run records exist' in limitations,True)
+    check('export-current-version-header',binding['candidate_reprollm_version'] in literal(document.split('## Experiment identity',1)[0]),True)
+    check('selected-snapshot-schema-footer',all(x in literal(document) for x in ['schema versions: manifest '+str(documents['manifest']['schema_version']), 'lock '+str(documents['lock']['schema_version']), 'run record '+str(run['schema_version'])]),True)
+    stdout=args.stdout.read_bytes();stderr=args.stderr.read_bytes();check('exact-independent-export-diagnostics',stderr,args.expected_stderr.read_bytes())
+    receipt=json.loads(args.command_receipt.read_bytes());assert receipt['schema_version']==1
+    actual_exit=receipt['exit_code'];check('export-actual-exit',actual_exit,0)
+    check('stdout-original-ledger-sha',digest(stdout),receipt['stdout_sha256'].removeprefix('sha256:'))
+    check('stderr-original-ledger-sha',digest(stderr),receipt['stderr_sha256'].removeprefix('sha256:'))
+    argv=receipt['argv'];assert 'export' in argv and '--run' in argv and argv[argv.index('--run')+1]==args.run_id
+    output_arg=Path(argv[argv.index('--output')+1]) if '--output' in argv else Path('REPRODUCIBILITY.md');target=output_arg if output_arg.is_absolute() else source_root/output_arg
+    expected_stdout=f'Wrote {target} ({len(roles)} models, run {args.run_id}) — commit this file with your paper artifact\n'.encode()
+    check('complete-success-stdout-owned-path',stdout,expected_stdout)
+    decoded=literal(document)
+    check('no-machine-paths',bool(re.search(r'(?i)(?:file://|(?:^|[\s"\x27])/(?:home|mnt|tmp|Users|root|data|opt)/|\b[A-Z]:[\\/]|\\\\[A-Za-z0-9_.-]+\\)',decoded)),False)
+    for label,private in [('project-root',str(source_root)),('implementation-root',str(implementation)),('username',getpass.getuser()),('hostname',socket.gethostname())]:
+        check('no-private-'+label,private in decoded,False)
+    check('no-obvious-credential-values',bool(re.search(r'(?:sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16}|-----BEGIN .*PRIVATE KEY-----)',decoded)),False)
+    file_sources=[]
+    for f in run.get('files',[]):
+        path=Path(f['path']);assert not path.is_absolute() and '..' not in path.parts and re.fullmatch(r'sha256:[a-f0-9]{64}',f['sha256'])
+        record={'relative_path':f['path'],'original_source_sha256_reference':f['sha256'],'original_size_bytes':f['size_bytes'],'effective_hash_source':'run','default_template_displays_file_hash_table':False,'displayed_input_phase_hashes_checked':True}
+        if f.get('snapshot'):
+            snapshot=Path(f['snapshot']);assert not snapshot.is_absolute() and '..' not in snapshot.parts
+            owned=(run_dir/snapshot).resolve();assert owned.is_relative_to(run_dir.resolve())
+            record['captured_snapshot_bytes_sha256']=digest(owned.read_bytes())
+        file_sources.append(record)
+    report={'schema_version':1,'case':args.case,'variant':args.variant,'selected_run_id':args.run_id,'export_projection_passed':all(c['equal'] for c in checks),'upstream_snapshot_fidelity_status':args.upstream_fidelity,'upstream_fidelity_blocker':args.upstream_fidelity!='PASS','upstream_fidelity_evidence_original_sha256':digest(args.upstream_fidelity_evidence.read_bytes()),'full_run_or_release_acceptance_claimed':False,'comparison_count':len(checks),'checks':checks,'source_binding_sha256':digest(args.source_binding.read_bytes()),'complete_original_input_sha256':{'run.json':digest(run_bytes),'markdown':digest(md_bytes),'stdout':digest(stdout),'stderr':digest(stderr),'current-tree-audit':digest(audit_bytes),'command-receipt':digest(args.command_receipt.read_bytes())},'selected_snapshot_references':document_hashes,'selected_captured_file_hash_provenance':file_sources,'main_field':parameter,'main_effective_source':flat[parameter]['source'],'main_effective_confidence':flat[parameter]['confidence'],'main_effective_detail_sha256':digest(flat[parameter].get('detail')),'selected_run_capture_warning_count':len(run.get('warnings',[])),'selected_run_capture_warnings_sha256':digest(run.get('warnings',[])),'product_commands_executed_by_checker':0,'gpu_or_network_jobs':0,'scope':'One already executed default-template export. Selected historical state and current-tree embedded audit are checked separately. Export projection success cannot override upstream fidelity FAIL. Exit0 means this export-projection check only; no release/A01-B declaration.'}
+    report['checker_sha256'] = digest(Path(__file__).read_bytes())
+    out.write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,indent=2)+'\n');print(json.dumps({'export_projection_passed':report['export_projection_passed'],'upstream_fidelity_blocker':report['upstream_fidelity_blocker'],'comparisons':len(checks),'report_sha256':digest(out.read_bytes())}));raise SystemExit(0 if report['export_projection_passed'] else 1)
+
+
+def identity_projection(document, flat, check):
+    for prefix,title in [('generation','Generation parameters'),('inference','Inference backend'),('training','Training')]:
+        actual=bullets(section(document,title))
+        complete = {path[len(prefix)+1:]:str(leaf['value']) for path,leaf in flat.items() if path.startswith(prefix+'.') and leaf['value'] is not None}
+        check('complete-effective-'+prefix+'-parameter-bullets',actual,complete)
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.'):
+                check('effective-'+path,actual.get(path[len(prefix)+1:]),str(leaf['value']))
+    for prefix,title in [('privacy','Privacy'),('evaluation.judge','Judge')]:
+        actual=table(section(document,title))
+        complete=[]
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.') and leaf['value'] is not None:
+                val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+                complete.append([path[len(prefix)+1:],val,evidence(leaf)])
+        check('complete-effective-'+prefix+'-parameter-rows',[r for r in actual if r[0]!='Field'],complete)
+        for path,leaf in flat.items():
+            if path.startswith(prefix+'.') and leaf['value'] is not None:
+                val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+                check('effective-'+path,[r for r in actual if r[0]==path[len(prefix)+1:]],[[path[len(prefix)+1:],val,evidence(leaf)]])
+    def value(path):return flat.get(path,{}).get('value')
+    roles=sorted({p.split('.')[1] for p in flat if p.startswith('models.')});model_rows=[]
+    for role in roles:
+        base='models.'+role;chat=flat.get(base+'.chat_template.sha256');chat_text='—'
+        if chat is not None:chat_text=short(chat['value']) if chat['confidence']=='exact' or chat['source']=='run' else str(value(base+'.chat_template.status'))+' (unresolved)'
+        model_rows.append([role,value(base+'.provider') or '—',value(base+'.id') or '—',revision(flat,base+'.revision'),value(base+'.pinnability') or '—',revision(flat,base+'.tokenizer.revision',False) if base+'.tokenizer.revision' in flat else '—',chat_text or '—'])
+    check('complete-effective-model-identity-rows',[r for r in first_table(section(document,'Models')) if r[0]!='Role'],model_rows)
+    dataset_rows=[]
+    for role in sorted({p.split('.')[1] for p in flat if p.startswith('datasets.')}):
+        base='datasets.'+role;dataset_rows.append([role,value(base+'.provider') or '—',value(base+'.id') or '—',revision(flat,base+'.revision'),value(base+'.content_fingerprint.status') or '—'])
+    check('complete-effective-dataset-identity-rows',[r for r in first_table(section(document,'Datasets')) if r[0]!='Role'],dataset_rows)
+    prompt_rows=[]
+    for role in sorted({p.split('.')[1] for p in flat if p.startswith('prompts.')}):
+        base='prompts.'+role;h=value(base+'.sha256') or value(base+'.text_sha256');prompt_rows.append([role,value(base+'.path') or '(inline text)',short(h) if h else 'not locked'])
+    check('complete-effective-prompt-identity-and-hash-rows',[r for r in first_table(section(document,'Prompts')) if r[0]!='Role'],prompt_rows)
+    for prefix,title,allowed in [('models','Models',('dtype','quantization','adapter')),('datasets','Datasets',('subset','split','preprocessing')),('prompts','Prompts',('format','few_shot'))]:
+        wanted=[]
+        for path,leaf in sorted(flat.items()):
+            if not path.startswith(prefix+'.') or leaf['value'] is None:continue
+            suffix=path.split('.',2)[2]
+            if not any(suffix==a or suffix.startswith(a+'.') for a in allowed):continue
+            val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+            wanted.append([path,val,evidence(leaf)])
+        actual=[r for r in table(section(document,title)) if len(r)==3 and r[0]!='Field']
+        if prefix=='prompts':actual=[r for r in actual if r[0].startswith('prompts.')]
+        check('complete-effective-'+prefix+'-detail-rows',actual,wanted)
+    evaluation=section(document,'Evaluation').split('#### Judge',1)[0]
+    wanted=[]
+    for path,leaf in sorted(flat.items()):
+        if not path.startswith('evaluation.') or path=='evaluation.metrics' or path.startswith('evaluation.judge.') or leaf['value'] is None:continue
+        val=json.dumps(leaf['value'],sort_keys=True,ensure_ascii=False) if isinstance(leaf['value'],(dict,list)) else str(leaf['value'])
+        wanted.append([path[len('evaluation.'):],val,evidence(leaf)])
+    check('complete-effective-evaluation-detail-rows',[r for r in table(evaluation) if len(r)==3 and r[0]!='Field'],wanted)
+    metrics=flat.get('evaluation.metrics');metric_rows=[]
+    if metrics and isinstance(metrics['value'],list):
+        for m in metrics['value']:
+            if isinstance(m,dict) and isinstance(m.get('name'),str):
+                params=m.get('params','not recorded');params=json.dumps(params,sort_keys=True,ensure_ascii=False) if isinstance(params,(dict,list)) else str(params)
+                metric_rows.append([m['name'],m.get('implementation') or 'not declared',short(m.get('implementation_sha256')) or 'not recorded',m.get('implementation_version') or 'not recorded',params,evidence(metrics)])
+    check('complete-effective-metric-evidence-rows',[r for r in table(evaluation) if len(r)==6 and r[0]!='Metric'],metric_rows)
+    return roles
+
+
+if __name__=='__main__':
+    main()

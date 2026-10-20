@@ -1,0 +1,161 @@
+"""Scoped transport copied from the reviewed controller; no native algorithms."""
+from __future__ import annotations
+import hashlib,json,os,signal,subprocess,time
+from pathlib import Path
+from session_config import RESOURCE_ROOT, NATIVE_ROOT, GPU_INDEX, ensure_output
+RESOURCE=RESOURCE_ROOT
+TASK=NATIVE_ROOT
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+def save_new(path: Path, value: object) -> None:
+    ensure_output(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x") as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
+
+def environment(kind: str, offline: bool = False) -> dict[str, str]:
+    env = dict(os.environ)
+    hf_token = env.get("HF_TOKEN")
+    for key in tuple(env):
+        if (
+            key
+            in {
+                "PYTHONPATH",
+                "HF_TOKEN",
+                "HUGGING_FACE_HUB_TOKEN",
+                "DEEPSEEK_API_KEY",
+                "OPENAI_API_KEY",
+                "ANTHROPIC_API_KEY",
+                "FORCE_TORCHRUN",
+                "USE_MCA",
+                "USE_MEGATRON_BRIDGE",
+                "USE_V1",
+                "RANK",
+                "LOCAL_RANK",
+                "WORLD_SIZE",
+                "LOCAL_WORLD_SIZE",
+                "MASTER_ADDR",
+                "MASTER_PORT",
+                "GROUP_RANK",
+                "ROLE_RANK",
+            }
+            or key.startswith(("TORCHELASTIC_", "SLURM_"))
+            or offline
+            and key.lower() in {"http_proxy", "https_proxy", "all_proxy"}
+        ):
+            env.pop(key)
+    # Avoid initializing an unused SOCKS fallback in the lightweight HTTP client.
+    for key in ("all_proxy", "ALL_PROXY"):
+        if env.get(key, "").lower().startswith("socks"):
+            env.pop(key)
+    env.update(
+        PATH=str(RESOURCE / "envs" / kind / "bin") + os.pathsep + env["PATH"],
+        CUDA_VISIBLE_DEVICES=str(GPU_INDEX),
+        OMP_NUM_THREADS="2",
+        MKL_NUM_THREADS="2",
+        OPENBLAS_NUM_THREADS="2",
+        NUMEXPR_NUM_THREADS="2",
+        HF_HOME=str(RESOURCE / "hf"),
+        HF_HUB_CACHE=str(RESOURCE / "hf/hub"),
+        HF_DATASETS_CACHE=str(RESOURCE / "hf/datasets"),
+        HF_ENDPOINT="https://huggingface.co",
+        TORCH_HOME=str(TASK / "torch"),
+        TRITON_CACHE_DIR=str(TASK / "triton"),
+        XDG_CACHE_HOME=str(TASK / "cache"),
+        TMPDIR=str(TASK / "tmp"),
+        TOKENIZERS_PARALLELISM="false",
+        WANDB_MODE="disabled",
+        HF_HUB_DISABLE_TELEMETRY="1",
+        VLLM_NO_USAGE_STATS="1",
+        DO_NOT_TRACK="1",
+        HF_HUB_OFFLINE=str(int(offline)),
+        HF_DATASETS_OFFLINE=str(int(offline)),
+        PYTHONPATH=str(TASK / "hooks"),
+        REPROLLM_VALIDATION_RESOURCE_ROOT=str(RESOURCE),
+        REPROLLM_VALIDATION_TASK_ROOT=str(TASK),
+        REPROLLM_VALIDATION_PARENT_LEASE="1",
+        PYTHONDONTWRITEBYTECODE="1",
+    )
+    if not offline and hf_token:
+        env["HF_TOKEN"] = hf_token
+    if kind == "modern":
+        compat = str(RESOURCE / "cuda-compat/usr/local/cuda-12.9/compat")
+        env.update(
+            VLLM_ENABLE_CUDA_COMPATIBILITY="1",
+            VLLM_CUDA_COMPATIBILITY_PATH=compat,
+            LD_LIBRARY_PATH=compat + os.pathsep + env.get("LD_LIBRARY_PATH", ""),
+        )
+    return env
+
+def command(argv, case, env, evidence, label, expected=0):
+    ensure_output(evidence)
+    evidence.mkdir(parents=True, exist_ok=True)
+    paths = [
+        evidence / (label + suffix)
+        for suffix in (".log", ".stderr.log", ".command.json", ".started.json")
+    ]
+    if any(path.exists() or path.is_symlink() for path in paths):
+        raise RuntimeError("command attempt already has evidence; inspect it without rerunning")
+    save_new(paths[3], dict(schema_version=1, state="started", label=label, cwd=case.name))
+    started = time.monotonic()
+    timed_out = False
+    with (
+        (evidence / (label + ".log")).open("xb") as stdout,
+        (evidence / (label + ".stderr.log")).open("xb") as stderr,
+    ):
+        try:
+            process = subprocess.Popen(
+                argv, cwd=case, env=env, stdout=stdout, stderr=stderr, start_new_session=True
+            )
+        except Exception as error:
+            save_new(
+                evidence / (label + ".command.json"),
+                dict(
+                    schema_version=1,
+                    argv=argv,
+                    cwd=case.name,
+                    exit_code=None,
+                    launch_failed=True,
+                    failure_kind=type(error).__name__,
+                    elapsed_seconds=round(time.monotonic() - started, 6),
+                ),
+            )
+            raise RuntimeError(
+                "command launch failed; complete attempt evidence retained"
+            ) from None
+        try:
+            result = process.wait(timeout=1800 if label == "run" else 900)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                result = process.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                result = process.wait()
+    record = dict(
+        schema_version=1,
+        argv=argv,
+        cwd=case.name,
+        exit_code=result,
+        timed_out=timed_out,
+        elapsed_seconds=round(time.monotonic() - started, 6),
+        stdout_sha256=sha((evidence / (label + ".log")).read_bytes()),
+        stderr_sha256=sha((evidence / (label + ".stderr.log")).read_bytes()),
+    )
+    save_new(evidence / (label + ".command.json"), record)
+    print(
+        json.dumps(
+            {
+                "label": label,
+                "case": case.name,
+                "exit_code": result,
+                "elapsed_seconds": record["elapsed_seconds"],
+            }
+        ),
+        flush=True,
+    )
+    if timed_out or expected is not None and result != expected:
+        raise RuntimeError(f"{case.name}/{label}: unexpected exit; preserve both complete streams")
+    return result

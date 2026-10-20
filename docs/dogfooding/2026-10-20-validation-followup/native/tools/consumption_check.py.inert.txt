@@ -1,0 +1,69 @@
+"""Independent actual-call and native-output checks, separate from recorder claims."""
+from session_config import CANDIDATE_COMMIT, CANDIDATE_ROOT, NATIVE_ROOT, RESOURCE_ROOT, SESSION_ROOT, QUALITY_ROOT, GATE_A_ROOT, IPC_ROOT, GPU_INDEX, ensure_output, require_acceptance
+import hashlib
+import json
+from pathlib import Path
+import sys
+import yaml
+
+RESOURCE = Path('<RESOURCE>')
+TASK = NATIVE_ROOT
+RECIPE = CANDIDATE_ROOT / 'examples/lm_eval_replay'
+name, variant = sys.argv[1:3]
+case = TASK/'cases'/name
+folder = TASK/'evidence/runtime'/name/variant
+proof = {'schema_version':1, 'case':name, 'variant':variant, 'status':'PASS', 'recorder_consumption_claim':'unverified; independent native observation only'}
+if name == 'lm-evaluation-harness':
+    results = list((case/'outputs/current').rglob('*results*.json'))
+    assert len(results) == 1
+    raw = results[0].read_bytes()
+    result = json.loads(raw)
+    configuration = result['config']
+    task = result['configs']['gsm8k_validation']
+    expected = yaml.safe_load((RECIPE/('validation/eval.yaml' if variant == 'a' else 'variants/eval-b.yaml')).read_bytes())
+    upstream = yaml.safe_load((RECIPE/'upstream/gsm8k.yaml').read_bytes())
+    assert configuration['model_args'] == expected['model_args']
+    assert configuration['gen_kwargs'] == expected['gen_kwargs']
+    assert all(configuration[k] == 42 for k in ('random_seed','numpy_seed','torch_seed','fewshot_seed'))
+    assert configuration['model'] == 'vllm' and configuration['limit'] == 100 and configuration['batch_size'] == 1
+    assert task['dataset_path'] == 'openai/gsm8k' and task['dataset_name'] == 'main'
+    assert task['dataset_kwargs']['revision'] == '740312add88f781978c0658806c59bc2815b9866'
+    assert task['test_split'] == 'test' and task['fewshot_split'] == 'train'
+    assert task['num_fewshot'] == result['n-shot']['gsm8k_validation'] == 5
+    assert task['metric_list'] == upstream['metric_list'] and task['filter_list'] == upstream['filter_list']
+    assert task['generation_kwargs'] == upstream['generation_kwargs'] | expected['gen_kwargs']
+    assert result['chat_template'] is None and result['chat_template_sha'] is None
+    proof.update(native_result_sha256=hashlib.sha256(raw).hexdigest(), effective_generation=configuration['gen_kwargs'], model_args=configuration['model_args'], dataset_revision=task['dataset_kwargs']['revision'], fewshot=5)
+else:
+    paths = sorted((TASK/'evidence/consumption-observer'/name/variant).glob('*.json'))
+    assert paths, 'Actual native call observation missing'
+    receipts = [json.loads(p.read_bytes()) for p in paths]
+    assert all(not r['errors'] and r['case'] == name and r['variant'] == variant for r in receipts)
+    observations = [o for r in receipts for o in r['observations']]
+    if name == 'FastChat':
+        actual = [o for o in observations if o['kind'] == 'fastchat_native_answer']
+        assert actual and all(o['max_new_token'] == (32 if variant == 'a' else 48) and o['num_choices'] == 1 and o['model_id'] == 'vicuna-validation' for o in actual)
+    elif name == 'LlamaFactory':
+        actual = [o for o in observations if o['kind'] == 'native_training_step']
+        lr = .0001 if variant == 'a' else .0002
+        assert len(actual) == 2 and all(o['learning_rate'] == lr and o['max_steps'] == 2 for o in actual)
+        assert actual[0]['optimizer_group_lrs'] and all(value == lr for value in actual[0]['optimizer_group_lrs'])
+    elif name == 'llm-dp-finetune':
+        actual = [o for o in observations if o['kind'] == 'fastdp_engine_constructor']
+        assert len(actual) == 1 and actual[0]['target_epsilon'] == (8 if variant == 'a' else 4) and actual[0]['epochs'] == .125
+    elif name == 'HarmBench':
+        actual = [o for o in observations if o['kind'] == 'vllm_generate']
+        for phase,cap in [('target',16 if variant == 'a' else 24),('classify',1)]:
+            items = [o for o in actual if o['phase'] == phase]
+            assert items and all(o['max_tokens'] == [cap] and o['temperature'] == [0.0] for o in items)
+        cfg = yaml.safe_load((case/'validation/pipeline.yaml').read_bytes())
+        for phase,prefix in [('target','target'),('classify','classifier')]:
+            items = [o for o in observations if o['kind'] == 'vllm_constructor' and o['phase'] == phase]
+            assert items and all(o['model'] == cfg[prefix+'_id'] and o['revision'] == cfg[prefix+'_revision'] for o in items)
+    else:
+        raise AssertionError('Unsupported native case')
+    proof.update(actual_observations=observations, observer_receipt_sha256=[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths])
+with (folder/'consumption-check.json').open('x') as stream:
+    json.dump(proof,stream,sort_keys=True,indent=2)
+    stream.write('\n')
+print(json.dumps(proof,sort_keys=True))

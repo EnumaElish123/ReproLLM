@@ -1,0 +1,25 @@
+model: vllm
+model_args:
+  pretrained: Qwen/Qwen2.5-0.5B-Instruct
+  revision: 7ae557604adf67be50417f59c2c2f167def9a775
+  tokenizer_revision: 7ae557604adf67be50417f59c2c2f167def9a775
+  dtype: bfloat16
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.12
+  max_model_len: 4096
+  max_num_seqs: 8
+  enforce_eager: true
+  seed: 42
+tasks: [gsm8k_validation]
+include_path: validation/tasks
+num_fewshot: 5
+limit: 100
+batch_size: 1
+seed: 42
+gen_kwargs:
+  temperature: 0.0
+  top_p: 1.0
+  do_sample: false
+  max_gen_toks: 32
+output_path: outputs/current
+log_samples: true

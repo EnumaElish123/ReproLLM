@@ -1,0 +1,56 @@
+"""Read original current-session evidence; never execute product, model, GPU or HTTP work."""
+from __future__ import annotations
+from datetime import datetime
+import hashlib,json
+from pathlib import Path
+from session_config import CANDIDATE_COMMIT,CANDIDATE_ROOT,NATIVE_ROOT,QUALITY_ROOT,GATE_A_ROOT,ensure_output,require_acceptance
+from controller import CASES
+HERE=Path(__file__).resolve().parent
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def read(path):return json.loads(path.read_bytes())
+def main():
+    out=ensure_output(HERE/'terminal-evidence-review.json');assert not out.exists();checks=[];runs=[];pairs=[];exports=[];guards=[];raw_runs=[]
+    def check(label,passed,**details):
+        checks.append(dict(label=label,passed=bool(passed),**details));assert passed,label
+    acceptance=require_acceptance();session=read(NATIVE_ROOT/'evidence/native-session.json')
+    check('frozen-helpers',session['helpers_sha256']=={p.name:sha(p.read_bytes()) for p in sorted(HERE.glob('*.py'))})
+    binding=read(HERE/'source-binding.json');check('same-candidate-source-binding',binding['source_commit']==CANDIDATE_COMMIT and all(sha((CANDIDATE_ROOT/p).read_bytes())==v for p,v in binding['files_sha256'].items()))
+    build=read(QUALITY_ROOT/'build-manifest.json');wheel=next(a['sha256'] for a in build['artifacts'] if a['filename'].endswith('.whl'))
+    for name,(_,argv,field,a,b,severity,config,fraction) in CASES.items():
+        parent=NATIVE_ROOT/'evidence/runtime'/name;pair=read(parent/'pair-check.json');target=[c for c in pair['complete_changes'] if c['path']==field]
+        check(name+'-pair',pair['status']=='PASS' and pair['target_gold_unchanged'] and pair['self_diff_empty'] and not pair['additional_changes_requiring_review'] and pair['full_findings_equal'] and pair['audit_profiles_equal'] and len(target)==1 and target[0]['a']==a and target[0]['b']==b and target[0]['severity']==severity)
+        pairs.append({'case':name,'leaf':field,'a':a,'b':b,'severity':severity,'complete_changes':pair['complete_changes'],'receipt_sha256':sha((parent/'pair-check.json').read_bytes())})
+        for variant in ['a','b']:
+            folder=parent/variant;run=read(folder/'run/run.json');capture=read(folder/'capture-check.json');consumption=read(folder/'consumption-check.json')
+            check(name+'-'+variant+'-native-run',run['schema_version']==2 and run['status']=='completed' and run['exit_code']==0 and run['environment']['env']['CUDA_VISIBLE_DEVICES']=='0')
+            check(name+'-'+variant+'-capture-consumption',capture['status']=='PASS' and consumption['status']=='PASS')
+            install=read(folder/'installed-wheel.log');check(name+'-'+variant+'-wheel',install['candidate_commit']==CANDIDATE_COMMIT and install['wheel_sha256']==wheel and install['matched_package_files']==143)
+            before=read(folder/'guard-before.json');after=read(folder/'guard-after.json');gpu=next(g for g in before['GPUs'] if g[0]==0)
+            check(name+'-'+variant+'-resource-policy',before['launch_guard']=='HARDWARE_CAPACITY_ONLY_PASS' and before['phase']=='pre_child' and gpu[3]>0 and before['fraction']==fraction and not before['artificial_idle_or_reserve_thresholds_applied'] and after['launch_guard']=='POST_CHILD_OBSERVATION_ONLY')
+            guards.append({'case':name,'variant':variant,'GPU':gpu,'original_fraction':fraction,'before_sha256':sha((folder/'guard-before.json').read_bytes()),'after_sha256':sha((folder/'guard-after.json').read_bytes())})
+            runs.append({'case':name,'variant':variant,'run_id':run['run_id'],'started_at':run['started_at'],'ended_at':run['ended_at']})
+            raw_runs.append({'case':name,'variant':variant,'files':{p.relative_to(folder/'run').as_posix():{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in sorted((folder/'run').rglob('*')) if p.is_file()}})
+            p=HERE/'exports-selected-run'/name/variant/'projection.json';r=read(p)
+            check(name+'-'+variant+'-selected-export',r['export_projection_passed'] and not r['upstream_fidelity_blocker'] and r['upstream_snapshot_fidelity_status']=='PASS' and all(c['equal'] for c in r['checks']))
+            exports.append({'case':name,'variant':variant,'kind':'selected-run','comparisons':r['comparison_count'],'receipt_sha256':sha(p.read_bytes())})
+        for kind in ['manifest-only','lock-only']:
+            p=HERE/'exports-nonrun'/name/(kind+'.json');r=read(p);check(name+'-'+kind+'-export',r['status']=='PASS' and r['complete_export_acceptance'] and r['embedded_audit_independently_verified'] and all(c['equal'] for c in r['checks']))
+            exports.append({'case':name,'variant':'a','kind':kind,'comparisons':r['comparison_count'],'receipt_sha256':sha(p.read_bytes())})
+    intervals=sorted(runs,key=lambda r:r['started_at']);check('ten-sequential-native-children',len(intervals)==10 and all(datetime.fromisoformat(a['ended_at'].replace('Z','+00:00'))<=datetime.fromisoformat(b['started_at'].replace('Z','+00:00')) for a,b in zip(intervals,intervals[1:])))
+    stages=[]
+    for v in ['a','b']:
+        for phase,fraction in [('target',.28),('classify',.45)]:
+            p=NATIVE_ROOT/'evidence/stage-guards'/v/(phase+'.json');r=read(p);gpu=next(g for g in r['GPUs'] if g[0]==0)
+            check('harmbench-'+v+'-'+phase+'-guard',r['GPU_index']==0 and r['stage']==phase and r['fraction']==fraction and gpu[3]>0 and r['launch_guard']=='HARDWARE_CAPACITY_ONLY_PASS' and not r['artificial_idle_or_reserve_thresholds_applied'])
+            stages.append({'variant':v,'stage':phase,'GPU':gpu,'fraction':fraction,'receipt_sha256':sha(p.read_bytes())})
+    commands=[]
+    for p in sorted((NATIVE_ROOT/'evidence/runtime').rglob('*.command.json')):
+        r=read(p);expected=1 if p.name=='pair-diff.command.json' else 0
+        check('command-stream-'+p.relative_to(NATIVE_ROOT).as_posix(),r['exit_code']==expected and not r.get('timed_out') and r['stdout_sha256']==sha(p.with_name(p.name.replace('.command.json','.log')).read_bytes()) and r['stderr_sha256']==sha(p.with_name(p.name.replace('.command.json','.stderr.log')).read_bytes()))
+        commands.append({'file':p.relative_to(NATIVE_ROOT).as_posix(),'sha256':sha(p.read_bytes()),'exit_code':r['exit_code']})
+    for relative,neg in [('qualification/nonrun/summary.json',7),('qualification/selected/summary.json',10)]:
+        r=read(HERE/relative);check('observer-qualified-'+relative,r['status']=='PASS' and r['positive_cases']==1 and r['negative_cases']==neg and r['current_native_acceptance'] is False)
+    result={'schema_version':1,'candidate_commit':CANDIDATE_COMMIT,'status':'PASS_NATIVE_AVAILABLE_ARTIFACT_MATRIX','all_checks_passed':all(c['passed'] for c in checks),'checks':checks,'native_children':len(runs),'independent_pairs':pairs,'native_run_intervals':intervals,'original_run_trees':raw_runs,'original_command_receipts':commands,'pre_child_guards':guards,'harmbench_cross_stage_guards':stages,'exports':{'states':len(exports),'comparisons':sum(r['comparisons'] for r in exports),'records':exports},'acceptance_binding':acceptance,'gold_or_pins_changed':False,'product_source_changed_by_validation':False,'product_gpu_or_network_commands_executed_by_observer':0,'remaining_boundaries':{'original_m3_inputs':'UNRECOVERED; supplementary H2 is distinct','hf_authenticated_gated_success':'NOT_ATTEMPTED_VAL_R03','paid_judge':'NOT_REPEATED; existing formal evidence belongs to previous approved execution','release_ready':False}}
+    out.write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps({'status':result['status'],'checks':len(checks),'native_children':len(runs),'pairs':len(pairs),'exports':len(exports),'export_comparisons':result['exports']['comparisons'],'command_streams':len(commands)*2},sort_keys=True))
+if __name__=='__main__':main()

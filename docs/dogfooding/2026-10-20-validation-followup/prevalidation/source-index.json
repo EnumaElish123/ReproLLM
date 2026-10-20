@@ -1,0 +1,445 @@
+{
+  "candidate_commit": "948d16423023027fff77322b8a872acaba306691",
+  "date": "2026-10-20",
+  "derived_receipts": [
+    {
+      "retained_bytes": 2845,
+      "retained_relative": "quality/verified-metrics.json",
+      "retained_sha256": "b16056526b47eaac4dbe031dbf668543b8c28572a068629651cabec610292875",
+      "source_relatives": [
+        "quality/before-development-final-1/raw/02-pytest-coverage.log",
+        "quality/before-development-final-1/raw/04-security.log",
+        "quality/before-development-final-1/raw/03-redaction-coverage.log",
+        "quality/before-development-final-1/pytest-report.xml",
+        "quality/before-development-final-1/coverage.json"
+      ],
+      "transforms": [
+        "omit hostname/timestamp/testcase bodies from original JUnit XML",
+        "retain only coverage total and named redaction summary; omit complete file map",
+        "parse counts/time from raw logs without copying contents"
+      ]
+    },
+    {
+      "retained_bytes": 1573,
+      "retained_relative": "quality/source-inventory-summary.json",
+      "retained_sha256": "96d2e10615fbbffbd3786e76884af6e0931080c24ac04593120e692d9c893b19",
+      "source_relatives": [
+        "quality/before-development-final-1/inputs-before.json",
+        "quality/before-development-final-1/inputs-after.json",
+        "gate/base-before-development-final-1/inputs-before.json",
+        "gate/base-before-development-final-1/inputs-after.json"
+      ],
+      "transforms": [
+        "omit complete tracked file maps; retain identities/counts and complete equality result"
+      ]
+    },
+    {
+      "retained_bytes": 1015,
+      "retained_relative": "installation/verified-invariance.json",
+      "retained_sha256": "58c337c76853821a354fb6aea4dc31b8e68f13c6f2cd1cccfbe251b067a6cdb0",
+      "source_relatives": [
+        "installation/modern/before.json",
+        "installation/modern/after.json",
+        "installation/dp/before.json",
+        "installation/dp/after.json",
+        "installation/modern/proof.json",
+        "installation/dp/proof.json"
+      ],
+      "transforms": [
+        "omit complete installed distribution lists; retain complete comparison/counts/hashes"
+      ]
+    },
+    {
+      "retained_bytes": 730,
+      "retained_relative": "harness/verified-identities.json",
+      "retained_sha256": "2cd21447b5b362e1285d1949ae80c65aed1133da165c879d61f0dfbe27bc7d80",
+      "source_relatives": [
+        "run_quality.py",
+        "install_candidate.py",
+        "hf_access_preflight.py"
+      ],
+      "transforms": [
+        "retain identities only; no helper source"
+      ]
+    },
+    {
+      "retained_bytes": 1094,
+      "retained_relative": "planning/r06b-structure-interpretation.json",
+      "retained_sha256": "c4463f6a659273a2b6e17167f31a8532a85ee531ffeff092073705eab2cc97dd",
+      "source_relatives": [],
+      "transforms": [
+        "transcribe parent implementation interpretation; planning only, not execution evidence"
+      ]
+    }
+  ],
+  "omitted_contents": [
+    "credentials and environment files (never read)",
+    "complete command argv/script payloads",
+    "all raw/private/sanitized logs",
+    "complete JUnit testcase bodies and hostname",
+    "full coverage file map",
+    "complete source file and installed distribution inventories",
+    "model files and native/generated content"
+  ],
+  "path_policy": {
+    "input_locators": "source_relative/external_source_relative/external_raw_log/external_stdout/external_stderr identify external task-relative sources; they are not package links",
+    "logical_markers": "Source receipts already use explicit logical position markers; no physical paths or machine identities are introduced.",
+    "retained_locators": "retained_relative resolves only inside this package"
+  },
+  "schema_version": 1,
+  "scope": "Completed pre-development local quality, fresh five-project Gate A, isolated installation proofs, HF preflight and original metadata input recheck only. Native/H2/discover work is still separate.",
+  "source_root": "logical current-task evidence root; no private filesystem root retained",
+  "sources": [
+    {
+      "original_bytes": 1431,
+      "original_sha256": "36fa050417198af900ad318c67477f46a9b085b1c220dd6232e2680667aec90c",
+      "representation": "original_bytes",
+      "retained_bytes": 1431,
+      "retained_relative": "quality/summary.json",
+      "retained_sha256": "36fa050417198af900ad318c67477f46a9b085b1c220dd6232e2680667aec90c",
+      "source_relative": "quality/before-development-final-1/summary.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 601,
+      "original_sha256": "262562797191594fbfe24c77316be3f37f7d3ed3e7e9adca0cee7f2379a53b7b",
+      "representation": "original_bytes",
+      "retained_bytes": 601,
+      "retained_relative": "quality/build-manifest.json",
+      "retained_sha256": "262562797191594fbfe24c77316be3f37f7d3ed3e7e9adca0cee7f2379a53b7b",
+      "source_relative": "quality/before-development-final-1/build-manifest.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 1168,
+      "original_sha256": "03829b4003b8c6524d1ff8ac00c3fce2177bdc97557f347eea416ac701c8cc27",
+      "representation": "original_bytes",
+      "retained_bytes": 1168,
+      "retained_relative": "gate-a/summary.json",
+      "retained_sha256": "03829b4003b8c6524d1ff8ac00c3fce2177bdc97557f347eea416ac701c8cc27",
+      "source_relative": "gate/base-before-development-final-1/summary.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 6198,
+      "original_sha256": "d589fd9faffee90b43b5b3711bc21eaf1ef93fbb87562d1de0b200519d071267",
+      "representation": "original_bytes",
+      "retained_bytes": 6198,
+      "retained_relative": "gate-a/checks.json",
+      "retained_sha256": "d589fd9faffee90b43b5b3711bc21eaf1ef93fbb87562d1de0b200519d071267",
+      "source_relative": "gate/base-before-development-final-1/checks.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 980,
+      "original_sha256": "e3436eab4a9b053daf61d0f0f64e46b74692fddffb253b80d47a97ff3ab6ea23",
+      "representation": "original_bytes",
+      "retained_bytes": 980,
+      "retained_relative": "gate-a/pins-before.json",
+      "retained_sha256": "e3436eab4a9b053daf61d0f0f64e46b74692fddffb253b80d47a97ff3ab6ea23",
+      "source_relative": "gate/base-before-development-final-1/pins-before.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 980,
+      "original_sha256": "e3436eab4a9b053daf61d0f0f64e46b74692fddffb253b80d47a97ff3ab6ea23",
+      "representation": "original_bytes",
+      "retained_bytes": 980,
+      "retained_relative": "gate-a/pins-after.json",
+      "retained_sha256": "e3436eab4a9b053daf61d0f0f64e46b74692fddffb253b80d47a97ff3ab6ea23",
+      "source_relative": "gate/base-before-development-final-1/pins-after.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 399,
+      "original_sha256": "66b54fc9243c77a2a063efe7962ff4615bad04e25f02543172b3da02f9fe0ad0",
+      "representation": "original_bytes",
+      "retained_bytes": 399,
+      "retained_relative": "gate-a/quality-binding.json",
+      "retained_sha256": "66b54fc9243c77a2a063efe7962ff4615bad04e25f02543172b3da02f9fe0ad0",
+      "source_relative": "gate/base-before-development-final-1/quality-binding.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 1637,
+      "original_sha256": "7243ffbd24a7dcef2809463c03de1bfd66505487ac8d98cb34657b9af4ae38c0",
+      "representation": "original_bytes",
+      "retained_bytes": 1637,
+      "retained_relative": "gate-a/oracle-binding.json",
+      "retained_sha256": "7243ffbd24a7dcef2809463c03de1bfd66505487ac8d98cb34657b9af4ae38c0",
+      "source_relative": "gate/base-before-development-final-1/oracle-binding.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 695,
+      "original_sha256": "f54ab934d77cb578324ae7fdedd6aa484585bef22841155e4429cf7862ccc143",
+      "representation": "original_bytes",
+      "retained_bytes": 695,
+      "retained_relative": "installation/modern-proof.json",
+      "retained_sha256": "f54ab934d77cb578324ae7fdedd6aa484585bef22841155e4429cf7862ccc143",
+      "source_relative": "installation/modern/proof.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 690,
+      "original_sha256": "39b9a51fec7e609cc05e2d7cfa28baa73275d5e25cf9c106265d954783583fd7",
+      "representation": "original_bytes",
+      "retained_bytes": 690,
+      "retained_relative": "installation/dp-proof.json",
+      "retained_sha256": "39b9a51fec7e609cc05e2d7cfa28baa73275d5e25cf9c106265d954783583fd7",
+      "source_relative": "installation/dp/proof.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 1173,
+      "original_sha256": "1a81e655cb7164b62e85a1b0e01423d823e8e4bdcd0097a16257296420a2600b",
+      "representation": "original_bytes",
+      "retained_bytes": 1173,
+      "retained_relative": "hf-access-preflight.json",
+      "retained_sha256": "1a81e655cb7164b62e85a1b0e01423d823e8e4bdcd0097a16257296420a2600b",
+      "source_relative": "hf-access-preflight.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 10706,
+      "original_sha256": "02c5b63aa215c0f46f1082d6ec0ff88daa5652e371ca74b2ddebe394cb7edda7",
+      "representation": "original_bytes",
+      "retained_bytes": 10706,
+      "retained_relative": "original-metadata-input-recheck.json",
+      "retained_sha256": "02c5b63aa215c0f46f1082d6ec0ff88daa5652e371ca74b2ddebe394cb7edda7",
+      "source_relative": "original-metadata-input-recheck.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 328,
+      "original_sha256": "6ba0b7035cdb44e504947d3ad638448457b30552e77d76842b39cae0c9e45bb3",
+      "representation": "original_bytes",
+      "retained_bytes": 328,
+      "retained_relative": "harness/quality-adaptation.json",
+      "retained_sha256": "6ba0b7035cdb44e504947d3ad638448457b30552e77d76842b39cae0c9e45bb3",
+      "source_relative": "quality-harness-adaptation.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 481,
+      "original_sha256": "ecad284eaf713f0249915697889651c7c8618ce2bbfc2cce81874ba7fa39b9fb",
+      "representation": "original_bytes",
+      "retained_bytes": 481,
+      "retained_relative": "harness/installation-adaptation.json",
+      "retained_sha256": "ecad284eaf713f0249915697889651c7c8618ce2bbfc2cce81874ba7fa39b9fb",
+      "source_relative": "installation-harness-adaptation.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 462,
+      "original_sha256": "bac2c419490282acc0079c05cccc70891a118a8cfa014b297913ebafe747caf3",
+      "representation": "original_bytes",
+      "retained_bytes": 462,
+      "retained_relative": "harness/identities.json",
+      "retained_sha256": "bac2c419490282acc0079c05cccc70891a118a8cfa014b297913ebafe747caf3",
+      "source_relative": "validation-harness-identities.json",
+      "transforms": []
+    },
+    {
+      "original_bytes": 29378,
+      "original_sha256": "83637d87518fc0472c59e7c501915c3bc6b60869caec1dbae4ca7bd4a30d3606",
+      "representation": "intentional_projection",
+      "retained_bytes": 17065,
+      "retained_relative": "quality/commands-summary.json",
+      "retained_sha256": "20ef5e8c21ac5bd854ed24c9bc1ad7c48f0d583152f58548b38db63dc22bf4de",
+      "source_relative": "quality/before-development-final-1/commands.json",
+      "transforms": [
+        "omit argv/script/cwd and all log contents",
+        "retain labels/exits/elapsed and independently verified original raw stream hashes",
+        "external raw-log paths are logical task-relative locators, not package links"
+      ]
+    },
+    {
+      "original_bytes": 32616,
+      "original_sha256": "a91519a2bedd8f374ef2fe852c2aa5f339dc6241ccb27e36e66e7e2977ce2460",
+      "representation": "intentional_projection",
+      "retained_bytes": 27080,
+      "retained_relative": "gate-a/commands-summary.json",
+      "retained_sha256": "d7039f566ccc3076370945f63a6d37acff307a4c8b17776d63a87204b15dfbd7",
+      "source_relative": "gate/base-before-development-final-1/commands.json",
+      "transforms": [
+        "omit argv/cwd and all stdout/stderr contents",
+        "retain labels/exits/elapsed and independently verified original raw stream hashes",
+        "external stream paths are logical task-relative locators, not package links"
+      ]
+    },
+    {
+      "original_bytes": 14434,
+      "original_sha256": "c5a565436012907dededbe40585ac184465390dad078e394193b5a8339ff1a80",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/raw/02-pytest-coverage.log",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 438,
+      "original_sha256": "b9c9c38465709c8ba1301c078e14645884f23f47347bbe629a135eff315cd6a7",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/raw/04-security.log",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 335,
+      "original_sha256": "1cb3de6e41d5cf51870a787e0b3a412bfb3f5634faa94357bfa94f6be3f3ebf1",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/raw/03-redaction-coverage.log",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 434105,
+      "original_sha256": "3f8853ebce8380ef6d2b8219fd1d54ed73eb7ffb482c078ba59dbdfcb86d3ec2",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/pytest-report.xml",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 1019107,
+      "original_sha256": "e28f8c497c53d0969683978a403b530b0df952ed44b73fa5797443bfc4283f05",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/coverage.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 1434972,
+      "original_sha256": "bc9965523e1c0243788f25ed8f2ba18ce53c643e3972363cf2009f938736909d",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/inputs-before.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 1434972,
+      "original_sha256": "bc9965523e1c0243788f25ed8f2ba18ce53c643e3972363cf2009f938736909d",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "quality/before-development-final-1/inputs-after.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 1434972,
+      "original_sha256": "bc9965523e1c0243788f25ed8f2ba18ce53c643e3972363cf2009f938736909d",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "gate/base-before-development-final-1/inputs-before.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 1434972,
+      "original_sha256": "bc9965523e1c0243788f25ed8f2ba18ce53c643e3972363cf2009f938736909d",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "gate/base-before-development-final-1/inputs-after.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 18720,
+      "original_sha256": "8717e5c839d1dcb5f9973a5521443e51110854ed3c2e84967ef8b5212d51dedc",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "installation/modern/before.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 18720,
+      "original_sha256": "8717e5c839d1dcb5f9973a5521443e51110854ed3c2e84967ef8b5212d51dedc",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "installation/modern/after.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 5618,
+      "original_sha256": "545a895289900476ee78856edd84ea1e6b79dd1724317a0e3ca2d20a598f2d9c",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "installation/dp/before.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 5618,
+      "original_sha256": "545a895289900476ee78856edd84ea1e6b79dd1724317a0e3ca2d20a598f2d9c",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "installation/dp/after.json",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 19477,
+      "original_sha256": "03421bbe790733e3b6549c868ece8a2faccc53a555efbcfb1b34449474315119",
+      "representation": "intentional_projection",
+      "retained_bytes": 1278,
+      "retained_relative": "quality/distribution-summary.json",
+      "retained_sha256": "e87dbc622c663ecd61e0dbd1976244f207614b9e4c00b8771eb2b585c5fbcff7",
+      "source_relative": "quality/before-development-final-1/distribution.json",
+      "transforms": [
+        "retain status/checks/count/time",
+        "omit command payloads, installation paths, raw outputs, and provenance locations"
+      ]
+    },
+    {
+      "original_bytes": 22340,
+      "original_sha256": "1d6b8d19b526255a0064f221e0ec3844673b90048f786c8f58ae8a5e1e41dd36",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "run_quality.py",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 4271,
+      "original_sha256": "5b03d003fdd0444abe733164ae7618c9814bd593709b3efc725b8538828439e9",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "install_candidate.py",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    },
+    {
+      "original_bytes": 3023,
+      "original_sha256": "324cf3817be40718fc1e0c95d651b586b0e1549d0bfaa5db21ee609509a187d7",
+      "representation": "hash_only",
+      "retained_relative": null,
+      "source_relative": "hf_access_preflight.py",
+      "transforms": [
+        "content intentionally omitted; original identity retained"
+      ]
+    }
+  ]
+}

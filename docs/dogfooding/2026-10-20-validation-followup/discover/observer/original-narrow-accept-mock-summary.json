@@ -1,0 +1,105 @@
+{
+  "candidate_document_sha256": "4ac5055f7bf1fabffb900e4282cbe79b101f4fdd2ccae780635aa4bb26942398",
+  "candidate_id": "c-7b21e7",
+  "commands": [
+    {
+      "elapsed_seconds": 0.509199,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "accept",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "cb0659c2596621f53095cec21d05e941df1dadc41bce6c751f1dfcf28a891157"
+    },
+    {
+      "elapsed_seconds": 1.045832,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-missing",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6a15e564c5e0cfc715eca3e4173217417ecc3e5473dedc6f9cd3beaa1d78a1aa"
+    },
+    {
+      "elapsed_seconds": 0.967884,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-explicit-sourced-value",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f5e3c424dd1b1ec9b2c3f7c78d3713c211181eb1acf568727e16d8160a357dcd"
+    },
+    {
+      "elapsed_seconds": 0.520428,
+      "exit": 2,
+      "expected_exit": 2,
+      "label": "duplicate-accept",
+      "stderr_sha256": "63fb48290e64df5efdde0ca1b265212630c79921b695d829e0a9d41a417e9806",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "elapsed_seconds": 0.968155,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-repeat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "34dc32741f91dbd34023cf877e3ea668145b0b54f1d1c4eff4febd77b1a7c0f9"
+    }
+  ],
+  "complete_nonproject_findings_equal": true,
+  "complete_repeat_audit_equal_except_generated_at": true,
+  "duplicate_exit": 2,
+  "explicit_operator_validation_input": {
+    "field": "custom.privacy.max_grad_norm_dp",
+    "origin": "Independent sent-source dataclass default; validation intent, not runtime consumption",
+    "value": 1.0
+  },
+  "missing_finding": {
+    "aliases": [],
+    "category": "project",
+    "evidence": [
+      {
+        "expected": null,
+        "field": "custom.privacy.max_grad_norm_dp",
+        "kind": "field",
+        "line": null,
+        "note": "accepted: Controls the per-sample DP clipping norm.",
+        "path": null,
+        "value": null
+      }
+    ],
+    "fix_hint": "Set custom.privacy.max_grad_norm_dp in reprollm.yaml (reason: Controls the per-sample DP clipping norm.)",
+    "level": 1,
+    "message": "custom.privacy.max_grad_norm_dp is accepted for this project but missing or null",
+    "profile_origin": [],
+    "rule_id": "project.max_grad_norm_dp",
+    "severity": "WARNING",
+    "severity_origin": "project_rule",
+    "status": "fail",
+    "suppressed_reason": null
+  },
+  "present_finding": {
+    "aliases": [],
+    "category": "project",
+    "evidence": [],
+    "fix_hint": "Set custom.privacy.max_grad_norm_dp in reprollm.yaml (reason: Controls the per-sample DP clipping norm.)",
+    "level": 1,
+    "message": "custom.privacy.max_grad_norm_dp is declared (accepted: Controls the per-sample DP clipping norm.)",
+    "profile_origin": [],
+    "rule_id": "project.max_grad_norm_dp",
+    "severity": "PASS",
+    "severity_origin": "project_rule",
+    "status": "pass",
+    "suppressed_reason": null
+  },
+  "project_rules_unchanged_on_duplicate": true,
+  "provider_requests": 0,
+  "reviewer_source": "Agent-operated synthetic mock selfcheck; not a real-provider candidate approval",
+  "rule_id": "project.max_grad_norm_dp",
+  "schema_version": 1,
+  "source_evidence": {
+    "line": 26,
+    "path": "src/llm_pft/arguments/privacy_args.py",
+    "sha256": "39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7"
+  },
+  "source_unchanged": true,
+  "status": "PASS",
+  "wall_seconds": 4.02716
+}

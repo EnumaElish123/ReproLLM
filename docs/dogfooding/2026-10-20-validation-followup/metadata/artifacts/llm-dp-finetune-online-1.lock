@@ -1,0 +1,91 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-20T01:39:19Z'
+manifest_sha256: sha256:4967f1ed18b8f2484f1a8de6b1252dc7049f7deb3ec2afe2a47959b9e12cea36
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: meta-llama/Llama-2-7b-hf
+    pinnability: exact
+    revision:
+      value: 01c7f73d771dfac7d292323805ebc428287df4f9
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T01:39:19Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: meta-llama/Llama-2-7b-hf
+      revision:
+        value: 01c7f73d771dfac7d292323805ebc428287df4f9
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T01:39:19Z'
+        note: null
+    chat_template:
+      sha256:
+        value: null
+        source: hf_api_forbidden
+        confidence: unresolved
+        resolved_at: null
+        note: HfForbidden
+      status: present
+    config_sha256:
+      value: null
+      source: hf_api_forbidden
+      confidence: unresolved
+      resolved_at: null
+      note: HfForbidden
+    adapter: null
+    local: null
+    dtype: null
+    quantization: null
+    trust_remote_code: null
+datasets:
+  train:
+    provider: huggingface
+    id: ecthr_cases
+    revision:
+      value: 1351ba4211ed9bc44692e6a1e2f237c4e3775b41
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T01:39:19Z'
+      note: null
+    subset: null
+    split: train
+    content_fingerprint:
+      status: not_computed
+    files: null
+prompts: {}
+files:
+- path: configs/fine-tune/deepspeed_stage3.json
+  sha256: sha256:c445beb05234a979ed80a71a7e209395564eea39630c730de18eb2d51be8b722
+  size_bytes: 436
+- path: configs/fine-tune/echr-llama2-7b-dp8.yml
+  sha256: sha256:20c9c1ab6bd19f5b92789d394beee9a4131d28a841d2c80ee93235271490fc12
+  size_bytes: 1656
+- path: data/echr/echr.py
+  sha256: sha256:0112037c9b509e83ed1957b8d2ae8504b2449257b58f25a1d9034ac48a21aa8d
+  size_bytes: 5382
+- path: src/llm_pft/arguments/privacy_args.py
+  sha256: sha256:39658034cf7df5c5bee934e8010d4cfdfe4288abb2fe1f3ea9875458a97045a7
+  size_bytes: 1357
+- path: src/llm_pft/models/language_model.py
+  sha256: sha256:b3fb5b2302bc98119738808168a7edde4f975acf36aeeb0e3ebb8db761a6c896
+  size_bytes: 28860
+generation: null
+inference: null
+training: null
+evaluation: null
+privacy: null
+environment:
+  python: 3.12.14
+  platform: linux
+  packages: {}
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.2'
+    source: nvidia_smi

@@ -1,0 +1,14 @@
+from session_config import CANDIDATE_COMMIT, CANDIDATE_ROOT, NATIVE_ROOT, RESOURCE_ROOT, SESSION_ROOT, QUALITY_ROOT, GATE_A_ROOT, IPC_ROOT, GPU_INDEX, ensure_output, require_acceptance
+import json
+import sys
+from controller import CASES, TASK, save, git
+from capture_verifier import verify_capture
+from reprollm.core.envinfo import installed_versions
+name,variant = sys.argv[1:3]
+case = TASK/'cases'/name
+folder = TASK/'evidence/runtime'/name/variant
+kind,argv,field,a,b,severity,config,fraction = CASES[name]
+result = verify_capture(case,folder/'run',field,a if variant == 'a' else b,argv,installed_versions(),git(case,'rev-parse','HEAD').decode().strip())
+result.update(run_protocol=2, input_observation_phase='pre_child', recorder_consumption='unverified')
+save(folder/'capture-check.json',result)
+print(json.dumps(result,sort_keys=True))

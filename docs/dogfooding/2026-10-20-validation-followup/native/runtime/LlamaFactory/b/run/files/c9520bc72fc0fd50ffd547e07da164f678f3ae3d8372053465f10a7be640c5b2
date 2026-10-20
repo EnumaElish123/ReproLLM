@@ -1,0 +1,32 @@
+"""Apply a resource ceiling, then invoke the original LlamaFactory CLI."""
+import sys
+import json
+from pathlib import Path
+import torch
+import yaml
+
+torch.cuda.set_per_process_memory_fraction(0.35, 0)
+from llamafactory.cli import main
+from llamafactory.train.sft.trainer import CustomSeq2SeqTrainer
+
+original_loss = CustomSeq2SeqTrainer.compute_loss
+observations = []
+
+def observed_loss(trainer, model, inputs, *args, **kwargs):
+    tokens = int((inputs['labels'] != -100).sum().item())
+    assert tokens > 0, 'actual training batch has no supervised target tokens'
+    result = original_loss(trainer, model, inputs, *args, **kwargs)
+    loss = result[0] if isinstance(result, tuple) else result
+    assert torch.isfinite(loss).all().item(), 'actual unfiltered loss is not finite'
+    observations.append(dict(supervised_tokens=tokens, loss=float(loss.detach().item())))
+    return result
+
+sys.argv = ['llamafactory-cli', 'train', 'validation/train.yaml']
+CustomSeq2SeqTrainer.compute_loss = observed_loss
+try:
+    main()
+finally:
+    CustomSeq2SeqTrainer.compute_loss = original_loss
+assert len(observations) == 2
+config = yaml.safe_load(Path('validation/train.yaml').read_text())
+Path(config['output_dir'], 'validation-proof.json').write_text(json.dumps(dict(schema_version=1, actual_batches=observations), indent=2, sort_keys=True)+'\n')

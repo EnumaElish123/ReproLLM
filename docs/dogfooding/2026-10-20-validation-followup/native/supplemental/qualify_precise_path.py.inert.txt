@@ -1,0 +1,17 @@
+"""No-product positive and rejection controls for the supplementary privacy observer."""
+from pathlib import Path
+import hashlib,json,sys
+import path_oracle_precise as precise
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import path_oracle
+HERE=Path(__file__).resolve().parent
+safe=['ratio = count /2\nsteps=count //2\n','v=f"data/{args.name}/answers/{model.id}.jsonl"\n','"""Save {save_dir}/test_cases.json."""\n','v="[/INST]"\n']
+private=['v="<SYNTHETIC_PRIVATE_PATH>/cache"\n','v=r"C:\\new\\file"\n','v=r"\\\\private-host\\share\\file"\n','v="file://<SYNTHETIC_PRIVATE_PATH>/cache"\n','ratio=count /2#<SYNTHETIC_PRIVATE_PATH>/cache\n','ratio=count //2#<SYNTHETIC_PRIVATE_PATH>/cache\n']
+records=[]
+for expected,inputs in [(False,safe),(True,private)]:
+ for text in inputs:
+  actual=bool(precise.unsafe_matches(text,python_source=True));assert actual==expected
+  records.append({'source_sha256':hashlib.sha256(text.encode()).hexdigest(),'expected_private':expected,'detected_private':actual})
+edge=private[-1];assert not path_oracle.unsafe_matches(edge,python_source=True) and precise.unsafe_matches(edge,python_source=True)
+result={'schema_version':1,'status':'PASS','safe_controls':len(safe),'private_controls':len(private),'old_frozen_observer_nested_comment_false_negative_reproduced':True,'precise_observer_rejects_same_input':True,'old_frozen_observer_sha256':hashlib.sha256((HERE.parent/'path_oracle.py').read_bytes()).hexdigest(),'supplemental_precise_observer_sha256':hashlib.sha256((HERE/'path_oracle_precise.py').read_bytes()).hexdigest(),'records':records,'product_gpu_api_or_network_commands':0,'scope':'Pure read-only observer qualification; original frozen helpers and all resource inputs unchanged.'}
+p=HERE/'privacy-observer-qualification.json';assert not p.exists();p.write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='records'},sort_keys=True))

@@ -1,0 +1,63 @@
+"""One task identity and fail-closed output boundary for fresh validation tools."""
+from __future__ import annotations
+import hashlib
+import json
+from pathlib import Path
+
+EXPECTED_ROOT = Path('<CURRENT_SESSION>')
+SESSION_ROOT = Path(__file__).resolve().parents[1]
+assert SESSION_ROOT == EXPECTED_ROOT, 'Helper must execute only from the new session root'
+CONFIG_PATH = SESSION_ROOT / 'native/session-config.json'
+CONFIG = json.loads(CONFIG_PATH.read_bytes())
+assert CONFIG['schema_version'] == 1
+CANDIDATE_COMMIT = CONFIG['candidate_commit']
+assert CANDIDATE_COMMIT == '948d16423023027fff77322b8a872acaba306691'
+assert CONFIG['session_root'] == str(SESSION_ROOT)
+CANDIDATE_ROOT = Path(CONFIG['candidate_root'])
+RESOURCE_ROOT = Path(CONFIG['resource_root'])
+NATIVE_ROOT = Path(CONFIG['native_root'])
+METADATA_ROOT = Path(CONFIG['metadata_root'])
+QUALITY_ROOT = Path(CONFIG['quality_root'])
+GATE_A_ROOT = Path(CONFIG['gate_a_root'])
+IPC_ROOT = Path(CONFIG['ipc_root'])
+GPU_INDEX = CONFIG['gpu_index']
+assert CANDIDATE_ROOT == SESSION_ROOT / 'worktree'
+assert RESOURCE_ROOT == Path('<RESOURCE>')
+assert NATIVE_ROOT == SESSION_ROOT / 'native/replay'
+assert METADATA_ROOT == SESSION_ROOT / 'metadata/replay'
+assert IPC_ROOT == SESSION_ROOT / 'native/ipc'
+assert QUALITY_ROOT == SESSION_ROOT / 'quality/before-development-final-1'
+assert GATE_A_ROOT == SESSION_ROOT / 'gate/base-before-development-final-1'
+assert GPU_INDEX == 0
+assert CONFIG['gpu_policy'] == 'hardware_capacity_only'
+assert CONFIG['automatic_gpu_retry'] is False and CONFIG['mutate_other_processes'] is False
+
+
+def ensure_output(path: Path) -> Path:
+    path = path.absolute()
+    resolved = path.resolve()
+    if not any(resolved.is_relative_to(SESSION_ROOT / part) for part in ('native', 'metadata')):
+        raise ValueError('Validation output escapes the new owned helper/evidence roots')
+    if path != resolved:
+        raise ValueError('Validation output must not traverse a symlink or unresolved segments')
+    return path
+
+
+def validate_acceptance(quality: dict, gate: dict) -> None:
+    if not (quality.get('all_passed') and quality.get('candidate_commit') == CANDIDATE_COMMIT and quality.get('inputs_byte_identical_before_after')):
+        raise RuntimeError('Current candidate final quality prerequisite not satisfied')
+    if not (gate.get('status') == 'PASS' and gate.get('candidate_commit') == CANDIDATE_COMMIT and gate.get('source_inputs_unchanged') and gate.get('complete_json_comparisons') == 10 and gate.get('all_checks_passed')):
+        raise RuntimeError('Current candidate final Gate A prerequisite not satisfied')
+
+
+def require_acceptance() -> dict:
+    try:
+        quality_raw = (QUALITY_ROOT / 'summary.json').read_bytes()
+        gate_raw = (GATE_A_ROOT / 'summary.json').read_bytes()
+    except OSError:
+        raise RuntimeError('Final quality and Gate A receipts are required before product execution') from None
+    quality, gate = json.loads(quality_raw), json.loads(gate_raw)
+    validate_acceptance(quality, gate)
+    if gate.get('quality_receipt_sha256') != hashlib.sha256(quality_raw).hexdigest():
+        raise RuntimeError('Gate A does not bind the exact final quality receipt')
+    return {'schema_version': 1, 'candidate_commit': CANDIDATE_COMMIT, 'quality_sha256': hashlib.sha256(quality_raw).hexdigest(), 'gate_a_sha256': hashlib.sha256(gate_raw).hexdigest(), 'configuration_sha256': hashlib.sha256(CONFIG_PATH.read_bytes()).hexdigest()}

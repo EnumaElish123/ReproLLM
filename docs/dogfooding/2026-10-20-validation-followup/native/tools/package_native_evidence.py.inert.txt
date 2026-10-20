@@ -1,0 +1,131 @@
+"""Build a fresh reviewable sharing projection; never copy private runtime logs or credentials."""
+from __future__ import annotations
+from pathlib import Path
+import getpass,hashlib,json,re,socket,sys
+ROOT=Path('<CURRENT_SESSION>');N=ROOT/'native';DEST=ROOT/'shareable-resource/native';R=N/'replay/evidence/runtime'
+assert not DEST.exists();DEST.mkdir(parents=True)
+SOURCES={};RETAINED=[]
+IDENTITIES=sorted(set([getpass.getuser(),socket.gethostname()])-set(['']),key=len,reverse=True)
+PREFIXES=[('<CURRENT_NATIVE>','<CURRENT_NATIVE>'),('<CURRENT_CANDIDATE>','<CURRENT_CANDIDATE>'),('<CURRENT_SESSION>','<CURRENT_SESSION>'),('<HISTORICAL_NATIVE>','<HISTORICAL_NATIVE>'),('<RESOURCE>','<RESOURCE>'),('<HISTORICAL_COMPLETION>','<HISTORICAL_COMPLETION>'),('<HISTORICAL_JUDGE_FIX>','<HISTORICAL_JUDGE_FIX>'),('<HISTORICAL_H2>','<HISTORICAL_H2>'),('<PINNED_SOURCE>','<PINNED_SOURCE>'),('<PRIMARY_PROJECT>','<PRIMARY_PROJECT>'),('<LOCAL_CONFIG_OWNER>','<LOCAL_CONFIG_OWNER>'),('<LOCAL_OWNER>','<LOCAL_OWNER>'),('<SYNTHETIC_PRIVATE_PATH>','<SYNTHETIC_PRIVATE_PATH>')]
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def file_sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as stream:
+  for block in iter(lambda:stream.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def logical(p):return '<NATIVE>/'+p.relative_to(N).as_posix()
+def source(p,kind='hash-only'):
+ key=logical(p)
+ if key not in SOURCES:SOURCES[key]={'source':key,'original_sha256':file_sha(p),'original_bytes':p.stat().st_size,'retention':kind,'shared_files':[]}
+ return key
+
+def sharing(text):
+ for old,new in PREFIXES:text=text.replace(old,new)
+ for name in IDENTITIES:text=re.sub(r'(?<![\w])'+re.escape(name)+r'(?![\w])','<LOCAL_IDENTITY>',text)
+ # Numeric process IDs are nonsecret but have no sharing value in control receipts.
+ return text
+
+def assert_no_private(text):
+ for prefix,_ in PREFIXES:
+  if prefix.startswith(('/tmp/reprollm','/home/','/mnt/share_data')):assert prefix not in text,'Private source root survived sharing'
+ for name in IDENTITIES:assert re.search(r'(?<![\w])'+re.escape(name)+r'(?![\w])',text) is None,'Machine identity survived sharing'
+
+def retain(p,target,mode='json'):
+ key=source(p,mode);raw=p.read_bytes()
+ if mode=='original-safe-artifact':
+  assert_no_private(raw.decode());out=raw;transform='NONE: original persisted artifact independently passed full capture/privacy and precise-path84file postcheck. Runtime logs are excluded.'
+ elif mode=='json':
+  data=json.loads(raw);out=(sharing(json.dumps(data,sort_keys=True,indent=2,ensure_ascii=False))+'\n').encode();transform='JSON parsed/canonicalized; local path roots and machine identity tokens replaced for sharing. Not an executable command or original byte claim.'
+ else:
+  out=sharing(raw.decode('utf-8')).encode();transform='Explicit path/identity sharing projection; helper source and tool streams are inert and are not claimed executable or original bytes.'
+ assert_no_private(out.decode());path=DEST/target;assert not path.exists();path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(out)
+ SOURCES[key]['shared_files'].append(target);SOURCES[key]['retention']=mode
+ RETAINED.append({'file':target,'retained_sha256':sha(out),'retained_bytes':len(out),'source':key,'original_sha256':sha(raw),'original_bytes':len(raw),'byte_identical':raw==out,'sharing_transform':transform})
+ return target
+
+def generated(target,obj,refs):
+ out=(json.dumps(obj,sort_keys=True,indent=2,ensure_ascii=False)+'\n').encode();assert_no_private(out.decode());p=DEST/target;p.parent.mkdir(parents=True,exist_ok=True);assert not p.exists();p.write_bytes(out);RETAINED.append({'file':target,'retained_sha256':sha(out),'retained_bytes':len(out),'derived_sources':refs,'sharing_transform':'Derived exact structured summary; original sources and their hashes are separately indexed.'})
+
+# Freeze/identity/qualifications/corrections: original failure streams are transformed, not hidden.
+for p in sorted(N.glob('*.json')):retain(p,'control/'+p.name)
+for p in sorted(N.glob('*.py')):retain(p,'tools/'+p.name+'.inert.txt','inert-text')
+for p in sorted(N.glob('*.inert.py.txt')):retain(p,'tools/'+p.name,'inert-text')
+for p in sorted(N.glob('*.log')):retain(p,'control/tool-streams/'+p.name+'.sharing.txt','inert-text')
+for base,target in [(N/'supplemental','supplemental'),(N/'qualification','qualification'),(N/'driver','driver')]:
+ for p in sorted(base.rglob('*')):
+  if not p.is_file() or '__pycache__' in p.parts:continue
+  rel=p.relative_to(base).as_posix()
+  if p.suffix=='.json':retain(p,target+'/'+rel)
+  elif p.suffix=='.py' or p.name.endswith('.inert.py.txt'):retain(p,target+'/'+rel+'.inert.txt','inert-text')
+  elif p.suffix in {'.log','.txt','.md'} or p.name in {'stdout','stderr'}:retain(p,target+'/'+rel+'.sharing.txt','inert-text')
+
+command_records=[];stream_records=[];run_records=[];exports=[];cases=[]
+for name in ['lm-evaluation-harness','FastChat','LlamaFactory','HarmBench','llm-dp-finetune']:
+ parent=R/name;row={'case':name,'variants':[]}
+ for p in sorted(parent.glob('*.json')):retain(p,'runtime/'+name+'/'+p.name)
+ for p in sorted(parent.glob('*.log')):
+  source(p);stream_records.append({'file':logical(p),'original_sha256':file_sha(p),'original_bytes':p.stat().st_size})
+  if p.name in {'pair-diff.log','self-diff.log'}:retain(p,'runtime/'+name+'/'+p.name+'.structured.json')
+ for variant in ['a','b']:
+  folder=parent/variant;run=json.loads((folder/'run/run.json').read_bytes());assert run['schema_version']==2 and run['reprollm_version']=='0.7.0' and run['status']=='completed' and run['exit_code']==0
+  for p in sorted(folder.glob('*.json')):retain(p,'runtime/'+name+'/'+variant+'/'+p.name)
+  for p in sorted(folder.glob('*.log')):
+   source(p);stream_records.append({'file':logical(p),'original_sha256':file_sha(p),'original_bytes':p.stat().st_size})
+   if p.name in {'audit-before.log','audit-after.log','manifest-audit.log','installed-wheel.log'}:retain(p,'runtime/'+name+'/'+variant+'/structured-streams/'+p.name+'.json')
+  for p in sorted((folder/'documents').glob('*')):retain(p,'runtime/'+name+'/'+variant+'/documents/'+p.name,'original-safe-artifact')
+  runfiles=[]
+  for p in sorted((folder/'run').rglob('*')):
+   if not p.is_file():continue
+   rel=p.relative_to(folder/'run').as_posix();source(p);kept=None
+   if rel not in {'stdout.log','stderr.log'}:kept=retain(p,'runtime/'+name+'/'+variant+'/run/'+rel,'original-safe-artifact')
+   runfiles.append({'file':rel,'original_sha256':file_sha(p),'bytes':p.stat().st_size,'retained_file':kept,'mode':'original-safe-artifact' if kept else 'runtime-log-hash-only'})
+  # Actual framework products (including tensors/model text) remain local; keep a full digest inventory.
+  outputs=[]
+  for p in sorted((folder/'outputs').rglob('*')):
+   if not p.is_file():continue
+   source(p);outputs.append({'path':p.relative_to(folder/'outputs').as_posix(),'sha256':file_sha(p),'bytes':p.stat().st_size,'retention':'hash-only; complete safe structural/numeric checks supplied in output-check.json'})
+  row['variants'].append({'variant':variant,'run_id':run['run_id'],'schema_version':run['schema_version'],'reprollm_version':run['reprollm_version'],'output_checks':'runtime/'+name+'/'+variant+'/output-check.json','consumption_checks':'runtime/'+name+'/'+variant+'/consumption-check.json','framework_outputs':outputs})
+  run_records.append({'case':name,'variant':variant,'run_id':run['run_id'],'files':runfiles})
+  for p in sorted(folder.glob('*REPRODUCIBILITY.md')):retain(p,'runtime/'+name+'/'+variant+'/'+p.name,'markdown-sharing-projection')
+ cases.append(row)
+for p in sorted(R.rglob('*.command.json')):
+ r=json.loads(p.read_bytes());assert r['exit_code']==(1 if p.name=='pair-diff.command.json' else 0) and not r.get('timed_out');command_records.append({'source':logical(p),'original_sha256':file_sha(p),'exit_code':r['exit_code'],'elapsed_seconds':r['elapsed_seconds'],'stdout_sha256':r['stdout_sha256'],'stderr_sha256':r['stderr_sha256']})
+# The original command streams are identified exactly once independently of extra product run logs.
+canonical_streams=[]
+for p in sorted(R.rglob('*.command.json')):
+ for suffix in ['.log','.stderr.log']:
+  q=p.with_name(p.name.replace('.command.json',suffix));canonical_streams.append({'source':logical(q),'sha256':file_sha(q),'bytes':q.stat().st_size,'retention':'hash-only; no original runtime stream is copied'})
+for base,target in [(N/'exports-selected-run','exports-selected-run'),(N/'exports-nonrun','exports-nonrun')]:
+ for p in sorted(base.rglob('*')):
+  if not p.is_file():continue
+  if p.suffix=='.json':retain(p,target+'/'+p.relative_to(base).as_posix())
+  else:retain(p,target+'/'+p.relative_to(base).as_posix()+'.sharing.txt','inert-text')
+terminal=json.loads((N/'terminal-evidence-review.json').read_bytes());assert terminal['all_checks_passed'];assert len(command_records)==170 and len(canonical_streams)==340 and len(run_records)==10 and sum(len(r['files']) for r in run_records)==84
+children=[]
+for name in [r['case'] for r in cases]:
+ for variant in ['a','b']:
+  folder=R/name/variant;r=json.loads((folder/'run.command.json').read_bytes());run=json.loads((folder/'run/run.json').read_bytes());children.append({'case':name,'variant':variant,'child_cli_elapsed_seconds':r['elapsed_seconds'],'recorded_runtime_seconds':run['duration_seconds'],'run_id':run['run_id']})
+summary={'schema_version':1,'candidate_commit':'948d16423023027fff77322b8a872acaba306691','status':'PASS_NATIVE_AVAILABLE_ARTIFACT_MATRIX','native_children':10,'pairs':5,'export_states':20,'export_comparisons':1291,'terminal_checks':244,'original_command_receipts':170,'original_command_streams_indexed':340,'original_run_tree_files_indexed':84,'original_run_tree_safe_nonlog_files_retained':64,'original_run_logs_hash_only':20,'actual_harmbench_stage_log_observations':4,'precise_privacy_requalification_run_trees':10,'precise_privacy_requalification_files':84,'model_or_api_retries':0,'paid_provider_requests':0,'original_workload_or_gold_changes':False,'command_elapsed_seconds_sum':round(sum(c['elapsed_seconds'] for c in command_records),6),'native_run_command_elapsed_seconds_sum':round(sum(c['child_cli_elapsed_seconds'] for c in children),6),'recorded_native_runtime_seconds_sum':round(sum(c['recorded_runtime_seconds'] for c in children),6),'children':children,'GPU_policy':'hardware_capacity_only; actual free GPU0 capacity, original workload fractions, one global lock and serial children; no GPU1 work or external process mutation','observation_limits':['Guard fractions are configured launch values. Actual HarmBench .28/.45/TP1/float16/max2048 values are separately witnessed in original vLLM kwargs and engine logs.','HarmBench logs directly show CUDA backend. GPU0 is tied to launch baseline, guard and unchanged source; no direct in-engine physical-device query is claimed.','Recorded input bindings remain child-consumption-unverified by recorder; separate actual-call/result observations supply the native verification.','DP epsilon8to4 is MEDIUM; complete pair exit1 under fail-onHIGH is explained by the changed configuration content hashHIGH; self-diffs are empty.','A top-level driver SIGSTOP hold allowed its current controller/child to finish naturally. Driver wall time includes that hold; no child/controller/model reran.','All original runtime stdout/stderr streams and framework model products are hash-only. Typed persisted nonlog run artifacts remain byte identical; other receipts/commands/helpers are sharing projections with original+retained hashes.','Original M3 metadata inputs and authenticated gated HF success are not closed here. No release readiness or repeat paid judge verification is claimed.'],'case_checks':cases,'related_H2':'Sibling metadata package;5targets15modes639checks15complete-report+15complete-lock comparisons passed independently.'}
+generated('summary.json',summary,[source(N/'terminal-evidence-review.json'),source(N/'supplemental/harmbench-log-observation.json'),source(N/'supplemental/privacy-postcheck.json')])
+generated('original-command-stream-index.json',{'schema_version':1,'receipts':command_records,'streams':canonical_streams},[logical(p) for p in sorted(R.rglob('*.command.json'))])
+generated('original-run-tree-index.json',{'schema_version':1,'scope':'84 original files indexed;64 safe persisted nonlog artifacts retained byte-identically;20runtime logs hash-only, so supplied trees are intentionally incomplete for log replay.','runs':run_records},[logical(R/r['case']/r['variant']/'run/run.json') for r in run_records])
+# Include this packager only as an inert sharing transform, never a replayable original helper.
+retain(Path(__file__),'tools/package_native_evidence.py.inert.txt','inert-text')
+source_index={'schema_version':1,'source_root':'<NATIVE> = current session native scratch only','source_files':list(SOURCES.values()),'private_runtime_stream_policy':'Original streams/framework products are local hash-only; structured reports and explicitly transformed control text are provided separately.','source_count':len(SOURCES),'all_originals_remain_unchanged':True}
+(DEST/'source-index.json').write_text(json.dumps(source_index,sort_keys=True,indent=2)+'\n')
+retained_index={'schema_version':1,'files':RETAINED,'retained_count':len(RETAINED),'index_and_audit_self_reference_exclusions':['source-index.json','retained-files.json','audit.json']}
+(DEST/'retained-files.json').write_text(json.dumps(retained_index,sort_keys=True,indent=2)+'\n')
+fail=[]
+for row in RETAINED:
+ p=DEST/row['file']
+ if file_sha(p)!=row['retained_sha256'] or p.stat().st_size!=row['retained_bytes']:fail.append(row['file'])
+ assert_no_private(p.read_text())
+for row in SOURCES.values():
+ p=N/row['source'].removeprefix('<NATIVE>/');assert file_sha(p)==row['original_sha256'] and p.stat().st_size==row['original_bytes']
+assert not fail
+actual={p.relative_to(DEST).as_posix() for p in DEST.rglob('*') if p.is_file()};expected={r['file'] for r in RETAINED}|{'source-index.json','retained-files.json'};assert actual==expected
+for row in RETAINED:
+ if '/run/' in row['file']:assert not row['file'].endswith(('stdout.log','stderr.log'))
+audit={'schema_version':1,'status':'PASS','source_count':len(SOURCES),'retained_count':len(RETAINED),'source_hashes_verified_unchanged':len(SOURCES),'retained_hashes_verified':len(RETAINED),'private_root_and_current_identity_scan':'PASS; exact credentials are intentionally not read. Root performs final credential/canary scan.','original_runtime_logs_copied':0,'run_tree_safe_original_files_retained':64,'original_command_receipts':170,'original_command_streams_hash_only':340,'run_tree_files_indexed':84,'extra_or_missing_retained_files':[],'source_index_sha256':file_sha(DEST/'source-index.json'),'retained_index_sha256':file_sha(DEST/'retained-files.json'),'packager_original_sha256':file_sha(Path(__file__)),'product_gpu_api_or_network_commands':0}
+(DEST/'audit.json').write_text(json.dumps(audit,sort_keys=True,indent=2)+'\n');print(json.dumps(audit,sort_keys=True))

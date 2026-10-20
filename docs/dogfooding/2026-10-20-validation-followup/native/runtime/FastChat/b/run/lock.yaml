@@ -1,0 +1,132 @@
+schema_version: 1
+reprollm_version: 0.7.0
+generated_at: '2026-10-20T02:00:32Z'
+manifest_sha256: sha256:58f2d17f8abf79e0ebbadb4d2744c9fa4b8716e520c88e3238d315487c6ace71
+project_rules_sha256: null
+resolution:
+  mode: online
+models:
+  primary:
+    provider: huggingface
+    id: lmsys/vicuna-7b-v1.5
+    pinnability: exact
+    revision:
+      value: 3321f76e3f527bd14065daf69dad9344000a201d
+      source: hf_api
+      confidence: exact
+      resolved_at: '2026-10-20T02:00:32Z'
+      note: null
+    observed_at: null
+    tokenizer:
+      id: lmsys/vicuna-7b-v1.5
+      revision:
+        value: 3321f76e3f527bd14065daf69dad9344000a201d
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T02:00:32Z'
+        note: null
+    chat_template:
+      sha256:
+        value: null
+        source: hf_api
+        confidence: exact
+        resolved_at: '2026-10-20T02:00:32Z'
+        note: model has no chat template
+      status: absent
+    config_sha256:
+      value: sha256:e122b598d0734b489590e99e3b3562a11ce67ea13bce390a7868b4f73ae6e615
+      source: hf_file:config.json
+      confidence: exact
+      resolved_at: '2026-10-20T02:00:32Z'
+      note: null
+    adapter: null
+    local: null
+    dtype: float16
+    quantization: none
+    trust_remote_code: false
+datasets:
+  eval:
+    provider: local
+    id: fastchat/llm_judge/data/mt_bench/question.jsonl
+    revision:
+      value: null
+      source: filesystem
+      confidence: exact
+      resolved_at: '2026-10-20T02:00:32Z'
+      note: null
+    subset: null
+    split: null
+    content_fingerprint:
+      status: not_computed
+    files:
+    - path: fastchat/llm_judge/data/mt_bench/question.jsonl
+      sha256: sha256:119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7
+      size_bytes: 48929
+prompts:
+  conversation:
+    path: fastchat/conversation.py
+    sha256: sha256:f641a0eb13edc43fc49c13b8c1fce3649f49567882bc0981d0677fd99c392e64
+    size_bytes: 102989
+    text_sha256: null
+files:
+- path: fastchat/llm_judge/gen_model_answer.py
+  sha256: sha256:8feb3c19262b8f8567b49c1cd45b0adfd83f199bdcd17e891a05dd608300c7c6
+  size_bytes: 9659
+- path: validation/answer.yaml
+  sha256: sha256:9ab460c8c3937f1fe1cfe8ac54f20606a420377010b9ad5cc032087bd6e99199
+  size_bytes: 150
+- path: validation/answer_entry.py
+  sha256: sha256:0ad9acddfa823aa88547242aec35b38c622db2b008639b3a419006f1cdc71304
+  size_bytes: 1631
+generation:
+  temperature: 0.7
+  top_p: null
+  top_k: null
+  max_tokens: 48
+  seed: 0
+  do_sample: true
+  stop: null
+  repetition_penalty: null
+  n: null
+inference:
+  backend: transformers
+  version:
+    value: 4.57.6
+    source: importlib_metadata
+    confidence: exact
+    resolved_at: '2026-10-20T02:00:32Z'
+    note: null
+  mode: null
+  dtype: float16
+  tensor_parallel_size: null
+  gpu_memory_utilization: null
+  quantization: null
+  max_model_len: null
+  kv_cache_dtype: null
+  params: {}
+training: null
+evaluation: null
+privacy: null
+environment:
+  python: 3.11.12
+  platform: linux
+  packages:
+    accelerate: 1.11.0
+    anthropic: 1.8.0
+    datasets: 3.6.0
+    evaluate: 0.4.6
+    lm_eval: 0.4.14.dev0
+    numpy: 2.2.6
+    openai: 2.24.0
+    peft: 0.18.1
+    safetensors: 0.8.0
+    sentencepiece: 0.2.2
+    tokenizers: 0.22.2
+    torch: 2.10.0+cu129
+    transformers: 4.57.6
+    trl: 0.24.0
+    vllm: 0.18.0
+  gpu:
+    driver: 535.216.01
+    cuda_driver_max: '12.9'
+    source: nvidia_smi

@@ -1,0 +1,14 @@
+from session_config import CANDIDATE_COMMIT, CANDIDATE_ROOT, NATIVE_ROOT, RESOURCE_ROOT, SESSION_ROOT, QUALITY_ROOT, GATE_A_ROOT, IPC_ROOT, GPU_INDEX, ensure_output, require_acceptance
+import json
+import sys
+from controller import CASES,TASK,save
+from capture_verifier import verify_pair
+name = sys.argv[1]
+case = TASK/'cases'/name
+folder = TASK/'evidence/runtime'/name
+kind,argv,field,a,b,severity,config,fraction = CASES[name]
+result = verify_pair(case,folder/'a/run',folder/'b/run',field,(a,b),severity,config,folder/'pair-diff.log',folder/'self-diff.log',folder/'a/audit-after.log',folder/'b/audit-after.log')
+save(folder/'pair-check.json',result)
+print(json.dumps(result,sort_keys=True))
+assert result['status'] == 'PASS', 'Additional drift requires independent review; complete deltas retained'
+assert result['full_findings_equal'] and result['audit_profiles_equal']

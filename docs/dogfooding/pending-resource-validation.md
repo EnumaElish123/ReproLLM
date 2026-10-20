@@ -82,9 +82,23 @@ remains FAIL and its B NOT_RUN. VAL-R01's native acceptance remains bound to
 does not rerun GPU/H2. HF 403 and all five original metadata-manifest gaps remain
 independent, with no new HF success or release-readiness claim.
 
+Updated 2026-10-20: the [prior-product validation follow-up](2026-10-20-validation-followup/README.md)
+passes fresh final quality and five-project Gate A at
+`948d16423023027fff77322b8a872acaba306691`, then replays Linux H2 and all ten
+native children with complete captures, consumption, five semantic pairs and
+20 exports. VAL-R01 is now PASS for those product bytes. The approved
+`DISCOVER-INIT-948D-20261020` current-input case also completes one real provider
+request and reviewed `top_p` acceptance; three input hashes differ from the
+historical case, whose gold stays unchanged. Formal judge A/B is not repeated:
+VAL-R02 retains `75d1b0` acceptance. A fresh preflight still authenticates but
+returns 403 for both restricted small files. All five original metadata
+manifests remain missing. The subsequent R06-B policy change has separate CPU
+quality/Gate A evidence; these resource runs are not relabelled to its commit.
+No release is authorized.
+
 | Tracking ID | Outstanding coverage | Current cause | Status |
 |---|---|---|---|
-| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Complete native acceptance at `750270b`; no new GPU/H2 matrix claimed for `75d1b0` | PASS — 2026-10-19, `750270b` |
+| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Fresh available H2/native/capture/diff/export matrix at `948d164`; original §8.1 inputs remain separate | PASS — 2026-10-20, `948d164` |
 | VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Both original-input provider requests, full capture fidelity and the complete HIGH direct-cap pair pass under a newly approved CNY 3 ceiling | PASS — 2026-10-19, `75d1b0` |
 | VAL-R03 | Successful authenticated HF gated-file resolution | Authenticated small files still return 403; original Project C metadata manifest remains missing | BLOCKED |
 

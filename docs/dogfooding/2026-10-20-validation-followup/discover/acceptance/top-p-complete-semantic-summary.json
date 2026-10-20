@@ -1,0 +1,105 @@
+{
+  "candidate_document_sha256": "aa4c64fbfabd4f1231a977b0e111f02ca0e69c3f515ae7b27a59bcfd11dc1857",
+  "candidate_id": "c-8914b9",
+  "commands": [
+    {
+      "elapsed_seconds": 0.517598,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "accept",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f7f0d3de1fc0caf0f74c2ddfac2855ec26b1e1e6c24804084b30f7da3fb6096c"
+    },
+    {
+      "elapsed_seconds": 0.944668,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-missing",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "79a7dedcfe5bb862a713b6d02b1a18d846a247595e47ec9b83e31446a939b14f"
+    },
+    {
+      "elapsed_seconds": 0.954082,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-explicit-sourced-value",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "28616d3207bb2fd2f50fe42a4c7c3bc10a6fd74054a8811ece3e47cd0673d609"
+    },
+    {
+      "elapsed_seconds": 0.514236,
+      "exit": 2,
+      "expected_exit": 2,
+      "label": "duplicate-accept",
+      "stderr_sha256": "65b8acc26f59150dfc39640d60481ad7373bca3e133bce2486303e05f72ac445",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "elapsed_seconds": 0.956551,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "audit-repeat",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2b7b07252c995bdfb68c7366d9ea8d31a4f5e58a07fdb0b5a6d08d8427c19138"
+    }
+  ],
+  "complete_nonproject_findings_equal": true,
+  "complete_repeat_audit_equal_except_generated_at": true,
+  "duplicate_exit": 2,
+  "explicit_operator_validation_input": {
+    "field": "custom.sampling.top_p",
+    "origin": "Independent sent-source dataclass default; validation intent, not runtime consumption",
+    "value": 1.0
+  },
+  "missing_finding": {
+    "aliases": [],
+    "category": "project",
+    "evidence": [
+      {
+        "expected": null,
+        "field": "custom.sampling.top_p",
+        "kind": "field",
+        "line": null,
+        "note": "accepted: Top-p controls sampling randomness; changing it alters generated attack/evaluation samples and leakage metrics.",
+        "path": null,
+        "value": null
+      }
+    ],
+    "fix_hint": "Set custom.sampling.top_p in reprollm.yaml (reason: Top-p controls sampling randomness; changing it alters generated attack/evaluation samples and leakage metrics.)",
+    "level": 1,
+    "message": "custom.sampling.top_p is accepted for this project but missing or null",
+    "profile_origin": [],
+    "rule_id": "project.top_p",
+    "severity": "WARNING",
+    "severity_origin": "project_rule",
+    "status": "fail",
+    "suppressed_reason": null
+  },
+  "present_finding": {
+    "aliases": [],
+    "category": "project",
+    "evidence": [],
+    "fix_hint": "Set custom.sampling.top_p in reprollm.yaml (reason: Top-p controls sampling randomness; changing it alters generated attack/evaluation samples and leakage metrics.)",
+    "level": 1,
+    "message": "custom.sampling.top_p is declared (accepted: Top-p controls sampling randomness; changing it alters generated attack/evaluation samples and leakage metrics.)",
+    "profile_origin": [],
+    "rule_id": "project.top_p",
+    "severity": "PASS",
+    "severity_origin": "project_rule",
+    "status": "pass",
+    "suppressed_reason": null
+  },
+  "project_rules_unchanged_on_duplicate": true,
+  "provider_requests": 0,
+  "reviewer_source": "Independent agent review of pinned Git bytes, exact sent block and AST literal; parent explicitly accepted top_p choice in current validation session",
+  "rule_id": "project.top_p",
+  "schema_version": 1,
+  "source_evidence": {
+    "line": 24,
+    "path": "src/llm_pft/arguments/sampling_args.py",
+    "sha256": "22cf4716508c967c0d4d0dfe2fd1af771bec67350dceb8c980f4099ec4525de3"
+  },
+  "source_unchanged": true,
+  "status": "PASS",
+  "wall_seconds": 3.908349
+}

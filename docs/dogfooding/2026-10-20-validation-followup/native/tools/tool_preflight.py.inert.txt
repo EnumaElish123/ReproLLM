@@ -1,0 +1,68 @@
+"""Qualify task boundaries, exact light inputs and observers without product/GPU/network runs."""
+from __future__ import annotations
+import ast
+import copy
+import hashlib
+import json
+from pathlib import Path
+import socket
+import subprocess
+import uuid
+import yaml
+import controller
+import path_oracle
+from session_config import *
+
+OUT = SESSION_ROOT / 'native/tool-preflight-1.json'
+assert not OUT.exists()
+checks = []
+def check(label, okay):
+    checks.append({'label': label, 'passed': bool(okay)})
+    assert okay, label
+
+def rejects(call):
+    try:call()
+    except (ValueError, RuntimeError):return True
+    return False
+
+q={'all_passed':True,'candidate_commit':CANDIDATE_COMMIT,'inputs_byte_identical_before_after':True}
+g={'status':'PASS','candidate_commit':CANDIDATE_COMMIT,'source_inputs_unchanged':True,'complete_json_comparisons':10,'all_checks_passed':True}
+validate_acceptance(q,g);check('acceptance-positive',True)
+for label, mutate in [('wrong-quality-candidate',lambda a,b:a.update(candidate_commit='0'*40)),('failed-quality',lambda a,b:a.update(all_passed=False)),('changed-quality-inputs',lambda a,b:a.update(inputs_byte_identical_before_after=False)),('wrong-gate-candidate',lambda a,b:b.update(candidate_commit='0'*40)),('failed-gate',lambda a,b:b.update(all_checks_passed=False)),('missing-target',lambda a,b:b.update(complete_json_comparisons=9))]:
+    a,b=copy.deepcopy(q),copy.deepcopy(g);mutate(a,b);check(label,rejects(lambda:validate_acceptance(a,b)))
+check('new-native-output',ensure_output(NATIVE_ROOT/'evidence/probe.json')==NATIVE_ROOT/'evidence/probe.json')
+check('new-metadata-output',ensure_output(METADATA_ROOT/'probe.json')==METADATA_ROOT/'probe.json')
+for label, location in [('historical-root',Path('<HISTORICAL_COMPLETION>/native/probe.json')),('candidate-write',CANDIDATE_ROOT/'probe.json'),('outside-task',Path('/tmp/outside-native-probe.json'))]:check(label,rejects(lambda:ensure_output(location)))
+IPC_ROOT.mkdir(exist_ok=True)
+address=IPC_ROOT/str(uuid.uuid4());size=len(str(address).encode())
+check('unix-socket-address-under-native-limit',size<107)
+s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+try:s.bind(str(address));check('actual-unix-socket-bind',True)
+finally:s.close();address.unlink(missing_ok=True)
+for value in ['ratio = count /2\nsteps = count //2\n','value = f"data/{args.name}/answers/{model.id}.jsonl"\n','"""Save {save_dir}/test_cases.json."""\n','value = "[/INST]"\n']:
+    check('path-observer-safe-'+str(len(checks)),not path_oracle.unsafe_matches(value,python_source=True))
+for value in ['value="<SYNTHETIC_PRIVATE_PATH>/cache"\n','value=r"C:\\new\\file"\n','value=r"\\\\private-host\\share\\file"\n','value="file://<SYNTHETIC_PRIVATE_PATH>/cache"\n','ratio = count /2\ncache="<SYNTHETIC_PRIVATE_PATH>/cache"\n']:
+    check('path-observer-private-'+str(len(checks)),bool(path_oracle.unsafe_matches(value,python_source=True)))
+expected={'lm-evaluation-harness':('generation.max_tokens',32,48,'HIGH',.12),'FastChat':('generation.max_tokens',32,48,'HIGH',.30),'LlamaFactory':('training.learning_rate',.0001,.0002,'HIGH',.35),'HarmBench':('generation.max_tokens',16,24,'HIGH',.45),'llm-dp-finetune':('privacy.mechanism.params.target_epsilon',8,4,'MEDIUM',.15)}
+check('experiment-values-and-drift-gold-unchanged',{k:(v[2],v[3],v[4],v[5],v[7]) for k,v in controller.CASES.items()}==expected)
+inventory=json.loads((CANDIDATE_ROOT/'docs/dogfooding/2026-10-18-a01-local/input-inventory.json').read_bytes())
+inputs=[]
+for item in inventory['inputs']:
+    if not item['case_id'].startswith('native-'):continue
+    case=item['case_id'].removeprefix('native-');relative=item['original_relative_path'];variant=item['variant']
+    if case=='lm-evaluation-harness':
+        mapping={'reprollm.yaml':'reprollm.yaml' if variant=='a' else 'variants/reprollm-b.yaml','validation/eval.yaml':'validation/eval.yaml' if variant=='a' else 'variants/eval-b.yaml','validation/tasks/gsm8k_validation.yaml':'validation/tasks/gsm8k_validation.yaml'}
+        raw=(CANDIDATE_ROOT/'examples/lm_eval_replay'/mapping[relative]).read_bytes()
+    else:raw=subprocess.check_output(['git','-C',str(RESOURCE_ROOT/'cases'/case),'show',item['source_git_commit']+':'+relative])
+    check('exact-input-'+case+'-'+variant+'-'+relative,hashlib.sha256(raw).hexdigest()==item['expected_sha256'] and len(raw)==item['expected_bytes'])
+    inputs.append({'case':case,'variant':variant,'relative_path':relative,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)})
+check('all-32-native-input-slots-verified',len(inputs)==32)
+metadata=[]
+for name in controller.CASES:
+    raw=(Path('<PINNED_SOURCE>/m4-m6-20260926.6OgZhb/metadata-inputs')/(name+'.yaml')).read_bytes()
+    item=next(x for x in inventory['inputs'] if x['case_id']=='h2-'+name)
+    check('exact-h2-input-'+name,hashlib.sha256(raw).hexdigest()==item['expected_sha256'])
+    metadata.append({'case':name,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)})
+check('no-original-runtime-created',not NATIVE_ROOT.exists() and not METADATA_ROOT.exists())
+result={'schema_version':1,'status':'PASS','candidate_commit':CANDIDATE_COMMIT,'checks':checks,'native_input_slots':inputs,'h2_inputs':metadata,'unix_socket_address_bytes':size,'gpu_model_jobs':0,'network_requests':0,'product_commands':0,'framework_environment_changes':0,'scope':'Tool and exact light input qualification only; not native/H2 resource acceptance.'}
+OUT.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print(json.dumps({'schema_version':1,'status':'PASS','checks':len(checks),'native_slots':len(inputs),'h2_inputs':len(metadata),'unix_socket_bind_bytes':size,'gpu_model_jobs':0,'product_commands':0},sort_keys=True))

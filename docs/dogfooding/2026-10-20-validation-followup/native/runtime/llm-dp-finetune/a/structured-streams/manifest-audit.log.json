@@ -1,0 +1,851 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:95bec6ce6b3e20a4bb8fc14bcad456b77fb633c299afaffec5256006771687b2",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "reprollm.yaml untracked",
+          "path": "reprollm.yaml",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "git",
+          "line": null,
+          "note": "validation/ untracked",
+          "path": "validation/",
+          "value": null
+        }
+      ],
+      "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+      "level": 1,
+      "message": "2 untracked non-ignored file(s): reprollm.yaml, validation/",
+      "profile_origin": [],
+      "rule_id": "code.no_untracked",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 6,
+          "note": "imported",
+          "path": "data/echr/echr.py",
+          "value": null
+        }
+      ],
+      "fix_hint": "Pin datasets exactly, e.g. `datasets==2.18.0`.",
+      "level": 1,
+      "message": "datasets is used but not pinned to an exact version (suggestion: datasets==2.18.0)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 9,
+          "note": "imported",
+          "path": "src/llm_pft/models/language_model.py",
+          "value": null
+        }
+      ],
+      "fix_hint": "Pin numpy exactly, e.g. `numpy==1.26.4`.",
+      "level": 1,
+      "message": "numpy is used but not pinned to an exact version (suggestion: numpy==1.26.4)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 101,
+          "note": "imported",
+          "path": "src/llm_pft/models/language_model.py",
+          "value": null
+        }
+      ],
+      "fix_hint": "Pin peft exactly, e.g. `peft==<version>`.",
+      "level": 1,
+      "message": "peft is used but not pinned to an exact version (suggestion: peft==<version>)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 1,
+          "note": "declared as unversioned",
+          "path": "requirements.txt",
+          "value": "(no version)"
+        }
+      ],
+      "fix_hint": "Pin torch exactly, e.g. `torch==2.2.0+cu121`.",
+      "level": 1,
+      "message": "torch is used but not pinned to an exact version (suggestion: torch==2.2.0+cu121)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 2,
+          "note": "declared as unversioned",
+          "path": "requirements.txt",
+          "value": "(no version)"
+        }
+      ],
+      "fix_hint": "Pin transformers exactly, e.g. `transformers==4.29.0`.",
+      "level": 1,
+      "message": "transformers is used but not pinned to an exact version (suggestion: transformers==4.29.0)",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+      "level": 1,
+      "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+      "profile_origin": [],
+      "rule_id": "env.lockfile_present",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "no requires-python / .python-version / conda python= found",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "level": 1,
+      "message": "no Python version requirement is declared",
+      "profile_origin": [],
+      "rule_id": "env.python_version_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.adapter",
+          "kind": "field",
+          "line": null,
+          "note": "absent",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.<role>.adapter in reprollm.yaml to describe the detected adapter.",
+      "level": 1,
+      "message": "models has no adapter declaration despite detected adapter use",
+      "profile_origin": [],
+      "rule_id": "model.adapter_declared",
+      "severity": "WARNING",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git submodule update --init --recursive`.",
+      "level": 1,
+      "message": "no .gitmodules",
+      "profile_origin": [],
+      "rule_id": "code.submodules_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Run `reprollm init` to create reprollm.yaml and .reprollm/.",
+      "level": 1,
+      "message": "audit level > 0; reprollm.yaml exists",
+      "profile_origin": [],
+      "rule_id": "env.reprollm_initialized",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "run",
+          "line": null,
+          "note": "no run.json found",
+          "path": ".reprollm/runs",
+          "value": null
+        }
+      ],
+      "fix_hint": "Wrap your command with `reprollm run -- <command>` to record runtime truth.",
+      "level": 1,
+      "message": "no run records found under .reprollm/runs",
+      "profile_origin": [],
+      "rule_id": "exec.run_recorded",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "fail",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.train.split",
+          "kind": "field",
+          "line": null,
+          "note": "only required for Hugging Face datasets",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.<role>.split in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.train.split: only required for Hugging Face datasets",
+      "profile_origin": [],
+      "rule_id": "dataset.split_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "prompt",
+      "evidence": [],
+      "fix_hint": "Set prompts.<role>.path to an existing file in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "prompt.file_exists",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "train",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.adapter.rank, models.<role>.adapter.alpha and models.<role>.adapter.target_modules on the same adapter in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "train.lora_config_complete",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "privacy",
+      "evidence": [],
+      "fix_hint": "Set privacy.attack.method and privacy.attack.query_budget in reprollm.yaml.",
+      "level": 1,
+      "message": "no applicable declarations",
+      "profile_origin": [],
+      "rule_id": "privacy.attack_config_declared",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+      "level": 1,
+      "message": "Tracked files have no uncommitted modifications.",
+      "profile_origin": [],
+      "rule_id": "code.clean_tree",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+      "level": 1,
+      "message": "HEAD points at a committed revision (no unborn branch).",
+      "profile_origin": [],
+      "rule_id": "code.git_commit",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+      "level": 1,
+      "message": "The experiment code lives in a git repository.",
+      "profile_origin": [],
+      "rule_id": "code.git_repo",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "code",
+      "evidence": [],
+      "fix_hint": "Run `git remote add origin <url>` so the experiment's code source is recorded.",
+      "level": 1,
+      "message": "An origin remote records where this code is published.",
+      "profile_origin": [],
+      "rule_id": "code.remote_recorded",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.",
+      "level": 1,
+      "message": "A dependency manifest declares the Python environment.",
+      "profile_origin": [],
+      "rule_id": "env.dependency_manifest_present",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [],
+      "fix_hint": "Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).",
+      "level": 1,
+      "message": "Secret-bearing files are not present or are gitignored.",
+      "profile_origin": [],
+      "rule_id": "env.secret_files_ignored",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Set execution.command in reprollm.yaml, e.g. `execution: {command: 'python eval.py --config configs/eval.yaml'}`.",
+      "level": 1,
+      "message": "The command that reproduces the experiment is declared.",
+      "profile_origin": [],
+      "rule_id": "exec.command_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "level": 1,
+      "message": "Declared profiles and detected signals agree.",
+      "profile_origin": [],
+      "rule_id": "exec.profile_detection_mismatch",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [],
+      "fix_hint": "Set execution.seed (or generation.seed / training.seed) in reprollm.yaml.",
+      "level": 1,
+      "message": "A random seed is declared somewhere (execution/generation/training).",
+      "profile_origin": [],
+      "rule_id": "exec.seed_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.dtype",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.dtype in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.dtype is declared",
+      "profile_origin": [],
+      "rule_id": "model.dtype_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.id",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.id in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.id is declared",
+      "profile_origin": [],
+      "rule_id": "model.primary_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "models.primary.provider",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set models.primary.provider in reprollm.yaml.",
+      "level": 1,
+      "message": "models.primary.provider is a known provider",
+      "profile_origin": [],
+      "rule_id": "model.provider_known",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "model",
+      "evidence": [],
+      "fix_hint": "Set models.<role>.trust_remote_code to true or false in reprollm.yaml to match the selected execution path.",
+      "level": 1,
+      "message": "Detected remote-code trust behavior is explicitly declared.",
+      "profile_origin": [],
+      "rule_id": "model.trust_remote_code_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "dataset",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "datasets.train.preprocessing",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set datasets.train.preprocessing in reprollm.yaml.",
+      "level": 1,
+      "message": "datasets.train.preprocessing is declared",
+      "profile_origin": [],
+      "rule_id": "dataset.preprocessing_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "train",
+      "evidence": [],
+      "fix_hint": "Set training.learning_rate, training.batch_size and either training.epochs or training.max_steps in reprollm.yaml.",
+      "level": 1,
+      "message": "Learning rate, batch size and training duration are declared.",
+      "profile_origin": [],
+      "rule_id": "train.hyperparameters_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "train",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "training.method",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set training.method in reprollm.yaml.",
+      "level": 1,
+      "message": "training.method is declared",
+      "profile_origin": [],
+      "rule_id": "train.method_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "train",
+      "evidence": [],
+      "fix_hint": "Set training.optimizer and training.scheduler in reprollm.yaml.",
+      "level": 1,
+      "message": "The optimizer and scheduler are declared.",
+      "profile_origin": [],
+      "rule_id": "train.optimizer_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "train",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "training.precision",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set training.precision in reprollm.yaml.",
+      "level": 1,
+      "message": "training.precision is declared",
+      "profile_origin": [],
+      "rule_id": "train.precision_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "privacy",
+      "evidence": [],
+      "fix_hint": "Set privacy.mechanism.name and nonempty privacy.mechanism.params in reprollm.yaml.",
+      "level": 1,
+      "message": "The privacy mechanism has a name and nonempty parameters.",
+      "profile_origin": [],
+      "rule_id": "privacy.mechanism_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "privacy",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "privacy.metrics",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set privacy.metrics in reprollm.yaml.",
+      "level": 1,
+      "message": "privacy.metrics is declared",
+      "profile_origin": [],
+      "rule_id": "privacy.metrics_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "privacy",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "privacy.threat_model",
+          "kind": "field",
+          "line": null,
+          "note": "declared",
+          "path": null,
+          "value": null
+        }
+      ],
+      "fix_hint": "Set privacy.threat_model in reprollm.yaml.",
+      "level": 1,
+      "message": "privacy.threat_model is declared",
+      "profile_origin": [],
+      "rule_id": "privacy.threat_model_declared",
+      "severity": "PASS",
+      "severity_origin": "default",
+      "status": "pass",
+      "suppressed_reason": null
+    }
+  ],
+  "generated_at": "2026-10-20T01:53:13Z",
+  "level": 1,
+  "profiles": {
+    "declared": [
+      "finetuning",
+      "privacy"
+    ],
+    "detected": [
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": 10,
+            "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+            "path": "fine_tune.py",
+            "value": null
+          },
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": 101,
+            "note": "import peft",
+            "path": "src/llm_pft/models/language_model.py",
+            "value": null
+          }
+        ],
+        "profile": "finetuning",
+        "shipped": true
+      },
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'differential privacy' in readme text",
+            "path": "README.md",
+            "value": null
+          },
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'epsilon' in config key",
+            "path": "configs/fine-tune/echr-llama-7b-dp4.yml",
+            "value": null
+          },
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'threat model' in config key",
+            "path": "reprollm.yaml",
+            "value": null
+          }
+        ],
+        "profile": "privacy",
+        "shipped": true
+      },
+      {
+        "confidence": "low",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": null,
+            "note": "keyword 'red team' in readme text",
+            "path": "README.md",
+            "value": null
+          }
+        ],
+        "profile": "safety",
+        "shipped": true
+      }
+    ],
+    "resolved": [
+      "core",
+      "finetuning",
+      "privacy"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 1,
+    "pass": 22,
+    "skipped": 6,
+    "suppressed": 0,
+    "warning": 9
+  },
+  "target": "."
+}

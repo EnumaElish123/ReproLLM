@@ -1,0 +1,55 @@
+"""Independent read-only evidence of actual vLLM argument/engine log values; no model import."""
+from __future__ import annotations
+import ast,hashlib,json,re,sys
+from pathlib import Path
+import yaml
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from session_config import CANDIDATE_COMMIT,NATIVE_ROOT,ensure_output
+
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def parse(log,cfg):
+    lines=log.splitlines();args=[];engines=[]
+    for i,line in enumerate(lines,1):
+        if 'non-default args: ' in line:
+            tail=line.split('non-default args: ',1)[1];assert len(tail)<50000
+            value=ast.literal_eval(tail);assert isinstance(value,dict);args.append((i,line,value))
+        if 'Initializing a V1 LLM engine ' in line and ' with config: ' in line:engines.append((i,line))
+    assert len(args)==len(engines)==2,'Exactly two native vLLM stages required'
+    results=[]
+    for index,(phase,prefix,fraction) in enumerate([('target','target',.28),('classify','classifier',.45)]):
+        line_no,line,a=args[index];engine_no,engine=engines[index]
+        assert line_no<engine_no and (index==1 or engine_no<args[1][0]),'Stage order mismatch'
+        revision=cfg[prefix+'_revision'];model=cfg[prefix+'_id']
+        assert a['revision']==a['tokenizer_revision']==revision
+        assert a['gpu_memory_utilization']==cfg[prefix+'_gpu_memory_utilization']==fraction
+        assert a['dtype']=='float16' and a['max_model_len']==cfg['max_model_len']==2048
+        assert a['max_num_seqs']==1 and a['enforce_eager'] is True and a['seed']==cfg['seed']==42
+        assert a['model']==model or str(a['model']).endswith('/models--'+model.replace('/','--')+'/snapshots/'+revision)
+        def engine_value(key):
+            match=re.search(r'(?:^|[, ])'+re.escape(key)+r'=([^,]+)(?:,|$)',engine)
+            assert match,'Missing engine '+key
+            return match[1].strip()
+        actual={'gpu_memory_utilization':a['gpu_memory_utilization'],'dtype_argument':a['dtype'],'max_model_len_argument':a['max_model_len'],'tensor_parallel_size':int(engine_value('tensor_parallel_size')),'dtype_engine':engine_value('dtype'),'max_seq_len_engine':int(engine_value('max_seq_len')),'device_config':engine_value('device_config'),'revision':engine_value('revision'),'tokenizer_revision':engine_value('tokenizer_revision')}
+        assert actual['tensor_parallel_size']==1 and actual['dtype_engine']=='torch.float16' and actual['max_seq_len_engine']==2048 and actual['device_config']=='cuda' and actual['revision']==actual['tokenizer_revision']==revision
+        results.append({'phase':phase,'model':model,'actual':actual,'args_line_number':line_no,'engine_line_number':engine_no,'args_line_sha256':sha(line.encode()),'engine_line_sha256':sha(engine.encode())})
+    return results
+
+def main():
+    here=Path(__file__).resolve().parent;out=ensure_output(here/'harmbench-log-observation.json');assert not out.exists();records=[]
+    for variant in ['a','b']:
+        folder=NATIVE_ROOT/'evidence/runtime/HarmBench'/variant;raw=(folder/'run.log').read_bytes();record=json.loads((folder/'run/run.json').read_bytes());command=json.loads((folder/'run.command.json').read_bytes())
+        assert command['exit_code']==0 and command['stdout_sha256']==sha(raw) and record['status']=='completed' and record['exit_code']==0 and record['environment']['env']['CUDA_VISIBLE_DEVICES']=='0'
+        capture=json.loads((folder/'capture-check.json').read_bytes());assert capture['status']=='PASS'
+        matches=[f for f in record['files'] if f['path']=='validation/pipeline.yaml']
+        assert len(matches)==1 and not matches[0]['redacted']
+        source=folder/'run'/matches[0]['snapshot'];cfgraw=source.read_bytes()
+        assert 'sha256:'+sha(cfgraw)==matches[0]['sha256']
+        assert json.loads((folder/'inputs.json').read_bytes())['inputs']['validation/pipeline.yaml']['sha256']==sha(cfgraw)
+        cfg=yaml.safe_load(cfgraw)
+        observations=parse(raw.decode('utf-8'),cfg)
+        for row in observations:
+            guard=json.loads((NATIVE_ROOT/'evidence/stage-guards'/variant/(row['phase']+'.json')).read_bytes());assert guard['fraction']==row['actual']['gpu_memory_utilization'] and guard['GPU_index']==0
+        records.append({'variant':variant,'run_id':record['run_id'],'original_stdout_sha256':sha(raw),'original_run_json_sha256':sha((folder/'run/run.json').read_bytes()),'original_command_sha256':sha((folder/'run.command.json').read_bytes()),'phase_observations':observations,'manifest_sha256':sha((folder/'documents/reprollm.yaml').read_bytes()),'config_source_for_shared_constructor_fields_sha256':sha(source.read_bytes())})
+    result={'schema_version':1,'candidate_commit':CANDIDATE_COMMIT,'status':'PASS','source':'Actual original vLLM non-default argument and initialized engine config log lines, independently parsed after execution','records':records,'actual_stage_observations':4,'GPU_device_evidence_scope':'Logs directly show cuda backend. GPU0 is the recorded launch baseline/guard and exact unchanged source/environment, not a direct in-engine physical-device query. Guard fraction constants alone are not actual argument observation.','checker_sha256':sha(Path(__file__).read_bytes()),'product_gpu_api_or_network_commands':0,'raw_evidence_changed':False}
+    out.write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps({'schema_version':1,'status':'PASS','stages':4,'product_gpu_api_or_network_commands':0},sort_keys=True))
+if __name__=='__main__':main()
