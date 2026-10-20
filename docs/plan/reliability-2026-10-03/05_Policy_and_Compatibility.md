@@ -252,10 +252,10 @@ LOW/NONE、first-match、其他参数及历史 gold 保持。原[提案](proposa
 
 ### 验收
 
-- [ ] 每条拟提升路径有实际 schema / 案例与实验含义证据。
-- [ ] 默认表、profile 继承、用户 LOW / NONE 覆盖均测试。
-- [ ] 无 blanket HIGH、无递归 wildcard 改动、无历史结果重写。
-- [ ] 可独立实施或延期，不阻塞 R08-A。
+- [x] 每条拟提升路径有实际 schema / 案例与实验含义证据。
+- [x] 默认表、profile 继承、用户 LOW / NONE 覆盖均测试。
+- [x] 无 blanket HIGH、无递归 wildcard 改动、无历史结果重写。
+- [x] 可独立实施或延期，不阻塞 R08-A。
 
 建议提案提交：`docs(diff): inventory high-impact free-form parameters (R08-B)`。
 

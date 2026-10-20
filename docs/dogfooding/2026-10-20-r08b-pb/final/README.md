@@ -1,0 +1,13 @@
+# R08-B A4 final local evidence
+
+Candidate `69d3a9de66201cc66a7799c65a5ca5110627256b`. [Summary](summary.json) binds fresh [quality](quality/summary.json), five-project [Gate A](gate-a/summary.json), and [affected diff consumers](affected-diff/summary.json). Current project CI is recorded separately.
+
+[Quality metrics](quality/verified-metrics.json) are parsed from this run's original logs, JUnit and coverage. Shareable logs and portable argv/cwd are retained with explicit privacy projections. Inline code, original streams, large tracked-source inventories and built wheel bytes remain hash-bound externally. The build manifest's original PENDING distribution field is preserved; later [distribution acceptance](quality/distribution.json) records actual completion.
+
+Gate A retains all five complete actual audit/fact reports, ten strict comparisons, clean pinned identities and complete stderr. [Oracle references](gate-a/oracle-references.json) verify byte identity with the existing [independent oracle](../../2026-10-20-r06b/final/gate-a/oracle/) in this repository; semantic gold is not regenerated from actual output.
+
+Affected evidence retains complete fresh pair/self-diff reports, predeclared full expectations, strict comparisons and complete stderr. Original run/snapshot bytes stay at their existing recorded locations, with every input hash retained. These are new CPU policy/reader comparisons of old records, not new native training, privacy-accountant computation or verification that a child consumed a setting. Historical epsilon MEDIUM and config SHA HIGH receipts are preserved. The four exact A4 defaults do not create aliases or recursive wildcards; effective LOW/NONE and first-match behavior remain supported.
+
+[Observer qualification](affected-diff/qualification/observer-correction.json) retains the first FAIL with zero comparisons, its full command/stream identities and failure streams. The corrected observer permits only the exact read-only repository-root Git query in its current disposable clone; all36 actual queries are retained. The pre-execution logging syntax correction, original helpers/preparations and independent static review remain separately hash-bound. Completed final acceptance is the later success receipt; the initial failure is unchanged.
+
+[Source index](source-index.json) distinguishes exact bytes, explicit privacy projections, derived receipts and hash-only external sources. Source locators identify external evidence; retained_relative resolves inside this archive. Credentials and environment files are not read by packaging, and it runs no product, tests, network, GPU or provider commands. Previous resource evidence and blockers retain original candidate bindings. No release is claimed.
