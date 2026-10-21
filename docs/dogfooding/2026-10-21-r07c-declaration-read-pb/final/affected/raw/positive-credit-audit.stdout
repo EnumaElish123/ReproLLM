@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-21T09:24:16Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": [
+      {
+        "profile": "finetuning",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "z.py",
+            "field": null,
+            "line": 1,
+            "value": null,
+            "expected": null,
+            "note": "import peft"
+          }
+        ],
+        "shipped": true
+      }
+    ]
+  },
+  "documents": {
+    "manifest": "sha256:ee9e8b132ca6fd32a34a1402e7a8e2daccf60a59206549c85fabb97d9631719c",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 0,
+    "skipped": 1
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 1,
+      "message": "peft is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "z.py",
+          "field": null,
+          "line": 1,
+          "value": null,
+          "expected": null,
+          "note": "imported"
+        },
+        {
+          "kind": "file",
+          "path": "A/Pipfile",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "peft possible exact declaration unverified"
+        },
+        {
+          "kind": "file",
+          "path": "b/environment.yaml",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "peft possible exact declaration unverified"
+        }
+      ],
+      "fix_hint": "Review peft declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

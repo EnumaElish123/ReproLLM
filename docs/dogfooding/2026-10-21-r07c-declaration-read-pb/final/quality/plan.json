@@ -1,0 +1,281 @@
+{
+  "candidate_commit": "69712c0585045261c6c5a691a6f23224639f8717",
+  "command_count": 24,
+  "commands": [
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:d57b8dca4db1bca524e35237a15c77c1f4fdd001d26527a349fd922a34be6643>",
+        "<UV>"
+      ],
+      "label": "00-environment-versions"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "label": "01-quickstart-preflight"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--basetemp=<QUALITY>/pytest-temp",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<QUALITY>/coverage.xml",
+        "--cov-report=json:<QUALITY>/coverage.json",
+        "--cov-fail-under=85",
+        "--tb=short",
+        "--junit-xml=<QUALITY>/pytest-report.xml"
+      ],
+      "label": "02-pytest-coverage"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "label": "03-redaction-coverage"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security",
+        "--basetemp=<QUALITY>/security-temp",
+        "--tb=short"
+      ],
+      "label": "04-security"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "check",
+        "."
+      ],
+      "label": "05-ruff-check"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "label": "06-ruff-format-check"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/mypy",
+        "src/",
+        "scripts/compare_gold.py"
+      ],
+      "label": "07-mypy"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "label": "08-rules-documentation"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "label": "09-profiles-documentation"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "label": "10-cli-documentation"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "schema",
+        "export",
+        "--out",
+        "<QUALITY>/schema-export"
+      ],
+      "label": "11-schema-export"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:0e86b56cdabe2f87e136c997db70470fa873742ccc35c26816174ea153a27128>",
+        "<QUALITY>/schema-export"
+      ],
+      "label": "12-schema-full-byte-comparison"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "label": "example-hf_vllm_eval-audit"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/hf_vllm_eval"
+      ],
+      "label": "example-hf_vllm_eval-lock-check"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "label": "example-openai_judge_eval-audit"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/openai_judge_eval"
+      ],
+      "label": "example-openai_judge_eval-lock-check"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "label": "example-privacy_custom_params-audit"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/privacy_custom_params"
+      ],
+      "label": "example-privacy_custom_params-lock-check"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "label": "20-self-audit"
+    },
+    {
+      "argv": [
+        "<UV>",
+        "build",
+        "--offline",
+        "--wheel",
+        "--out-dir",
+        "<QUALITY>/dist"
+      ],
+      "label": "21-candidate-wheel-build"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:8117665779c8c02164d70490d911a09c09d2f4ff7c740c4bf0d1e3001e9abd38>",
+        "<QUALITY>/dist"
+      ],
+      "label": "22-candidate-wheel-payload"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:660172f399bb2c566fc483430fbda3ac2f029261a076f16c10d0caff377d22db>",
+        "<QUALITY>",
+        "69712c0585045261c6c5a691a6f23224639f8717"
+      ],
+      "label": "23-candidate-build-manifest"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/validate_distribution.py",
+        "--wheel",
+        "<QUALITY>/dist/reprollm-0.7.0-py3-none-any.whl",
+        "--build-manifest",
+        "<QUALITY>/build-manifest.json",
+        "--expected-version",
+        "0.7.0",
+        "--no-index",
+        "--find-links",
+        "<PREVIOUS_SESSION>/runtime-wheels",
+        "--output",
+        "<QUALITY>/distribution.json",
+        "--raw-output-dir",
+        "<QUALITY>/private-distribution"
+      ],
+      "label": "24-installed-candidate-distribution"
+    }
+  ],
+  "schema_version": 1,
+  "status": "PREPARED_FOR_THIS_ATTEMPT"
+}

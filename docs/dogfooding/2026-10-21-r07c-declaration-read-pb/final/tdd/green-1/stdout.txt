@@ -1,0 +1,146 @@
+........................................................................ [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 40%]
+........................................................................ [ 54%]
+.................................F...................................... [ 67%]
+........................................................................ [ 81%]
+...............F........................................................ [ 94%]
+...........................                                              [100%]
+=================================== FAILURES ===================================
+_ test_restoring_declaration_body_restores_existing_warning_or_exact_credit[loose] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-560/test_restoring_declaration_bod1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fb6c0b16c00>
+restoration = 'loose'
+
+    @pytest.mark.parametrize("restoration", ["empty", "loose", "exact"])
+    def test_restoring_declaration_body_restores_existing_warning_or_exact_credit(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, restoration: str
+    ) -> None:
+        failed = _declaration_body_files(tmp_path)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+        _assert_declaration_body_skip(finding, [failed])
+        (tmp_path / failed).write_text(
+            "[project]\n"
+            + (
+                {
+                    "empty": "",
+                    "loose": 'dependencies=["torch>=1"]\n',
+                    "exact": 'dependencies=["torch==2.5.1"]\n',
+                }[restoration]
+            ),
+            encoding="utf-8",
+        )
+        ctx = _format_credit_context(tmp_path)
+    
+        restored = LlmCriticalDepsPinnedRule().check(ctx)
+    
+        assert ctx.deps.declaration_read_issues == {}
+        if restoration == "exact":
+            assert restored == []
+        else:
+            assert len(restored) == 1
+            assert (restored[0].status, restored[0].severity) == (FindingStatus.FAIL, Severity.WARNING)
+            assert restored[0].message == (
+                "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+            )
+>           assert restored[0].evidence[0].path == "requirements.txt"
+E           AssertionError: assert 'unrelated/pyproject.toml' == 'requirements.txt'
+E             
+E             - requirements.txt
+E             + unrelated/pyproject.toml
+
+tests/unit/rules/test_env.py:1223: AssertionError
+__ test_declaration_body_skip_preserves_full_json_text_export_and_suppression __
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-560/test_declaration_body_skip_pre2')
+
+    def test_declaration_body_skip_preserves_full_json_text_export_and_suppression(
+        tmp_path: Path,
+    ) -> None:
+        repo = _declaration_body_cli_repo(tmp_path)
+        before = {
+            p.relative_to(repo): p.read_bytes()
+            for p in repo.rglob("*")
+            if p.is_file() and ".git" not in p.relative_to(repo).parts
+        }
+        args = ["audit", str(repo), "--format", "json", "--fail-on", "critical"]
+    
+        first = runner.invoke(app, args)
+        second = runner.invoke(app, args)
+    
+        assert first.exit_code == second.exit_code == 0
+        assert first.stderr == second.stderr == ""
+        a = _coverage_cli_json(first.stdout)
+        b = _coverage_cli_json(second.stdout)
+        a.pop("generated_at")
+        b.pop("generated_at")
+        assert a == b
+        assert a["findings"] == [_expected_declaration_body_cli_skip()]
+        hidden = runner.invoke(app, ["audit", str(repo), "--no-color", "--fail-on", "critical"])
+        shown = runner.invoke(
+            app, ["audit", str(repo), "--no-color", "--show-skipped", "--fail-on", "critical"]
+        )
+        assert hidden.exit_code == shown.exit_code == 0
+        assert hidden.stderr == shown.stderr == ""
+        assert _DECLARATION_BODY_CLI_MESSAGE not in hidden.stdout
+        assert _DECLARATION_BODY_CLI_MESSAGE in shown.stdout
+        assert "Findings: PASS" in hidden.stdout
+        assert "0 passed · 0 suppressed · 1 skipped" in hidden.stdout
+        output = tmp_path / "declaration-body-export.md"
+    
+        exported = runner.invoke(app, ["export", str(repo), "--output", str(output)])
+    
+        assert exported.exit_code == 0, exported.output
+        assert exported.stderr == ""
+        document = output.read_text(encoding="utf-8")
+        assert "0 critical · 0 warning ·\n0 info · 0 passed." in document
+        assert "env.llm_critical_deps_pinned" not in document
+        assert {
+            p.relative_to(repo): p.read_bytes()
+            for p in repo.rglob("*")
+            if p.is_file() and ".git" not in p.relative_to(repo).parts
+        } == before
+        (repo / ".reprollm/config.yaml").write_text(
+            "schema_version: 1\naudit:\n  ignore:\n"
+            "    - rule: env.llm_critical_deps_pinned\n"
+            "      reason: Reviewed declaration body uncertainty.\n",
+            encoding="utf-8",
+        )
+        commit_all(repo)
+    
+        ignored = runner.invoke(app, args)
+    
+        assert ignored.exit_code == 0, ignored.output
+        assert ignored.stderr == ""
+        report = _coverage_cli_json(ignored.stdout)
+        (finding,) = report["findings"]
+        expected = _expected_declaration_body_cli_skip()
+        expected.update(status="suppressed", suppressed_reason="Reviewed declaration body uncertainty.")
+        expected["evidence"].append(
+            {
+                "kind": "field",
+                "path": None,
+                "field": "audit.ignore",
+                "line": None,
+                "value": None,
+                "expected": None,
+                "note": (
+                    "suppressed: original severity INFO; reason: Reviewed declaration body uncertainty."
+                ),
+            }
+        )
+>       assert finding == expected
+E       AssertionError: assert {'rule_id': '...: 'INFO', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 11 identical items, use -vv to show
+E         Differing items:
+E         {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'u...e, 'line': None, ...}, {'kind': 'field', 'path': '.reprollm/config.yaml', 'field': 'audit.ignore', 'line': None, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'u...toml', 'field': None, 'line': None, ...}, {'kind': 'field', 'path': None, 'field': 'audit.ignore', 'line': None, ...}]}
+E         Use -v to get more diff
+
+tests/unit/cli/test_audit.py:1622: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_env.py::test_restoring_declaration_body_restores_existing_warning_or_exact_credit[loose]
+FAILED tests/unit/cli/test_audit.py::test_declaration_body_skip_preserves_full_json_text_export_and_suppression
+2 failed, 529 passed in 40.45s

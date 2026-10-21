@@ -1,0 +1,79 @@
+{
+  "Ruff_format_check_two_files": true,
+  "actual_first_GREEN_failure_names": [
+    "test_restoring_declaration_body_restores_existing_warning_or_exact_credit[loose]",
+    "test_declaration_body_skip_preserves_full_json_text_export_and_suppression"
+  ],
+  "base_commit": "aee6488078c3435dcc33b20a68cca8bda0d0ec57",
+  "changed_functions_only": [
+    "test_restoring_declaration_body_restores_existing_warning_or_exact_credit",
+    "test_declaration_body_skip_preserves_full_json_text_export_and_suppression"
+  ],
+  "changes": [
+    {
+      "correction": "Only restored loose pyproject case uses first captured pyproject declaration; empty restoration still uses requirements.txt.",
+      "function": "test_restoring_declaration_body_restores_existing_warning_or_exact_credit",
+      "legacy_contract": "scan_dependencies parses every pyproject before the requirements graph; _evidence selects the first captured matching declaration."
+    },
+    {
+      "correction": "Only expected appended audit.ignore evidence path None becomes .reprollm/config.yaml.",
+      "function": "test_declaration_body_skip_preserves_full_json_text_export_and_suppression",
+      "legacy_contract": "Unchanged engine._suppress always records that logical config path; remaining evidence/status/reason assertions unchanged."
+    }
+  ],
+  "complete_corrected_patch_apply_check_base_temp_files": true,
+  "corrected_complete_product_tests_patch_sha256": "296ecd625ef495d704fc42f6a5a0b8e3ef92d71e0083cafcaaf9fb4d56b6bc65",
+  "correction_patch_sha256": "3d0d80c5a338f89924d425ca16cf2a3bbb07f9f2460f73d377afe92457d05905",
+  "external_preparation_guard_stop": {
+    "actual": "Reverse proof unintentionally matched common suppression dict text elsewhere in module; assertion stopped after writing only partial external copies.",
+    "attempt": 1,
+    "correction": "Scope forward and reverse text proof to the two named functions; entire restored AST now matches original.",
+    "preserved_external_partial_directory": "test-draft/pb-oracle-correction-prepare-attempt-1",
+    "raw_capture": "Visible tool output retained; human-readable transcription here."
+  },
+  "files": [
+    {
+      "accepted_draft_sha256": "5d75b8e5444d6ac0074956c96eeb6d654720852fa33e6bf85cf0b6bd0d890b31",
+      "changed": false,
+      "corrected_product_test_sha256": "5d75b8e5444d6ac0074956c96eeb6d654720852fa33e6bf85cf0b6bd0d890b31",
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "accepted_draft_sha256": "6b1549a23ff498b536157a64edd6cc8954ff70f38c9b547b2332ca6e4edb9ae1",
+      "changed": true,
+      "corrected_product_test_sha256": "dad7c2f2ffefe45594206b3e1cc00799a763b9dc76a83af93dd2657369d04c00",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "accepted_draft_sha256": "3ffdda979312a40e83cce49378d19b590aacab218bf7d5e7b97a5cc2bf073c9d",
+      "changed": true,
+      "corrected_product_test_sha256": "efd54ee47cbc4a3e1c6e72f62d8c20cc6d4f33557dbe6bf25ea689a7317015b9",
+      "path": "tests/unit/cli/test_audit.py"
+    },
+    {
+      "accepted_draft_sha256": "7e533f106d94fcf6205feb493a77d3a80e6b577f0e3fbd24690beeec9545dbb8",
+      "changed": false,
+      "corrected_product_test_sha256": "7e533f106d94fcf6205feb493a77d3a80e6b577f0e3fbd24690beeec9545dbb8",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    }
+  ],
+  "first_GREEN_counts": {
+    "command_seconds": 41.38080924004316,
+    "failed": 2,
+    "passed": 529,
+    "pytest_seconds": 40.45
+  },
+  "first_GREEN_junit_sha256": "fe403281a00ee7492ce75fec650a3fc07f869faf4b82fd91bfdc25113cc6e1a1",
+  "first_GREEN_summary_sha256": "d6eb4c8a0471184037d5ca8e5392cf7e22e3119cf6632e61b832e3eecce195d2",
+  "formal_test_edits": 0,
+  "genuine_RED_summary_sha256": "0104ba98f82d93c47223405fabe0e7e9a8c82df0a889d1b92b177c34155b7baf",
+  "minimal_patch_apply_check_current_tests": true,
+  "original_P_A449_snapshot_accepted_draft_and_failed_GREEN_preserved": true,
+  "original_P_A_metadata_sha256": "72cbd68125ad8f5063687f40e157fa8f40cf0a0f3317dcf2b9b5960805b2d9c9",
+  "original_accepted_patch_sha256": "9b8f17564796018da7e4d4bb05b3a88570ce46b6b5b07aaf04322c3d720b7ff8",
+  "pytest_product_runs": 0,
+  "schema_version": 1,
+  "source_spec_engine_schema_changes": 0,
+  "static_AST_restore_proves_only_two_assertion_oracle_changes": true,
+  "status": "PASS_INDEPENDENT_MINIMAL_TWO_ORACLE_PATH_CORRECTIONS_PREPARED_NOT_APPLIED"
+}

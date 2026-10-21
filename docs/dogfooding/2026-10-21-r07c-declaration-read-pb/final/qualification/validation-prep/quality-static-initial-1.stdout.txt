@@ -1,0 +1,22 @@
+E501 Line too long (101 > 100)
+  --> <SESSION_EVIDENCE>/validation-prep/quality_for_candidate.py:34:101
+   |
+32 |     assert not output.exists(), "Never replace an earlier attempt"
+33 |     assert WHEELS.is_dir()
+34 |     spec = importlib.util.spec_from_file_location("r07c_declaration_read_original_quality", ORIGINAL)
+   |                                                                                                     ^
+35 |     assert spec is not None and spec.loader is not None
+36 |     module = importlib.util.module_from_spec(spec)
+   |
+
+E501 Line too long (103 > 100)
+  --> <SESSION_EVIDENCE>/validation-prep/quality_readiness.py:43:101
+   |
+41 |     def git(*args: str) -> bytes:
+42 |         return subprocess.run(
+43 |             ["<GIT_EXECUTABLE>", "-C", str(ROOT), *args], cwd=OUT, env=env, capture_output=True, check=True
+   |                                                                                                     ^^^
+44 |         ).stdout
+   |
+
+Found 2 errors.

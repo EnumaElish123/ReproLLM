@@ -1,0 +1,68 @@
+{
+  "CI_mutations": 0,
+  "checks": [
+    {
+      "command": [
+        "<CANDIDATE>/.venv/bin/ruff",
+        "check",
+        "--isolated",
+        "--select",
+        "E4,E7,E9,F",
+        "<SESSION_EVIDENCE>/validation-prep/discover_ci_jobs.py",
+        "<SESSION_EVIDENCE>/validation-prep/observe_ci_public_html.py",
+        "<SESSION_EVIDENCE>/validation-prep/run_current_ci_observer.py"
+      ],
+      "exit": 0,
+      "stderr": "ci-static-final-check.stderr.txt",
+      "stdout": "ci-static-final-check.stdout.txt"
+    },
+    {
+      "command": [
+        "<CANDIDATE>/.venv/bin/ruff",
+        "format",
+        "--isolated",
+        "--check",
+        "--line-length",
+        "100",
+        "<SESSION_EVIDENCE>/validation-prep/discover_ci_jobs.py",
+        "<SESSION_EVIDENCE>/validation-prep/observe_ci_public_html.py",
+        "<SESSION_EVIDENCE>/validation-prep/run_current_ci_observer.py"
+      ],
+      "exit": 0,
+      "stderr": "ci-static-final-format.stderr.txt",
+      "stdout": "ci-static-final-format.stdout.txt"
+    }
+  ],
+  "earlier_static_invocations": {
+    "count": 2,
+    "details": [
+      "two deliberate broad exception capture receipts",
+      "intentional subprocess returncode handling"
+    ],
+    "first_capture": "tool transcript only",
+    "product_or_network_calls": 0,
+    "second_capture": "ci-static-check.stdout.txt / stderr",
+    "status": "three inherited lint suggestions; no behavior changes"
+  },
+  "go_requires": "exact final delivery main pushed and runtime full HEAD",
+  "network_calls": 0,
+  "schema_version": 1,
+  "source_adaptations": [
+    {
+      "adapted_sha256": "d54e443dd2105fa1e2f84ac48b7d516e159475c50a8f5ab4bcfc389618af2cc1",
+      "file": "discover_ci_jobs.py",
+      "source_sha256": "161c536330ff33d25404948279568e6bc1384f521fe51cdc426bf78d0eac3a7b"
+    },
+    {
+      "adapted_sha256": "39bc589ca3c73bfd4f50a4fec34a52edf531ca02a5c115abdd746c8edda3d9ad",
+      "file": "observe_ci_public_html.py",
+      "source_sha256": "5f2623c233728f209db82b813e176543865ad5825fb17351406617d62c244d6f"
+    },
+    {
+      "adapted_sha256": "2100fc96e3ee9a758cf318a5baf452b2375465ab1afbdbb07443432494878291",
+      "file": "run_current_ci_observer.py",
+      "source_sha256": "6120952dc7f7fc08ff696ec64827d6a8140489c2ab2c9f4d1c709e59f0f383fe"
+    }
+  ],
+  "status": "PASS_STATIC_ADAPTATION_NOT_EXECUTED"
+}

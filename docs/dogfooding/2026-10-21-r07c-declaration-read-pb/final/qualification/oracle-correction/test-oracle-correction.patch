@@ -1,0 +1,24 @@
+--- a/tests/unit/rules/test_env.py
++++ b/tests/unit/rules/test_env.py
+@@ -1220,7 +1220,9 @@
+         assert restored[0].message == (
+             "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+         )
+-        assert restored[0].evidence[0].path == "requirements.txt"
++        assert restored[0].evidence[0].path == (
++            failed if restoration == "loose" else "requirements.txt"
++        )
+ 
+ 
+ def test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findings(
+--- a/tests/unit/cli/test_audit.py
++++ b/tests/unit/cli/test_audit.py
+@@ -1609,7 +1609,7 @@
+     expected["evidence"].append(
+         {
+             "kind": "field",
+-            "path": None,
++            "path": ".reprollm/config.yaml",
+             "field": "audit.ignore",
+             "line": None,
+             "value": None,

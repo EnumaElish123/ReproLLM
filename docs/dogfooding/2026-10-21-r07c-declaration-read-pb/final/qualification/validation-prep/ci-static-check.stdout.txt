@@ -1,0 +1,35 @@
+BLE001 Do not catch blind exception: `Exception`
+   --> validation-prep/discover_ci_jobs.py:124:12
+    |
+122 |             else:
+123 |                 jobs.write_bytes(payload)
+124 |     except Exception as exc:
+    |            ^^^^^^^^^
+125 |         record.update(
+126 |             {"status": "DISCOVERY_ERROR", "error_type": type(exc).__name__, "error": str(exc)}
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> validation-prep/observe_ci_public_html.py:155:12
+    |
+153 |                 x in {"Failure", "Cancelled", "Canceled"} for x in row["workflow_status_text"]
+154 |             )
+155 |     except Exception as exc:
+    |            ^^^^^^^^^
+156 |         row.update(error_type=type(exc).__name__, explicit_success=False, explicit_failure=False)
+157 |     (folder / (name + ".json")).write_text(
+    |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+  --> validation-prep/run_current_ci_observer.py:60:18
+   |
+58 |             "--root-authorized",
+59 |         ]
+60 |         result = subprocess.run(command, capture_output=True)
+   |                  ^^^^^^^^^^^^^^
+61 |         stdout = out / f"observer-call-{n:04d}.stdout.txt"
+62 |         stderr = out / f"observer-call-{n:04d}.stderr.txt"
+   |
+help: Add explicit `check=False`
+
+Found 3 errors.
