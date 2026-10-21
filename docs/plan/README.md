@@ -95,6 +95,12 @@ for the exact candidate and current validation status. The original [P-A proposa
 PROPOSED record and [P-A report](../dogfooding/2026-10-21-r07c-profile-pa/README.md)
 retain their preparation-time state. Broader R07-C remains OPEN.
 
+The maintainer has [specifically accepted R07-C D-F](reliability-2026-10-03/proposals/R07-C/format-lock-read/decision-accepted.json).
+P-B handles known captured associated format-lock body read/decoder failures independently of Python coverage;
+exact/qualified credit and existing D-L remain. Follow its [P-B report](../dogfooding/2026-10-21-r07c-lock-read-pb/README.md)
+for implementation and current validation status. The [P-A proposal](reliability-2026-10-03/proposals/R07-C/format-lock-read/R07-C_associated_format_lock_failures.md)
+and original PROPOSED snapshot remain immutable; broader R07-C stays OPEN.
+
 The accepted R07-C D-L slice implements the [dependency format-lock policy](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md).
 Its [P-A report](../dogfooding/2026-10-21-r07c-dependency-pa/README.md) preserves the proposal and conditional design.
 The maintainer has [specifically accepted D-L](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/decision-accepted.json);

@@ -1,6 +1,9 @@
 """Dependency-declaration parsing tests (M2-T03): each format ≥3 cases."""
 
 from pathlib import Path
+from typing import IO, Any
+
+import pytest
 
 from reprollm.core.deps import canonical_dep_name, scan_dependencies
 from reprollm.core.git import inspect_git
@@ -367,3 +370,87 @@ def test_pipfile_physical_lines(tmp_path: Path) -> None:
     decls = _scan(repo).declarations
     assert _by_name(decls, "requests")[0].line == 2
     assert _by_name(decls, "numpy")[0].line == 5
+
+
+# --- R07-C D-F: typed known format-lock body read/syntax failures ------------
+
+
+@pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+@pytest.mark.parametrize("failure", ["syntax", "unreadable"])
+def test_format_lock_known_failure_is_not_a_successfully_empty_package_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, lock_name: str, failure: str
+) -> None:
+    _write(tmp_path, "pyproject.toml", '[project]\nname = "failed"\ndependencies = ["torch>=2"]\n')
+    _write(tmp_path, lock_name, "[broken\n")
+    if failure == "unreadable":
+        original_open = Path.open
+
+        def deny_lock(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path == tmp_path / lock_name:
+                raise PermissionError("synthetic lock read denial")
+            return original_open(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "open", deny_lock)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.path == lock_name
+    assert lock.packages == frozenset()
+    assert lock.read_issue == ("invalid_syntax" if failure == "syntax" else "unreadable")
+    assert result.qualified_lock_packages([]) == frozenset()
+    assert result.unparsed == []
+
+
+@pytest.mark.parametrize(
+    ("lock_name", "content"),
+    [
+        ("uv.lock", ""),
+        ("poetry.lock", ""),
+        ("Pipfile.lock", "{}\n"),
+        ("conda-lock.yml", "package: []\n"),
+        ("conda-lock.yml", "null\n"),
+        ("conda-lock.yml", ""),
+        ("uv.lock", '[[package]]\nname = "torch"\n'),
+        ("poetry.lock", '[[package]]\nname = "torch"\n'),
+        ("Pipfile.lock", '{"default": {"torch": {}}}\n'),
+        ("conda-lock.yml", "package:\n  - name: pytorch\n"),
+    ],
+)
+def test_successfully_decoded_lock_bodies_are_not_known_read_or_syntax_failures(
+    tmp_path: Path, lock_name: str, content: str
+) -> None:
+    _write(tmp_path, "pyproject.toml", '[project]\nname = "readable"\n')
+    _write(tmp_path, lock_name, content)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue is None
+    assert result.unverified_lock_paths([("torch", "a.py")]) == {}
+
+
+@pytest.mark.parametrize(
+    ("lock_name", "content"),
+    [
+        ("uv.lock", 'package = "invalid collection"\n'),
+        ("poetry.lock", "[[package]]\nname = 12\n"),
+        ("Pipfile.lock", "[]\n"),
+        ("Pipfile.lock", '{"default": ["torch"]}\n'),
+        ("conda-lock.yml", "- torch\n"),
+        ("conda-lock.yml", "package: invalid collection\n"),
+        ("conda-lock.yml", "package:\n  - name: 12\n"),
+    ],
+)
+def test_decoded_but_unsupported_lock_shapes_remain_outside_the_bounded_failure_policy(
+    tmp_path: Path, lock_name: str, content: str
+) -> None:
+    _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+    _write(tmp_path, lock_name, content)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue is None
+    assert result.unverified_lock_paths([("torch", "a.py")]) == {}
+    assert result.qualified_lock_packages([("torch", "a.py")]) == frozenset()

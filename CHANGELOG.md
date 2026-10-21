@@ -9,6 +9,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-F (spec §12.3.4): preserve known format-lock body read/decoder failures
+  internally. For current in-use critical packages, retain exact and qualified
+  credit first; otherwise a failed lock with an existing R06-B qualifying captured
+  origin produces SKIPPED/INFO instead of missing-pin WARNING, independently of
+  Python coverage. Unassociated failed locks and successful empty/nonmember locks
+  keep their existing behavior. An isolated warning/promoted critical gate can
+  stop failing; no lock credit, presence, renderer, schema, gold or version change.
+
 - R07-C D-L: when primary-Python analysis is incomplete or unavailable, used-but-unpinned
   critical packages that occur in captured format-lock package sets become SKIPPED/INFO.
   This conservatively allows for missing import-origin lock credit; exact declarations,

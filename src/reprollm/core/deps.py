@@ -14,6 +14,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath, PureWindowsPath
+from typing import Literal
 
 import yaml
 from packaging.requirements import Requirement
@@ -26,6 +27,9 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
+
+LockReadIssue = Literal["unreadable", "invalid_syntax"]
+_FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
 
 
 def canonical_dep_name(name: str) -> str:
@@ -92,6 +96,8 @@ class DependencyDeclaration:
 class Lockfile:
     path: str
     packages: frozenset[str]  # canonicalized names
+    # Only known body-read/syntax failures; None does not certify all package grammar.
+    read_issue: LockReadIssue | None = None
 
 
 @dataclass
@@ -111,6 +117,38 @@ class Declarations:
             if _is_requirements_name(lock.path)
             for name in lock.packages
         }
+        qualified.update(
+            name
+            for lock, origins in self._format_lock_origins(import_origins).items()
+            for name in origins
+            if name in lock.packages
+        )
+        return frozenset(qualified)
+
+    def unverified_lock_paths(
+        self, import_origins: Iterable[tuple[str, str]]
+    ) -> dict[str, tuple[str, ...]]:
+        """Known unreadable/invalid locks associated with captured package-use origins."""
+        failed = {
+            lock
+            for lock in self.lockfiles
+            if lock.read_issue is not None and PurePosixPath(lock.path).name in _FORMAT_LOCK_NAMES
+        }
+        if not failed:
+            return {}
+        paths: dict[str, set[str]] = {}
+        for lock, origins in self._format_lock_origins(import_origins).items():
+            if lock not in failed:
+                continue
+            for name in origins:
+                paths.setdefault(name, set()).add(lock.path)
+        return {name: tuple(sorted(paths[name])) for name in sorted(paths)}
+
+    def _format_lock_origins(
+        self, import_origins: Iterable[tuple[str, str]]
+    ) -> dict[Lockfile, set[str]]:
+        """Associate captured origins before testing package membership or read state."""
+        origins: dict[Lockfile, set[str]] = {}
         paired: dict[PurePosixPath, set[Lockfile]] = {}
         for lock in self.lockfiles:
             location = PurePosixPath(lock.path)
@@ -121,10 +159,10 @@ class Declarations:
                 ):
                     continue
                 paired.setdefault(location.parent, set()).add(lock)
-                qualified.update(
+                origins.setdefault(lock, set()).update(
                     declaration.name
                     for declaration in self.declarations
-                    if declaration.source_file == manifest and declaration.name in lock.packages
+                    if declaration.source_file == manifest
                 )
         project_roots = {PurePosixPath(path).parent for path in self._project_manifests}
         boundaries = project_roots | self._uncertain_directories
@@ -136,13 +174,10 @@ class Declarations:
                 (parent for parent in PurePosixPath(normalized).parents if parent in boundaries),
                 None,
             )
-            if (
-                owner is not None
-                and owner not in self._uncertain_directories
-                and any(name in lock.packages for lock in paired.get(owner, ()))
-            ):
-                qualified.add(name)
-        return frozenset(qualified)
+            if owner is not None and owner not in self._uncertain_directories:
+                for lock in paired.get(owner, ()):
+                    origins.setdefault(lock, set()).add(name)
+        return origins
 
 
 def dependency_file_paths(files: Iterable[str], *basenames: str) -> list[str]:
@@ -750,18 +785,22 @@ def _collect_lockfiles(
 
     for name in ("uv.lock", "poetry.lock"):
         for path in basenames.get(name, []):
-            packages = _toml_lockfile_packages(scanner, path, result)
+            packages, issue = _toml_lockfile_packages(scanner, path, result)
             result.lockfiles.append(
-                Lockfile(path, frozenset(canonical_dep_name(n) for n in packages))
+                Lockfile(path, frozenset(canonical_dep_name(n) for n in packages), issue)
             )
 
     for path in basenames.get("Pipfile.lock", []):
-        packages = _pipfile_lock_packages(scanner, path, result)
-        result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
+        packages, issue = _pipfile_lock_packages(scanner, path, result)
+        result.lockfiles.append(
+            Lockfile(path, frozenset(canonical_dep_name(n) for n in packages), issue)
+        )
 
     for path in basenames.get("conda-lock.yml", []):
-        packages = _conda_lock_packages(scanner, path, result)
-        result.lockfiles.append(Lockfile(path, frozenset(canonical_dep_name(n) for n in packages)))
+        packages, issue = _conda_lock_packages(scanner, path, result)
+        result.lockfiles.append(
+            Lockfile(path, frozenset(canonical_dep_name(n) for n in packages), issue)
+        )
 
     # Qualification and packages use the same captured include closure.
     for path in requirements:
@@ -785,53 +824,59 @@ def _lock_package_names(packages: list[object], path: str, result: Declarations)
     return names
 
 
-def _toml_lockfile_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
+def _toml_lockfile_packages(
+    scanner: RepoScanner, path: str, result: Declarations
+) -> tuple[list[str], LockReadIssue | None]:
     text = scanner.read_text(path)
     if text is None:
-        return []
+        return [], "unreadable"
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError:
-        return []
+        return [], "invalid_syntax"
     packages = doc.get("package") or []
     if not isinstance(packages, list):
         result.unparsed.append(f"{path}:0: invalid package collection")
-        return []
-    return _lock_package_names(packages, path, result)
+        return [], None
+    return _lock_package_names(packages, path, result), None
 
 
-def _pipfile_lock_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
+def _pipfile_lock_packages(
+    scanner: RepoScanner, path: str, result: Declarations
+) -> tuple[list[str], LockReadIssue | None]:
     text = scanner.read_text(path)
     if text is None:
-        return []
+        return [], "unreadable"
     try:
         doc = json.loads(text)
     except json.JSONDecodeError:
-        return []
+        return [], "invalid_syntax"
     if not isinstance(doc, dict):
         result.unparsed.append(f"{path}:0: invalid lock document")
-        return []
+        return [], None
     names: list[str] = []
     for section in ("default", "develop"):
         table = doc.get(section) or {}
         if isinstance(table, dict):
             names.extend(table.keys())
-    return names
+    return names, None
 
 
-def _conda_lock_packages(scanner: RepoScanner, path: str, result: Declarations) -> list[str]:
+def _conda_lock_packages(
+    scanner: RepoScanner, path: str, result: Declarations
+) -> tuple[list[str], LockReadIssue | None]:
     text = scanner.read_text(path)
     if text is None:
-        return []
+        return [], "unreadable"
     try:
         doc = yaml.safe_load(text)
     except yaml.YAMLError:
-        return []
+        return [], "invalid_syntax"
     packages = doc.get("package") or [] if isinstance(doc, dict) else []
     if not isinstance(packages, list):
         result.unparsed.append(f"{path}:0: invalid package collection")
-        return []
-    return _lock_package_names(packages, path, result)
+        return [], None
+    return _lock_package_names(packages, path, result), None
 
 
 def _requirements_all_pinned(path: str, graph: _RequirementsGraph) -> bool:

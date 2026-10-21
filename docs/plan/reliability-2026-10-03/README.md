@@ -30,6 +30,11 @@ P-B 实施及当前验证状态见[接续报告](../../dogfooding/2026-10-21-r07
 仅对可能受遗漏 import 信用影响的待警告包 SKIP；[P-B 报告](../../dogfooding/2026-10-21-r07c-dependency-pb/README.md)记录实现、已通过的完整质量门与五项目验证；最终 HEAD CI 另行核对。
 [原 P-A](../../dogfooding/2026-10-21-r07c-dependency-pa/README.md)与 PROPOSED 快照保留，不冒充本轮正式结果。
 
+维护者已[具体接受 R07-C D-F 与补丁](proposals/R07-C/format-lock-read/decision-accepted.json)：
+已关联格式锁的已知读取/解码失败逐包 SKIP，独立于 Python coverage，既有 exact/qualified 与 D-L 保留。
+[P-B 报告](../../dogfooding/2026-10-21-r07c-lock-read-pb/README.md)记录实现与最终验证状态；
+[原提案与 P-A 快照](proposals/R07-C/format-lock-read/R07-C_associated_format_lock_failures.md)原字节保留，整个 R07-C 仍 OPEN。
+
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
 R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

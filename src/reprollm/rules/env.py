@@ -120,10 +120,12 @@ class LlmCriticalDepsPinnedRule(Rule):
         findings: list[Finding] = []
         deps = ctx.deps
         python_gap = ctx.pyscan.coverage().pass_skip_reason() is not None
-        locked = deps.qualified_lock_packages(
+        import_origins = [
             (canonical_dep_name(info.module.split(".", 1)[0]), info.path)
             for info in ctx.pyscan.imports
-        )
+        ]
+        locked = deps.qualified_lock_packages(import_origins)
+        unverified = deps.unverified_lock_paths(import_origins)
         installed = installed_versions()
         for canonical in self._critical_in_use(ctx):
             if canonical in locked:
@@ -132,6 +134,39 @@ class LlmCriticalDepsPinnedRule(Rule):
             if declarations:
                 continue
             display = _display_name(canonical)
+            failed_lock_paths = unverified.get(canonical, ())
+            if failed_lock_paths:
+                findings.append(
+                    Finding(
+                        rule_id=self.id,
+                        aliases=list(self.aliases),
+                        category=self.category,
+                        severity=Severity.INFO,
+                        status=FindingStatus.SKIPPED,
+                        level=ctx.level,
+                        message=(
+                            f"{display} is used; an associated format lock could not be read "
+                            "or parsed, so missing pin evidence is not established"
+                        ),
+                        evidence=[
+                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                            *[
+                                Evidence(
+                                    kind="file",
+                                    path=path,
+                                    note=f"{display} associated; lock package contents unverified",
+                                )
+                                for path in failed_lock_paths
+                            ],
+                        ],
+                        fix_hint=(
+                            f"Review {display} declarations and associated format-lock files; "
+                            "restore readable, valid lock contents before deciding that "
+                            "exact pin evidence is absent."
+                        ),
+                    )
+                )
+                continue
             possible_lock_paths = sorted(
                 {
                     lock.path

@@ -938,3 +938,246 @@ def test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagno
         "suppressed": 0,
         "skipped": 1,
     }
+
+
+_ASSOCIATED_LOCK_CONTENT_MESSAGE = (
+    "torch is used; an associated format lock could not be read or parsed, "
+    "so missing pin evidence is not established"
+)
+
+
+def _associated_failed_lock_repo(tmp_path: Path, severity: str = "CRITICAL") -> Path:
+    repo = make_git_repo(tmp_path / "failed-lock")
+    profiles = repo / ".reprollm" / "profiles"
+    profiles.mkdir(parents=True)
+    (profiles / "core.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "name": "core",
+                "description": "Isolated associated lock contents regression.",
+                "rules": ["env.llm_critical_deps_pinned"],
+                "severity_overrides": {"env.llm_critical_deps_pinned": severity},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: failed-lock}\nexperiment: {profiles: []}\n",
+        encoding="utf-8",
+    )
+    (repo / "pyproject.toml").write_text(
+        '[project]\nname = "failed-lock"\ndependencies = ["torch>=2"]\n', encoding="utf-8"
+    )
+    (repo / "uv.lock").write_text("[broken\n", encoding="utf-8")
+    commit_all(repo)
+    return repo
+
+
+@pytest.mark.parametrize(
+    ("severity", "threshold", "mixed", "readable_empty_exit"),
+    [
+        ("WARNING", "never", False, 0),
+        ("WARNING", "critical", False, 0),
+        ("WARNING", "warning", False, 1),
+        ("CRITICAL", "never", False, 0),
+        ("CRITICAL", "critical", False, 1),
+        ("CRITICAL", "warning", False, 1),
+        ("CRITICAL", "critical", True, 1),
+    ],
+    ids=[
+        "warning-never",
+        "warning-critical",
+        "warning-warning",
+        "critical-never",
+        "critical-critical",
+        "critical-warning",
+        "mixed-critical",
+    ],
+)
+def test_failed_associated_lock_skip_preserves_cli_failure_thresholds(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    severity: str,
+    threshold: str,
+    mixed: bool,
+    readable_empty_exit: int,
+) -> None:
+    repo = _associated_failed_lock_repo(tmp_path, severity)
+    if mixed:
+        (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+
+    result = runner.invoke(app, args)
+
+    assert result.exit_code == int(mixed), result.output
+    assert result.stderr == ""
+    report = _coverage_cli_json(result.stdout)
+    skipped = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+    assert len(skipped) == 1
+    assert skipped[0] == {
+        "rule_id": "env.llm_critical_deps_pinned",
+        "aliases": [],
+        "category": "env",
+        "severity": "INFO",
+        "status": "skipped",
+        "level": 1,
+        "message": _ASSOCIATED_LOCK_CONTENT_MESSAGE,
+        "evidence": [
+            {
+                "kind": "file",
+                "path": "pyproject.toml",
+                "field": None,
+                "line": 3,
+                "value": ">=2",
+                "expected": None,
+                "note": "declared as >=2",
+            },
+            {
+                "kind": "file",
+                "path": "uv.lock",
+                "field": None,
+                "line": None,
+                "value": None,
+                "expected": None,
+                "note": "torch associated; lock package contents unverified",
+            },
+        ],
+        "fix_hint": (
+            "Review torch declarations and associated format-lock files; restore readable, "
+            "valid lock contents before deciding that exact pin evidence is absent."
+        ),
+        "profile_origin": [],
+        "severity_origin": "default",
+        "suppressed_reason": None,
+    }
+    assert report["summary"] == {
+        "critical": int(mixed),
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 1,
+    }
+    if mixed:
+        (warning,) = [finding for finding in report["findings"] if finding["status"] == "fail"]
+        assert warning["message"] == (
+            "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)"
+        )
+        assert (warning["severity"], warning["severity_origin"]) == ("CRITICAL", "profile:core")
+    (repo / "uv.lock").write_text("", encoding="utf-8")
+    commit_all(repo)
+
+    readable_empty = runner.invoke(app, args)
+
+    assert readable_empty.exit_code == readable_empty_exit, readable_empty.output
+    assert readable_empty.stderr == ""
+    empty_report = _coverage_cli_json(readable_empty.stdout)
+    assert len(empty_report["findings"]) == 1 + int(mixed)
+    assert all(
+        finding["status"] == "fail"
+        and finding["severity"] == severity
+        and finding["severity_origin"] == "profile:core"
+        for finding in empty_report["findings"]
+    )
+    assert empty_report["summary"] == {
+        "critical": (1 + int(mixed)) * int(severity == "CRITICAL"),
+        "warning": (1 + int(mixed)) * int(severity == "WARNING"),
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 0,
+    }
+
+
+def test_failed_associated_lock_skip_preserves_json_text_export_and_suppression(
+    tmp_path: Path,
+) -> None:
+    repo = _associated_failed_lock_repo(tmp_path)
+    before = {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    }
+    args = ["audit", str(repo), "--format", "json", "--fail-on", "critical"]
+
+    first = runner.invoke(app, args)
+    second = runner.invoke(app, args)
+
+    assert first.exit_code == second.exit_code == 0
+    assert first.stderr == second.stderr == ""
+    first_report = _coverage_cli_json(first.stdout)
+    second_report = _coverage_cli_json(second.stdout)
+    first_report.pop("generated_at")
+    second_report.pop("generated_at")
+    assert first_report == second_report
+    assert first_report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 1,
+    }
+    text_args = ["audit", str(repo), "--no-color", "--fail-on", "critical"]
+
+    hidden = runner.invoke(app, text_args)
+    shown = runner.invoke(app, [*text_args, "--show-skipped"])
+
+    assert hidden.exit_code == shown.exit_code == 0
+    assert hidden.stderr == shown.stderr == ""
+    assert _ASSOCIATED_LOCK_CONTENT_MESSAGE not in hidden.stdout
+    assert _ASSOCIATED_LOCK_CONTENT_MESSAGE in shown.stdout
+    assert "Findings: PASS" in hidden.stdout
+    assert "0 passed · 0 suppressed · 1 skipped" in hidden.stdout
+    output = tmp_path / "failed-lock-export.md"
+
+    exported = runner.invoke(app, ["export", str(repo), "--output", str(output)])
+
+    assert exported.exit_code == 0, exported.output
+    assert exported.stderr == ""
+    document = output.read_text(encoding="utf-8")
+    assert "0 critical · 0 warning ·\n0 info · 0 passed." in document
+    assert "env.llm_critical_deps_pinned" not in document
+    assert {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    } == before
+    (repo / ".reprollm" / "config.yaml").write_text(
+        "schema_version: 1\naudit:\n  ignore:\n"
+        "    - rule: env.llm_critical_deps_pinned\n"
+        "      reason: Reviewed associated lock read uncertainty.\n",
+        encoding="utf-8",
+    )
+    commit_all(repo)
+
+    ignored = runner.invoke(app, args)
+
+    assert ignored.exit_code == 0, ignored.output
+    assert ignored.stderr == ""
+    report = _coverage_cli_json(ignored.stdout)
+    (finding,) = report["findings"]
+    assert (finding["status"], finding["severity"], finding["severity_origin"]) == (
+        "suppressed",
+        "INFO",
+        "default",
+    )
+    assert finding["message"] == _ASSOCIATED_LOCK_CONTENT_MESSAGE
+    assert finding["suppressed_reason"] == "Reviewed associated lock read uncertainty."
+    assert len(finding["evidence"]) == 3
+    assert finding["evidence"][1]["path"] == "uv.lock"
+    assert finding["evidence"][2]["field"] == "audit.ignore"
+    assert finding["evidence"][2]["note"] == (
+        "suppressed: original severity INFO; reason: Reviewed associated lock read uncertainty."
+    )
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 1,
+        "skipped": 0,
+    }
