@@ -1,0 +1,27 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "cause": "Latest archived command labels omit the older candidate- prefix; two oracle locators retained it.",
+      "error_kind": "FileNotFoundError",
+      "exit": 1,
+      "harness_sha256": "1460f11c3dfbe4c9828c21cc5eb6ce3b05f92e4e45f2a874411e3e7d2a1aa276",
+      "missing_repository_relative": "docs/dogfooding/2026-10-21-r07c-profile-pb/final/affected/diagnostics/candidate-lm-evaluation-harness-init.stderr.txt",
+      "prepared_directory_empty_and_preserved": "affected-prepared-attempt-1",
+      "proposal_commit": "44141ec7ec9643be92c85f53d50343541ac36c60",
+      "status": "STOPPED_PREPARATION_ONLY_NOT_PRODUCT_GATE"
+    },
+    {
+      "attempt": 2,
+      "cause": "A correction script expected two identical literal locator expressions, but one has a leading slash and one does not. Its assertion stopped before changing the driver; the following preparation call correctly refused to replace the original empty attempt directory.",
+      "error_kind": "AssertionError",
+      "exit": 1,
+      "harness_sha256": "1460f11c3dfbe4c9828c21cc5eb6ce3b05f92e4e45f2a874411e3e7d2a1aa276",
+      "status": "REFUSED_OVERWRITE_BEFORE_PREPARATION"
+    }
+  ],
+  "correction": "Replace the shared diagnostics/candidate- substring in exactly two copied archive locators. Preserve both stopped calls, move the original empty directory, and start a new preparation output. No expected or product semantics change.",
+  "product_tests_quality_network_or_GPU_calls": 0,
+  "raw_failure_streams": "Tool transcript only; no fabricated standalone raw streams.",
+  "schema_version": 1
+}

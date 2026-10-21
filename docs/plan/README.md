@@ -95,10 +95,10 @@ for the exact candidate and current validation status. The original [P-A proposa
 PROPOSED record and [P-A report](../dogfooding/2026-10-21-r07c-profile-pa/README.md)
 retain their preparation-time state. Broader R07-C remains OPEN.
 
-The next R07-C slice is the [proposed D-L dependency format-lock policy](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md).
+The accepted R07-C D-L slice implements the [dependency format-lock policy](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md).
 Its [P-A report](../dogfooding/2026-10-21-r07c-dependency-pa/README.md) preserves the proposal and conditional design.
 The maintainer has [specifically accepted D-L](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/decision-accepted.json);
-follow its [P-B report](../dogfooding/2026-10-21-r07c-dependency-pb/README.md) for the implementation and current final validation status.
+follow its [P-B report](../dogfooding/2026-10-21-r07c-dependency-pb/README.md) for the implementation, completed local quality/five-project gates and separate final-head CI status.
 Broader R07-C remains OPEN.
 
 R08-A option A remains implemented and unreleased; read its
