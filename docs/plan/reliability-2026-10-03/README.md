@@ -84,3 +84,10 @@ P-B 已实施有限格式锁结构失败和部分信用保留，最终验收状�
 本任务不执行 S1 的产品修复，不修改 schema、drift policy 或 gold，也不触发发布/付费资源。它不替代后续 R00 的问题复核。
 
 入库验证记录见 [PLAN-IMPORT 会话报告](../../dogfooding/2026-10-03-reliability-plan-import.md)。后续实现报告按照总则模板记录任务、提交、测试、完整 gold 差异及接续输入。
+
+## R07-C D-M proposal follow-up (2026-10-21)
+
+The [bounded declaration-body proposal](proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md)
+is PROPOSED, with exact external implementation/spec/test patches and independently checked conditional evidence.
+Read the [P-A report](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md) before deciding.
+No formal product changes or new gold are applied; whole R07-C remains OPEN.

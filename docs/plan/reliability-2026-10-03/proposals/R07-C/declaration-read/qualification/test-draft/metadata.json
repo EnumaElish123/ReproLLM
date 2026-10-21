@@ -1,0 +1,603 @@
+{
+  "all_other_existing_function_or_class_AST_and_full_source_unchanged": 137,
+  "base_commit": "aee6488078c3435dcc33b20a68cca8bda0d0ec57",
+  "changed_existing_top_level_definitions": [
+    {
+      "function": "test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "function": "test_failed_lock_uncertainty_uses_existing_captured_origin_association",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "function": "test_unassociated_structural_lock_failure_keeps_existing_package_warning",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "function": "test_uncertain_manifest_blocks_ancestor_import_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "function": "test_two_conda_environment_basenames_never_guess_a_lock_owner",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "function": "test_same_directory_uncertainty_only_blocks_inferred_import_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "function": "test_unreadable_observed_manifest_cannot_borrow_ancestor_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    }
+  ],
+  "files": [
+    {
+      "base_sha256": "d25be8d240f44786fee3b7e319fdde811f38703572f6b7fa96fd2e9f820dbaf6",
+      "bytes": 33002,
+      "draft_sha256": "5d75b8e5444d6ac0074956c96eeb6d654720852fa33e6bf85cf0b6bd0d890b31",
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "base_sha256": "5fdc8f7f8482b4558201644029e3fe928e6e317336af6ad8ada3b7607d17fcef",
+      "bytes": 52327,
+      "draft_sha256": "6b1549a23ff498b536157a64edd6cc8954ff70f38c9b547b2332ca6e4edb9ae1",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "base_sha256": "976ff3fd5af7523eb6d8fba5776a2bf813f1d1196c449d79a056bd29845849c0",
+      "bytes": 60204,
+      "draft_sha256": "3ffdda979312a40e83cce49378d19b590aacab218bf7d5e7b97a5cc2bf073c9d",
+      "path": "tests/unit/cli/test_audit.py"
+    },
+    {
+      "base_sha256": "341e193325dd9fe8769c0bbf13b627c845e93a80e7941022ccc7e687d9fa532d",
+      "bytes": 21029,
+      "draft_sha256": "7e533f106d94fcf6205feb493a77d3a80e6b577f0e3fbd24690beeec9545dbb8",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    }
+  ],
+  "formal_edits": 0,
+  "formal_source_or_tests_edited": 0,
+  "formal_test_or_product_execution": 0,
+  "known_crashes": "No product execution performed. Existing normal body-read/decode failure paths are guarded; no new crash is claimed. Other decoder exception classes/structural grammar remain outside this draft.",
+  "legacy_case_outcomes_changed": 11,
+  "legacy_functions_deliberately_revised": [
+    {
+      "cases": [
+        "uncertain-project, complete view"
+      ],
+      "changed_case_count": 1,
+      "function": "test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": [
+        "barrier"
+      ],
+      "changed_case_count": 1,
+      "function": "test_failed_lock_uncertainty_uses_existing_captured_origin_association",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": [
+        "barrier"
+      ],
+      "changed_case_count": 1,
+      "function": "test_unassociated_structural_lock_failure_keeps_existing_package_warning",
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": [
+        "toml-syntax",
+        "pipfile-syntax",
+        "yaml-syntax"
+      ],
+      "changed_case_count": 3,
+      "function": "test_uncertain_manifest_blocks_ancestor_import_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "cases": [
+        "dependencies: [broken\\n"
+      ],
+      "changed_case_count": 1,
+      "function": "test_two_conda_environment_basenames_never_guess_a_lock_owner",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "cases": [
+        "import"
+      ],
+      "changed_case_count": 1,
+      "function": "test_same_directory_uncertainty_only_blocks_inferred_import_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    },
+    {
+      "cases": [
+        "pyproject.toml",
+        "Pipfile",
+        "environment.yml"
+      ],
+      "changed_case_count": 3,
+      "function": "test_unreadable_observed_manifest_cannot_borrow_ancestor_credit",
+      "path": "tests/unit/rules/test_dependency_lock_scope.py"
+    }
+  ],
+  "new_parametrized_cases": 105,
+  "new_test_functions": 21,
+  "new_tests": [
+    {
+      "cases": 1,
+      "function": "test_declaration_body_issue_map_defaults_preserve_legacy_positional_values",
+      "parameters": [],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 20,
+      "function": "test_captured_declaration_body_read_failures_preserve_all_legacy_facts",
+      "parameters": [
+        {
+          "names": "basename",
+          "values": [
+            "pyproject.toml",
+            "Pipfile",
+            "environment.yml",
+            "environment.yaml",
+            "requirements-bad.txt"
+          ]
+        },
+        {
+          "names": "failure",
+          "values": [
+            "permission",
+            "binary",
+            "invalid-utf8",
+            "read-cap"
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 4,
+      "function": "test_caught_manager_body_decoder_failure_retains_old_diagnostic_and_capture",
+      "parameters": [
+        {
+          "names": [
+            "basename",
+            "body"
+          ],
+          "values": [
+            [
+              "pyproject.toml",
+              "[project broken\n"
+            ],
+            [
+              "Pipfile",
+              "[packages broken\n"
+            ],
+            [
+              "environment.yml",
+              "dependencies: [broken\n"
+            ],
+            [
+              "environment.yaml",
+              "dependencies: [broken\n"
+            ]
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 6,
+      "function": "test_requirements_actual_child_body_read_failure_is_recorded_without_extra_reads",
+      "parameters": [
+        {
+          "names": "failure",
+          "values": [
+            "missing",
+            "binary",
+            "invalid-utf8",
+            "read-cap",
+            "permission",
+            "outside-alias"
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 1,
+      "function": "test_shared_normalized_requirements_body_failure_is_read_and_recorded_once",
+      "parameters": [],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 17,
+      "function": "test_readable_declaration_shapes_and_line_grammar_do_not_become_body_failures",
+      "parameters": [
+        {
+          "names": [
+            "basename",
+            "body"
+          ],
+          "values": [
+            [
+              "pyproject.toml",
+              "[tool.ruff]\n"
+            ],
+            [
+              "pyproject.toml",
+              "[project]\ndependencies=[]\n"
+            ],
+            [
+              "pyproject.toml",
+              "project=42\n"
+            ],
+            [
+              "pyproject.toml",
+              "tool=false\n"
+            ],
+            [
+              "pyproject.toml",
+              "[project]\ndependencies=42\n"
+            ],
+            [
+              "pyproject.toml",
+              "[tool.poetry]\ndependencies=[]\n"
+            ],
+            [
+              "Pipfile",
+              "[packages]\n"
+            ],
+            [
+              "Pipfile",
+              "packages=false\n"
+            ],
+            [
+              "Pipfile",
+              "[packages]\ntorch={version=\"==2.5.1\",git=\"public\"}\n"
+            ],
+            [
+              "environment.yml",
+              ""
+            ],
+            [
+              "environment.yml",
+              "null\n"
+            ],
+            [
+              "environment.yml",
+              "[]\n"
+            ],
+            [
+              "environment.yml",
+              "dependencies: false\n"
+            ],
+            [
+              "environment.yml",
+              "dependencies: [pytorch>=2, {pip: [false]}]\n"
+            ],
+            [
+              "requirements.txt",
+              "# comment only\n"
+            ],
+            [
+              "requirements.txt",
+              "not a requirement !!!\n"
+            ],
+            [
+              "requirements.txt",
+              "-e .\n--index-url https://example.invalid\n"
+            ]
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 5,
+      "function": "test_unattempted_requirements_include_edges_do_not_invent_body_read_failures",
+      "parameters": [
+        {
+          "names": "edge",
+          "values": [
+            "absolute",
+            "escape",
+            "malformed",
+            "unsupported",
+            "excluded"
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 4,
+      "function": "test_unexpanded_or_uncaptured_requirements_nodes_do_not_invent_body_read_failures",
+      "parameters": [
+        {
+          "names": "graph",
+          "values": [
+            "cycle",
+            "depth",
+            "excluded-root",
+            "unlisted-root"
+          ]
+        }
+      ],
+      "path": "tests/unit/core/test_deps.py"
+    },
+    {
+      "cases": 6,
+      "function": "test_captured_declaration_body_failure_prevents_missing_pin_conclusion",
+      "parameters": [
+        {
+          "names": [
+            "path",
+            "body"
+          ],
+          "values": [
+            [
+              "unrelated/pyproject.toml",
+              {
+                "literal_bytes_hex": "5b62726f6b656e0a"
+              }
+            ],
+            [
+              "unrelated/Pipfile",
+              {
+                "literal_bytes_hex": "5b62726f6b656e0a"
+              }
+            ],
+            [
+              "unrelated/environment.yml",
+              {
+                "literal_bytes_hex": "646570656e64656e636965733a205b62726f6b656e0a"
+              }
+            ],
+            [
+              "unrelated/environment.yaml",
+              {
+                "literal_bytes_hex": "646570656e64656e636965733a205b62726f6b656e0a"
+              }
+            ],
+            [
+              "unrelated/requirements.txt",
+              {
+                "literal_bytes_hex": "756e7265616461626c65000a"
+              }
+            ],
+            [
+              "deps/base.txt",
+              {
+                "literal_bytes_hex": "756e7265616461626c65000a"
+              }
+            ]
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 3,
+      "function": "test_failed_declaration_body_has_repository_wide_influence_without_manager_pair",
+      "parameters": [
+        {
+          "names": "placement",
+          "values": [
+            "root",
+            "sibling",
+            "deep-unrelated"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 10,
+      "function": "test_captured_positive_pin_credit_precedes_failed_declaration_body",
+      "parameters": [
+        {
+          "names": "credit",
+          "values": [
+            "root-exact",
+            "nested-exact",
+            "qualified-declaration",
+            "qualified-import",
+            "partial-lock-member"
+          ]
+        },
+        {
+          "names": "coverage",
+          "values": [
+            "complete",
+            "gap"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 2,
+      "function": "test_associated_format_lock_failure_keeps_precedence_over_declaration_body_failure",
+      "parameters": [
+        {
+          "names": "lock_body",
+          "values": [
+            "[broken\n",
+            "package=[{}]\n"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 1,
+      "function": "test_possible_format_credit_with_python_gap_keeps_precedence_over_body_failure",
+      "parameters": [],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 4,
+      "function": "test_declaration_body_failure_is_independent_of_primary_python_coverage",
+      "parameters": [
+        {
+          "names": "coverage",
+          "values": [
+            "complete",
+            "gap",
+            "unavailable",
+            "inconsistent"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 1,
+      "function": "test_all_failed_body_paths_are_sorted_deduplicated_after_existing_use_evidence",
+      "parameters": [],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 2,
+      "function": "test_declaration_body_skip_preserves_import_and_conda_canonical_use_evidence",
+      "parameters": [
+        {
+          "names": "origin",
+          "values": [
+            "import",
+            "conda-alias"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 3,
+      "function": "test_restoring_declaration_body_restores_existing_warning_or_exact_credit",
+      "parameters": [
+        {
+          "names": "restoration",
+          "values": [
+            "empty",
+            "loose",
+            "exact"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 1,
+      "function": "test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findings",
+      "parameters": [],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 6,
+      "function": "test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_warning",
+      "parameters": [
+        {
+          "names": "unverified",
+          "values": [
+            "readable-line",
+            "directive",
+            "cycle",
+            "depth",
+            "excluded-include",
+            "wrong-shape"
+          ]
+        }
+      ],
+      "path": "tests/unit/rules/test_env.py"
+    },
+    {
+      "cases": 7,
+      "function": "test_declaration_body_skip_keeps_overrides_thresholds_and_independent_warning",
+      "parameters": [
+        {
+          "names": [
+            "severity",
+            "threshold",
+            "mixed",
+            "restored_exit"
+          ],
+          "values": [
+            [
+              "WARNING",
+              "never",
+              false,
+              0
+            ],
+            [
+              "WARNING",
+              "critical",
+              false,
+              0
+            ],
+            [
+              "WARNING",
+              "warning",
+              false,
+              1
+            ],
+            [
+              "CRITICAL",
+              "never",
+              false,
+              0
+            ],
+            [
+              "CRITICAL",
+              "critical",
+              false,
+              1
+            ],
+            [
+              "CRITICAL",
+              "warning",
+              false,
+              1
+            ],
+            [
+              "WARNING",
+              "warning",
+              true,
+              1
+            ]
+          ]
+        }
+      ],
+      "path": "tests/unit/cli/test_audit.py"
+    },
+    {
+      "cases": 1,
+      "function": "test_declaration_body_skip_preserves_full_json_text_export_and_suppression",
+      "parameters": [],
+      "path": "tests/unit/cli/test_audit.py"
+    }
+  ],
+  "patch_sha256": "9b8f17564796018da7e4d4bb05b3a88570ce46b6b5b07aaf04322c3d720b7ff8",
+  "proposed_implementation_draft_binding": {
+    "deps_sha256": "dace7486136f14a4ae6a912838de716b259a329d505865d9a764d0a3dc301e1f",
+    "env_sha256": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05"
+  },
+  "pytest_collection": 0,
+  "reason_for_11_legacy_changes": "Body failure now globally defeats missing exact-declaration absence for known uncredited packages. Existing origin association and qualified_lock_packages remain explicitly empty; valid wrong decoded shapes keep old WARNING and existing D-F/D-L/D-S precedence remains unchanged.",
+  "schema_version": 1,
+  "static_checks": {
+    "AST_parse_all4": true,
+    "Ruff_check_all4": true,
+    "Ruff_format_all4": true,
+    "git_apply_check_only": true,
+    "tracked_inputs_clean_at_exact_base": true,
+    "untracked_proposal_preparation_by_root_does_not_change_test_or_product_inputs": true
+  },
+  "status": "EXTERNAL_ACCEPTANCE_DRAFT_STATIC_ONLY_NOT_APPLIED_OR_EXECUTED",
+  "syntax_AST_parse_only": true,
+  "test_product_executions": 0
+}

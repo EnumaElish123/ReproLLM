@@ -1,0 +1,145 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:ee9e8b132ca6fd32a34a1402e7a8e2daccf60a59206549c85fabb97d9631719c",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 2,
+          "note": "declared as >=1",
+          "path": "requirements.txt",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "peft possible exact declaration unverified",
+          "path": "other/Pipfile",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review peft declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "peft is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 2,
+          "note": "declared as >=1",
+          "path": "pyproject.toml",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "torch associated; lock package contents unverified",
+          "path": "uv.lock",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "torch is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    },
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 1,
+          "note": "declared as >=1",
+          "path": "requirements.txt",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "transformers listed; import-origin credit unverified",
+          "path": "orphan/uv.lock",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review transformers declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "transformers is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    }
+  ],
+  "generated_at": "2026-10-21T08:26:42Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "expected": null,
+            "field": null,
+            "kind": "detection",
+            "line": 2,
+            "note": "dependency peft",
+            "path": "requirements.txt",
+            "value": null
+          }
+        ],
+        "profile": "finetuning",
+        "shipped": true
+      }
+    ],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 3,
+    "suppressed": 0,
+    "warning": 0
+  },
+  "target": "."
+}

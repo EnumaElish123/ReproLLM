@@ -1,0 +1,58 @@
+{
+  "API_CLI_json_visibility_kinds": {
+    "api": 12,
+    "cli": 3,
+    "visibility": 1
+  },
+  "additional_visibility_cli_calls": 4,
+  "checks": [
+    {
+      "command": [
+        "<SOURCE_REPOSITORY>/.venv/bin/ruff",
+        "check",
+        "<SESSION_EVIDENCE>/observation-prep/observe.py"
+      ],
+      "elapsed_seconds": 0.052131,
+      "exit": 0,
+      "stderr": "static-final-1.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "static-final-1.stdout.txt",
+      "stdout_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "command": [
+        "<SOURCE_REPOSITORY>/.venv/bin/ruff",
+        "format",
+        "--check",
+        "<SESSION_EVIDENCE>/observation-prep/observe.py"
+      ],
+      "elapsed_seconds": 0.048723,
+      "exit": 0,
+      "stderr": "static-final-2.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "static-final-2.stdout.txt",
+      "stdout_sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+    }
+  ],
+  "expected_contract": "Frozen per-case typed map+changed package names; original baseline full report supplies unchanged fields; literal target replacement written and hash-guarded before conditional worker. scripts/compare_gold.py uses only T02 audit metadata exclusions.",
+  "formal_product_files_modified": false,
+  "initial_static_findings": "Two B905 zip strict findings corrected before any product worker; initial raw outputs retained. Initial source formatting retained separately.",
+  "isolated_workers_planned": 32,
+  "observer_sha256": "fa63c0831668ff8fd32dd088257424517c7502b363ab77f11bc284af3c7a30be",
+  "plan_sha256": "7bbcba60221315e85306f6b898937bd6a3d396447f969cae9eec96dd69879e41",
+  "prior_reference_read": {
+    "path": "<PRIOR_DS_SESSION>/observation-prep/observe.py",
+    "sha256": "9ab1e319c16705ef11853eff832de007aa99c21f50c1b17d469b43f782f3326a"
+  },
+  "product_workers_executed": 0,
+  "representative_pairs": 16,
+  "run_after_root_static_GO": [
+    "<CANDIDATE>/.venv/bin/python",
+    "<SESSION>/observation-prep/observe.py",
+    "--execute",
+    "--root-authorized"
+  ],
+  "runtime_source_contract": "Conditional worker compiles exact SHA-bound drafted deps and env into canonical module names before engine/CLI registration imports. No rule method rewrite. Read/scan/Git instrumentation is pass-through and retained in paired traces.",
+  "schema_version": 1,
+  "status": "PASS_STATIC_PREPARED_ROOT_EXECUTION_GO_PENDING"
+}

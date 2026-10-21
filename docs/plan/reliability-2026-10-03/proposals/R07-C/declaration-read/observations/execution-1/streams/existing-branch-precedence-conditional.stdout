@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-21T08:26:43Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": [
+      {
+        "profile": "finetuning",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "kind": "detection",
+            "path": "requirements.txt",
+            "field": null,
+            "line": 2,
+            "value": null,
+            "expected": null,
+            "note": "dependency peft"
+          }
+        ],
+        "shipped": true
+      }
+    ]
+  },
+  "documents": {
+    "manifest": "sha256:ee9e8b132ca6fd32a34a1402e7a8e2daccf60a59206549c85fabb97d9631719c",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 0,
+    "skipped": 3
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 1,
+      "message": "peft is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 2,
+          "value": ">=1",
+          "expected": null,
+          "note": "declared as >=1"
+        },
+        {
+          "kind": "file",
+          "path": "other/Pipfile",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "peft possible exact declaration unverified"
+        }
+      ],
+      "fix_hint": "Review peft declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 1,
+      "message": "torch is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "pyproject.toml",
+          "field": null,
+          "line": 2,
+          "value": ">=1",
+          "expected": null,
+          "note": "declared as >=1"
+        },
+        {
+          "kind": "file",
+          "path": "uv.lock",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "torch associated; lock package contents unverified"
+        }
+      ],
+      "fix_hint": "Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 1,
+      "message": "transformers is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=1",
+          "expected": null,
+          "note": "declared as >=1"
+        },
+        {
+          "kind": "file",
+          "path": "orphan/uv.lock",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "transformers listed; import-origin credit unverified"
+        }
+      ],
+      "fix_hint": "Review transformers declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

@@ -1,0 +1,437 @@
+{
+  "Git_audit_calls": [
+    [
+      "git",
+      "rev-parse",
+      "--is-inside-work-tree"
+    ],
+    [
+      "git",
+      "rev-parse",
+      "--show-toplevel"
+    ],
+    [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    [
+      "git",
+      "remote",
+      "get-url",
+      "origin"
+    ],
+    [
+      "git",
+      "ls-files",
+      "-z",
+      "--cached",
+      "--others",
+      "--exclude-standard"
+    ]
+  ],
+  "Git_queries": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--is-inside-work-tree"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "01c4bb0bdd2c02eacb804bea35fd305e6eb60c3cd50290de9907baa027289101"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b7d736c03589c8e3ce815d90a69641aeeac29b0e67e6444543fae16a64324f41"
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9b3162498c21d7f960877099174ecea13410bd21d12440b2ea8868117fc08ae0"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "exit": 128,
+      "stderr_sha256": "c1940b65e0d7f482ca0eaf10031b3b248705ae70ce30426b0046b9ade54ed643",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "ls-files",
+        "-z",
+        "--cached",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7607b35f6949850d44b198c3914cbb9cec2c95d14306718d8beac787feebd0dc"
+    }
+  ],
+  "candidate_trace": [
+    {
+      "accepted": true,
+      "path": "requirements.txt"
+    },
+    {
+      "accepted": true,
+      "path": "cycle.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth0.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth1.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth2.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth3.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth4.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth5.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth6.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth7.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth8.in"
+    },
+    {
+      "accepted": true,
+      "path": "depth9.in"
+    },
+    {
+      "accepted": false,
+      "path": ".venv/hidden.in"
+    }
+  ],
+  "canonical_registered_rule_unchanged_after_loading": true,
+  "case": "requirements-exclusion-controls",
+  "diagnostics": [
+    "cycle.in:1: include cycle",
+    "depth0.in:1: include incomplete",
+    "depth1.in:1: include incomplete",
+    "depth2.in:1: include incomplete",
+    "depth3.in:1: include incomplete",
+    "depth4.in:1: include incomplete",
+    "depth5.in:1: include incomplete",
+    "depth6.in:1: include incomplete",
+    "depth7.in:1: include incomplete",
+    "depth8.in:1: include incomplete",
+    "depth9.in:1: include depth limit",
+    "requirements.txt:2: invalid ???",
+    "requirements.txt:3: --constraint unsupported.in",
+    "requirements.txt:4: include incomplete",
+    "requirements.txt:5: include incomplete",
+    "requirements.txt:6: include unreadable",
+    "requirements.txt:7: include unreadable",
+    "requirements.txt:8: include unsupported syntax"
+  ],
+  "elapsed_seconds": 0.090949,
+  "exact_source_hashes": {
+    "reprollm.core.deps": "d065a373c47cfcf10306199345ce68e8ccf331c980189112a29cde63b2b7696d",
+    "reprollm.rules.env": "747f660816b010cff9f1d2061cbd97024f83ef57c3383491e4dc939ca6b6be13"
+  },
+  "exit": 0,
+  "fixture_open_trace": [
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "reprollm.yaml"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": ".reprollm/profiles/core.yaml"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "requirements.txt"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "cycle.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth0.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth1.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth2.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth3.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth4.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth5.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth6.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth7.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth8.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "depth9.in"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "z.py"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "reprollm.yaml"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": ".reprollm/profiles/core.yaml"
+    },
+    {
+      "flags": 524288,
+      "mode": "r",
+      "path": "reprollm.yaml"
+    }
+  ],
+  "loaded_origins": {
+    "reprollm.core.deps": {
+      "actual_code_filename": "<CANDIDATE>/src/reprollm/core/deps.py",
+      "canonical_module": "reprollm.core.deps",
+      "source_sha256": "d065a373c47cfcf10306199345ce68e8ccf331c980189112a29cde63b2b7696d"
+    },
+    "reprollm.rules.env": {
+      "actual_code_filename": "<CANDIDATE>/src/reprollm/rules/env.py",
+      "canonical_module": "reprollm.rules.env",
+      "source_sha256": "747f660816b010cff9f1d2061cbd97024f83ef57c3383491e4dc939ca6b6be13"
+    }
+  },
+  "mode": "baseline",
+  "network_GPU_provider_requests": 0,
+  "scanner_read_trace": [
+    {
+      "max_bytes": 524288,
+      "path": "requirements.txt",
+      "text_sha256": "2050d9a2a6d0c49bdf8bbdfe3886e0fa8ec1c524286d76e456f53af7e9140656"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "cycle.in",
+      "text_sha256": "0a0f3c2afe223178f18d1d5951c681ac6f6138d4430ca371350d467df5379807"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth0.in",
+      "text_sha256": "3af7b0d5c9ce6f43fd0aaad84b42597fa70766886617046a2817f0e595c3f596"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth1.in",
+      "text_sha256": "ef15f7402ae6da22a2feb5f9540d629e30c3fc456b6430c622bcb2e5ede635b9"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth2.in",
+      "text_sha256": "e310201c4006482e2822d5397d00d138f5eba1ddab102b44778d4ec973857eec"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth3.in",
+      "text_sha256": "2cf0756adbf33a49363609619afe787567679b6b1721d3ddc3e0fcaaa3f71946"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth4.in",
+      "text_sha256": "1550f6910c11931650407b1a2fc7e60ae8b7785cf51c6e0d1e1c3d300b0ef5b9"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth5.in",
+      "text_sha256": "95505c13fbcace38853bef436b499f4d11f3488edac9db91c69c35dbeb4e2381"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth6.in",
+      "text_sha256": "2f517d4544114238785f994d5670e6584cb527d3ad949f7409bd3afe1f77be44"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth7.in",
+      "text_sha256": "db678bc1420a53acb4504a35cc12b79719656da3db7828a8f737bb7d86bbc724"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth8.in",
+      "text_sha256": "195e622aee7ef5d44508cee23fadef6248a01a713a9d8dddf6877596e1544cc5"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "depth9.in",
+      "text_sha256": "be6be4f283eb03c1dc2cf934670e29c415b7682afe877b7c797b89996eb3e561"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "z.py",
+      "text_sha256": "b91a3bc5e2064d025a8ae122555c96948ec5b4895d53d809c4b66b71a4915133"
+    },
+    {
+      "max_bytes": 524288,
+      "path": "reprollm.yaml",
+      "text_sha256": "ee9e8b132ca6fd32a34a1402e7a8e2daccf60a59206549c85fabb97d9631719c"
+    }
+  ],
+  "schema_version": 1,
+  "snapshots": [
+    {
+      "coverage": {
+        "candidate": 1,
+        "limit": 500,
+        "observed": true,
+        "parsed": 1,
+        "selected": 1
+      },
+      "declaration_read_issues": {},
+      "declarations": [
+        {
+          "display_name": "torch",
+          "exact_version": null,
+          "line": 1,
+          "name": "torch",
+          "source_file": "requirements.txt",
+          "specifier": ">=1"
+        }
+      ],
+      "imports": [
+        {
+          "line": 1,
+          "module": "torch",
+          "path": "z.py"
+        }
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "project_manifests": {},
+      "qualified_packages": [],
+      "scan_warnings": [],
+      "uncertain_directories": [],
+      "unparsed": [
+        "requirements.txt:2: invalid ???",
+        "requirements.txt:3: --constraint unsupported.in",
+        "cycle.in:1: include cycle",
+        "requirements.txt:4: include incomplete",
+        "depth9.in:1: include depth limit",
+        "depth8.in:1: include incomplete",
+        "depth7.in:1: include incomplete",
+        "depth6.in:1: include incomplete",
+        "depth5.in:1: include incomplete",
+        "depth4.in:1: include incomplete",
+        "depth3.in:1: include incomplete",
+        "depth2.in:1: include incomplete",
+        "depth1.in:1: include incomplete",
+        "depth0.in:1: include incomplete",
+        "requirements.txt:5: include incomplete",
+        "requirements.txt:6: include unreadable",
+        "requirements.txt:7: include unreadable",
+        "requirements.txt:8: include unsupported syntax"
+      ],
+      "unverified_lock_paths": {}
+    }
+  ],
+  "visibility": {}
+}

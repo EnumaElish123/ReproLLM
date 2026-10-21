@@ -1,0 +1,120 @@
+--- a/src/reprollm/core/deps.py
++++ b/src/reprollm/core/deps.py
+@@ -28,6 +28,7 @@
+ #: Distribution-name overrides applied before canonicalization (spec M2-T03).
+ _NAME_OVERRIDES = {"pytorch": "torch"}
+ 
++DeclarationReadIssue = Literal["unreadable", "invalid_syntax"]
+ LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
+ _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
+ 
+@@ -108,6 +109,7 @@
+     manifest_present: bool = False
+     _project_manifests: dict[str, frozenset[str]] = field(default_factory=dict, repr=False)
+     _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
++    declaration_read_issues: dict[str, DeclarationReadIssue] = field(default_factory=dict)
+ 
+     def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
+         """Return lock credit supported by an associated actual package origin."""
+@@ -342,9 +344,12 @@
+         cached = self.nodes.get(source)
+         if cached is not None:
+             return cached
+-        text = (
+-            self.scanner.read_text(source) if self.scanner.is_analysis_candidate(source) else None
+-        )
++        if self.scanner.is_analysis_candidate(source):
++            text = self.scanner.read_text(source)
++            if text is None:
++                self.result.declaration_read_issues[source] = "unreadable"
++        else:
++            text = None
+         if text is None:
+             node = _RequirementFile(False)
+         else:
+@@ -590,12 +595,14 @@
+     table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
+     text = scanner.read_text(path)
+     if text is None:
++        result.declaration_read_issues[path] = "unreadable"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: unreadable")
+         return False
+     try:
+         doc = tomllib.loads(text)
+     except tomllib.TOMLDecodeError as exc:
++        result.declaration_read_issues[path] = "invalid_syntax"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
+         return False
+@@ -678,12 +685,14 @@
+ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
+     text = scanner.read_text(path)
+     if text is None:
++        result.declaration_read_issues[path] = "unreadable"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: unreadable")
+         return
+     try:
+         doc = yaml.safe_load(text)
+     except yaml.YAMLError as exc:
++        result.declaration_read_issues[path] = "invalid_syntax"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
+         return
+@@ -739,12 +748,14 @@
+ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> None:
+     text = scanner.read_text(path)
+     if text is None:
++        result.declaration_read_issues[path] = "unreadable"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: unreadable")
+         return
+     try:
+         doc = tomllib.loads(text)
+     except tomllib.TOMLDecodeError as exc:
++        result.declaration_read_issues[path] = "invalid_syntax"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
+         return
+--- a/src/reprollm/rules/env.py
++++ b/src/reprollm/rules/env.py
+@@ -205,6 +205,38 @@
+                         fix_hint=(
+                             f"Review {display} declarations and format-lock origins; complete "
+                             "Python analysis before deciding that exact pin evidence is absent."
++                        ),
++                    )
++                )
++                continue
++            if deps.declaration_read_issues:
++                findings.append(
++                    Finding(
++                        rule_id=self.id,
++                        aliases=list(self.aliases),
++                        category=self.category,
++                        severity=Severity.INFO,
++                        status=FindingStatus.SKIPPED,
++                        level=ctx.level,
++                        message=(
++                            f"{display} is used; a dependency declaration body could not be read "
++                            "or parsed, so missing pin evidence is not established"
++                        ),
++                        evidence=[
++                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
++                            *[
++                                Evidence(
++                                    kind="file",
++                                    path=path,
++                                    note=f"{display} possible exact declaration unverified",
++                                )
++                                for path in sorted(deps.declaration_read_issues)
++                            ],
++                        ],
++                        fix_hint=(
++                            f"Review {display} declarations and failed dependency source files; "
++                            "restore readable, valid declaration bodies before deciding that "
++                            "exact pin evidence is absent."
+                         ),
+                     )
+                 )

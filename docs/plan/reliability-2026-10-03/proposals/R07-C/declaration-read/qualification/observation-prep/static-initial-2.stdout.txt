@@ -1,0 +1,26 @@
+B905 `zip()` without an explicit `strict=` parameter
+   --> <SESSION_EVIDENCE>/observation-prep/observe.py:476:20
+    |
+474 |     assert len(scans) == len(dependencies) == (3 if visibility else 1)
+475 |     snapshots = []
+476 |     for py, dep in zip(scans, dependencies):
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^
+477 |         origins = [
+478 |             (env_module.canonical_dep_name(i.module.split(".", 1)[0]), i.path) for i in py.imports
+    |
+help: Add explicit value for parameter `strict=`
+
+B905 `zip()` without an explicit `strict=` parameter
+   --> <SESSION_EVIDENCE>/observation-prep/observe.py:659:21
+    |
+657 | def compare_facts(left, right, case):
+658 |     a, b = copy.deepcopy(left), copy.deepcopy(right)
+659 |     for old, new in zip(a.pop("snapshots"), b.pop("snapshots")):
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+660 |         assert old.pop("declaration_read_issues") == {}
+661 |         assert new.pop("declaration_read_issues") == case["issues"]
+    |
+help: Add explicit value for parameter `strict=`
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).
