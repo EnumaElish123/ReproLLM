@@ -172,11 +172,12 @@ import 最近项目根、unknown barrier、workspace 兼容成本及后续验收
 P-B 仅实施两规则空结果的 primary-Python gap / unavailable veto，见[实施与验收报告](../../dogfooding/2026-10-20-r07c-pb/README.md)。
 保留其他现合同；广义 R07-C 的 mixed evidence、listing/deps/framework 和充分证书仍 OPEN，不因局部 A 交付关闭。
 
-2026-10-21：[profile-absence 接续 P-A](proposals/R07-C/profile-absence/R07-C_profile_absence.md)
-及[会话报告](../../dogfooding/2026-10-21-r07c-profile-pa/README.md)准备仅规则内部的 declared-but-undetected
-局部 P：Python gap/unavailable 时逐 profile SKIPPED，正向 high/shipped 未声明 FAIL 保留。
-[决定记录](proposals/R07-C/profile-absence/decision.json)仍为 PROPOSED；规范和规则补丁尚未应用。
-当前 nonempty absence 合同仍以既有规格为准，不能用先前 empty-result 接受替代新决定。
+2026-10-21，维护者[明确接受 profile-absence 局部 P 与具体规则 / 规范补丁](proposals/R07-C/profile-absence/decision-accepted.json)。
+P-B 只改 declared-but-undetected 分支：Python gap/unavailable 时逐 profile SKIPPED，
+正向 high/shipped 未声明 FAIL 保留；见[实施与验收报告](../../dogfooding/2026-10-21-r07c-profile-pb/README.md)。
+原[提案](proposals/R07-C/profile-absence/R07-C_profile_absence.md)、[PROPOSED 决定](proposals/R07-C/profile-absence/decision.json)
+及[P-A 报告](../../dogfooding/2026-10-21-r07c-profile-pa/README.md)保留准备时状态，不作为当前执行结果。
+这不关闭依赖 absence、其他覆盖域或充分证书的广义 R07-C 工作。
 
 ### 当前问题与推荐原则
 

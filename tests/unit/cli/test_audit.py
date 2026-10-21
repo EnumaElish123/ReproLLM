@@ -388,3 +388,234 @@ def test_audit_text_fail_result_line(monkeypatch, tmp_path: Path) -> None:
     result = runner.invoke(app, ["audit", ".", "--no-color"])
     assert "Findings: FAIL (1 critical, 1 warning)" in result.output
     assert "Result: exit 1 (--fail-on critical; findings reach the threshold)" in result.output
+
+
+_PROFILE_ABSENCE_MESSAGE = (
+    "declared profile 'inference' has no detection evidence in the analysed inputs; "
+    "Python candidate analysis is incomplete or unavailable, so absence is not established"
+)
+
+
+def _declared_profile_absence_repo(tmp_path: Path, severity: str = "CRITICAL") -> Path:
+    repo = _coverage_cli_repo(tmp_path)
+    core_path = repo / ".reprollm" / "profiles" / "core.yaml"
+    core = yaml.safe_load(core_path.read_text(encoding="utf-8"))
+    core["severity_overrides"] = {"exec.profile_detection_mismatch": severity}
+    core_path.write_text(yaml.safe_dump(core), encoding="utf-8")
+    (core_path.parent / "inference.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "name": "inference",
+                "description": "Isolate declared-profile absence without other required rules.",
+                "rules": [],
+                "detect": {"imports": ["vllm"]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: coverage}\nexperiment: {profiles: [inference]}\n",
+        encoding="utf-8",
+    )
+    (repo / "z.py").write_text("value = 2\n", encoding="utf-8")
+    commit_all(repo)
+    return repo
+
+
+@pytest.mark.parametrize("severity", ["WARNING", "CRITICAL"])
+@pytest.mark.parametrize("fail_on", ["warning", "critical", "never"])
+def test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, severity: str, fail_on: str
+) -> None:
+    repo = _declared_profile_absence_repo(tmp_path, severity)
+    before = {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    }
+    args = ["audit", str(repo), "--format", "json", "--fail-on", fail_on]
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+
+    gap = runner.invoke(app, args)
+    repeated = runner.invoke(app, args)
+
+    assert gap.exit_code == repeated.exit_code == 0, gap.output
+    assert (
+        gap.stderr
+        == repeated.stderr
+        == (
+            "scan: Python analysis incomplete: parsed 1 of 2 candidate files; "
+            "selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.\n"
+        )
+    )
+    report = _coverage_cli_json(gap.stdout)
+    second = _coverage_cli_json(repeated.stdout)
+    report.pop("generated_at")
+    second.pop("generated_at")
+    assert report == second
+    (finding,) = [
+        f for f in report["findings"] if f["rule_id"] == "exec.profile_detection_mismatch"
+    ]
+    assert finding["message"] == _PROFILE_ABSENCE_MESSAGE
+    assert (finding["status"], finding["severity"], finding["severity_origin"]) == (
+        "skipped",
+        "INFO",
+        "default",
+    )
+    assert finding["evidence"] == [
+        {
+            "kind": "field",
+            "path": None,
+            "field": "experiment.profiles",
+            "line": None,
+            "value": None,
+            "expected": None,
+            "note": "inference declared; detection absence unverified",
+        }
+    ]
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 4,
+        "suppressed": 0,
+        "skipped": 2,
+    }
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 2)
+
+    complete = runner.invoke(app, args)
+
+    expected_exit = int(fail_on == "warning" or (fail_on == "critical" and severity == "CRITICAL"))
+    assert complete.exit_code == expected_exit, complete.output
+    assert complete.stderr == ""
+    complete_report = _coverage_cli_json(complete.stdout)
+    (failure,) = [f for f in complete_report["findings"] if f["status"] == "fail"]
+    assert failure["rule_id"] == "exec.profile_detection_mismatch"
+    assert failure["severity"] == severity
+    assert failure["severity_origin"] == "profile:core"
+    assert (
+        failure["message"]
+        == "declared profile 'inference' has no detection evidence in this repository"
+    )
+    assert failure["evidence"][0]["note"] == "inference declared, nothing detected"
+    assert complete_report["summary"] == {
+        "critical": int(severity == "CRITICAL"),
+        "warning": int(severity == "WARNING"),
+        "info": 0,
+        "pass": 5,
+        "suppressed": 0,
+        "skipped": 0,
+    }
+    assert {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    } == before
+
+
+def test_audit_profile_absence_skip_does_not_hide_a_positive_critical_mismatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = _declared_profile_absence_repo(tmp_path)
+    (repo / "a.py").write_text("import peft\n", encoding="utf-8")
+    (repo / "z.py").write_text("import vllm\n", encoding="utf-8")
+    (repo / "requirements.txt").write_text("torch==2.5.1\npeft==0.1\n", encoding="utf-8")
+    commit_all(repo)
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+
+    result = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "critical"])
+
+    assert result.exit_code == 1, result.output
+    assert result.stderr.count("scan: Python analysis incomplete:") == 1
+    report = _coverage_cli_json(result.stdout)
+    findings = [f for f in report["findings"] if f["rule_id"] == "exec.profile_detection_mismatch"]
+    assert len(findings) == 2
+    failure, skipped = findings
+    assert (failure["status"], failure["severity"], failure["severity_origin"]) == (
+        "fail",
+        "CRITICAL",
+        "profile:core",
+    )
+    assert failure["message"] == (
+        "detected profile 'finetuning' (high confidence) is not declared in experiment.profiles"
+    )
+    assert failure["evidence"][0]["path"] == "a.py"
+    assert failure["evidence"][0]["line"] == 1
+    assert failure["evidence"][0]["note"] == "import peft"
+    assert (skipped["status"], skipped["severity"], skipped["severity_origin"]) == (
+        "skipped",
+        "INFO",
+        "default",
+    )
+    assert skipped["message"] == _PROFILE_ABSENCE_MESSAGE
+    assert skipped["evidence"][0]["note"] == "inference declared; detection absence unverified"
+    assert report["summary"] == {
+        "critical": 1,
+        "warning": 0,
+        "info": 0,
+        "pass": 4,
+        "suppressed": 0,
+        "skipped": 2,
+    }
+
+
+def test_audit_profile_absence_skip_obeys_existing_text_and_suppression_contract(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = _declared_profile_absence_repo(tmp_path)
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    args = ["audit", str(repo), "--no-color", "--fail-on", "warning"]
+
+    hidden = runner.invoke(app, args)
+    shown = runner.invoke(app, [*args, "--show-skipped"])
+
+    assert hidden.exit_code == shown.exit_code == 0
+    assert hidden.stderr == shown.stderr
+    assert hidden.stderr.count("scan: Python analysis incomplete:") == 1
+    assert "exec.profile_detection_mismatch" not in hidden.stdout
+    assert (
+        f"exec.profile_detection_mismatch      skipped: {_PROFILE_ABSENCE_MESSAGE}" in shown.stdout
+    )
+    assert "4 passed · 0 suppressed · 2 skipped" in hidden.stdout
+    output = tmp_path / "declared-export.md"
+
+    exported = runner.invoke(app, ["export", str(repo), "--output", str(output)])
+
+    assert exported.exit_code == 0, exported.output
+    assert exported.stderr == hidden.stderr
+    assert exported.stderr.count("scan: Python analysis incomplete:") == 1
+    assert "0 critical · 0 warning ·\n0 info · 4 passed." in output.read_text(encoding="utf-8")
+    (repo / ".reprollm" / "config.yaml").write_text(
+        "schema_version: 1\naudit:\n  ignore:\n"
+        "    - rule: exec.profile_detection_mismatch\n"
+        "      reason: Reviewed incomplete profile evidence.\n",
+        encoding="utf-8",
+    )
+    commit_all(repo)
+
+    ignored = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "critical"])
+
+    assert ignored.exit_code == 0, ignored.output
+    report = _coverage_cli_json(ignored.stdout)
+    (finding,) = [
+        f for f in report["findings"] if f["rule_id"] == "exec.profile_detection_mismatch"
+    ]
+    assert finding["status"] == "suppressed"
+    assert finding["severity"] == "INFO"
+    assert finding["severity_origin"] == "default"
+    assert finding["message"] == _PROFILE_ABSENCE_MESSAGE
+    assert finding["suppressed_reason"] == "Reviewed incomplete profile evidence."
+    assert finding["evidence"][0]["note"] == "inference declared; detection absence unverified"
+    assert finding["evidence"][1]["field"] == "audit.ignore"
+    assert finding["evidence"][1]["note"] == (
+        "suppressed: original severity INFO; reason: Reviewed incomplete profile evidence."
+    )
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 4,
+        "suppressed": 1,
+        "skipped": 1,
+    }

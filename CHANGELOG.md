@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- P-B / R07-C declared-profile absence (spec §§12.3.1–12.3.2): when a declared
+  non-core profile has no detection entry and primary-Python candidate coverage
+  is incomplete or unavailable, report that profile as SKIPPED/INFO instead of
+  an absence-derived FAIL. Keep positive high-confidence mismatches and existing
+  empty-result handling. New SKIPPED outcomes do not receive FAIL-only severity
+  overrides, so a prior override-triggered failure can stop triggering exit 1.
+  Suppression, thresholds, schemas and historical reports retain their contracts;
+  broader R07-C dependency/listing/framework coverage remains open.
+
 - P-B / R08-B A4 (spec §18): classify exactly the recorded target_epsilon,
   target_delta and max_grad_norm leaves under privacy.mechanism.params, plus
   training.params.num_train_epochs, as HIGH in newly computed diffs. Existing

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import Rule, register_rule
-from reprollm.schemas.finding import Evidence, Finding, Severity
+from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
 
 
 def _has_manifest(ctx: AuditContext) -> bool:
@@ -141,6 +141,31 @@ class ProfileDetectionMismatchRule(Rule):
             if profile == "core":
                 continue  # implicit; never mismatched
             if profile not in detected:
+                if ctx.pyscan.coverage().pass_skip_reason() is not None:
+                    findings.append(
+                        Finding(
+                            rule_id=self.id,
+                            aliases=list(self.aliases),
+                            category=self.category,
+                            severity=Severity.INFO,
+                            status=FindingStatus.SKIPPED,
+                            level=ctx.level,
+                            message=(
+                                f"declared profile {profile!r} has no detection evidence "
+                                "in the analysed inputs; Python candidate analysis is "
+                                "incomplete or unavailable, so absence is not established"
+                            ),
+                            evidence=[
+                                Evidence(
+                                    kind="field",
+                                    field="experiment.profiles",
+                                    note=f"{profile} declared; detection absence unverified",
+                                )
+                            ],
+                            fix_hint=self.fix_hint,
+                        )
+                    )
+                    continue
                 findings.append(
                     self.finding(
                         ctx,

@@ -1,0 +1,522 @@
+....FFFFF..FFFFFFFFFFFF                                                  [100%]
+=================================== FAILURES ===================================
+_ test_profile_conclusions_preserve_positive_evidence_and_skip_unverified_absence[declared-profile-hidden-by-cap] _
+tests/unit/core/test_engine.py:212: in test_profile_conclusions_preserve_positive_evidence_and_skip_unverified_absence
+    assert finding.status.value == expected_status
+E   AssertionError: assert 'fail' == 'skipped'
+E     
+E     - skipped
+E     + fail
+_ test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[syntax] _
+tests/unit/core/test_engine.py:364: in test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[binary] _
+tests/unit/core/test_engine.py:364: in test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[read-cap] _
+tests/unit/core/test_engine.py:364: in test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[unreadable] _
+tests/unit/core/test_engine.py:364: in test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[unobserved] _
+tests/unit/core/test_engine.py:435: in test_unavailable_python_coverage_cannot_establish_multiple_profile_absences
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[parsed-over-selected] _
+tests/unit/core/test_engine.py:435: in test_unavailable_python_coverage_cannot_establish_multiple_profile_absences
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[selected-over-candidate] _
+tests/unit/core/test_engine.py:435: in test_unavailable_python_coverage_cannot_establish_multiple_profile_absences
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[selected-over-limit] _
+tests/unit/core/test_engine.py:435: in test_unavailable_python_coverage_cannot_establish_multiple_profile_absences
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+E   AssertionError: assert ('fail', 'INFO') == ('skipped', 'INFO')
+E     
+E     At index 0 diff: 'fail' != 'skipped'
+E     Use -v to get more diff
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[warning-WARNING] _
+tests/unit/cli/test_audit.py:443: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert gap.exit_code == repeated.exit_code == 0, gap.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T01:45:25Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [
+E           "inference"
+E         ],
+E         "resolved": [
+E           "core",
+E           "inference"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:c3be5df48baffc1d128555f19467862320d269d147a0c5106a343cd5eb0b9dab",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 0,
+E         "warning": 1,
+E         "info": 0,
+E         "pass": 4,
+E         "suppressed": 0,
+E         "skipped": 1
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "exec.profile_detection_mismatch",
+E           "aliases": [],
+E           "category": "exec",
+E           "severity": "WARNING",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "declared profile 'inference' has no detection evidence in this repository",
+E           "evidence": [
+E             {
+E               "kind": "field",
+E               "path": null,
+E               "field": "experiment.profiles",
+E               "line": null,
+E               "value": null,
+E               "expected": null,
+E               "note": "inference declared, nothing detected"
+E             }
+E           ],
+E           "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "INFO",
+E           "status": "skipped",
+E           "level": 1,
+E           "message": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1); no rule-wide PASS is established.",
+E           "evidence": [],
+E           "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.clean_tree",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "Tracked files have no uncommitted modifications.",
+E           "evidence": [],
+E           "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_commit",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "HEAD points at a committed revision (no unborn branch).",
+E           "evidence": [],
+E           "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_repo",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "The experiment code lives in a git repository.",
+E           "evidence": [],
+E           "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.no_untracked",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "No untracked, non-ignored files are left in the tree.",
+E           "evidence": [],
+E           "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[warning-CRITICAL] _
+tests/unit/cli/test_audit.py:443: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert gap.exit_code == repeated.exit_code == 0, gap.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T01:45:25Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [
+E           "inference"
+E         ],
+E         "resolved": [
+E           "core",
+E           "inference"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:c3be5df48baffc1d128555f19467862320d269d147a0c5106a343cd5eb0b9dab",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 1,
+E         "warning": 0,
+E         "info": 0,
+E         "pass": 4,
+E         "suppressed": 0,
+E         "skipped": 1
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "exec.profile_detection_mismatch",
+E           "aliases": [],
+E           "category": "exec",
+E           "severity": "CRITICAL",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "declared profile 'inference' has no detection evidence in this repository",
+E           "evidence": [
+E             {
+E               "kind": "field",
+E               "path": null,
+E               "field": "experiment.profiles",
+E               "line": null,
+E               "value": null,
+E               "expected": null,
+E               "note": "inference declared, nothing detected"
+E             }
+E           ],
+E           "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "INFO",
+E           "status": "skipped",
+E           "level": 1,
+E           "message": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1); no rule-wide PASS is established.",
+E           "evidence": [],
+E           "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.clean_tree",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "Tracked files have no uncommitted modifications.",
+E           "evidence": [],
+E           "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_commit",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "HEAD points at a committed revision (no unborn branch).",
+E           "evidence": [],
+E           "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_repo",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "The experiment code lives in a git repository.",
+E           "evidence": [],
+E           "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.no_untracked",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "No untracked, non-ignored files are left in the tree.",
+E           "evidence": [],
+E           "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[critical-WARNING] _
+tests/unit/cli/test_audit.py:460: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert finding["message"] == _PROFILE_ABSENCE_MESSAGE
+E   AssertionError: assert 'declared pro...is repository' == 'declared pro...t established'
+E     
+E     Skipping 50 identical leading characters in diff, use -v to show
+E     - ence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established
+E     + ence in this repository
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[critical-CRITICAL] _
+tests/unit/cli/test_audit.py:443: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert gap.exit_code == repeated.exit_code == 0, gap.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T01:45:25Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [
+E           "inference"
+E         ],
+E         "resolved": [
+E           "core",
+E           "inference"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:c3be5df48baffc1d128555f19467862320d269d147a0c5106a343cd5eb0b9dab",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 1,
+E         "warning": 0,
+E         "info": 0,
+E         "pass": 4,
+E         "suppressed": 0,
+E         "skipped": 1
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "exec.profile_detection_mismatch",
+E           "aliases": [],
+E           "category": "exec",
+E           "severity": "CRITICAL",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "declared profile 'inference' has no detection evidence in this repository",
+E           "evidence": [
+E             {
+E               "kind": "field",
+E               "path": null,
+E               "field": "experiment.profiles",
+E               "line": null,
+E               "value": null,
+E               "expected": null,
+E               "note": "inference declared, nothing detected"
+E             }
+E           ],
+E           "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "INFO",
+E           "status": "skipped",
+E           "level": 1,
+E           "message": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1); no rule-wide PASS is established.",
+E           "evidence": [],
+E           "fix_hint": "Pin the package exactly (see the message for the suggested version).",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.clean_tree",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "Tracked files have no uncommitted modifications.",
+E           "evidence": [],
+E           "fix_hint": "Commit or stash your changes: `git add -A && git commit` or `git stash`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_commit",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "HEAD points at a committed revision (no unborn branch).",
+E           "evidence": [],
+E           "fix_hint": "Commit the current state: `git add -A && git commit -m 'experiment'`.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.git_repo",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "The experiment code lives in a git repository.",
+E           "evidence": [],
+E           "fix_hint": "Run `git init` and commit the experiment code so its state is recorded.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         },
+E         {
+E           "rule_id": "code.no_untracked",
+E           "aliases": [],
+E           "category": "code",
+E           "severity": "PASS",
+E           "status": "pass",
+E           "level": 1,
+E           "message": "No untracked, non-ignored files are left in the tree.",
+E           "evidence": [],
+E           "fix_hint": "Commit them, delete them, or add them to .gitignore.",
+E           "profile_origin": [],
+E           "severity_origin": "default",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[never-WARNING] _
+tests/unit/cli/test_audit.py:460: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert finding["message"] == _PROFILE_ABSENCE_MESSAGE
+E   AssertionError: assert 'declared pro...is repository' == 'declared pro...t established'
+E     
+E     Skipping 50 identical leading characters in diff, use -v to show
+E     - ence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established
+E     + ence in this repository
+_ test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[never-CRITICAL] _
+tests/unit/cli/test_audit.py:460: in test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate
+    assert finding["message"] == _PROFILE_ABSENCE_MESSAGE
+E   AssertionError: assert 'declared pro...is repository' == 'declared pro...t established'
+E     
+E     Skipping 50 identical leading characters in diff, use -v to show
+E     - ence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established
+E     + ence in this repository
+__ test_audit_profile_absence_skip_does_not_hide_a_positive_critical_mismatch __
+tests/unit/cli/test_audit.py:540: in test_audit_profile_absence_skip_does_not_hide_a_positive_critical_mismatch
+    assert failure["message"] == (
+E   AssertionError: assert 'declared pro...is repository' == 'detected pro...ment.profiles'
+E     
+E     - detected profile 'finetuning' (high confidence) is not declared in experiment.profiles
+E     + declared profile 'inference' has no detection evidence in this repository
+_ test_audit_profile_absence_skip_obeys_existing_text_and_suppression_contract _
+tests/unit/cli/test_audit.py:573: in test_audit_profile_absence_skip_obeys_existing_text_and_suppression_contract
+    assert hidden.exit_code == shown.exit_code == 0
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_engine.py::test_profile_conclusions_preserve_positive_evidence_and_skip_unverified_absence[declared-profile-hidden-by-cap]
+FAILED tests/unit/core/test_engine.py::test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[syntax]
+FAILED tests/unit/core/test_engine.py::test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[binary]
+FAILED tests/unit/core/test_engine.py::test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[read-cap]
+FAILED tests/unit/core/test_engine.py::test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed[unreadable]
+FAILED tests/unit/core/test_engine.py::test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[unobserved]
+FAILED tests/unit/core/test_engine.py::test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[parsed-over-selected]
+FAILED tests/unit/core/test_engine.py::test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[selected-over-candidate]
+FAILED tests/unit/core/test_engine.py::test_unavailable_python_coverage_cannot_establish_multiple_profile_absences[selected-over-limit]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[warning-WARNING]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[warning-CRITICAL]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[critical-WARNING]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[critical-CRITICAL]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[never-WARNING]
+FAILED tests/unit/cli/test_audit.py::test_audit_unverified_profile_absence_cannot_trigger_an_overridden_failure_gate[never-CRITICAL]
+FAILED tests/unit/cli/test_audit.py::test_audit_profile_absence_skip_does_not_hide_a_positive_critical_mismatch
+FAILED tests/unit/cli/test_audit.py::test_audit_profile_absence_skip_obeys_existing_text_and_suppression_contract
+17 failed, 6 passed, 26 deselected in 3.72s

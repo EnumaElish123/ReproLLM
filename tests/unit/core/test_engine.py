@@ -161,13 +161,20 @@ def test_capped_python_view_cannot_pass_rules_that_depend_on_unseen_imports(
             "import vllm\n",
             "[inference]",
             False,
-            "fail",
-            "declared profile 'inference' has no detection evidence in this repository",
+            "skipped",
+            "declared profile 'inference' has no detection evidence in the analysed inputs; "
+            "Python candidate analysis is incomplete or unavailable, so absence is not established",
         ),
     ],
-    ids=["inside-cap", "outside-cap", "truly-absent", "unreadable", "legacy-absence-finding"],
+    ids=[
+        "inside-cap",
+        "outside-cap",
+        "truly-absent",
+        "unreadable",
+        "declared-profile-hidden-by-cap",
+    ],
 )
-def test_profile_conclusions_use_only_the_approved_empty_result_policy(
+def test_profile_conclusions_preserve_positive_evidence_and_skip_unverified_absence(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     stub_run_cmd: CmdStub,
@@ -206,7 +213,20 @@ def test_profile_conclusions_use_only_the_approved_empty_result_policy(
     assert finding.severity.value == ("PASS" if expected_status == "pass" else "INFO")
     assert finding.message == expected_message
     if expected_status == "skipped":
-        assert finding.evidence == []
+        if profiles == "[inference]":
+            assert [item.model_dump(mode="json") for item in finding.evidence] == [
+                {
+                    "kind": "field",
+                    "path": None,
+                    "field": "experiment.profiles",
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": "inference declared; detection absence unverified",
+                }
+            ]
+        else:
+            assert finding.evidence == []
     if first == "import vllm\n" and not unreadable:
         (package,) = [f for f in report.findings if f.rule_id == "env.llm_critical_deps_pinned"]
         assert package.status.value == "fail" and package.severity.value == "WARNING"
@@ -304,3 +324,118 @@ def test_pass_hook_is_not_queried_for_failures_or_inapplicable_rules(
     assert by_id["env.llm_critical_deps_pinned"] == "fail"
     assert by_id["exec.profile_detection_mismatch"] == "fail"
     assert by_id["model.trust_remote_code_declared"] == "skipped"
+
+
+@pytest.mark.parametrize("source_kind", ["syntax", "binary", "read-cap", "unreadable"])
+def test_profile_absence_is_unverified_when_a_selected_source_cannot_be_parsed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stub_run_cmd: CmdStub,
+    source_kind: str,
+) -> None:
+    from reprollm.core import scanner
+
+    (tmp_path / "reprollm.yaml").write_text(
+        "project: {name: declared}\nexperiment: {profiles: [inference]}\n", encoding="utf-8"
+    )
+    selected = tmp_path / "a.py"
+    contents = {
+        "syntax": b"def f(:\n",
+        "binary": b"\x00",
+        "read-cap": b"#" + b"x" * scanner.MAX_READ_BYTES,
+        "unreadable": b"import vllm\n",
+    }
+    selected.write_bytes(contents[source_kind])
+    if source_kind == "unreadable":
+        original_open = Path.open
+
+        def deny_selected(path: Path, *args: Any, **kwargs: Any) -> IO[Any]:
+            if path == selected:
+                raise PermissionError("synthetic unreadable candidate")
+            return original_open(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "open", deny_selected)
+    stub_run_cmd.on("git", returncode=1)
+    monkeypatch.setattr(scanner, "MAX_PYTHON_FILES", 1)
+
+    report = run_audit(tmp_path, target=".")
+
+    (finding,) = [f for f in report.findings if f.rule_id == "exec.profile_detection_mismatch"]
+    assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+    assert finding.severity_origin == "default"
+    assert finding.message == (
+        "declared profile 'inference' has no detection evidence in the analysed inputs; "
+        "Python candidate analysis is incomplete or unavailable, so absence is not established"
+    )
+    assert len(finding.evidence) == 1
+    assert finding.evidence[0].field == "experiment.profiles"
+    assert finding.evidence[0].note == "inference declared; detection absence unverified"
+
+
+@pytest.mark.parametrize("contents", [None, "value = 1\n"], ids=["zero-candidates", "complete"])
+def test_profile_absence_stays_a_failure_for_a_valid_complete_python_view(
+    tmp_path: Path, stub_run_cmd: CmdStub, contents: str | None
+) -> None:
+    (tmp_path / "reprollm.yaml").write_text(
+        "project: {name: declared}\nexperiment: {profiles: [inference]}\n", encoding="utf-8"
+    )
+    if contents is not None:
+        (tmp_path / "main.py").write_text(contents, encoding="utf-8")
+    stub_run_cmd.on("git", returncode=1)
+
+    report = run_audit(tmp_path, target=".")
+
+    (finding,) = [f for f in report.findings if f.rule_id == "exec.profile_detection_mismatch"]
+    assert (finding.status.value, finding.severity.value) == ("fail", "INFO")
+    assert (
+        finding.message
+        == "declared profile 'inference' has no detection evidence in this repository"
+    )
+    assert finding.evidence[0].note == "inference declared, nothing detected"
+
+
+@pytest.mark.parametrize(
+    ("observed", "candidate", "selected", "parsed", "limit"),
+    [(False, 0, 0, 0, 0), (True, 1, 1, 2, 1), (True, 1, 2, 1, 2), (True, 1, 1, 1, 0)],
+    ids=["unobserved", "parsed-over-selected", "selected-over-candidate", "selected-over-limit"],
+)
+def test_unavailable_python_coverage_cannot_establish_multiple_profile_absences(
+    tmp_path: Path, observed: bool, candidate: int, selected: int, parsed: int, limit: int
+) -> None:
+    from reprollm.core.context import AuditContext
+    from reprollm.core.pyscan import PyScanResult
+    from reprollm.rules.exec_ import ProfileDetectionMismatchRule
+    from reprollm.schemas.finding import DetectionResult
+    from reprollm.schemas.manifest import Manifest
+
+    ctx = AuditContext(
+        tmp_path,
+        level=1,
+        manifest=Manifest.model_validate(
+            {
+                "project": {"name": "unavailable"},
+                "experiment": {"profiles": ["privacy", "inference"]},
+            }
+        ),
+    )
+    ctx.declared_profiles = ["privacy", "inference"]
+    ctx._detection = DetectionResult()
+    ctx._pyscan = PyScanResult(
+        coverage_observed=observed,
+        python_candidate_count=candidate,
+        python_selected_count=selected,
+        python_parsed_count=parsed,
+        python_file_limit=limit,
+    )
+
+    findings = ProfileDetectionMismatchRule().check(ctx)
+
+    assert len(findings) == 2
+    for finding, profile in zip(findings, ["inference", "privacy"], strict=True):
+        assert (finding.status.value, finding.severity.value) == ("skipped", "INFO")
+        assert finding.message == (
+            f"declared profile {profile!r} has no detection evidence in the analysed inputs; "
+            "Python candidate analysis is incomplete or unavailable, so absence is not established"
+        )
+        assert finding.evidence[0].field == "experiment.profiles"
+        assert finding.evidence[0].note == f"{profile} declared; detection absence unverified"

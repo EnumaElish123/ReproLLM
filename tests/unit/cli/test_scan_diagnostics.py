@@ -273,6 +273,8 @@ def test_export_preserves_complete_markdown_and_stdout(
     monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 2)
     root = tmp_path / "business"
     _business_files(root, 2)
+    # Keep a positive mismatch fixed; absence and empty-result policies depend on coverage.
+    (root / "business_0000.py").write_text("import evaluate\nimport peft\n", encoding="utf-8")
     (root / "reprollm.yaml").write_text(
         "schema_version: 1\nproject: {name: business}\nexperiment: {profiles: [evaluation]}\n"
     )
