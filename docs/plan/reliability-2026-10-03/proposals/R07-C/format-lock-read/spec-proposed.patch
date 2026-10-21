@@ -1,0 +1,169 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -916,7 +916,7 @@
+ |---|---|---|---|
+ | `env.dependency_manifest_present` | CRITICAL | always | none of `pyproject.toml` (with `[project]` or `[tool.poetry]`), `requirements*.txt`, `environment.yml`, `uv.lock`, `poetry.lock`, `Pipfile` exists |
+ | `env.lockfile_present` | WARNING | dependency manifest present | no `uv.lock` / `poetry.lock` / `Pipfile.lock` / `conda-lock.yml` and no `requirements*.txt` satisfying the complete exact requirements closure contract below |
+-| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded possible-format-lock SKIP in §12.3.3. `pytorch` in conda counts as `torch`. |
++| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded format-lock SKIP policies in §§12.3.3–12.3.4. `pytorch` in conda counts as `torch`. |
+ | `env.python_version_declared` | WARNING | always | no `requires-python` in pyproject, no `.python-version`, no `python=` in environment.yml |
+ | `env.secret_files_ignored` | CRITICAL | always | any file matching the forbidden patterns of §16.4 (except the template names `.env.example`, `.env.sample`, `.env.template`) exists and is tracked or not ignored by git (`git check-ignore` false) |
+ | `env.reprollm_initialized` | INFO | level 0 only | `.reprollm/` or `reprollm.yaml` absent |
+@@ -973,16 +973,17 @@
+ No warning prose is parsed into coverage facts; no persisted fields are added.
+ 
+ Nonempty rule results remain unchanged except for the declared-but-undetected
+-profile branch in §12.3.2 and the possible-format-lock dependency branch in §12.3.3.
++profile branch in §12.3.2 and the bounded format-lock dependency branches in §§12.3.3–12.3.4.
+ Applicability skips, all other built-in rules and generated project rules are
+-unchanged. Used-but-unpinned package WARNING outside §12.3.3 remains an existing
++unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.4 remains an existing
+ bounded-scan conclusion relative to the captured dependency view; it may depend
+ on absence and be overturned by additional evidence. It is not relabelled as a
+ fully proven violation. Listing/dependency/framework uncertainty and broader
+ input-specific sufficient certificates remain OPEN R07-C work. This limited policy must not be described as
+ full R07-C coverage assurance or proof of complete experiment reproducibility.
+-With consistent observed counts and parsed=candidate, prior behavior stays
+-unchanged; default fail-on and all existing schema versions stay unchanged.
++With consistent observed counts and parsed=candidate, the primary-Python veto does not apply;
++independent known format-lock failures can still use §12.3.4. Default fail-on and all existing schema
++versions stay unchanged.
+ 
+ 
+ ### 12.3.2 Declared-profile absence with primary-Python gaps (R07-C continuation)
+@@ -1032,8 +1033,8 @@
+ outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
+ 
+ This continuation changes only the declared-but-undetected branch under the
+-specified primary-Python assessment. The separate dependency policy in §12.3.3
+-has its own bounded scope. Upstream listing/detection completeness and broader
++specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.4
++have their own bounded scopes. Upstream listing/detection completeness and broader
+ sufficient-certificate policy remain unchanged or OPEN. It does not close the whole R07-C task, certify child execution
+ or authorize rewriting historical reports.
+ 
+@@ -1051,10 +1052,10 @@
+ - If that assessment is incomplete or unavailable AND the package belongs to at
+   least one captured supported-format lock package set, emit one SKIPPED/INFO
+   finding for that package instead of its used-but-unpinned FAIL/WARNING.
+-- Otherwise retain the existing FAIL/WARNING message, evidence, suggestion and
+-  fix hint, including when Python analysis is incomplete but no captured format
+-  lock contains that package. Consistent observed parsed=candidate retains all
+-  prior per-package behavior, including zero candidates.
++- Otherwise this primary-Python branch retains the existing FAIL/WARNING message,
++  evidence, suggestion and fix hint, subject to the independent known-lock-failure
++  policy in §12.3.4. Consistent observed parsed=candidate does not trigger this
++  primary-Python branch, including zero candidates.
+ 
+ The new finding retains rule ID, aliases, category and audit level. Use the
+ existing display-name mapping for `{display}` and this exact message:
+@@ -1094,11 +1095,12 @@
+ expand discovery/read budgets, add inferred import paths or execute a package
+ manager. It does not change R06-B association or repository existential semantics.
+ 
+-Unreadable/malformed locks whose parser captured no matching package entry do
+-not trigger this branch. The resulting old bounded WARNING does not certify
+-lock parsing, dependency reading, listing or the completeness of package-use
+-enumeration. This policy settles only the stated primary-Python uncertainty
+-relative to a captured dependency view. Independent dependency/parser/listing
++Unreadable or syntactically invalid lock bodies with no captured matching package
++entry do not trigger this primary-Python branch. Known failures with a captured
++qualifying origin are handled independently by §12.3.4. Other bounded WARNING
++findings do not certify lock parsing, dependency reading, listing or complete
++package-use enumeration. This policy settles only the stated primary-Python
++uncertainty relative to a captured dependency view; remaining dependency/parser/listing
+ uncertainty and broader sufficient certificates remain OPEN R07-C work.
+ 
+ A nonempty result may contain both new SKIPPED findings and existing WARNING
+@@ -1112,6 +1114,91 @@
+ export follow existing SKIPPED visibility and summary contracts; JSON retains
+ the complete findings. No schema, rule ID, default rule severity or historical
+ report is changed, and this continuation does not close the whole R07-C task.
++
++### 12.3.4 Known associated format-lock body failures (R07-C D-F)
++
++For `env.llm_critical_deps_pinned` only, distinguish a known failed attempt to
++capture a supported format-lock body from a successful parse whose captured
++package set omits a name. Supported basenames remain exactly `uv.lock`,
++`poetry.lock`, `Pipfile.lock` and `conda-lock.yml`. The internal `Lockfile.read_issue`
++is `unreadable` when the existing safe `RepoScanner.read_text` returns None, or
++`invalid_syntax` when the corresponding TOML/JSON/YAML decoder raises its existing
++caught decode-error class. These are fixed reason codes, never raw exception text.
++The optional internal field defaults to None for legacy/manual values. None means
++no recorded failure of these two kinds; it is not a certificate of complete grammar,
++valid versions, exact builds, or successful installation. It adds no persisted field.
++
++The existing read boundary and budgets remain in force. Read failures include
++existing refusals for unsafe paths, binary, oversize, missing or inaccessible
++content. Do not inspect rejected content, retry reads, or infer a package name from
++raw failed text. A captured lock artifact remains in the existing presence inventory
++with its existing captured package set; failure does not qualify it as pin credit.
++
++Use the existing R06-B origin association from §12.2 BEFORE testing package-set
++membership. A captured declaration has an eligible format-lock origin only when
++its qualifying manager manifest is in the same logical directory as that lock
++and supports that lock format. A captured import has an eligible origin only
++through its existing nearest qualifying project root, same-manager pair, and
++existing uncertain-directory barrier. Resolve only the existing captured origins;
++do not invent an omitted import or workspace parent-lock delegation. A lock entry
++is not itself a use origin. This shared association must yield exactly the previous
++qualified-lock package credit when intersected with captured package membership.
++
++Preserve the current canonical in-use set and existing exact-declaration and
++qualified-lock credit first. For each remaining package, if at least one eligible
++associated captured format lock has either recorded read_issue, emit one
++SKIPPED/INFO instead of the used-but-unpinned FAIL/WARNING. This condition is
++independent of primary-Python coverage, including complete or zero-candidate
++views. Evaluate it before §12.3.3 when both policies could apply. Otherwise retain
++§12.3.3 and all remaining existing behavior.
++
++The new finding retains rule ID, aliases, category, audit level and existing
++display-name mapping. Use this exact message:
++
++```text
++{display} is used; an associated format lock could not be read or parsed, so missing pin evidence is not established
++```
++
++Use this exact fix hint:
++
++```text
++Review {display} declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.
++```
++
++Evidence first retains the existing first declaration for that canonical package,
++or otherwise its first captured import. Append one `kind: file` item for each
++distinct eligible associated format-lock logical path with a recorded failure,
++sorted lexicographically, with exact note
++`{display} associated; lock package contents unverified`. Other evidence defaults,
++finding origin/suppression fields, canonical package iteration and final engine
++sort remain unchanged. No extra aggregate finding or per-package PASS is added.
++
++This is bounded uncertainty about package membership relative to fixed captured
++origins and existing manager boundaries. Restoring a failed eligible lock body
++could reveal the package and supply existing credit, so its absence was not
++established. No credit is granted by the new SKIP. Unpaired, wrong-manager,
++nearer-project or barrier-blocked failed locks do not trigger this policy solely
++because they exist elsewhere in the repository. An exact declaration or another
++qualified lock still wins even when a different associated lock failed.
++
++Successful empty and successful nonmember lock bodies retain existing behavior.
++Wrong top-level shapes, invalid collections or entries, partial package extraction,
++unsupported grammar that does not raise the caught decoder error, missing candidates,
++dependency-manifest/requirements failures and omitted import origins remain outside
++this continuation. They are not silently certified by read_issue=None. Independent
++listing, dependency reading/grammar, README/config/framework completeness and broader
++sufficient certificates remain OPEN R07-C work.
++
++Mixed SKIPPED and unchanged WARNING findings are preserved. Existing empty-result
++Python veto, no-critical-package applicability skip, default rule severity and
++all other rules are unchanged. FAIL-only severity overrides do not promote the
++new SKIPPED/INFO; suppression still applies to all statuses. An isolated warning
++or promoted critical failure can stop triggering exit 1; threshold values and
++FAIL-only counting are unchanged. Default text can show Findings: PASS with a
++skipped count, while default export omits skipped counts and the old notable
++warning; full JSON retains the new finding. No renderer, schema, rule ID,
++historical report, gold answer or version is changed. This policy does not close
++the whole R07-C task.
+ 
+ ### 12.4 `model.*` (M3 presence, M4 lock)
+ 

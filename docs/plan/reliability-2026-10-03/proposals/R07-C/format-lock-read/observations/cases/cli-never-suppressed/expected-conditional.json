@@ -1,0 +1,71 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:922beb63a4da6983839aaf194b8844201ee4944c4b9967ba75f804c803e6969a",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 4,
+          "note": "declared as >=1",
+          "path": "pyproject.toml",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "torch associated; lock package contents unverified",
+          "path": "uv.lock",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": "audit.ignore",
+          "kind": "field",
+          "line": null,
+          "note": "suppressed: original severity INFO; reason: synthetic deliberate suppression",
+          "path": ".reprollm/config.yaml",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "torch is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "suppressed",
+      "suppressed_reason": "synthetic deliberate suppression"
+    }
+  ],
+  "generated_at": "2026-10-21T05:24:11Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 0,
+    "suppressed": 1,
+    "warning": 0
+  },
+  "target": "."
+}

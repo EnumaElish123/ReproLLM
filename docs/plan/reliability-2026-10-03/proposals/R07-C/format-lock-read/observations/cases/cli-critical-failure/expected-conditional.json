@@ -1,0 +1,62 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:922beb63a4da6983839aaf194b8844201ee4944c4b9967ba75f804c803e6969a",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 4,
+          "note": "declared as >=1",
+          "path": "pyproject.toml",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "torch associated; lock package contents unverified",
+          "path": "uv.lock",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "torch is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    }
+  ],
+  "generated_at": "2026-10-21T05:24:05Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 1,
+    "suppressed": 0,
+    "warning": 0
+  },
+  "target": "."
+}

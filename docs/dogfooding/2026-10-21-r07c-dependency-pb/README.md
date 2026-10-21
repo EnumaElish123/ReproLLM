@@ -36,8 +36,10 @@ P-A `44141ec7ec9643be92c85f53d50343541ac36c60`（`docs(spec): propose bounded de
 | [五项目 Gate A](final/gate-a/summary.json) | 全部五个固定目标；51 命令、32 检查、10 份完整 L0/facts JSON 比较；规则、profiles、hints、依赖、路径、框架、诊断无 gold 差异 | 墙钟 90.917994 秒；命令合计 88.781512 秒 |
 | [受影响命令](final/affected/summary.json) | 197 编排行、20 次产品调用、154 检查；五份完整 L1 JSON、15 个初始化文件（含十个隐藏文件）、五份完整默认导出；四份专项完整 JSON 无差异 | 墙钟 199.634887 秒；命令合计 183.921420 秒 |
 
-五项目为 val.md 固定的 lm-evaluation-harness、FastChat、HarmBench、verl、TRL；
+五项目为 val.md 固定的 lm-evaluation-harness、FastChat、LlamaFactory、HarmBench、llm-dp-finetune；
 每个目标的 SHA、origin、干净状态、命令、退出码、实际/期望文件及诊断保存在归档中。
+2026-10-21 勘误：原报告将 LlamaFactory、llm-dp-finetune 误写为 verl、TRL；
+本处仅更正项目名称。原 Gate A/受影响命令的项目 SHA、origin、完整产物和哈希均正确且保持原字节。
 初始化只在一次性 clone 执行。普通导出和初始化文件完整按字节比较；audit JSON 仅排除规范允许的根 T-02 元数据，
 不排除嵌套字段。原独立 oracle 保留，本轮未用实际结果重新生成 gold。
 

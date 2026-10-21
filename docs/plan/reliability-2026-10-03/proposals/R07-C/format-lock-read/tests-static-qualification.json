@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "status": "FORMATTED_STATIC_DRAFT_ONLY_NOT_EXECUTED",
+  "baseline": "60aa97f91b09c56e118c434c954ebc451679423e",
+  "interfaces": [
+    "scan_dependencies",
+    "Declarations.qualified_lock_packages/unverified_lock_paths",
+    "LlmCriticalDepsPinnedRule.check/applies",
+    "audit/export CLI"
+  ],
+  "source_or_product_mutations": 0,
+  "product_or_test_executions": 0,
+  "Python_3_10_syntax": "PASS_STATIC_AST_ONLY",
+  "legacy_test_functions_AST_and_text_unchanged": 71,
+  "cases": 74,
+  "files": {
+    "tests/unit/rules/test_env.py": {
+      "tests": [
+        {
+          "name": "test_associated_failed_lock_contents_do_not_establish_missing_pin",
+          "cases": 8
+        },
+        {
+          "name": "test_associated_unreadable_lock_keeps_the_existing_read_boundary",
+          "cases": 3
+        },
+        {
+          "name": "test_restoring_lock_contents_restores_the_existing_membership_decision",
+          "cases": 12
+        },
+        {
+          "name": "test_known_pin_credit_precedes_failed_associated_lock_contents",
+          "cases": 4
+        },
+        {
+          "name": "test_failed_lock_uncertainty_uses_existing_captured_origin_association",
+          "cases": 8
+        },
+        {
+          "name": "test_failed_locks_do_not_create_package_usage",
+          "cases": 1
+        },
+        {
+          "name": "test_ambiguous_conda_manifests_do_not_create_an_association_to_a_failed_lock",
+          "cases": 1
+        },
+        {
+          "name": "test_unlisted_oversize_format_lock_is_not_a_captured_failed_lock",
+          "cases": 1
+        },
+        {
+          "name": "test_failed_associated_lock_uncertainty_is_independent_of_python_coverage",
+          "cases": 2
+        },
+        {
+          "name": "test_failed_lock_contents_skip_coexists_with_stable_warning_and_sorted_evidence",
+          "cases": 1
+        }
+      ],
+      "case_count": 41,
+      "sha256": "1bced83e504b58e40f027db799104f2c7e4b9b498ded77a0be152d103fd1cfde"
+    },
+    "tests/unit/core/test_deps.py": {
+      "tests": [
+        {
+          "name": "test_format_lock_known_failure_is_not_a_successfully_empty_package_set",
+          "cases": 8
+        },
+        {
+          "name": "test_successfully_decoded_lock_bodies_are_not_known_read_or_syntax_failures",
+          "cases": 10
+        },
+        {
+          "name": "test_decoded_but_unsupported_lock_shapes_remain_outside_the_bounded_failure_policy",
+          "cases": 7
+        }
+      ],
+      "case_count": 25,
+      "sha256": "a04fef47d214bdd0c1b3744db5088bb6915a8582ae4993bda98acf67c7445a5e"
+    },
+    "tests/unit/cli/test_audit.py": {
+      "tests": [
+        {
+          "name": "test_failed_associated_lock_skip_preserves_cli_failure_thresholds",
+          "cases": 7
+        },
+        {
+          "name": "test_failed_associated_lock_skip_preserves_json_text_export_and_suppression",
+          "cases": 1
+        }
+      ],
+      "case_count": 8,
+      "sha256": "5cf0e27a3345b4aee507262b415995f0baad2d072c6785cb639281f1722ecbb1"
+    }
+  },
+  "patch_sha256": "71e016e11a41a01b65a2aded3c4b53bd5248a919adea79adbb9aee71ce8cd745",
+  "preformat_patch_sha256": "d6a88899f9a4a006c0f0d21ce7553f944c7f2084bf300d30c479aa180776e881",
+  "git_apply_check": {
+    "exit": 0,
+    "elapsed_seconds": 0.010865774005651474,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "static_preparation_receipt_sha256": "5af4dad1bb907955028d3c3160fdb1a3b9fda028bf0860e292302169a9534747",
+  "static_note": "One direct-external-path Ruff check failed only on unchanged import inferred-firstparty classification; all three same-bytes logical-filename stdin Ruff checks passed without rule ignores/import rewrites. Raw failed preparation retained."
+}

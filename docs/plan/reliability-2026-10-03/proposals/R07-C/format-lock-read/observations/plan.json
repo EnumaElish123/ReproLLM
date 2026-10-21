@@ -1,0 +1,699 @@
+{
+  "base_commit": "60aa97f91b09c56e118c434c954ebc451679423e",
+  "cases": [
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "deny_read": null,
+      "id": "uv-syntax-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "3323fb1a1f3551779a6a72e9f062fcb4a2be92f947029746cdd23dd08f23691a",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "member",
+      "deny_read": "uv.lock",
+      "id": "uv-controlled-read-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "c73a24d73f74e0a8ee8645b52d0f70046c45c7dcc2bca60372e45a235eed3ce6",
+      "issues": {
+        "uv.lock": "unreadable"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "poetry.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "deny_read": null,
+      "id": "poetry-syntax-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "e653708d6faa69cee61a6861bc77dbaa0109c0b961989589bfd333218e2b9e9f",
+      "issues": {
+        "poetry.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "poetry",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "poetry.lock": "[[package\nname = \"torch\"\n",
+        "pyproject.toml": "[tool.poetry.dependencies]\ntorch = \">=1\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "poetry.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "member",
+      "deny_read": "poetry.lock",
+      "id": "poetry-controlled-read-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "3fc2cfa927d272f555aee2f4efb6973fef6d9aa45c9679d063680d7085528a62",
+      "issues": {
+        "poetry.lock": "unreadable"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "poetry",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "poetry.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "pyproject.toml": "[tool.poetry.dependencies]\ntorch = \">=1\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "Pipfile.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "deny_read": null,
+      "id": "pipfile-syntax-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "6ce4b1324c65766e1d38aea0f73e01e094187aa32e63a789ec55b33d28257a9c",
+      "issues": {
+        "Pipfile.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "pipfile",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "Pipfile": "[packages]\ntorch = \">=1\"\n",
+        "Pipfile.lock": "{\"default\": ",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "Pipfile.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "member",
+      "deny_read": "Pipfile.lock",
+      "id": "pipfile-controlled-read-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "99f3d72b453ae191b6a7557f2169156e20e1eb5f1e715311f1788f643a32f263",
+      "issues": {
+        "Pipfile.lock": "unreadable"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "pipfile",
+      "package": "torch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "Pipfile": "[packages]\ntorch = \">=1\"\n",
+        "Pipfile.lock": "{\"default\": {\"torch\": {\"version\": \"==1.0\"}}}\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "conda-lock.yml"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "deny_read": null,
+      "id": "conda-syntax-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "f6f0631a44ab931583125a37ad0c13c3f0f1a3f0e014d61c50b411a89e43445c",
+      "issues": {
+        "conda-lock.yml": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "conda",
+      "package": "pytorch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "conda-lock.yml": "package: [\n",
+        "environment.yml": "dependencies:\n  - pytorch>=1\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "conda-lock.yml"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "member",
+      "deny_read": "conda-lock.yml",
+      "id": "conda-controlled-read-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "0efb2ecb59fbc35d36f8408cea7bd8af02ab07dc476953c27413babca82cedf4",
+      "issues": {
+        "conda-lock.yml": "unreadable"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "conda",
+      "package": "pytorch",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "conda-lock.yml": "package:\n  - name: pytorch\n    version: '1.0'\n",
+        "environment.yml": "dependencies:\n  - pytorch>=1\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "empty",
+      "id": "valid-empty",
+      "input_count": 5,
+      "input_inventory_sha256": "c3d6c5146ecfed3c782c9823a6ab9cd337d264f6ca46173aaf92e539974b68ad",
+      "issues": {},
+      "kind": "api",
+      "limit": 500,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "nonmember",
+      "id": "valid-nonmember",
+      "input_count": 5,
+      "input_inventory_sha256": "a1ea323687d1396fe61b940075e35b5c176dc38b51cd6f2cfa64ad360e2cdcc3",
+      "issues": {},
+      "kind": "api",
+      "limit": 500,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package]]\nname = \"numpy\"\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {},
+      "baseline": "pass",
+      "changed": [],
+      "content": "member",
+      "id": "valid-member",
+      "input_count": 5,
+      "input_inventory_sha256": "c73a24d73f74e0a8ee8645b52d0f70046c45c7dcc2bca60372e45a235eed3ce6",
+      "issues": {},
+      "kind": "api",
+      "limit": 500,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "pass",
+      "changed": [],
+      "content": "syntax",
+      "id": "exact-control",
+      "input_count": 6,
+      "input_inventory_sha256": "9a1f65641e070e2138117f977e710fe5e5d341e0f4b12ac886766f34a429ec84",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements-exact.txt": "torch==1.0\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "exact"
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "pass",
+      "changed": [],
+      "content": "syntax",
+      "id": "other-credit-control",
+      "input_count": 7,
+      "input_inventory_sha256": "3282c1bce02c663e46241733a16b6fc52f98fcd5f36b5ea9f8f23499c54bb620",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "other/poetry.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "other/pyproject.toml": "[tool.poetry.dependencies]\ntorch = \">=1\"\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "other-credit"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "unpaired-control",
+      "input_count": 5,
+      "input_inventory_sha256": "c54f91f23d2769e7f73c2d92e63942c06d2f212e795c32a5445e752761406809",
+      "issues": {
+        "orphan/uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "orphan/uv.lock": "[[package\nname = \"torch\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "unpaired"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "wrong-manager-control",
+      "input_count": 6,
+      "input_inventory_sha256": "38a40b05bf13414cd357a8cadd73b6d3e116c628be75a9dc70e1374e1cd64bb5",
+      "issues": {
+        "orphan/uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "orphan/pyproject.toml": "[tool.poetry.dependencies]\ntorch = \">=1\"\n",
+        "orphan/uv.lock": "[[package\nname = \"torch\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "wrong-manager"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "nearer-root-control",
+      "input_count": 7,
+      "input_inventory_sha256": "003f0b927a86d0cbb3e56758384eb03a99b1de7d6bf690ab3280554c8b451186",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "nested/pyproject.toml": "[project]\nname=\"nearer\"\nversion=\"0.1\"\ndependencies=[]\n",
+        "nested/z.py": "import torch\n",
+        "pyproject.toml": "[project]\nname=\"root\"\nversion=\"0.1\"\ndependencies=[]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "nearer-root"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "barrier-control",
+      "input_count": 7,
+      "input_inventory_sha256": "e27a4006b27612df327ef738f1bb0a60bf22db58d07cbc201f1fd488d800efb4",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "nested/pyproject.toml": "[project\n",
+        "nested/z.py": "import torch\n",
+        "pyproject.toml": "[project]\nname=\"root\"\nversion=\"0.1\"\ndependencies=[]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "barrier"
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "id": "import-origin-control",
+      "input_count": 5,
+      "input_inventory_sha256": "93d4cf266fffa6f22fdae22e07eeb1e680efc6f614cef996edf6c33275a371d7",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname=\"root\"\nversion=\"0.1\"\ndependencies=[]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "import torch\n"
+      },
+      "special": "import-origin"
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "id": "python-gap-df-control",
+      "input_count": 6,
+      "input_inventory_sha256": "d411f79113a7e1cb490abc77b9f2220be7d1d0045813316c9c027f49fbf3aa1d",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "api",
+      "limit": 1,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "python-gap-df"
+    },
+    {
+      "associations": {},
+      "baseline": "dl-skip",
+      "changed": [],
+      "content": "syntax",
+      "id": "existing-dl-control",
+      "input_count": 7,
+      "input_inventory_sha256": "ea1435f9403a1952af88cd3193a7265978ad3d5926677a9161276ccc3069f5c7",
+      "issues": {},
+      "kind": "api",
+      "limit": 1,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname=\"nested\"\nversion=\"0.1\"\ndependencies=[]\n",
+        "nested/uv.lock": "[[package]]\nname=\"torch\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      },
+      "special": "existing-dl"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "wrong-shape-control",
+      "input_count": 5,
+      "input_inventory_sha256": "54f1d5c2e771b9b48266b51d699407e7c6a202859e96b7c58094e251a7a05bc4",
+      "issues": {},
+      "kind": "api",
+      "limit": 500,
+      "manager": "pipfile",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "Pipfile": "[packages]\ntorch = \">=1\"\n",
+        "Pipfile.lock": "[]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "wrong-shape"
+    },
+    {
+      "associations": {},
+      "baseline": "warnings",
+      "changed": [],
+      "content": "syntax",
+      "id": "partial-invalid-control",
+      "input_count": 5,
+      "input_inventory_sha256": "f89a3ee881ae2c753491aabbcb563f6ccbf78f2d31b41ea0f84ecbb223e9c378",
+      "issues": {},
+      "kind": "api",
+      "limit": 500,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package]]\nname = 123\n\n[[package]]\nname=\"numpy\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "partial-invalid"
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 0,
+      "fail_on": "critical",
+      "id": "cli-critical-failure",
+      "input_count": 5,
+      "input_inventory_sha256": "42cb744d383b99c35fb6f93dd3c8a2078be5c2f543ceebbb32c86c5e8b760445",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "cli",
+      "limit": 500,
+      "override": "CRITICAL",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"env.llm_critical_deps_pinned\": \"CRITICAL\"\n  }\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      }
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 1,
+      "fail_on": "warning",
+      "id": "cli-warning-mixed",
+      "input_count": 6,
+      "input_inventory_sha256": "0f4d76e13c98738b19081288449ac05b721ff5e2caf5a6a1cd78b4b09fd16d64",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "cli",
+      "limit": 500,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "numpy>=1\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "special": "mixed"
+    },
+    {
+      "associations": {
+        "torch": [
+          "uv.lock"
+        ]
+      },
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "content": "syntax",
+      "expected_baseline_exit": 0,
+      "expected_conditional_exit": 0,
+      "fail_on": "never",
+      "id": "cli-never-suppressed",
+      "input_count": 6,
+      "input_inventory_sha256": "8061a4d200c98a66da73c5970e779ed148bcf3d8aa1114ae4d682fb2f7005f92",
+      "issues": {
+        "uv.lock": "invalid_syntax"
+      },
+      "kind": "cli",
+      "limit": 500,
+      "override": "CRITICAL",
+      "small_input_bodies_utf8": {
+        ".reprollm/config.yaml": "{\n  \"audit\": {\n    \"ignore\": [\n      {\n        \"reason\": \"synthetic deliberate suppression\",\n        \"rule\": \"env.llm_critical_deps_pinned\"\n      }\n    ]\n  },\n  \"schema_version\": 1\n}\n",
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"env.llm_critical_deps_pinned\": \"CRITICAL\"\n  }\n}\n",
+        "pyproject.toml": "[project]\nname = \"synthetic-pair\"\nversion = \"0.1\"\ndependencies = [\"torch>=1\"]\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-format-lock-read\"\n  },\n  \"schema_version\": 1\n}\n",
+        "uv.lock": "[[package\nname = \"torch\"\n",
+        "z.py": "value = 1\n"
+      },
+      "suppressed": true
+    }
+  ],
+  "execution_boundaries": {
+    "conditional_instrumentation": "Load exact proposed deps source only into an isolated synthetic module and point AuditContext scan_dependencies at it; replace registered existing rule.check with AST-extracted proposed check in baseline globals. No file/module code on disk is replaced; all other registered class attributes retain identity.",
+    "network_GPU_provider": false,
+    "product_subprocesses": "Exact read-only Git whitelist in current synthetic fixture only",
+    "source_patches_applied": false
+  },
+  "expected_recipe": {
+    "baseline_and_conditional_schema_and_version_asserted": true,
+    "fix_hint": "Review {display} declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+    "fix_hint_literal": "Review {display} declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+    "message": "{display} is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+    "metadata_exemptions": [
+      "root generated_at",
+      "root reprollm_version"
+    ],
+    "normalization": "Actual worker timestamps are retained. compare_gold --audit-metadata validates full AuditReport and excludes only root spec T02 fields.",
+    "source": "For named changed package only: retain positive original evidence; append sorted unique format-lock paths from independently fixed fixture inputs; set new fixed INFO/SKIPPED fields/message/fix_hint; apply pre-existing suppression, stable severity/category/rule sort and recompute counts. No conditional output supplies expected values."
+  },
+  "observer_sha256": "b4eb963cb470701cd566cb53019a96e995065e44f261a270ed75ffb67c48cfed",
+  "proposed_deps_sha256": "c2bf20235f20af34726db11be4dd3f7d767e40a082a64ad3d1e303bbc899e14c",
+  "proposed_source_sha256": "747f660816b010cff9f1d2061cbd97024f83ef57c3383491e4dc939ca6b6be13",
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_ANY_PRODUCT_WORKER"
+}
