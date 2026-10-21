@@ -754,3 +754,158 @@ def test_failed_lock_contents_skip_coexists_with_stable_warning_and_sorted_evide
         "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)"
     )
     _assert_lock_contents_skip(skipped, "requirements.txt", 1, ["a/poetry.lock", "z/uv.lock"])
+
+
+# --- R07-C D-S: known decoded structure failure uses the D-F policy --------
+
+
+@pytest.mark.parametrize(
+    ("lock_name", "body"),
+    [
+        ("uv.lock", "package = false\n"),
+        ("poetry.lock", 'package = [{name = ""}]\n'),
+        ("Pipfile.lock", '{"default": null}\n'),
+        ("conda-lock.yml", "package: [null]\n"),
+    ],
+)
+def test_associated_structurally_invalid_lock_keeps_missing_pin_unverified(
+    tmp_path: Path, lock_name: str, body: str
+) -> None:
+    manifest, line = _failed_format_files(tmp_path, lock_name)
+    (tmp_path / lock_name).write_text(body, encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    assert ctx.pyscan.coverage().pass_skip_reason() is None
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+    assert LockfilePresentRule().check(ctx) == []
+
+
+@pytest.mark.parametrize("view", ["zero", "complete", "capped", "unavailable"])
+def test_structural_lock_failure_is_independent_of_primary_python_analysis(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, view: str
+) -> None:
+    manifest, line = _failed_format_files(tmp_path)
+    (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+    if view != "zero":
+        (tmp_path / "a.py").write_text("value = 1\n", encoding="utf-8")
+        (tmp_path / "z.py").write_text("value = 2\n", encoding="utf-8")
+    if view == "capped":
+        monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    ctx = _format_credit_context(tmp_path)
+    if view == "unavailable":
+        ctx._pyscan = PyScanResult()
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+
+
+@pytest.mark.parametrize("credit", ["exact", "nested-exact", "other-lock", "partial-member"])
+def test_structural_lock_failure_does_not_revoke_positive_pin_credit(
+    tmp_path: Path, credit: str
+) -> None:
+    _failed_format_files(tmp_path)
+    (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+    if credit == "exact":
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\ndependencies = ["torch==2.5.1"]\n', encoding="utf-8"
+        )
+    elif credit == "nested-exact":
+        (tmp_path / "nested").mkdir()
+        (tmp_path / "nested" / "requirements.txt").write_text("torch==2.5.1\n", encoding="utf-8")
+    elif credit == "other-lock":
+        (tmp_path / "poetry.lock").write_text('[[package]]\nname = "torch"\n', encoding="utf-8")
+    else:
+        (tmp_path / "uv.lock").write_text('package = [{name = "torch"}, {}]\n', encoding="utf-8")
+
+    assert LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path)) == []
+
+
+@pytest.mark.parametrize("origin_case", ["unpaired", "wrong-manager", "nearer-project", "barrier"])
+def test_unassociated_structural_lock_failure_keeps_existing_package_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, origin_case: str
+) -> None:
+    (tmp_path / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
+    (tmp_path / "a.py").write_text("import torch\n", encoding="utf-8")
+    (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+    if origin_case == "wrong-manager":
+        (tmp_path / "Pipfile").write_text("[packages]\n", encoding="utf-8")
+    elif origin_case in {"nearer-project", "barrier"}:
+        (tmp_path / "pyproject.toml").write_text('[project]\nname = "outer"\n', encoding="utf-8")
+        nested = tmp_path / "nested"
+        nested.mkdir()
+        (nested / "pyproject.toml").write_text(
+            "[broken\n" if origin_case == "barrier" else '[project]\nname = "inner"\n',
+            encoding="utf-8",
+        )
+        (tmp_path / "a.py").rename(nested / "a.py")
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+
+    assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
+    assert finding.message == (
+        "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+    )
+    assert len(finding.evidence) == 1
+
+
+@pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+def test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified(
+    tmp_path: Path, lock_name: str
+) -> None:
+    if lock_name in {"uv.lock", "poetry.lock"}:
+        manifest, line = "pyproject.toml", 2
+        declaration = '[project]\ndependencies = ["numpy>=1", "torch>=2"]\n'
+        body = 'package = [{name = "numpy"}, {}]\n'
+    elif lock_name == "Pipfile.lock":
+        manifest, line = "Pipfile", 3
+        declaration = '[packages]\nnumpy = ">=1"\ntorch = ">=2"\n'
+        body = '{"default": {"numpy": {}}, "develop": false}\n'
+    else:
+        manifest, line = "environment.yml", 2
+        declaration = "dependencies:\n  - numpy>=1\n  - pytorch>=2\n"
+        body = "package: [{name: numpy}, {}]\n"
+    (tmp_path / manifest).write_text(declaration, encoding="utf-8")
+    (tmp_path / lock_name).write_text(body, encoding="utf-8")
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+
+    _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+
+def test_structural_lock_failure_does_not_create_critical_package_usage(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "no-use"\n', encoding="utf-8")
+    (tmp_path / "uv.lock").write_text('package = [{name = "torch"}, {}]\n', encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+
+    assert LlmCriticalDepsPinnedRule().applies(ctx) is False
+    assert LlmCriticalDepsPinnedRule().check(ctx) == []
+
+
+def test_structural_and_syntax_failures_share_sorted_evidence_and_preserve_other_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / "requirements.txt").write_text("torch>=2\nnumpy>=1\n", encoding="utf-8")
+    for directory, lock_name, body in [
+        ("a", "poetry.lock", "package = [{}]\n"),
+        ("z", "uv.lock", "[broken\n"),
+    ]:
+        project = tmp_path / directory
+        project.mkdir()
+        (project / "pyproject.toml").write_text('[project]\nname = "owner"\n', encoding="utf-8")
+        (project / lock_name).write_text(body, encoding="utf-8")
+        (project / "a.py").write_text("import torch\n", encoding="utf-8")
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+
+    warning, skipped = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+
+    assert (warning.status, warning.severity) == (FindingStatus.FAIL, Severity.WARNING)
+    assert warning.message == (
+        "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)"
+    )
+    _assert_lock_contents_skip(skipped, "requirements.txt", 1, ["a/poetry.lock", "z/uv.lock"])

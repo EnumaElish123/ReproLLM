@@ -192,11 +192,11 @@ P-B 只改 declared-but-undetected 分支：Python gap/unavailable 时逐 profil
 [原提案](proposals/R07-C/format-lock-read/R07-C_associated_format_lock_failures.md)、PROPOSED 决定和 P-A 条件观察保持快照。
 错误结构/部分提取、一般依赖/requirements、遗漏 import、listing/README/config/framework 和广义证书继续 OPEN。
 
-D-S 的[具体有限结构提取提案](proposals/R07-C/format-lock-structure/R07-C_associated_lock_structure.md)
-已经准备，[P-A 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md)记录首次
-32 组完整条件比较、静态验收草稿和独立回读。它仅建议增加 `invalid_structure` 并复用 D-F 既有输出，
-保留部分成员信用及明确空/null 兼容边界；仍待具体接受，正式补丁未应用，P-B 门未执行。
-不把此 P-A 观察当成整个 R07-C 关闭或新鲜 Gate A。
+维护者已[具体接受 D-S](proposals/R07-C/format-lock-structure/decision-accepted.json)。
+P-B 仅增加 `invalid_structure` 并复用 D-F 关联/输出，保留部分成员信用及空/null 明确边界；
+[P-B 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pb/README.md)记录实施和当前验收状态。
+原[P-A 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md)、PROPOSED 决定及条件证据保留；
+这不关闭整个 R07-C，一般依赖/requirements、其他 grammar、listing/framework 和广义证书仍 OPEN。
 
 ### 当前问题与推荐原则
 

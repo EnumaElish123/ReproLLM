@@ -9,6 +9,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-S: classify the specified decoded format-lock container/name-entry failures as unverified missing-pin evidence through the accepted associated-lock path; retain partial positive credit, legacy empty values, presence semantics and historical gold.
+
 - R07-C D-F (spec §12.3.4): preserve known format-lock body read/decoder failures
   internally. For current in-use critical packages, retain exact and qualified
   credit first; otherwise a failed lock with an existing R06-B qualifying captured

@@ -42,10 +42,10 @@ R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-sessi
 该性能会话的本地质量门为 2,505 tests / 174 security tests；当时源码的五项目 Gate A
 126 条全新命令、987 项完整比较及另列的 30 项独立核对全部通过。
 
-下一步 R07-C 局部 D-S 的[具体提案](proposals/R07-C/format-lock-structure/R07-C_associated_lock_structure.md)
-及补丁已完成 P-A，[报告](../../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md)记录
-32 份完整条件比较与独立回读。D-S 仍 PROPOSED，正式补丁未应用；接受后方执行 P-B。
-错误结构以外的一般依赖/requirements、listing/framework 和充分证书仍 OPEN。
+维护者已[具体接受 D-S 与补丁](proposals/R07-C/format-lock-structure/decision-accepted.json)，
+P-B 已实施有限格式锁结构失败和部分信用保留，最终验收状态见[P-B 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pb/README.md)。
+原[P-A 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md)和 416 文件 PROPOSED 快照保留。
+一般依赖/requirements、listing/framework 和充分证书仍 OPEN。
 
 ## 执行文件与会话
 

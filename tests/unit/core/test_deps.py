@@ -442,15 +442,184 @@ def test_successfully_decoded_lock_bodies_are_not_known_read_or_syntax_failures(
         ("conda-lock.yml", "package:\n  - name: 12\n"),
     ],
 )
-def test_decoded_but_unsupported_lock_shapes_remain_outside_the_bounded_failure_policy(
+def test_decoded_invalid_lock_shapes_are_known_structural_failures(
     tmp_path: Path, lock_name: str, content: str
 ) -> None:
     _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+    if lock_name == "Pipfile.lock":
+        _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+    elif lock_name == "conda-lock.yml":
+        _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
     _write(tmp_path, lock_name, content)
 
     result = _scan(tmp_path)
 
     (lock,) = result.lockfiles
-    assert lock.read_issue is None
-    assert result.unverified_lock_paths([("torch", "a.py")]) == {}
+    assert lock.read_issue == "invalid_structure"
+    assert result.unverified_lock_paths([("torch", "a.py")]) == {"torch": (lock_name,)}
     assert result.qualified_lock_packages([("torch", "a.py")]) == frozenset()
+
+
+# --- R07-C D-S: decoded container/name extraction uncertainty ---------------
+
+
+@pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+@pytest.mark.parametrize(
+    ("body", "unparsed"),
+    [
+        ("package = false\n", []),
+        ("package = 0\n", []),
+        ('package = ""\n', []),
+        ("package = {}\n", []),
+        ('package = "not a list"\n', ["invalid package collection"]),
+        ("package = [false]\n", []),
+        ("package = [0]\n", []),
+        ('package = ["torch"]\n', []),
+        ("package = [[]]\n", []),
+        ("package = [{}]\n", []),
+        ('package = [{name = ""}]\n', []),
+        ("package = [{name = false}]\n", ["invalid package name"]),
+    ],
+)
+def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+    tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+) -> None:
+    _write(tmp_path, lock_name, body)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue == "invalid_structure"
+    assert lock.packages == frozenset()
+    assert result.unparsed == [f"{lock_name}:0: {message}" for message in unparsed]
+
+
+@pytest.mark.parametrize(
+    ("body", "unparsed"),
+    [
+        ("false\n", []),
+        ("0\n", []),
+        ('""\n', []),
+        ("[]\n", []),
+        ("package: null\n", []),
+        ("package: false\n", []),
+        ("package: 0\n", []),
+        ('package: ""\n', []),
+        ("package: {}\n", []),
+        ("package: invalid\n", ["invalid package collection"]),
+        ("package: [null]\n", []),
+        ("package: [false]\n", []),
+        ("package: [0]\n", []),
+        ("package: [torch]\n", []),
+        ("package: [[]]\n", []),
+        ("package: [{}]\n", []),
+        ('package: [{name: ""}]\n', []),
+        ("package: [{name: null}]\n", []),
+        ("package: [{name: 12}]\n", ["invalid package name"]),
+    ],
+)
+def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+    tmp_path: Path, body: str, unparsed: list[str]
+) -> None:
+    _write(tmp_path, "conda-lock.yml", body)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue == "invalid_structure"
+    assert lock.packages == frozenset()
+    assert result.unparsed == [f"conda-lock.yml:0: {message}" for message in unparsed]
+
+
+@pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+    tmp_path: Path, body: str
+) -> None:
+    _write(tmp_path, "Pipfile.lock", body)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue == "invalid_structure"
+    assert lock.packages == frozenset()
+    assert result.unparsed == ["Pipfile.lock:0: invalid lock document"]
+
+
+@pytest.mark.parametrize("section", ["default", "develop"])
+@pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+    tmp_path: Path, section: str, value: str
+) -> None:
+    _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.read_issue == "invalid_structure"
+    assert lock.packages == frozenset()
+    assert result.unparsed == []
+
+
+@pytest.mark.parametrize(
+    ("lock_name", "body", "packages"),
+    [
+        ("uv.lock", "", frozenset()),
+        ("uv.lock", "package = []\n", frozenset()),
+        ("poetry.lock", "", frozenset()),
+        ("poetry.lock", "package = []\n", frozenset()),
+        ("Pipfile.lock", "{}\n", frozenset()),
+        ("Pipfile.lock", '{"default": {}, "develop": {}}\n', frozenset()),
+        ("conda-lock.yml", "", frozenset()),
+        ("conda-lock.yml", "null\n", frozenset()),
+        ("conda-lock.yml", "{}\n", frozenset()),
+        ("conda-lock.yml", "package: []\n", frozenset()),
+        ("uv.lock", '[[package]]\nname = " "\nversion = false\n', frozenset({""})),
+        ("poetry.lock", '[[package]]\nname = "torch"\nversion = false\n', frozenset({"torch"})),
+        ("Pipfile.lock", '{"default": {"torch": null}}\n', frozenset({"torch"})),
+        ("Pipfile.lock", '{"default": {"": []}}\n', frozenset({""})),
+        ("conda-lock.yml", 'package: [{name: " ", version: false}]\n', frozenset({""})),
+        ("conda-lock.yml", "package: [{name: pytorch, version: false}]\n", frozenset({"torch"})),
+    ],
+)
+def test_lock_structure_assessment_preserves_empty_and_opaque_legacy_contents(
+    tmp_path: Path, lock_name: str, body: str, packages: frozenset[str]
+) -> None:
+    _write(tmp_path, lock_name, body)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.packages == packages
+    assert lock.read_issue is None
+    assert result.unparsed == []
+
+
+@pytest.mark.parametrize(
+    ("lock_name", "body", "unparsed"),
+    [
+        ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+        ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+        ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+        ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+        ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+    ],
+)
+def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+    tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+) -> None:
+    if lock_name in {"uv.lock", "poetry.lock"}:
+        _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+    elif lock_name == "Pipfile.lock":
+        _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+    else:
+        _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch=2\n  - numpy=1\n")
+    _write(tmp_path, lock_name, body)
+
+    result = _scan(tmp_path)
+
+    (lock,) = result.lockfiles
+    assert lock.packages == frozenset({"torch"})
+    assert lock.read_issue == "invalid_structure"
+    assert result.qualified_lock_packages([]) == frozenset({"torch"})
+    assert result.unverified_lock_paths([]) == {"numpy": (lock_name,), "torch": (lock_name,)}
+    assert result.unparsed == [f"{lock_name}:0: {message}" for message in unparsed]
