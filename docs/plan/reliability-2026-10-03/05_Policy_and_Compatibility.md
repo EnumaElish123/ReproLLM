@@ -206,6 +206,13 @@ P-B仅为已采集声明正文的现有读取/解码失败增加内部事实，�
 [P-A条件证据](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md)保持历史字节。
 decoded结构/行语法、一般include图、未知use和遗漏候选/listing/framework仍OPEN；不关闭整个R07-C。
 
+2026-10-22：[D-M-S 具体 P-A](proposals/R07-C/declaration-structure/R07-C_declaration_structure.md)
+准备成功解码后指定容器／成员类型的封闭检查表、部分正面证据保留和 D-M 消费复用，
+附未应用规范补丁、当前政策观察、独立验收预期及五项目来源影响。
+[决定](proposals/R07-C/declaration-structure/decision.json)保持 PROPOSED；
+[会话报告](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)区分实际观察与未来预期。
+单包值语法、requirements 引用图及更广覆盖继续 OPEN；具体接受前不改产品政策。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。

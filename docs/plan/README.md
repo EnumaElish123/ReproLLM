@@ -120,6 +120,14 @@ The maintainer has [specifically accepted D-L](reliability-2026-10-03/proposals/
 follow its [P-B report](../dogfooding/2026-10-21-r07c-dependency-pb/README.md) for the implementation, completed local quality/five-project gates and separate final-head CI status.
 Broader R07-C remains OPEN.
 
+The next [D-M-S declaration-structure P-A](reliability-2026-10-03/proposals/R07-C/declaration-structure/R07-C_declaration_structure.md)
+is **PROPOSED**, with a concrete unapplied specification patch, bounded current-policy
+observations and independent five-project source expectations. It covers specified
+decoded container/member types while retaining partial positive evidence; individual
+package-value grammar and requirements graphs remain outside. See its
+[preparation report](../dogfooding/2026-10-22-r07c-declaration-structure-pa.md).
+No D-M-S policy is approved or implemented by that preparation.
+
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).

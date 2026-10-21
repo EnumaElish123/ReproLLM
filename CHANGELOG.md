@@ -69,6 +69,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Development workflow
 
+- P-A / R07-C D-M-S (spec §§12.2–12.3.6): prepare a closed decoded
+  declaration-structure proposal, an unapplied specification amendment, current
+  parser/rule observations and independent five-project source expectations.
+  Preserve partial positive evidence and distinguish missing/empty values from
+  specified wrong types. This is PROPOSED; product behavior, normative spec,
+  historical gold, dependencies and release version remain unchanged.
+
 - P-A / R08-B (spec §18): inventory actual privacy/training free-form fields,
   prepare four exact default-HIGH paths with source mappings, compatibility,
   independent conditional experiments and unapplied default/spec/test/gold

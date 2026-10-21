@@ -92,3 +92,13 @@ The [P-B report](../../dogfooding/2026-10-21-r07c-declaration-read-pb/README.md)
 The original [proposal](proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md) and
 [P-A report](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md) retain their preparation-time state.
 No gold or historical result is rewritten; whole R07-C remains OPEN.
+
+## R07-C decoded declaration structure P-A (2026-10-22)
+
+The next [D-M-S proposal](proposals/R07-C/declaration-structure/R07-C_declaration_structure.md)
+is PROPOSED, with an unapplied specification patch, current-policy observations,
+independent acceptance expectations and five-project source evidence. It retains
+partial positive declarations and limits the proposed extension to named decoded
+container/member types. Package-value grammar and requirements graphs stay OPEN.
+Read the [preparation report](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)
+before a specific decision; no new policy or release is authorized by preparation.
