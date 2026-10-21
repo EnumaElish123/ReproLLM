@@ -1,0 +1,65 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:127dc35f8d5c55d1af71ec0a14b6574ef9173fcaa712d1d000c1e9e276668c34",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "exec",
+      "evidence": [
+        {
+          "expected": null,
+          "field": "experiment.profiles",
+          "kind": "field",
+          "line": null,
+          "note": "probe declared; detection absence unverified",
+          "path": null,
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": "audit.ignore",
+          "kind": "field",
+          "line": null,
+          "note": "suppressed: original severity INFO; reason: synthetic deliberate suppression",
+          "path": ".reprollm/config.yaml",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+      "level": 1,
+      "message": "declared profile 'probe' has no detection evidence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established",
+      "profile_origin": [],
+      "rule_id": "exec.profile_detection_mismatch",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "suppressed",
+      "suppressed_reason": "synthetic deliberate suppression"
+    }
+  ],
+  "generated_at": "2026-10-21T00:00:00Z",
+  "level": 1,
+  "profiles": {
+    "declared": [
+      "probe"
+    ],
+    "detected": [],
+    "resolved": [
+      "core",
+      "probe"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 0,
+    "suppressed": 1,
+    "warning": 0
+  },
+  "target": "."
+}

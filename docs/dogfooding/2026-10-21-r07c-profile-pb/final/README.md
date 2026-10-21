@@ -1,0 +1,13 @@
+# R07-C profile-absence final local evidence
+
+Candidate `2b0a10ad156b512cf5d53a49467e5b0c5ddf59ee`. [Summary](summary.json) binds fresh [quality](quality/summary.json), five-project [Gate A](gate-a/summary.json), and [affected init/audit/export](affected/summary.json). Current project CI is recorded separately. Broader R07-C remains OPEN.
+
+[Quality metrics](quality/verified-metrics.json) are parsed from this run's original logs, JUnit and coverage. Shareable logs and portable argv/cwd retain explicit privacy projections. Inline code, original private streams, large tracked-source inventories and built wheel bytes remain hash-bound externally. The build manifest's original PENDING distribution field is preserved; later [distribution acceptance](quality/distribution.json) records actual completion.
+
+Gate A retains all five complete actual audit/fact reports, ten comparisons, clean pinned identities and complete stderr. [Oracle references](gate-a/oracle-references.json) verify byte identity with the existing [independent oracle](../../2026-10-20-r06b/final/gate-a/oracle/) in this repository; semantic gold is not regenerated from actual output. Affected evidence retains complete fresh initialized files including hidden metadata, full L1 audit/default export, exact independent oracle references/comparisons and every stderr. Targeted extension cases retain their complete inputs/outputs/expectations.
+
+[Acceptance](qualification/decision-accepted.json), [implementation review](qualification/implementation-review.json), [P-A preservation](qualification/P-A-snapshot-preservation.json) and [P-B TDD references](qualification/tdd-references.json) remain separate from conditional P-A experiments. Only the accepted profile-absence slice is closed. Dependency/listing/framework/README/config completeness and profile-specific sufficient certificates remain OPEN.
+
+[Initial failed quality](initial-quality-failure/summary.json) and its [diagnosis](initial-quality-failure/diagnosis-provenance.json) retain the original stopped attempt separately; its remaining 21 checks were not run. Narrow diagnostic probes have transcript-only counts rather than invented raw receipts.
+
+[Source index](source-index.json) distinguishes exact bytes, explicit privacy projections, derived receipts and hash-only external sources. Source locators identify external evidence; retained_relative resolves inside this archive. Credentials/environment files are not read by packaging, which executes no product, tests, network, GPU or provider commands. Historical resource results/blockers retain original candidate bindings; no release is claimed.

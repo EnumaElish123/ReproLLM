@@ -1,0 +1,443 @@
+{
+  "candidate_commit": "c03aea317b580e3aa7eb834d06386f9aa4fe3c64",
+  "executed_commands": [
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:d57b8dca4db1bca524e35237a15c77c1f4fdd001d26527a349fd922a34be6643>",
+        "<UV>"
+      ],
+      "candidate_input_inventory_sha256": "d6a8c3d8673209b98db4f0126574a1570f38b1adfad157409c2c7fa54c2f87df",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 0.178036,
+      "exit_code": 0,
+      "external_raw_log": "quality-final-1/raw/00-environment-versions.log",
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 1224,
+          "sha256": "d57b8dca4db1bca524e35237a15c77c1f4fdd001d26527a349fd922a34be6643"
+        }
+      ],
+      "label": "00-environment-versions",
+      "origin_check": {
+        "elapsed_seconds": 0.074148,
+        "exit_code": 0,
+        "external_raw_log": "quality-final-1/raw/00-environment-versions-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154",
+      "retained_shareable_log": "initial-quality-failure/logs/00-environment-versions.log",
+      "shareable_log_sha256": "95f25b3c7c9c8a6a2e949058c5d99917855ec94c09892ddbd1b2c324b9375154"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "candidate_input_inventory_sha256": "d6a8c3d8673209b98db4f0126574a1570f38b1adfad157409c2c7fa54c2f87df",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 11.664993,
+      "exit_code": 0,
+      "external_raw_log": "quality-final-1/raw/01-quickstart-preflight.log",
+      "inline_code_arguments": [],
+      "label": "01-quickstart-preflight",
+      "origin_check": {
+        "elapsed_seconds": 0.072585,
+        "exit_code": 0,
+        "external_raw_log": "quality-final-1/raw/01-quickstart-preflight-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3",
+      "retained_shareable_log": "initial-quality-failure/logs/01-quickstart-preflight.log",
+      "shareable_log_sha256": "3da344e3f92bc1c6601fdcd658689f997ed707fe43bb60f76d833888d97d45a3"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--basetemp=<QUALITY>/pytest-temp",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<QUALITY>/coverage.xml",
+        "--cov-report=json:<QUALITY>/coverage.json",
+        "--cov-fail-under=85",
+        "--tb=short",
+        "--junit-xml=<QUALITY>/pytest-report.xml"
+      ],
+      "candidate_input_inventory_sha256": "d6a8c3d8673209b98db4f0126574a1570f38b1adfad157409c2c7fa54c2f87df",
+      "cwd": "<CANDIDATE>",
+      "elapsed_seconds": 488.358648,
+      "exit_code": 1,
+      "external_raw_log": "quality-final-1/raw/02-pytest-coverage.log",
+      "inline_code_arguments": [],
+      "label": "02-pytest-coverage",
+      "origin_check": {
+        "elapsed_seconds": 0.072462,
+        "exit_code": 0,
+        "external_raw_log": "quality-final-1/raw/02-pytest-coverage-origin.log",
+        "raw_log_sha256": "1d3b125e5e15ab23a2a064d77c793c10994ebce7d743ebe27c0e72c764f00058"
+      },
+      "raw_log_sha256": "4beb2cb12187dadd1a163f07b57d9ab46fecae212b01afc1cad31f1941c2ac45",
+      "retained_shareable_log": "initial-quality-failure/logs/02-pytest-coverage.log",
+      "shareable_log_sha256": "130ff06d3d1f9cc4e2cde6a40fb66e4178ce99243308a96df7375ccb780fcdf0"
+    }
+  ],
+  "executed_count": 3,
+  "not_run_commands": [
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "inline_code_arguments": [],
+      "label": "03-redaction-coverage",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security",
+        "--basetemp=<QUALITY>/security-temp",
+        "--tb=short"
+      ],
+      "inline_code_arguments": [],
+      "label": "04-security",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "check",
+        "."
+      ],
+      "inline_code_arguments": [],
+      "label": "05-ruff-check",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "inline_code_arguments": [],
+      "label": "06-ruff-format-check",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/mypy",
+        "src/",
+        "scripts/compare_gold.py"
+      ],
+      "inline_code_arguments": [],
+      "label": "07-mypy",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "inline_code_arguments": [],
+      "label": "08-rules-documentation",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "inline_code_arguments": [],
+      "label": "09-profiles-documentation",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "inline_code_arguments": [],
+      "label": "10-cli-documentation",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "schema",
+        "export",
+        "--out",
+        "<QUALITY>/schema-export"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "11-schema-export",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:0e86b56cdabe2f87e136c997db70470fa873742ccc35c26816174ea153a27128>",
+        "<QUALITY>/schema-export"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 820,
+          "sha256": "0e86b56cdabe2f87e136c997db70470fa873742ccc35c26816174ea153a27128"
+        }
+      ],
+      "label": "12-schema-full-byte-comparison",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-hf_vllm_eval-audit",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/hf_vllm_eval"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-hf_vllm_eval-lock-check",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-openai_judge_eval-audit",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/openai_judge_eval"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-openai_judge_eval-lock-check",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        "examples/privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-privacy_custom_params-audit",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "lock",
+        "--check",
+        "examples/privacy_custom_params"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "example-privacy_custom_params-lock-check",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d>",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 40,
+          "sha256": "609c85df0f660194fa3e41304d3455305d0a2bf01ad92d48a88c6a78582f029d"
+        }
+      ],
+      "label": "20-self-audit",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<UV>",
+        "build",
+        "--offline",
+        "--wheel",
+        "--out-dir",
+        "<QUALITY>/dist"
+      ],
+      "inline_code_arguments": [],
+      "label": "21-candidate-wheel-build",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:8117665779c8c02164d70490d911a09c09d2f4ff7c740c4bf0d1e3001e9abd38>",
+        "<QUALITY>/dist"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 1580,
+          "sha256": "8117665779c8c02164d70490d911a09c09d2f4ff7c740c4bf0d1e3001e9abd38"
+        }
+      ],
+      "label": "22-candidate-wheel-payload",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "-c",
+        "<INLINE_CODE_SHA256:660172f399bb2c566fc483430fbda3ac2f029261a076f16c10d0caff377d22db>",
+        "<QUALITY>",
+        "c03aea317b580e3aa7eb834d06386f9aa4fe3c64"
+      ],
+      "inline_code_arguments": [
+        {
+          "argument_index": 2,
+          "bytes": 1197,
+          "sha256": "660172f399bb2c566fc483430fbda3ac2f029261a076f16c10d0caff377d22db"
+        }
+      ],
+      "label": "23-candidate-build-manifest",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    },
+    {
+      "argv": [
+        "<CANDIDATE_ENV>/bin/python",
+        "scripts/validate_distribution.py",
+        "--wheel",
+        "<QUALITY>/dist/reprollm-0.7.0-py3-none-any.whl",
+        "--build-manifest",
+        "<QUALITY>/build-manifest.json",
+        "--expected-version",
+        "0.7.0",
+        "--no-index",
+        "--find-links",
+        "<PREVIOUS_SESSION>/runtime-wheels",
+        "--output",
+        "<QUALITY>/distribution.json",
+        "--raw-output-dir",
+        "<QUALITY>/private-distribution"
+      ],
+      "inline_code_arguments": [],
+      "label": "24-installed-candidate-distribution",
+      "status": "NOT_RUN_AFTER_FIRST_FAILURE"
+    }
+  ],
+  "not_run_count": 21,
+  "schema_version": 1,
+  "status": "FAILED_INCOMPLETE_GATE_NOT_PASS"
+}
