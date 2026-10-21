@@ -1,0 +1,48 @@
+{
+  "bounded_consumer_addition": {
+    "expected_export_diagnostics": "Exactly the same single coverage stderr diagnostic as audit.",
+    "expected_export_summary": "0 critical \u00b7 0 warning \u00b7\n0 info \u00b7 4 passed.",
+    "previous_patch_retained_only_externally": true,
+    "previous_patch_sha256": "93145b61e4dc8aaa679a73bd339106621a97483d8d0707e0a4e1b95fdea5564f",
+    "reason": "Default export consumes the changed absence outcome through its audit summary. Existing text/suppression case now checks export before ignore, with an explicitly owned output outside the repo. Same 18 cases and two target modules."
+  },
+  "existing_param_case_updated": 1,
+  "files": [
+    {
+      "AST": "PASS",
+      "full_target_retained_only_in_external_scratch": true,
+      "repo_config_ruff_check": "PASS",
+      "repo_config_ruff_format_check": "PASS",
+      "repository_relative": "tests/unit/core/test_engine.py",
+      "source_sha256": "24931bdb76ae666c156128544a22e9b1c9fa7742ee55aa870607c9c285aba6c2",
+      "target_sha256": "0ea56fdfcb2c9ab599a38fb835efd147938fd5f57d2a341f098960f2e95912e1"
+    },
+    {
+      "AST": "PASS",
+      "full_target_retained_only_in_external_scratch": true,
+      "repo_config_ruff_check": "PASS",
+      "repo_config_ruff_format_check": "PASS",
+      "repository_relative": "tests/unit/cli/test_audit.py",
+      "source_sha256": "e942935f4ac8907b8489763ddfe8df024d9e5e5994e1022647c1a69ebdfc1c4c",
+      "target_sha256": "44cbc7014b93adf33771760e5f8eed1d9f9df0712d9f700ce3749d179b7504c6"
+    }
+  ],
+  "git_apply_check": "PASS",
+  "new_CLI_functions": 3,
+  "new_test_cases": 18,
+  "new_test_functions": 6,
+  "patch_sha256": "01fb5bd49fedf8418274060bd0be8e0bfd20383638f3d79cac5d0f4d1a41bd6b",
+  "product_or_pytest_execution": false,
+  "proposed_behavior_validation": "NOT_EXECUTED; no RED/GREEN or accepted policy inferred.",
+  "schema_version": 1,
+  "scope": "Two existing test modules only. Core has 4 read/parse gaps, 2 valid complete/zero cases, 4 typed unknown/invalid coverage cases; CLI has 6 override-threshold cases plus mixed and text/suppression cases. Do not persist full copied target test files.",
+  "static_preparation_qualification": {
+    "correction": "Format draft stdin with the actual repository config and filename before lint/final-format checks; no behavior expectation changed.",
+    "final_helper_sha256": "7dd7cef2568944e291547cfdd7ea4d736d26cb8a09cbae31f2c0a9638ea8ca2d",
+    "initial_check": "Pre-format Ruff static lint rejected three long lines. No product/test execution.",
+    "initial_helper_sha256": "6f1fe006f182c4ae36d0c8f8fbce5f43e0c19095901388204ca939110005d840",
+    "original_preformat_draft_helper_retained_only_externally": true,
+    "read_only_scope": "User input snapshot excludes .git bookkeeping; all user-owned input/config/profile files remain included."
+  },
+  "status": "UNAPPLIED_TEST_DRAFT_STATIC_CHECKS_PASS_NOT_GREEN"
+}

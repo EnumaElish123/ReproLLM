@@ -1,0 +1,90 @@
+diff --git a/docs/plan/01_specification.md b/docs/plan/01_specification.md
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -949,7 +949,7 @@
+ | `exec.command_declared` | WARNING | 1 | manifest | `execution.command` absent |
+ | `exec.seed_declared` | WARNING | 1 | manifest | none of `execution.seed`, `generation.seed`, `training.seed` present |
+ | `exec.run_recorded` | INFO | 1 | manifest | no run records |
+-| `exec.profile_detection_mismatch` | INFO | 1 | manifest | a `high`-confidence detected profile is not declared, or a declared profile has no detection evidence |
++| `exec.profile_detection_mismatch` | INFO | 1 | manifest | a `high`-confidence detected profile is not declared, or a declared profile has no detection evidence (subject to the branch-specific SKIP in §12.3.2) |
+ 
+ ### 12.3.1 Known primary-Python gaps: bounded synthetic-PASS policy (R07-C A)
+ 
+@@ -972,15 +972,69 @@
+ filesystem enumeration, dependency parsing, framework scanning or full detection.
+ No warning prose is parsed into coverage facts; no persisted fields are added.
+ 
+-Nonempty rule results, applicability skips, all other built-in rules and generated
+-project rules are unchanged. In particular, declared-but-undetected profile INFO
+-and used-but-unpinned package WARNING remain existing bounded-scan conclusions;
+-some depend on absence and may be overturned by additional evidence. They are not
+-relabelled as fully proven violations. Classification of those branches and of
+-listing/dependency/framework uncertainty remains OPEN R07-C work. This limited
+-policy must not be described as full R07-C coverage assurance or proof of complete
+-experiment reproducibility. With consistent observed counts and parsed=candidate, prior behavior stays
++Nonempty rule results remain unchanged except for the declared-but-undetected
++profile branch in §12.3.2. Applicability skips, all other built-in rules and generated
++project rules are unchanged. Used-but-unpinned package WARNING remains an existing
++bounded-scan conclusion; it may depend on absence and be overturned by additional
++evidence. It is not relabelled as a fully proven violation. Classification of
++that branch, listing/dependency/framework uncertainty and input-specific sufficient
++certificates remains OPEN R07-C work. This limited policy must not be described as
++full R07-C coverage assurance or proof of complete experiment reproducibility.
++With consistent observed counts and parsed=candidate, prior behavior stays
+ unchanged; default fail-on and all existing schema versions stay unchanged.
++
++
++### 12.3.2 Declared-profile absence with primary-Python gaps (R07-C continuation)
++
++For `exec.profile_detection_mismatch` only, consider each declared non-core profile
++that has no entry in the current detection result. If the existing typed
++primary-Python coverage assessment in §12.3.1 is incomplete or unavailable, emit
++one explicit SKIPPED/INFO finding for that profile instead of its absence-derived
++FAIL. This includes unobserved or inconsistent counts; no warning text is parsed.
++Use the following message template, where `{profile!r}` is the existing quoted
++profile-name representation:
++
++```text
++declared profile {profile!r} has no detection evidence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established
++```
++
++Both incomplete and unavailable assessments use that same message. Evidence is
++exactly one existing field item: `kind: field`, `field: experiment.profiles`,
++`note: "{profile} declared; detection absence unverified"`. Keep the rule ID,
++aliases, category, current audit level and rule fix hint; optional evidence fields
++and finding origin/suppression fields retain their existing defaults. No counts,
++new status, schema field or schema version are added.
++
++When the captured primary-Python view has consistent observed counts with
++parsed=candidate, retain the current declared-but-undetected FAIL, message and
++evidence. This preserves a bounded evaluation result; it does not prove complete
++listing, dependency, README/config/framework detection or repository-wide absence.
++A detected profile has no such absence finding regardless of whether its witness
++came from Python or another supported source. Core remains implicit and excluded.
++
++Keep the positive branch unchanged: a shipped high-confidence detected profile
++that is not in the effective declarations still yields its existing FAIL and
++concrete detection evidence, even in the same result list as one or more new
++SKIPPED findings. Emit absence outcomes in the existing sorted declared-profile
++order, then positive outcomes in the existing sorted detected-profile order;
++the engine's unchanged final severity/category/rule-ID sort still applies.
++Do not short-circuit the whole rule or add a rule-wide coverage finding when its
++check already returned outcomes. The existing empty-result veto in §12.3.1 and
++missing-manifest applicability skip retain their exact contracts.
++
++Profile severity overrides continue to apply only to FAIL outcomes. A new
++SKIPPED outcome remains INFO/default, including when the rule has an override of
++WARNING or CRITICAL. An isolated absence finding that previously triggered an
++explicit or default failure threshold through such an override can therefore
++stop triggering exit 1. Threshold values and FAIL-only counting are unchanged.
++Existing ignore/suppression handling still applies to every status: matching
++outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
++
++This continuation changes only the declared-but-undetected branch under the
++specified primary-Python assessment. All other rules, dependency absence logic,
++upstream listing/detection completeness and sufficient-certificate policy remain
++unchanged or OPEN. It does not close the whole R07-C task, certify child execution
++or authorize rewriting historical reports.
+ 
+ ### 12.4 `model.*` (M3 presence, M4 lock)
+ 

@@ -87,6 +87,12 @@ and validation status. The original [P-A proposal](reliability-2026-10-03/propos
 PROPOSED decision and [conditional evidence report](../dogfooding/2026-10-20-r08b-pa/README.md)
 retain their preparation-time state. Historical resource results and gold remain
 bound to their original candidates.
+The [R07-C profile-absence continuation](reliability-2026-10-03/proposals/R07-C/profile-absence/R07-C_profile_absence.md)
+now prepares a concrete per-profile SKIP policy for the remaining declared-but-undetected
+branch. Its [P-A report](../dogfooding/2026-10-21-r07c-profile-pa/README.md) records source-bound
+conditional observations and prospective zero deltas; this policy is PROPOSED and
+its patches remain unapplied. The earlier empty-result approval does not authorize
+this new branch, and broader R07-C remains OPEN.
 
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and

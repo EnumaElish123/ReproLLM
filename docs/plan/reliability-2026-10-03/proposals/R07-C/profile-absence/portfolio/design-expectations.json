@@ -1,0 +1,1139 @@
+{
+  "current_product_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+  "gate_A": "NOT_RUN_THIS_SESSION; immutable historical full outputs are an oracle/design source only, never a fresh candidate PASS.",
+  "gold_updates": false,
+  "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+  "new_product_test_network_GPU_provider_commands": 0,
+  "projects": [
+    {
+      "L0_declared": [],
+      "L0_mismatch_findings": [],
+      "L0_resolved": [
+        "core"
+      ],
+      "L1_mismatch_findings_complete": [
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Python candidate analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500); no rule-wide PASS is established.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "L1_profiles_complete": {
+        "declared": [
+          "evaluation",
+          "finetuning",
+          "inference"
+        ],
+        "detected": [
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'agent' in file stem",
+                "path": "lm_eval/tasks/longbench2/agent_history.yaml",
+                "value": null
+              }
+            ],
+            "profile": "agent",
+            "shipped": false
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 8,
+                "note": "import lm_eval",
+                "path": "examples/transformer-lens.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 768,
+                "note": "import evaluate",
+                "path": "lm_eval/api/registry.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 1,
+                "note": "CLI: lm_eval",
+                "path": "lm_eval/tasks/afrimgsm/run.sh",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 1,
+                "note": "CLI: lm_eval",
+                "path": "lm_eval/tasks/afrimmlu/fewshot.sh",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 1,
+                "note": "CLI: lm_eval",
+                "path": "lm_eval/tasks/afrobench/afrisenti/fewshot.sh",
+                "value": null
+              }
+            ],
+            "profile": "evaluation",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 17,
+                "note": "import peft",
+                "path": "lm_eval/models/hf_steered.py",
+                "value": null
+              }
+            ],
+            "profile": "finetuning",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 25,
+                "note": "import sglang",
+                "path": "lm_eval/models/sglang_causallms.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 13,
+                "note": "import vllm",
+                "path": "lm_eval/models/vllm_causallms.py",
+                "value": null
+              }
+            ],
+            "profile": "inference",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'grader' in file stem",
+                "path": "lm_eval/tasks/score/math/math_grader.py",
+                "value": null
+              }
+            ],
+            "profile": "llm_judge",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'retriev' in file stem",
+                "path": "lm_eval/tasks/infinitebench/infinitebench_kv_retrieval.yaml",
+                "value": null
+              }
+            ],
+            "profile": "rag",
+            "shipped": false
+          }
+        ],
+        "resolved": [
+          "core",
+          "inference",
+          "evaluation",
+          "finetuning"
+        ]
+      },
+      "case": "lm-evaluation-harness",
+      "complete_initialized_file_set": [
+        ".reprollm/config.yaml",
+        ".reprollm/project-rules.yaml",
+        "reprollm.yaml"
+      ],
+      "coverage_reconstructed_from_complete_historical_facts": {
+        "candidate": 816,
+        "limit": 500,
+        "parsed": 500,
+        "selected": 500
+      },
+      "coverage_scope": "Captured primary-Python view only; not proof of complete listing, dependency, framework or every signal source. Counts reconstructed without importing/running product.",
+      "coverage_sources": {
+        "candidate": "count .py paths in complete analysis_files",
+        "limit": "byte-identical scanner MAX_PYTHON_FILES=500",
+        "parsed": "selected minus explicit parse/read-skipped diagnostics",
+        "selected": "complete python_paths list equals first 500 candidate paths"
+      },
+      "current_gate_status": "NOT_RUN_THIS_SESSION",
+      "design_target_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+      "diagnostics_full": [
+        "Python analysis incomplete: parsed 500 of 816 candidate files; selected 500 (limit 500), omitted 316. Missing signals may be in unanalysed files.",
+        "python file scan truncated to 500 of 816 files"
+      ],
+      "fixed_pin": {
+        "clean": true,
+        "name": "lm-evaluation-harness",
+        "origin": "git@github.com:EleutherAI/lm-evaluation-harness.git",
+        "sha": "b954108c9baaaa934b4ad842033b31a97ee30816"
+      },
+      "full_source_references": {
+        "L0_full_facts": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-facts/lm-evaluation-harness.json",
+        "L0_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-audit/lm-evaluation-harness.json",
+        "L0_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/lm-evaluation-harness-L0.json",
+        "L1_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/lm-evaluation-harness/audit-level1.json",
+        "L1_independent_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-lm-evaluation-harness-full-L1/expected.normalized.json",
+        "L1_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-lm-evaluation-harness-full-L1/comparison.json",
+        "default_export": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/lm-evaluation-harness/REPRODUCIBILITY.md",
+        "facts_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/lm-evaluation-harness-facts.json",
+        "independent_default_export_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/lm-evaluation-harness/REPRODUCIBILITY.expected.md",
+        "manifest": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/lm-evaluation-harness/initialized/reprollm.yaml"
+      },
+      "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+      "missing_declared_profiles": [],
+      "policy_expectation_status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+      "predicted_full_deltas": {
+        "L0": [],
+        "L1": [],
+        "default_export": [],
+        "diagnostics": [],
+        "initialized_files": [],
+        "profiles_hints_paths": []
+      },
+      "reason": "Level0 cannot execute this min_level1 manifest rule. Every historical initialized L1 declared non-core profile already has a detection entry, at any existing confidence, so the proposed declared-profile-absence branch is unreachable. Existing empty-result PASS/SKIPPED is retained; complete default export remains byte-identical.",
+      "unmatched_positive_high_shipped_profiles": []
+    },
+    {
+      "L0_declared": [],
+      "L0_mismatch_findings": [],
+      "L0_resolved": [
+        "core"
+      ],
+      "L1_mismatch_findings_complete": [
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "L1_profiles_complete": {
+        "declared": [
+          "finetuning",
+          "inference",
+          "llm_judge"
+        ],
+        "detected": [
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'benchmark' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "evaluation",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 10,
+                "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+                "path": "fastchat/data/convert_alpaca.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 13,
+                "note": "import peft",
+                "path": "fastchat/model/apply_lora.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 24,
+                "note": "import deepspeed",
+                "path": "fastchat/train/train_lora.py",
+                "value": null
+              }
+            ],
+            "profile": "finetuning",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 17,
+                "note": "import sglang",
+                "path": "fastchat/serve/sglang_worker.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 15,
+                "note": "import vllm",
+                "path": "fastchat/serve/vllm_worker.py",
+                "value": null
+              }
+            ],
+            "profile": "inference",
+            "shipped": true
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'judge' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'llm-as-a-judge' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'llm_judge' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "llm_judge",
+            "shipped": true
+          }
+        ],
+        "resolved": [
+          "core",
+          "finetuning",
+          "inference",
+          "evaluation",
+          "llm_judge"
+        ]
+      },
+      "case": "FastChat",
+      "complete_initialized_file_set": [
+        ".reprollm/config.yaml",
+        ".reprollm/project-rules.yaml",
+        "reprollm.yaml"
+      ],
+      "coverage_reconstructed_from_complete_historical_facts": {
+        "candidate": 148,
+        "limit": 500,
+        "parsed": 148,
+        "selected": 148
+      },
+      "coverage_scope": "Captured primary-Python view only; not proof of complete listing, dependency, framework or every signal source. Counts reconstructed without importing/running product.",
+      "coverage_sources": {
+        "candidate": "count .py paths in complete analysis_files",
+        "limit": "byte-identical scanner MAX_PYTHON_FILES=500",
+        "parsed": "selected minus explicit parse/read-skipped diagnostics",
+        "selected": "complete python_paths list equals first 500 candidate paths"
+      },
+      "current_gate_status": "NOT_RUN_THIS_SESSION",
+      "design_target_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+      "diagnostics_full": [],
+      "fixed_pin": {
+        "clean": true,
+        "name": "FastChat",
+        "origin": "https://github.com/lm-sys/FastChat.git",
+        "sha": "587d5cfa1609a43d192cedb8441cac3c17db105d"
+      },
+      "full_source_references": {
+        "L0_full_facts": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-facts/FastChat.json",
+        "L0_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-audit/FastChat.json",
+        "L0_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/FastChat-L0.json",
+        "L1_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/FastChat/audit-level1.json",
+        "L1_independent_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-FastChat-full-L1/expected.normalized.json",
+        "L1_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-FastChat-full-L1/comparison.json",
+        "default_export": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/FastChat/REPRODUCIBILITY.md",
+        "facts_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/FastChat-facts.json",
+        "independent_default_export_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/FastChat/REPRODUCIBILITY.expected.md",
+        "manifest": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/FastChat/initialized/reprollm.yaml"
+      },
+      "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+      "missing_declared_profiles": [],
+      "policy_expectation_status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+      "predicted_full_deltas": {
+        "L0": [],
+        "L1": [],
+        "default_export": [],
+        "diagnostics": [],
+        "initialized_files": [],
+        "profiles_hints_paths": []
+      },
+      "reason": "Level0 cannot execute this min_level1 manifest rule. Every historical initialized L1 declared non-core profile already has a detection entry, at any existing confidence, so the proposed declared-profile-absence branch is unreachable. Existing empty-result PASS/SKIPPED is retained; complete default export remains byte-identical.",
+      "unmatched_positive_high_shipped_profiles": []
+    },
+    {
+      "L0_declared": [],
+      "L0_mismatch_findings": [],
+      "L0_resolved": [
+        "core"
+      ],
+      "L1_mismatch_findings_complete": [
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "L1_profiles_complete": {
+        "declared": [
+          "evaluation",
+          "finetuning",
+          "inference"
+        ],
+        "detected": [
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'agent' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'function calling' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "agent",
+            "shipped": false
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "directory 'eval'",
+                "path": null,
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'benchmark' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'mmlu' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "evaluation",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 21,
+                "note": "import peft",
+                "path": "scripts/bench_qwen.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 23,
+                "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+                "path": "scripts/bench_qwen.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 20,
+                "note": "import deepspeed",
+                "path": "scripts/stat_utils/cal_flops.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 34,
+                "note": "import trl",
+                "path": "src/llamafactory/chat/hf_engine.py",
+                "value": null
+              }
+            ],
+            "profile": "finetuning",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 35,
+                "note": "import vllm",
+                "path": "scripts/vllm_infer.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 36,
+                "note": "import sglang",
+                "path": "src/llamafactory/chat/sglang_engine.py",
+                "value": null
+              }
+            ],
+            "profile": "inference",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'judge' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "llm_judge",
+            "shipped": true
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'rag' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'retriev' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "rag",
+            "shipped": false
+          }
+        ],
+        "resolved": [
+          "core",
+          "inference",
+          "evaluation",
+          "finetuning"
+        ]
+      },
+      "case": "LlamaFactory",
+      "complete_initialized_file_set": [
+        ".reprollm/config.yaml",
+        ".reprollm/project-rules.yaml",
+        "reprollm.yaml"
+      ],
+      "coverage_reconstructed_from_complete_historical_facts": {
+        "candidate": 311,
+        "limit": 500,
+        "parsed": 311,
+        "selected": 311
+      },
+      "coverage_scope": "Captured primary-Python view only; not proof of complete listing, dependency, framework or every signal source. Counts reconstructed without importing/running product.",
+      "coverage_sources": {
+        "candidate": "count .py paths in complete analysis_files",
+        "limit": "byte-identical scanner MAX_PYTHON_FILES=500",
+        "parsed": "selected minus explicit parse/read-skipped diagnostics",
+        "selected": "complete python_paths list equals first 500 candidate paths"
+      },
+      "current_gate_status": "NOT_RUN_THIS_SESSION",
+      "design_target_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+      "diagnostics_full": [],
+      "fixed_pin": {
+        "clean": true,
+        "name": "LlamaFactory",
+        "origin": "https://github.com/hiyouga/LlamaFactory.git",
+        "sha": "673048c6a543cbbeaed5b8444b8223dc4e23c721"
+      },
+      "full_source_references": {
+        "L0_full_facts": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-facts/LlamaFactory.json",
+        "L0_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-audit/LlamaFactory.json",
+        "L0_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/LlamaFactory-L0.json",
+        "L1_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/LlamaFactory/audit-level1.json",
+        "L1_independent_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-LlamaFactory-full-L1/expected.normalized.json",
+        "L1_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-LlamaFactory-full-L1/comparison.json",
+        "default_export": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/LlamaFactory/REPRODUCIBILITY.md",
+        "facts_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/LlamaFactory-facts.json",
+        "independent_default_export_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/LlamaFactory/REPRODUCIBILITY.expected.md",
+        "manifest": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/LlamaFactory/initialized/reprollm.yaml"
+      },
+      "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+      "missing_declared_profiles": [],
+      "policy_expectation_status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+      "predicted_full_deltas": {
+        "L0": [],
+        "L1": [],
+        "default_export": [],
+        "diagnostics": [],
+        "initialized_files": [],
+        "profiles_hints_paths": []
+      },
+      "reason": "Level0 cannot execute this min_level1 manifest rule. Every historical initialized L1 declared non-core profile already has a detection entry, at any existing confidence, so the proposed declared-profile-absence branch is unreachable. Existing empty-result PASS/SKIPPED is retained; complete default export remains byte-identical.",
+      "unmatched_positive_high_shipped_profiles": []
+    },
+    {
+      "L0_declared": [],
+      "L0_mismatch_findings": [],
+      "L0_resolved": [
+        "core"
+      ],
+      "L1_mismatch_findings_complete": [
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Python candidate analysis incomplete: parsed 121 of 123 candidate files; selected 123 (limit 500); no rule-wide PASS is established.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "INFO",
+          "severity_origin": "default",
+          "status": "skipped",
+          "suppressed_reason": null
+        }
+      ],
+      "L1_profiles_complete": {
+        "declared": [
+          "evaluation",
+          "finetuning",
+          "inference",
+          "safety"
+        ],
+        "detected": [
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'agent' in config key",
+                "path": "data/optimizer_targets/extra_targets/harmbench_targets_text_orca.json",
+                "value": null
+              }
+            ],
+            "profile": "agent",
+            "shipped": false
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 7,
+                "note": "dependency evaluate",
+                "path": "adversarial_training/alignment-handbook/requirements.txt",
+                "value": null
+              }
+            ],
+            "profile": "evaluation",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 13,
+                "note": "import trl",
+                "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 14,
+                "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+                "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 54,
+                "note": "import peft",
+                "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 100,
+                "note": "import deepspeed",
+                "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+                "value": null
+              }
+            ],
+            "profile": "finetuning",
+            "shipped": true
+          },
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 9,
+                "note": "import vllm",
+                "path": "baselines/artprompt/artprompt.py",
+                "value": null
+              }
+            ],
+            "profile": "inference",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'judge' in config key",
+                "path": "configs/method_configs/PAIR_config.yaml",
+                "value": null
+              }
+            ],
+            "profile": "llm_judge",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'epsilon' in config key",
+                "path": "configs/method_configs/MultiModalPGDPatch_config.yaml",
+                "value": null
+              }
+            ],
+            "profile": "privacy",
+            "shipped": true
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'harmbench' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'refusal' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'jailbreak' in config key",
+                "path": "configs/method_configs/GPTFuzz_config.yaml",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'advbench' in config key",
+                "path": "data/classifier_val_sets/multimodal_behaviors_val_set.json",
+                "value": null
+              }
+            ],
+            "profile": "safety",
+            "shipped": true
+          }
+        ],
+        "resolved": [
+          "core",
+          "inference",
+          "evaluation",
+          "finetuning",
+          "safety"
+        ]
+      },
+      "case": "HarmBench",
+      "complete_initialized_file_set": [
+        ".reprollm/config.yaml",
+        ".reprollm/project-rules.yaml",
+        "reprollm.yaml"
+      ],
+      "coverage_reconstructed_from_complete_historical_facts": {
+        "candidate": 123,
+        "limit": 500,
+        "parsed": 121,
+        "selected": 123
+      },
+      "coverage_scope": "Captured primary-Python view only; not proof of complete listing, dependency, framework or every signal source. Counts reconstructed without importing/running product.",
+      "coverage_sources": {
+        "candidate": "count .py paths in complete analysis_files",
+        "limit": "byte-identical scanner MAX_PYTHON_FILES=500",
+        "parsed": "selected minus explicit parse/read-skipped diagnostics",
+        "selected": "complete python_paths list equals first 500 candidate paths"
+      },
+      "current_gate_status": "NOT_RUN_THIS_SESSION",
+      "design_target_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+      "diagnostics_full": [
+        "baselines/artprompt/jailbreak/baseline.py:9: syntax error; skipped",
+        "baselines/artprompt/jailbreak/safe_eval.py:3: syntax error; skipped",
+        "requirements.txt:18: art  # for ArtPrompt",
+        "requirements.txt:19: tenacity  # for ArtPrompt"
+      ],
+      "fixed_pin": {
+        "clean": true,
+        "name": "HarmBench",
+        "origin": "https://github.com/centerforaisafety/HarmBench.git",
+        "sha": "8e1604d1171fe8a48d8febecd22f600e462bdcdd"
+      },
+      "full_source_references": {
+        "L0_full_facts": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-facts/HarmBench.json",
+        "L0_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-audit/HarmBench.json",
+        "L0_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/HarmBench-L0.json",
+        "L1_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/HarmBench/audit-level1.json",
+        "L1_independent_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-HarmBench-full-L1/expected.normalized.json",
+        "L1_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-HarmBench-full-L1/comparison.json",
+        "default_export": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/HarmBench/REPRODUCIBILITY.md",
+        "facts_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/HarmBench-facts.json",
+        "independent_default_export_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/HarmBench/REPRODUCIBILITY.expected.md",
+        "manifest": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/HarmBench/initialized/reprollm.yaml"
+      },
+      "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+      "missing_declared_profiles": [],
+      "policy_expectation_status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+      "predicted_full_deltas": {
+        "L0": [],
+        "L1": [],
+        "default_export": [],
+        "diagnostics": [],
+        "initialized_files": [],
+        "profiles_hints_paths": []
+      },
+      "reason": "Level0 cannot execute this min_level1 manifest rule. Every historical initialized L1 declared non-core profile already has a detection entry, at any existing confidence, so the proposed declared-profile-absence branch is unreachable. Existing empty-result PASS/SKIPPED is retained; complete default export remains byte-identical.",
+      "unmatched_positive_high_shipped_profiles": []
+    },
+    {
+      "L0_declared": [],
+      "L0_mismatch_findings": [],
+      "L0_resolved": [
+        "core"
+      ],
+      "L1_mismatch_findings_complete": [
+        {
+          "aliases": [],
+          "category": "exec",
+          "evidence": [],
+          "fix_hint": "Review experiment.profiles in reprollm.yaml against the detection evidence; add or remove a profile only to describe the selected experiment. Capabilities used by other repository workflows need no manifest change.",
+          "level": 1,
+          "message": "Declared profiles and detected signals agree.",
+          "profile_origin": [],
+          "rule_id": "exec.profile_detection_mismatch",
+          "severity": "PASS",
+          "severity_origin": "default",
+          "status": "pass",
+          "suppressed_reason": null
+        }
+      ],
+      "L1_profiles_complete": {
+        "declared": [
+          "finetuning",
+          "privacy"
+        ],
+        "detected": [
+          {
+            "confidence": "high",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 10,
+                "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+                "path": "fine_tune.py",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": 101,
+                "note": "import peft",
+                "path": "src/llm_pft/models/language_model.py",
+                "value": null
+              }
+            ],
+            "profile": "finetuning",
+            "shipped": true
+          },
+          {
+            "confidence": "medium",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'differential privacy' in readme text",
+                "path": "README.md",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'epsilon' in config key",
+                "path": "configs/fine-tune/echr-llama-7b-dp4.yml",
+                "value": null
+              },
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'threat model' in config key",
+                "path": "reprollm.yaml",
+                "value": null
+              }
+            ],
+            "profile": "privacy",
+            "shipped": true
+          },
+          {
+            "confidence": "low",
+            "evidence": [
+              {
+                "expected": null,
+                "field": null,
+                "kind": "detection",
+                "line": null,
+                "note": "keyword 'red team' in readme text",
+                "path": "README.md",
+                "value": null
+              }
+            ],
+            "profile": "safety",
+            "shipped": true
+          }
+        ],
+        "resolved": [
+          "core",
+          "finetuning",
+          "privacy"
+        ]
+      },
+      "case": "llm-dp-finetune",
+      "complete_initialized_file_set": [
+        ".reprollm/config.yaml",
+        ".reprollm/project-rules.yaml",
+        "reprollm.yaml"
+      ],
+      "coverage_reconstructed_from_complete_historical_facts": {
+        "candidate": 46,
+        "limit": 500,
+        "parsed": 46,
+        "selected": 46
+      },
+      "coverage_scope": "Captured primary-Python view only; not proof of complete listing, dependency, framework or every signal source. Counts reconstructed without importing/running product.",
+      "coverage_sources": {
+        "candidate": "count .py paths in complete analysis_files",
+        "limit": "byte-identical scanner MAX_PYTHON_FILES=500",
+        "parsed": "selected minus explicit parse/read-skipped diagnostics",
+        "selected": "complete python_paths list equals first 500 candidate paths"
+      },
+      "current_gate_status": "NOT_RUN_THIS_SESSION",
+      "design_target_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+      "diagnostics_full": [
+        "requirements.txt:4: git+https://github.com/flairNLP/flair"
+      ],
+      "fixed_pin": {
+        "clean": true,
+        "name": "llm-dp-finetune",
+        "origin": "https://github.com/jyhong836/llm-dp-finetune.git",
+        "sha": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e"
+      },
+      "full_source_references": {
+        "L0_full_facts": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-facts/llm-dp-finetune.json",
+        "L0_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/actual-audit/llm-dp-finetune.json",
+        "L0_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/llm-dp-finetune-L0.json",
+        "L1_full_report": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/llm-dp-finetune/audit-level1.json",
+        "L1_independent_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-llm-dp-finetune-full-L1/expected.normalized.json",
+        "L1_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/comparison/candidate-llm-dp-finetune-full-L1/comparison.json",
+        "default_export": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/llm-dp-finetune/REPRODUCIBILITY.md",
+        "facts_strict_comparison": "docs/dogfooding/2026-10-20-r07c-pb/final/gate-a/comparison/llm-dp-finetune-facts.json",
+        "independent_default_export_expected": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/llm-dp-finetune/REPRODUCIBILITY.expected.md",
+        "manifest": "docs/dogfooding/2026-10-20-r07c-pb/final/affected/artifacts/candidate/llm-dp-finetune/initialized/reprollm.yaml"
+      },
+      "historical_product_commit": "b5564f0c7b94db132053cbe97abd8e824403a8bc",
+      "missing_declared_profiles": [],
+      "policy_expectation_status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+      "predicted_full_deltas": {
+        "L0": [],
+        "L1": [],
+        "default_export": [],
+        "diagnostics": [],
+        "initialized_files": [],
+        "profiles_hints_paths": []
+      },
+      "reason": "Level0 cannot execute this min_level1 manifest rule. Every historical initialized L1 declared non-core profile already has a detection entry, at any existing confidence, so the proposed declared-profile-absence branch is unreachable. Existing empty-result PASS/SKIPPED is retained; complete default export remains byte-identical.",
+      "unmatched_positive_high_shipped_profiles": []
+    }
+  ],
+  "schema_version": 1,
+  "scope_condition": "Only the absent-declared-profile branch changes; existing empty-result policy, detected-positive branch, scanner/detector/init/export/schema/defaults stay fixed. Zero-delta predictions do not apply to arbitrary wider R07-C option B.",
+  "status": "DESIGN_EXPECTATION_NOT_EXECUTED",
+  "storage_commit": "30dc9cae41b2fbcc1657357eff34b3e5a7f26322",
+  "task": "R07-C profile-absence follow-up P-A"
+}

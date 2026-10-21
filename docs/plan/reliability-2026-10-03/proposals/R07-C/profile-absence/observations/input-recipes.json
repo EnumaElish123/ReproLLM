@@ -1,0 +1,498 @@
+{
+  "complete_input_file_count": 61,
+  "files": {
+    "binary-gap/a.py": {
+      "bytes": 11,
+      "recipe": {
+        "kind": "hex",
+        "value": "76616c7565203d2031000a"
+      },
+      "sha256": "2073f738f843b75415f44ac6b243bbf74ba8487195c7f5df4dacb9d5ea3529db"
+    },
+    "binary-gap/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "cap-hidden/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "cap-hidden/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "cap-hidden/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "cli-critical-cap/.reprollm/profiles/core.yaml": {
+      "bytes": 238,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic target-only policy fixture\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"exec.profile_detection_mismatch\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"exec.profile_detection_mismatch\": \"CRITICAL\"\n  }\n}\n"
+      },
+      "sha256": "1ec204e1fb83a36898bc7d0d9f6770040f9f984e2efe732fa87cac7a4fb12c10"
+    },
+    "cli-critical-cap/.reprollm/profiles/probe.yaml": {
+      "bytes": 179,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic detection fixture\",\n  \"detect\": {\n    \"imports\": [\n      \"vllm\"\n    ]\n  },\n  \"extends\": [\n    \"core\"\n  ],\n  \"name\": \"probe\",\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "43460cb5b32b43e8b5880db98d8e8d005e5630e3b362c9369db121a8b3a75ed5"
+    },
+    "cli-critical-cap/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "cli-critical-cap/reprollm.yaml": {
+      "bytes": 147,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"probe\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "127dc35f8d5c55d1af71ec0a14b6574ef9173fcaa712d1d000c1e9e276668c34"
+    },
+    "cli-critical-cap/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "cli-suppressed-cap/.reprollm/config.yaml": {
+      "bytes": 186,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"audit\": {\n    \"ignore\": [\n      {\n        \"reason\": \"synthetic deliberate suppression\",\n        \"rule\": \"exec.profile_detection_mismatch\"\n      }\n    ]\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "1e71c0261a4f219c4db35dc1ea65da8b04d5626885a0c0f2d5d799d8b24c33e3"
+    },
+    "cli-suppressed-cap/.reprollm/profiles/core.yaml": {
+      "bytes": 237,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic target-only policy fixture\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"exec.profile_detection_mismatch\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"exec.profile_detection_mismatch\": \"WARNING\"\n  }\n}\n"
+      },
+      "sha256": "5e093e32786f855e4378b5e6535ed85238b7f2466ff876d9d9f04fa7035f2aff"
+    },
+    "cli-suppressed-cap/.reprollm/profiles/probe.yaml": {
+      "bytes": 179,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic detection fixture\",\n  \"detect\": {\n    \"imports\": [\n      \"vllm\"\n    ]\n  },\n  \"extends\": [\n    \"core\"\n  ],\n  \"name\": \"probe\",\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "43460cb5b32b43e8b5880db98d8e8d005e5630e3b362c9369db121a8b3a75ed5"
+    },
+    "cli-suppressed-cap/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "cli-suppressed-cap/reprollm.yaml": {
+      "bytes": 147,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"probe\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "127dc35f8d5c55d1af71ec0a14b6574ef9173fcaa712d1d000c1e9e276668c34"
+    },
+    "cli-suppressed-cap/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "cli-warning-cap/.reprollm/profiles/core.yaml": {
+      "bytes": 237,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic target-only policy fixture\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"exec.profile_detection_mismatch\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"exec.profile_detection_mismatch\": \"WARNING\"\n  }\n}\n"
+      },
+      "sha256": "5e093e32786f855e4378b5e6535ed85238b7f2466ff876d9d9f04fa7035f2aff"
+    },
+    "cli-warning-cap/.reprollm/profiles/probe.yaml": {
+      "bytes": 179,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic detection fixture\",\n  \"detect\": {\n    \"imports\": [\n      \"vllm\"\n    ]\n  },\n  \"extends\": [\n    \"core\"\n  ],\n  \"name\": \"probe\",\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "43460cb5b32b43e8b5880db98d8e8d005e5630e3b362c9369db121a8b3a75ed5"
+    },
+    "cli-warning-cap/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "cli-warning-cap/reprollm.yaml": {
+      "bytes": 147,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"probe\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "127dc35f8d5c55d1af71ec0a14b6574ef9173fcaa712d1d000c1e9e276668c34"
+    },
+    "cli-warning-cap/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "cli-warning-complete/.reprollm/profiles/core.yaml": {
+      "bytes": 237,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic target-only policy fixture\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"exec.profile_detection_mismatch\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"exec.profile_detection_mismatch\": \"WARNING\"\n  }\n}\n"
+      },
+      "sha256": "5e093e32786f855e4378b5e6535ed85238b7f2466ff876d9d9f04fa7035f2aff"
+    },
+    "cli-warning-complete/.reprollm/profiles/probe.yaml": {
+      "bytes": 179,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic detection fixture\",\n  \"detect\": {\n    \"imports\": [\n      \"vllm\"\n    ]\n  },\n  \"extends\": [\n    \"core\"\n  ],\n  \"name\": \"probe\",\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "43460cb5b32b43e8b5880db98d8e8d005e5630e3b362c9369db121a8b3a75ed5"
+    },
+    "cli-warning-complete/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "cli-warning-complete/reprollm.yaml": {
+      "bytes": 147,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"probe\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "127dc35f8d5c55d1af71ec0a14b6574ef9173fcaa712d1d000c1e9e276668c34"
+    },
+    "complete-absent/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "complete-absent/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "custom-detection-witness/.reprollm/profiles/inference.yaml": {
+      "bytes": 178,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"description\": \"Synthetic override\",\n  \"detect\": {\n    \"imports\": [\n      \"localmod\"\n    ]\n  },\n  \"extends\": [\n    \"core\"\n  ],\n  \"name\": \"inference\",\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "2a2c7d34d9413535fe31659c61f9b992482acd1473e4e24877539788384ae958"
+    },
+    "custom-detection-witness/a.py": {
+      "bytes": 16,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import localmod\n"
+      },
+      "sha256": "d338e238644393623540b194e60f184cfde502da94250a483ce22b99cf35136c"
+    },
+    "custom-detection-witness/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "custom-detection-witness/z.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 2\n"
+      },
+      "sha256": "69ef4f409b530264b0da21ad4054978ada08895c93631a0da1957e2a10b592b5"
+    },
+    "dependency-witness/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "dependency-witness/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "dependency-witness/requirements.txt": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "vllm==1.0\n"
+      },
+      "sha256": "9bc559b8271147a8edcf65827346bbc807ff3576b1523ccd3927c6a8e51395ac"
+    },
+    "dependency-witness/z.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 2\n"
+      },
+      "sha256": "69ef4f409b530264b0da21ad4054978ada08895c93631a0da1957e2a10b592b5"
+    },
+    "full-hidden/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "full-hidden/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "full-hidden/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "invalid-counts/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "invalid-counts/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "mixed-positive/a.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import peft\n"
+      },
+      "sha256": "68180a729780093d41a65d5dfa81b3f4462e4eaa7d6efa576eb2d74e9c967d94"
+    },
+    "mixed-positive/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "mixed-positive/z.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "multi-absence/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "multi-absence/reprollm.yaml": {
+      "bytes": 171,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\",\n      \"finetuning\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "7b2316c8a50a48c8022ba178da5bca61fad7f98821369d393a37e1db7b03838d"
+    },
+    "multi-absence/z.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 2\n"
+      },
+      "sha256": "69ef4f409b530264b0da21ad4054978ada08895c93631a0da1957e2a10b592b5"
+    },
+    "oversize-gap/a.py": {
+      "bytes": 524289,
+      "recipe": {
+        "kind": "prefix_then_repeat",
+        "prefix_hex": "23",
+        "repeat_byte_hex": "20",
+        "repeat_count": 524288
+      },
+      "sha256": "62d75049d7d250c91bc89eea8996801e2af1c8cf2ce8662157bb697682f0a5d2"
+    },
+    "oversize-gap/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "positive-unknown/a.py": {
+      "bytes": 24,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\nimport peft\n"
+      },
+      "sha256": "60ae79de51e509842ce10bf5287b79326790170ad04661f10afdd04bf360e1f8"
+    },
+    "positive-unknown/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "readme-witness/README.md": {
+      "bytes": 5,
+      "recipe": {
+        "kind": "utf8",
+        "value": "LoRA\n"
+      },
+      "sha256": "a1132db08660840578d6439b6a613b268194d057ac024d160388c62357a95a34"
+    },
+    "readme-witness/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "readme-witness/reprollm.yaml": {
+      "bytes": 152,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"finetuning\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "d8ae28e17a8b6b387f7b1da19757a48aa6d94077119b5ec1a1ec66e85d3930ed"
+    },
+    "readme-witness/z.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 2\n"
+      },
+      "sha256": "69ef4f409b530264b0da21ad4054978ada08895c93631a0da1957e2a10b592b5"
+    },
+    "syntax-gap/a.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "def broken(\n"
+      },
+      "sha256": "553eda8c53fc903895e005a1bc644c6058ffd91ce4df67c9fbdbe8763f6d8862"
+    },
+    "syntax-gap/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "unknown-marker/a.py": {
+      "bytes": 10,
+      "recipe": {
+        "kind": "utf8",
+        "value": "value = 1\n"
+      },
+      "sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+    },
+    "unknown-marker/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "unreadable-gap/a.py": {
+      "bytes": 12,
+      "recipe": {
+        "kind": "utf8",
+        "value": "import vllm\n"
+      },
+      "sha256": "502a222fdfba67213f0c48a935d84da9fd5158df433da0bd30a6c9cba0d0dd6d"
+    },
+    "unreadable-gap/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    },
+    "zero-candidates/reprollm.yaml": {
+      "bytes": 151,
+      "recipe": {
+        "kind": "utf8",
+        "value": "{\n  \"experiment\": {\n    \"profiles\": [\n      \"inference\"\n    ]\n  },\n  \"project\": {\n    \"name\": \"synthetic-profile-absence\"\n  },\n  \"schema_version\": 1\n}\n"
+      },
+      "sha256": "191db4f13df4e241462012152a16807f1c41ae52399785a00b3302fe2083e9b4"
+    }
+  },
+  "input_root": "execution-1/inputs",
+  "schema_version": 1,
+  "scope": "Exact synthetic inputs, including user profile loader fixtures; generated oversize bytes represented by a deterministic recipe. No private repository data or credentials."
+}

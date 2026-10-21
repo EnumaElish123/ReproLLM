@@ -19,6 +19,12 @@
 7. 不依赖新增资源的接续路线是 **A02 试用材料 → A03 本地事实整理 → P-A/P-B**。读取 [A02 任务卡和反馈入口](../../trials/a02-local/README.md)、[A03 事实与草稿](../../adoption/a03-2026-10-18.md)和[A02/A03 接续报告](../../dogfooding/2026-10-18-a02-a03-local.md)。材料可审阅、真实试用 PENDING、持续采用未观察到，三种状态分别记录。A03 当前表单核验尚未完成。
 8. 维护者已于 2026-10-18 [接受 R08-A 方案 A](proposals/R08-A/decision.json)，并按 P-B 实施直接 judge params 叶子默认 HIGH，保留用户 LOW/NONE 与历史记录。验收/资源状态见 [P-B 报告](../../dogfooding/2026-10-18-r08a/README.md)；[原提案快照](proposals/R08-A/R08-A_direct_judge_params.md)继续保留当时状态。R06-B 方案 A 已于 2026-10-20 [获具体批准](proposals/R06-B/decision.json)，P-B 实施及独立 CPU 验收见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)；[原提案](proposals/R06-B/R06-B_dependency_lock_scope.md)保持准备时快照。R07-C 的局部 A、具体规范与 D-41 engine patch 已获[明确接受](proposals/R07-C/decision-accepted.json)，P-B 仅实施两规则在 primary-Python 缺口 / 内部 coverage 不可用时的空结果 PASS veto，见[本轮实施及验收报告](../../dogfooding/2026-10-20-r07c-pb/README.md)。这是有意保守的局部政策；更广 mixed evidence 范围仍 OPEN。原 [P-A 材料](proposals/R07-C/R07-C_incomplete_scan_conclusions.md)和[P-A 报告](../../dogfooding/2026-10-20-r07c-pa/README.md)保留准备时状态，不冒充 P-B 结果。R08-B A4 四条精确路径及规范 / 前瞻补丁已获[具体接受](proposals/R08-B/decision-accepted.json)，P-B 默认 HIGH 实施与当前验收状态见[P-B 报告](../../dogfooding/2026-10-20-r08b-pb/README.md)。原[提案](proposals/R08-B/R08-B_exact_parameter_risk.md)、PROPOSED 决定及[P-A 报告](../../dogfooding/2026-10-20-r08b-pa/README.md)保留准备时快照；匹配、用户覆盖和历史资源结果归属保持。
 
+
+2026-10-21：[R07-C profile-absence 接续 P-A](../../dogfooding/2026-10-21-r07c-profile-pa/README.md)
+已准备[具体局部 P、规则 / 规范 / 测试补丁](proposals/R07-C/profile-absence/R07-C_profile_absence.md)，
+完成当前 / 条件对照和五项目预写影响；仍为 PROPOSED，未扩大既有局部 A 的批准或实施范围。
+更广 mixed/deps/listing/framework 及充分证书仍 OPEN。
+
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
 R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

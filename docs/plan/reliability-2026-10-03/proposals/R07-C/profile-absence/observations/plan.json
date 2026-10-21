@@ -1,0 +1,270 @@
+{
+  "CLI_case_count": 4,
+  "base_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+  "boundary": "proc.run_cmd entirely canned; no real Git/child/GPU/provider/socket requests, no heavy imports. Host/user replaced by synthetic fixture identifiers before audit. Inputs only under external scratch; no credentials.",
+  "case_count": 16,
+  "cases": [
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n",
+        "z.py": "import vllm\n"
+      },
+      "fixture": null,
+      "id": "cap-hidden",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "aggregate PASS",
+      "conditional_expectation": "unchanged aggregate PASS",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n",
+        "z.py": "import vllm\n"
+      },
+      "fixture": null,
+      "id": "full-hidden",
+      "python_limit": 2
+    },
+    {
+      "baseline_expectation": "inference absence FAIL + finetuning high positive FAIL",
+      "conditional_expectation": "inference SKIP + identical finetuning high positive FAIL",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "import peft\n",
+        "z.py": "import vllm\n"
+      },
+      "fixture": null,
+      "id": "mixed-positive",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "unchanged absence FAIL INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n"
+      },
+      "fixture": null,
+      "id": "complete-absent",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "unchanged absence FAIL INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {},
+      "fixture": null,
+      "id": "zero-candidates",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "def broken(\n"
+      },
+      "fixture": null,
+      "id": "syntax-gap",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "<NUL binary>"
+      },
+      "fixture": null,
+      "id": "binary-gap",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "<512KiB+1 valid text>"
+      },
+      "fixture": null,
+      "id": "oversize-gap",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "import vllm\n"
+      },
+      "fixture": "Path.open controlled PermissionError",
+      "id": "unreadable-gap",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "existing empty-result SKIP",
+      "conditional_expectation": "identical existing empty-result SKIP",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n",
+        "requirements.txt": "vllm==1.0\n",
+        "z.py": "value = 2\n"
+      },
+      "fixture": null,
+      "id": "dependency-witness",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "existing empty-result SKIP",
+      "conditional_expectation": "identical existing empty-result SKIP",
+      "declared_profiles": [
+        "finetuning"
+      ],
+      "files": {
+        "README.md": "LoRA\n",
+        "a.py": "value = 1\n",
+        "z.py": "value = 2\n"
+      },
+      "fixture": null,
+      "id": "readme-witness",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "two absence FAIL INFO sorted finetuning,inference",
+      "conditional_expectation": "two SKIP INFO same profile order",
+      "declared_profiles": [
+        "inference",
+        "finetuning"
+      ],
+      "files": {
+        "a.py": "value = 1\n",
+        "z.py": "value = 2\n"
+      },
+      "fixture": null,
+      "id": "multi-absence",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "existing empty-result SKIP",
+      "conditional_expectation": "identical existing empty-result SKIP; user signal honored",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "import localmod\n",
+        "z.py": "value = 2\n"
+      },
+      "fixture": "user inference detect imports=[localmod]",
+      "id": "custom-detection-witness",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n"
+      },
+      "fixture": "real scan then coverage_observed=false",
+      "id": "unknown-marker",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "absence FAIL INFO",
+      "conditional_expectation": "per-profile SKIP INFO",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "value = 1\n"
+      },
+      "fixture": "real scan then selected_count=0 with parsed_count=1",
+      "id": "invalid-counts",
+      "python_limit": 1
+    },
+    {
+      "baseline_expectation": "finetuning high positive FAIL only",
+      "conditional_expectation": "identical positive FAIL only; no new SKIP",
+      "declared_profiles": [
+        "inference"
+      ],
+      "files": {
+        "a.py": "import vllm\nimport peft\n"
+      },
+      "fixture": "real scan then coverage_observed=false",
+      "id": "positive-unknown",
+      "python_limit": 1
+    }
+  ],
+  "cli_cases": [
+    {
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 0,
+      "fail_on": "warning",
+      "files": "cap-hidden",
+      "id": "warning-cap",
+      "severity_override": "WARNING",
+      "suppressed": false
+    },
+    {
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 0,
+      "fail_on": "critical",
+      "files": "cap-hidden",
+      "id": "critical-cap",
+      "severity_override": "CRITICAL",
+      "suppressed": false
+    },
+    {
+      "expected_baseline_exit": 0,
+      "expected_conditional_exit": 0,
+      "fail_on": "warning",
+      "files": "cap-hidden",
+      "id": "suppressed-cap",
+      "severity_override": "WARNING",
+      "suppressed": true
+    },
+    {
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 1,
+      "fail_on": "warning",
+      "files": "complete-absent",
+      "id": "warning-complete",
+      "severity_override": "WARNING",
+      "suppressed": false
+    }
+  ],
+  "independent_expected_deltas": "Only existing declared-and-not-detected finding(s) with incomplete/unavailable Python coverage become exact SKIP; all other findings and detected/effective profiles stay identical; summary/sort follow existing engine. CLI only-target fixture uses user-owned core/probe profile to isolate target without unrelated FAIL masking.",
+  "planned_worker_processes": 40,
+  "retention": "Complete baseline/conditional report plus exact stdout/stderr, diagnostics, proc calls, coverage, source/input hashes; source before/after equality. Expected selection written before actual worker execution, strict comparisons use existing scripts/compare_gold.py.",
+  "schema_version": 1,
+  "scope": "16 API inputs x baseline/conditional independent process +4 CLI inputs x baseline/conditional independent process. New policy injected only in worker registry using unapplied draft rule source, never candidate source files. No P-B/fullquality/GateA claim.",
+  "status": "PREPARED_NOT_EXECUTED_WAIT_ROOT_SIGNAL",
+  "task": "R07-C profile-absence P-A conditional observation",
+  "timestamp": "engine datetime fixture 2026-10-21T00:00:00Z, not current execution time"
+}

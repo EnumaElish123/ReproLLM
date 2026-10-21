@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "<SESSION>/observations/observe.py", line 273, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "<SESSION>/observations/observe.py", line 269, in main
+    return worker(args) if args.worker else execute(args)
+           ^^^^^^^^^^^^
+  File "<SESSION>/observations/observe.py", line 159, in worker
+    result = CliRunner().invoke(app, ['audit', '.', '--format', 'json', '--fail-on', case['fail_on']], catch_exceptions=False)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<CANDIDATE>/.venv/lib/python3.12/site-packages/typer/testing.py", line 285, in invoke
+    cli = _get_command(app)
+          ^^^^^^^^^^^^^^^^^
+  File "<CANDIDATE>/.venv/lib/python3.12/site-packages/typer/main.py", line 1174, in get_command
+    if typer_instance._add_completion:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'function' object has no attribute '_add_completion'

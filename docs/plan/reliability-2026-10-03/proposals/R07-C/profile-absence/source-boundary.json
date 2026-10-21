@@ -1,0 +1,88 @@
+{
+  "D41_engine_redaction_schema_changes": false,
+  "base_commit": "bb98e67c6e108822c62842d738f42af2eda871e4",
+  "coverage_contract": "Same generic message for known gaps and unavailable; consistent observed parsed=candidate retains legacy FAIL but does not certify global absence.",
+  "draft_patches": [
+    {
+      "base_sha256": "89e2b86089ad85b93ac3dfcc4918312dfc1335054d3c29337ff4a5bcba6d44bb",
+      "patch_file": "implementation-proposed.patch",
+      "patch_sha256": "f5c56dfc1c7149be643a9a99d0a6c3949966e617b160d26f39d69770a040cc85",
+      "proposed_sha256": "14475250422e84feb6342078e1263fc9041cb84e400b262625107d8704f23ea0",
+      "target": "src/reprollm/rules/exec_.py"
+    },
+    {
+      "base_sha256": "ff647ab9c837b51acb4080dbbb37c8642afc7021489bad54912a617dbc3eaa66",
+      "patch_file": "spec-proposed.patch",
+      "patch_sha256": "6b29f5eccaad34f69652b334301d74f1e938750680ba0cbf4422ae0844452a9c",
+      "proposed_sha256": "efed31e69ebe24c1dd93e8d959035c69239c1383e0f7fa511d0e77f9a40072a4",
+      "target": "docs/plan/01_specification.md"
+    },
+    {
+      "base_sha256": "eec4a42a1a107b0ea4871e5bc734eecad70d16fc5232997766b32b18f415dca4",
+      "patch_file": "changelog-proposed.patch",
+      "patch_sha256": "c5abc1c81a05d7a30e2be116a5ff898bdd2ff5ed7614c266cf54c3372d1856d6",
+      "proposed_sha256": "bcfe496c5e65ee14cd51415bce9ca9d29a870cd291f342e4a2723122a5eceee6",
+      "target": "CHANGELOG.md"
+    }
+  ],
+  "exact_evidence_note_template": "{profile} declared; detection absence unverified",
+  "exact_message_template": "declared profile {profile!r} has no detection evidence in the analysed inputs; Python candidate analysis is incomplete or unavailable, so absence is not established",
+  "forbidden_scope_unchanged": [
+    "engine",
+    "registry",
+    "pyscan",
+    "schemas",
+    "State",
+    "profiles",
+    "rule IDs/default severities",
+    "CLI thresholds",
+    "dependencies",
+    "upstream listing/framework/config coverage",
+    "other rule branches",
+    "historical reports/gold"
+  ],
+  "multiple_profiles": "Retain sorted declared-profile iteration including existing duplicate behavior; positive sorted-detected phase and unchanged engine stable sort follow.",
+  "new_finding": {
+    "aliases": "list(self.aliases), currently []",
+    "category": "exec",
+    "evidence": [
+      {
+        "field": "experiment.profiles",
+        "kind": "field",
+        "note": "{profile} declared; detection absence unverified"
+      }
+    ],
+    "fix_hint": "unchanged rule.fix_hint",
+    "level": "ctx.level",
+    "profile_origin": [],
+    "rule_id": "exec.profile_detection_mismatch",
+    "severity": "INFO",
+    "severity_origin": "default",
+    "status": "skipped",
+    "suppressed_reason": null
+  },
+  "proposal_acceptance": "Required before P-B; ordinary development authorization and earlier empty-PASS D-41 acceptance do not approve this branch change.",
+  "proposed_source_file": "exec_.py.proposed.txt",
+  "proposed_source_sha256": "14475250422e84feb6342078e1263fc9041cb84e400b262625107d8704f23ea0",
+  "resource_or_product_execution": false,
+  "schema_version": 1,
+  "severity_override_cost": "Only FAIL receives profile overrides; new SKIP stays INFO/default. A previously isolated WARNING/CRITICAL override-derived exit 1 can become exit 0.",
+  "source_refs_sha256": {
+    "CHANGELOG.md": "eec4a42a1a107b0ea4871e5bc734eecad70d16fc5232997766b32b18f415dca4",
+    "docs/plan/01_specification.md": "ff647ab9c837b51acb4080dbbb37c8642afc7021489bad54912a617dbc3eaa66",
+    "src/reprollm/cli/audit.py": "ccb01ee35f6b22c88e464a726965815ed22116c9f4f2503043dcf0492adde7bf",
+    "src/reprollm/core/context.py": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b",
+    "src/reprollm/core/engine.py": "27776bf0955c58005a5c48d7f12ed469c09bf4722027efeeaef7c8cacbdd8500",
+    "src/reprollm/core/pyscan.py": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273",
+    "src/reprollm/core/registry.py": "91b86c0cf771df769ee8f48d8fb1b33307182c13510c3e1c3aa0f047e8107638",
+    "src/reprollm/profiles/detect.py": "7f9e72d61e59abcac5819fc8b028c9ca30c06b8be96c334fb7df4109f9a2e403",
+    "src/reprollm/rules/_presence.py": "06460fcaf3873be25d4f5659e0cc3e5105e3d5bf0d53998c91243a28628a5b41",
+    "src/reprollm/rules/exec_.py": "89e2b86089ad85b93ac3dfcc4918312dfc1335054d3c29337ff4a5bcba6d44bb",
+    "src/reprollm/schemas/finding.py": "724f1b44fbaaf2f46a2b036016da8e07de08f4363f9ea2c7cd23a9cbb668a09a"
+  },
+  "static_python_3_10_AST": "PASS",
+  "status": "PROPOSED_NOT_APPLIED",
+  "suppression": "Existing engine suppression applies to all statuses, retaining SUPPRESSED/INFO, reason and appended ignore evidence.",
+  "task": "R07-C profile absence continuation P-A",
+  "trigger": "Only each declared non-core profile absent from detection and existing typed coverage.pass_skip_reason() is not None. Use None/non-None only; never parse or copy the PASS reason prose."
+}

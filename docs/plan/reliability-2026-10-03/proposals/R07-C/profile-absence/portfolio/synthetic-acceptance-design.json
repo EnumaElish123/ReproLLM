@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "id": "hidden-then-visible",
+      "required": "Declared inference; same import vllm moves from omitted to selected view. Incomplete view gets one profile-specific SKIPPED/INFO; fully read view satisfies declaration; keep the old empty-result policy."
+    },
+    {
+      "id": "mixed-positive-and-absence",
+      "required": "Omitted declared inference witness plus visible undeclared high-confidence finetuning/peft witness: preserve the positive FAIL and its exact evidence while emitting absence SKIPPED. No blanket rule SKIP."
+    },
+    {
+      "id": "complete-and-zero-candidates",
+      "required": "No signal with valid complete primary-Python coverage, including zero candidates: preserve original declared-without-evidence FAIL message/evidence and severity override."
+    },
+    {
+      "id": "parse-and-read-gaps",
+      "required": "Selected syntax error, binary content, >512KiB content but listed <=2MiB, or controlled unreadable Python: incomplete coverage does not establish profile absence; no new default count-limit stderr when candidate count is within limit."
+    },
+    {
+      "id": "unknown-and-invalid-coverage",
+      "required": "Unobserved or inconsistent typed counts cannot establish detection absence; existing fixed schema and profile-specific SKIPPED remain safe without claiming full listing or signal completeness."
+    },
+    {
+      "id": "nonempty-but-low-confidence",
+      "required": "A declared profile already present in detection at any existing confidence has no absence finding. Keep existing semantics; do not raise the absence threshold to high."
+    },
+    {
+      "id": "multiple-and-custom-profiles",
+      "required": "Multiple missing declarations produce sorted per-profile outcomes. Loaded custom profiles and detect overrides receive the explicitly chosen conservative policy; do not invent a sufficient-certificate exception. A loaded profile with detect={} still gets the conservative incomplete-view SKIPPED when absent; no special sufficient-certificate exception is inferred from empty signals."
+    },
+    {
+      "id": "threshold-overrides",
+      "required": "Only absence outcome changes: CRITICAL/WARNING overrides still affect complete-view FAIL, while incomplete-view SKIPPED remains INFO/default and cannot alone trip warning/critical gates; --fail-on never returns 0 without changing finding statuses."
+    },
+    {
+      "id": "CLI-json-text-repeat-suppression",
+      "required": "Validate the complete single JSON document/schema, full summary, exact default stderr, repeated report modulo permitted generated_at, hidden skipped details/default text, --show-skipped and existing ignore suppression."
+    },
+    {
+      "id": "all-five-affected-consumers",
+      "required": "After actual acceptance and implementation, execute fresh five-project L0, ordinary init/L1 and default export; compare every report/fact/generated file/diagnostic against referenced immutable full predeclared expected sources. This P-A document does not execute that gate."
+    }
+  ],
+  "proposed_scope": "Declared-profile absence branch only; old empty-result and positive detected branches stay fixed.",
+  "schema_version": 1,
+  "status": "DESIGN_EXPECTATION_NOT_EXECUTED"
+}
