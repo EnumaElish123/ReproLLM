@@ -188,7 +188,7 @@ P-B 只改 declared-but-undetected 分支：Python gap/unavailable 时逐 profil
 
 维护者已[接受 D-F 的具体规范和实现补丁](proposals/R07-C/format-lock-read/decision-accepted.json)，
 仅处理具备既有 R06-B 合格捕获来源的格式锁 body-read/decoder 已知失败，先保留 exact/qualified 信用，再逐包 SKIPPED/INFO，独立于 Python coverage。
-[P-B 报告](../../dogfooding/2026-10-21-r07c-lock-read-pb/README.md)记录实现与验证；
+[P-B 报告](../../dogfooding/2026-10-21-r07c-lock-read-pb/README.md)记录已通过的完整本地质量门及五项目/受影响验证；最终 HEAD CI 另行核对。
 [原提案](proposals/R07-C/format-lock-read/R07-C_associated_format_lock_failures.md)、PROPOSED 决定和 P-A 条件观察保持快照。
 错误结构/部分提取、一般依赖/requirements、遗漏 import、listing/README/config/framework 和广义证书继续 OPEN。
 
