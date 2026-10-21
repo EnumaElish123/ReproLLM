@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-S (spec §12.3.7): record the approved bounded decoded declaration
+  container/member type failures, preserving partial valid declarations, existing
+  diagnostics and exact/qualified-lock credit. Remaining used critical packages
+  follow D-M's repository-wide SKIPPED/INFO policy after D-F/D-S and D-L; an isolated
+  warning/promoted critical gate can stop failing. Missing/correct empty containers
+  and top-level YAML null retain their behavior. Package values, string grammar,
+  unknown Conda mappings and requirements graphs remain outside this slice.
+  No schema, gold, renderer, dependency or version change.
+
 - R07-C D-M (spec §12.3.6): retain known captured dependency-declaration body
   read/decoder failures internally. After existing credit and D-F/D-S/D-L paths,
   remaining critical-package missing-pin warnings become SKIPPED/INFO with

@@ -820,35 +820,37 @@ def test_shared_normalized_requirements_body_failure_is_read_and_recorded_once(
 
 
 @pytest.mark.parametrize(
-    ("basename", "body"),
+    ("basename", "body", "structural_issue"),
     [
-        ("pyproject.toml", "[tool.ruff]\n"),
-        ("pyproject.toml", "[project]\ndependencies=[]\n"),
-        ("pyproject.toml", "project=42\n"),
-        ("pyproject.toml", "tool=false\n"),
-        ("pyproject.toml", "[project]\ndependencies=42\n"),
-        ("pyproject.toml", "[tool.poetry]\ndependencies=[]\n"),
-        ("Pipfile", "[packages]\n"),
-        ("Pipfile", "packages=false\n"),
-        ("Pipfile", '[packages]\ntorch={version="==2.5.1",git="public"}\n'),
-        ("environment.yml", ""),
-        ("environment.yml", "null\n"),
-        ("environment.yml", "[]\n"),
-        ("environment.yml", "dependencies: false\n"),
-        ("environment.yml", "dependencies: [pytorch>=2, {pip: [false]}]\n"),
-        ("requirements.txt", "# comment only\n"),
-        ("requirements.txt", "not a requirement !!!\n"),
-        ("requirements.txt", "-e .\n--index-url https://example.invalid\n"),
+        ("pyproject.toml", "[tool.ruff]\n", False),
+        ("pyproject.toml", "[project]\ndependencies=[]\n", False),
+        ("pyproject.toml", "project=42\n", True),
+        ("pyproject.toml", "tool=false\n", True),
+        ("pyproject.toml", "[project]\ndependencies=42\n", True),
+        ("pyproject.toml", "[tool.poetry]\ndependencies=[]\n", True),
+        ("Pipfile", "[packages]\n", False),
+        ("Pipfile", "packages=false\n", True),
+        ("Pipfile", '[packages]\ntorch={version="==2.5.1",git="public"}\n', False),
+        ("environment.yml", "", False),
+        ("environment.yml", "null\n", False),
+        ("environment.yml", "[]\n", True),
+        ("environment.yml", "dependencies: false\n", True),
+        ("environment.yml", "dependencies: [pytorch>=2, {pip: [false]}]\n", True),
+        ("requirements.txt", "# comment only\n", False),
+        ("requirements.txt", "not a requirement !!!\n", False),
+        ("requirements.txt", "-e .\n--index-url https://example.invalid\n", False),
     ],
 )
 def test_readable_declaration_shapes_and_line_grammar_do_not_become_body_failures(
-    tmp_path: Path, basename: str, body: str
+    tmp_path: Path, basename: str, body: str, structural_issue: bool
 ) -> None:
     _write(tmp_path, basename, body)
 
     result = scan_dependencies(_DeclarationBodyScanner(tmp_path))
 
-    assert result.declaration_read_issues == {}
+    assert result.declaration_read_issues == (
+        {basename: "invalid_structure"} if structural_issue else {}
+    )
 
 
 @pytest.mark.parametrize("edge", ["absolute", "escape", "malformed", "unsupported", "excluded"])

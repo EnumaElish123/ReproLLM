@@ -28,7 +28,7 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
-DeclarationReadIssue = Literal["unreadable", "invalid_syntax"]
+DeclarationReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
 
@@ -590,6 +590,27 @@ def _leading_key(line: str) -> str | None:
 # --- pyproject.toml ---------------------------------------------------------
 
 
+def _is_string_list(value: object) -> bool:
+    return isinstance(value, list) and all(isinstance(item, str) for item in value)
+
+
+def _invalid_pyproject_structure(doc: dict[str, object]) -> bool:
+    project = doc.get("project", {})
+    tool = doc.get("tool", {})
+    if not isinstance(project, dict) or not isinstance(tool, dict):
+        return True
+    poetry = tool.get("poetry", {})
+    if not isinstance(poetry, dict):
+        return True
+    optional = project.get("optional-dependencies", {})
+    return (
+        not _is_string_list(project.get("dependencies", []))
+        or not isinstance(optional, dict)
+        or any(not _is_string_list(group) for group in optional.values())
+        or not isinstance(poetry.get("dependencies", {}), dict)
+    )
+
+
 def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> bool:
     """Parse once; return True only when a ``[project]`` or ``[tool.poetry]``
     table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
@@ -606,6 +627,9 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return False
+    # Inspect raw shapes before legacy falsey defaults and qualification discard them.
+    if _invalid_pyproject_structure(doc):
+        result.declaration_read_issues[path] = "invalid_structure"
     if "project" in doc and not isinstance(doc["project"], dict):
         result._uncertain_directories.add(PurePosixPath(path).parent)
     raw_tool = doc.get("tool", {})
@@ -682,6 +706,22 @@ _CONDA_VERSION_RE = re.compile(
 _CONDA_RANGE_RE = re.compile(r"(?:>=|<=|!=|>|<|~=)[0-9]+(?:\.[0-9]+)*")
 
 
+def _invalid_environment_structure(doc: object) -> bool:
+    if doc is None:
+        return False  # Retain the legacy empty/top-level-null boundary (spec §12.3.7).
+    if not isinstance(doc, dict):
+        return True
+    dependencies = doc.get("dependencies", [])
+    if not isinstance(dependencies, list):
+        return True
+    for entry in dependencies:
+        if not isinstance(entry, (str, dict)):
+            return True
+        if isinstance(entry, dict) and "pip" in entry and not _is_string_list(entry["pip"]):
+            return True
+    return False
+
+
 def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
     text = scanner.read_text(path)
     if text is None:
@@ -696,6 +736,8 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return
+    if _invalid_environment_structure(doc):
+        result.declaration_read_issues[path] = "invalid_structure"
     if not isinstance(doc, dict):
         return
     if "dependencies" in doc and not isinstance(doc["dependencies"], list):
@@ -763,6 +805,7 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
         section in doc and not isinstance(doc[section], dict)
         for section in ("packages", "dev-packages")
     ):
+        result.declaration_read_issues[path] = "invalid_structure"
         result._uncertain_directories.add(PurePosixPath(path).parent)
     if any(isinstance(doc.get(section), dict) for section in ("packages", "dev-packages")):
         result._project_manifests[path] = frozenset({"Pipfile.lock"})

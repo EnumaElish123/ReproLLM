@@ -168,13 +168,16 @@ def test_uncertain_manifest_blocks_ancestor_import_credit(
 
     context = AuditContext(tmp_path)
     warning = _torch_import_warning("sub/train.py")
-    expected = (
-        _declaration_body_scope_skip(warning, f"sub/{manifest}")
-        if broken in {"[project broken\n", "[packages broken\n", "dependencies: [broken\n"}
-        else warning
-    )
+    expected = _declaration_body_scope_skip(warning, f"sub/{manifest}")
     assert LlmCriticalDepsPinnedRule().check(context) == [expected]
     assert context.deps.qualified_lock_packages([("torch", "sub/train.py")]) == frozenset()
+    assert context.deps.declaration_read_issues == {
+        f"sub/{manifest}": (
+            "invalid_syntax"
+            if broken in {"[project broken\n", "[packages broken\n", "dependencies: [broken\n"}
+            else "invalid_structure"
+        )
+    }
 
 
 @pytest.mark.parametrize("alternative", ["dependencies: []\n", "dependencies: [broken\n"])
@@ -549,9 +552,17 @@ def test_uncertain_tool_container_preserves_an_independent_explicit_project_decl
             "train.py": "import torch\n",
         },
     )
-    expected = [] if declared else [_torch_import_warning("train.py")]
+    expected = (
+        []
+        if declared
+        else [_declaration_body_scope_skip(_torch_import_warning("train.py"), "pyproject.toml")]
+    )
+    context = AuditContext(tmp_path)
 
-    assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == expected
+    assert LlmCriticalDepsPinnedRule().check(context) == expected
+    assert context.deps.qualified_lock_packages([("torch", "train.py")]) == (
+        frozenset({"torch"}) if declared else frozenset()
+    )
 
 
 @pytest.mark.parametrize("lock_text", ["", "[[package broken\n"], ids=["empty", "malformed"])

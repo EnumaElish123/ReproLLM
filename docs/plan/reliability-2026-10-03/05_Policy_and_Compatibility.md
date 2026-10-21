@@ -206,12 +206,12 @@ P-B仅为已采集声明正文的现有读取/解码失败增加内部事实，�
 [P-A条件证据](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md)保持历史字节。
 decoded结构/行语法、一般include图、未知use和遗漏候选/listing/framework仍OPEN；不关闭整个R07-C。
 
-2026-10-22：[D-M-S 具体 P-A](proposals/R07-C/declaration-structure/R07-C_declaration_structure.md)
-准备成功解码后指定容器／成员类型的封闭检查表、部分正面证据保留和 D-M 消费复用，
-附未应用规范补丁、当前政策观察、独立验收预期及五项目来源影响。
-[决定](proposals/R07-C/declaration-structure/decision.json)保持 PROPOSED；
-[会话报告](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)区分实际观察与未来预期。
-单包值语法、requirements 引用图及更广覆盖继续 OPEN；具体接受前不改产品政策。
+2026-10-22：维护者已[具体接受 D-M-S 方案 A 及规范补丁](proposals/R07-C/declaration-structure/decision-accepted.json)。
+P-B 对成功解码后的指定容器／成员实施有界检查，保留部分有效声明、信用与既有优先级，复用 D-M 消费。
+[P-B 报告](../../dogfooding/2026-10-22-r07c-declaration-structure-pb/README.md)记录实施与最终验收状态。
+原[具体 P-A](proposals/R07-C/declaration-structure/R07-C_declaration_structure.md)、PROPOSED 决定和
+[P-A 报告](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)保持历史字节。
+单包值／字符串语法、requirements 引用图及更广覆盖继续 OPEN；本批不关闭整个 R07-C。
 
 ### 当前问题与推荐原则
 

@@ -1402,7 +1402,7 @@ _DECLARATION_BODY_CLI_MESSAGE = (
 
 
 def _declaration_body_cli_repo(
-    tmp_path: Path, severity: str = "CRITICAL", mixed: bool = False
+    tmp_path: Path, severity: str = "CRITICAL", mixed: bool = False, body: str = "[broken\n"
 ) -> Path:
     repo = make_git_repo(tmp_path / "declaration-body")
     profiles = repo / ".reprollm" / "profiles"
@@ -1426,7 +1426,7 @@ def _declaration_body_cli_repo(
     )
     (repo / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
     (repo / "unrelated").mkdir()
-    (repo / "unrelated/pyproject.toml").write_text("[broken\n", encoding="utf-8")
+    (repo / "unrelated/pyproject.toml").write_text(body, encoding="utf-8")
     commit_all(repo)
     return repo
 
@@ -1471,6 +1471,16 @@ def _expected_declaration_body_cli_skip() -> dict[str, Any]:
 
 
 @pytest.mark.parametrize(
+    "body",
+    [
+        "[broken\n",
+        "project=42\n",
+        "tool=false\n",
+        '[project]\noptional-dependencies={bad=false, good=["requests==2.1"]}\n',
+    ],
+    ids=["body-syntax", "structure-project", "structure-tool", "structure-partial-group"],
+)
+@pytest.mark.parametrize(
     ("severity", "threshold", "mixed", "restored_exit"),
     [
         ("WARNING", "never", False, 0),
@@ -1489,8 +1499,9 @@ def test_declaration_body_skip_keeps_overrides_thresholds_and_independent_warnin
     threshold: str,
     mixed: bool,
     restored_exit: int,
+    body: str,
 ) -> None:
-    repo = _declaration_body_cli_repo(tmp_path, severity, mixed)
+    repo = _declaration_body_cli_repo(tmp_path, severity, mixed, body)
     monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
     args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
 
@@ -1544,10 +1555,21 @@ def test_declaration_body_skip_keeps_overrides_thresholds_and_independent_warnin
     }
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        "[broken\n",
+        "project=42\n",
+        "tool=false\n",
+        '[project]\noptional-dependencies={bad=false, good=["requests==2.1"]}\n',
+    ],
+    ids=["body-syntax", "structure-project", "structure-tool", "structure-partial-group"],
+)
 def test_declaration_body_skip_preserves_full_json_text_export_and_suppression(
     tmp_path: Path,
+    body: str,
 ) -> None:
-    repo = _declaration_body_cli_repo(tmp_path)
+    repo = _declaration_body_cli_repo(tmp_path, body=body)
     before = {
         p.relative_to(repo): p.read_bytes()
         for p in repo.rglob("*")

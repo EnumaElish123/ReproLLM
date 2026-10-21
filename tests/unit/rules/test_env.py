@@ -1241,7 +1241,7 @@ def test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findin
 
 @pytest.mark.parametrize(
     "unverified",
-    ["readable-line", "directive", "cycle", "depth", "excluded-include", "wrong-shape"],
+    ["readable-line", "directive", "cycle", "depth", "excluded-include"],
 )
 def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_warning(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unverified: str
@@ -1262,8 +1262,6 @@ def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_war
             (tmp_path / f"{index}.txt").write_text(f"-r {index + 1}.txt\n", encoding="utf-8")
     elif unverified == "excluded-include":
         (tmp_path / "requirements-extra.txt").write_text("-r .venv/missing.txt\n", encoding="utf-8")
-    else:
-        (tmp_path / "pyproject.toml").write_text("project=42\n", encoding="utf-8")
     monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
     ctx = _format_credit_context(tmp_path)
 
@@ -1274,3 +1272,177 @@ def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_war
     assert finding.message == (
         "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
     )
+
+
+# --- R07-C D-M-S: decoded gaps retain partial credit and earlier policies ---
+
+
+def _declaration_structure_files(root: Path) -> str:
+    failed = _declaration_body_files(root)
+    (root / failed).write_text("project=42\n", encoding="utf-8")
+    return failed
+
+
+@pytest.mark.parametrize("coverage", ["complete", "gap", "unavailable", "inconsistent"])
+def test_declaration_structure_gap_uses_body_policy_independent_of_python_coverage(
+    tmp_path: Path, coverage: str
+) -> None:
+    failed = _declaration_structure_files(tmp_path)
+    ctx = _format_credit_context(tmp_path)
+    if coverage != "complete":
+        ctx._pyscan = PyScanResult(
+            coverage_observed=coverage != "unavailable",
+            python_candidate_count=2,
+            python_selected_count=1,
+            python_parsed_count=2 if coverage == "inconsistent" else 1,
+            python_file_limit=1,
+        )
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_declaration_body_skip(finding, [failed])
+    assert ctx.deps.declaration_read_issues == {failed: "invalid_structure"}
+
+
+@pytest.mark.parametrize(
+    "credit", ["partial-exact", "unrelated-exact", "conflicting-exact", "qualified-lock"]
+)
+@pytest.mark.parametrize("coverage", ["complete", "gap"])
+def test_declaration_structure_gap_never_revokes_positive_credit(
+    tmp_path: Path, credit: str, coverage: str
+) -> None:
+    failed = _declaration_structure_files(tmp_path)
+    if credit == "partial-exact":
+        (tmp_path / failed).write_text(
+            '[project]\ndependencies=["torch==2.5.1", 7]\n', encoding="utf-8"
+        )
+    elif credit == "qualified-lock":
+        (tmp_path / "pyproject.toml").write_text(
+            '[project]\ndependencies=["torch>=2", 7]\n', encoding="utf-8"
+        )
+        (tmp_path / "uv.lock").write_text('package=[{name="torch"},{}]\n', encoding="utf-8")
+    else:
+        (tmp_path / "pins").mkdir()
+        (tmp_path / "pins/requirements.txt").write_text("torch==2.5.1\n", encoding="utf-8")
+        if credit == "conflicting-exact":
+            (tmp_path / "requirements.txt").write_text("torch==2.4.0\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    if coverage == "gap":
+        ctx._pyscan = PyScanResult()
+    rule = LlmCriticalDepsPinnedRule()
+
+    assert rule.check(ctx) == []
+    assert (rule.pass_skip_reason(ctx) is not None) == (coverage == "gap")
+    assert ctx.deps.declaration_read_issues[failed] == "invalid_structure"
+
+
+def test_partial_exact_structure_gap_only_skips_remaining_used_package(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\ndependencies=["torch>=2", "openai==1.50.0", 7]\n', encoding="utf-8"
+    )
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_declaration_body_skip(finding, ["pyproject.toml"], "pyproject.toml", 2)
+    assert [(d.name, d.specifier, d.is_exact) for d in ctx.deps.declarations] == [
+        ("torch", ">=2", False),
+        ("openai", "==1.50.0", True),
+    ]
+
+
+@pytest.mark.parametrize("lock_body", ["[broken\n", "package=[{}]\n"])
+def test_associated_lock_failure_retains_precedence_over_structure_gap(
+    tmp_path: Path, lock_body: str
+) -> None:
+    manifest, line = _failed_format_files(tmp_path)
+    (tmp_path / "uv.lock").write_text(lock_body, encoding="utf-8")
+    (tmp_path / "unrelated").mkdir()
+    (tmp_path / "unrelated/Pipfile").write_text("packages=false\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+    assert ctx.deps.declaration_read_issues == {"unrelated/Pipfile": "invalid_structure"}
+
+
+def test_possible_format_credit_retains_precedence_over_structure_gap(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock_path = _format_credit_files(tmp_path)
+    (tmp_path / "unrelated").mkdir()
+    (tmp_path / "unrelated/Pipfile").write_text("packages=false\n", encoding="utf-8")
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_format_credit_skip(finding, [lock_path])
+    assert ctx.deps.declaration_read_issues == {"unrelated/Pipfile": "invalid_structure"}
+
+
+def test_body_and_structure_gaps_merge_sorted_evidence_for_each_uncredited_package(
+    tmp_path: Path,
+) -> None:
+    _declaration_structure_files(tmp_path)
+    (tmp_path / "requirements.txt").write_text("torch>=2\nopenai>=1\n", encoding="utf-8")
+    (tmp_path / "a").mkdir()
+    (tmp_path / "a/Pipfile").write_text("[broken\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+
+    findings = LlmCriticalDepsPinnedRule().check(ctx)
+
+    assert [f.message.split(" ")[0] for f in findings] == ["openai", "torch"]
+    _assert_declaration_body_skip(findings[1], ["a/Pipfile", "unrelated/pyproject.toml"])
+    assert [e.path for e in findings[0].evidence] == [
+        "requirements.txt",
+        "a/Pipfile",
+        "unrelated/pyproject.toml",
+    ]
+    assert (findings[0].status, findings[0].severity) == (FindingStatus.SKIPPED, Severity.INFO)
+    assert ctx.deps.declaration_read_issues == {
+        "a/Pipfile": "invalid_syntax",
+        "unrelated/pyproject.toml": "invalid_structure",
+    }
+
+
+@pytest.mark.parametrize("restoration", ["empty", "exact", "removed"])
+def test_structure_restoration_recomputes_credit_and_does_not_keep_stale_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, restoration: str
+) -> None:
+    failed = _declaration_structure_files(tmp_path)
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    _assert_declaration_body_skip(finding, [failed])
+    if restoration == "removed":
+        (tmp_path / failed).unlink()
+    else:
+        (tmp_path / failed).write_text(
+            '[project]\ndependencies=["torch==2.5.1"]\n'
+            if restoration == "exact"
+            else "[project]\ndependencies=[]\n",
+            encoding="utf-8",
+        )
+    restored = _format_credit_context(tmp_path)
+    findings = LlmCriticalDepsPinnedRule().check(restored)
+    assert restored.deps.declaration_read_issues == {}
+    if restoration == "exact":
+        assert findings == []
+    else:
+        assert len(findings) == 1
+        assert (findings[0].status, findings[0].severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert findings[0].message == (
+            "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+        )
+
+
+def test_structure_gap_does_not_invent_package_use(tmp_path: Path) -> None:
+    failed = _declaration_structure_files(tmp_path)
+    (tmp_path / "requirements.txt").write_text("requests>=2\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    rule = LlmCriticalDepsPinnedRule()
+    assert rule.applies(ctx) is False
+    assert rule.check(ctx) == []
+    assert rule.skip_reason(ctx) == "no LLM-critical package is declared or imported"
+    assert ctx.deps.declaration_read_issues == {failed: "invalid_structure"}
