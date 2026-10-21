@@ -1,0 +1,138 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -916,7 +916,7 @@
+ |---|---|---|---|
+ | `env.dependency_manifest_present` | CRITICAL | always | none of `pyproject.toml` (with `[project]` or `[tool.poetry]`), `requirements*.txt`, `environment.yml`, `uv.lock`, `poetry.lock`, `Pipfile` exists |
+ | `env.lockfile_present` | WARNING | dependency manifest present | no `uv.lock` / `poetry.lock` / `Pipfile.lock` / `conda-lock.yml` and no `requirements*.txt` satisfying the complete exact requirements closure contract below |
+-| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded format-lock SKIP policies in §§12.3.3–12.3.4. `pytorch` in conda counts as `torch`. |
++| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded format-lock SKIP policies in §§12.3.3–12.3.5. `pytorch` in conda counts as `torch`. |
+ | `env.python_version_declared` | WARNING | always | no `requires-python` in pyproject, no `.python-version`, no `python=` in environment.yml |
+ | `env.secret_files_ignored` | CRITICAL | always | any file matching the forbidden patterns of §16.4 (except the template names `.env.example`, `.env.sample`, `.env.template`) exists and is tracked or not ignored by git (`git check-ignore` false) |
+ | `env.reprollm_initialized` | INFO | level 0 only | `.reprollm/` or `reprollm.yaml` absent |
+@@ -973,9 +973,9 @@
+ No warning prose is parsed into coverage facts; no persisted fields are added.
+ 
+ Nonempty rule results remain unchanged except for the declared-but-undetected
+-profile branch in §12.3.2 and the bounded format-lock dependency branches in §§12.3.3–12.3.4.
++profile branch in §12.3.2 and the bounded format-lock dependency branches in §§12.3.3–12.3.5.
+ Applicability skips, all other built-in rules and generated project rules are
+-unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.4 remains an existing
++unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.5 remains an existing
+ bounded-scan conclusion relative to the captured dependency view; it may depend
+ on absence and be overturned by additional evidence. It is not relabelled as a
+ fully proven violation. Listing/dependency/framework uncertainty and broader
+@@ -1033,7 +1033,7 @@
+ outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
+ 
+ This continuation changes only the declared-but-undetected branch under the
+-specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.4
++specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.5
+ have their own bounded scopes. Upstream listing/detection completeness and broader
+ sufficient-certificate policy remain unchanged or OPEN. It does not close the whole R07-C task, certify child execution
+ or authorize rewriting historical reports.
+@@ -1123,10 +1123,11 @@
+ `poetry.lock`, `Pipfile.lock` and `conda-lock.yml`. The internal `Lockfile.read_issue`
+ is `unreadable` when the existing safe `RepoScanner.read_text` returns None, or
+ `invalid_syntax` when the corresponding TOML/JSON/YAML decoder raises its existing
+-caught decode-error class. These are fixed reason codes, never raw exception text.
+-The optional internal field defaults to None for legacy/manual values. None means
+-no recorded failure of these two kinds; it is not a certificate of complete grammar,
+-valid versions, exact builds, or successful installation. It adds no persisted field.
++caught decode-error class. Section 12.3.5 adds one bounded structural-extraction
++reason. These are fixed reason codes, never raw exception text. The optional internal
++field defaults to None for legacy/manual values. None means no recorded failure of
++these known kinds; it is not a certificate of complete grammar, valid versions,
++exact builds, or successful installation. It adds no persisted field.
+ 
+ The existing read boundary and budgets remain in force. Read failures include
+ existing refusals for unsafe paths, binary, oversize, missing or inaccessible
+@@ -1146,7 +1147,8 @@
+ 
+ Preserve the current canonical in-use set and existing exact-declaration and
+ qualified-lock credit first. For each remaining package, if at least one eligible
+-associated captured format lock has either recorded read_issue, emit one
++associated captured format lock has a recorded read_issue from this section or
++§12.3.5, emit one
+ SKIPPED/INFO instead of the used-but-unpinned FAIL/WARNING. This condition is
+ independent of primary-Python coverage, including complete or zero-candidate
+ views. Evaluate it before §12.3.3 when both policies could apply. Otherwise retain
+@@ -1181,11 +1183,11 @@
+ because they exist elsewhere in the repository. An exact declaration or another
+ qualified lock still wins even when a different associated lock failed.
+ 
+-Successful empty and successful nonmember lock bodies retain existing behavior.
+-Wrong top-level shapes, invalid collections or entries, partial package extraction,
+-unsupported grammar that does not raise the caught decoder error, missing candidates,
++Shape-compatible empty and nonmember lock bodies retain existing behavior, with
++the bounded structural-extraction checks in §12.3.5. Unsupported grammar outside
++those checks that does not raise the caught decoder error, missing candidates,
+ dependency-manifest/requirements failures and omitted import origins remain outside
+-this continuation. They are not silently certified by read_issue=None. Independent
++these continuations. They are not silently certified by read_issue=None. Independent
+ listing, dependency reading/grammar, README/config/framework completeness and broader
+ sufficient certificates remain OPEN R07-C work.
+ 
+@@ -1199,6 +1201,63 @@
+ warning; full JSON retains the new finding. No renderer, schema, rule ID,
+ historical report, gold answer or version is changed. This policy does not close
+ the whole R07-C task.
++
++### 12.3.5 Known associated format-lock extraction-structure failures (R07-C D-S)
++
++Extend the internal `LockReadIssue` vocabulary with `invalid_structure` for only
++the following decoded container and entry checks. They are a bounded extraction
++contract, not validation of the complete uv, Poetry, Pipenv or Conda lock format.
++Existing safe-read and caught decoder failures retain `unreadable` and
++`invalid_syntax` respectively and take precedence over these post-decode checks.
++
++| Captured format | Shape-compatible empty/missing values | Known structural failure |
++|---|---|---|
++| `uv.lock`, `poetry.lock` | Missing `package` key or an empty list | A present `package` value is not a list, or any list entry is not a mapping with a nonempty string `name` |
++| `Pipfile.lock` | Root mapping; missing `default`/`develop` sections or empty section mappings | Decoded root is not a mapping, or a present `default`/`develop` value is not a mapping |
++| `conda-lock.yml` | Decoded None (empty YAML or explicit top-level null); root mapping with a missing `package` key or empty list | Any other decoded root is not a mapping, a present `package` value is not a list, or any list entry is not a mapping with a nonempty string `name` |
++
++Present wrong-type values remain wrong-type even when falsey: do not coalesce
++`false`, zero, empty strings or empty mappings into a valid package list. A
++present null package collection or Pipfile section is invalid; this is distinct
++from an absent key. TOML has no decoded null. Keep the explicit legacy top-level
++Conda None exception; it is not evidence that every manager accepts that document.
++
++For list entry names, nonempty means the existing literal string value is not
++`""`; do not add name-spelling, version, build, hash or metadata validation.
++Whitespace-only or otherwise unsupported nonempty names retain existing capture
++and canonicalization behavior. Pipfile section keys and their associated values
++retain existing extraction behavior, including empty keys and opaque values; no
++new package-value schema is imposed here. Duplicate names and unsupported manager
++metadata remain governed by existing behavior. None does not certify those facts.
++
++Preserve the entire previously captured package set, including names from usable
++entries next to structurally invalid entries or from a usable Pipfile section next
++to a wrong-type section. Record `invalid_structure` as soon as any specified
++post-decode shape check fails. Preserve existing `unparsed` diagnostics exactly;
++the typed issue is not derived from warning text, and does not add raw content,
++new diagnostics or persisted fields. Do not retry or broaden content reads.
++
++Reuse §12.3.4's existing qualifying-origin association and per-package finding,
++message, fix hint, evidence order and paths for this third issue. Existing exact
++declarations and qualified package credit still win first, including a package
++already captured from a partially extracted associated lock. Only a remaining
++used package without that credit can become SKIPPED/INFO because a structurally
++failed captured lock is associated with an existing qualified use origin. No
++membership or pin credit is granted by SKIP. Python coverage is independent.
++Unassociated, wrong-manager, nearer-project or barrier-blocked locks retain
++existing outcomes. Keep D-F, D-L and the empty-result Python veto otherwise intact.
++
++Presence rules retain their existing artifact semantics. Mixed warnings,
++FAIL-only overrides, suppression, default text/export visibility and exit
++thresholds retain §12.3.4's contracts; the newly classified isolated WARNING or
++promoted CRITICAL can stop triggering exit 1. Full JSON retains SKIPPED findings.
++No rule ID, default severity, renderer, engine, scanner, persisted schema,
++dependency version, historical report or five-project gold is changed.
++
++This closes only these explicit decoded shapes. Other package-name grammar,
++package values/versions, manager format completeness, general dependency-manifest
++or requirements failures, omitted candidates/imports, listing and framework
++completeness, and broader sufficient certificates remain OPEN R07-C work.
+ 
+ ### 12.4 `model.*` (M3 presence, M4 lock)
+ 

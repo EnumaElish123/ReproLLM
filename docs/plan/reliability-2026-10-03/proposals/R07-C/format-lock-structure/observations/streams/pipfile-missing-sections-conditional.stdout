@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-21T06:28:36Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": []
+  },
+  "documents": {
+    "manifest": "sha256:1496d643c5569faddd53bc73e68a5f83bd4736049773fd0f0008b790472e29e5",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 1,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 0,
+    "skipped": 0
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 1,
+      "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "Pipfile",
+          "field": null,
+          "line": 2,
+          "value": ">=1",
+          "expected": null,
+          "note": "declared as >=1"
+        }
+      ],
+      "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

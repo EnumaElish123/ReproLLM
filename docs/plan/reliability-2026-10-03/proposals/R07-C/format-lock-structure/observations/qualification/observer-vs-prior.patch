@@ -1,0 +1,625 @@
+--- prior-D-F-observer.py
++++ D-S-observer.py
+@@ -1,4 +1,4 @@
+-"""Bounded unapplied D-F observation; all writes stay in this session's scratch."""
++"""Bounded unapplied D-S observation; all writes stay in this session's scratch."""
+ 
+ from __future__ import annotations
+ 
+@@ -11,17 +11,17 @@
+ import subprocess
+ import sys
+ import time
+-from pathlib import Path, PurePosixPath
+-
+-SESSION = Path("<PRIOR_DF_SESSION>")
++from pathlib import Path
++
++SESSION = Path("<SESSION>")
+ ROOT = SESSION / "worktree"
+ PREP = SESSION / "observation-prep"
+-SOURCE = SESSION / "draft/src/reprollm/rules/env.py"
+-DEPS_SOURCE = SESSION / "draft/src/reprollm/core/deps.py"
+-BASE = "60aa97f91b09c56e118c434c954ebc451679423e"
++SOURCE = ROOT / "src/reprollm/rules/env.py"
++DEPS_SOURCE = SESSION / "implementation-draft/deps-proposed.py"
++BASE = "603883fd8b7c7be2eac42d335a182ff654f93918"
+ ID = "env.llm_critical_deps_pinned"
+ SOURCE_SHA = "747f660816b010cff9f1d2061cbd97024f83ef57c3383491e4dc939ca6b6be13"
+-DEPS_SOURCE_SHA = "c2bf20235f20af34726db11be4dd3f7d767e40a082a64ad3d1e303bbc899e14c"
++DEPS_SOURCE_SHA = "d065a373c47cfcf10306199345ce68e8ccf331c980189112a29cde63b2b7696d"
+ MESSAGE = (
+     "{display} is used; an associated format lock could not be read "
+     "or parsed, so missing pin evidence is not established"
+@@ -78,7 +78,7 @@
+             assert stage == "0"
+             index[name.decode()] = (mode, blob)
+     assert tree == index
+-    prefix = "docs/plan/reliability-2026-10-03/proposals/R07-C/format-lock-read/"
++    prefix = "docs/plan/reliability-2026-10-03/proposals/R07-C/format-lock-structure/"
+     untracked = [
+         x.decode()
+         for x in subprocess.check_output(
+@@ -172,7 +172,7 @@
+         "reprollm.yaml": encoded(
+             {
+                 "schema_version": 1,
+-                "project": {"name": "synthetic-format-lock-read"},
++                "project": {"name": "synthetic-format-lock-structure"},
+                 "experiment": {"profiles": []},
+             }
+         ),
+@@ -191,7 +191,9 @@
+         case.get("manager", "uv"), case.get("package", "torch"), case.get("version", ">=1")
+     )
+     files[pair["manifest"]] = pair["body"]
+-    files[pair["lock"]] = pair[case.get("content", "syntax")]
++    files[pair["lock"]] = case.get(
++        "lock_body", pair[case.get("content", "syntax")].decode()
++    ).encode()
+     special = case.get("special")
+     if special == "exact":
+         files["requirements-exact.txt"] = b"torch==1.0\n"
+@@ -201,7 +203,7 @@
+         files[other["lock"]] = other["member"]
+     elif special in {"unpaired", "wrong-manager"}:
+         files.pop(pair["lock"])
+-        files["orphan/uv.lock"] = pair["syntax"]
++        files["orphan/uv.lock"] = case["lock_body"].encode()
+         files["requirements.txt"] = b"torch>=1\n"
+         files.pop(pair["manifest"])
+         if special == "wrong-manager":
+@@ -237,6 +239,15 @@
+         files[pair["lock"]] = b'[[package]]\nname = 123\n\n[[package]]\nname="numpy"\n'
+     elif special == "mixed":
+         files["requirements.txt"] = b"numpy>=1\n"
++    if special == "partial":
++        if case["manager"] == "pipfile":
++            files[pair["manifest"]] = b'[packages]\ntorch = ">=1"\nopenai = ">=1"\n'
++        elif case["manager"] == "conda":
++            files[pair["manifest"]] = b"dependencies:\n  - pytorch>=1\n  - openai>=1\n"
++        else:
++            files[pair["manifest"]] = (
++                b'[project]\nname="partial"\ndependencies=["torch>=1", "openai>=1"]\n'
++            )
+     if case.get("suppressed"):
+         files[".reprollm/config.yaml"] = encoded(
+             {"schema_version": 1, "audit": {"ignore": [{"rule": ID, "reason": REASON}]}}
+@@ -245,189 +256,171 @@
+ 
+ 
+ def cases():
++    """Finite literal fixtures and named expected deltas, before any product workers."""
+     rows = []
+-    for manager in ["uv", "poetry", "pipfile", "conda"]:
++
++    def add(id_, manager="uv", body="package = false\n", **changes):
+         pair = paired(manager)
+-        for content in ["syntax", "member"]:
+-            read = content == "member"
+-            rows.append(
+-                {
+-                    "id": manager + ("-controlled-read-failure" if read else "-syntax-failure"),
+-                    "kind": "api",
+-                    "manager": manager,
+-                    "package": "pytorch" if manager == "conda" else "torch",
+-                    "content": content,
+-                    "limit": 500,
+-                    "deny_read": pair["lock"] if read else None,
+-                    "changed": ["torch"],
+-                    "baseline": "warnings",
+-                    "issues": {pair["lock"]: "unreadable" if read else "invalid_syntax"},
+-                    "associations": {"torch": [pair["lock"]]},
+-                }
+-            )
+-    for content in ["empty", "nonmember", "member"]:
+-        rows.append(
+-            {
+-                "id": "valid-" + content,
+-                "kind": "api",
+-                "content": content,
+-                "limit": 500,
+-                "changed": [],
+-                "baseline": "pass" if content == "member" else "warnings",
+-                "issues": {},
+-                "associations": {},
+-            }
+-        )
+-    for special in [
+-        "exact",
+-        "other-credit",
+-        "unpaired",
+-        "wrong-manager",
+-        "nearer-root",
+-        "barrier",
+-        "import-origin",
+-        "python-gap-df",
+-        "existing-dl",
+-        "wrong-shape",
+-        "partial-invalid",
++        row = {
++            "id": id_,
++            "kind": "api",
++            "manager": manager,
++            "package": "pytorch" if manager == "conda" else "torch",
++            "lock_body": body,
++            "limit": 500,
++            "changed": ["torch"],
++            "baseline": "warnings",
++            "baseline_packages": ["torch"],
++            "baseline_issues": {},
++            "baseline_associations": {},
++            "issues": {pair["lock"]: "invalid_structure"},
++            "associations": {"torch": [pair["lock"]]},
++        }
++        row.update(changes)
++        rows.append(row)
++
++    add("uv-false-collection")
++    add("poetry-empty-map-collection", "poetry", "package = {}\n")
++    add("pipfile-null-section", "pipfile", '{"default": null}\n')
++    add("conda-empty-string-collection", "conda", 'package: ""\n')
++    add("uv-nonmapping-entry", body="package = [12]\n")
++    add("poetry-missing-name", "poetry", '[[package]]\nversion="1"\n')
++    add("uv-empty-name", body='[[package]]\nname=""\n')
++    add("conda-nonstring-name", "conda", "package:\n  - name: 12\n")
++    add("pipfile-root-list", "pipfile", "[]\n")
++    add("conda-root-false", "conda", "false\n")
++    for id_, manager, body in [
++        ("uv-partial-credit", "uv", '[[package]]\nname="torch"\n[[package]]\nname=12\n'),
++        ("pipfile-partial-credit", "pipfile", '{"default":{"torch":{}},"develop":false}\n'),
++        ("conda-partial-credit", "conda", "package:\n  - name: pytorch\n  - {}\n"),
+     ]:
+-        id_ = special + "-control"
+-        changed = ["torch"] if special in {"import-origin", "python-gap-df"} else []
+-        issue = (
+-            {}
+-            if special in {"existing-dl", "wrong-shape", "partial-invalid"}
+-            else {
+-                "orphan/uv.lock"
+-                if special in {"unpaired", "wrong-manager"}
+-                else "uv.lock": "invalid_syntax"
+-            }
+-        )
+-        associations = (
+-            {"torch": ["uv.lock"]}
+-            if special in {"exact", "other-credit", "import-origin", "python-gap-df"}
+-            else {}
+-        )
+-        rows.append(
+-            {
+-                "id": id_,
+-                "kind": "api",
+-                "special": special,
+-                "manager": "pipfile" if special == "wrong-shape" else "uv",
+-                "limit": 1 if special in {"python-gap-df", "existing-dl"} else 500,
+-                "changed": changed,
+-                "baseline": "pass"
+-                if special in {"exact", "other-credit"}
+-                else ("dl-skip" if special == "existing-dl" else "warnings"),
+-                "issues": issue,
+-                "associations": associations,
+-            }
+-        )
+-    rows.extend(
+-        [
+-            {
+-                "id": "cli-critical-failure",
+-                "kind": "cli",
+-                "override": "CRITICAL",
+-                "fail_on": "critical",
+-                "expected_baseline_exit": 1,
+-                "expected_conditional_exit": 0,
+-            },
+-            {
+-                "id": "cli-warning-mixed",
+-                "kind": "cli",
+-                "special": "mixed",
+-                "fail_on": "warning",
+-                "expected_baseline_exit": 1,
+-                "expected_conditional_exit": 1,
+-            },
+-            {
+-                "id": "cli-never-suppressed",
+-                "kind": "cli",
+-                "override": "CRITICAL",
+-                "suppressed": True,
+-                "fail_on": "never",
+-                "expected_baseline_exit": 0,
+-                "expected_conditional_exit": 0,
+-            },
+-        ]
+-    )
+-    for row in rows:
+-        row.setdefault("content", "syntax")
+-        row.setdefault("limit", 500)
+-        row.setdefault("changed", ["torch"])
+-        row.setdefault("baseline", "warnings")
+-        row.setdefault("issues", {"uv.lock": "invalid_syntax"})
+-        row.setdefault("associations", {"torch": ["uv.lock"]})
+-    assert len(rows) == 25
++        lock = paired(manager)["lock"]
++        add(
++            id_,
++            manager,
++            body,
++            special="partial",
++            changed=["openai"],
++            baseline_packages=["openai"],
++            associations={"openai": [lock], "torch": [lock]},
++        )
++    for id_, manager, body, baseline in [
++        ("uv-valid-empty", "uv", "", "warnings"),
++        ("conda-top-null", "conda", "null\n", "warnings"),
++        ("pipfile-missing-sections", "pipfile", '{"_meta":{}}\n', "warnings"),
++        ("pipfile-empty-sections", "pipfile", '{"default":{},"develop":{}}\n', "warnings"),
++        ("uv-member-control", "uv", '[[package]]\nname="torch"\n', "pass"),
++        ("conda-nonmember-control", "conda", "package:\n  - name: numpy\n", "warnings"),
++    ]:
++        add(id_, manager, body, changed=[], baseline=baseline, issues={}, associations={})
++    for special in ["unpaired", "wrong-manager", "nearer-root", "barrier"]:
++        lock = "orphan/uv.lock" if special in {"unpaired", "wrong-manager"} else "uv.lock"
++        add(
++            special + "-control",
++            special=special,
++            changed=[],
++            issues={lock: "invalid_structure"},
++            associations={},
++        )
++    for special in ["exact", "other-credit", "import-origin"]:
++        add(
++            special + "-control",
++            special=special,
++            changed=["torch"] if special == "import-origin" else [],
++            baseline="warnings" if special == "import-origin" else "pass",
++        )
++    add("python-gap-structure", special="python-gap-df", limit=1)
++    add(
++        "existing-df-syntax",
++        body='[[package\nname="torch"\n',
++        changed=[],
++        baseline="df-skip",
++        baseline_issues={"uv.lock": "invalid_syntax"},
++        baseline_associations={"torch": ["uv.lock"]},
++        issues={"uv.lock": "invalid_syntax"},
++    )
++    add(
++        "existing-dl-control",
++        special="existing-dl",
++        changed=[],
++        limit=1,
++        baseline="dl-skip",
++        issues={},
++        associations={},
++    )
++    add(
++        "cli-critical-structure",
++        kind="cli",
++        override="CRITICAL",
++        fail_on="critical",
++        expected_baseline_exit=1,
++        expected_conditional_exit=0,
++    )
++    add(
++        "cli-mixed-warning",
++        kind="cli",
++        special="mixed",
++        fail_on="warning",
++        baseline_packages=["numpy", "torch"],
++        expected_baseline_exit=1,
++        expected_conditional_exit=1,
++    )
++    add(
++        "cli-suppressed",
++        kind="cli",
++        override="CRITICAL",
++        suppressed=True,
++        fail_on="never",
++        expected_baseline_exit=0,
++        expected_conditional_exit=0,
++    )
++    assert len(rows) == 32
+     return rows
+ 
+ 
+ def qualify_source():
+-    baseline_env = ast.parse(
+-        (ROOT / "src/reprollm/rules/env.py").read_bytes(), feature_version=(3, 10)
+-    )
+-    proposed_env = ast.parse(SOURCE.read_bytes(), feature_version=(3, 10))
+-    old_class = next(
+-        n
+-        for n in baseline_env.body
+-        if isinstance(n, ast.ClassDef) and n.name == "LlmCriticalDepsPinnedRule"
+-    )
+-    new_class = next(
+-        n
+-        for n in proposed_env.body
+-        if isinstance(n, ast.ClassDef) and n.name == "LlmCriticalDepsPinnedRule"
+-    )
+-    old_check = next(
+-        n for n in old_class.body if isinstance(n, ast.FunctionDef) and n.name == "check"
+-    )
+-    new_check = next(
+-        n for n in new_class.body if isinstance(n, ast.FunctionDef) and n.name == "check"
+-    )
+-    rebuilt = copy.deepcopy(proposed_env)
+-    rebuilt_class = next(
+-        n
+-        for n in rebuilt.body
+-        if isinstance(n, ast.ClassDef) and n.name == "LlmCriticalDepsPinnedRule"
+-    )
+-    rebuilt_class.body = [
+-        copy.deepcopy(old_check) if isinstance(n, ast.FunctionDef) and n.name == "check" else n
+-        for n in rebuilt_class.body
+-    ]
+-    assert ast.dump(rebuilt, include_attributes=False) == ast.dump(
+-        baseline_env, include_attributes=False
+-    )
+-    old_deps = ast.parse((ROOT / "src/reprollm/core/deps.py").read_bytes(), feature_version=(3, 10))
+-    new_deps = ast.parse(DEPS_SOURCE.read_bytes(), feature_version=(3, 10))
++    assert SOURCE.read_bytes() == (ROOT / "src/reprollm/rules/env.py").read_bytes()
++    old = ast.parse((ROOT / "src/reprollm/core/deps.py").read_bytes(), feature_version=(3, 10))
++    new = ast.parse(DEPS_SOURCE.read_bytes(), feature_version=(3, 10))
+     allowed = {
+-        "Lockfile",
+-        "Declarations",
+-        "_collect_lockfiles",
++        "_lock_package_names",
+         "_toml_lockfile_packages",
+         "_pipfile_lock_packages",
+         "_conda_lock_packages",
+     }
+-    old_by_name = {
+-        n.name: n for n in old_deps.body if isinstance(n, (ast.ClassDef, ast.FunctionDef))
+-    }
+-    reconstructed = copy.deepcopy(new_deps)
+-    kept = []
+-    for n in reconstructed.body:
+-        if isinstance(n, ast.ImportFrom) and n.module == "typing":
+-            assert [x.name for x in n.names] == ["Literal"]
+-            continue
+-        if isinstance(n, ast.Assign) and any(
+-            isinstance(t, ast.Name) and t.id in {"LockReadIssue", "_FORMAT_LOCK_NAMES"}
+-            for t in n.targets
++    old_by_name = {n.name: n for n in old.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
++    old_issue = next(
++        n
++        for n in old.body
++        if isinstance(n, ast.Assign)
++        and any(isinstance(t, ast.Name) and t.id == "LockReadIssue" for t in n.targets)
++    )
++    rebuilt = copy.deepcopy(new)
++    for i, node in enumerate(rebuilt.body):
++        if isinstance(node, ast.Assign) and any(
++            isinstance(t, ast.Name) and t.id == "LockReadIssue" for t in node.targets
+         ):
+-            continue
+-        if isinstance(n, (ast.ClassDef, ast.FunctionDef)) and n.name in allowed:
+-            n = copy.deepcopy(old_by_name[n.name])
+-        kept.append(n)
+-    reconstructed.body = kept
+-    assert ast.dump(reconstructed, include_attributes=False) == ast.dump(
+-        old_deps, include_attributes=False
+-    )
+-    return new_check
++            rebuilt.body[i] = copy.deepcopy(old_issue)
++        elif isinstance(node, ast.FunctionDef) and node.name in allowed:
++            rebuilt.body[i] = copy.deepcopy(old_by_name[node.name])
++        elif isinstance(node, ast.ClassDef) and node.name == "Declarations":
++            method = next(
++                n
++                for n in node.body
++                if isinstance(n, ast.FunctionDef) and n.name == "unverified_lock_paths"
++            )
++            old_method = next(
++                n
++                for n in old_by_name["Declarations"].body
++                if isinstance(n, ast.FunctionDef) and n.name == "unverified_lock_paths"
++            )
++            assert (
++                isinstance(method.body[0], ast.Expr)
++                and isinstance(method.body[0].value, ast.Constant)
++                and isinstance(method.body[0].value.value, str)
++            )
++            method.body[0] = copy.deepcopy(old_method.body[0])
++    assert ast.dump(rebuilt, include_attributes=False) == ast.dump(old, include_attributes=False)
+ 
+ 
+ def prepare():
+@@ -487,9 +480,8 @@
+             "source_patches_applied": False,
+             "conditional_instrumentation": (
+                 "Load exact proposed deps source only into an isolated synthetic module and point "
+-                "AuditContext scan_dependencies at it; replace registered existing rule.check "
+-                "with AST-extracted proposed check in baseline globals. No file/module code "
+-                "on disk is replaced; all other registered class attributes retain identity."
++                "AuditContext scan_dependencies at it. The registered rule/check and all other "
++                "rule class attributes retain identity. No on-disk source is replaced."
+             ),
+         },
+     }
+@@ -506,20 +498,17 @@
+             "proposed_deps_sha256": DEPS_SOURCE_SHA,
+             "all_other_AST_nodes_unchanged": True,
+             "allowed_changed_deps_AST_targets": [
+-                "Lockfile",
+-                "Declarations",
+-                "_collect_lockfiles",
++                "LockReadIssue",
++                "Declarations.unverified_lock_paths docstring only",
++                "_lock_package_names",
+                 "_toml_lockfile_packages",
+                 "_pipfile_lock_packages",
+                 "_conda_lock_packages",
+-                "typing.Literal",
+-                "LockReadIssue",
+-                "_FORMAT_LOCK_NAMES",
+             ],
+             "observer_sha256": sha(Path(__file__).read_bytes()),
+             "old_methodology_read_source": {
+-                "path": "<PRIOR_DL_SESSION>/observation-prep/observe.py",
+-                "sha256": "28a2980113e2da19731e926620447d04c4051e7d6587de5b734815b69b738c5e",
++                "path": "<PRIOR_DF_SESSION>/observation-prep/observe.py",
++                "sha256": "b4eb963cb470701cd566cb53019a96e995065e44f261a270ed75ffb67c48cfed",
+             },
+             "product_workers_executed": 0,
+         },
+@@ -570,7 +559,6 @@
+     from reprollm.core import context, engine, proc, registry, scanner
+     from reprollm.reporters.json_ import audit_report_to_json
+     from reprollm.rules import env as env_module
+-    from reprollm.schemas.finding import FindingStatus
+ 
+     assert Path(reprollm.__file__).resolve() == ROOT / "src/reprollm/__init__.py"
+     assert Path(sys.prefix).resolve() == ROOT / ".venv" and reprollm.__version__ == "0.7.0"
+@@ -579,7 +567,7 @@
+     from reprollm.core.envinfo import installed_versions
+ 
+     visible_installed = installed_versions()
+-    assert not any(name in visible_installed for name in ["torch", "numpy"])
++    assert not any(name in visible_installed for name in ["torch", "numpy", "openai"])
+     original_proc = proc.run_cmd
+ 
+     def readonly_query(argv, *, cwd=None, **kwargs):
+@@ -607,11 +595,11 @@
+         import types
+ 
+         assert sha(DEPS_SOURCE.read_bytes()) == DEPS_SOURCE_SHA
+-        conditional_deps = types.ModuleType("reprollm.core._df_observation_deps")
++        conditional_deps = types.ModuleType("reprollm.core._ds_observation_deps")
+         conditional_deps.__package__ = "reprollm.core"
+         sys.modules[conditional_deps.__name__] = conditional_deps
+         exec(
+-            compile(DEPS_SOURCE.read_bytes(), "<UNAPPLIED_DF_DEPS>", "exec"),
++            compile(DEPS_SOURCE.read_bytes(), "<UNAPPLIED_DS_DEPS>", "exec"),
+             conditional_deps.__dict__,
+         )
+         original_deps = conditional_deps.scan_dependencies
+@@ -656,20 +644,9 @@
+     class_before = dict(cls.__dict__)
+     check_before = cls.check
+     assert registry.get_rule(ID) is cls
+-    if args.mode == "conditional":
+-        assert sha(SOURCE.read_bytes()) == SOURCE_SHA
+-        method = qualify_source()
+-        namespace = dict(env_module.__dict__)
+-        namespace.update({"PurePosixPath": PurePosixPath, "FindingStatus": FindingStatus})
+-        exec(
+-            compile(ast.Module(body=[method], type_ignores=[]), "<UNAPPLIED_ENV_CHECK>", "exec"),
+-            namespace,
+-        )
+-        cls.check = namespace["check"]
+-    assert set(cls.__dict__) == set(class_before)
+-    assert all(
+-        cls.__dict__[name] is value for name, value in class_before.items() if name != "check"
+-    )
++    assert sha(SOURCE.read_bytes()) == SOURCE_SHA
++    assert cls.check is check_before
++    assert all(cls.__dict__[name] is value for name, value in class_before.items())
+     assert registry.get_rule(ID) is cls
+     os.chdir(fixture)
+     diagnostics = []
+@@ -736,7 +713,7 @@
+     assert all(
+         cls.__dict__[name] is value for name, value in class_before.items() if name != "check"
+     )
+-    assert (cls.check is check_before) is (args.mode == "baseline")
++    assert cls.check is check_before
+     write(
+         args.metadata,
+         {
+@@ -755,7 +732,8 @@
+             "read_only_Git_queries": queries,
+             "network_GPU_provider_requests": 0,
+             "source_origin_verified": True,
+-            "conditional_source_sha256": SOURCE_SHA if args.mode == "conditional" else None,
++            "unchanged_registered_rule_source_sha256": SOURCE_SHA,
++            "registered_rule_check_unchanged": True,
+             "conditional_deps_sha256": DEPS_SOURCE_SHA if args.mode == "conditional" else None,
+             "conditional_deps_origin": selected_deps_origin,
+             "controlled_Path_open_refusals": controlled_refusals,
+@@ -764,7 +742,7 @@
+             "actual_timestamps_retained_not_fixed": True,
+             "source_file_bytes_unchanged": True,
+             "installed_suggestion_metadata": {
+-                name: visible_installed.get(name) for name in ["torch", "numpy"]
++                name: visible_installed.get(name) for name in ["torch", "numpy", "openai"]
+             },
+         },
+     )
+@@ -872,12 +850,14 @@
+     assert report["schema_version"] == 1 and report["reprollm_version"] == "0.7.0"
+     if case["baseline"] == "pass":
+         assert len(actual) == 1 and actual[0]["status"] == "pass"
+-    elif case["baseline"] == "dl-skip":
++    elif case["baseline"] in {"dl-skip", "df-skip"}:
+         assert len(actual) == 1 and actual[0]["status"] == "skipped"
+-        assert "captured format lock lists the package" in actual[0]["message"]
++        if case["baseline"] == "dl-skip":
++            assert "captured format lock lists the package" in actual[0]["message"]
++        else:
++            assert actual[0]["message"] == MESSAGE.format(display="torch")
+     else:
+-        packages = ["numpy", "torch"] if case.get("special") == "mixed" else ["torch"]
+-        assert [f["message"].split(" ", 1)[0] for f in actual] == packages
++        assert [f["message"].split(" ", 1)[0] for f in actual] == case["baseline_packages"]
+         assert all(
+             f["status"] == ("suppressed" if case.get("suppressed") else "fail") for f in actual
+         )
+@@ -890,11 +870,14 @@
+         "parsed": selected,
+         "limit": case["limit"],
+     }
+-    assert all(lock["read_issue"] is None for lock in meta["dependencies"]["lockfiles"])
+-    assert meta["dependencies"]["unverified_lock_paths"] == {}
+-    assert meta["controlled_Path_open_refusals"] == (
+-        [case["deny_read"]] if case.get("deny_read") else []
+-    )
++    assert {
++        lock["path"]: lock["read_issue"]
++        for lock in meta["dependencies"]["lockfiles"]
++        if lock["read_issue"] is not None
++    } == case["baseline_issues"]
++    assert meta["dependencies"]["unverified_lock_paths"] == case["baseline_associations"]
++    assert meta["controlled_Path_open_refusals"] == []
++    assert meta["registered_rule_check_unchanged"]
+ 
+ 
+ def compare_facts(case, baseline, conditional):
+@@ -902,7 +885,7 @@
+         copy.deepcopy(baseline["dependencies"]),
+         copy.deepcopy(conditional["dependencies"]),
+     )
+-    assert left.pop("unverified_lock_paths") == {}
++    assert left.pop("unverified_lock_paths") == case["baseline_associations"]
+     assert right.pop("unverified_lock_paths") == case["associations"]
+     assert {
+         lock["path"]: lock["read_issue"]
+@@ -921,6 +904,8 @@
+         "scan_warnings",
+         "read_only_Git_queries",
+         "controlled_Path_open_refusals",
++        "registered_rule_check_unchanged",
++        "unchanged_registered_rule_source_sha256",
+     ]:
+         assert baseline[key] == conditional[key], (case["id"], key)
+ 
+@@ -1109,7 +1094,7 @@
+             "schema_version": 1,
+             "status": "PASS_UNAPPLIED_CONDITIONAL_P_A_NOT_P_B_ACCEPTANCE",
+             "base_commit": BASE,
+-            "logical_API_cases": 22,
++            "logical_API_cases": sum(c["kind"] == "api" for c in plan["cases"]),
+             "separately_labelled_internal_API_probes": 0,
+             "logical_CLI_cases": 3,
+             "product_workers": sum(c["product_worker"] for c in commands),
+@@ -1122,7 +1107,7 @@
+             "summed_command_seconds": round(sum(c["elapsed_seconds"] for c in commands), 6),
+             "source_and_fixture_inputs_unchanged": True,
+             "scope": (
+-                "Synthetic baseline and in-memory unapplied-deps-and-check "
++                "Synthetic baseline and in-memory unapplied-deps-only "
+                 "conditional observation only; "
+                 "no production patch application, tests/full quality/Gate A/GPU/paid/provider "
+                 "execution, or policy approval."

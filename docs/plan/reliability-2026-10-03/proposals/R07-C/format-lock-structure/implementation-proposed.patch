@@ -1,0 +1,120 @@
+--- a/src/reprollm/core/deps.py
++++ b/src/reprollm/core/deps.py
+@@ -28,7 +28,7 @@
+ #: Distribution-name overrides applied before canonicalization (spec M2-T03).
+ _NAME_OVERRIDES = {"pytorch": "torch"}
+ 
+-LockReadIssue = Literal["unreadable", "invalid_syntax"]
++LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
+ _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
+ 
+ 
+@@ -96,7 +96,7 @@
+ class Lockfile:
+     path: str
+     packages: frozenset[str]  # canonicalized names
+-    # Only known body-read/syntax failures; None does not certify all package grammar.
++    # Only bounded read/syntax/structure failures; None does not certify all package grammar.
+     read_issue: LockReadIssue | None = None
+ 
+ 
+@@ -128,7 +128,7 @@
+     def unverified_lock_paths(
+         self, import_origins: Iterable[tuple[str, str]]
+     ) -> dict[str, tuple[str, ...]]:
+-        """Known unreadable/invalid locks associated with captured package-use origins."""
++        """Known failed locks associated with captured package-use origins."""
+         failed = {
+             lock
+             for lock in self.lockfiles
+@@ -810,18 +810,26 @@
+             result.lockfiles.append(Lockfile(path, graph.closures[path].packages))
+ 
+ 
+-def _lock_package_names(packages: list[object], path: str, result: Declarations) -> list[str]:
++def _lock_package_names(
++    packages: list[object], path: str, result: Declarations
++) -> tuple[list[str], LockReadIssue | None]:
+     names: list[str] = []
++    issue: LockReadIssue | None = None
+     for package in packages:
+         if not isinstance(package, dict):
++            issue = "invalid_structure"
+             continue
+         name = package.get("name")
+         if isinstance(name, str):
+             if name:
+                 names.append(name)
+-        elif name is not None:
+-            result.unparsed.append(f"{path}:0: invalid package name")
+-    return names
++            else:
++                issue = "invalid_structure"
++        else:
++            issue = "invalid_structure"
++            if name is not None:
++                result.unparsed.append(f"{path}:0: invalid package name")
++    return names, issue
+ 
+ 
+ def _toml_lockfile_packages(
+@@ -834,11 +842,14 @@
+         doc = tomllib.loads(text)
+     except tomllib.TOMLDecodeError:
+         return [], "invalid_syntax"
+-    packages = doc.get("package") or []
++    raw_packages = doc.get("package", [])
++    # Preserve legacy extraction and diagnostics for falsey unsupported containers.
++    packages = raw_packages or []
+     if not isinstance(packages, list):
+         result.unparsed.append(f"{path}:0: invalid package collection")
+-        return [], None
+-    return _lock_package_names(packages, path, result), None
++        return [], "invalid_structure"
++    names, issue = _lock_package_names(packages, path, result)
++    return names, "invalid_structure" if not isinstance(raw_packages, list) else issue
+ 
+ 
+ def _pipfile_lock_packages(
+@@ -853,13 +864,17 @@
+         return [], "invalid_syntax"
+     if not isinstance(doc, dict):
+         result.unparsed.append(f"{path}:0: invalid lock document")
+-        return [], None
++        return [], "invalid_structure"
+     names: list[str] = []
++    issue: LockReadIssue | None = None
+     for section in ("default", "develop"):
+-        table = doc.get(section) or {}
++        raw_table = doc.get(section, {})
++        table = raw_table or {}
+         if isinstance(table, dict):
+             names.extend(table.keys())
+-    return names, None
++        if not isinstance(raw_table, dict):
++            issue = "invalid_structure"
++    return names, issue
+ 
+ 
+ def _conda_lock_packages(
+@@ -872,11 +887,17 @@
+         doc = yaml.safe_load(text)
+     except yaml.YAMLError:
+         return [], "invalid_syntax"
+-    packages = doc.get("package") or [] if isinstance(doc, dict) else []
++    if doc is None:
++        return [], None
++    if not isinstance(doc, dict):
++        return [], "invalid_structure"
++    raw_packages = doc.get("package", [])
++    packages = raw_packages or []
+     if not isinstance(packages, list):
+         result.unparsed.append(f"{path}:0: invalid package collection")
+-        return [], None
+-    return _lock_package_names(packages, path, result), None
++        return [], "invalid_structure"
++    names, issue = _lock_package_names(packages, path, result)
++    return names, "invalid_structure" if not isinstance(raw_packages, list) else issue
+ 
+ 
+ def _requirements_all_pinned(path: str, graph: _RequirementsGraph) -> bool:

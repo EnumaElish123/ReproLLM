@@ -1,0 +1,1156 @@
+"""Bounded unapplied D-S observation; all writes stay in this session's scratch."""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import copy
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+SESSION = Path("<SESSION>")
+ROOT = SESSION / "worktree"
+PREP = SESSION / "observation-prep"
+SOURCE = ROOT / "src/reprollm/rules/env.py"
+DEPS_SOURCE = SESSION / "implementation-draft/deps-proposed.py"
+BASE = "603883fd8b7c7be2eac42d335a182ff654f93918"
+ID = "env.llm_critical_deps_pinned"
+SOURCE_SHA = "747f660816b010cff9f1d2061cbd97024f83ef57c3383491e4dc939ca6b6be13"
+DEPS_SOURCE_SHA = "d065a373c47cfcf10306199345ce68e8ccf331c980189112a29cde63b2b7696d"
+MESSAGE = (
+    "{display} is used; an associated format lock could not be read "
+    "or parsed, so missing pin evidence is not established"
+)
+FIX = (
+    "Review {display} declarations and associated format-lock files; restore readable, "
+    "valid lock contents before deciding that exact pin evidence is absent."
+)
+REASON = "synthetic deliberate suppression"
+FORMATS = {"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"}
+ALLOWED_GIT = {
+    ("git", "rev-parse", "--is-inside-work-tree"),
+    ("git", "rev-parse", "--show-toplevel"),
+    ("git", "rev-parse", "HEAD"),
+    ("git", "rev-parse", "--abbrev-ref", "HEAD"),
+    ("git", "branch", "--show-current"),
+    ("git", "status", "--porcelain"),
+    ("git", "remote", "get-url", "origin"),
+    ("git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"),
+}
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def encoded(value):
+    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode()
+
+
+def write(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(encoded(value))
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+def source_guard():
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT).decode().strip() == BASE
+    tree = {}
+    for row in subprocess.check_output(["git", "ls-tree", "-r", "-z", BASE], cwd=ROOT).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, kind, blob = meta.decode().split()
+            assert kind == "blob"
+            tree[name.decode()] = (mode, blob)
+    index = {}
+    for row in subprocess.check_output(["git", "ls-files", "-s", "-z"], cwd=ROOT).split(b"\0"):
+        if row:
+            meta, name = row.split(b"\t", 1)
+            mode, blob, stage = meta.decode().split()
+            assert stage == "0"
+            index[name.decode()] = (mode, blob)
+    assert tree == index
+    prefix = "docs/plan/reliability-2026-10-03/proposals/R07-C/format-lock-structure/"
+    untracked = [
+        x.decode()
+        for x in subprocess.check_output(
+            ["git", "ls-files", "--others", "--exclude-standard", "-z"], cwd=ROOT
+        ).split(b"\0")
+        if x
+    ]
+    assert all(name.startswith(prefix) for name in untracked), untracked
+    rows = {}
+    for name, (mode, blob) in tree.items():
+        p = ROOT / name
+        raw = os.readlink(p).encode() if mode == "120000" else p.read_bytes()
+        assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == blob, (
+            name
+        )
+        rows[name] = sha(raw)
+    return {
+        "schema_version": 1,
+        "commit": BASE,
+        "tracked_file_count": len(rows),
+        "all_HEAD_index_working_blobs_equal": True,
+        "inventory_sha256": sha(encoded(rows)),
+        "files": rows,
+        "allowed_untracked_prefix": prefix,
+    }
+
+
+def input_inventory(root):
+    rows = {}
+    for directory, names, files in os.walk(root):
+        names[:] = sorted(n for n in names if n != ".git")
+        for name in sorted(files):
+            p = Path(directory) / name
+            assert not p.is_symlink()
+            raw = p.read_bytes()
+            rows[p.relative_to(root).as_posix()] = {"sha256": sha(raw), "bytes": len(raw)}
+    return rows
+
+
+def paired(manager, package="torch", version=">=1", path=""):
+    prefix = path + "/" if path else ""
+    if manager == "uv":
+        manifest, lock = "pyproject.toml", "uv.lock"
+        body = (
+            '[project]\nname = "synthetic-pair"\nversion = "0.1"\n'
+            'dependencies = ["' + package + version + '"]\n'
+        )
+        member = '[[package]]\nname = "' + package + '"\nversion = "1.0"\n'
+        syntax, empty, nonmember = (
+            '[[package\nname = "torch"\n',
+            "",
+            '[[package]]\nname = "numpy"\n',
+        )
+    elif manager == "poetry":
+        manifest, lock = "pyproject.toml", "poetry.lock"
+        body = "[tool.poetry.dependencies]\n" + package + ' = "' + version + '"\n'
+        member = '[[package]]\nname = "' + package + '"\nversion = "1.0"\n'
+        syntax, empty, nonmember = (
+            '[[package\nname = "torch"\n',
+            "",
+            '[[package]]\nname = "numpy"\n',
+        )
+    elif manager == "pipfile":
+        manifest, lock = "Pipfile", "Pipfile.lock"
+        body = "[packages]\n" + package + ' = "' + version + '"\n'
+        member = json.dumps({"default": {package: {"version": "==1.0"}}}) + "\n"
+        syntax, empty, nonmember = (
+            '{"default": ',
+            "{}\n",
+            '{"default":{"numpy":{"version":"==1.0"}}}\n',
+        )
+    else:
+        assert manager == "conda"
+        manifest, lock = "environment.yml", "conda-lock.yml"
+        body = "dependencies:\n  - " + package + version + "\n"
+        member = "package:\n  - name: " + package + "\n    version: '1.0'\n"
+        syntax, empty, nonmember = "package: [\n", "{}\n", "package:\n  - name: numpy\n"
+    return {
+        "manifest": prefix + manifest,
+        "lock": prefix + lock,
+        "body": body.encode(),
+        "member": member.encode(),
+        "syntax": syntax.encode(),
+        "empty": empty.encode(),
+        "nonmember": nonmember.encode(),
+    }
+
+
+def fixture_files(case):
+    files = {
+        "reprollm.yaml": encoded(
+            {
+                "schema_version": 1,
+                "project": {"name": "synthetic-format-lock-structure"},
+                "experiment": {"profiles": []},
+            }
+        ),
+        ".reprollm/profiles/core.yaml": encoded(
+            {
+                "schema_version": 1,
+                "name": "core",
+                "description": "Synthetic target-only scope",
+                "rules": [ID],
+                "severity_overrides": {ID: case["override"]} if case.get("override") else {},
+            }
+        ),
+        "z.py": b"value = 1\n",
+    }
+    pair = paired(
+        case.get("manager", "uv"), case.get("package", "torch"), case.get("version", ">=1")
+    )
+    files[pair["manifest"]] = pair["body"]
+    files[pair["lock"]] = case.get(
+        "lock_body", pair[case.get("content", "syntax")].decode()
+    ).encode()
+    special = case.get("special")
+    if special == "exact":
+        files["requirements-exact.txt"] = b"torch==1.0\n"
+    elif special == "other-credit":
+        other = paired("poetry", path="other")
+        files[other["manifest"]] = other["body"]
+        files[other["lock"]] = other["member"]
+    elif special in {"unpaired", "wrong-manager"}:
+        files.pop(pair["lock"])
+        files["orphan/uv.lock"] = case["lock_body"].encode()
+        files["requirements.txt"] = b"torch>=1\n"
+        files.pop(pair["manifest"])
+        if special == "wrong-manager":
+            files["orphan/pyproject.toml"] = b'[tool.poetry.dependencies]\ntorch = ">=1"\n'
+    elif special in {"nearer-root", "barrier"}:
+        files[pair["manifest"]] = b'[project]\nname="root"\nversion="0.1"\ndependencies=[]\n'
+        files["z.py"] = b"value = 1\n"
+        files["nested/z.py"] = b"import torch\n"
+        files["nested/pyproject.toml"] = (
+            b'[project]\nname="nearer"\nversion="0.1"\ndependencies=[]\n'
+            if special == "nearer-root"
+            else b"[project\n"
+        )
+    elif special == "import-origin":
+        files[pair["manifest"]] = b'[project]\nname="root"\nversion="0.1"\ndependencies=[]\n'
+        files["z.py"] = b"import torch\n"
+    elif special == "python-gap-df":
+        files["a.py"] = b"value = 1\n"
+    elif special == "existing-dl":
+        files.pop(pair["manifest"])
+        files.pop(pair["lock"])
+        files["requirements.txt"] = b"torch>=1\n"
+        files["nested/pyproject.toml"] = (
+            b'[project]\nname="nested"\nversion="0.1"\ndependencies=[]\n'
+        )
+        files["nested/uv.lock"] = b'[[package]]\nname="torch"\n'
+        files["a.py"] = b"value = 1\n"
+        files.pop("z.py")
+        files["nested/z.py"] = b"import torch\n"
+    elif special == "wrong-shape":
+        files[pair["lock"]] = b"[]\n"
+    elif special == "partial-invalid":
+        files[pair["lock"]] = b'[[package]]\nname = 123\n\n[[package]]\nname="numpy"\n'
+    elif special == "mixed":
+        files["requirements.txt"] = b"numpy>=1\n"
+    if special == "partial":
+        if case["manager"] == "pipfile":
+            files[pair["manifest"]] = b'[packages]\ntorch = ">=1"\nopenai = ">=1"\n'
+        elif case["manager"] == "conda":
+            files[pair["manifest"]] = b"dependencies:\n  - pytorch>=1\n  - openai>=1\n"
+        else:
+            files[pair["manifest"]] = (
+                b'[project]\nname="partial"\ndependencies=["torch>=1", "openai>=1"]\n'
+            )
+    if case.get("suppressed"):
+        files[".reprollm/config.yaml"] = encoded(
+            {"schema_version": 1, "audit": {"ignore": [{"rule": ID, "reason": REASON}]}}
+        )
+    return files
+
+
+def cases():
+    """Finite literal fixtures and named expected deltas, before any product workers."""
+    rows = []
+
+    def add(id_, manager="uv", body="package = false\n", **changes):
+        pair = paired(manager)
+        row = {
+            "id": id_,
+            "kind": "api",
+            "manager": manager,
+            "package": "pytorch" if manager == "conda" else "torch",
+            "lock_body": body,
+            "limit": 500,
+            "changed": ["torch"],
+            "baseline": "warnings",
+            "baseline_packages": ["torch"],
+            "baseline_issues": {},
+            "baseline_associations": {},
+            "issues": {pair["lock"]: "invalid_structure"},
+            "associations": {"torch": [pair["lock"]]},
+        }
+        row.update(changes)
+        rows.append(row)
+
+    add("uv-false-collection")
+    add("poetry-empty-map-collection", "poetry", "package = {}\n")
+    add("pipfile-null-section", "pipfile", '{"default": null}\n')
+    add("conda-empty-string-collection", "conda", 'package: ""\n')
+    add("uv-nonmapping-entry", body="package = [12]\n")
+    add("poetry-missing-name", "poetry", '[[package]]\nversion="1"\n')
+    add("uv-empty-name", body='[[package]]\nname=""\n')
+    add("conda-nonstring-name", "conda", "package:\n  - name: 12\n")
+    add("pipfile-root-list", "pipfile", "[]\n")
+    add("conda-root-false", "conda", "false\n")
+    for id_, manager, body in [
+        ("uv-partial-credit", "uv", '[[package]]\nname="torch"\n[[package]]\nname=12\n'),
+        ("pipfile-partial-credit", "pipfile", '{"default":{"torch":{}},"develop":false}\n'),
+        ("conda-partial-credit", "conda", "package:\n  - name: pytorch\n  - {}\n"),
+    ]:
+        lock = paired(manager)["lock"]
+        add(
+            id_,
+            manager,
+            body,
+            special="partial",
+            changed=["openai"],
+            baseline_packages=["openai"],
+            associations={"openai": [lock], "torch": [lock]},
+        )
+    for id_, manager, body, baseline in [
+        ("uv-valid-empty", "uv", "", "warnings"),
+        ("conda-top-null", "conda", "null\n", "warnings"),
+        ("pipfile-missing-sections", "pipfile", '{"_meta":{}}\n', "warnings"),
+        ("pipfile-empty-sections", "pipfile", '{"default":{},"develop":{}}\n', "warnings"),
+        ("uv-member-control", "uv", '[[package]]\nname="torch"\n', "pass"),
+        ("conda-nonmember-control", "conda", "package:\n  - name: numpy\n", "warnings"),
+    ]:
+        add(id_, manager, body, changed=[], baseline=baseline, issues={}, associations={})
+    for special in ["unpaired", "wrong-manager", "nearer-root", "barrier"]:
+        lock = "orphan/uv.lock" if special in {"unpaired", "wrong-manager"} else "uv.lock"
+        add(
+            special + "-control",
+            special=special,
+            changed=[],
+            issues={lock: "invalid_structure"},
+            associations={},
+        )
+    for special in ["exact", "other-credit", "import-origin"]:
+        add(
+            special + "-control",
+            special=special,
+            changed=["torch"] if special == "import-origin" else [],
+            baseline="warnings" if special == "import-origin" else "pass",
+        )
+    add("python-gap-structure", special="python-gap-df", limit=1)
+    add(
+        "existing-df-syntax",
+        body='[[package\nname="torch"\n',
+        changed=[],
+        baseline="df-skip",
+        baseline_issues={"uv.lock": "invalid_syntax"},
+        baseline_associations={"torch": ["uv.lock"]},
+        issues={"uv.lock": "invalid_syntax"},
+    )
+    add(
+        "existing-dl-control",
+        special="existing-dl",
+        changed=[],
+        limit=1,
+        baseline="dl-skip",
+        issues={},
+        associations={},
+    )
+    add(
+        "cli-critical-structure",
+        kind="cli",
+        override="CRITICAL",
+        fail_on="critical",
+        expected_baseline_exit=1,
+        expected_conditional_exit=0,
+    )
+    add(
+        "cli-mixed-warning",
+        kind="cli",
+        special="mixed",
+        fail_on="warning",
+        baseline_packages=["numpy", "torch"],
+        expected_baseline_exit=1,
+        expected_conditional_exit=1,
+    )
+    add(
+        "cli-suppressed",
+        kind="cli",
+        override="CRITICAL",
+        suppressed=True,
+        fail_on="never",
+        expected_baseline_exit=0,
+        expected_conditional_exit=0,
+    )
+    assert len(rows) == 32
+    return rows
+
+
+def qualify_source():
+    assert SOURCE.read_bytes() == (ROOT / "src/reprollm/rules/env.py").read_bytes()
+    old = ast.parse((ROOT / "src/reprollm/core/deps.py").read_bytes(), feature_version=(3, 10))
+    new = ast.parse(DEPS_SOURCE.read_bytes(), feature_version=(3, 10))
+    allowed = {
+        "_lock_package_names",
+        "_toml_lockfile_packages",
+        "_pipfile_lock_packages",
+        "_conda_lock_packages",
+    }
+    old_by_name = {n.name: n for n in old.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
+    old_issue = next(
+        n
+        for n in old.body
+        if isinstance(n, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "LockReadIssue" for t in n.targets)
+    )
+    rebuilt = copy.deepcopy(new)
+    for i, node in enumerate(rebuilt.body):
+        if isinstance(node, ast.Assign) and any(
+            isinstance(t, ast.Name) and t.id == "LockReadIssue" for t in node.targets
+        ):
+            rebuilt.body[i] = copy.deepcopy(old_issue)
+        elif isinstance(node, ast.FunctionDef) and node.name in allowed:
+            rebuilt.body[i] = copy.deepcopy(old_by_name[node.name])
+        elif isinstance(node, ast.ClassDef) and node.name == "Declarations":
+            method = next(
+                n
+                for n in node.body
+                if isinstance(n, ast.FunctionDef) and n.name == "unverified_lock_paths"
+            )
+            old_method = next(
+                n
+                for n in old_by_name["Declarations"].body
+                if isinstance(n, ast.FunctionDef) and n.name == "unverified_lock_paths"
+            )
+            assert (
+                isinstance(method.body[0], ast.Expr)
+                and isinstance(method.body[0].value, ast.Constant)
+                and isinstance(method.body[0].value.value, str)
+            )
+            method.body[0] = copy.deepcopy(old_method.body[0])
+    assert ast.dump(rebuilt, include_attributes=False) == ast.dump(old, include_attributes=False)
+
+
+def prepare():
+    assert sha(SOURCE.read_bytes()) == SOURCE_SHA
+    assert sha(DEPS_SOURCE.read_bytes()) == DEPS_SOURCE_SHA
+    qualify_source()
+    assert not (PREP / "plan.json").exists()
+    before = source_guard()
+    rows = cases()
+    for case in rows:
+        files = fixture_files(case)
+        case["input_count"] = len(files)
+        case["input_inventory_sha256"] = sha(
+            encoded({k: {"sha256": sha(v), "bytes": len(v)} for k, v in sorted(files.items())})
+        )
+        case["small_input_bodies_utf8"] = {
+            k: v.decode() for k, v in files.items() if not k.startswith("business_")
+        }
+        if case.get("large_cli"):
+            case["generated_files_recipe"] = {
+                "pattern": "business_{index:04}.py",
+                "indices": [0, 499],
+                "body": "value = 1\n",
+                "count": 500,
+            }
+    plan = {
+        "schema_version": 1,
+        "status": "FROZEN_BEFORE_ANY_PRODUCT_WORKER",
+        "base_commit": BASE,
+        "proposed_source_sha256": SOURCE_SHA,
+        "proposed_deps_sha256": DEPS_SOURCE_SHA,
+        "observer_sha256": sha(Path(__file__).read_bytes()),
+        "cases": rows,
+        "expected_recipe": {
+            "source": (
+                "For named changed package only: retain positive original evidence; append "
+                "sorted unique format-lock paths from independently fixed fixture inputs; set "
+                "new fixed INFO/SKIPPED fields/message/fix_hint; apply pre-existing suppression, "
+                "stable severity/category/rule sort and recompute counts. No conditional output "
+                "supplies expected values."
+            ),
+            "message": MESSAGE,
+            "fix_hint_literal": FIX,
+            "fix_hint": (FIX),
+            "metadata_exemptions": ["root generated_at", "root reprollm_version"],
+            "baseline_and_conditional_schema_and_version_asserted": True,
+            "normalization": (
+                "Actual worker timestamps are retained. compare_gold --audit-metadata validates "
+                "full AuditReport and excludes only root spec T02 fields."
+            ),
+        },
+        "execution_boundaries": {
+            "network_GPU_provider": False,
+            "product_subprocesses": (
+                "Exact read-only Git whitelist in current synthetic fixture only"
+            ),
+            "source_patches_applied": False,
+            "conditional_instrumentation": (
+                "Load exact proposed deps source only into an isolated synthetic module and point "
+                "AuditContext scan_dependencies at it. The registered rule/check and all other "
+                "rule class attributes retain identity. No on-disk source is replaced."
+            ),
+        },
+    }
+    after = source_guard()
+    assert before == after
+    write(PREP / "source-at-preparation.json", before)
+    write(PREP / "plan.json", plan)
+    write(
+        PREP / "source-qualification.json",
+        {
+            "schema_version": 1,
+            "status": "PASS_STATIC_SCOPE_AND_PY310_AST",
+            "proposed_source_sha256": SOURCE_SHA,
+            "proposed_deps_sha256": DEPS_SOURCE_SHA,
+            "all_other_AST_nodes_unchanged": True,
+            "allowed_changed_deps_AST_targets": [
+                "LockReadIssue",
+                "Declarations.unverified_lock_paths docstring only",
+                "_lock_package_names",
+                "_toml_lockfile_packages",
+                "_pipfile_lock_packages",
+                "_conda_lock_packages",
+            ],
+            "observer_sha256": sha(Path(__file__).read_bytes()),
+            "old_methodology_read_source": {
+                "path": "<PRIOR_DF_SESSION>/observation-prep/observe.py",
+                "sha256": "b4eb963cb470701cd566cb53019a96e995065e44f261a270ed75ffb67c48cfed",
+            },
+            "product_workers_executed": 0,
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "status": "PREPARED",
+                "logical_cases": len(rows),
+                "worker_count": len(rows) * 2,
+                "plan_sha256": sha((PREP / "plan.json").read_bytes()),
+            }
+        )
+    )
+
+
+def worker(args):
+    case = next(row for row in read(PREP / "plan.json")["cases"] if row["id"] == args.case)
+    fixture = args.fixture.resolve()
+    queries = []
+    audit_calls = []
+
+    def audit_guard(event, data):
+        if event in {"socket.connect", "socket.getaddrinfo"}:
+            raise RuntimeError("Observer forbids network")
+        if event == "import" and str(data[0]).split(".")[0] in {
+            "torch",
+            "transformers",
+            "vllm",
+            "huggingface_hub",
+            "numpy",
+            "peft",
+        }:
+            raise RuntimeError("Observer forbids heavy imports")
+        if event == "subprocess.Popen":
+            executable, argv, cwd, _ = data
+            assert (
+                Path(str(executable)).name == "git"
+                and tuple(argv) in ALLOWED_GIT
+                and Path(cwd).resolve() == fixture
+            ), "Non-whitelisted child process"
+            audit_calls.append(list(argv))
+
+    sys.addaudithook(audit_guard)
+    from typer.testing import CliRunner
+
+    import reprollm
+    from reprollm.core import context, engine, proc, registry, scanner
+    from reprollm.reporters.json_ import audit_report_to_json
+    from reprollm.rules import env as env_module
+
+    assert Path(reprollm.__file__).resolve() == ROOT / "src/reprollm/__init__.py"
+    assert Path(sys.prefix).resolve() == ROOT / ".venv" and reprollm.__version__ == "0.7.0"
+    original_env_bytes = (ROOT / "src/reprollm/rules/env.py").read_bytes()
+    original_deps_bytes = (ROOT / "src/reprollm/core/deps.py").read_bytes()
+    from reprollm.core.envinfo import installed_versions
+
+    visible_installed = installed_versions()
+    assert not any(name in visible_installed for name in ["torch", "numpy", "openai"])
+    original_proc = proc.run_cmd
+
+    def readonly_query(argv, *, cwd=None, **kwargs):
+        assert tuple(argv) in ALLOWED_GIT and Path(cwd).resolve() == fixture
+        result = original_proc(argv, cwd=cwd, **kwargs)
+        queries.append(
+            {
+                "argv": list(argv),
+                "cwd": "<CASE>",
+                "exit": result.returncode,
+                "stdout_sha256": sha(result.stdout.encode()),
+                "stderr_sha256": sha(result.stderr.encode()),
+            }
+        )
+        return result
+
+    proc.run_cmd = readonly_query
+    scanner.MAX_PYTHON_FILES = case["limit"]
+    scans = []
+    deps_snapshots = []
+    original_scan = context.scan_python
+    original_deps = context.scan_dependencies
+    selected_deps_origin = "COMMITTED_BASELINE"
+    if args.mode == "conditional":
+        import types
+
+        assert sha(DEPS_SOURCE.read_bytes()) == DEPS_SOURCE_SHA
+        conditional_deps = types.ModuleType("reprollm.core._ds_observation_deps")
+        conditional_deps.__package__ = "reprollm.core"
+        sys.modules[conditional_deps.__name__] = conditional_deps
+        exec(
+            compile(DEPS_SOURCE.read_bytes(), "<UNAPPLIED_DS_DEPS>", "exec"),
+            conditional_deps.__dict__,
+        )
+        original_deps = conditional_deps.scan_dependencies
+        selected_deps_origin = "UNAPPLIED_ISOLATED_EXACT_SOURCE"
+
+    def recorded_scan(fs):
+        result = original_scan(fs)
+        actual = {
+            "observed": result.coverage_observed,
+            "candidate": result.python_candidate_count,
+            "selected": result.python_selected_count,
+            "parsed": result.python_parsed_count,
+            "limit": result.python_file_limit,
+        }
+        if case.get("internal_probe") == "unobserved":
+            result.coverage_observed = False
+        elif case.get("internal_probe") == "invalid-counts":
+            result.python_selected_count = 0
+        scans.append((result, actual))
+        return result
+
+    def recorded_deps(fs):
+        result = original_deps(fs)
+        deps_snapshots.append(result)
+        return result
+
+    context.scan_python = recorded_scan
+    context.scan_dependencies = recorded_deps
+    original_open = Path.open
+    controlled_refusals = []
+    if case.get("deny_read"):
+        denied = fixture / case["deny_read"]
+
+        def controlled_open(path, *pos, **kw):
+            if path.resolve() == denied:
+                controlled_refusals.append(case["deny_read"])
+                raise PermissionError("Synthetic controlled content read refusal")
+            return original_open(path, *pos, **kw)
+
+        Path.open = controlled_open
+    cls = env_module.LlmCriticalDepsPinnedRule
+    class_before = dict(cls.__dict__)
+    check_before = cls.check
+    assert registry.get_rule(ID) is cls
+    assert sha(SOURCE.read_bytes()) == SOURCE_SHA
+    assert cls.check is check_before
+    assert all(cls.__dict__[name] is value for name, value in class_before.items())
+    assert registry.get_rule(ID) is cls
+    os.chdir(fixture)
+    diagnostics = []
+    started = time.monotonic()
+    if case["kind"] == "cli":
+        from reprollm.cli.main import app
+
+        result = CliRunner().invoke(
+            app,
+            ["audit", ".", "--format", "json", "--fail-on", case["fail_on"]],
+            catch_exceptions=False,
+        )
+        stdout, stderr, code = result.stdout, result.stderr, result.exit_code
+    else:
+        report = engine.run_audit(fixture, target=".", diagnostics=diagnostics)
+        stdout, stderr, code = audit_report_to_json(report) + "\n", "", 0
+    elapsed = round(time.monotonic() - started, 6)
+    assert len(scans) == len(deps_snapshots) == 1 and len(audit_calls) == len(queries)
+    pyscan, actual_counts = scans[0]
+    deps = deps_snapshots[0]
+    snapshot = {
+        "manifest_present": deps.manifest_present,
+        "declarations": [vars(d) for d in deps.declarations],
+        "unparsed": list(deps.unparsed),
+        "lockfiles": [
+            {
+                "path": lock.path,
+                "packages": sorted(lock.packages),
+                "read_issue": getattr(lock, "read_issue", None),
+            }
+            for lock in deps.lockfiles
+        ],
+        "qualified_packages_for_actual_imports": sorted(
+            deps.qualified_lock_packages(
+                (env_module.canonical_dep_name(info.module.split(".", 1)[0]), info.path)
+                for info in pyscan.imports
+            )
+        ),
+    }
+    import_origins = [
+        (env_module.canonical_dep_name(info.module.split(".", 1)[0]), info.path)
+        for info in pyscan.imports
+    ]
+    snapshot["unverified_lock_paths"] = (
+        {key: list(value) for key, value in deps.unverified_lock_paths(import_origins).items()}
+        if hasattr(deps, "unverified_lock_paths")
+        else {}
+    )
+    snapshot["project_manifests"] = {
+        key: sorted(value) for key, value in sorted(deps._project_manifests.items())
+    }
+    snapshot["uncertain_directories"] = sorted(
+        path.as_posix() for path in deps._uncertain_directories
+    )
+    coverage = {
+        "observed": pyscan.coverage_observed,
+        "candidate": pyscan.python_candidate_count,
+        "selected": pyscan.python_selected_count,
+        "parsed": pyscan.python_parsed_count,
+        "limit": pyscan.python_file_limit,
+    }
+    assert (ROOT / "src/reprollm/rules/env.py").read_bytes() == original_env_bytes
+    assert (ROOT / "src/reprollm/core/deps.py").read_bytes() == original_deps_bytes
+    assert all(
+        cls.__dict__[name] is value for name, value in class_before.items() if name != "check"
+    )
+    assert cls.check is check_before
+    write(
+        args.metadata,
+        {
+            "schema_version": 1,
+            "case": case["id"],
+            "kind": case["kind"],
+            "mode": args.mode,
+            "exit": code,
+            "elapsed_seconds": elapsed,
+            "coverage": coverage,
+            "actual_scan_counts_before_explicit_internal_probe": actual_counts,
+            "imports": [vars(i) for i in pyscan.imports],
+            "diagnostics": diagnostics,
+            "scan_warnings": list(pyscan.warnings),
+            "dependencies": snapshot,
+            "read_only_Git_queries": queries,
+            "network_GPU_provider_requests": 0,
+            "source_origin_verified": True,
+            "unchanged_registered_rule_source_sha256": SOURCE_SHA,
+            "registered_rule_check_unchanged": True,
+            "conditional_deps_sha256": DEPS_SOURCE_SHA if args.mode == "conditional" else None,
+            "conditional_deps_origin": selected_deps_origin,
+            "controlled_Path_open_refusals": controlled_refusals,
+            "controlled_read_refusal_only_not_native_permission_probe": bool(case.get("deny_read")),
+            "all_other_rule_class_attributes_identical": True,
+            "actual_timestamps_retained_not_fixed": True,
+            "source_file_bytes_unchanged": True,
+            "installed_suggestion_metadata": {
+                name: visible_installed.get(name) for name in ["torch", "numpy", "openai"]
+            },
+        },
+    )
+    sys.stdout.write(stdout)
+    sys.stderr.write(stderr)
+    return code
+
+
+def expected_report(baseline, case):
+    result = copy.deepcopy(baseline)
+    for canonical in case["changed"]:
+        display = canonical
+        expected_original = (
+            f"{display} is used but not pinned to an exact version "
+            f"(suggestion: {display}==<version>)"
+        )
+        matches = [
+            finding
+            for finding in result["findings"]
+            if finding["rule_id"] == ID and finding["message"] == expected_original
+        ]
+        assert len(matches) == 1, (case["id"], expected_original)
+        finding = matches[0]
+        assert finding["status"] == ("suppressed" if case.get("suppressed") else "fail")
+        evidence = copy.deepcopy(finding["evidence"])
+        if case.get("suppressed"):
+            assert evidence[-1]["field"] == "audit.ignore"
+            evidence.pop()
+        paths = case["associations"].get(canonical, [])
+        assert paths
+        for path in paths:
+            evidence.append(
+                {
+                    "kind": "file",
+                    "path": path,
+                    "field": None,
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": f"{display} associated; lock package contents unverified",
+                }
+            )
+        if case.get("suppressed"):
+            evidence.append(
+                {
+                    "kind": "field",
+                    "path": ".reprollm/config.yaml",
+                    "field": "audit.ignore",
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": f"suppressed: original severity INFO; reason: {REASON}",
+                }
+            )
+        finding.update(
+            {
+                "severity": "INFO",
+                "status": "suppressed" if case.get("suppressed") else "skipped",
+                "severity_origin": "default",
+                "message": MESSAGE.format(display=display),
+                "evidence": evidence,
+                "fix_hint": (FIX.format(display=display)),
+            }
+        )
+    ranks = {"CRITICAL": 3, "WARNING": 2, "INFO": 1, "PASS": 0}
+    categories = [
+        "code",
+        "env",
+        "exec",
+        "model",
+        "dataset",
+        "gen",
+        "prompt",
+        "eval",
+        "judge",
+        "train",
+        "privacy",
+        "consistency",
+        "project",
+    ]
+    result["findings"].sort(
+        key=lambda item: (
+            -ranks[item["severity"]],
+            categories.index(item["category"]),
+            item["rule_id"],
+        )
+    )
+    result["summary"] = {
+        **{
+            severity.lower(): sum(
+                f["status"] == "fail" and f["severity"] == severity for f in result["findings"]
+            )
+            for severity in ["CRITICAL", "WARNING", "INFO"]
+        },
+        "pass": sum(f["status"] == "pass" for f in result["findings"]),
+        "suppressed": sum(f["status"] == "suppressed" for f in result["findings"]),
+        "skipped": sum(f["status"] == "skipped" for f in result["findings"]),
+    }
+    return result
+
+
+def check_baseline(case, report, meta):
+    actual = report["findings"]
+    assert all(f["rule_id"] == ID for f in actual)
+    assert report["schema_version"] == 1 and report["reprollm_version"] == "0.7.0"
+    if case["baseline"] == "pass":
+        assert len(actual) == 1 and actual[0]["status"] == "pass"
+    elif case["baseline"] in {"dl-skip", "df-skip"}:
+        assert len(actual) == 1 and actual[0]["status"] == "skipped"
+        if case["baseline"] == "dl-skip":
+            assert "captured format lock lists the package" in actual[0]["message"]
+        else:
+            assert actual[0]["message"] == MESSAGE.format(display="torch")
+    else:
+        assert [f["message"].split(" ", 1)[0] for f in actual] == case["baseline_packages"]
+        assert all(
+            f["status"] == ("suppressed" if case.get("suppressed") else "fail") for f in actual
+        )
+    eligible = sum(name.endswith(".py") for name in fixture_files(case))
+    selected = min(eligible, case["limit"])
+    assert meta["coverage"] == {
+        "observed": True,
+        "candidate": eligible,
+        "selected": selected,
+        "parsed": selected,
+        "limit": case["limit"],
+    }
+    assert {
+        lock["path"]: lock["read_issue"]
+        for lock in meta["dependencies"]["lockfiles"]
+        if lock["read_issue"] is not None
+    } == case["baseline_issues"]
+    assert meta["dependencies"]["unverified_lock_paths"] == case["baseline_associations"]
+    assert meta["controlled_Path_open_refusals"] == []
+    assert meta["registered_rule_check_unchanged"]
+
+
+def compare_facts(case, baseline, conditional):
+    left, right = (
+        copy.deepcopy(baseline["dependencies"]),
+        copy.deepcopy(conditional["dependencies"]),
+    )
+    assert left.pop("unverified_lock_paths") == case["baseline_associations"]
+    assert right.pop("unverified_lock_paths") == case["associations"]
+    assert {
+        lock["path"]: lock["read_issue"]
+        for lock in right["lockfiles"]
+        if lock["read_issue"] is not None
+    } == case["issues"]
+    for rows in [left["lockfiles"], right["lockfiles"]]:
+        for lock in rows:
+            lock.pop("read_issue")
+    assert left == right, (case["id"], "old dependency facts changed")
+    for key in [
+        "coverage",
+        "actual_scan_counts_before_explicit_internal_probe",
+        "imports",
+        "diagnostics",
+        "scan_warnings",
+        "read_only_Git_queries",
+        "controlled_Path_open_refusals",
+        "registered_rule_check_unchanged",
+        "unchanged_registered_rule_source_sha256",
+    ]:
+        assert baseline[key] == conditional[key], (case["id"], key)
+
+
+def execute():
+    assert sha(SOURCE.read_bytes()) == SOURCE_SHA
+    assert sha(DEPS_SOURCE.read_bytes()) == DEPS_SOURCE_SHA
+    plan = read(PREP / "plan.json")
+    assert (
+        plan["observer_sha256"] == sha(Path(__file__).read_bytes())
+        and plan["proposed_source_sha256"] == SOURCE_SHA
+        and plan["proposed_deps_sha256"] == DEPS_SOURCE_SHA
+    )
+    output = SESSION / "observations/execution-1"
+    assert not output.exists()
+    output.mkdir(parents=True)
+    before = source_guard()
+    write(output / "source-before.json", before)
+    commands = []
+    checks = []
+    started = time.monotonic()
+    env = {
+        "PATH": str(ROOT / ".venv/bin") + ":/usr/bin:/bin",
+        "PYTHONPATH": str(ROOT / "src"),
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONUTF8": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "120",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "GIT_CONFIG_NOSYSTEM": "1",
+    }
+
+    def run(label, argv, cwd, expected=0, product=False):
+        tick = time.monotonic()
+        result = subprocess.run(argv, cwd=cwd, capture_output=True, timeout=90, env=env)
+        folder = output / "streams"
+        folder.mkdir(exist_ok=True)
+        stdout_path, stderr_path = folder / (label + ".stdout"), folder / (label + ".stderr")
+        stdout_path.write_bytes(result.stdout)
+        stderr_path.write_bytes(result.stderr)
+        row = {
+            "label": label,
+            "product_worker": product,
+            "argv": [
+                part.replace(str(ROOT), "<CANDIDATE>").replace(str(SESSION), "<SESSION>")
+                for part in argv
+            ],
+            "cwd": "<CASE>" if str(cwd).startswith(str(output / "inputs")) else "<CANDIDATE>",
+            "exit": result.returncode,
+            "expected_exit": expected,
+            "elapsed_seconds": round(time.monotonic() - tick, 6),
+            "stdout": stdout_path.relative_to(output).as_posix(),
+            "stderr": stderr_path.relative_to(output).as_posix(),
+            "stdout_sha256": sha(result.stdout),
+            "stderr_sha256": sha(result.stderr),
+        }
+        commands.append(row)
+        write(output / "commands.json", {"schema_version": 1, "commands": commands})
+        assert result.returncode == expected, label + ": unexpected command exit"
+        return result
+
+    try:
+        for case in plan["cases"]:
+            label = case["id"]
+            folder = output / label
+            folder.mkdir()
+            fixture = output / "inputs" / label
+            fixture.mkdir(parents=True)
+            for name, body in fixture_files(case).items():
+                dest = fixture / name
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(body)
+            captured = input_inventory(fixture)
+            assert (
+                len(captured) == case["input_count"]
+                and sha(encoded(captured)) == case["input_inventory_sha256"]
+            )
+            write(folder / "inputs-before.json", {"schema_version": 1, "files": captured})
+            for suffix, argv in [
+                ("git-init", ["git", "init", "--quiet"]),
+                ("git-add", ["git", "add", "--force", "--", "."]),
+                (
+                    "git-commit",
+                    [
+                        "git",
+                        "-c",
+                        "user.name=Synthetic Observer",
+                        "-c",
+                        "user.email=fixture@example.invalid",
+                        "commit",
+                        "--quiet",
+                        "-m",
+                        "Synthetic dependency coverage fixture",
+                    ],
+                ),
+            ]:
+                run(label + "-" + suffix, argv, fixture)
+            reports, metadata = {}, {}
+            for mode in ["baseline", "conditional"]:
+                if mode == "conditional":
+                    expected = expected_report(reports["baseline"], case)
+                    write(folder / "expected-conditional.json", expected)
+                    expected_sha_before_worker = sha(
+                        (folder / "expected-conditional.json").read_bytes()
+                    )
+                meta = folder / (mode + ".metadata.json")
+                argv = [
+                    str(ROOT / ".venv/bin/python"),
+                    str(Path(__file__)),
+                    "--worker",
+                    "--case",
+                    label,
+                    "--mode",
+                    mode,
+                    "--fixture",
+                    str(fixture),
+                    "--metadata",
+                    str(meta),
+                ]
+                result = run(
+                    label + "-" + mode, argv, ROOT, case.get("expected_" + mode + "_exit", 0), True
+                )
+                reports[mode] = json.loads(result.stdout)
+                metadata[mode] = read(meta)
+                if mode == "baseline":
+                    check_baseline(case, reports[mode], metadata[mode])
+                else:
+                    assert (
+                        sha((folder / "expected-conditional.json").read_bytes())
+                        == expected_sha_before_worker
+                    )
+            comparison = run(
+                label + "-full-comparison",
+                [
+                    str(ROOT / ".venv/bin/python"),
+                    str(ROOT / "scripts/compare_gold.py"),
+                    str(folder / "expected-conditional.json"),
+                    str(output / "streams" / (label + "-conditional.stdout")),
+                    "--audit-metadata",
+                ],
+                ROOT,
+            )
+            parsed = json.loads(comparison.stdout)
+            assert parsed["differences"] == [] and parsed["ignored_root_fields"] == [
+                "generated_at",
+                "reprollm_version",
+            ]
+            compare_facts(case, metadata["baseline"], metadata["conditional"])
+            assert (output / "streams" / (label + "-baseline.stderr")).read_bytes() == (
+                output / "streams" / (label + "-conditional.stderr")
+            ).read_bytes()
+            assert (output / "streams" / (label + "-baseline.stderr")).read_bytes() == b""
+            after = input_inventory(fixture)
+            write(folder / "inputs-after.json", {"schema_version": 1, "files": after})
+            assert after == captured
+            status = run(
+                label + "-git-clean",
+                ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+                fixture,
+            )
+            assert status.stdout == b""
+            checks.append(
+                {
+                    "case": label,
+                    "kind": case["kind"],
+                    "full_JSON_comparison": "PASS",
+                    "expected_JSON_written_before_conditional": True,
+                    "independent_expected_sha256": expected_sha_before_worker,
+                    "unchanged_existing_coverage_dependencies_queries_diagnostics_stderr": True,
+                    "new_typed_lock_issues_and_associations_match_frozen_case": True,
+                    "fixture_bytes_unchanged": True,
+                    "baseline_target_statuses": [
+                        f["status"] for f in reports["baseline"]["findings"]
+                    ],
+                    "conditional_target_statuses": [
+                        f["status"] for f in reports["conditional"]["findings"]
+                    ],
+                }
+            )
+            write(output / "checks.json", {"schema_version": 1, "checks": checks})
+            print(label + ": complete baseline/conditional audit comparison PASS", flush=True)
+        final = source_guard()
+        write(output / "source-after.json", final)
+        assert before == final
+        summary = {
+            "schema_version": 1,
+            "status": "PASS_UNAPPLIED_CONDITIONAL_P_A_NOT_P_B_ACCEPTANCE",
+            "base_commit": BASE,
+            "logical_API_cases": sum(c["kind"] == "api" for c in plan["cases"]),
+            "separately_labelled_internal_API_probes": 0,
+            "logical_CLI_cases": 3,
+            "product_workers": sum(c["product_worker"] for c in commands),
+            "full_JSON_comparisons": len(checks),
+            "observer_sha256": sha(Path(__file__).read_bytes()),
+            "proposed_source_sha256": SOURCE_SHA,
+            "proposed_deps_sha256": DEPS_SOURCE_SHA,
+            "plan_sha256": sha((PREP / "plan.json").read_bytes()),
+            "wall_seconds": round(time.monotonic() - started, 6),
+            "summed_command_seconds": round(sum(c["elapsed_seconds"] for c in commands), 6),
+            "source_and_fixture_inputs_unchanged": True,
+            "scope": (
+                "Synthetic baseline and in-memory unapplied-deps-only "
+                "conditional observation only; "
+                "no production patch application, tests/full quality/Gate A/GPU/paid/provider "
+                "execution, or policy approval."
+            ),
+        }
+        write(output / "summary.json", summary)
+        print(json.dumps(summary, sort_keys=True))
+    except BaseException as exc:
+        failure = {
+            "schema_version": 1,
+            "status": "FAIL_STOPPED_NOT_ACCEPTANCE",
+            "failure_kind": type(exc).__name__,
+            "message": str(exc).replace(str(SESSION), "<SESSION>"),
+            "last_command": commands[-1]["label"] if commands else None,
+            "completed_case_count": len(checks),
+            "product_workers_attempted": sum(c["product_worker"] for c in commands),
+        }
+        write(output / "failure.json", failure)
+        print(json.dumps(failure, sort_keys=True), flush=True)
+        raise
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--worker", action="store_true")
+    parser.add_argument("--root-authorized", action="store_true")
+    parser.add_argument("--case")
+    parser.add_argument("--mode", choices=["baseline", "conditional"])
+    parser.add_argument("--fixture", type=Path)
+    parser.add_argument("--metadata", type=Path)
+    args = parser.parse_args()
+    if args.worker:
+        return worker(args)
+    assert args.root_authorized
+    if args.prepare:
+        prepare()
+        return 0
+    assert args.execute
+    return execute()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
