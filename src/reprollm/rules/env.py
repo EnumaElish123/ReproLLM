@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import PurePosixPath
+
 from reprollm.core._toml import tomllib
 from reprollm.core.context import AuditContext
 from reprollm.core.deps import (
@@ -13,7 +15,7 @@ from reprollm.core.envinfo import LLM_CRITICAL_PACKAGES, installed_versions
 from reprollm.core.pyscan import ImportInfo
 from reprollm.core.redaction import is_forbidden_file
 from reprollm.core.registry import Rule, register_rule
-from reprollm.schemas.finding import Evidence, Finding, Severity
+from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
 
 #: LLM-critical names in canonical (comparison) space.
 _CRITICAL_CANON = {canonical_dep_name(name) for name in LLM_CRITICAL_PACKAGES}
@@ -117,6 +119,7 @@ class LlmCriticalDepsPinnedRule(Rule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         findings: list[Finding] = []
         deps = ctx.deps
+        python_gap = ctx.pyscan.coverage().pass_skip_reason() is not None
         locked = deps.qualified_lock_packages(
             (canonical_dep_name(info.module.split(".", 1)[0]), info.path)
             for info in ctx.pyscan.imports
@@ -129,6 +132,48 @@ class LlmCriticalDepsPinnedRule(Rule):
             if declarations:
                 continue
             display = _display_name(canonical)
+            possible_lock_paths = sorted(
+                {
+                    lock.path
+                    for lock in deps.lockfiles
+                    if PurePosixPath(lock.path).name
+                    in {"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"}
+                    and canonical in lock.packages
+                }
+            )
+            if python_gap and possible_lock_paths:
+                # Missing imports can qualify an existing format lock for this package.
+                findings.append(
+                    Finding(
+                        rule_id=self.id,
+                        aliases=list(self.aliases),
+                        category=self.category,
+                        severity=Severity.INFO,
+                        status=FindingStatus.SKIPPED,
+                        level=ctx.level,
+                        message=(
+                            f"{display} is used; Python analysis is incomplete or unavailable "
+                            "and a captured format lock lists the package, "
+                            "so missing pin evidence is not established"
+                        ),
+                        evidence=[
+                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                            *[
+                                Evidence(
+                                    kind="file",
+                                    path=path,
+                                    note=f"{display} listed; import-origin credit unverified",
+                                )
+                                for path in possible_lock_paths
+                            ],
+                        ],
+                        fix_hint=(
+                            f"Review {display} declarations and format-lock origins; complete "
+                            "Python analysis before deciding that exact pin evidence is absent."
+                        ),
+                    )
+                )
+                continue
             version = installed.get(display)
             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
             finding = self.finding(

@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-L: when primary-Python analysis is incomplete or unavailable, used-but-unpinned
+  critical packages that occur in captured format-lock package sets become SKIPPED/INFO.
+  This conservatively allows for missing import-origin lock credit; exact declarations,
+  qualified credit, other packages and complete-view behavior retain their contracts.
+  An absence-only warning or promoted critical gate may stop failing. This does not
+  certify dependency parsing or grant credit to an unassociated lock (spec §12.3.3).
+
 - P-B / R07-C declared-profile absence (spec §§12.3.1–12.3.2): when a declared
   non-core profile has no detection entry and primary-Python candidate coverage
   is incomplete or unavailable, report that profile as SKIPPED/INFO instead of

@@ -182,8 +182,9 @@ P-B 只改 declared-but-undetected 分支：Python gap/unavailable 时逐 profil
 下一步 [D-L 具体提案](proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md)已准备：
 在固定已采集依赖视图下，只对 Python gap/unavailable 且在格式 lock 包集合中出现的原待警告包逐项 SKIPPED/INFO，
 保留 exact/qualified 信用、其他包与完整视图旧行为；格式 membership 是保守上界，不赋予 lock 信用。
-[待决记录](proposals/R07-C/dependency-lock-credit/decision.json)仍为 PROPOSED，原 A/P 不覆盖本次规范变化。
-[本次 P-A](../../dogfooding/2026-10-21-r07c-dependency-pa/README.md)的条件对照与五项目零差异来源推导不等于 P-B 验收。
+维护者已[明确接受具体 D-L 与补丁](proposals/R07-C/dependency-lock-credit/decision-accepted.json)，
+[P-B 报告](../../dogfooding/2026-10-21-r07c-dependency-pb/README.md)记录实现与当前最终门。
+[原决定](proposals/R07-C/dependency-lock-credit/decision.json)及[P-A](../../dogfooding/2026-10-21-r07c-dependency-pa/README.md)保留准备时快照，条件结果不冒充 P-B 验收。
 
 ### 当前问题与推荐原则
 

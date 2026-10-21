@@ -619,3 +619,322 @@ def test_audit_profile_absence_skip_obeys_existing_text_and_suppression_contract
         "suppressed": 1,
         "skipped": 1,
     }
+
+
+_DEPENDENCY_FORMAT_CREDIT_MESSAGE = (
+    "torch is used; Python analysis is incomplete or unavailable and a captured format "
+    "lock lists the package, so missing pin evidence is not established"
+)
+_DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC = (
+    "scan: Python analysis incomplete: parsed 1 of 2 candidate files; "
+    "selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.\n"
+)
+
+
+def _dependency_format_credit_repo(tmp_path: Path, severity: str = "CRITICAL") -> Path:
+    repo = make_git_repo(tmp_path / "format-credit")
+    profiles = repo / ".reprollm" / "profiles"
+    profiles.mkdir(parents=True)
+    (profiles / "core.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "name": "core",
+                "description": "Isolated dependency format-lock credit controls.",
+                "rules": ["env.llm_critical_deps_pinned"],
+                "severity_overrides": {"env.llm_critical_deps_pinned": severity},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: format-credit}\nexperiment: {profiles: []}\n",
+        encoding="utf-8",
+    )
+    (repo / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
+    (repo / "a.py").write_text("value = 1\n", encoding="utf-8")
+    nested = repo / "nested"
+    nested.mkdir()
+    (nested / "z.py").write_text("import torch\n", encoding="utf-8")
+    # An unpaired lock makes the complete-view WARNING an independent control.
+    (nested / "uv.lock").write_text(
+        '[[package]]\nname = "torch"\nversion = "2.5.1"\n', encoding="utf-8"
+    )
+    commit_all(repo)
+    return repo
+
+
+@pytest.mark.parametrize(
+    ("severity", "threshold", "mixed", "complete_exit"),
+    [
+        ("WARNING", "never", False, 0),
+        ("WARNING", "critical", False, 0),
+        ("WARNING", "warning", False, 1),
+        ("CRITICAL", "never", False, 0),
+        ("CRITICAL", "critical", False, 1),
+        ("CRITICAL", "warning", False, 1),
+        ("CRITICAL", "critical", True, 1),
+    ],
+    ids=[
+        "warning-never",
+        "warning-critical",
+        "warning-warning",
+        "critical-never",
+        "critical-critical",
+        "critical-warning",
+        "mixed-critical",
+    ],
+)
+def test_dependency_possible_credit_skip_preserves_failure_threshold_contract(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    severity: str,
+    threshold: str,
+    mixed: bool,
+    complete_exit: int,
+) -> None:
+    repo = _dependency_format_credit_repo(tmp_path, severity)
+    if mixed:
+        (repo / "requirements.txt").write_text("torch>=2\nnumpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+    before = {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    }
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+
+    result = runner.invoke(app, args)
+
+    assert result.exit_code == int(mixed), result.output
+    assert result.stderr == _DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC
+    report = _coverage_cli_json(result.stdout)
+    skipped = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+    assert len(skipped) == 1
+    finding = skipped[0]
+    assert (finding["rule_id"], finding["severity"], finding["severity_origin"]) == (
+        "env.llm_critical_deps_pinned",
+        "INFO",
+        "default",
+    )
+    assert finding["message"] == _DEPENDENCY_FORMAT_CREDIT_MESSAGE
+    assert finding["evidence"] == [
+        {
+            "kind": "file",
+            "path": "requirements.txt",
+            "field": None,
+            "line": 1,
+            "value": ">=2",
+            "expected": None,
+            "note": "declared as >=2",
+        },
+        {
+            "kind": "file",
+            "path": "nested/uv.lock",
+            "field": None,
+            "line": None,
+            "value": None,
+            "expected": None,
+            "note": "torch listed; import-origin credit unverified",
+        },
+    ]
+    assert report["summary"] == {
+        "critical": int(mixed),
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 1,
+    }
+    if mixed:
+        failure, skip = report["findings"]
+        assert failure["message"].startswith("numpy is used but not pinned")
+        assert (failure["status"], failure["severity"], failure["severity_origin"]) == (
+            "fail",
+            "CRITICAL",
+            "profile:core",
+        )
+        assert skip == finding
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 2)
+
+    complete = runner.invoke(app, args)
+
+    assert complete.exit_code == complete_exit, complete.output
+    assert complete.stderr == ""
+    complete_report = _coverage_cli_json(complete.stdout)
+    assert len(complete_report["findings"]) == 1 + int(mixed)
+    assert all(
+        finding["status"] == "fail"
+        and finding["severity"] == severity
+        and finding["severity_origin"] == "profile:core"
+        for finding in complete_report["findings"]
+    )
+    assert complete_report["summary"] == {
+        "critical": (1 + int(mixed)) * int(severity == "CRITICAL"),
+        "warning": (1 + int(mixed)) * int(severity == "WARNING"),
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 0,
+    }
+    assert {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    } == before
+
+
+def test_dependency_credit_skip_obeys_json_text_export_and_suppression_contract(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = _dependency_format_credit_repo(tmp_path)
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    before = {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    }
+    args = ["audit", str(repo), "--format", "json", "--fail-on", "warning"]
+
+    first = runner.invoke(app, args)
+    second = runner.invoke(app, args)
+
+    assert first.exit_code == second.exit_code == 0
+    assert first.stderr == second.stderr == _DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC
+    first_json, second_json = _coverage_cli_json(first.stdout), _coverage_cli_json(second.stdout)
+    assert len(first_json["findings"]) == len(second_json["findings"]) == 1
+    assert first_json["findings"][0]["message"] == _DEPENDENCY_FORMAT_CREDIT_MESSAGE
+    first_json.pop("generated_at")
+    second_json.pop("generated_at")
+    assert first_json == second_json
+    text_args = ["audit", str(repo), "--no-color", "--fail-on", "warning"]
+
+    hidden = runner.invoke(app, text_args)
+    shown = runner.invoke(app, [*text_args, "--show-skipped"])
+
+    assert hidden.exit_code == shown.exit_code == 0
+    assert hidden.stderr == shown.stderr == _DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC
+    assert _DEPENDENCY_FORMAT_CREDIT_MESSAGE not in hidden.stdout
+    assert _DEPENDENCY_FORMAT_CREDIT_MESSAGE in shown.stdout
+    assert "0 passed · 0 suppressed · 1 skipped" in hidden.stdout
+    output = tmp_path / "dependency-credit-export.md"
+
+    exported = runner.invoke(app, ["export", str(repo), "--output", str(output)])
+
+    assert exported.exit_code == 0, exported.output
+    assert exported.stderr == _DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC
+    document = output.read_text(encoding="utf-8")
+    assert "0 critical · 0 warning ·\n0 info · 0 passed." in document
+    assert "env.llm_critical_deps_pinned" not in document
+    assert {
+        path.relative_to(repo): path.read_bytes()
+        for path in repo.rglob("*")
+        if path.is_file() and ".git" not in path.relative_to(repo).parts
+    } == before
+    (repo / ".reprollm" / "config.yaml").write_text(
+        "schema_version: 1\naudit:\n  ignore:\n"
+        "    - rule: env.llm_critical_deps_pinned\n"
+        "      reason: Reviewed incomplete import-origin evidence.\n",
+        encoding="utf-8",
+    )
+    commit_all(repo)
+
+    ignored = runner.invoke(app, args)
+
+    assert ignored.exit_code == 0, ignored.output
+    assert ignored.stderr == _DEPENDENCY_FORMAT_CREDIT_DIAGNOSTIC
+    report = _coverage_cli_json(ignored.stdout)
+    (finding,) = report["findings"]
+    assert (finding["status"], finding["severity"], finding["severity_origin"]) == (
+        "suppressed",
+        "INFO",
+        "default",
+    )
+    assert finding["message"] == _DEPENDENCY_FORMAT_CREDIT_MESSAGE
+    assert finding["suppressed_reason"] == "Reviewed incomplete import-origin evidence."
+    assert len(finding["evidence"]) == 3
+    assert finding["evidence"][1]["path"] == "nested/uv.lock"
+    assert finding["evidence"][2]["field"] == "audit.ignore"
+    assert finding["evidence"][2]["note"] == (
+        "suppressed: original severity INFO; reason: Reviewed incomplete import-origin evidence."
+    )
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 1,
+        "skipped": 0,
+    }
+
+
+def test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagnostic(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from reprollm.core.context import AuditContext
+
+    repo = _dependency_format_credit_repo(tmp_path)
+    (repo / "a.py").write_text("def broken(:\n", encoding="utf-8")
+    commit_all(repo)
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 2)
+    scan = AuditContext(repo).pyscan
+    assert (
+        scan.python_candidate_count,
+        scan.python_selected_count,
+        scan.python_parsed_count,
+        scan.python_file_limit,
+    ) == (2, 2, 1, 2)
+
+    result = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "warning"])
+
+    assert result.exit_code == 0, result.output
+    assert result.stderr == ""
+    report = _coverage_cli_json(result.stdout)
+    assert report["findings"] == [
+        {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 1,
+            "message": _DEPENDENCY_FORMAT_CREDIT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": "requirements.txt",
+                    "field": None,
+                    "line": 1,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                {
+                    "kind": "file",
+                    "path": "nested/uv.lock",
+                    "field": None,
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": "torch listed; import-origin credit unverified",
+                },
+            ],
+            "fix_hint": (
+                "Review torch declarations and format-lock origins; complete Python analysis "
+                "before deciding that exact pin evidence is absent."
+            ),
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+    ]
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 1,
+    }

@@ -1,0 +1,508 @@
+FFFF.......FFFFFFFFF.FFFFFFFFFF                                          [100%]
+=================================== FAILURES ===================================
+__________ test_missing_import_can_change_format_lock_credit[uv.lock] __________
+tests/unit/rules/test_env.py:267: in test_missing_import_can_change_format_lock_credit
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+________ test_missing_import_can_change_format_lock_credit[poetry.lock] ________
+tests/unit/rules/test_env.py:267: in test_missing_import_can_change_format_lock_credit
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/poetry.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or ...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_______ test_missing_import_can_change_format_lock_credit[Pipfile.lock] ________
+tests/unit/rules/test_env.py:267: in test_missing_import_can_change_format_lock_credit
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/Pipfile.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+______ test_missing_import_can_change_format_lock_credit[conda-lock.yml] _______
+tests/unit/rules/test_env.py:267: in test_missing_import_can_change_format_lock_credit
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/conda-lock.yml', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete ...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+___ test_unavailable_python_view_keeps_format_credit_unverified[unobserved] ____
+tests/unit/rules/test_env.py:359: in test_unavailable_python_view_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_unavailable_python_view_keeps_format_credit_unverified[parsed-over-selected] _
+tests/unit/rules/test_env.py:359: in test_unavailable_python_view_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_____ test_selected_python_failure_keeps_format_credit_unverified[syntax] ______
+tests/unit/rules/test_env.py:391: in test_selected_python_failure_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_____ test_selected_python_failure_keeps_format_credit_unverified[binary] ______
+tests/unit/rules/test_env.py:391: in test_selected_python_failure_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+____ test_selected_python_failure_keeps_format_credit_unverified[read-cap] _____
+tests/unit/rules/test_env.py:391: in test_selected_python_failure_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+___ test_selected_python_failure_keeps_format_credit_unverified[unreadable] ____
+tests/unit/rules/test_env.py:391: in test_selected_python_failure_keeps_format_credit_unverified
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[unpaired] _
+tests/unit/rules/test_env.py:416: in test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[nearer-project] _
+tests/unit/rules/test_env.py:416: in test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[uncertain-project] _
+tests/unit/rules/test_env.py:416: in test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged
+    _assert_format_credit_skip(finding, [lock_path])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'nested/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)'} != {'message': 'torch is used; Python analysis is incomplete or unav...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_format_credit_skip_coexists_with_unpinned_warning_and_sorted_lock_evidence _
+tests/unit/rules/test_env.py:459: in test_format_credit_skip_coexists_with_unpinned_warning_and_sorted_lock_evidence
+    _assert_format_credit_skip(skipped, ["a/poetry.lock", "z/uv.lock"])
+tests/unit/rules/test_env.py:216: in _assert_format_credit_skip
+    assert finding.model_dump(mode="json") == {
+E   AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'severity': 'WARNING'} != {'severity': 'INFO'}
+E     {'status': 'fail'} != {'status': 'skipped'}
+E     {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'a...try.lock', 'field': None, 'line': None, ...}, {'kind': 'file', 'path': 'z/uv.lock', 'field': None, 'line': None, ...}]}
+E     {'message': 'torch is used but not pinned to an exact version (suggestion: torch==<version>)...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-never] _
+tests/unit/cli/test_audit.py:715: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert len(skipped) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-critical] _
+tests/unit/cli/test_audit.py:715: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert len(skipped) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-warning] _
+tests/unit/cli/test_audit.py:711: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert result.exit_code == int(mixed), result.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T03:15:51Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [],
+E         "resolved": [
+E           "core"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:e39827d8ee1a2d9ed3a4477882b985501e30b3401d0992acdff7400d1a82d0a7",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 0,
+E         "warning": 1,
+E         "info": 0,
+E         "pass": 0,
+E         "suppressed": 0,
+E         "skipped": 0
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "WARNING",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E           "evidence": [
+E             {
+E               "kind": "file",
+E               "path": "requirements.txt",
+E               "field": null,
+E               "line": 1,
+E               "value": ">=2",
+E               "expected": null,
+E               "note": "declared as >=2"
+E             }
+E           ],
+E           "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+E    +  and   0 = int(False)
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-never] _
+tests/unit/cli/test_audit.py:715: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert len(skipped) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-critical] _
+tests/unit/cli/test_audit.py:711: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert result.exit_code == int(mixed), result.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T03:15:51Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [],
+E         "resolved": [
+E           "core"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:e39827d8ee1a2d9ed3a4477882b985501e30b3401d0992acdff7400d1a82d0a7",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 1,
+E         "warning": 0,
+E         "info": 0,
+E         "pass": 0,
+E         "suppressed": 0,
+E         "skipped": 0
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "CRITICAL",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E           "evidence": [
+E             {
+E               "kind": "file",
+E               "path": "requirements.txt",
+E               "field": null,
+E               "line": 1,
+E               "value": ">=2",
+E               "expected": null,
+E               "note": "declared as >=2"
+E             }
+E           ],
+E           "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+E    +  and   0 = int(False)
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-warning] _
+tests/unit/cli/test_audit.py:711: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert result.exit_code == int(mixed), result.output
+E   AssertionError: scan: Python analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1), omitted 1. Missing signals may be in unanalysed files.
+E     {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T03:15:52Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [],
+E         "resolved": [
+E           "core"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:e39827d8ee1a2d9ed3a4477882b985501e30b3401d0992acdff7400d1a82d0a7",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 1,
+E         "warning": 0,
+E         "info": 0,
+E         "pass": 0,
+E         "suppressed": 0,
+E         "skipped": 0
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "CRITICAL",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E           "evidence": [
+E             {
+E               "kind": "file",
+E               "path": "requirements.txt",
+E               "field": null,
+E               "line": 1,
+E               "value": ">=2",
+E               "expected": null,
+E               "note": "declared as >=2"
+E             }
+E           ],
+E           "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+E    +  and   0 = int(False)
+_ test_dependency_possible_credit_skip_preserves_failure_threshold_contract[mixed-critical] _
+tests/unit/cli/test_audit.py:715: in test_dependency_possible_credit_skip_preserves_failure_threshold_contract
+    assert len(skipped) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_dependency_credit_skip_obeys_json_text_export_and_suppression_contract __
+tests/unit/cli/test_audit.py:804: in test_dependency_credit_skip_obeys_json_text_export_and_suppression_contract
+    assert first.exit_code == second.exit_code == 0
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+_ test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagnostic _
+tests/unit/cli/test_audit.py:892: in test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagnostic
+    assert result.exit_code == 0, result.output
+E   AssertionError: {
+E       "schema_version": 1,
+E       "reprollm_version": "0.7.0",
+E       "generated_at": "2026-10-21T03:15:52Z",
+E       "target": ".",
+E       "level": 1,
+E       "profiles": {
+E         "declared": [],
+E         "resolved": [
+E           "core"
+E         ],
+E         "detected": []
+E       },
+E       "documents": {
+E         "manifest": "sha256:e39827d8ee1a2d9ed3a4477882b985501e30b3401d0992acdff7400d1a82d0a7",
+E         "lock": null,
+E         "runs": 0
+E       },
+E       "summary": {
+E         "critical": 1,
+E         "warning": 0,
+E         "info": 0,
+E         "pass": 0,
+E         "suppressed": 0,
+E         "skipped": 0
+E       },
+E       "findings": [
+E         {
+E           "rule_id": "env.llm_critical_deps_pinned",
+E           "aliases": [],
+E           "category": "env",
+E           "severity": "CRITICAL",
+E           "status": "fail",
+E           "level": 1,
+E           "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E           "evidence": [
+E             {
+E               "kind": "file",
+E               "path": "requirements.txt",
+E               "field": null,
+E               "line": 1,
+E               "value": ">=2",
+E               "expected": null,
+E               "note": "declared as >=2"
+E             }
+E           ],
+E           "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E           "profile_origin": [],
+E           "severity_origin": "profile:core",
+E           "suppressed_reason": null
+E         }
+E       ]
+E     }
+E     
+E     
+E   assert 1 == 0
+E    +  where 1 = <Result SystemExit(1)>.exit_code
+=========================== short test summary info ============================
+FAILED tests/unit/rules/test_env.py::test_missing_import_can_change_format_lock_credit[uv.lock]
+FAILED tests/unit/rules/test_env.py::test_missing_import_can_change_format_lock_credit[poetry.lock]
+FAILED tests/unit/rules/test_env.py::test_missing_import_can_change_format_lock_credit[Pipfile.lock]
+FAILED tests/unit/rules/test_env.py::test_missing_import_can_change_format_lock_credit[conda-lock.yml]
+FAILED tests/unit/rules/test_env.py::test_unavailable_python_view_keeps_format_credit_unverified[unobserved]
+FAILED tests/unit/rules/test_env.py::test_unavailable_python_view_keeps_format_credit_unverified[parsed-over-selected]
+FAILED tests/unit/rules/test_env.py::test_selected_python_failure_keeps_format_credit_unverified[syntax]
+FAILED tests/unit/rules/test_env.py::test_selected_python_failure_keeps_format_credit_unverified[binary]
+FAILED tests/unit/rules/test_env.py::test_selected_python_failure_keeps_format_credit_unverified[read-cap]
+FAILED tests/unit/rules/test_env.py::test_selected_python_failure_keeps_format_credit_unverified[unreadable]
+FAILED tests/unit/rules/test_env.py::test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[unpaired]
+FAILED tests/unit/rules/test_env.py::test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[nearer-project]
+FAILED tests/unit/rules/test_env.py::test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged[uncertain-project]
+FAILED tests/unit/rules/test_env.py::test_format_credit_skip_coexists_with_unpinned_warning_and_sorted_lock_evidence
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-never]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-critical]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[warning-warning]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-never]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-critical]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[critical-warning]
+FAILED tests/unit/cli/test_audit.py::test_dependency_possible_credit_skip_preserves_failure_threshold_contract[mixed-critical]
+FAILED tests/unit/cli/test_audit.py::test_dependency_credit_skip_obeys_json_text_export_and_suppression_contract
+FAILED tests/unit/cli/test_audit.py::test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagnostic
+23 failed, 8 passed, 44 deselected in 3.05s
