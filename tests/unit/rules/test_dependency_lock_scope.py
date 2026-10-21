@@ -166,9 +166,15 @@ def test_uncertain_manifest_blocks_ancestor_import_credit(
         },
     )
 
-    assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [
-        _torch_import_warning("sub/train.py")
-    ]
+    context = AuditContext(tmp_path)
+    warning = _torch_import_warning("sub/train.py")
+    expected = (
+        _declaration_body_scope_skip(warning, f"sub/{manifest}")
+        if broken in {"[project broken\n", "[packages broken\n", "dependencies: [broken\n"}
+        else warning
+    )
+    assert LlmCriticalDepsPinnedRule().check(context) == [expected]
+    assert context.deps.qualified_lock_packages([("torch", "sub/train.py")]) == frozenset()
 
 
 @pytest.mark.parametrize("alternative", ["dependencies: []\n", "dependencies: [broken\n"])
@@ -185,7 +191,14 @@ def test_two_conda_environment_basenames_never_guess_a_lock_owner(
     )
     context = AuditContext(tmp_path)
 
-    assert LlmCriticalDepsPinnedRule().check(context) == [_torch_warning("environment.yml")]
+    warning = _torch_warning("environment.yml")
+    expected = (
+        _declaration_body_scope_skip(warning, "environment.yaml")
+        if alternative == "dependencies: [broken\n"
+        else warning
+    )
+    assert LlmCriticalDepsPinnedRule().check(context) == [expected]
+    assert context.deps.qualified_lock_packages([]) == frozenset()
     assert LockfilePresentRule().check(context) == []
 
 
@@ -255,9 +268,17 @@ def test_same_directory_uncertainty_only_blocks_inferred_import_credit(
             "train.py": "import torch\n",
         },
     )
-    expected = [] if declared else [_torch_import_warning("train.py")]
+    expected = (
+        []
+        if declared
+        else [_declaration_body_scope_skip(_torch_import_warning("train.py"), "Pipfile")]
+    )
+    context = AuditContext(tmp_path)
 
-    assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == expected
+    assert LlmCriticalDepsPinnedRule().check(context) == expected
+    assert context.deps.qualified_lock_packages([("torch", "train.py")]) == (
+        frozenset({"torch"}) if declared else frozenset()
+    )
 
 
 def test_clean_deeper_project_uses_own_pair_below_an_outer_uncertain_manifest(
@@ -300,7 +321,10 @@ def test_unreadable_observed_manifest_cannot_borrow_ancestor_credit(
     monkeypatch.setattr(Path, "open", open_with_unreadable_candidate)
     context = AuditContext(tmp_path)
 
-    assert LlmCriticalDepsPinnedRule().check(context) == [_torch_import_warning("sub/train.py")]
+    assert LlmCriticalDepsPinnedRule().check(context) == [
+        _declaration_body_scope_skip(_torch_import_warning("sub/train.py"), f"sub/{manifest}")
+    ]
+    assert context.deps.qualified_lock_packages([("torch", "sub/train.py")]) == frozenset()
     assert context.deps.unparsed == [f"sub/{manifest}:0: unreadable"]
 
 
@@ -572,3 +596,26 @@ def test_multiple_origins_still_emit_one_warning_with_original_first_evidence(
     )
 
     assert LlmCriticalDepsPinnedRule().check(AuditContext(tmp_path)) == [_torch_warning()]
+
+
+def _declaration_body_scope_skip(warning: Finding, failed: str) -> Finding:
+    return warning.model_copy(
+        update={
+            "status": FindingStatus.SKIPPED,
+            "severity": Severity.INFO,
+            "message": (
+                "torch is used; a dependency declaration body could not be read or parsed, "
+                "so missing pin evidence is not established"
+            ),
+            "evidence": [
+                *warning.evidence,
+                Evidence(
+                    kind="file", path=failed, note="torch possible exact declaration unverified"
+                ),
+            ],
+            "fix_hint": (
+                "Review torch declarations and failed dependency source files; restore readable, "
+                "valid declaration bodies before deciding that exact pin evidence is absent."
+            ),
+        }
+    )

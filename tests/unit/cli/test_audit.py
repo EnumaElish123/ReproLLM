@@ -1390,3 +1390,241 @@ def test_structural_lock_skip_keeps_json_text_export_and_suppression_contracts(
         "suppressed": 1,
         "skipped": 0,
     }
+
+
+# --- R07-C D-M: declaration-body uncertainty reaches audit and export -------
+
+
+_DECLARATION_BODY_CLI_MESSAGE = (
+    "torch is used; a dependency declaration body could not be read or parsed, "
+    "so missing pin evidence is not established"
+)
+
+
+def _declaration_body_cli_repo(
+    tmp_path: Path, severity: str = "CRITICAL", mixed: bool = False
+) -> Path:
+    repo = make_git_repo(tmp_path / "declaration-body")
+    profiles = repo / ".reprollm" / "profiles"
+    profiles.mkdir(parents=True)
+    (profiles / "core.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "name": "core",
+                "description": "Isolated captured declaration-body uncertainty.",
+                "rules": ["env.llm_critical_deps_pinned"]
+                + (["env.python_version_declared"] if mixed else []),
+                "severity_overrides": {"env.llm_critical_deps_pinned": severity},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (repo / "reprollm.yaml").write_text(
+        "schema_version: 1\nproject: {name: declaration-body}\nexperiment: {profiles: []}\n",
+        encoding="utf-8",
+    )
+    (repo / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
+    (repo / "unrelated").mkdir()
+    (repo / "unrelated/pyproject.toml").write_text("[broken\n", encoding="utf-8")
+    commit_all(repo)
+    return repo
+
+
+def _expected_declaration_body_cli_skip() -> dict[str, Any]:
+    return {
+        "rule_id": "env.llm_critical_deps_pinned",
+        "aliases": [],
+        "category": "env",
+        "severity": "INFO",
+        "status": "skipped",
+        "level": 1,
+        "message": _DECLARATION_BODY_CLI_MESSAGE,
+        "evidence": [
+            {
+                "kind": "file",
+                "path": "requirements.txt",
+                "field": None,
+                "line": 1,
+                "value": ">=2",
+                "expected": None,
+                "note": "declared as >=2",
+            },
+            {
+                "kind": "file",
+                "path": "unrelated/pyproject.toml",
+                "field": None,
+                "line": None,
+                "value": None,
+                "expected": None,
+                "note": "torch possible exact declaration unverified",
+            },
+        ],
+        "fix_hint": (
+            "Review torch declarations and failed dependency source files; restore readable, "
+            "valid declaration bodies before deciding that exact pin evidence is absent."
+        ),
+        "profile_origin": [],
+        "severity_origin": "default",
+        "suppressed_reason": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("severity", "threshold", "mixed", "restored_exit"),
+    [
+        ("WARNING", "never", False, 0),
+        ("WARNING", "critical", False, 0),
+        ("WARNING", "warning", False, 1),
+        ("CRITICAL", "never", False, 0),
+        ("CRITICAL", "critical", False, 1),
+        ("CRITICAL", "warning", False, 1),
+        ("WARNING", "warning", True, 1),
+    ],
+)
+def test_declaration_body_skip_keeps_overrides_thresholds_and_independent_warning(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    severity: str,
+    threshold: str,
+    mixed: bool,
+    restored_exit: int,
+) -> None:
+    repo = _declaration_body_cli_repo(tmp_path, severity, mixed)
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+
+    failed_body = runner.invoke(app, args)
+
+    assert failed_body.exit_code == int(mixed), failed_body.output
+    assert failed_body.stderr == ""
+    report = _coverage_cli_json(failed_body.stdout)
+    (skipped,) = [f for f in report["findings"] if f["rule_id"] == "env.llm_critical_deps_pinned"]
+    assert skipped == _expected_declaration_body_cli_skip()
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": int(mixed),
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 1,
+    }
+    if mixed:
+        (warning,) = [f for f in report["findings"] if f["status"] == "fail"]
+        assert warning["rule_id"] == "env.python_version_declared"
+        assert warning["severity"] == "WARNING"
+        assert warning["message"] == "no Python version requirement is declared"
+    (repo / "unrelated/pyproject.toml").write_text("[project]\n", encoding="utf-8")
+    commit_all(repo)
+
+    restored = runner.invoke(app, args)
+
+    assert restored.exit_code == restored_exit, restored.output
+    assert restored.stderr == ""
+    restored_report = _coverage_cli_json(restored.stdout)
+    (pinned,) = [
+        f for f in restored_report["findings"] if f["rule_id"] == "env.llm_critical_deps_pinned"
+    ]
+    assert (pinned["status"], pinned["severity"], pinned["severity_origin"]) == (
+        "fail",
+        severity,
+        "profile:core",
+    )
+    assert pinned["message"] == (
+        "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+    )
+    assert pinned["evidence"] == _expected_declaration_body_cli_skip()["evidence"][:1]
+    assert restored_report["summary"] == {
+        "critical": int(severity == "CRITICAL"),
+        "warning": int(severity == "WARNING") + int(mixed),
+        "info": 0,
+        "pass": 0,
+        "suppressed": 0,
+        "skipped": 0,
+    }
+
+
+def test_declaration_body_skip_preserves_full_json_text_export_and_suppression(
+    tmp_path: Path,
+) -> None:
+    repo = _declaration_body_cli_repo(tmp_path)
+    before = {
+        p.relative_to(repo): p.read_bytes()
+        for p in repo.rglob("*")
+        if p.is_file() and ".git" not in p.relative_to(repo).parts
+    }
+    args = ["audit", str(repo), "--format", "json", "--fail-on", "critical"]
+
+    first = runner.invoke(app, args)
+    second = runner.invoke(app, args)
+
+    assert first.exit_code == second.exit_code == 0
+    assert first.stderr == second.stderr == ""
+    a = _coverage_cli_json(first.stdout)
+    b = _coverage_cli_json(second.stdout)
+    a.pop("generated_at")
+    b.pop("generated_at")
+    assert a == b
+    assert a["findings"] == [_expected_declaration_body_cli_skip()]
+    hidden = runner.invoke(app, ["audit", str(repo), "--no-color", "--fail-on", "critical"])
+    shown = runner.invoke(
+        app, ["audit", str(repo), "--no-color", "--show-skipped", "--fail-on", "critical"]
+    )
+    assert hidden.exit_code == shown.exit_code == 0
+    assert hidden.stderr == shown.stderr == ""
+    assert _DECLARATION_BODY_CLI_MESSAGE not in hidden.stdout
+    assert _DECLARATION_BODY_CLI_MESSAGE in shown.stdout
+    assert "Findings: PASS" in hidden.stdout
+    assert "0 passed · 0 suppressed · 1 skipped" in hidden.stdout
+    output = tmp_path / "declaration-body-export.md"
+
+    exported = runner.invoke(app, ["export", str(repo), "--output", str(output)])
+
+    assert exported.exit_code == 0, exported.output
+    assert exported.stderr == ""
+    document = output.read_text(encoding="utf-8")
+    assert "0 critical · 0 warning ·\n0 info · 0 passed." in document
+    assert "env.llm_critical_deps_pinned" not in document
+    assert {
+        p.relative_to(repo): p.read_bytes()
+        for p in repo.rglob("*")
+        if p.is_file() and ".git" not in p.relative_to(repo).parts
+    } == before
+    (repo / ".reprollm/config.yaml").write_text(
+        "schema_version: 1\naudit:\n  ignore:\n"
+        "    - rule: env.llm_critical_deps_pinned\n"
+        "      reason: Reviewed declaration body uncertainty.\n",
+        encoding="utf-8",
+    )
+    commit_all(repo)
+
+    ignored = runner.invoke(app, args)
+
+    assert ignored.exit_code == 0, ignored.output
+    assert ignored.stderr == ""
+    report = _coverage_cli_json(ignored.stdout)
+    (finding,) = report["findings"]
+    expected = _expected_declaration_body_cli_skip()
+    expected.update(status="suppressed", suppressed_reason="Reviewed declaration body uncertainty.")
+    expected["evidence"].append(
+        {
+            "kind": "field",
+            "path": ".reprollm/config.yaml",
+            "field": "audit.ignore",
+            "line": None,
+            "value": None,
+            "expected": None,
+            "note": (
+                "suppressed: original severity INFO; reason: Reviewed declaration body uncertainty."
+            ),
+        }
+    )
+    assert finding == expected
+    assert report["summary"] == {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "pass": 0,
+        "suppressed": 1,
+        "skipped": 0,
+    }

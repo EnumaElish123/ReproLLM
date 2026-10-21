@@ -107,10 +107,12 @@ its [P-B report](../dogfooding/2026-10-21-r07c-lock-structure-pb/README.md) reco
 The original [P-A report](../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md), PROPOSED snapshot and concrete patches remain historical preparation evidence.
 Broader R07-C remains OPEN.
 
-The next R07-C D-M [concrete proposal](reliability-2026-10-03/proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md)
-and [P-A evidence](../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md) cover only known captured declaration-body failures,
-including actual requirements body-read failures. It remains PROPOSED; formal product/specification/test patches are unapplied.
-Existing D-S delivery and wider R07-C OPEN boundaries remain unchanged.
+The maintainer has [specifically accepted R07-C D-M](reliability-2026-10-03/proposals/R07-C/declaration-read/decision-accepted.json).
+P-B handles known captured declaration-body failures, including actual requirements body-read failures;
+its [P-B report](../dogfooding/2026-10-21-r07c-declaration-read-pb/README.md) records implementation and current validation status.
+The original [P-A proposal](reliability-2026-10-03/proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md),
+PROPOSED snapshot and [P-A evidence](../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md) remain historical preparation records.
+Broader R07-C remains OPEN.
 
 The accepted R07-C D-L slice implements the [dependency format-lock policy](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md).
 Its [P-A report](../dogfooding/2026-10-21-r07c-dependency-pa/README.md) preserves the proposal and conditional design.

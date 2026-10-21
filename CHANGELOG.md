@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M (spec §12.3.6): retain known captured dependency-declaration body
+  read/decoder failures internally. After existing credit and D-F/D-S/D-L paths,
+  remaining critical-package missing-pin warnings become SKIPPED/INFO with
+  failed source evidence. Influence is repository-wide under retained existential
+  exact semantics, including unrelated failed candidates. Only actual requirements
+  body read failures join; readable grammar/structure/include-graph errors remain
+  outside. An isolated warning/promoted critical gate can stop failing. No credit,
+  presence, renderer, engine, scanner, schema, gold, dependency or version change.
+
 - R07-C D-S: classify the specified decoded format-lock container/name-entry failures as unverified missing-pin evidence through the accepted associated-lock path; retain partial positive credit, legacy empty values, presence semantics and historical gold.
 
 - R07-C D-F (spec §12.3.4): preserve known format-lock body read/decoder failures

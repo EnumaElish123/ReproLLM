@@ -209,6 +209,38 @@ class LlmCriticalDepsPinnedRule(Rule):
                     )
                 )
                 continue
+            if deps.declaration_read_issues:
+                findings.append(
+                    Finding(
+                        rule_id=self.id,
+                        aliases=list(self.aliases),
+                        category=self.category,
+                        severity=Severity.INFO,
+                        status=FindingStatus.SKIPPED,
+                        level=ctx.level,
+                        message=(
+                            f"{display} is used; a dependency declaration body could not be read "
+                            "or parsed, so missing pin evidence is not established"
+                        ),
+                        evidence=[
+                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                            *[
+                                Evidence(
+                                    kind="file",
+                                    path=path,
+                                    note=f"{display} possible exact declaration unverified",
+                                )
+                                for path in sorted(deps.declaration_read_issues)
+                            ],
+                        ],
+                        fix_hint=(
+                            f"Review {display} declarations and failed dependency source files; "
+                            "restore readable, valid declaration bodies before deciding that "
+                            "exact pin evidence is absent."
+                        ),
+                    )
+                )
+                continue
             version = installed.get(display)
             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
             finding = self.finding(

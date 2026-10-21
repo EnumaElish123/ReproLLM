@@ -198,12 +198,13 @@ P-B 仅增加 `invalid_structure` 并复用 D-F 关联/输出，保留部分成�
 原[P-A 报告](../../dogfooding/2026-10-21-r07c-lock-structure-pa/README.md)、PROPOSED 决定及条件证据保留；
 这不关闭整个 R07-C，一般依赖/requirements、其他 grammar、listing/framework 和广义证书仍 OPEN。
 
-D-M [具体提案](proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md)及
-[P-A记录](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md)已完成：
-仅为已采集声明正文的现有读取/解码失败增加内部事实，含实际requirements正文read None，
-保留现有信用及D-F/D-S、D-L，再把剩余缺pin项保守SKIP。影响范围依现行existential exact为全仓。
-105新验收草稿、11旧结果修订、16完整条件比较与五项目来源核查齐全；仍PROPOSED，正式补丁未应用。
-具体决定前不实施；decoded结构/行语法、一般include图、遗漏候选/listing/framework仍OPEN。
+维护者已[具体接受D-M及规范/实现/测试补丁](proposals/R07-C/declaration-read/decision-accepted.json)。
+P-B仅为已采集声明正文的现有读取/解码失败增加内部事实，含实际requirements正文read None，
+保留现有信用及D-F/D-S、D-L，再把剩余缺pin项保守SKIP；依现行existential exact影响全仓。
+[P-B报告](../../dogfooding/2026-10-21-r07c-declaration-read-pb/README.md)记录实施与当前验收状态。
+原[提案](proposals/R07-C/declaration-read/R07-C_declaration_body_failures.md)、PROPOSED快照及
+[P-A条件证据](../../dogfooding/2026-10-21-r07c-declaration-read-pa/README.md)保持历史字节。
+decoded结构/行语法、一般include图、未知use和遗漏候选/listing/framework仍OPEN；不关闭整个R07-C。
 
 ### 当前问题与推荐原则
 

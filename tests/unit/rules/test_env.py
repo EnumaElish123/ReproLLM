@@ -422,9 +422,12 @@ def test_possible_credit_is_deliberately_conservative_but_complete_view_is_uncha
         ("torch", info.path) for info in complete.pyscan.imports
     )
     (unchanged,) = LlmCriticalDepsPinnedRule().check(complete)
-    assert (unchanged.status, unchanged.severity) == (FindingStatus.FAIL, Severity.WARNING)
-    assert unchanged.message.startswith("torch is used but not pinned to an exact version")
-    assert len(unchanged.evidence) == 1
+    if barrier == "uncertain-project":
+        _assert_declaration_body_skip(unchanged, ["nested/deeper/pyproject.toml"])
+    else:
+        assert (unchanged.status, unchanged.severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert unchanged.message.startswith("torch is used but not pinned to an exact version")
+        assert len(unchanged.evidence) == 1
 
 
 def test_format_lock_entries_do_not_create_package_usage(tmp_path: Path) -> None:
@@ -669,6 +672,12 @@ def test_failed_lock_uncertainty_uses_existing_captured_origin_association(
 
     if origin_case == "paired-import":
         _assert_lock_contents_skip(finding, "requirements.txt", 1, ["uv.lock"])
+    elif origin_case == "barrier":
+        _assert_declaration_body_skip(finding, ["nested/pyproject.toml"])
+        assert (
+            ctx.deps.qualified_lock_packages(("torch", info.path) for info in ctx.pyscan.imports)
+            == frozenset()
+        )
     else:
         assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
         assert finding.message == (
@@ -843,13 +852,21 @@ def test_unassociated_structural_lock_failure_keeps_existing_package_warning(
         (tmp_path / "a.py").rename(nested / "a.py")
     monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
 
-    (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    ctx = _format_credit_context(tmp_path)
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
 
-    assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
-    assert finding.message == (
-        "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
-    )
-    assert len(finding.evidence) == 1
+    if origin_case == "barrier":
+        _assert_declaration_body_skip(finding, ["nested/pyproject.toml"])
+        assert (
+            ctx.deps.qualified_lock_packages(("torch", info.path) for info in ctx.pyscan.imports)
+            == frozenset()
+        )
+    else:
+        assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert finding.message == (
+            "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+        )
+        assert len(finding.evidence) == 1
 
 
 @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
@@ -909,3 +926,351 @@ def test_structural_and_syntax_failures_share_sorted_evidence_and_preserve_other
         "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)"
     )
     _assert_lock_contents_skip(skipped, "requirements.txt", 1, ["a/poetry.lock", "z/uv.lock"])
+
+
+# --- R07-C D-M: globally possible exact declaration in a failed body --------
+
+
+_DECLARATION_BODY_MESSAGE = (
+    "torch is used; a dependency declaration body could not be read or parsed, "
+    "so missing pin evidence is not established"
+)
+_DECLARATION_BODY_HINT = (
+    "Review torch declarations and failed dependency source files; restore readable, "
+    "valid declaration bodies before deciding that exact pin evidence is absent."
+)
+
+
+def _declaration_body_files(root: Path, failed: str = "unrelated/pyproject.toml") -> str:
+    (root / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
+    target = root / failed
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("[broken\n", encoding="utf-8")
+    return failed
+
+
+def _assert_declaration_body_skip(
+    finding: Finding, paths: list[str], use_path: str = "requirements.txt", line: int = 1
+) -> None:
+    assert finding.model_dump(mode="json") == {
+        "rule_id": "env.llm_critical_deps_pinned",
+        "aliases": [],
+        "category": "env",
+        "severity": "INFO",
+        "status": "skipped",
+        "level": 0,
+        "message": _DECLARATION_BODY_MESSAGE,
+        "evidence": [
+            {
+                "kind": "file",
+                "path": use_path,
+                "field": None,
+                "line": line,
+                "value": ">=2",
+                "expected": None,
+                "note": "declared as >=2",
+            },
+            *[
+                {
+                    "kind": "file",
+                    "path": path,
+                    "field": None,
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": "torch possible exact declaration unverified",
+                }
+                for path in paths
+            ],
+        ],
+        "fix_hint": _DECLARATION_BODY_HINT,
+        "profile_origin": [],
+        "severity_origin": "default",
+        "suppressed_reason": None,
+    }
+
+
+@pytest.mark.parametrize(
+    ("path", "body"),
+    [
+        ("unrelated/pyproject.toml", b"[broken\n"),
+        ("unrelated/Pipfile", b"[broken\n"),
+        ("unrelated/environment.yml", b"dependencies: [broken\n"),
+        ("unrelated/environment.yaml", b"dependencies: [broken\n"),
+        ("unrelated/requirements.txt", b"unreadable\x00\n"),
+        ("deps/base.txt", b"unreadable\x00\n"),
+    ],
+)
+def test_captured_declaration_body_failure_prevents_missing_pin_conclusion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, path: str, body: bytes
+) -> None:
+    _declaration_body_files(tmp_path, path)
+    (tmp_path / path).write_bytes(body)
+    if path == "deps/base.txt":
+        (tmp_path / "requirements-extra.txt").write_text("-r deps/base.txt\n", encoding="utf-8")
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    ctx = _format_credit_context(tmp_path)
+    assert ctx.pyscan.coverage().pass_skip_reason() is None
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_declaration_body_skip(finding, [path])
+    assert ctx.deps.qualified_lock_packages([]) == frozenset()
+
+
+@pytest.mark.parametrize("placement", ["root", "sibling", "deep-unrelated"])
+def test_failed_declaration_body_has_repository_wide_influence_without_manager_pair(
+    tmp_path: Path, placement: str
+) -> None:
+    failed = {"root": "Pipfile", "sibling": "other/Pipfile", "deep-unrelated": "a/b/c/Pipfile"}[
+        placement
+    ]
+    _declaration_body_files(tmp_path, failed)
+    (tmp_path / "requirements.txt").write_text("torch>=2\nopenai>=1\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+
+    findings = LlmCriticalDepsPinnedRule().check(ctx)
+
+    assert [finding.message.split(" ")[0] for finding in findings] == ["openai", "torch"]
+    assert all(
+        (finding.status, finding.severity) == (FindingStatus.SKIPPED, Severity.INFO)
+        for finding in findings
+    )
+    for finding in findings:
+        assert [e.path for e in finding.evidence] == ["requirements.txt", failed]
+        assert finding.evidence[-1].note == (
+            finding.message.split(" ")[0] + " possible exact declaration unverified"
+        )
+    assert ctx.deps.qualified_lock_packages([]) == frozenset()
+
+
+@pytest.mark.parametrize(
+    "credit",
+    [
+        "root-exact",
+        "nested-exact",
+        "qualified-declaration",
+        "qualified-import",
+        "partial-lock-member",
+    ],
+)
+@pytest.mark.parametrize("coverage", ["complete", "gap"])
+def test_captured_positive_pin_credit_precedes_failed_declaration_body(
+    tmp_path: Path, credit: str, coverage: str
+) -> None:
+    _declaration_body_files(tmp_path)
+    if credit == "root-exact":
+        (tmp_path / "requirements.txt").write_text("torch==2.5.1\n", encoding="utf-8")
+    elif credit == "nested-exact":
+        pin = tmp_path / "pins" / "requirements-extra.txt"
+        pin.parent.mkdir()
+        pin.write_text("torch==2.5.1\n", encoding="utf-8")
+    else:
+        (tmp_path / "pyproject.toml").write_text(
+            "[project]\n" + ('dependencies=["torch>=2"]\n' if credit != "qualified-import" else ""),
+            encoding="utf-8",
+        )
+        if credit == "qualified-import":
+            (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        (tmp_path / "uv.lock").write_text(
+            'package=[{name="torch"}' + (",{}]" if credit == "partial-lock-member" else "]") + "\n",
+            encoding="utf-8",
+        )
+    ctx = _format_credit_context(tmp_path)
+
+    if coverage == "gap":
+        view = ctx.pyscan
+        view.coverage_observed = True
+        view.python_candidate_count = 2
+        view.python_selected_count = 1
+        view.python_parsed_count = 1
+        view.python_file_limit = 1
+    rule = LlmCriticalDepsPinnedRule()
+
+    assert rule.check(ctx) == []
+    assert (rule.pass_skip_reason(ctx) is not None) == (coverage == "gap")
+    assert ctx.deps.declaration_read_issues == {"unrelated/pyproject.toml": "invalid_syntax"}
+
+
+@pytest.mark.parametrize("lock_body", ["[broken\n", "package=[{}]\n"])
+def test_associated_format_lock_failure_keeps_precedence_over_declaration_body_failure(
+    tmp_path: Path, lock_body: str
+) -> None:
+    manifest, line = _failed_format_files(tmp_path)
+    (tmp_path / "uv.lock").write_text(lock_body, encoding="utf-8")
+    target = tmp_path / "unrelated" / "Pipfile"
+    target.parent.mkdir()
+    target.write_text("[broken\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+    assert ctx.deps.declaration_read_issues == {"unrelated/Pipfile": "invalid_syntax"}
+
+
+def test_possible_format_credit_with_python_gap_keeps_precedence_over_body_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock_path = _format_credit_files(tmp_path)
+    target = tmp_path / "unrelated" / "Pipfile"
+    target.parent.mkdir()
+    target.write_text("[broken\n", encoding="utf-8")
+    monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_format_credit_skip(finding, [lock_path])
+    assert ctx.deps.declaration_read_issues == {"unrelated/Pipfile": "invalid_syntax"}
+
+
+@pytest.mark.parametrize("coverage", ["complete", "gap", "unavailable", "inconsistent"])
+def test_declaration_body_failure_is_independent_of_primary_python_coverage(
+    tmp_path: Path, coverage: str
+) -> None:
+    failed = _declaration_body_files(tmp_path)
+    ctx = _format_credit_context(tmp_path)
+    if coverage != "complete":
+        ctx._pyscan = PyScanResult(
+            coverage_observed=coverage != "unavailable",
+            python_candidate_count=2,
+            python_selected_count=1,
+            python_parsed_count=2 if coverage == "inconsistent" else 1,
+            python_file_limit=1,
+        )
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_declaration_body_skip(finding, [failed])
+
+
+def test_all_failed_body_paths_are_sorted_deduplicated_after_existing_use_evidence(
+    tmp_path: Path,
+) -> None:
+    _declaration_body_files(tmp_path, "z/pyproject.toml")
+    _declaration_body_files(tmp_path, "a/Pipfile")
+    (tmp_path / "requirements-extra.txt").write_text(
+        "-r deps/base.txt\n-r deps/../deps/base.txt\n", encoding="utf-8"
+    )
+    (tmp_path / "deps").mkdir()
+    (tmp_path / "deps/base.txt").write_bytes(b"bad\x00\n")
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    _assert_declaration_body_skip(finding, ["a/Pipfile", "deps/base.txt", "z/pyproject.toml"])
+    assert len(ctx.deps.unparsed) == 3
+    assert ctx.deps.unparsed[0].startswith("z/pyproject.toml:0: ")
+    assert ctx.deps.unparsed[1] == "requirements-extra.txt:1: include unreadable"
+    assert ctx.deps.unparsed[2].startswith("a/Pipfile:0: ")
+
+
+@pytest.mark.parametrize("origin", ["import", "conda-alias"])
+def test_declaration_body_skip_preserves_import_and_conda_canonical_use_evidence(
+    tmp_path: Path, origin: str
+) -> None:
+    failed = _declaration_body_files(tmp_path)
+    (tmp_path / "requirements.txt").write_text("requests>=2\n", encoding="utf-8")
+    if origin == "import":
+        (tmp_path / "train.py").write_text("import torch\n", encoding="utf-8")
+        expected = {"path": "train.py", "line": 1, "note": "imported", "value": None}
+    else:
+        (tmp_path / "environment.yml").write_text("dependencies:\n - pytorch=2\n", encoding="utf-8")
+        expected = {"path": "environment.yml", "line": 1, "note": "declared as =2", "value": "=2"}
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    assert finding.message == _DECLARATION_BODY_MESSAGE
+    assert {key: getattr(finding.evidence[0], key) for key in expected} == expected
+    assert [e.path for e in finding.evidence[1:]] == [failed]
+    assert (finding.status, finding.severity) == (FindingStatus.SKIPPED, Severity.INFO)
+
+
+@pytest.mark.parametrize("restoration", ["empty", "loose", "exact"])
+def test_restoring_declaration_body_restores_existing_warning_or_exact_credit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, restoration: str
+) -> None:
+    failed = _declaration_body_files(tmp_path)
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    _assert_declaration_body_skip(finding, [failed])
+    (tmp_path / failed).write_text(
+        "[project]\n"
+        + (
+            {
+                "empty": "",
+                "loose": 'dependencies=["torch>=1"]\n',
+                "exact": 'dependencies=["torch==2.5.1"]\n',
+            }[restoration]
+        ),
+        encoding="utf-8",
+    )
+    ctx = _format_credit_context(tmp_path)
+
+    restored = LlmCriticalDepsPinnedRule().check(ctx)
+
+    assert ctx.deps.declaration_read_issues == {}
+    if restoration == "exact":
+        assert restored == []
+    else:
+        assert len(restored) == 1
+        assert (restored[0].status, restored[0].severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert restored[0].message == (
+            "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+        )
+        assert restored[0].evidence[0].path == (
+            failed if restoration == "loose" else "requirements.txt"
+        )
+
+
+def test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findings(
+    tmp_path: Path,
+) -> None:
+    _declaration_body_files(tmp_path)
+    (tmp_path / "requirements.txt").write_text("requests>=2\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    rule = LlmCriticalDepsPinnedRule()
+
+    assert rule.applies(ctx) is False
+    assert rule.check(ctx) == []
+    assert rule.skip_reason(ctx) == "no LLM-critical package is declared or imported"
+    assert ctx.deps.declaration_read_issues
+
+
+@pytest.mark.parametrize(
+    "unverified",
+    ["readable-line", "directive", "cycle", "depth", "excluded-include", "wrong-shape"],
+)
+def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unverified: str
+) -> None:
+    (tmp_path / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
+    if unverified in {"readable-line", "directive"}:
+        (tmp_path / "requirements-extra.txt").write_text(
+            "not a requirement !!!\n" if unverified == "readable-line" else "-e .\n",
+            encoding="utf-8",
+        )
+    elif unverified == "cycle":
+        (tmp_path / "requirements-extra.txt").write_text(
+            "-r requirements-extra.txt\n", encoding="utf-8"
+        )
+    elif unverified == "depth":
+        (tmp_path / "requirements-extra.txt").write_text("-r 0.txt\n", encoding="utf-8")
+        for index in range(10):
+            (tmp_path / f"{index}.txt").write_text(f"-r {index + 1}.txt\n", encoding="utf-8")
+    elif unverified == "excluded-include":
+        (tmp_path / "requirements-extra.txt").write_text("-r .venv/missing.txt\n", encoding="utf-8")
+    else:
+        (tmp_path / "pyproject.toml").write_text("project=42\n", encoding="utf-8")
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    ctx = _format_credit_context(tmp_path)
+
+    (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+
+    assert ctx.deps.declaration_read_issues == {}
+    assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
+    assert finding.message == (
+        "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+    )

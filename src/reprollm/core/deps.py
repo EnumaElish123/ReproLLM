@@ -28,6 +28,7 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
+DeclarationReadIssue = Literal["unreadable", "invalid_syntax"]
 LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
 
@@ -108,6 +109,7 @@ class Declarations:
     manifest_present: bool = False
     _project_manifests: dict[str, frozenset[str]] = field(default_factory=dict, repr=False)
     _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
+    declaration_read_issues: dict[str, DeclarationReadIssue] = field(default_factory=dict)
 
     def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
         """Return lock credit supported by an associated actual package origin."""
@@ -342,9 +344,12 @@ class _RequirementsGraph:
         cached = self.nodes.get(source)
         if cached is not None:
             return cached
-        text = (
-            self.scanner.read_text(source) if self.scanner.is_analysis_candidate(source) else None
-        )
+        if self.scanner.is_analysis_candidate(source):
+            text = self.scanner.read_text(source)
+            if text is None:
+                self.result.declaration_read_issues[source] = "unreadable"
+        else:
+            text = None
         if text is None:
             node = _RequirementFile(False)
         else:
@@ -590,12 +595,14 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     table qualifies the file as a dependency manifest (spec §12.2, M2F-T03)."""
     text = scanner.read_text(path)
     if text is None:
+        result.declaration_read_issues[path] = "unreadable"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return False
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
+        result.declaration_read_issues[path] = "invalid_syntax"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return False
@@ -678,12 +685,14 @@ _CONDA_RANGE_RE = re.compile(r"(?:>=|<=|!=|>|<|~=)[0-9]+(?:\.[0-9]+)*")
 def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) -> None:
     text = scanner.read_text(path)
     if text is None:
+        result.declaration_read_issues[path] = "unreadable"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return
     try:
         doc = yaml.safe_load(text)
     except yaml.YAMLError as exc:
+        result.declaration_read_issues[path] = "invalid_syntax"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return
@@ -739,12 +748,14 @@ def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -
 def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> None:
     text = scanner.read_text(path)
     if text is None:
+        result.declaration_read_issues[path] = "unreadable"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: unreadable")
         return
     try:
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
+        result.declaration_read_issues[path] = "invalid_syntax"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return

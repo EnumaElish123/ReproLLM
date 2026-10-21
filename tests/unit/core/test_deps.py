@@ -623,3 +623,290 @@ def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
     assert result.qualified_lock_packages([]) == frozenset({"torch"})
     assert result.unverified_lock_paths([]) == {"numpy": (lock_name,), "torch": (lock_name,)}
     assert result.unparsed == [f"{lock_name}:0: {message}" for message in unparsed]
+
+
+# --- R07-C D-M: bounded captured declaration-body uncertainty ---------------
+
+
+class _DeclarationBodyScanner(RepoScanner):
+    def __init__(self, root: Path) -> None:
+        from reprollm.core.git import GitInfo
+
+        super().__init__(root, GitInfo(is_repo=False))
+        self.body_reads: list[str] = []
+
+    def read_text(self, rel_path: str, max_bytes: int = 512 * 1024) -> str | None:
+        self.body_reads.append(rel_path)
+        return super().read_text(rel_path, max_bytes)
+
+
+def _assert_declaration_body_legacy_facts(result: Any, bad_path: str) -> None:
+    assert [
+        (d.name, d.display_name, d.specifier, d.exact_version, d.source_file, d.line)
+        for d in result.declarations
+    ] == [("torch", "torch", "==2.5.1", "2.5.1", "requirements.txt", 1)]
+    assert result.manifest_present is True
+    assert [(lock.path, lock.packages, lock.read_issue) for lock in result.lockfiles] == [
+        ("requirements.txt", frozenset({"torch"}), None)
+    ]
+    assert result._project_manifests == {}
+    if bad_path.endswith("requirements-bad.txt"):
+        assert result._uncertain_directories == set()
+    else:
+        from pathlib import PurePosixPath
+
+        assert result._uncertain_directories == {PurePosixPath("broken")}
+
+
+def test_declaration_body_issue_map_defaults_preserve_legacy_positional_values() -> None:
+    from reprollm.core.deps import Declarations
+
+    declarations = Declarations([], [], [], False, {}, set())
+
+    assert declarations.declaration_read_issues == {}
+    assert Declarations().declaration_read_issues is not declarations.declaration_read_issues
+
+
+@pytest.mark.parametrize(
+    "basename",
+    ["pyproject.toml", "Pipfile", "environment.yml", "environment.yaml", "requirements-bad.txt"],
+)
+@pytest.mark.parametrize("failure", ["permission", "binary", "invalid-utf8", "read-cap"])
+def test_captured_declaration_body_read_failures_preserve_all_legacy_facts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, basename: str, failure: str
+) -> None:
+    _write(tmp_path, "requirements.txt", "torch==2.5.1\n")
+    path = f"broken/{basename}"
+    _write(tmp_path, path, "safe fixture\n")
+    target = tmp_path / path
+    if failure == "binary":
+        target.write_bytes(b"SYNTHETIC_BODY_CANARY\x00\n")
+    elif failure == "invalid-utf8":
+        target.write_bytes(b"\xffSYNTHETIC_BODY_CANARY\n")
+    elif failure == "read-cap":
+        target.write_bytes(b"x" * (512 * 1024 + 1))
+    else:
+        original = Path.open
+
+        def denied(source: Path, *args: Any, **kwargs: Any) -> Any:
+            if source == target:
+                raise PermissionError(f"{target}: SYNTHETIC_BODY_CANARY")
+            return original(source, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "open", denied)
+    scanner = _DeclarationBodyScanner(tmp_path)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {path: "unreadable"}
+    assert result.unparsed == [f"{path}:0: unreadable"]
+    assert scanner.body_reads.count(path) == 1
+    assert sorted(scanner.body_reads) == sorted([path, "requirements.txt"])
+    _assert_declaration_body_legacy_facts(result, path)
+    diagnostics = "\n".join(result.unparsed + scanner.warnings)
+    assert str(target) not in diagnostics
+    assert "SYNTHETIC_BODY_CANARY" not in diagnostics
+
+
+@pytest.mark.parametrize(
+    ("basename", "body"),
+    [
+        ("pyproject.toml", "[project broken\n"),
+        ("Pipfile", "[packages broken\n"),
+        ("environment.yml", "dependencies: [broken\n"),
+        ("environment.yaml", "dependencies: [broken\n"),
+    ],
+)
+def test_caught_manager_body_decoder_failure_retains_old_diagnostic_and_capture(
+    tmp_path: Path, basename: str, body: str
+) -> None:
+    import yaml
+
+    from reprollm.core._toml import tomllib
+
+    _write(tmp_path, "requirements.txt", "torch==2.5.1\n")
+    path = f"broken/{basename}"
+    _write(tmp_path, path, body)
+    try:
+        if basename.startswith("environment"):
+            yaml.safe_load(body)
+        else:
+            tomllib.loads(body)
+    except (tomllib.TOMLDecodeError, yaml.YAMLError) as exc:
+        legacy = f"{path}:0: {exc}"
+    else:
+        raise AssertionError("The test fixture must exercise an existing decoder failure")
+    scanner = _DeclarationBodyScanner(tmp_path)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {path: "invalid_syntax"}
+    assert result.unparsed == [legacy]
+    assert sorted(scanner.body_reads) == sorted([path, "requirements.txt"])
+    _assert_declaration_body_legacy_facts(result, path)
+
+
+@pytest.mark.parametrize(
+    "failure", ["missing", "binary", "invalid-utf8", "read-cap", "permission", "outside-alias"]
+)
+def test_requirements_actual_child_body_read_failure_is_recorded_without_extra_reads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    root = tmp_path / "repo"
+    root.mkdir()
+    _write(root, "requirements.txt", "torch==2.5.1\n-r deps/base.txt\n")
+    child = root / "deps/base.txt"
+    child.parent.mkdir()
+    outside = tmp_path / "outside-synthetic.txt"
+    outside.write_text("openai==1.2.3 # SYNTHETIC_OUTSIDE_BODY_CANARY\n")
+    if failure == "outside-alias":
+        try:
+            child.symlink_to(outside)
+        except (OSError, NotImplementedError) as exc:
+            pytest.skip(f"symlinks unavailable: {type(exc).__name__}")
+    elif failure != "missing":
+        child.write_bytes(
+            b"x" * (512 * 1024 + 1)
+            if failure == "read-cap"
+            else b"\xffbad\n"
+            if failure == "invalid-utf8"
+            else b"bad\x00\n"
+        )
+    original = Path.open
+
+    def guarded(source: Path, *args: Any, **kwargs: Any) -> Any:
+        assert source != outside, "An outside include body must never be opened"
+        if failure == "permission" and source == child:
+            raise PermissionError("SYNTHETIC_BODY_EXCEPTION_CANARY")
+        return original(source, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", guarded)
+    scanner = _DeclarationBodyScanner(root)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {"deps/base.txt": "unreadable"}
+    assert scanner.body_reads == ["requirements.txt", "deps/base.txt"]
+    assert [(d.name, d.source_file, d.line, d.exact_version) for d in result.declarations] == [
+        ("torch", "requirements.txt", 1, "2.5.1")
+    ]
+    assert result.lockfiles == []
+    assert result.unparsed == ["requirements.txt:2: include unreadable"]
+    assert result.manifest_present is True
+    diagnostics = "\n".join(result.unparsed + scanner.warnings)
+    assert str(outside) not in diagnostics
+    assert "SYNTHETIC_OUTSIDE_BODY_CANARY" not in diagnostics
+    assert "SYNTHETIC_BODY_EXCEPTION_CANARY" not in diagnostics
+
+
+def test_shared_normalized_requirements_body_failure_is_read_and_recorded_once(
+    tmp_path: Path,
+) -> None:
+    _write(tmp_path, "requirements-a.txt", "-r deps/base.txt\n-r deps/../deps/base.txt\n")
+    _write(tmp_path, "requirements-b.txt", "-r deps/base.txt\n")
+    _write(tmp_path, "deps/base.txt", "bad\x00\n")
+    scanner = _DeclarationBodyScanner(tmp_path)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {"deps/base.txt": "unreadable"}
+    assert scanner.body_reads.count("deps/base.txt") == 1
+    assert result.unparsed == [
+        "requirements-a.txt:1: include unreadable",
+        "requirements-b.txt:1: include unreadable",
+    ]
+    assert result.declarations == []
+    assert result.lockfiles == []
+
+
+@pytest.mark.parametrize(
+    ("basename", "body"),
+    [
+        ("pyproject.toml", "[tool.ruff]\n"),
+        ("pyproject.toml", "[project]\ndependencies=[]\n"),
+        ("pyproject.toml", "project=42\n"),
+        ("pyproject.toml", "tool=false\n"),
+        ("pyproject.toml", "[project]\ndependencies=42\n"),
+        ("pyproject.toml", "[tool.poetry]\ndependencies=[]\n"),
+        ("Pipfile", "[packages]\n"),
+        ("Pipfile", "packages=false\n"),
+        ("Pipfile", '[packages]\ntorch={version="==2.5.1",git="public"}\n'),
+        ("environment.yml", ""),
+        ("environment.yml", "null\n"),
+        ("environment.yml", "[]\n"),
+        ("environment.yml", "dependencies: false\n"),
+        ("environment.yml", "dependencies: [pytorch>=2, {pip: [false]}]\n"),
+        ("requirements.txt", "# comment only\n"),
+        ("requirements.txt", "not a requirement !!!\n"),
+        ("requirements.txt", "-e .\n--index-url https://example.invalid\n"),
+    ],
+)
+def test_readable_declaration_shapes_and_line_grammar_do_not_become_body_failures(
+    tmp_path: Path, basename: str, body: str
+) -> None:
+    _write(tmp_path, basename, body)
+
+    result = scan_dependencies(_DeclarationBodyScanner(tmp_path))
+
+    assert result.declaration_read_issues == {}
+
+
+@pytest.mark.parametrize("edge", ["absolute", "escape", "malformed", "unsupported", "excluded"])
+def test_unattempted_requirements_include_edges_do_not_invent_body_read_failures(
+    tmp_path: Path, edge: str
+) -> None:
+    target = {
+        "absolute": "/synthetic-outside-body.txt",
+        "escape": "../synthetic-outside-body.txt",
+        "malformed": "",
+        "unsupported": '"quoted.txt"',
+        "excluded": ".venv/base.txt",
+    }[edge]
+    _write(tmp_path, "requirements.txt", f"torch>=2\n-r {target}\n")
+    scanner = _DeclarationBodyScanner(tmp_path)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {}
+    assert scanner.body_reads == ["requirements.txt"]
+    assert result.lockfiles == []
+    assert result.unparsed == [
+        "requirements.txt:2: "
+        + (
+            "include malformed"
+            if edge == "malformed"
+            else "include unsupported syntax"
+            if edge == "unsupported"
+            else "include unreadable"
+        )
+    ]
+
+
+@pytest.mark.parametrize("graph", ["cycle", "depth", "excluded-root", "unlisted-root"])
+def test_unexpanded_or_uncaptured_requirements_nodes_do_not_invent_body_read_failures(
+    tmp_path: Path, graph: str
+) -> None:
+    if graph == "cycle":
+        _write(tmp_path, "requirements.txt", "torch>=2\n-r deps/base.txt\n")
+        _write(tmp_path, "deps/base.txt", "-r ../requirements.txt\n")
+    elif graph == "depth":
+        _write(tmp_path, "requirements.txt", "torch>=2\n-r deps/0.txt\n")
+        for index in range(11):
+            _write(tmp_path, f"deps/{index}.txt", f"-r {index + 1}.txt\n")
+    elif graph == "excluded-root":
+        _write(tmp_path, ".venv/requirements.txt", "bad\x00\n")
+    else:
+        _write(tmp_path, "requirements.txt", "x" * (2 * 1024 * 1024 + 1))
+    scanner = _DeclarationBodyScanner(tmp_path)
+
+    result = scan_dependencies(scanner)
+
+    assert result.declaration_read_issues == {}
+    if graph == "depth":
+        assert "deps/10.txt" not in scanner.body_reads
+        assert "deps/11.txt" not in scanner.body_reads
+        assert "deps/9.txt:1: include depth limit" in result.unparsed
+    elif graph in {"excluded-root", "unlisted-root"}:
+        assert scanner.body_reads == []
+        assert result.declarations == []
+        assert result.unparsed == []
