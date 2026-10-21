@@ -1,0 +1,17 @@
+--- first-build-packager.py
++++ runtime-variable-fixed-packager.py
+@@ -820,12 +820,12 @@
+     assert preparation["current_packager_sha256"] == sha(Path(__file__).read_bytes())
+     assert preparation["packager_executions"] == 0
+     correction_history = preparation["pre_execution_peer_review_correction"]
+-    for relative, expected in [
++    for source_relative, expected in [
+         ("package-final-prep/packager-before-provenance-correction.py.txt", correction_history["initial_packager_sha256"]),
+         ("package-final-prep/provenance-correction.patch", correction_history["correction_patch_sha256"]),
+         ("package-final-prep/packager-vs-prior.patch", preparation["adaptation_patch_sha256"]),
+     ]:
+-        original, _, _ = a.source(relative)
++        original, _, _ = a.source(source_relative)
+         assert sha(original) == expected
+     a.keep("packager-independent-static-review.json", "qualification/packager-peer-static-review.json")
+     a.emit("summary.json", {

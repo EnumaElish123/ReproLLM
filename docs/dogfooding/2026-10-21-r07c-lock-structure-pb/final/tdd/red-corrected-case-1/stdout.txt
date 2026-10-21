@@ -1,0 +1,41 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[conda-lock.yml-package: [{name: pytorch}, false]\n-unparsed4] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-557/test_partially_extracted_lock_0')
+lock_name = 'conda-lock.yml', body = 'package: [{name: pytorch}, false]\n'
+unparsed = []
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch=2\n  - numpy=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[conda-lock.yml-package: [{name: pytorch}, false]\n-unparsed4]
+1 failed, 4 deselected in 0.27s

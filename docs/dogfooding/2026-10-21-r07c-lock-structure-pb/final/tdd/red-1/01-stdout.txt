@@ -1,0 +1,4056 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.............. [ 62%]
+..FFFFFFFFFFFFFFFFFFFF........FFFF.FFFFFFFFF                             [100%]
+=================================== FAILURES ===================================
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = false\n-unparsed0-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer0')
+lock_name = 'uv.lock', body = 'package = false\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = false\n-unparsed0-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer1')
+lock_name = 'poetry.lock', body = 'package = false\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = 0\n-unparsed1-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer2')
+lock_name = 'uv.lock', body = 'package = 0\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = 0\n-unparsed1-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer3')
+lock_name = 'poetry.lock', body = 'package = 0\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ""\n-unparsed2-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer4')
+lock_name = 'uv.lock', body = 'package = ""\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ""\n-unparsed2-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer5')
+lock_name = 'poetry.lock', body = 'package = ""\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = {}\n-unparsed3-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer6')
+lock_name = 'uv.lock', body = 'package = {}\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = {}\n-unparsed3-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer7')
+lock_name = 'poetry.lock', body = 'package = {}\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = "not a list"\n-unparsed4-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer8')
+lock_name = 'uv.lock', body = 'package = "not a list"\n'
+unparsed = ['invalid package collection']
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = "not a list"\n-unparsed4-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer9')
+lock_name = 'poetry.lock', body = 'package = "not a list"\n'
+unparsed = ['invalid package collection']
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [false]\n-unparsed5-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer10')
+lock_name = 'uv.lock', body = 'package = [false]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [false]\n-unparsed5-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer11')
+lock_name = 'poetry.lock', body = 'package = [false]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [0]\n-unparsed6-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer12')
+lock_name = 'uv.lock', body = 'package = [0]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [0]\n-unparsed6-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer13')
+lock_name = 'poetry.lock', body = 'package = [0]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ["torch"]\n-unparsed7-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer14')
+lock_name = 'uv.lock', body = 'package = ["torch"]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ["torch"]\n-unparsed7-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer15')
+lock_name = 'poetry.lock', body = 'package = ["torch"]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [[]]\n-unparsed8-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer16')
+lock_name = 'uv.lock', body = 'package = [[]]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [[]]\n-unparsed8-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer17')
+lock_name = 'poetry.lock', body = 'package = [[]]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{}]\n-unparsed9-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer18')
+lock_name = 'uv.lock', body = 'package = [{}]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{}]\n-unparsed9-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer19')
+lock_name = 'poetry.lock', body = 'package = [{}]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = ""}]\n-unparsed10-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer20')
+lock_name = 'uv.lock', body = 'package = [{name = ""}]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = ""}]\n-unparsed10-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer21')
+lock_name = 'poetry.lock', body = 'package = [{name = ""}]\n', unparsed = []
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = false}]\n-unparsed11-uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer22')
+lock_name = 'uv.lock', body = 'package = [{name = false}]\n'
+unparsed = ['invalid package name']
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = false}]\n-unparsed11-poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_toml_lock_structure_uncer23')
+lock_name = 'poetry.lock', body = 'package = [{name = false}]\n'
+unparsed = ['invalid package name']
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock"])
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("package = false\n", []),
+            ("package = 0\n", []),
+            ('package = ""\n', []),
+            ("package = {}\n", []),
+            ('package = "not a list"\n', ["invalid package collection"]),
+            ("package = [false]\n", []),
+            ("package = [0]\n", []),
+            ('package = ["torch"]\n', []),
+            ("package = [[]]\n", []),
+            ("package = [{}]\n", []),
+            ('package = [{name = ""}]\n', []),
+            ("package = [{name = false}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_toml_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:492: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[false\n-unparsed0] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce0')
+body = 'false\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[0\n-unparsed1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce1')
+body = '0\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[""\n-unparsed2] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce2')
+body = '""\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[[]\n-unparsed3] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce3')
+body = '[]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: null\n-unparsed4] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce4')
+body = 'package: null\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: false\n-unparsed5] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce5')
+body = 'package: false\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: 0\n-unparsed6] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce6')
+body = 'package: 0\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: ""\n-unparsed7] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce7')
+body = 'package: ""\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: {}\n-unparsed8] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce8')
+body = 'package: {}\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: invalid\n-unparsed9] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce9')
+body = 'package: invalid\n', unparsed = ['invalid package collection']
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [null]\n-unparsed10] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce10')
+body = 'package: [null]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [false]\n-unparsed11] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce11')
+body = 'package: [false]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [0]\n-unparsed12] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce12')
+body = 'package: [0]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [torch]\n-unparsed13] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce13')
+body = 'package: [torch]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [[]]\n-unparsed14] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce14')
+body = 'package: [[]]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{}]\n-unparsed15] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce15')
+body = 'package: [{}]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: ""}]\n-unparsed16] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce16')
+body = 'package: [{name: ""}]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: null}]\n-unparsed17] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce17')
+body = 'package: [{name: null}]\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+_ test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: 12}]\n-unparsed18] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_conda_lock_structure_unce18')
+body = 'package: [{name: 12}]\n', unparsed = ['invalid package name']
+
+    @pytest.mark.parametrize(
+        ("body", "unparsed"),
+        [
+            ("false\n", []),
+            ("0\n", []),
+            ('""\n', []),
+            ("[]\n", []),
+            ("package: null\n", []),
+            ("package: false\n", []),
+            ("package: 0\n", []),
+            ('package: ""\n', []),
+            ("package: {}\n", []),
+            ("package: invalid\n", ["invalid package collection"]),
+            ("package: [null]\n", []),
+            ("package: [false]\n", []),
+            ("package: [0]\n", []),
+            ("package: [torch]\n", []),
+            ("package: [[]]\n", []),
+            ("package: [{}]\n", []),
+            ('package: [{name: ""}]\n', []),
+            ("package: [{name: null}]\n", []),
+            ("package: [{name: 12}]\n", ["invalid package name"]),
+        ],
+    )
+    def test_conda_lock_structure_uncertainty_preserves_existing_diagnostics(
+        tmp_path: Path, body: str, unparsed: list[str]
+    ) -> None:
+        _write(tmp_path, "conda-lock.yml", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:529: AssertionError
+___ test_pipfile_lock_nonmapping_document_is_structurally_unverified[null\n] ___
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_nonmapping_d0')
+body = 'null\n'
+
+    @pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+    def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+        tmp_path: Path, body: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:543: AssertionError
+__ test_pipfile_lock_nonmapping_document_is_structurally_unverified[false\n] ___
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_nonmapping_d1')
+body = 'false\n'
+
+    @pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+    def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+        tmp_path: Path, body: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:543: AssertionError
+____ test_pipfile_lock_nonmapping_document_is_structurally_unverified[0\n] _____
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_nonmapping_d2')
+body = '0\n'
+
+    @pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+    def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+        tmp_path: Path, body: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:543: AssertionError
+____ test_pipfile_lock_nonmapping_document_is_structurally_unverified[""\n] ____
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_nonmapping_d3')
+body = '""\n'
+
+    @pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+    def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+        tmp_path: Path, body: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:543: AssertionError
+____ test_pipfile_lock_nonmapping_document_is_structurally_unverified[[]\n] ____
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_nonmapping_d4')
+body = '[]\n'
+
+    @pytest.mark.parametrize("body", ["null\n", "false\n", "0\n", '""\n', "[]\n"])
+    def test_pipfile_lock_nonmapping_document_is_structurally_unverified(
+        tmp_path: Path, body: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:543: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[null-default] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron0')
+section = 'default', value = 'null'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[null-develop] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron1')
+section = 'develop', value = 'null'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[false-default] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron2')
+section = 'default', value = 'false'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[false-develop] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron3')
+section = 'develop', value = 'false'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[0-default] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron4')
+section = 'default', value = '0'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[0-develop] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron5')
+section = 'develop', value = '0'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[""-default] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron6')
+section = 'default', value = '""'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[""-develop] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron7')
+section = 'develop', value = '""'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[[]-default] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron8')
+section = 'default', value = '[]'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[[]-develop] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_pipfile_lock_present_wron9')
+section = 'develop', value = '[]'
+
+    @pytest.mark.parametrize("section", ["default", "develop"])
+    @pytest.mark.parametrize("value", ["null", "false", "0", '""', "[]"])
+    def test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section(
+        tmp_path: Path, section: str, value: str
+    ) -> None:
+        _write(tmp_path, "Pipfile.lock", f'{{"{section}": {value}}}\n')
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:558: AssertionError
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[uv.lock-package = [{name = "torch"}, {}]\n-unparsed0] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partially_extracted_lock_0')
+lock_name = 'uv.lock', body = 'package = [{name = "torch"}, {}]\n'
+unparsed = []
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[poetry.lock-package = [{name = "torch"}, {name = 12}]\n-unparsed1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partially_extracted_lock_1')
+lock_name = 'poetry.lock', body = 'package = [{name = "torch"}, {name = 12}]\n'
+unparsed = ['invalid package name']
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[Pipfile.lock-{"default": {"torch": {}}, "develop": []}\n-unparsed2] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partially_extracted_lock_2')
+lock_name = 'Pipfile.lock', body = '{"default": {"torch": {}}, "develop": []}\n'
+unparsed = []
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[Pipfile.lock-{"default": null, "develop": {"torch": {}}}\n-unparsed3] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partially_extracted_lock_3')
+lock_name = 'Pipfile.lock'
+body = '{"default": null, "develop": {"torch": {}}}\n', unparsed = []
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+_ test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[conda-lock.yml-package: [{name: pytorch}, false]\n-unparsed4] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partially_extracted_lock_4')
+lock_name = 'conda-lock.yml', body = 'package: [{name: pytorch}, false]\n'
+unparsed = []
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body", "unparsed"),
+        [
+            ("uv.lock", 'package = [{name = "torch"}, {}]\n', []),
+            ("poetry.lock", 'package = [{name = "torch"}, {name = 12}]\n', ["invalid package name"]),
+            ("Pipfile.lock", '{"default": {"torch": {}}, "develop": []}\n', []),
+            ("Pipfile.lock", '{"default": null, "develop": {"torch": {}}}\n', []),
+            ("conda-lock.yml", "package: [{name: pytorch}, false]\n", []),
+        ],
+    )
+    def test_partially_extracted_lock_keeps_known_package_names_and_existing_credit(
+        tmp_path: Path, lock_name: str, body: str, unparsed: list[str]
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            _write(tmp_path, "pyproject.toml", '[project]\ndependencies = ["torch>=2", "numpy>=1"]\n')
+        elif lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+        else:
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
+        _write(tmp_path, lock_name, body)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+        assert lock.packages == frozenset({"torch"})
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset({'torch'}), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:622: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[uv.lock-package = "invalid collection"\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap0')
+lock_name = 'uv.lock', content = 'package = "invalid collection"\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='uv.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[poetry.lock-[[package]]\nname = 12\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap1')
+lock_name = 'poetry.lock', content = '[[package]]\nname = 12\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='poetry.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[Pipfile.lock-[]\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap2')
+lock_name = 'Pipfile.lock', content = '[]\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[Pipfile.lock-{"default": ["torch"]}\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap3')
+lock_name = 'Pipfile.lock', content = '{"default": ["torch"]}\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='Pipfile.lock', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-- torch\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap4')
+lock_name = 'conda-lock.yml', content = '- torch\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-package: invalid collection\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap5')
+lock_name = 'conda-lock.yml', content = 'package: invalid collection\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-package:\n  - name: 12\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_decoded_invalid_lock_shap6')
+lock_name = 'conda-lock.yml', content = 'package:\n  - name: 12\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "content"),
+        [
+            ("uv.lock", 'package = "invalid collection"\n'),
+            ("poetry.lock", "[[package]]\nname = 12\n"),
+            ("Pipfile.lock", "[]\n"),
+            ("Pipfile.lock", '{"default": ["torch"]}\n'),
+            ("conda-lock.yml", "- torch\n"),
+            ("conda-lock.yml", "package: invalid collection\n"),
+            ("conda-lock.yml", "package:\n  - name: 12\n"),
+        ],
+    )
+    def test_decoded_invalid_lock_shapes_are_known_structural_failures(
+        tmp_path: Path, lock_name: str, content: str
+    ) -> None:
+        _write(tmp_path, "pyproject.toml", '[project]\nname = "shape"\ndependencies = ["torch>=2"]\n')
+        if lock_name == "Pipfile.lock":
+            _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\n')
+        elif lock_name == "conda-lock.yml":
+            _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n")
+        _write(tmp_path, lock_name, content)
+    
+        result = _scan(tmp_path)
+    
+        (lock,) = result.lockfiles
+>       assert lock.read_issue == "invalid_structure"
+E       AssertionError: assert None == 'invalid_structure'
+E        +  where None = Lockfile(path='conda-lock.yml', packages=frozenset(), read_issue=None).read_issue
+
+tests/unit/core/test_deps.py:458: AssertionError
+_ test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[uv.lock-package = false\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_associated_structurally_i0')
+lock_name = 'uv.lock', body = 'package = false\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body"),
+        [
+            ("uv.lock", "package = false\n"),
+            ("poetry.lock", 'package = [{name = ""}]\n'),
+            ("Pipfile.lock", '{"default": null}\n'),
+            ("conda-lock.yml", "package: [null]\n"),
+        ],
+    )
+    def test_associated_structurally_invalid_lock_keeps_missing_pin_unverified(
+        tmp_path: Path, lock_name: str, body: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path, lock_name)
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+        ctx = _format_credit_context(tmp_path)
+        assert ctx.pyscan.coverage().pass_skip_reason() is None
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:781: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[poetry.lock-package = [{name = ""}]\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_associated_structurally_i1')
+lock_name = 'poetry.lock', body = 'package = [{name = ""}]\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body"),
+        [
+            ("uv.lock", "package = false\n"),
+            ("poetry.lock", 'package = [{name = ""}]\n'),
+            ("Pipfile.lock", '{"default": null}\n'),
+            ("conda-lock.yml", "package: [null]\n"),
+        ],
+    )
+    def test_associated_structurally_invalid_lock_keeps_missing_pin_unverified(
+        tmp_path: Path, lock_name: str, body: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path, lock_name)
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+        ctx = _format_credit_context(tmp_path)
+        assert ctx.pyscan.coverage().pass_skip_reason() is None
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:781: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['poetry.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[Pipfile.lock-{"default": null}\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_associated_structurally_i2')
+lock_name = 'Pipfile.lock', body = '{"default": null}\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body"),
+        [
+            ("uv.lock", "package = false\n"),
+            ("poetry.lock", 'package = [{name = ""}]\n'),
+            ("Pipfile.lock", '{"default": null}\n'),
+            ("conda-lock.yml", "package: [null]\n"),
+        ],
+    )
+    def test_associated_structurally_invalid_lock_keeps_missing_pin_unverified(
+        tmp_path: Path, lock_name: str, body: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path, lock_name)
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+        ctx = _format_credit_context(tmp_path)
+        assert ctx.pyscan.coverage().pass_skip_reason() is None
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:781: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'Pipfile', use_line = 2, lock_paths = ['Pipfile.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'Pipfile', 'field': None, 'line': 2, ...}]} != {'evidence': [{'kind': 'file', 'path': 'Pipfile', 'field': None, 'line': 2, ...}, {'kind': 'file', 'path': 'Pipfil...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[conda-lock.yml-package: [null]\n] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_associated_structurally_i3')
+lock_name = 'conda-lock.yml', body = 'package: [null]\n'
+
+    @pytest.mark.parametrize(
+        ("lock_name", "body"),
+        [
+            ("uv.lock", "package = false\n"),
+            ("poetry.lock", 'package = [{name = ""}]\n'),
+            ("Pipfile.lock", '{"default": null}\n'),
+            ("conda-lock.yml", "package: [null]\n"),
+        ],
+    )
+    def test_associated_structurally_invalid_lock_keeps_missing_pin_unverified(
+        tmp_path: Path, lock_name: str, body: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path, lock_name)
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+        ctx = _format_credit_context(tmp_path)
+        assert ctx.pyscan.coverage().pass_skip_reason() is None
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:781: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'environment.yml', use_line = 1, lock_paths = ['conda-lock.yml']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'environment.yml', 'field': None, 'line': 1, ...}]} != {'evidence': [{'kind': 'file', 'path': 'environment.yml', 'field': None, 'line': 1, ...}, {'kind': 'file',...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_lock_failure_is_independent_of_primary_python_analysis[zero] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_failure_i0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961d7ed50>
+view = 'zero'
+
+    @pytest.mark.parametrize("view", ["zero", "complete", "capped", "unavailable"])
+    def test_structural_lock_failure_is_independent_of_primary_python_analysis(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, view: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path)
+        (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if view != "zero":
+            (tmp_path / "a.py").write_text("value = 1\n", encoding="utf-8")
+            (tmp_path / "z.py").write_text("value = 2\n", encoding="utf-8")
+        if view == "capped":
+            monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+        ctx = _format_credit_context(tmp_path)
+        if view == "unavailable":
+            ctx._pyscan = PyScanResult()
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+
+tests/unit/rules/test_env.py:802: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_lock_failure_is_independent_of_primary_python_analysis[complete] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_failure_i1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961d7fb60>
+view = 'complete'
+
+    @pytest.mark.parametrize("view", ["zero", "complete", "capped", "unavailable"])
+    def test_structural_lock_failure_is_independent_of_primary_python_analysis(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, view: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path)
+        (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if view != "zero":
+            (tmp_path / "a.py").write_text("value = 1\n", encoding="utf-8")
+            (tmp_path / "z.py").write_text("value = 2\n", encoding="utf-8")
+        if view == "capped":
+            monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+        ctx = _format_credit_context(tmp_path)
+        if view == "unavailable":
+            ctx._pyscan = PyScanResult()
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+
+tests/unit/rules/test_env.py:802: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_lock_failure_is_independent_of_primary_python_analysis[capped] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_failure_i2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f39613b6f90>
+view = 'capped'
+
+    @pytest.mark.parametrize("view", ["zero", "complete", "capped", "unavailable"])
+    def test_structural_lock_failure_is_independent_of_primary_python_analysis(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, view: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path)
+        (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if view != "zero":
+            (tmp_path / "a.py").write_text("value = 1\n", encoding="utf-8")
+            (tmp_path / "z.py").write_text("value = 2\n", encoding="utf-8")
+        if view == "capped":
+            monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+        ctx = _format_credit_context(tmp_path)
+        if view == "unavailable":
+            ctx._pyscan = PyScanResult()
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+
+tests/unit/rules/test_env.py:802: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_lock_failure_is_independent_of_primary_python_analysis[unavailable] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_failure_i3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f39613611f0>
+view = 'unavailable'
+
+    @pytest.mark.parametrize("view", ["zero", "complete", "capped", "unavailable"])
+    def test_structural_lock_failure_is_independent_of_primary_python_analysis(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, view: str
+    ) -> None:
+        manifest, line = _failed_format_files(tmp_path)
+        (tmp_path / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if view != "zero":
+            (tmp_path / "a.py").write_text("value = 1\n", encoding="utf-8")
+            (tmp_path / "z.py").write_text("value = 2\n", encoding="utf-8")
+        if view == "capped":
+            monkeypatch.setattr(scanner_mod, "MAX_PYTHON_FILES", 1)
+        ctx = _format_credit_context(tmp_path)
+        if view == "unavailable":
+            ctx._pyscan = PyScanResult()
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
+    
+>       _assert_lock_contents_skip(finding, manifest, line, ["uv.lock"])
+
+tests/unit/rules/test_env.py:802: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 3, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 3, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[uv.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partial_lock_members_keep0')
+lock_name = 'uv.lock'
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified(
+        tmp_path: Path, lock_name: str
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            manifest, line = "pyproject.toml", 2
+            declaration = '[project]\ndependencies = ["numpy>=1", "torch>=2"]\n'
+            body = 'package = [{name = "numpy"}, {}]\n'
+        elif lock_name == "Pipfile.lock":
+            manifest, line = "Pipfile", 3
+            declaration = '[packages]\nnumpy = ">=1"\ntorch = ">=2"\n'
+            body = '{"default": {"numpy": {}}, "develop": false}\n'
+        else:
+            manifest, line = "environment.yml", 2
+            declaration = "dependencies:\n  - numpy>=1\n  - pytorch>=2\n"
+            body = "package: [{name: numpy}, {}]\n"
+        (tmp_path / manifest).write_text(declaration, encoding="utf-8")
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:876: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 2, lock_paths = ['uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 2, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 2, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[poetry.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partial_lock_members_keep1')
+lock_name = 'poetry.lock'
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified(
+        tmp_path: Path, lock_name: str
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            manifest, line = "pyproject.toml", 2
+            declaration = '[project]\ndependencies = ["numpy>=1", "torch>=2"]\n'
+            body = 'package = [{name = "numpy"}, {}]\n'
+        elif lock_name == "Pipfile.lock":
+            manifest, line = "Pipfile", 3
+            declaration = '[packages]\nnumpy = ">=1"\ntorch = ">=2"\n'
+            body = '{"default": {"numpy": {}}, "develop": false}\n'
+        else:
+            manifest, line = "environment.yml", 2
+            declaration = "dependencies:\n  - numpy>=1\n  - pytorch>=2\n"
+            body = "package: [{name: numpy}, {}]\n"
+        (tmp_path / manifest).write_text(declaration, encoding="utf-8")
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:876: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'pyproject.toml', use_line = 2, lock_paths = ['poetry.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 2, ...}]} != {'evidence': [{'kind': 'file', 'path': 'pyproject.toml', 'field': None, 'line': 2, ...}, {'kind': 'file', '...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[Pipfile.lock] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partial_lock_members_keep2')
+lock_name = 'Pipfile.lock'
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified(
+        tmp_path: Path, lock_name: str
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            manifest, line = "pyproject.toml", 2
+            declaration = '[project]\ndependencies = ["numpy>=1", "torch>=2"]\n'
+            body = 'package = [{name = "numpy"}, {}]\n'
+        elif lock_name == "Pipfile.lock":
+            manifest, line = "Pipfile", 3
+            declaration = '[packages]\nnumpy = ">=1"\ntorch = ">=2"\n'
+            body = '{"default": {"numpy": {}}, "develop": false}\n'
+        else:
+            manifest, line = "environment.yml", 2
+            declaration = "dependencies:\n  - numpy>=1\n  - pytorch>=2\n"
+            body = "package: [{name: numpy}, {}]\n"
+        (tmp_path / manifest).write_text(declaration, encoding="utf-8")
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:876: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'Pipfile', use_line = 3, lock_paths = ['Pipfile.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'Pipfile', 'field': None, 'line': 3, ...}]} != {'evidence': [{'kind': 'file', 'path': 'Pipfile', 'field': None, 'line': 3, ...}, {'kind': 'file', 'path': 'Pipfil...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[conda-lock.yml] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_partial_lock_members_keep3')
+lock_name = 'conda-lock.yml'
+
+    @pytest.mark.parametrize("lock_name", ["uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"])
+    def test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified(
+        tmp_path: Path, lock_name: str
+    ) -> None:
+        if lock_name in {"uv.lock", "poetry.lock"}:
+            manifest, line = "pyproject.toml", 2
+            declaration = '[project]\ndependencies = ["numpy>=1", "torch>=2"]\n'
+            body = 'package = [{name = "numpy"}, {}]\n'
+        elif lock_name == "Pipfile.lock":
+            manifest, line = "Pipfile", 3
+            declaration = '[packages]\nnumpy = ">=1"\ntorch = ">=2"\n'
+            body = '{"default": {"numpy": {}}, "develop": false}\n'
+        else:
+            manifest, line = "environment.yml", 2
+            declaration = "dependencies:\n  - numpy>=1\n  - pytorch>=2\n"
+            body = "package: [{name: numpy}, {}]\n"
+        (tmp_path / manifest).write_text(declaration, encoding="utf-8")
+        (tmp_path / lock_name).write_text(body, encoding="utf-8")
+    
+        (finding,) = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    
+>       _assert_lock_contents_skip(finding, manifest, line, [lock_name])
+
+tests/unit/rules/test_env.py:876: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.WARNING: 'WARNING'>, st...nt='Pin torch exactly, e.g. `torch==<version>`.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'environment.yml', use_line = 2, lock_paths = ['conda-lock.yml']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...WARNING', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Differing items:
+E         {'status': 'fail'} != {'status': 'skipped'}
+E         {'fix_hint': 'Pin torch exactly, e.g. `torch==<version>`.'} != {'fix_hint': 'Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.'}
+E         {'severity': 'WARNING'} != {'severity': 'INFO'}
+E         {'evidence': [{'kind': 'file', 'path': 'environment.yml', 'field': None, 'line': 2, ...}]} != {'evidence': [{'kind': 'file', 'path': 'environment.yml', 'field': None, 'line': 2, ...}, {'kind': 'file',...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_and_syntax_failures_share_sorted_evidence_and_preserve_other_warning _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_and_syntax_fai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961358380>
+
+    def test_structural_and_syntax_failures_share_sorted_evidence_and_preserve_other_warning(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        (tmp_path / "requirements.txt").write_text("torch>=2\nnumpy>=1\n", encoding="utf-8")
+        for directory, lock_name, body in [
+            ("a", "poetry.lock", "package = [{}]\n"),
+            ("z", "uv.lock", "[broken\n"),
+        ]:
+            project = tmp_path / directory
+            project.mkdir()
+            (project / "pyproject.toml").write_text('[project]\nname = "owner"\n', encoding="utf-8")
+            (project / lock_name).write_text(body, encoding="utf-8")
+            (project / "a.py").write_text("import torch\n", encoding="utf-8")
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    
+        warning, skipped = LlmCriticalDepsPinnedRule().check(_format_credit_context(tmp_path))
+    
+        assert (warning.status, warning.severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert warning.message == (
+            "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)"
+        )
+>       _assert_lock_contents_skip(skipped, "requirements.txt", 1, ["a/poetry.lock", "z/uv.lock"])
+
+tests/unit/rules/test_env.py:911: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+finding = Finding(rule_id='env.llm_critical_deps_pinned', aliases=[], category='env', severity=<Severity.INFO: 'INFO'>, status=<...ore deciding that exact pin evidence is absent.', profile_origin=[], severity_origin='default', suppressed_reason=None)
+use_path = 'requirements.txt', use_line = 1
+lock_paths = ['a/poetry.lock', 'z/uv.lock']
+
+    def _assert_lock_contents_skip(
+        finding: Finding, use_path: str, use_line: int, lock_paths: list[str]
+    ) -> None:
+>       assert finding.model_dump(mode="json") == {
+            "rule_id": "env.llm_critical_deps_pinned",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 0,
+            "message": _LOCK_CONTENT_MESSAGE,
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": use_path,
+                    "field": None,
+                    "line": use_line,
+                    "value": ">=2",
+                    "expected": None,
+                    "note": "declared as >=2",
+                },
+                *[
+                    {
+                        "kind": "file",
+                        "path": path,
+                        "field": None,
+                        "line": None,
+                        "value": None,
+                        "expected": None,
+                        "note": "torch associated; lock package contents unverified",
+                    }
+                    for path in lock_paths
+                ],
+            ],
+            "fix_hint": _LOCK_CONTENT_HINT,
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+E       AssertionError: assert {'rule_id': '...: 'INFO', ...} == {'rule_id': '...: 'INFO', ...}
+E         
+E         Omitting 11 identical items, use -vv to show
+E         Differing items:
+E         {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'z/uv.lock', 'field': None, 'line': None, ...}]} != {'evidence': [{'kind': 'file', 'path': 'requirements.txt', 'field': None, 'line': 1, ...}, {'kind': 'file', 'path': 'a...try.lock', 'field': None, 'line': None, ...}, {'kind': 'file', 'path': 'z/uv.lock', 'field': None, 'line': None, ...}]}
+E         Use -v to get more diff
+
+tests/unit/rules/test_env.py:493: AssertionError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-never-False-0] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961dfa6c0>
+severity = 'WARNING', threshold = 'never', mixed = False, restored_exit = 0
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+        assert result.exit_code == int(mixed), result.output
+        assert result.stderr == ""
+        report = _coverage_cli_json(result.stdout)
+>       (skipped,) = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+        ^^^^^^^^^^
+E       ValueError: not enough values to unpack (expected 1, got 0)
+
+tests/unit/cli/test_audit.py:1222: ValueError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-critical-False-0] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f39614427e0>
+severity = 'WARNING', threshold = 'critical', mixed = False, restored_exit = 0
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+        assert result.exit_code == int(mixed), result.output
+        assert result.stderr == ""
+        report = _coverage_cli_json(result.stdout)
+>       (skipped,) = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+        ^^^^^^^^^^
+E       ValueError: not enough values to unpack (expected 1, got 0)
+
+tests/unit/cli/test_audit.py:1222: ValueError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-warning-False-1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961443680>
+severity = 'WARNING', threshold = 'warning', mixed = False, restored_exit = 1
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+>       assert result.exit_code == int(mixed), result.output
+E       AssertionError: {
+E           "schema_version": 1,
+E           "reprollm_version": "0.7.0",
+E           "generated_at": "2026-10-21T06:46:22Z",
+E           "target": ".",
+E           "level": 1,
+E           "profiles": {
+E             "declared": [],
+E             "resolved": [
+E               "core"
+E             ],
+E             "detected": []
+E           },
+E           "documents": {
+E             "manifest": "sha256:132c96109ba27ed626b00db7d2ba2f22ed6a1a04fa00153b7641a33f0bb157ee",
+E             "lock": null,
+E             "runs": 0
+E           },
+E           "summary": {
+E             "critical": 0,
+E             "warning": 1,
+E             "info": 0,
+E             "pass": 0,
+E             "suppressed": 0,
+E             "skipped": 0
+E           },
+E           "findings": [
+E             {
+E               "rule_id": "env.llm_critical_deps_pinned",
+E               "aliases": [],
+E               "category": "env",
+E               "severity": "WARNING",
+E               "status": "fail",
+E               "level": 1,
+E               "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E               "evidence": [
+E                 {
+E                   "kind": "file",
+E                   "path": "pyproject.toml",
+E                   "field": null,
+E                   "line": 3,
+E                   "value": ">=2",
+E                   "expected": null,
+E                   "note": "declared as >=2"
+E                 }
+E               ],
+E               "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E               "profile_origin": [],
+E               "severity_origin": "profile:core",
+E               "suppressed_reason": null
+E             }
+E           ]
+E         }
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = <Result SystemExit(1)>.exit_code
+E        +  and   0 = int(False)
+
+tests/unit/cli/test_audit.py:1219: AssertionError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-never-False-0] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f39614fab10>
+severity = 'CRITICAL', threshold = 'never', mixed = False, restored_exit = 0
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+        assert result.exit_code == int(mixed), result.output
+        assert result.stderr == ""
+        report = _coverage_cli_json(result.stdout)
+>       (skipped,) = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+        ^^^^^^^^^^
+E       ValueError: not enough values to unpack (expected 1, got 0)
+
+tests/unit/cli/test_audit.py:1222: ValueError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-critical-False-1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f396159bbf0>
+severity = 'CRITICAL', threshold = 'critical', mixed = False, restored_exit = 1
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+>       assert result.exit_code == int(mixed), result.output
+E       AssertionError: {
+E           "schema_version": 1,
+E           "reprollm_version": "0.7.0",
+E           "generated_at": "2026-10-21T06:46:23Z",
+E           "target": ".",
+E           "level": 1,
+E           "profiles": {
+E             "declared": [],
+E             "resolved": [
+E               "core"
+E             ],
+E             "detected": []
+E           },
+E           "documents": {
+E             "manifest": "sha256:132c96109ba27ed626b00db7d2ba2f22ed6a1a04fa00153b7641a33f0bb157ee",
+E             "lock": null,
+E             "runs": 0
+E           },
+E           "summary": {
+E             "critical": 1,
+E             "warning": 0,
+E             "info": 0,
+E             "pass": 0,
+E             "suppressed": 0,
+E             "skipped": 0
+E           },
+E           "findings": [
+E             {
+E               "rule_id": "env.llm_critical_deps_pinned",
+E               "aliases": [],
+E               "category": "env",
+E               "severity": "CRITICAL",
+E               "status": "fail",
+E               "level": 1,
+E               "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E               "evidence": [
+E                 {
+E                   "kind": "file",
+E                   "path": "pyproject.toml",
+E                   "field": null,
+E                   "line": 3,
+E                   "value": ">=2",
+E                   "expected": null,
+E                   "note": "declared as >=2"
+E                 }
+E               ],
+E               "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E               "profile_origin": [],
+E               "severity_origin": "profile:core",
+E               "suppressed_reason": null
+E             }
+E           ]
+E         }
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = <Result SystemExit(1)>.exit_code
+E        +  and   0 = int(False)
+
+tests/unit/cli/test_audit.py:1219: AssertionError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-warning-False-1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961d59e80>
+severity = 'CRITICAL', threshold = 'warning', mixed = False, restored_exit = 1
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+>       assert result.exit_code == int(mixed), result.output
+E       AssertionError: {
+E           "schema_version": 1,
+E           "reprollm_version": "0.7.0",
+E           "generated_at": "2026-10-21T06:46:23Z",
+E           "target": ".",
+E           "level": 1,
+E           "profiles": {
+E             "declared": [],
+E             "resolved": [
+E               "core"
+E             ],
+E             "detected": []
+E           },
+E           "documents": {
+E             "manifest": "sha256:132c96109ba27ed626b00db7d2ba2f22ed6a1a04fa00153b7641a33f0bb157ee",
+E             "lock": null,
+E             "runs": 0
+E           },
+E           "summary": {
+E             "critical": 1,
+E             "warning": 0,
+E             "info": 0,
+E             "pass": 0,
+E             "suppressed": 0,
+E             "skipped": 0
+E           },
+E           "findings": [
+E             {
+E               "rule_id": "env.llm_critical_deps_pinned",
+E               "aliases": [],
+E               "category": "env",
+E               "severity": "CRITICAL",
+E               "status": "fail",
+E               "level": 1,
+E               "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+E               "evidence": [
+E                 {
+E                   "kind": "file",
+E                   "path": "pyproject.toml",
+E                   "field": null,
+E                   "line": 3,
+E                   "value": ">=2",
+E                   "expected": null,
+E                   "note": "declared as >=2"
+E                 }
+E               ],
+E               "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+E               "profile_origin": [],
+E               "severity_origin": "profile:core",
+E               "suppressed_reason": null
+E             }
+E           ]
+E         }
+E         
+E         
+E       assert 1 == 0
+E        +  where 1 = <Result SystemExit(1)>.exit_code
+E        +  and   0 = int(False)
+
+tests/unit/cli/test_audit.py:1219: AssertionError
+_ test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-critical-True-1] _
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3961362270>
+severity = 'CRITICAL', threshold = 'critical', mixed = True, restored_exit = 1
+
+    @pytest.mark.parametrize(
+        ("severity", "threshold", "mixed", "restored_exit"),
+        [
+            ("WARNING", "never", False, 0),
+            ("WARNING", "critical", False, 0),
+            ("WARNING", "warning", False, 1),
+            ("CRITICAL", "never", False, 0),
+            ("CRITICAL", "critical", False, 1),
+            ("CRITICAL", "warning", False, 1),
+            ("CRITICAL", "critical", True, 1),
+        ],
+    )
+    def test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures(
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        severity: str,
+        threshold: str,
+        mixed: bool,
+        restored_exit: int,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path, severity)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        if mixed:
+            (repo / "requirements.txt").write_text("numpy>=1\n", encoding="utf-8")
+        commit_all(repo)
+        monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+        args = ["audit", str(repo), "--format", "json", "--fail-on", threshold]
+    
+        result = runner.invoke(app, args)
+    
+        assert result.exit_code == int(mixed), result.output
+        assert result.stderr == ""
+        report = _coverage_cli_json(result.stdout)
+>       (skipped,) = [finding for finding in report["findings"] if finding["status"] == "skipped"]
+        ^^^^^^^^^^
+E       ValueError: not enough values to unpack (expected 1, got 0)
+
+tests/unit/cli/test_audit.py:1222: ValueError
+__ test_structural_lock_skip_keeps_json_text_export_and_suppression_contracts __
+
+tmp_path = PosixPath('<PYTEST_TEMP>/pytest-555/test_structural_lock_skip_keep7')
+
+    def test_structural_lock_skip_keeps_json_text_export_and_suppression_contracts(
+        tmp_path: Path,
+    ) -> None:
+        repo = _associated_failed_lock_repo(tmp_path)
+        (repo / "uv.lock").write_text("package = [{}]\n", encoding="utf-8")
+        commit_all(repo)
+        before = {
+            path.relative_to(repo): path.read_bytes()
+            for path in repo.rglob("*")
+            if path.is_file() and ".git" not in path.relative_to(repo).parts
+        }
+        args = ["audit", str(repo), "--format", "json", "--fail-on", "critical"]
+    
+        first = runner.invoke(app, args)
+        second = runner.invoke(app, args)
+    
+>       assert first.exit_code == second.exit_code == 0
+E       assert 1 == 0
+E        +  where 1 = <Result SystemExit(1)>.exit_code
+
+tests/unit/cli/test_audit.py:1314: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = false\n-unparsed0-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = false\n-unparsed0-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = 0\n-unparsed1-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = 0\n-unparsed1-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ""\n-unparsed2-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ""\n-unparsed2-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = {}\n-unparsed3-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = {}\n-unparsed3-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = "not a list"\n-unparsed4-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = "not a list"\n-unparsed4-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [false]\n-unparsed5-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [false]\n-unparsed5-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [0]\n-unparsed6-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [0]\n-unparsed6-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ["torch"]\n-unparsed7-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = ["torch"]\n-unparsed7-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [[]]\n-unparsed8-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [[]]\n-unparsed8-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{}]\n-unparsed9-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{}]\n-unparsed9-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = ""}]\n-unparsed10-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = ""}]\n-unparsed10-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = false}]\n-unparsed11-uv.lock]
+FAILED tests/unit/core/test_deps.py::test_toml_lock_structure_uncertainty_preserves_existing_diagnostics[package = [{name = false}]\n-unparsed11-poetry.lock]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[false\n-unparsed0]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[0\n-unparsed1]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[""\n-unparsed2]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[[]\n-unparsed3]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: null\n-unparsed4]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: false\n-unparsed5]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: 0\n-unparsed6]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: ""\n-unparsed7]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: {}\n-unparsed8]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: invalid\n-unparsed9]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [null]\n-unparsed10]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [false]\n-unparsed11]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [0]\n-unparsed12]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [torch]\n-unparsed13]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [[]]\n-unparsed14]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{}]\n-unparsed15]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: ""}]\n-unparsed16]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: null}]\n-unparsed17]
+FAILED tests/unit/core/test_deps.py::test_conda_lock_structure_uncertainty_preserves_existing_diagnostics[package: [{name: 12}]\n-unparsed18]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_nonmapping_document_is_structurally_unverified[null\n]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_nonmapping_document_is_structurally_unverified[false\n]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_nonmapping_document_is_structurally_unverified[0\n]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_nonmapping_document_is_structurally_unverified[""\n]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_nonmapping_document_is_structurally_unverified[[]\n]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[null-default]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[null-develop]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[false-default]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[false-develop]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[0-default]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[0-develop]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[""-default]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[""-develop]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[[]-default]
+FAILED tests/unit/core/test_deps.py::test_pipfile_lock_present_wrong_section_is_not_a_successfully_empty_section[[]-develop]
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[uv.lock-package = [{name = "torch"}, {}]\n-unparsed0]
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[poetry.lock-package = [{name = "torch"}, {name = 12}]\n-unparsed1]
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[Pipfile.lock-{"default": {"torch": {}}, "develop": []}\n-unparsed2]
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[Pipfile.lock-{"default": null, "develop": {"torch": {}}}\n-unparsed3]
+FAILED tests/unit/core/test_deps.py::test_partially_extracted_lock_keeps_known_package_names_and_existing_credit[conda-lock.yml-package: [{name: pytorch}, false]\n-unparsed4]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[uv.lock-package = "invalid collection"\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[poetry.lock-[[package]]\nname = 12\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[Pipfile.lock-[]\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[Pipfile.lock-{"default": ["torch"]}\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-- torch\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-package: invalid collection\n]
+FAILED tests/unit/core/test_deps.py::test_decoded_invalid_lock_shapes_are_known_structural_failures[conda-lock.yml-package:\n  - name: 12\n]
+FAILED tests/unit/rules/test_env.py::test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[uv.lock-package = false\n]
+FAILED tests/unit/rules/test_env.py::test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[poetry.lock-package = [{name = ""}]\n]
+FAILED tests/unit/rules/test_env.py::test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[Pipfile.lock-{"default": null}\n]
+FAILED tests/unit/rules/test_env.py::test_associated_structurally_invalid_lock_keeps_missing_pin_unverified[conda-lock.yml-package: [null]\n]
+FAILED tests/unit/rules/test_env.py::test_structural_lock_failure_is_independent_of_primary_python_analysis[zero]
+FAILED tests/unit/rules/test_env.py::test_structural_lock_failure_is_independent_of_primary_python_analysis[complete]
+FAILED tests/unit/rules/test_env.py::test_structural_lock_failure_is_independent_of_primary_python_analysis[capped]
+FAILED tests/unit/rules/test_env.py::test_structural_lock_failure_is_independent_of_primary_python_analysis[unavailable]
+FAILED tests/unit/rules/test_env.py::test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[uv.lock]
+FAILED tests/unit/rules/test_env.py::test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[poetry.lock]
+FAILED tests/unit/rules/test_env.py::test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[Pipfile.lock]
+FAILED tests/unit/rules/test_env.py::test_partial_lock_members_keep_credit_while_other_associated_usage_remains_unverified[conda-lock.yml]
+FAILED tests/unit/rules/test_env.py::test_structural_and_syntax_failures_share_sorted_evidence_and_preserve_other_warning
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-never-False-0]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-critical-False-0]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[WARNING-warning-False-1]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-never-False-0]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-critical-False-1]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-warning-False-1]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_cli_override_thresholds_and_other_failures[CRITICAL-critical-True-1]
+FAILED tests/unit/cli/test_audit.py::test_structural_lock_skip_keeps_json_text_export_and_suppression_contracts
+91 failed, 25 passed in 5.16s

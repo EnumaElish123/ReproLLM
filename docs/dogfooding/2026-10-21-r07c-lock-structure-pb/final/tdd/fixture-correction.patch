@@ -1,0 +1,11 @@
+--- accepted-P-A/tests/unit/core/test_deps.py
++++ corrected-P-B/tests/unit/core/test_deps.py
+@@ -612,7 +612,7 @@
+     elif lock_name == "Pipfile.lock":
+         _write(tmp_path, "Pipfile", '[packages]\ntorch = ">=2"\nnumpy = ">=1"\n')
+     else:
+-        _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch>=2\n  - numpy>=1\n")
++        _write(tmp_path, "environment.yml", "dependencies:\n  - pytorch=2\n  - numpy=1\n")
+     _write(tmp_path, lock_name, body)
+ 
+     result = _scan(tmp_path)

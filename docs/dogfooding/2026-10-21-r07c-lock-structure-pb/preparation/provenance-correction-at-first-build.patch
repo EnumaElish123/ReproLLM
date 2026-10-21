@@ -1,0 +1,32 @@
+--- pre-peer-review-packager.py
++++ corrected-provenance-packager.py
+@@ -709,7 +709,13 @@
+         "final_focused_GREEN_and_static_checks_passed": True,
+         "raw_stream_policy": "Authentic original bytes remain externally hash-bound. Retained streams replace only known physical roots/identity; all spacing, line breaks and other content are preserved.",
+         "not_formal_quality_failure": "Initial targeted GREEN failure and corrected single-case RED are retained TDD history, separate from the final full quality and product gates."},
+-        stage_source_keys, ["Read original four-stage receipts and raw logs, verify all stream hashes, parse literal counts and retain the genuine failing attempt and exact one-fixture correction"])
++        stage_source_keys + [
++            "session:test-draft/pb-fixture-correction/metadata.json",
++            "session:test-draft/pb-fixture-correction/fixture-correction.patch",
++            "session:test-fixture-correction-metadata.json",
++            "session:tests-corrected-for-product.patch",
++            "repository:" + ACCEPTED,
++        ], ["Read original four-stage receipts and raw logs, verify all stream hashes, parse literal counts and retain the genuine failing attempt and exact one-fixture correction"])
+ 
+ def preparation_history(a: Archive):
+     sources = []
+@@ -813,6 +819,14 @@
+     preparation = a.keep("package-final-prep/static-preparation.json", "qualification/packager-preparation.json")
+     assert preparation["current_packager_sha256"] == sha(Path(__file__).read_bytes())
+     assert preparation["packager_executions"] == 0
++    correction_history = preparation["pre_execution_peer_review_correction"]
++    for relative, expected in [
++        ("package-final-prep/packager-before-provenance-correction.py.txt", correction_history["initial_packager_sha256"]),
++        ("package-final-prep/provenance-correction.patch", correction_history["correction_patch_sha256"]),
++        ("package-final-prep/packager-vs-prior.patch", preparation["adaptation_patch_sha256"]),
++    ]:
++        original, _, _ = a.source(relative)
++        assert sha(original) == expected
+     a.keep("packager-independent-static-review.json", "qualification/packager-peer-static-review.json")
+     a.emit("summary.json", {
+         "schema_version": 1, "candidate_commit": COMMIT,
