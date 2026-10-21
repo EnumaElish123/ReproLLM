@@ -95,6 +95,11 @@ for the exact candidate and current validation status. The original [P-A proposa
 PROPOSED record and [P-A report](../dogfooding/2026-10-21-r07c-profile-pa/README.md)
 retain their preparation-time state. Broader R07-C remains OPEN.
 
+The next R07-C slice is the [proposed D-L dependency format-lock policy](reliability-2026-10-03/proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md).
+Its [P-A report](../dogfooding/2026-10-21-r07c-dependency-pa/README.md) records unapplied concrete patches, 31 draft tests,
+40 conditional workers and five-project zero-delta source design. The specific normative decision is pending;
+no D-L product or P-B acceptance is claimed.
+
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).

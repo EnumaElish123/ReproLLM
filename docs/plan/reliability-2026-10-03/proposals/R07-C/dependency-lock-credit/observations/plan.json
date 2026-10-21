@@ -1,0 +1,461 @@
+{
+  "base_commit": "9cabdc80ecab7728b1ee08c79fc408dd202a6e28",
+  "cases": [
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "uv-hidden-origin",
+      "input_count": 7,
+      "input_inventory_sha256": "7f6bdbc4bcad455a78b4cf3ca6c05761ebb5c9c959f14b8abee3e41a1b44c0c3",
+      "kind": "api",
+      "limit": 1,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "poetry-hidden-origin",
+      "input_count": 7,
+      "input_inventory_sha256": "daacc4c4c315faf44e382d98d69e0fba4728f899b1a7a67028183591f2201538",
+      "kind": "api",
+      "limit": 1,
+      "manager": "poetry",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/poetry.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/pyproject.toml": "[tool.poetry]\nname = \"synthetic-nested\"\nversion = \"0.1\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "pipfile-hidden-origin",
+      "input_count": 7,
+      "input_inventory_sha256": "f9e17d2ac54adcabb1b04e2f8646160ff2c0697dd3ac4a70553ecd962affb073",
+      "kind": "api",
+      "limit": 1,
+      "manager": "pipfile",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/Pipfile": "[packages]\n",
+        "nested/Pipfile.lock": "{\n  \"default\": {\n    \"torch\": {\n      \"version\": \"==1.0\"\n    }\n  }\n}\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "conda-hidden-origin",
+      "input_count": 7,
+      "input_inventory_sha256": "13841e4d8fc03b5fb72e6669c0881fe260a1277c8d24c43f3ebfe7cecfd30167",
+      "kind": "api",
+      "limit": 1,
+      "lock_package": "pytorch",
+      "manager": "conda",
+      "requirements": "pytorch>=1\n",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/conda-lock.yml": "{\n  \"package\": [\n    {\n      \"name\": \"pytorch\",\n      \"version\": \"1.0\"\n    }\n  ]\n}\n",
+        "nested/environment.yml": "dependencies: []\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "pytorch>=1\n"
+      }
+    },
+    {
+      "baseline": "pass",
+      "changed": [],
+      "id": "uv-complete-origin",
+      "input_count": 7,
+      "input_inventory_sha256": "7f6bdbc4bcad455a78b4cf3ca6c05761ebb5c9c959f14b8abee3e41a1b44c0c3",
+      "kind": "api",
+      "limit": 2,
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [],
+      "id": "no-format-lock",
+      "input_count": 5,
+      "input_inventory_sha256": "e58caf48a33f1b954a1c74171e3d41c9b4fdd9d6faf6d7e2e70f481a84c252b6",
+      "kind": "api",
+      "limit": 1,
+      "manager": "none",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [],
+      "id": "other-lock-package",
+      "input_count": 7,
+      "input_inventory_sha256": "96cbdb2aa54cac5a53b7d222f62108e5aa6b7c69c88d029ed27c404ba0ce226f",
+      "kind": "api",
+      "limit": 1,
+      "lock_package": "numpy",
+      "manager": "uv",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"numpy\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "aggregate-skip",
+      "changed": [],
+      "id": "exact-precedes-gap",
+      "input_count": 7,
+      "input_inventory_sha256": "ee224f30b9bb6348cba39ebcdf9a7e5c8bd3790a0c47e20ba8a6671a50dbc2e1",
+      "kind": "api",
+      "limit": 1,
+      "requirements": "torch==1.0\n",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch==1.0\n"
+      }
+    },
+    {
+      "baseline": "aggregate-skip",
+      "changed": [],
+      "id": "requirements-credit-precedes-gap",
+      "input_count": 6,
+      "input_inventory_sha256": "3a6a075941498e08951b48f94f94574d5e8a5169a44894374704dba181f07008",
+      "kind": "api",
+      "limit": 1,
+      "manager": "none",
+      "requirements_lock": true,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements-pinned.txt": "torch==1.0\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "unpaired-overapprox-gap",
+      "input_count": 6,
+      "input_inventory_sha256": "f39ea66a8f3b7892884db848fcea3d21c1d8525c2ba7860470b577d2c18f059c",
+      "kind": "api",
+      "limit": 1,
+      "manager": "unpaired",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/z.py": "import torch\n",
+        "orphan/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [],
+      "id": "unpaired-complete-control",
+      "input_count": 6,
+      "input_inventory_sha256": "f39ea66a8f3b7892884db848fcea3d21c1d8525c2ba7860470b577d2c18f059c",
+      "kind": "api",
+      "limit": 2,
+      "manager": "unpaired",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/z.py": "import torch\n",
+        "orphan/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [],
+      "id": "malformed-lock",
+      "input_count": 6,
+      "input_inventory_sha256": "869852f56d40fa2762da2060f52223c174753b7532051e172d7a9b826bcd5365",
+      "kind": "api",
+      "limit": 1,
+      "manager": "malformed",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/z.py": "import torch\n",
+        "orphan/uv.lock": "[[package\nname = \"torch\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "selected-syntax-gap",
+      "input_count": 6,
+      "input_inventory_sha256": "3c513dc276d8bc7063fa91774842428672096a55cfc6dbd10b87c8004450657a",
+      "kind": "api",
+      "limit": 1,
+      "primary_failure": "syntax",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "def broken(:\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "selected-read-gap",
+      "input_count": 6,
+      "input_inventory_sha256": "32208ca9b5bb8e54729f2fa81260e37b76ee83ba48d6eb61090eb907a4dee850",
+      "kind": "api",
+      "limit": 1,
+      "primary_failure": "read",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [],
+      "dependency_read_failure": true,
+      "id": "dependency-read-gap-open",
+      "input_count": 5,
+      "input_inventory_sha256": "82511ddc60649c4303609b6e8e69676116f1141a286703b5a6827f59be771b4b",
+      "kind": "api",
+      "limit": 1,
+      "manager": "none",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements-private.txt": "torch==1.0\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "internal-unobserved",
+      "input_count": 6,
+      "input_inventory_sha256": "85d9ab08b255db3012d7fb47552252167dd6472744de6521d8aca7b772374329",
+      "internal_probe": "unobserved",
+      "kind": "internal-api-probe",
+      "limit": 1,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "id": "internal-invalid-counts",
+      "input_count": 6,
+      "input_inventory_sha256": "85d9ab08b255db3012d7fb47552252167dd6472744de6521d8aca7b772374329",
+      "internal_probe": "invalid-counts",
+      "kind": "internal-api-probe",
+      "limit": 1,
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "a.py": "value = 1\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 0,
+      "fail_on": "critical",
+      "generated_files_recipe": {
+        "body": "value = 1\n",
+        "count": 500,
+        "indices": [
+          0,
+          499
+        ],
+        "pattern": "business_{index:04}.py"
+      },
+      "id": "cli-critical-hidden",
+      "input_count": 506,
+      "input_inventory_sha256": "4a762c1f999bc5967c6773d20adf66e55c25d175aac20f06c4b768c6fba34abb",
+      "kind": "cli",
+      "large_cli": true,
+      "limit": 500,
+      "override": "CRITICAL",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"env.llm_critical_deps_pinned\": \"CRITICAL\"\n  }\n}\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "expected_baseline_exit": 1,
+      "expected_conditional_exit": 1,
+      "fail_on": "warning",
+      "generated_files_recipe": {
+        "body": "value = 1\n",
+        "count": 500,
+        "indices": [
+          0,
+          499
+        ],
+        "pattern": "business_{index:04}.py"
+      },
+      "id": "cli-warning-mixed",
+      "input_count": 506,
+      "input_inventory_sha256": "5316f8231303cc3cd77647d088d3f3e3ff6eedccd43a5c6af42042c462a43aba",
+      "kind": "cli",
+      "large_cli": true,
+      "limit": 500,
+      "requirements": "numpy>=1\ntorch>=1\n",
+      "small_input_bodies_utf8": {
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {}\n}\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "numpy>=1\ntorch>=1\n"
+      }
+    },
+    {
+      "baseline": "warnings",
+      "changed": [
+        "torch"
+      ],
+      "expected_baseline_exit": 0,
+      "expected_conditional_exit": 0,
+      "fail_on": "never",
+      "generated_files_recipe": {
+        "body": "value = 1\n",
+        "count": 500,
+        "indices": [
+          0,
+          499
+        ],
+        "pattern": "business_{index:04}.py"
+      },
+      "id": "cli-never-suppressed",
+      "input_count": 507,
+      "input_inventory_sha256": "a2b5cb12adcece8ca229272df1a70117773d9ea7edfb330fed835bbeb33aa039",
+      "kind": "cli",
+      "large_cli": true,
+      "limit": 500,
+      "override": "CRITICAL",
+      "small_input_bodies_utf8": {
+        ".reprollm/config.yaml": "{\n  \"audit\": {\n    \"ignore\": [\n      {\n        \"reason\": \"synthetic deliberate suppression\",\n        \"rule\": \"env.llm_critical_deps_pinned\"\n      }\n    ]\n  },\n  \"schema_version\": 1\n}\n",
+        ".reprollm/profiles/core.yaml": "{\n  \"description\": \"Synthetic target-only scope\",\n  \"name\": \"core\",\n  \"rules\": [\n    \"env.llm_critical_deps_pinned\"\n  ],\n  \"schema_version\": 1,\n  \"severity_overrides\": {\n    \"env.llm_critical_deps_pinned\": \"CRITICAL\"\n  }\n}\n",
+        "nested/pyproject.toml": "[project]\nname = \"synthetic-nested\"\nversion = \"0.1\"\ndependencies = []\n",
+        "nested/uv.lock": "[[package]]\nname = \"torch\"\nversion = \"1.0\"\n",
+        "nested/z.py": "import torch\n",
+        "reprollm.yaml": "{\n  \"experiment\": {\n    \"profiles\": []\n  },\n  \"project\": {\n    \"name\": \"synthetic-dependency-coverage\"\n  },\n  \"schema_version\": 1\n}\n",
+        "requirements.txt": "torch>=1\n"
+      },
+      "suppressed": true
+    }
+  ],
+  "execution_boundaries": {
+    "conditional_instrumentation": "Replace registered existing class.check with only AST-extracted proposed check in copied baseline module globals; all other class attributes retain identity. Internal coverage probes are separately labelled.",
+    "network_GPU_provider": false,
+    "product_subprocesses": "Exact read-only Git whitelist in current synthetic fixture only",
+    "source_patches_applied": false
+  },
+  "expected_recipe": {
+    "baseline_and_conditional_schema_and_version_asserted": true,
+    "fix_hint": "Review {display} declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+    "message": "{display} is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+    "metadata_exemptions": [
+      "root generated_at",
+      "root reprollm_version"
+    ],
+    "normalization": "Actual worker timestamps are retained. compare_gold --audit-metadata validates full AuditReport and excludes only root spec T02 fields.",
+    "source": "For named changed package only: retain positive original evidence; append sorted unique format-lock paths from independently fixed fixture inputs; set new fixed INFO/SKIPPED fields/message/fix_hint; apply pre-existing suppression, stable severity/category/rule sort and recompute counts. No conditional output supplies expected values."
+  },
+  "observer_sha256": "28a2980113e2da19731e926620447d04c4051e7d6587de5b734815b69b738c5e",
+  "proposed_source_sha256": "922b9efc09e790b44b61a33515a8c9b06808db75f95cfffaad857dc8ed2deb6a",
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_ANY_PRODUCT_WORKER"
+}

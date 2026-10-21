@@ -25,6 +25,10 @@ P-B 实施及当前验证状态见[接续报告](../../dogfooding/2026-10-21-r07
 原[提案](proposals/R07-C/profile-absence/R07-C_profile_absence.md)、PROPOSED 决定和[P-A 报告](../../dogfooding/2026-10-21-r07c-profile-pa/README.md)
 保留准备时状态。更广 dependency/listing/framework 和充分证书仍 OPEN。
 
+下一批拟采用 [R07-C D-L：格式 lock 中出现的包与 Python 缺口](proposals/R07-C/dependency-lock-credit/R07-C_dependency_lock_credit.md)，
+仅对可能受遗漏 import 信用影响的待警告包 SKIP。具体修订待接受，正式产品补丁未应用。
+[本次 P-A 报告](../../dogfooding/2026-10-21-r07c-dependency-pa/README.md)区分条件观察、来源预期与后续 P-B 门。
+
 交付来源：[S1-A](../../dogfooding/2026-10-10-reliability-s1a/README.md)、[S1-B收尾](../../dogfooding/2026-10-10-reliability-s1b/r03-session.md)、[S2及scope交接](../../dogfooding/2026-10-10-reliability-s2/s2-handoff.md)。S3-A来源：[交付报告](../../dogfooding/2026-10-13-reliability-s3a/README.md)；S3-B来源：[交付报告](../../dogfooding/2026-10-14-reliability-s3b/README.md)。历史PLAN-REVISE/PLAN-IMPORT状态及资源BLOCKED记录保留。
 
 R07-A [性能跟进](../../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)

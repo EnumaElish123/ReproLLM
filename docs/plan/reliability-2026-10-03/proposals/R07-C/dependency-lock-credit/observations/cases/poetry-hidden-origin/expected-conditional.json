@@ -1,0 +1,62 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:69b787e3eca59a100a7c9b0e0b4ef513ef816f92f7dd369101c285e239a8052a",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 1,
+          "note": "declared as >=1",
+          "path": "requirements.txt",
+          "value": ">=1"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "torch listed; import-origin credit unverified",
+          "path": "nested/poetry.lock",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review torch declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "torch is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "skipped",
+      "suppressed_reason": null
+    }
+  ],
+  "generated_at": "2026-10-21T02:54:32Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 1,
+    "suppressed": 0,
+    "warning": 0
+  },
+  "target": "."
+}

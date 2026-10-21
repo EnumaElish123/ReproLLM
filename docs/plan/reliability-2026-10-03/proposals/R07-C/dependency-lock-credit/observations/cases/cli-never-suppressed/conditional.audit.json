@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-21T02:55:11Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": []
+  },
+  "documents": {
+    "manifest": "sha256:69b787e3eca59a100a7c9b0e0b4ef513ef816f92f7dd369101c285e239a8052a",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 1,
+    "skipped": 0
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "suppressed",
+      "level": 1,
+      "message": "torch is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=1",
+          "expected": null,
+          "note": "declared as >=1"
+        },
+        {
+          "kind": "file",
+          "path": "nested/uv.lock",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "torch listed; import-origin credit unverified"
+        },
+        {
+          "kind": "field",
+          "path": ".reprollm/config.yaml",
+          "field": "audit.ignore",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "suppressed: original severity INFO; reason: synthetic deliberate suppression"
+        }
+      ],
+      "fix_hint": "Review torch declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": "synthetic deliberate suppression"
+    }
+  ]
+}
+

@@ -1,0 +1,576 @@
+{
+  "P_A_only_no_policy_acceptance": true,
+  "base_commit": "9cabdc80ecab7728b1ee08c79fc408dd202a6e28",
+  "compatibility": "Isolated thresholds can1to0; default text may show Findings: PASS with skipped count; default export omits skip count and target notable line. These costs are explicit in final proposal.",
+  "decision_sha256": "1be9557c66e874b210d5e46d78d21ad84cfbbb353969e1c985bf479b31e36535",
+  "final_proposal_sha256": "46c54275ac0da9e00aa4b7eed78310ea027efa77d2c8d4188dfa4face5994003",
+  "four_exact_patches": {
+    "changelog-proposed.patch": {
+      "sha256": "9db6ccfd117ba49241f056f41719cc9d8b9e0e0c4dcc0e78533efd936dccaab7",
+      "targets": [
+        {
+          "base_sha256": "bcfe496c5e65ee14cd51415bce9ca9d29a870cd291f342e4a2723122a5eceee6",
+          "in_memory_reconstruction_exact": true,
+          "path": "CHANGELOG.md",
+          "proposed_sha256": "b3ec585c672df8931cf3e57600f1bb6dcd263e6313de496a1252d9f37a596108"
+        }
+      ]
+    },
+    "implementation-proposed.patch": {
+      "sha256": "2b75434ae10d1769adb7334d03920a28219bf051c8fb05760efca887e02e0b2b",
+      "targets": [
+        {
+          "base_sha256": "5127048f17bfaaa3b4e965eed4a200f3df37a805a0d197f6209d1500870687a1",
+          "in_memory_reconstruction_exact": true,
+          "path": "src/reprollm/rules/env.py",
+          "proposed_sha256": "922b9efc09e790b44b61a33515a8c9b06808db75f95cfffaad857dc8ed2deb6a"
+        }
+      ]
+    },
+    "spec-proposed.patch": {
+      "sha256": "831eec85d8c7d0f44d2140e8f6788257ef8516a65683cd58f0a9c74816294112",
+      "targets": [
+        {
+          "base_sha256": "efed31e69ebe24c1dd93e8d959035c69239c1383e0f7fa511d0e77f9a40072a4",
+          "in_memory_reconstruction_exact": true,
+          "path": "docs/plan/01_specification.md",
+          "proposed_sha256": "437e73a8b6ec699c60a791342e2de5eddea2f080655ef64864221753667a6688"
+        }
+      ]
+    },
+    "tests-proposed.patch": {
+      "sha256": "b1d9471010d2d588ad7e7f2e595c6c18afa28f22df23a79041c4ff064de29930",
+      "targets": [
+        {
+          "base_sha256": "2d7026b14767697d3c8a67cd4150550923ac23103a2b20d4ddd68e12a517ade9",
+          "in_memory_reconstruction_exact": true,
+          "path": "tests/unit/rules/test_env.py",
+          "proposed_sha256": "23d8ecb6df35ea15bce0a25ea4c5ded45555485393f213432ade5fa4d1bb7385"
+        },
+        {
+          "base_sha256": "44cbc7014b93adf33771760e5f8eed1d9f9df0712d9f700ce3749d179b7504c6",
+          "in_memory_reconstruction_exact": true,
+          "path": "tests/unit/cli/test_audit.py",
+          "proposed_sha256": "f48922d5da86538fcd3853fbdee11d068f1eb813b243070df3b15f7f1009536f"
+        }
+      ]
+    }
+  },
+  "legacy_function_preservation": {
+    "tests/unit/cli/test_audit.py": {
+      "all_existing_functions_preserved": 20,
+      "existing_tests_preserved": 16
+    },
+    "tests/unit/rules/test_env.py": {
+      "all_existing_functions_preserved": 20,
+      "existing_tests_preserved": 19
+    }
+  },
+  "new_test_functions": 11,
+  "new_tests": [
+    {
+      "cases": 4,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_missing_import_can_change_format_lock_credit"
+    },
+    {
+      "cases": 4,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_python_gap_preserves_warning_without_captured_format_member"
+    },
+    {
+      "cases": 3,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_known_pin_credit_precedes_possible_credit_skip"
+    },
+    {
+      "cases": 2,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_unavailable_python_view_keeps_format_credit_unverified"
+    },
+    {
+      "cases": 4,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_selected_python_failure_keeps_format_credit_unverified"
+    },
+    {
+      "cases": 3,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_possible_credit_is_deliberately_conservative_but_complete_view_is_unchanged"
+    },
+    {
+      "cases": 1,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_format_lock_entries_do_not_create_package_usage"
+    },
+    {
+      "cases": 1,
+      "file": "tests/unit/rules/test_env.py",
+      "test": "test_format_credit_skip_coexists_with_unpinned_warning_and_sorted_lock_evidence"
+    },
+    {
+      "cases": 7,
+      "file": "tests/unit/cli/test_audit.py",
+      "test": "test_dependency_possible_credit_skip_preserves_failure_threshold_contract"
+    },
+    {
+      "cases": 1,
+      "file": "tests/unit/cli/test_audit.py",
+      "test": "test_dependency_credit_skip_obeys_json_text_export_and_suppression_contract"
+    },
+    {
+      "cases": 1,
+      "file": "tests/unit/cli/test_audit.py",
+      "test": "test_dependency_credit_selected_parse_failure_below_file_limit_has_no_diagnostic"
+    }
+  ],
+  "normative_and_interface_findings": [],
+  "observation_review": {
+    "API_selected_parse_read_gap_counts": "candidate=selected=1, parsed=0, limit=1; no count cap",
+    "CLI_pairs": 3,
+    "actual_fixture_files_rebuilt_and_current_bytes_verified": 1626,
+    "actual_generated_at_max": "2026-10-21T02:55:11Z",
+    "actual_generated_at_min": "2026-10-21T02:54:30Z",
+    "actual_generated_at_unique_count": 36,
+    "all_metadata_schema_version_and_origin_checks_verified": true,
+    "cases": [
+      {
+        "case": "uv-hidden-origin",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "poetry-hidden-origin",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "pipfile-hidden-origin",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "conda-hidden-origin",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "uv-complete-origin",
+        "coverage": {
+          "candidate": 2,
+          "limit": 2,
+          "observed": true,
+          "parsed": 2,
+          "selected": 2
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "pass"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "pass"
+        ]
+      },
+      {
+        "case": "no-format-lock",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "fail"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "other-lock-package",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "fail"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "exact-precedes-gap",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "skipped"
+        ]
+      },
+      {
+        "case": "requirements-credit-precedes-gap",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "skipped"
+        ]
+      },
+      {
+        "case": "unpaired-overapprox-gap",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "unpaired-complete-control",
+        "coverage": {
+          "candidate": 2,
+          "limit": 2,
+          "observed": true,
+          "parsed": 2,
+          "selected": 2
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "fail"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "malformed-lock",
+        "coverage": {
+          "candidate": 2,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "fail"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "selected-syntax-gap",
+        "coverage": {
+          "candidate": 1,
+          "limit": 1,
+          "observed": true,
+          "parsed": 0,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "selected-read-gap",
+        "coverage": {
+          "candidate": 1,
+          "limit": 1,
+          "observed": true,
+          "parsed": 0,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "dependency-read-gap-open",
+        "coverage": {
+          "candidate": 1,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "api",
+        "new_exit": 0,
+        "new_statuses": [
+          "fail"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "internal-unobserved",
+        "coverage": {
+          "candidate": 1,
+          "limit": 1,
+          "observed": false,
+          "parsed": 1,
+          "selected": 1
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "internal-api-probe",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "internal-invalid-counts",
+        "coverage": {
+          "candidate": 1,
+          "limit": 1,
+          "observed": true,
+          "parsed": 1,
+          "selected": 0
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "internal-api-probe",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "cli-critical-hidden",
+        "coverage": {
+          "candidate": 501,
+          "limit": 500,
+          "observed": true,
+          "parsed": 500,
+          "selected": 500
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "cli",
+        "new_exit": 0,
+        "new_statuses": [
+          "skipped"
+        ],
+        "old_exit": 1,
+        "old_statuses": [
+          "fail"
+        ]
+      },
+      {
+        "case": "cli-warning-mixed",
+        "coverage": {
+          "candidate": 501,
+          "limit": 500,
+          "observed": true,
+          "parsed": 500,
+          "selected": 500
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "cli",
+        "new_exit": 1,
+        "new_statuses": [
+          "fail",
+          "skipped"
+        ],
+        "old_exit": 1,
+        "old_statuses": [
+          "fail",
+          "fail"
+        ]
+      },
+      {
+        "case": "cli-never-suppressed",
+        "coverage": {
+          "candidate": 501,
+          "limit": 500,
+          "observed": true,
+          "parsed": 500,
+          "selected": 500
+        },
+        "full_expected_independently_rebuilt_and_compared": true,
+        "kind": "cli",
+        "new_exit": 0,
+        "new_statuses": [
+          "suppressed"
+        ],
+        "old_exit": 0,
+        "old_statuses": [
+          "suppressed"
+        ]
+      }
+    ],
+    "complete_original_stream_hashes_verified": 280,
+    "expected_write_before_conditional_source_order_and_hash_guards_reviewed": true,
+    "full_expected_reports_independently_rebuilt_and_type_strict_compared": 20,
+    "internal_API_probe_pairs": 2,
+    "limitations": "P-A process-local method replacement only; internal coverage probes separately labelled. No proof of real runtime execution or P-B/fullquality/freshGateA.",
+    "logical_cases": 20,
+    "only_excluded_root_fields": [
+      "generated_at",
+      "reprollm_version"
+    ],
+    "ordinary_API_pairs": 15,
+    "original_file_mtime_order_also_verified": true,
+    "product_workers_reviewed_not_rerun": 40,
+    "read_only_product_Git_queries_verified": 280,
+    "recorded_top_level_commands_verified": 140,
+    "tracked_source_files_currently_reread_identical": 9256
+  },
+  "portable_observation_package": {
+    "all_retained_sources_exact": true,
+    "derived_receipts": 3,
+    "file_count": 170,
+    "manifest_sha256": "85ec11fc59b9fa15b66ff1eefef0c14cb12664d1fff460ee1b2ecd8c0a5f9b5b",
+    "original_source_hashes_reread": 390,
+    "privacy_scan": "PASS",
+    "strict_finite_unique_key_JSON_including_manifest": 129
+  },
+  "portfolio_review_receipt_sha256": "67fc65bde37605afccda4b722b76498695717943226cf106ac33caa4a13a9744",
+  "proof": "Relative to FIXED captured dependency view, added imports can qualify only existing format-lock members. D-L is a coarse upper bound and can SKIP impossible pairs/barriers; no lock credit or complete dependency/listing certificate is granted.",
+  "proposed_source_sha256": "922b9efc09e790b44b61a33515a8c9b06808db75f95cfffaad857dc8ed2deb6a",
+  "resolved_test_gap": "An independent CLI case now isolates parsed<selected=candidate below count limit and requires complete SKIPPED finding/summary plus empty default stderr.",
+  "reviewer_product_test_network_GPU_executions": 0,
+  "schema_version": 1,
+  "source_scope": "Only rules/env.py; exact/qualified precedence, usage set, requirements credit, other packages, complete view, engine overrides/suppression and existing schema remain within reviewed scope. No D-41 protected module change.",
+  "status": "PASS_INDEPENDENT_FINAL_D_L_P_A_REVIEW",
+  "unexecuted_new_parameterized_cases": 31,
+  "whole_R07_C_closed": false
+}
