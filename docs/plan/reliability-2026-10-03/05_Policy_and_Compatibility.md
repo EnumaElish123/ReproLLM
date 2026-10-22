@@ -213,6 +213,13 @@ P-B 对成功解码后的指定容器／成员实施有界检查，保留部分�
 [P-A 报告](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)保持历史字节。
 单包值／字符串语法、requirements 引用图及更广覆盖继续 OPEN；本批不关闭整个 R07-C。
 
+2026-10-22：下一片 [D-G 具体 P-A](proposals/R07-C/requirements-depth/R07-C_requirements_depth_frontier.md)为 **PROPOSED**。
+仅建议将全部 roots 后仍无最终 node 的既有 normalized include target 作为深度预算未展开事实，
+保留信用和 D-F/D-S、D-L、D-M 优先级；无新读取、预算或 grammar 扩张。
+必须具体接受 [方案 A、精确规范补丁与保守成本](proposals/R07-C/requirements-depth/spec-issue-draft.md)才能 P-B。
+[P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-depth-pa.md)分离原观察、正式基线、本地验收和最终 CI。
+本片没有实施或执行未来政策，不关闭整个 R07-C；其他已授权文稿工作可继续。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。

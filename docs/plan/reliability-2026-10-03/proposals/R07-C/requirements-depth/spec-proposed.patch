@@ -1,0 +1,201 @@
+--- a/docs/plan/01_specification.md
++++ b/docs/plan/01_specification.md
+@@ -916,7 +916,7 @@
+ |---|---|---|---|
+ | `env.dependency_manifest_present` | CRITICAL | always | none of `pyproject.toml` (with `[project]` or `[tool.poetry]`), `requirements*.txt`, `environment.yml`, `uv.lock`, `poetry.lock`, `Pipfile` exists |
+ | `env.lockfile_present` | WARNING | dependency manifest present | no `uv.lock` / `poetry.lock` / `Pipfile.lock` / `conda-lock.yml` and no `requirements*.txt` satisfying the complete exact requirements closure contract below |
+-| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.7. `pytorch` in conda counts as `torch`. |
++| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.8. `pytorch` in conda counts as `torch`. |
+ | `env.python_version_declared` | WARNING | always | no `requires-python` in pyproject, no `.python-version`, no `python=` in environment.yml |
+ | `env.secret_files_ignored` | CRITICAL | always | any file matching the forbidden patterns of §16.4 (except the template names `.env.example`, `.env.sample`, `.env.template`) exists and is tracked or not ignored by git (`git check-ignore` false) |
+ | `env.reprollm_initialized` | INFO | level 0 only | `.reprollm/` or `reprollm.yaml` absent |
+@@ -973,9 +973,9 @@
+ No warning prose is parsed into coverage facts; no persisted fields are added.
+ 
+ Nonempty rule results remain unchanged except for the declared-but-undetected
+-profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.7.
++profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.8.
+ Applicability skips, all other built-in rules and generated project rules are
+-unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.7 remains an existing
++unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.8 remains an existing
+ bounded-scan conclusion relative to the captured dependency view; it may depend
+ on absence and be overturned by additional evidence. It is not relabelled as a
+ fully proven violation. Listing/dependency/framework uncertainty and broader
+@@ -1033,7 +1033,7 @@
+ outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
+ 
+ This continuation changes only the declared-but-undetected branch under the
+-specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.7
++specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.8
+ have their own bounded scopes. Upstream listing/detection completeness and broader
+ sufficient-certificate policy remain unchanged or OPEN. It does not close the whole R07-C task, certify child execution
+ or authorize rewriting historical reports.
+@@ -1054,7 +1054,7 @@
+   finding for that package instead of its used-but-unpinned FAIL/WARNING.
+ - Otherwise this primary-Python branch retains the existing FAIL/WARNING message,
+   evidence, suggestion and fix hint, subject to the independent known lock/declaration failure
+-  policies in §§12.3.4–12.3.7. Consistent observed parsed=candidate does not trigger this
++  policies in §§12.3.4–12.3.8. Consistent observed parsed=candidate does not trigger this
+   primary-Python branch, including zero candidates.
+ 
+ The new finding retains rule ID, aliases, category and audit level. Use the
+@@ -1152,7 +1152,7 @@
+ SKIPPED/INFO instead of the used-but-unpinned FAIL/WARNING. This condition is
+ independent of primary-Python coverage, including complete or zero-candidate
+ views. Evaluate it before §12.3.3 when both policies could apply. Otherwise evaluate
+-§12.3.3 followed by §12.3.6, retaining all other existing behavior.
++§12.3.3 followed by §12.3.6 (including §12.3.7), then §12.3.8, retaining all other existing behavior.
+ 
+ The new finding retains rule ID, aliases, category, audit level and existing
+ display-name mapping. Use this exact message:
+@@ -1187,7 +1187,7 @@
+ the bounded structural-extraction checks in §12.3.5. Unsupported grammar outside
+ those checks that does not raise the caught decoder error, missing candidates,
+ dependency-manifest/requirements failures outside the explicit declaration-failure scopes
+-of §§12.3.6–12.3.7 and omitted import origins remain outside these continuations. They are not silently certified by read_issue=None. Independent
++of §§12.3.6–12.3.8 and omitted import origins remain outside these continuations. They are not silently certified by read_issue=None. Independent
+ listing, dependency reading/grammar, README/config/framework completeness and broader
+ sufficient certificates remain OPEN R07-C work.
+ 
+@@ -1256,7 +1256,7 @@
+ 
+ This closes only these explicit decoded shapes. Other package-name grammar,
+ package values/versions, manager format completeness, dependency-manifest or
+-requirements failures outside §§12.3.6–12.3.7, omitted candidates/imports, listing and framework
++requirements failures outside §§12.3.6–12.3.8, omitted candidates/imports, listing and framework
+ completeness, and broader sufficient certificates remain OPEN R07-C work.
+ 
+ ### 12.3.6 Known dependency-declaration body failures (R07-C D-M)
+@@ -1288,7 +1288,7 @@
+ depth exhaustion, unexpanded nodes, decoded wrong structures and unsupported
+ entry grammar do not by themselves create either body-failure code. Only the
+ explicit post-decode shapes in §12.3.7 may create `invalid_structure`; other
+-remaining cases are not certified by an empty failure dictionary.
++remaining cases are not certified by an empty failure dictionary. Section 12.3.8 separately records the final unexpanded requirements depth frontier without adding a body-failure code.
+ 
+ Keep the current canonical in-use set and package iteration. Existing qualified
+ lock or exact-declaration credit wins first, followed by the existing D-F/D-S
+@@ -1339,7 +1339,7 @@
+ dependencies, historical reports and five-project gold stay unchanged.
+ 
+ This bounded body-capture policy does not settle decoded declaration structure
+-outside §12.3.7, readable line/entry grammar, general include-graph failures, omitted candidates,
++outside §12.3.7, readable line/entry grammar, include-graph failures outside §12.3.8, omitted candidates,
+ unknown package use, listing, README/config/framework completeness or broader
+ sufficient certificates. The whole R07-C task remains OPEN.
+ 
+@@ -1421,9 +1421,113 @@
+ keys are not invalidated; only a present `pip` field gets its listed checks.
+ Do not add support for build dependencies, dynamic declarations, dependency groups,
+ Poetry groups or Pipfile custom categories. Requirements text/line/directive/include
+-grammar and graph completeness, other decoded shapes, unknown/omitted use and
++grammar and graph completeness outside §12.3.8, other decoded shapes, unknown/omitted use and
+ candidates, listing, README/config/framework completeness and sufficient certificates
+ remain OPEN. This slice does not close the whole R07-C task.
++
++### 12.3.8 Requirements include targets unexpanded at the depth budget (R07-C D-G)
++
++For `env.llm_critical_deps_pinned` only, retain a separate internal fact for a
++supported requirements include whose target remains outside the captured graph
++because of the existing depth budget. Add
++`Declarations.unexpanded_requirement_targets: tuple[str, ...] = ()` after the
++existing fields. Its default is empty for legacy/manual values; it is not a
++persisted document field and does not extend `DeclarationReadIssue`.
++
++Compute this fact only after all discovered requirements roots have completed
++their existing expansion. A target qualifies exactly when an existing readable
++captured node contains a `_RequirementInclude` event with a non-None normalized
++logical target, and that target has no entry in the final captured node map.
++Deduplicate and sort the resulting target paths lexicographically. Under the
++existing traversal, active-stack cycles revisit an already captured node;
++ordinary supported targets within the budget create a node even when candidate
++exclusion or a body-read failure makes it unreadable. A supported edge with no
++final target node is therefore the unexpanded depth frontier. Preserve the
++current depth limit of 10, with each discovered root at depth 0. Do not use
++`closure.complete=False`, `is_exact=False`, or diagnostic text as a substitute
++for this typed final-graph predicate.
++
++The final-graph requirement matters: a deep target may be captured later through
++another shallower root. If it has a final node, omit it from this new tuple even
++if an earlier root retains a depth-limit diagnostic or incomplete closure. A
++captured target's own unexpanded child edges can independently contribute their
++final missing target paths. Repeated/shared edges contribute one target path;
++this is not a claim that every originating edge is reported.
++
++This fact says that the normalized logical target was not expanded. It does
++not assert that the target exists, is readable, has passed candidate or physical
++path checks, contains any package, or contains an exact declaration. A target
++that would be excluded by candidate filtering, absent, or rejected by the
++physical read boundary can still qualify if the depth budget prevented those
++checks from being reached. Do not perform a new probe to classify it. In
++contrast, a target actually reached within the budget has a node and does not
++qualify here; actual attempted body-read failures retain §12.3.6, and candidate
++exclusions remain outside this new fact. Malformed/unsupported include events
++with no normalized target, including rejected absolute/escaping/remote syntax,
++do not qualify. No outside-root content is read.
++
++Do not add candidates, roots, include edges, file reads, retries, target
++existence checks, scanner calls, package-manager execution, or a higher budget.
++Preserve every declaration and its order, source, line, specifier and exact
++version; preserve lock inventories and qualification, complete-closure results,
++project roots/barriers, manifest/lock presence and all existing diagnostics.
++The tuple does not create package use or credit, and it does not change the
++requirements-as-lock contract in §12.2. Do not mark an unexpanded target as
++unreadable, invalid syntax or invalid structure.
++
++Keep the current canonical in-use set and iteration. Exact-declaration or
++qualified-lock credit wins first, followed by D-F/D-S, then D-L, then D-M
++(including §12.3.7). Only after those branches, for each remaining package that
++would receive the used-but-unpinned FAIL/WARNING, a nonempty
++`unexpanded_requirement_targets` produces one SKIPPED/INFO finding. This branch
++is independent of primary-Python coverage. Do not add a per-package PASS or
++aggregate finding, alter applicability, or alter the existing empty-result
++primary-Python veto. Existing higher-priority messages/evidence remain exact
++and do not append the lower-priority target paths.
++
++The conservative influence is repository-wide under §12.2's existential exact
++policy: an unexpanded target could contain an exact declaration for any currently
++used, uncredited critical package. It need not do so, and an unrelated project
++can cause SKIP. Do not impose format-lock ownership on this uncertainty or infer
++package names from target names. SKIP grants no exact/lock credit and certifies
++neither complete dependency capture nor experiment reproducibility.
++
++Keep rule ID, aliases, category, level and display-name mapping. Use this exact
++message:
++
++```text
++{display} is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established
++```
++
++Use this exact fix hint:
++
++```text
++Review {display} declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.
++```
++
++Evidence first retains the existing first captured declaration for the package,
++or otherwise its first captured import. Append one `kind: file` item for each
++distinct logical target path in lexical order, with `path` equal to that target
++and the exact note `{display} include target unexpanded at the depth limit`.
++All other optional evidence and finding origin/suppression fields keep their
++defaults. A file-kind target item identifies a known reference, not a verified
++existing/read file. Keep the existing final engine sort.
++
++FAIL-only severity overrides do not promote this SKIPPED/INFO. Current
++suppression, thresholds and determinism remain unchanged; an isolated WARNING
++or promoted CRITICAL gate can change from exit 1 to 0, while an independent
++qualifying finding can still fail the command. Default text can show PASS with
++a skipped count; default export hides SKIP; complete JSON retains the finding.
++Do not change renderers, engine, scanner, redaction, schemas, dependencies,
++package version, five-project gold or historical artifacts.
++
++This is only the specified final depth frontier. Requirements string/line,
++directive, continuation, comment, URL/VCS/editable, constraints and include
++syntax support do not expand. Cycles and complete-but-nonexact closures do not
++trigger it. Reached candidate exclusions, omitted roots/candidates/use, other
++graph uncertainty, manager package-value grammar, listing, README/config/
++framework completeness and sufficient certificates remain OPEN R07-C work.
++The whole R07-C task is not closed by this slice.
+ 
+ ### 12.4 `model.*` (M3 presence, M4 lock)
+ 

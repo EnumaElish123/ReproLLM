@@ -1,0 +1,148 @@
+"""Private current-product observations, not implementation of a future policy."""
+
+from __future__ import annotations
+
+import dataclasses
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+from reprollm.core.context import AuditContext
+from reprollm.core.deps import Declarations, _RequirementsGraph, scan_dependencies
+from reprollm.core.git import GitInfo
+from reprollm.core.pyscan import scan_python
+from reprollm.core.scanner import RepoScanner
+from reprollm.rules import env
+
+
+OUT = Path(__file__).parent / "requirements-research"
+OUT.mkdir(exist_ok=True)
+ROOT = Path.cwd()
+
+
+def guard(event: str, args: tuple[object, ...]) -> None:
+    if event.startswith("socket.") or event in {"subprocess.Popen", "os.system"}:
+        raise RuntimeError("Research observer forbids network and child processes")
+    if event == "import" and str(args[0]).split(".", 1)[0] in {
+        "torch", "transformers", "numpy", "vllm", "huggingface_hub"
+    }:
+        raise RuntimeError("Research observer forbids heavy target imports")
+
+
+sys.addaudithook(guard)
+env.installed_versions = lambda: {}
+
+
+class Scanner(RepoScanner):
+    def __init__(self, root: Path) -> None:
+        super().__init__(root, GitInfo(is_repo=False))
+        self.reads: list[str] = []
+
+    def read_text(self, rel_path: str, max_bytes: int = 512 * 1024) -> str | None:
+        self.reads.append(rel_path)
+        return super().read_text(rel_path, max_bytes)
+
+
+def case(name: str, extra: str, *, files: dict[str, str] | None = None,
+         exact: bool = False, issues: dict[str, str] | None = None,
+         explanation: str) -> dict:
+    return {
+        "id": name,
+        "files": {"requirements.txt": "torch>=2\n" + extra, **(files or {})},
+        "independent_expected_current": {
+            "torch_exact": exact,
+            "body_issue_paths": issues or {},
+            "critical_status": [] if exact else ["skipped" if issues else "fail"],
+        },
+        "scope_reasoning": explanation,
+    }
+
+
+cases = [
+    case("valid-loose", "", explanation="Complete captured declarations without exact pin; no capture loss."),
+    case("literal-exact", "torch==2.5.1\n", exact=True, explanation="Positive exact declaration wins."),
+    case("bad-plain-line", "not a requirement !!!\n", explanation="Captured bytes, no supported declaration; repair can add anything, not evidence of actual omitted supported content."),
+    case("inline-exact-comment", "torch==2.5.1 # pin\n", explanation="Pip-supported inline comment hides an actual exact declaration from this bounded parser; grammar expansion and status policy are distinct options."),
+    case("continued-exact", "torch==\\\n2.5.1\n", explanation="Pip-supported continuation can form an exact declaration; existing physical-line parser drops both lines."),
+    case("global-index", "--index-url https://example.invalid/simple\n", explanation="Unsupported directive prevents lock closure; index alone contains no exact-version declaration."),
+    case("constraints", "-c constraints.txt\n", files={"constraints.txt": "torch==2.5.1\n"}, explanation="Unopened constraints file may constrain version in pip, but current requirements declaration/credit contract does not support constraint semantics."),
+    case("supported-include", "-r pins.txt\n", files={"pins.txt": "torch==2.5.1\n"}, exact=True, explanation="Supported edge captures exact declaration; no extra policy needed."),
+    case("malformed-include", "-r\n", explanation="Typed include error with no target; no concrete unseen file identified."),
+    case("quoted-include", '-r "pins.txt"\n', files={"pins.txt": "torch==2.5.1\n"}, explanation="Typed unsupported syntax; target not normalized or read. Support/uncertainty decision must be specific."),
+    case("attached-include", "-rpins.txt\n", files={"pins.txt": "torch==2.5.1\n"}, explanation="Typed unsupported syntax with no captured target, not an attempted read failure."),
+    case("outside-include", "-r ../outside.txt\n", explanation="Containment rejection before read; extending audit evidence beyond root is forbidden."),
+    case("url-include", "-r https://example.invalid/pins.txt\n", explanation="Unsupported remote edge; audit cannot fetch this input."),
+    case("excluded-include", "-r .venv/pins.txt\n", files={".venv/pins.txt": "torch==2.5.1\n"}, explanation="Known normalized edge but deliberate candidate exclusion; node unreadable without a body attempt, distinguish from depth and D-M."),
+    case("missing-include", "-r missing.txt\n", issues={"missing.txt": "unreadable"}, explanation="Actual attempted supported body read failed; already covered by D-M."),
+    case("observed-cycle", "-r loop.txt\n", files={"loop.txt": "-r requirements.txt\n"}, explanation="Cycle makes closure incomplete, but all cycle bodies were captured; no unseen exact declaration follows from the cycle itself."),
+    case("observed-cycle-exact", "-r loop.txt\n", files={"loop.txt": "torch==2.5.1\n-r requirements.txt\n"}, exact=True, explanation="Incomplete cycle closure does not revoke captured exact credit."),
+]
+chain = {f"deps/{i}.txt": f"-r {i+1}.txt\n" for i in range(10)}
+chain["deps/10.txt"] = "torch==2.5.1\n"
+cases.append(case("depth-unseen-exact", "-r deps/0.txt\n", files=chain,
+                  explanation="Root depth 0, deps/9 depth 10 captured; deps/10 at depth 11 not captured. Its fixed synthetic bytes prove an exact declaration can remain unseen."))
+cases.append(case("depth-with-exact-sibling", "torch==2.4.0\n-r deps/0.txt\n", files=chain, exact=True,
+                  explanation="Existing exact sibling wins even while deeper target is unobserved."))
+cases.append(case("depth-later-shallow-root", "-r deps/0.txt\n",
+                  files={**chain, "requirements-z.txt": "-r deps/10.txt\n"}, exact=True,
+                  explanation="First closure remains depth-incomplete, but final global capture later reads target through a shallow independent root; no final missing-pin loss."))
+loose_chain = {**chain, "deps/10.txt": "numpy>=1\n"}
+cases.append(case("depth-later-shallow-root-loose", "-r deps/0.txt\n",
+                  files={**loose_chain, "requirements-z.txt": "-r deps/10.txt\n"},
+                  explanation="All target bytes eventually captured, no torch exact; historical per-root depth failure does not establish final global capture loss."))
+cases.append(case("depth-plus-body-failure", "-r deps/0.txt\n-r missing.txt\n", files=chain,
+                  issues={"missing.txt": "unreadable"},
+                  explanation="Current D-M already skips; a future graph slice may add evidence, but must not relabel status-only equality as complete equality."))
+
+(OUT / "cases.json").write_text(json.dumps({"schema_version": 1, "cases": cases}, indent=2) + "\n", encoding="utf-8")
+records = []
+started = time.perf_counter()
+for item in cases:
+    root = OUT / "fixtures" / item["id"]
+    root.mkdir(parents=True, exist_ok=False)
+    for name, body in item["files"].items():
+        target = root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(body.encode("utf-8"))
+    scanner = Scanner(root)
+    declarations = scan_dependencies(scanner)
+    context = AuditContext(root, level=0)
+    context._git = GitInfo(is_repo=False)
+    context._fs = scanner
+    context._deps = declarations
+    context._pyscan = scan_python(scanner)
+    findings = env.LlmCriticalDepsPinnedRule().check(context)
+    finding_status = [finding.status.value for finding in findings if finding.message.startswith("torch ")]
+    actual_projection = {
+        "torch_exact": any(d.name == "torch" and d.exact_version for d in declarations.declarations),
+        "body_issue_paths": declarations.declaration_read_issues,
+        "critical_status": finding_status,
+    }
+    assert actual_projection == item["independent_expected_current"], (item["id"], actual_projection)
+    graph_scanner = Scanner(root)
+    graph_result = Declarations()
+    graph = _RequirementsGraph(graph_scanner, graph_result)
+    roots = sorted(p for p in graph_scanner.analysis_files() if Path(p).name.startswith("requirements") and p.endswith(".txt"))
+    graph.parse(roots)
+    records.append({
+        "id": item["id"],
+        "projection": actual_projection,
+        "declarations": [dataclasses.asdict(d) for d in declarations.declarations],
+        "issues": declarations.declaration_read_issues,
+        "unparsed": declarations.unparsed,
+        "reads": scanner.reads,
+        "findings": [finding.model_dump(mode="json") for finding in findings],
+        "roots": roots,
+        "graph_reads": graph_scanner.reads,
+        "graph_nodes": {
+            path: {"readable": node.readable, "events": [dataclasses.asdict(event) if dataclasses.is_dataclass(event) else {"unsupported_text": event} for event in node.events]}
+            for path, node in sorted(graph.nodes.items())
+        },
+        "closures": {path: {"complete": closure.complete, "sources": sorted(closure.sources), "is_exact": closure.is_exact} for path, closure in sorted(graph.closures.items())},
+        "fixture_hashes": {name: hashlib.sha256(body.encode()).hexdigest() for name, body in item["files"].items()},
+    })
+report = {"schema_version": 1, "status": "CURRENT_PRODUCT_OBSERVATIONS_ONLY", "future_policy_executions": 0, "controls": ["GitInfo(is_repo=False)", "installed_versions={}", "no imports or model calls", "audit hook blocks network/process/heavy imports"], "product_source_sha256": hashlib.sha256((ROOT / "src/reprollm/core/deps.py").read_bytes()).hexdigest(), "observer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "cases_sha256": hashlib.sha256((OUT / "cases.json").read_bytes()).hexdigest(), "elapsed_seconds": time.perf_counter() - started, "cases": records}
+(OUT / "current-observations.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+print(json.dumps({"cases": len(records), "status": report["status"], "seconds": report["elapsed_seconds"]}))

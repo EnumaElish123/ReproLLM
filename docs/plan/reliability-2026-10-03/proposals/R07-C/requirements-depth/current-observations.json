@@ -1,0 +1,2898 @@
+{
+  "schema_version": 1,
+  "status": "CURRENT_PRODUCT_OBSERVATIONS_ONLY",
+  "future_policy_executions": 0,
+  "controls": [
+    "GitInfo(is_repo=False)",
+    "installed_versions={}",
+    "no imports or model calls",
+    "audit hook blocks network/process/heavy imports"
+  ],
+  "product_source_sha256": "be81aa1f52ff253abbf460667c444d5a53be63d24ae531f999b5cf7f6724b8eb",
+  "observer_sha256": "a533e08c170a80e6e47b6ac7a15fe2a9495cc1bd3c492d2e50226295396a74d4",
+  "cases_sha256": "e736765afb60d9437ad400739e605ecb3323b9208677466c8e486a41974069ad",
+  "elapsed_seconds": 0.40943379999998797,
+  "cases": [
+    {
+      "id": "valid-loose",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "025ceb6213ca61e0121437d6cd1f7deb2099714bec3bf8deb8e1c14d9b59b465"
+      }
+    },
+    {
+      "id": "literal-exact",
+      "projection": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 2
+        }
+      ],
+      "issues": {},
+      "unparsed": [],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 2
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "19cdbdb7b99c6bce0616887e6bc7b3d7b1bcd9e5f2c4d9cfb01417ba8e14c285"
+      }
+    },
+    {
+      "id": "bad-plain-line",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: not a requirement !!!"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: not a requirement !!!"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "46f5593a7693a47a26d847a31997a83daa796fb8138c7ac5829c6880f1434c5b"
+      }
+    },
+    {
+      "id": "inline-exact-comment",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "0b80fe94520d3766d7d4af728e691cd27c0885b6896d4e6468ff77590aa3476a"
+      }
+    },
+    {
+      "id": "continued-exact",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        },
+        {
+          "name": "2-5-1",
+          "display_name": "2.5.1",
+          "specifier": null,
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 3
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: torch==\\"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: torch==\\"
+            },
+            {
+              "name": "2-5-1",
+              "display_name": "2.5.1",
+              "specifier": null,
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 3
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "9f6690931de522e692cfd705f120397561a7be30b0db8fe6645978f10e0b9929"
+      }
+    },
+    {
+      "id": "global-index",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: --index-url https://example.invalid/simple"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: --index-url https://example.invalid/simple"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "fcfad35b1fb8934847e8509a879f98b64ffebf8b444bf235910f7b095b4a8cc7"
+      }
+    },
+    {
+      "id": "constraints",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: -c constraints.txt"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: -c constraints.txt"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "9c7b3ed916ab9ce98ee40b52a41d1c5690ece6e9f991b736ee2623a375b2238c",
+        "constraints.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "supported-include",
+      "projection": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "pins.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [],
+      "reads": [
+        "requirements.txt",
+        "pins.txt"
+      ],
+      "findings": [],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "pins.txt"
+      ],
+      "graph_nodes": {
+        "pins.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "pins.txt",
+              "line": 1
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "pins.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "pins.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "3c748b118d9fc3548cc080185cf62078e71143804eb3cced088134a659e0859b",
+        "pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "malformed-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include malformed"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": null,
+              "error": "include malformed"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "38f0f1ff776fab7a8b11705186d6a19a6e30e1837efba86862c1713a9e6e7aa9"
+      }
+    },
+    {
+      "id": "quoted-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include unsupported syntax"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": null,
+              "error": "include unsupported syntax"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "0b7c7aac58f311e0b27e85fd82b2e16ed1594b19f6729fc70a25081c2828c622",
+        "pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "attached-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include unsupported syntax"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": null,
+              "error": "include unsupported syntax"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "1b64fb0a99dd18b34e50a89fe66c460a8f53bbbf814ca53085ca3f77ad3aa62f",
+        "pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "outside-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include unreadable"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": null,
+              "error": "include unreadable"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "4ec2c95eee9528434f1438a1398e1501744ad6d7933ffd74e8a61500de1acbf5"
+      }
+    },
+    {
+      "id": "url-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include unsupported syntax"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": null,
+              "error": "include unsupported syntax"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "5aac16905cd9c7425bd0f8cdd0c04cd726da6f126a89bdc5f9f59f5eac9cb12e"
+      }
+    },
+    {
+      "id": "excluded-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "requirements.txt:2: include unreadable"
+      ],
+      "reads": [
+        "requirements.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        ".venv/pins.txt": {
+          "readable": false,
+          "events": []
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": ".venv/pins.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "bbeac1ace1ceb336fc6a02b10708d86c228675ee93a1964767c68bde92b90146",
+        ".venv/pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "missing-include",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {
+          "missing.txt": "unreadable"
+        },
+        "critical_status": [
+          "skipped"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {
+        "missing.txt": "unreadable"
+      },
+      "unparsed": [
+        "requirements.txt:2: include unreadable"
+      ],
+      "reads": [
+        "requirements.txt",
+        "missing.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "INFO",
+          "status": "skipped",
+          "level": 0,
+          "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            },
+            {
+              "kind": "file",
+              "path": "missing.txt",
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "torch possible exact declaration unverified"
+            }
+          ],
+          "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "missing.txt"
+      ],
+      "graph_nodes": {
+        "missing.txt": {
+          "readable": false,
+          "events": []
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "missing.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "b7b8768e9041e6dcde2480fe9ee9d329b79ee06d46b21d898750dce31109831d"
+      }
+    },
+    {
+      "id": "observed-cycle",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "loop.txt:1: include cycle",
+        "requirements.txt:2: include incomplete"
+      ],
+      "reads": [
+        "requirements.txt",
+        "loop.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "loop.txt"
+      ],
+      "graph_nodes": {
+        "loop.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "requirements.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "loop.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "loop.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "053c62cca7540d5ff2a389df5f515ae06d67f769459f5c0927b01f59f96fdd48",
+        "loop.txt": "69075054c6d3bf5e0104bbc5d72895f380f050216a76ee8978dc4fbfd62f95e8"
+      }
+    },
+    {
+      "id": "observed-cycle-exact",
+      "projection": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "loop.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "loop.txt:2: include cycle",
+        "requirements.txt:2: include incomplete"
+      ],
+      "reads": [
+        "requirements.txt",
+        "loop.txt"
+      ],
+      "findings": [],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "loop.txt"
+      ],
+      "graph_nodes": {
+        "loop.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "loop.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "requirements.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "loop.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "loop.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "053c62cca7540d5ff2a389df5f515ae06d67f769459f5c0927b01f59f96fdd48",
+        "loop.txt": "bd43a26887e7ed62aa3a7500b5d3ba9b6d1440bfc1ea6292026c0dba32c22933"
+      }
+    },
+    {
+      "id": "depth-unseen-exact",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:2: include incomplete"
+      ],
+      "reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "deps/0.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "depth-with-exact-sibling",
+      "projection": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.4.0",
+          "exact_version": "2.4.0",
+          "source_file": "requirements.txt",
+          "line": 2
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:3: include incomplete"
+      ],
+      "reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "findings": [],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.4.0",
+              "exact_version": "2.4.0",
+              "source_file": "requirements.txt",
+              "line": 2
+            },
+            {
+              "line": 3,
+              "target": "deps/0.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "5c02bbb339128dd8e18c1b3f4e9a4493ca697c3e90c394d8698363fdff1c12ac",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "depth-later-shallow-root",
+      "projection": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "deps/10.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:2: include incomplete"
+      ],
+      "reads": [
+        "requirements-z.txt",
+        "deps/10.txt",
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "findings": [],
+      "roots": [
+        "requirements-z.txt",
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements-z.txt",
+        "deps/10.txt",
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/10.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "deps/10.txt",
+              "line": 1
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements-z.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "deps/0.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements-z.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": true
+        },
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e",
+        "requirements-z.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311"
+      }
+    },
+    {
+      "id": "depth-later-shallow-root-loose",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "numpy",
+          "display_name": "numpy",
+          "specifier": ">=1",
+          "exact_version": null,
+          "source_file": "deps/10.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {},
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:2: include incomplete"
+      ],
+      "reads": [
+        "requirements-z.txt",
+        "deps/10.txt",
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "numpy is used but not pinned to an exact version (suggestion: numpy==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "deps/10.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=1",
+              "expected": null,
+              "note": "declared as >=1"
+            }
+          ],
+          "fix_hint": "Pin numpy exactly, e.g. `numpy==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        },
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements-z.txt",
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements-z.txt",
+        "deps/10.txt",
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/10.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "numpy",
+              "display_name": "numpy",
+              "specifier": ">=1",
+              "exact_version": null,
+              "source_file": "deps/10.txt",
+              "line": 1
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements-z.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "deps/0.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements-z.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": false
+        },
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "61a016e6e50a3e5f8c1ee78f74d8f0d12c7c69428495def373c075bea21ebe5c",
+        "requirements-z.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311"
+      }
+    },
+    {
+      "id": "depth-plus-body-failure",
+      "projection": {
+        "torch_exact": false,
+        "body_issue_paths": {
+          "missing.txt": "unreadable"
+        },
+        "critical_status": [
+          "skipped"
+        ]
+      },
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "issues": {
+        "missing.txt": "unreadable"
+      },
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:2: include incomplete",
+        "requirements.txt:3: include unreadable"
+      ],
+      "reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "missing.txt"
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "INFO",
+          "status": "skipped",
+          "level": 0,
+          "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            },
+            {
+              "kind": "file",
+              "path": "missing.txt",
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "torch possible exact declaration unverified"
+            }
+          ],
+          "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "roots": [
+        "requirements.txt"
+      ],
+      "graph_reads": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "missing.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "missing.txt": {
+          "readable": false,
+          "events": []
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "line": 2,
+              "target": "deps/0.txt",
+              "error": null
+            },
+            {
+              "line": 3,
+              "target": "missing.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_hashes": {
+        "requirements.txt": "6025982f9286343589050789883b5c8647110d40612b6a08f4ec3a710180704d",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    }
+  ]
+}

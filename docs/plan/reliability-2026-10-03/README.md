@@ -103,3 +103,13 @@ and final validation status. The original
 PROPOSED decision and [preparation report](../../dogfooding/2026-10-22-r07c-declaration-structure-pa.md)
 remain unchanged. Package-value/string grammar, requirements graphs and wider
 R07-C stay OPEN. No release is authorized.
+
+## R07-C requirements depth frontier P-A (2026-10-22)
+
+The next narrow [proposal](proposals/R07-C/requirements-depth/R07-C_requirements_depth_frontier.md)
+is PROPOSED; its concrete spec patch remains unapplied and the future policy unexecuted.
+The [P-A report](../../dogfooding/2026-10-22-r07c-requirements-depth-pa.md) records the
+accepted product baseline, separate PB closure/CI status and unchanged current observations.
+Specific acceptance of [option A, the exact patch and conservative boundaries](proposals/R07-C/requirements-depth/spec-issue-draft.md)
+is required before P-B. Requirements grammar, omitted candidates/listing/framework and
+the whole R07-C scope remain OPEN. No release is authorized.

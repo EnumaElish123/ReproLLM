@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "INDEPENDENT_FUTURE_EXPECTATION_NOT_EXECUTED",
+  "case_id": "depth-unseen-exact",
+  "internal_fact": {
+    "unexpanded_requirement_targets": [
+      "deps/10.txt"
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 0,
+      "message": "torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=2",
+          "expected": null,
+          "note": "declared as >=2"
+        },
+        {
+          "kind": "file",
+          "path": "deps/10.txt",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "torch include target unexpanded at the depth limit"
+        }
+      ],
+      "fix_hint": "Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "valid-loose",
+      "files": {
+        "requirements.txt": "torch>=2\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Complete captured declarations without exact pin; no capture loss."
+    },
+    {
+      "id": "literal-exact",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "scope_reasoning": "Positive exact declaration wins."
+    },
+    {
+      "id": "bad-plain-line",
+      "files": {
+        "requirements.txt": "torch>=2\nnot a requirement !!!\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Captured bytes, no supported declaration; repair can add anything, not evidence of actual omitted supported content."
+    },
+    {
+      "id": "inline-exact-comment",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Pip-supported inline comment hides an actual exact declaration from this bounded parser; grammar expansion and status policy are distinct options."
+    },
+    {
+      "id": "continued-exact",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==\\\n2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Pip-supported continuation can form an exact declaration; existing physical-line parser drops both lines."
+    },
+    {
+      "id": "global-index",
+      "files": {
+        "requirements.txt": "torch>=2\n--index-url https://example.invalid/simple\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Unsupported directive prevents lock closure; index alone contains no exact-version declaration."
+    },
+    {
+      "id": "constraints",
+      "files": {
+        "requirements.txt": "torch>=2\n-c constraints.txt\n",
+        "constraints.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Unopened constraints file may constrain version in pip, but current requirements declaration/credit contract does not support constraint semantics."
+    },
+    {
+      "id": "supported-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r pins.txt\n",
+        "pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "scope_reasoning": "Supported edge captures exact declaration; no extra policy needed."
+    },
+    {
+      "id": "malformed-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Typed include error with no target; no concrete unseen file identified."
+    },
+    {
+      "id": "quoted-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r \"pins.txt\"\n",
+        "pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Typed unsupported syntax; target not normalized or read. Support/uncertainty decision must be specific."
+    },
+    {
+      "id": "attached-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-rpins.txt\n",
+        "pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Typed unsupported syntax with no captured target, not an attempted read failure."
+    },
+    {
+      "id": "outside-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r ../outside.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Containment rejection before read; extending audit evidence beyond root is forbidden."
+    },
+    {
+      "id": "url-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r https://example.invalid/pins.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Unsupported remote edge; audit cannot fetch this input."
+    },
+    {
+      "id": "excluded-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r .venv/pins.txt\n",
+        ".venv/pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Known normalized edge but deliberate candidate exclusion; node unreadable without a body attempt, distinguish from depth and D-M."
+    },
+    {
+      "id": "missing-include",
+      "files": {
+        "requirements.txt": "torch>=2\n-r missing.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {
+          "missing.txt": "unreadable"
+        },
+        "critical_status": [
+          "skipped"
+        ]
+      },
+      "scope_reasoning": "Actual attempted supported body read failed; already covered by D-M."
+    },
+    {
+      "id": "observed-cycle",
+      "files": {
+        "requirements.txt": "torch>=2\n-r loop.txt\n",
+        "loop.txt": "-r requirements.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Cycle makes closure incomplete, but all cycle bodies were captured; no unseen exact declaration follows from the cycle itself."
+    },
+    {
+      "id": "observed-cycle-exact",
+      "files": {
+        "requirements.txt": "torch>=2\n-r loop.txt\n",
+        "loop.txt": "torch==2.5.1\n-r requirements.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "scope_reasoning": "Incomplete cycle closure does not revoke captured exact credit."
+    },
+    {
+      "id": "depth-unseen-exact",
+      "files": {
+        "requirements.txt": "torch>=2\n-r deps/0.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "Root depth 0, deps/9 depth 10 captured; deps/10 at depth 11 not captured. Its fixed synthetic bytes prove an exact declaration can remain unseen."
+    },
+    {
+      "id": "depth-with-exact-sibling",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.4.0\n-r deps/0.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "scope_reasoning": "Existing exact sibling wins even while deeper target is unobserved."
+    },
+    {
+      "id": "depth-later-shallow-root",
+      "files": {
+        "requirements.txt": "torch>=2\n-r deps/0.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n",
+        "requirements-z.txt": "-r deps/10.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": true,
+        "body_issue_paths": {},
+        "critical_status": []
+      },
+      "scope_reasoning": "First closure remains depth-incomplete, but final global capture later reads target through a shallow independent root; no final missing-pin loss."
+    },
+    {
+      "id": "depth-later-shallow-root-loose",
+      "files": {
+        "requirements.txt": "torch>=2\n-r deps/0.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "numpy>=1\n",
+        "requirements-z.txt": "-r deps/10.txt\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {},
+        "critical_status": [
+          "fail"
+        ]
+      },
+      "scope_reasoning": "All target bytes eventually captured, no torch exact; historical per-root depth failure does not establish final global capture loss."
+    },
+    {
+      "id": "depth-plus-body-failure",
+      "files": {
+        "requirements.txt": "torch>=2\n-r deps/0.txt\n-r missing.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "torch_exact": false,
+        "body_issue_paths": {
+          "missing.txt": "unreadable"
+        },
+        "critical_status": [
+          "skipped"
+        ]
+      },
+      "scope_reasoning": "Current D-M already skips; a future graph slice may add evidence, but must not relabel status-only equality as complete equality."
+    }
+  ]
+}
