@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "CORRECTED_BEFORE_PUSH",
+  "scope": "Independent readback receipt outside the canonical 627-file evidence directory",
+  "initial_local_documentation_commit": "f4d7cfc7750f03ea02f4192f24817ff7ab4ad1eb",
+  "original_crlf_sha256": "ba085b6905d62062e6542271168c5df8b4ae7efc89fffca663a7c760387d825c",
+  "initial_index_lf_sha256": "852c5ed8ad3d1fba9f34989b683686eeff354d6fbd58939b9cee1fe272c4dc56",
+  "difference": "CRLF to LF only; JSON content was unchanged",
+  "observed_failure": "The first receipt index-byte assertion failed. The combined PowerShell command did not stop at the Python exit and created the local documentation commit. No push occurred.",
+  "correction": "Re-add the receipt with git add --renormalize under its already-staged -text attribute, then require exact original/index bytes and explicit failure guards before the follow-up documentation commit.",
+  "corrected_index_sha256": "ba085b6905d62062e6542271168c5df8b4ae7efc89fffca663a7c760387d825c",
+  "canonical_evidence": "All 627 canonical evidence files had already passed exact index-byte verification and were unchanged",
+  "product_inputs": "UNCHANGED",
+  "product_gates_rerun": false,
+  "release": "NOT_PERFORMED"
+}
