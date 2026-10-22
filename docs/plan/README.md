@@ -144,9 +144,12 @@ R08-A option A remains implemented and unreleased; read its
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
 For work independent of outstanding resources, the
 [A02 local trial materials](../trials/a02-local/README.md) and
-[A03 sourced facts](../adoption/a03-2026-10-18.md) remain available. Independent
-trials are PENDING; form matching and any submission remain separate from
-local drafting. No release is authorized. Resource results stay candidate-bound.
+[A03 historical sourced facts](../adoption/a03-2026-10-18.md) remain available.
+The [2026-10-22 A03 supplement](../adoption/a03-2026-10-22.md) records dated facts,
+read-only public-form matching and measured draft lengths, with separate preparation
+and verified PB delivery identities. Conditional form behavior and server validation
+remain untested; independent trials are PENDING and no application is submitted.
+No release is authorized. Resource results stay candidate-bound.
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI
