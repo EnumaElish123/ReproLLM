@@ -1,0 +1,32 @@
+--- pre-review/synthetic.py
++++ reviewed/synthetic.py
+@@ -12,12 +12,12 @@
+ MESSAGE = 'torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established'
+ REASON = 'Reviewed requirements depth frontier uncertainty.'
+ CASES = [
+-    dict(name='warning-hidden-exact', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='critical-hidden-loose', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch>=3\n'}, severity='CRITICAL', threshold='critical', mixed=False),
+-    dict(name='warning-target-missing', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={}, severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='warning-target-excluded', targets=['.venv/pins.txt'], last='-r ../.venv/pins.txt\n', hidden={'.venv/pins.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='critical-sorted-targets', targets=['a-first.txt','z-last.txt'], last='-r ../z-last.txt\n-r ../a-first.txt\n-r ../deps/../a-first.txt\n', hidden={'a-first.txt':'','z-last.txt':''}, severity='CRITICAL', threshold='critical', mixed=False),
+-    dict(name='independent-warning', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=True),
++    dict(name='warning-hidden-exact', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='critical-hidden-loose', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch>=3\n'}, severity='CRITICAL', threshold='critical', mixed=False, depth_lines=[1]),
++    dict(name='warning-target-missing', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='warning-target-excluded', targets=['.venv/pins.txt'], last='-r ../.venv/pins.txt\n', hidden={'.venv/pins.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='critical-sorted-targets', targets=['a-first.txt','z-last.txt'], last='-r ../z-last.txt\n-r ../a-first.txt\n-r ../deps/../a-first.txt\n', hidden={'a-first.txt':'','z-last.txt':''}, severity='CRITICAL', threshold='critical', mixed=False, depth_lines=[1,2]),
++    dict(name='independent-warning', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=True, depth_lines=[1]),
+ ]
+ 
+ 
+@@ -108,8 +108,8 @@
+                     assert normalized==first_stdout
+                 runner.compare(name+'-'+suffix+'-compare',TOOLS/f'synthetic-expected/{name}-unexpanded.json',runner.output/row['stdout']['path'],audit=True)
+                 checks.append(dict(case=name,state=suffix,status='PASS',expected_exit=unexpanded_exit))
+-            verbose,row=runner.cli(name+'-verbose',[*command,'--verbose'],path,unexpanded_exit)
+-            diagnostics=[*(f'deps/{index}.txt:1: include incomplete' for index in range(9)),*(f'deps/9.txt:{line}: include depth limit' for line in range(1,len(case['last'].splitlines())+1)),'requirements.txt:2: include incomplete']
++            verbose,row=runner.cli(name+'-verbose',['--verbose',*command],path,unexpanded_exit)
++            diagnostics=[*(f'deps/{index}.txt:1: include incomplete' for index in range(9)),*(f'deps/9.txt:{line}: include depth limit' for line in case['depth_lines']),'requirements.txt:2: include incomplete']
+             assert verbose.stderr.decode().replace('\r\n','\n')==''.join('scan: '+line+'\n' for line in sorted(diagnostics))
+             runner.compare(name+'-verbose-compare',TOOLS/f'synthetic-expected/{name}-unexpanded.json',runner.output/row['stdout']['path'],audit=True)
+             checks.append(dict(case=name,state='verbose-diagnostics',status='PASS',diagnostics=diagnostics))

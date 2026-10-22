@@ -1,0 +1,25 @@
+--- common.py before peer review
++++ common.py after peer review
+@@ -105,6 +105,7 @@
+     assert digest((TOOLS/'quality/inputs.json').read_bytes()) == summary['input_inventory_sha256']
+     assert inputs['files'] == inventory(), 'Product/test/schema/tool inputs changed after quality'
+     assert all(digest((TOOLS/name).read_bytes()) == value for name,value in inputs['validation_tools'].items())
++    verify_synthetic_oracle()
+     return dict(summary_sha256=digest((TOOLS/'quality/summary.json').read_bytes()), inputs_sha256=digest((TOOLS/'quality/inputs.json').read_bytes()))
+ 
+ 
+@@ -113,3 +114,14 @@
+     for name, value in binding['files'].items():
+         assert digest((TOOLS/name).read_bytes()) == value, name
+     return dict(binding_sha256=digest((TOOLS/'oracle-binding.json').read_bytes()), files=len(binding['files']))
++
++
++def verify_synthetic_oracle(root=TOOLS):
++    root = Path(root)
++    expected = read(root/'synthetic-plan.json')['expected_files']
++    actual = {p.relative_to(root).as_posix(): digest(p.read_bytes())
++              for p in (root/'synthetic-expected').rglob('*') if p.is_file()}
++    assert len(expected) == 18, 'Synthetic oracle must have exactly 18 complete reports'
++    assert actual.keys() == expected.keys(), 'Synthetic oracle paths changed'
++    assert actual == expected, 'Synthetic oracle body hash changed'
++    return dict(plan_sha256=digest((root/'synthetic-plan.json').read_bytes()), files=len(expected))

@@ -133,7 +133,9 @@ graphs and wider R07-C remain OPEN; no release is authorized.
 The maintainer explicitly delegated the R07-C D-G A/B adjudication; the agent
 [chose A and the exact patch](reliability-2026-10-03/proposals/R07-C/requirements-depth/decision-accepted.json),
 including its repository-wide conservative SKIP and exit-code costs. Follow the
-[P-B report](../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md) for current implementation and validation status.
+[P-B report](../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md): implementation at `d823f90`
+has passed final local quality, fresh five-project Gate A and the affected D-G consumers.
+Exact final pushed-head CI is checked separately at delivery.
 The original [P-A report](../dogfooding/2026-10-22-r07c-requirements-depth-pa.md),
 PROPOSED snapshot and raw observations remain historical. A separate
 [ordering evidence correction](reliability-2026-10-03/proposals/R07-C/requirements-depth/decision-evidence/README.md)

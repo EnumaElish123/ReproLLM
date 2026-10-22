@@ -1,0 +1,55 @@
+--- <PRIOR_PRIVATE_WORKSPACE>\r07c-structure-pb-validation\quality.py
++++ <VALIDATION>\quality.py
+@@ -6,13 +6,13 @@
+ import sys
+ import xml.etree.ElementTree as ET
+ 
+-from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write
++from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write, verify_oracle, verify_synthetic_oracle
+ 
+ 
+ def main():
+     runner = Runner(TOOLS/'quality')
+     files = inventory()
+-    inputs = dict(schema_version=1, files=files, validation_tools={p.name:digest(p.read_bytes()) for p in sorted(TOOLS.iterdir()) if p.is_file() and (p.suffix in {'.py','.ps1'} or p.name in {'locations-private.json','oracle-binding.json','synthetic-plan.json','environment-private.json','failed-selection.json'})})
++    inputs = dict(schema_version=1, files=files, validation_tools={p.name:digest(p.read_bytes()) for p in sorted(TOOLS.iterdir()) if p.is_file() and (p.suffix in {'.py','.ps1'} or p.name in {'locations-private.json','oracle-binding.json','synthetic-plan.json','environment-private.json','preparation-binding.json','execution-plan.json'})})
+     write(runner.output/'inputs.json', inputs)
+     head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+     result = None
+@@ -20,9 +20,13 @@
+     error = None
+     test_root=Path(read(TOOLS/'environment-private.json')['test_temp_root'])
+     try:
++        verify_oracle(); verify_synthetic_oracle()
+         commands = [
++            ('candidate-head',['git','--no-optional-locks','rev-parse','HEAD']),
++            ('candidate-status',['git','--no-optional-locks','status','--porcelain=v1','--untracked-files=all']),
+             ('locked-sync',[UV,'sync','--locked','--dev','--offline']),
+             ('environment',[PYTHON,'-X','utf8',TOOLS/'environment.py']),
++            ('version',[PYTHON,'-X','utf8',TOOLS/'cli.py','--version']),
+             ('quickstart',[PYTHON,'-X','utf8','scripts/gen_quickstart.py','--check']),
+             ('pytest',[PYTHON,'-X','utf8','-m','pytest','-q','--tb=short','--cov=reprollm','--cov-report=term',f'--cov-report=xml:{runner.output}/coverage.xml',f'--cov-report=json:{runner.output}/coverage.json','--cov-fail-under=85','-m','not slow and not linux_only','--junit-xml',runner.output/'pytest-report.xml','--basetemp',test_root/'p']),
+             ('redaction',[PYTHON,'-m','coverage','report','--fail-under=100','--include=src/reprollm/core/redaction.py']),
+@@ -44,7 +48,13 @@
+                     assert not (example/'reprollm.lock').exists()
+         commands.append(('self-audit',[PYTHON,'-X','utf8',TOOLS/'cli.py','audit','.','--format','github','--fail-on','never']))
+         for label, argv in commands:
+-            runner.run(label, argv)
++            completed, _ = runner.run(label, argv)
++            if label == 'candidate-head':
++                assert completed.stdout.decode().strip() == head and not completed.stderr
++            if label == 'candidate-status':
++                assert not completed.stdout and not completed.stderr
++            if label == 'version':
++                assert completed.stdout.splitlines() == [b'reprollm 0.7.0'] and not completed.stderr
+         expected = {p.name:p.read_bytes() for p in (ROOT/'schemas').glob('*.json')}
+         actual = {p.name:p.read_bytes() for p in (runner.output/'schemas').glob('*.json')}
+         assert expected.keys() == actual.keys()
+@@ -53,6 +63,7 @@
+         assert all(x['lf_equal'] for x in comparison.values())
+         assert inventory() == files
+         assert all(digest((TOOLS/name).read_bytes()) == value for name,value in inputs['validation_tools'].items())
++        verify_oracle(); verify_synthetic_oracle()
+         status = 'PASS'
+     except Exception as exc:
+         error = str(exc)

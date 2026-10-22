@@ -1,0 +1,140 @@
+{
+  "acceptance_ids": [
+    "G02",
+    "G03",
+    "G04",
+    "G11",
+    "G12",
+    "G21",
+    "G25",
+    "G26",
+    "G27",
+    "G28"
+  ],
+  "cases": [
+    {
+      "depth_lines": [
+        1
+      ],
+      "hidden": {
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "last": "-r 10.txt\n",
+      "mixed": false,
+      "name": "warning-hidden-exact",
+      "severity": "WARNING",
+      "targets": [
+        "deps/10.txt"
+      ],
+      "threshold": "warning"
+    },
+    {
+      "depth_lines": [
+        1
+      ],
+      "hidden": {
+        "deps/10.txt": "torch>=3\n"
+      },
+      "last": "-r 10.txt\n",
+      "mixed": false,
+      "name": "critical-hidden-loose",
+      "severity": "CRITICAL",
+      "targets": [
+        "deps/10.txt"
+      ],
+      "threshold": "critical"
+    },
+    {
+      "depth_lines": [
+        1
+      ],
+      "hidden": {},
+      "last": "-r 10.txt\n",
+      "mixed": false,
+      "name": "warning-target-missing",
+      "severity": "WARNING",
+      "targets": [
+        "deps/10.txt"
+      ],
+      "threshold": "warning"
+    },
+    {
+      "depth_lines": [
+        1
+      ],
+      "hidden": {
+        ".venv/pins.txt": "torch==2.5.1\n"
+      },
+      "last": "-r ../.venv/pins.txt\n",
+      "mixed": false,
+      "name": "warning-target-excluded",
+      "severity": "WARNING",
+      "targets": [
+        ".venv/pins.txt"
+      ],
+      "threshold": "warning"
+    },
+    {
+      "depth_lines": [
+        1,
+        2
+      ],
+      "hidden": {
+        "a-first.txt": "",
+        "z-last.txt": ""
+      },
+      "last": "-r ../z-last.txt\n-r ../a-first.txt\n-r ../deps/../a-first.txt\n",
+      "mixed": false,
+      "name": "critical-sorted-targets",
+      "severity": "CRITICAL",
+      "targets": [
+        "a-first.txt",
+        "z-last.txt"
+      ],
+      "threshold": "critical"
+    },
+    {
+      "depth_lines": [
+        1
+      ],
+      "hidden": {
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "last": "-r 10.txt\n",
+      "mixed": true,
+      "name": "independent-warning",
+      "severity": "WARNING",
+      "targets": [
+        "deps/10.txt"
+      ],
+      "threshold": "warning"
+    }
+  ],
+  "expected_files": {
+    "synthetic-expected/critical-hidden-loose-restored.json": "c59d218ac6afb64b7a86d56c297cd0caa5ab5cfccfc0ce73b9a580d4508e26f7",
+    "synthetic-expected/critical-hidden-loose-suppressed.json": "c8b5636e02482d4244e2c57e284c62c0f055b2079036592338e311f780037c5c",
+    "synthetic-expected/critical-hidden-loose-unexpanded.json": "bb022a9f79c9f3a59fdf02ab584794bf5a74acf5cc76f6338aeba162dd69a434",
+    "synthetic-expected/critical-sorted-targets-restored.json": "c59d218ac6afb64b7a86d56c297cd0caa5ab5cfccfc0ce73b9a580d4508e26f7",
+    "synthetic-expected/critical-sorted-targets-suppressed.json": "14cfa31d25289720fa4a101ee6d2911d51e005c0e2d4cf9848f856b7d5d0eba5",
+    "synthetic-expected/critical-sorted-targets-unexpanded.json": "f38a4d61208265aca79a0a0d5ca56e20655ca5df805ed36ff67759bd61d1bb2f",
+    "synthetic-expected/independent-warning-restored.json": "3b182b99d37c418ee4b66ccac8f46c518a409e12897f583e2ddc9a5b7b43775a",
+    "synthetic-expected/independent-warning-suppressed.json": "de0da030b28671f451c211a0d7035bb3ed8d5ea8df1fe6494cd2a82ea6f9651d",
+    "synthetic-expected/independent-warning-unexpanded.json": "c3cea00e50cd079407f4e2cc8a9bf3f8e5a5a0cd4dc124c7bde85e11574514f7",
+    "synthetic-expected/warning-hidden-exact-restored.json": "c87ce9b435ae0fd5fb7d4c09bdfb3f9b1202d29db6d24324290d5ee4fe0696b3",
+    "synthetic-expected/warning-hidden-exact-suppressed.json": "c8b5636e02482d4244e2c57e284c62c0f055b2079036592338e311f780037c5c",
+    "synthetic-expected/warning-hidden-exact-unexpanded.json": "bb022a9f79c9f3a59fdf02ab584794bf5a74acf5cc76f6338aeba162dd69a434",
+    "synthetic-expected/warning-target-excluded-restored.json": "c87ce9b435ae0fd5fb7d4c09bdfb3f9b1202d29db6d24324290d5ee4fe0696b3",
+    "synthetic-expected/warning-target-excluded-suppressed.json": "7c99167c863124f03650b013182a5e1255904e2edfd548b5f3743e36bd74b2e2",
+    "synthetic-expected/warning-target-excluded-unexpanded.json": "f68db15b20784ab64730c2fcc85c307893f9e68ef89b01eb9dca24dbcf435483",
+    "synthetic-expected/warning-target-missing-restored.json": "c87ce9b435ae0fd5fb7d4c09bdfb3f9b1202d29db6d24324290d5ee4fe0696b3",
+    "synthetic-expected/warning-target-missing-suppressed.json": "c8b5636e02482d4244e2c57e284c62c0f055b2079036592338e311f780037c5c",
+    "synthetic-expected/warning-target-missing-unexpanded.json": "bb022a9f79c9f3a59fdf02ab584794bf5a74acf5cc76f6338aeba162dd69a434"
+  },
+  "export_assertions": "Complete output retained; predeclared summary/notable absence only, not whole-document independent gold.",
+  "method": "Literal full AuditReport oracle written from accepted spec, independent fixture bytes and existing CLI contract before candidate execution. Only root generated_at and reprollm_version metadata exempted by compare_gold.",
+  "paid_api": "NOT_CALLED",
+  "restored_exit": 1,
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXECUTED",
+  "unexpanded_exit": "1 only for independent-warning; otherwise 0"
+}

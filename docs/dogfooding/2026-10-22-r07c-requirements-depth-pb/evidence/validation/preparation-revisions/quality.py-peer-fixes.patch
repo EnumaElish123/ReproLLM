@@ -1,0 +1,27 @@
+--- quality.py before peer review
++++ quality.py after peer review
+@@ -6,7 +6,7 @@
+ import sys
+ import xml.etree.ElementTree as ET
+ 
+-from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write
++from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write, verify_oracle, verify_synthetic_oracle
+ 
+ 
+ def main():
+@@ -20,6 +20,7 @@
+     error = None
+     test_root=Path(read(TOOLS/'environment-private.json')['test_temp_root'])
+     try:
++        verify_oracle(); verify_synthetic_oracle()
+         commands = [
+             ('candidate-head',['git','--no-optional-locks','rev-parse','HEAD']),
+             ('candidate-status',['git','--no-optional-locks','status','--porcelain=v1','--untracked-files=all']),
+@@ -62,6 +63,7 @@
+         assert all(x['lf_equal'] for x in comparison.values())
+         assert inventory() == files
+         assert all(digest((TOOLS/name).read_bytes()) == value for name,value in inputs['validation_tools'].items())
++        verify_oracle(); verify_synthetic_oracle()
+         status = 'PASS'
+     except Exception as exc:
+         error = str(exc)

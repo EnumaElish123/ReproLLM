@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "ERRATUM",
+  "created_utc": "2026-10-22T01:50:06.674514+00:00",
+  "original_review": "development/core-independent-review.json",
+  "original_review_sha256": "aa081ba70c3beb0a6478e16f75ea578c7cca281b76a938c7c699da167079fcb2",
+  "affected_field": "focused_validation.affected_skip_reason",
+  "incorrect_statement": "Parent-owned administrator security preflight and final full gate remain separate and are still pending at this review.",
+  "correction": "The administrator preflight had already completed PREFLIGHT_PASS before the original review: two commands, both exit 0, including five existing symlink/leakage tests passed in 1.32 seconds. Only the final full quality gate remained pending at the review time. The 19 ordinary-account scanner skips remain skipped and do not become security PASS.",
+  "preflight": {
+    "status": "PREFLIGHT_PASS",
+    "command_count": 2,
+    "command_seconds": 1.968541,
+    "wall_seconds": 1.970853,
+    "pytest_passed": 5,
+    "pytest_reported_seconds": 1.32,
+    "launcher_exit": 0
+  },
+  "timing_basis": "Execution order confirmed by parent; source filesystem modification times independently precede original review. These are evidence file timestamps, not claimed process start/end timestamps.",
+  "sources": {
+    "tools/preflight-admin/summary.json": {
+      "sha256": "97cc9e96293b39ba6d231a49dd6f7ac4280f2a9703e6eb436a6f8be4adb4b701",
+      "bytes": 199,
+      "filesystem_mtime_utc": "2026-10-22T01:37:11.557065+00:00"
+    },
+    "tools/preflight-admin/commands.json": {
+      "sha256": "5c8e27693b5809eb5c2c77350539e881a2b7dd2e33bcb0521218b7d5977b07c7",
+      "bytes": 1969,
+      "filesystem_mtime_utc": "2026-10-22T01:37:11.557065+00:00"
+    },
+    "tools/preflight-admin/raw/001-symlinks-and-no-leaks.stdout": {
+      "sha256": "1ff40f1e0fdd8ec0b02fd58b54aeb8eea7492a7ced327963371c4594a244e1cc",
+      "bytes": 100,
+      "filesystem_mtime_utc": "2026-10-22T01:37:11.557065+00:00"
+    },
+    "tools/preflight-admin-exit.txt": {
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "bytes": 1,
+      "filesystem_mtime_utc": "2026-10-22T01:37:11.569068+00:00"
+    },
+    "development/core-independent-review.json": {
+      "sha256": "aa081ba70c3beb0a6478e16f75ea578c7cca281b76a938c7c699da167079fcb2",
+      "bytes": 5286,
+      "filesystem_mtime_utc": "2026-10-22T01:47:49.796484+00:00"
+    }
+  },
+  "preservation": "Original review and all historical test receipts are unchanged; this sidecar corrects only the review-time preflight status."
+}

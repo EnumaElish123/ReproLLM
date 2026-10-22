@@ -217,7 +217,8 @@ P-B 对成功解码后的指定容器／成员实施有界检查，保留部分�
 [裁决采用A及具体补丁](proposals/R07-C/requirements-depth/decision-accepted.json)，接受全仓SKIP和退出1→0成本。
 本片仅记录全部roots后仍无最终node的既有normalized include targets，保留信用及
 D-F/D-S、D-L、D-M优先级，无新增读取、预算或grammar扩张。
-后续实施及验收见 [P-B报告](../../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md)。
+`d823f90`已通过最终本地质量门、五项目Gate A和受影响D-G消费者；
+见 [P-B报告](../../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md)。精确推送HEAD的CI在交付时另核。
 原 [P-A报告](../../dogfooding/2026-10-22-r07c-requirements-depth-pa.md)和PROPOSED材料保持历史字节；
 “later shallow root”的实际先后顺序另立 [证据勘误](proposals/R07-C/requirements-depth/decision-evidence/README.md)。
 这项委托裁决不等于其他R07-C政策的批准，也不关闭整个R07-C。

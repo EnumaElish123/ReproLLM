@@ -1,0 +1,133 @@
+--- <PRIOR_PRIVATE_WORKSPACE>\r07c-structure-pb-validation\synthetic.py
++++ <VALIDATION>\synthetic.py
+@@ -2,22 +2,24 @@
+ 
+ import copy
+ import json
++import re
+ from pathlib import Path
+ import sys
+ 
+ from common import ROOT, TOOLS, Runner, digest, read, verify_quality, write
+ 
+-MANIFEST = b'schema_version: 1\nproject: {name: declaration-structure}\nexperiment: {profiles: []}\n'
+-MESSAGE = 'torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established'
+-REASON = 'Reviewed declaration structure uncertainty.'
++MANIFEST = b'schema_version: 1\nproject: {name: requirements-depth}\nexperiment: {profiles: []}\n'
++MESSAGE = 'torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established'
++REASON = 'Reviewed requirements depth frontier uncertainty.'
+ CASES = [
+-    dict(name='project-falsey', path='unrelated/pyproject.toml', body='project=0\n', restored='[project]\n', severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='tool-falsey-critical', path='unrelated/pyproject.toml', body='tool=false\n', restored='[project]\n', severity='CRITICAL', threshold='critical', mixed=False),
+-    dict(name='partial-optional', path='unrelated/pyproject.toml', body='[project]\noptional-dependencies={bad=false, good=["requests==2.1"]}\n', restored='[project]\n', severity='CRITICAL', threshold='critical', mixed=False),
+-    dict(name='pipfile-section', path='unrelated/Pipfile', body='packages=false\n[dev-packages]\nrequests="==2.1"\n', restored='[packages]\n', severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='environment-pip', path='unrelated/environment.yml', body='dependencies:\n  - pip: ["requests==2.1", 7]\n', restored='dependencies: []\n', severity='WARNING', threshold='warning', mixed=False),
+-    dict(name='independent-warning', path='unrelated/pyproject.toml', body='project=42\n', restored='[project]\n', severity='WARNING', threshold='warning', mixed=True),
++    dict(name='warning-hidden-exact', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='critical-hidden-loose', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch>=3\n'}, severity='CRITICAL', threshold='critical', mixed=False, depth_lines=[1]),
++    dict(name='warning-target-missing', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='warning-target-excluded', targets=['.venv/pins.txt'], last='-r ../.venv/pins.txt\n', hidden={'.venv/pins.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=False, depth_lines=[1]),
++    dict(name='critical-sorted-targets', targets=['a-first.txt','z-last.txt'], last='-r ../z-last.txt\n-r ../a-first.txt\n-r ../deps/../a-first.txt\n', hidden={'a-first.txt':'','z-last.txt':''}, severity='CRITICAL', threshold='critical', mixed=False, depth_lines=[1,2]),
++    dict(name='independent-warning', targets=['deps/10.txt'], last='-r 10.txt\n', hidden={'deps/10.txt':'torch==2.5.1\n'}, severity='WARNING', threshold='warning', mixed=True, depth_lines=[1]),
+ ]
++
+ 
+ 
+ def evidence(**values):
+@@ -26,7 +28,7 @@
+ 
+ def expected(case, state):
+     first=evidence(path='requirements.txt',line=1,value='>=2',note='declared as >=2')
+-    finding=dict(rule_id='env.llm_critical_deps_pinned',aliases=[],category='env',severity='INFO',status='skipped',level=1,message=MESSAGE,evidence=[first,evidence(path=case['path'],note='torch possible exact declaration unverified')],fix_hint='Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.',profile_origin=[],severity_origin='default',suppressed_reason=None)
++    finding=dict(rule_id='env.llm_critical_deps_pinned',aliases=[],category='env',severity='INFO',status='skipped',level=1,message=MESSAGE,evidence=[first]+[evidence(path=target,note='torch include target unexpanded at the depth limit') for target in case['targets']],fix_hint='Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.',profile_origin=[],severity_origin='default',suppressed_reason=None)
+     summary=dict(critical=0,warning=int(case['mixed']),info=0,**{'pass':0},skipped=1,suppressed=0)
+     if state=='restored':
+         finding.update(severity=case['severity'],status='fail',severity_origin='profile:core',message='torch is used but not pinned to an exact version (suggestion: torch==<version>)',evidence=[first],fix_hint='Pin torch exactly, e.g. `torch==<version>`.')
+@@ -49,11 +51,11 @@
+ def prepare():
+     files={}
+     for case in CASES:
+-        for state in ['malformed','restored','suppressed']:
++        for state in ['unexpanded','restored','suppressed']:
+             relative=f'synthetic-expected/{case["name"]}-{state}.json'
+             write(TOOLS/relative,expected(case,state))
+             files[relative]=digest((TOOLS/relative).read_bytes())
+-    write(TOOLS/'synthetic-plan.json',dict(schema_version=1,status='PREPARED_NOT_EXECUTED',cases=CASES,expected_files=files,method='Literal full AuditReport oracle written from accepted spec, independent fixture bytes and existing CLI contract before candidate execution. Only root generated_at and reprollm_version metadata exempted by compare_gold.',acceptance_ids=['A12','A19','A20','A28','A29','A30','A32'],export_assertions='Complete output retained; predeclared summary/notable absence only, not whole-document independent gold.',restored_exit=1,malformed_exit='1 only for independent-warning; otherwise 0',paid_api='NOT_CALLED'))
++    write(TOOLS/'synthetic-plan.json',dict(schema_version=1,status='PREPARED_NOT_EXECUTED',cases=CASES,expected_files=files,method='Literal full AuditReport oracle written from accepted spec, independent fixture bytes and existing CLI contract before candidate execution. Only root generated_at and reprollm_version metadata exempted by compare_gold.',acceptance_ids=['G02','G03','G04','G11','G12','G21','G25','G26','G27','G28'],export_assertions='Complete output retained; predeclared summary/notable absence only, not whole-document independent gold.',restored_exit=1,unexpanded_exit='1 only for independent-warning; otherwise 0',paid_api='NOT_CALLED'))
+ 
+ 
+ def main():
+@@ -70,26 +72,47 @@
+     try:
+         for case in CASES:
+             name=case['name']
+-            path=TOOLS/'synthetic-cases'/name
++            path=Path(read(TOOLS/'environment-private.json')['test_temp_root'])/'s-cases'/name
+             path.mkdir(parents=True,exist_ok=False)
+             (path/'.reprollm/profiles').mkdir(parents=True)
+-            profile=dict(schema_version=1,name='core',description='Isolated declaration structure policy validation.',rules=['env.llm_critical_deps_pinned']+(['env.python_version_declared'] if case['mixed'] else []),severity_overrides={'env.llm_critical_deps_pinned':case['severity']})
++            profile=dict(schema_version=1,name='core',description='Isolated requirements depth frontier policy validation.',rules=['env.llm_critical_deps_pinned']+(['env.python_version_declared'] if case['mixed'] else []),severity_overrides={'env.llm_critical_deps_pinned':case['severity']})
+             write(path/'.reprollm/profiles/core.yaml',profile)
+             (path/'reprollm.yaml').write_bytes(MANIFEST)
+-            (path/'requirements.txt').write_bytes(b'torch>=2\n')
+-            (path/case['path']).parent.mkdir(parents=True)
+-            (path/case['path']).write_bytes(case['body'].encode())
++            (path/'requirements.txt').write_bytes(b'torch>=2\n-r deps/0.txt\n')
++            (path/'deps').mkdir()
++            for index in range(9):
++                (path/f'deps/{index}.txt').write_bytes(f'-r {index+1}.txt\n'.encode())
++            (path/'deps/9.txt').write_bytes(b'')
++            for relative,body in case['hidden'].items():
++                (path/relative).parent.mkdir(parents=True,exist_ok=True)
++                (path/relative).write_bytes(body.encode())
+             runner.run(name+'-git-init',['git','init','--quiet'],path)
+             runner.run(name+'-git-add',['git','add','--all'],path)
+-            runner.run(name+'-git-commit',['git','-c','user.name=Validation','-c','user.email=validation@example.invalid','-c','commit.gpgsign=false','commit','--quiet','-m','test: fixed structural declaration inputs'],path)
++            runner.run(name+'-git-commit',['git','-c','user.name=Validation','-c','user.email=validation@example.invalid','-c','commit.gpgsign=false','commit','--quiet','-m','test: fixed requirements depth frontier inputs'],path)
++            command=['audit','.','--format','json','--fail-on',case['threshold']]
++            baseline,row=runner.cli(name+'-baseline',command,path,1)
++            assert not baseline.stderr
++            runner.compare(name+'-baseline-compare',TOOLS/f'synthetic-expected/{name}-restored.json',runner.output/row['stdout']['path'],audit=True)
++            checks.append(dict(case=name,state='baseline',status='PASS',expected_exit=1))
++            (path/'deps/9.txt').write_bytes(case['last'].encode())
+             fixed={p.relative_to(path).as_posix():digest(p.read_bytes()) for p in path.rglob('*') if p.is_file() and '.git' not in p.parts}
+-            command=['audit','.','--format','json','--fail-on',case['threshold']]
+-            malformed_exit=int(case['mixed'])
+-            for suffix in ['malformed','repeat']:
+-                result,row=runner.cli(name+'-'+suffix,command,path,malformed_exit)
++            unexpanded_exit=int(case['mixed'])
++            first_stdout=None
++            for suffix in ['unexpanded','repeat']:
++                result,row=runner.cli(name+'-'+suffix,command,path,unexpanded_exit)
+                 assert not result.stderr
+-                runner.compare(name+'-'+suffix+'-compare',TOOLS/f'synthetic-expected/{name}-malformed.json',runner.output/row['stdout']['path'],audit=True)
+-                checks.append(dict(case=name,state=suffix,status='PASS',expected_exit=malformed_exit))
++                normalized=re.sub(rb'("generated_at": ")[^"]+(")',rb'\1<TIMESTAMP>\2',result.stdout)
++                if first_stdout is None:
++                    first_stdout=normalized
++                else:
++                    assert normalized==first_stdout
++                runner.compare(name+'-'+suffix+'-compare',TOOLS/f'synthetic-expected/{name}-unexpanded.json',runner.output/row['stdout']['path'],audit=True)
++                checks.append(dict(case=name,state=suffix,status='PASS',expected_exit=unexpanded_exit))
++            verbose,row=runner.cli(name+'-verbose',['--verbose',*command],path,unexpanded_exit)
++            diagnostics=[*(f'deps/{index}.txt:1: include incomplete' for index in range(9)),*(f'deps/9.txt:{line}: include depth limit' for line in case['depth_lines']),'requirements.txt:2: include incomplete']
++            assert verbose.stderr.decode().replace('\r\n','\n')==''.join('scan: '+line+'\n' for line in sorted(diagnostics))
++            runner.compare(name+'-verbose-compare',TOOLS/f'synthetic-expected/{name}-unexpanded.json',runner.output/row['stdout']['path'],audit=True)
++            checks.append(dict(case=name,state='verbose-diagnostics',status='PASS',diagnostics=diagnostics))
+             if not case['mixed']:
+                 text,_=runner.cli(name+'-text',['audit','.','--no-color','--fail-on',case['threshold']],path)
+                 assert not text.stderr
+@@ -105,11 +128,11 @@
+                 checks.append(dict(case=name,state='text-export',status='PASS',export_sha256=digest(export.read_bytes()),scope='prewritten summary/notable assertions; full output retained'))
+             assert fixed=={p.relative_to(path).as_posix():digest(p.read_bytes()) for p in path.rglob('*') if p.is_file() and '.git' not in p.parts}
+             (path/'.reprollm/config.yaml').write_bytes(('schema_version: 1\naudit:\n  ignore:\n    - rule: env.llm_critical_deps_pinned\n      reason: '+REASON+'\n').encode())
+-            result,row=runner.cli(name+'-suppressed',command,path,malformed_exit)
++            result,row=runner.cli(name+'-suppressed',command,path,unexpanded_exit)
+             assert not result.stderr
+             runner.compare(name+'-suppressed-compare',TOOLS/f'synthetic-expected/{name}-suppressed.json',runner.output/row['stdout']['path'],audit=True)
+             (path/'.reprollm/config.yaml').unlink()
+-            (path/case['path']).write_bytes(case['restored'].encode())
++            (path/'deps/9.txt').write_bytes(b'')
+             restored,row=runner.cli(name+'-restored',command,path,1)
+             assert not restored.stderr
+             runner.compare(name+'-restored-compare',TOOLS/f'synthetic-expected/{name}-restored.json',runner.output/row['stdout']['path'],audit=True)

@@ -1,0 +1,11 @@
+--- <PRIOR_PRIVATE_WORKSPACE>\r07c-structure-pb-validation\gate.py
++++ <VALIDATION>\gate.py
+@@ -30,7 +30,7 @@
+ 
+ 
+ def clone_target(runner,target):
+-    clone=TOOLS/'c'/target['name']
++    clone=Path(read(TOOLS/'environment-private.json')['test_temp_root'])/'g'/target['name']
+     clone.parent.mkdir(exist_ok=True)
+     require(not clone.exists(),'Disposable clone already exists')
+     runner.run(target['name']+'-clone',['git','-c','core.longpaths=true','-c','core.autocrlf=false','-c','core.eol=lf','clone','--quiet','--no-hardlinks','--no-checkout',target['private_path'],clone])

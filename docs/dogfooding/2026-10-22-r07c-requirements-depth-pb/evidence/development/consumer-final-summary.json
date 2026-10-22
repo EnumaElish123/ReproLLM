@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "status": "CONSUMER_FOCUSED_ACCEPTANCE_PASS",
+  "attempts": [
+    {
+      "label": "consumer-red",
+      "passed": 21,
+      "failed": 31,
+      "skipped": 0,
+      "errors": 0,
+      "exit_code": 1,
+      "elapsed_seconds": 11.809549999999945,
+      "receipt_sha256": "bbe3dfa7785fd45ab9fce5e8270166dc1e26639fb2f69ebb5f9b051497ecf752",
+      "inputs_count": 6,
+      "all_recorded_inputs_unchanged": true
+    },
+    {
+      "label": "consumer-red-final",
+      "passed": 21,
+      "failed": 31,
+      "skipped": 0,
+      "errors": 0,
+      "exit_code": 1,
+      "elapsed_seconds": 11.572774400000526,
+      "receipt_sha256": "957cdc9b3acb4539c324a24536707dbc19c3737abffbc1bbd8298fe59f365b2c",
+      "inputs_count": 6,
+      "all_recorded_inputs_unchanged": true
+    },
+    {
+      "label": "consumer-green",
+      "passed": 446,
+      "failed": 8,
+      "skipped": 4,
+      "errors": 0,
+      "exit_code": 1,
+      "elapsed_seconds": 162.2115258999993,
+      "receipt_sha256": "919fddb606be5a7d279c97cf182797f39bc7285dded379acef963dafa532eeff",
+      "inputs_count": 6,
+      "all_recorded_inputs_unchanged": true
+    },
+    {
+      "label": "consumer-utf8-probe",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 5.9509638999988965,
+      "receipt_sha256": "bffe4fdb4870dc24bb2a22e5385ff16f4a3866a53d3c601e53993d18364f94c9",
+      "inputs_count": 135,
+      "all_recorded_inputs_unchanged": true
+    },
+    {
+      "label": "consumer-green-final",
+      "passed": 454,
+      "failed": 0,
+      "skipped": 4,
+      "errors": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 161.9955057999996,
+      "receipt_sha256": "856bd03579fc46cc8038dfc2c640c06f5f2aee12fcb703a1bc8394cef1b9f675",
+      "inputs_count": 142,
+      "all_recorded_inputs_unchanged": true
+    }
+  ],
+  "final_tests": {
+    "passed": 454,
+    "skipped": 4,
+    "new_tests_passed": 48,
+    "pytest_seconds": 161.48,
+    "wall_seconds": 161.9955057999996
+  },
+  "environment_correction": "First full affected run really failed eight existing export tests because default Windows GBK could not decode UTF-8 export text. Preserved every log/receipt. No product or test changes; PYTHONUTF8=1 child environment is the sole retry change. Exact eight failures passed before full same-scope retry.",
+  "input_inventory_note": "First RED/first GREEN recorded six directly changed/protected files. UTF8 probe/final GREEN records every src Python file, selected consumer tests, tests/conftest.py, pyproject.toml and AuditReport schema. No historical inventory is backfilled.",
+  "skips": [
+    {
+      "count": 2,
+      "reason": "symlinks unavailable: OSError",
+      "coverage_boundary": "non-admin Windows focused run; administrator preflight/final quality gate required"
+    },
+    {
+      "count": 2,
+      "reason": "POSIX filename includes colon/control character",
+      "coverage_boundary": "Windows unsupported; Linux CI required"
+    }
+  ],
+  "checks": {
+    "ruff_check": "PASS",
+    "ruff_format_check": "PASS",
+    "mypy_src_128_files": "PASS",
+    "independent_source_review": "NO_PRODUCT_ISSUE_FOUND",
+    "final_hashes_equal_current": true
+  },
+  "approval_matrix": {
+    "G14-G15": [
+      "test_positive_credit_wins_over_depth_and_other_uncertainty",
+      "test_exact_credit_removes_only_its_package_while_other_package_keeps_depth_skip"
+    ],
+    "G16": [
+      "test_associated_lock_failure_keeps_entire_finding_before_body_and_depth"
+    ],
+    "G17": [
+      "test_unverified_origin_keeps_entire_finding_before_body_and_depth"
+    ],
+    "G18": [
+      "test_body_syntax_structure_or_read_failure_keeps_entire_finding_before_depth"
+    ],
+    "G19": [
+      "test_unrelated_depth_frontier_affects_all_remaining_packages_and_sorts_target_evidence"
+    ],
+    "G20": [
+      "test_depth_frontier_does_not_invent_use_or_change_empty_result_python_veto",
+      "test_positive_credit_wins_over_depth_and_other_uncertainty",
+      "test_depth_gap_keeps_full_skip_independent_of_coverage_and_unread_target_contents"
+    ],
+    "G21": [
+      "test_depth_frontier_changes_only_missing_pin_outcome_and_restores_after_edge_removal",
+      "test_shallow_include_restores_current_evidence_without_stale_depth_state"
+    ],
+    "G25-G27": [
+      "test_depth_frontier_changes_only_missing_pin_outcome_and_restores_after_edge_removal"
+    ],
+    "G28": [
+      "test_depth_frontier_full_json_text_export_suppression_and_byte_determinism"
+    ],
+    "G29": [
+      "test_manual_legacy_positional_declarations_keep_the_existing_warning",
+      "test_depth_frontier_changes_only_missing_pin_outcome_and_restores_after_edge_removal"
+    ]
+  },
+  "source_review_sha256": "854be5cb86bfb379de38bedffe7ddee3f47ff91f5d0ea94c89b8c7c164709a6f",
+  "static_receipt_sha256": "64c15bbf618be336c62de7338a8381eeda556092444fa3cc798cef662e6d1962",
+  "red_summary_sha256": "2509ecd1b0c32649f75c6b684d83f77df75c90b4550755d90af7ca475a41577b",
+  "post_red_test_correction_sha256": "391681427de520147c8587cb04deccefc144d9e40f102a829a349a79d00d9ef0",
+  "frozen_modified_test_hashes": {
+    "tests/unit/cli/test_requirement_frontier_cli.py": "f5e04672842a847efe348bcc4f74328faa2c628c30c391c5a0a1fb56dc69369b",
+    "tests/unit/rules/test_env.py": "c62470cef6ca84b79f5463a23c24d672f49f6d62371b33d20c7ee5cbf7a5c1d5",
+    "tests/unit/rules/test_requirement_frontier_rule.py": "5d5b0e36a9d9fe5d7b6cefeafec8724e3ac086cf19e14857415ea11eb9c5a8a8"
+  },
+  "tools": {
+    "consumer-run.py": "06df487aa6b4d65d9045be2e285365f913f74b4b49d5e12b08d95e5a3d2d4700",
+    "consumer-green-run.py": "7ec7992292fa4754a80fe5bcf8fe6a470c7100040e58284f901e04aaef1ed131",
+    "consumer-utf8-run.py": "745bfb31408f445c6f92fc4ffd894205a0e147b1ec7d8dfff905ac8fd8202771"
+  },
+  "legacy_change": "One depth-only WARNING parameter replaced by new dedicated D-G assertions. Four other out-of-scope controls kept. No fixture, snapshot or gold edits. No source changes made by this agent."
+}

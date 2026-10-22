@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "COUNT_CLARIFICATION",
+  "created_utc": "2026-10-22T01:51:32.988926+00:00",
+  "new_dg_cases": 62,
+  "new_dg_red_failed": 62,
+  "new_dg_green_passed": 62,
+  "new_dg_skipped": 0,
+  "prior_control_passed": 322,
+  "prior_control_skipped": 1,
+  "total_collected": 385,
+  "clarification": "The single skip belongs to prior test_deps.py, not the new D-G test_requirements_depth_frontier.py. The new D-G file collects 62 cases, not 63. The old control modules contribute 322 passed and one skipped. The skipped outside-alias test already exists in the prior D-M-S product commit and was not added or edited in this D-G work.",
+  "prior_case_source": {
+    "path": "tests/unit/core/test_deps.py",
+    "line": 752,
+    "last_committed_change": "9bfa895a53478868c0e2cffa5978665f66556015",
+    "current_raw_sha256": "836b794258a32d672d45acb2aeb5bfd8a791a2a5f73db94198c02cfc25109bd7",
+    "committed_blob_sha256": "836b794258a32d672d45acb2aeb5bfd8a791a2a5f73db94198c02cfc25109bd7"
+  },
+  "evidence": [
+    {
+      "run": "core-red-final",
+      "xml_sha256": "2529b31ceb1d1241f6ddf5f46fff30dd3beba8208f18396f760a10f876e2de53",
+      "classes": {
+        "tests.unit.core.test_requirements_depth_frontier": {
+          "failed": 62
+        },
+        "tests.unit.core.test_deps": {
+          "passed": 186,
+          "skipped": 1
+        },
+        "tests.unit.core.test_declaration_structure": {
+          "passed": 136
+        }
+      },
+      "skips": [
+        {
+          "classname": "tests.unit.core.test_deps",
+          "name": "test_requirements_actual_child_body_read_failure_is_recorded_without_extra_reads[outside-alias]",
+          "reason": "symlinks unavailable: OSError"
+        }
+      ]
+    },
+    {
+      "run": "core-green",
+      "xml_sha256": "216563ba7989f032d7168caeeaf0c7fa348603b8f8fcf297db489b6c2c75a6f1",
+      "classes": {
+        "tests.unit.core.test_requirements_depth_frontier": {
+          "passed": 62
+        },
+        "tests.unit.core.test_deps": {
+          "passed": 186,
+          "skipped": 1
+        },
+        "tests.unit.core.test_declaration_structure": {
+          "passed": 136
+        }
+      },
+      "skips": [
+        {
+          "classname": "tests.unit.core.test_deps",
+          "name": "test_requirements_actual_child_body_read_failure_is_recorded_without_extra_reads[outside-alias]",
+          "reason": "symlinks unavailable: OSError"
+        }
+      ]
+    }
+  ],
+  "preservation": "Original test mapping, reviews, test sources and all RED/GREEN receipts remain unchanged. This sidecar makes the counted module ownership explicit."
+}

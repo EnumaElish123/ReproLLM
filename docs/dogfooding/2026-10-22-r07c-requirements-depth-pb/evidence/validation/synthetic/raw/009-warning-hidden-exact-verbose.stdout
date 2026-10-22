@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-22T02:18:57Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": []
+  },
+  "documents": {
+    "manifest": "sha256:408bd1e46fbefe246314fb93b394e20ff6dc7a2837e06e805c10c1237902627f",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 0,
+    "skipped": 1
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "skipped",
+      "level": 1,
+      "message": "torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=2",
+          "expected": null,
+          "note": "declared as >=2"
+        },
+        {
+          "kind": "file",
+          "path": "deps/10.txt",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "torch include target unexpanded at the depth limit"
+        }
+      ],
+      "fix_hint": "Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

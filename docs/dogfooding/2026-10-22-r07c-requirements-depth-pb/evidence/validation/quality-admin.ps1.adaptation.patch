@@ -1,0 +1,36 @@
+--- prior/quality-admin.ps1
++++ dg/quality-admin.ps1
+@@ -1,24 +1,22 @@
++param([ValidateSet('preflight','quality')][string]$Mode = 'preflight')
+ $ErrorActionPreference = 'Stop'
+-$taskDir = '<PRIOR_PRIVATE_WORKSPACE>\r07c-structure-pb-validation'
++$taskDir = '<VALIDATION>'
+ Set-Location -LiteralPath '<REPOSITORY>'
+ $env:PATH = "<REPOSITORY>\.venv\Scripts;<GIT_INSTALLATION>\bin;<GIT_INSTALLATION>\usr\bin;$env:PATH"
+ $testRoot = (Get-Content -LiteralPath "$taskDir\environment-private.json" -Raw | ConvertFrom-Json).test_temp_root
+ $env:TEMP = Join-Path $testRoot 't'
+ $env:TMP = $env:TEMP
+-$env:UV_CACHE_DIR = "$taskDir\uv-cache"
++$env:UV_CACHE_DIR = Join-Path $testRoot 'uv-cache'
+ $env:PYTHONUTF8 = '1'
+ $env:PYTHONIOENCODING = 'utf-8'
+ New-Item -ItemType Directory -Path $env:TEMP -Force | Out-Null
+ $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+-if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+-    [IO.File]::WriteAllText("$taskDir\quality-admin-exit.txt", 'ADMIN_REQUIRED')
+-    throw 'Administrator test token required for existing symlink safety tests'
+-}
+-& '.venv\Scripts\python.exe' -X utf8 -m pytest -q tests/unit/cli/test_rule_lifecycle.py::test_archive_symlink_refused_without_reading_target tests/unit/cli/test_rule_lifecycle.py::test_archive_file_symlink_is_rejected_before_read tests/unit/cli/test_rule_lifecycle.py::test_rule_source_symlink_is_rejected_before_archival --basetemp (Join-Path $testRoot 'pre') *> "$taskDir\preflight-admin-symlinks.log"
+-if ($LASTEXITCODE -ne 0) {
+-    [IO.File]::WriteAllText("$taskDir\quality-admin-exit.txt", "PREFLIGHT:$LASTEXITCODE")
+-    exit $LASTEXITCODE
+-}
++if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'Administrator test token required for existing symlink safety tests' }
++$probeLabel = if ($Mode -eq 'quality') { 'preflight-final' } else { 'preflight-admin' }
++& '.venv\Scripts\python.exe' -X utf8 "$taskDir\preflight-admin.py" $probeLabel *> "$taskDir\$probeLabel-launch.log"
++$probeExit = $LASTEXITCODE
++[IO.File]::WriteAllText("$taskDir\$probeLabel-exit.txt", [string]$probeExit)
++if ($probeExit -ne 0 -or $Mode -eq 'preflight') { exit $probeExit }
+ & '.venv\Scripts\python.exe' -X utf8 "$taskDir\quality.py" *> "$taskDir\quality-admin.log"
+ [IO.File]::WriteAllText("$taskDir\quality-admin-exit.txt", [string]$LASTEXITCODE)
+ exit $LASTEXITCODE

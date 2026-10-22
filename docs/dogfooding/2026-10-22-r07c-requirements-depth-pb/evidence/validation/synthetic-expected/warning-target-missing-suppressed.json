@@ -1,0 +1,71 @@
+{
+  "documents": {
+    "lock": null,
+    "manifest": "sha256:408bd1e46fbefe246314fb93b394e20ff6dc7a2837e06e805c10c1237902627f",
+    "runs": 0
+  },
+  "findings": [
+    {
+      "aliases": [],
+      "category": "env",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": 1,
+          "note": "declared as >=2",
+          "path": "requirements.txt",
+          "value": ">=2"
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "file",
+          "line": null,
+          "note": "torch include target unexpanded at the depth limit",
+          "path": "deps/10.txt",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": "audit.ignore",
+          "kind": "field",
+          "line": null,
+          "note": "suppressed: original severity INFO; reason: Reviewed requirements depth frontier uncertainty.",
+          "path": ".reprollm/config.yaml",
+          "value": null
+        }
+      ],
+      "fix_hint": "Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.",
+      "level": 1,
+      "message": "torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established",
+      "profile_origin": [],
+      "rule_id": "env.llm_critical_deps_pinned",
+      "severity": "INFO",
+      "severity_origin": "default",
+      "status": "suppressed",
+      "suppressed_reason": "Reviewed requirements depth frontier uncertainty."
+    }
+  ],
+  "generated_at": "2026-10-22T00:00:00Z",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "detected": [],
+    "resolved": [
+      "core"
+    ]
+  },
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "summary": {
+    "critical": 0,
+    "info": 0,
+    "pass": 0,
+    "skipped": 0,
+    "suppressed": 1,
+    "warning": 0
+  },
+  "target": "."
+}
