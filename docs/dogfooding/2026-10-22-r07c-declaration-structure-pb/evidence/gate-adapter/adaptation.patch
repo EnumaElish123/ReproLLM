@@ -1,0 +1,19 @@
+--- frozen-private/gate.py
++++ short-clone-private/gate.py
+@@ -1,4 +1,7 @@
+ from __future__ import annotations
++
++import sys
++sys.path.insert(0, r'<VALIDATION>')
+ 
+ import json
+ from pathlib import Path
+@@ -30,7 +33,7 @@
+ 
+ 
+ def clone_target(runner,target):
+-    clone=TOOLS/'c'/target['name']
++    clone=Path(read(TOOLS/'environment-private.json')['test_temp_root'])/'g'/target['name']
+     clone.parent.mkdir(exist_ok=True)
+     require(not clone.exists(),'Disposable clone already exists')
+     runner.run(target['name']+'-clone',['git','-c','core.longpaths=true','-c','core.autocrlf=false','-c','core.eol=lf','clone','--quiet','--no-hardlinks','--no-checkout',target['private_path'],clone])

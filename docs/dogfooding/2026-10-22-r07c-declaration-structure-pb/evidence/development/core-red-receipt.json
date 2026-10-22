@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "stage": "RED",
+  "status": "EXPECTED_FAIL",
+  "baseline_commit": "bd80e78fdad1b80d150375cfea2fe68a6a2e1565",
+  "argv": [
+    "{python}",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/core/test_declaration_structure.py",
+    "tests/unit/core/test_deps.py",
+    "--basetemp={private}/core-red-isolated-tmp",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "pytest_summary": {
+    "failed": 106,
+    "passed": 216,
+    "skipped": 1,
+    "duration_seconds": 6.49
+  },
+  "outer_command_wall_seconds": 7.4261752,
+  "output": {
+    "path": "core-red-isolated.txt",
+    "sha256": "95c9558f63cffd9bd24e50229dcc173e128dcc8c044c3fab226462ef3b37513c",
+    "completed_file_mtime_utc": "2026-10-21T23:41:52.769227+00:00"
+  },
+  "source": {
+    "path": "src/reprollm/core/deps.py",
+    "sha256": "dace7486136f14a4ae6a912838de716b259a329d505865d9a764d0a3dc301e1f",
+    "identity": "unchanged baseline Git blob during RED"
+  },
+  "tests_sha256": {
+    "tests/unit/core/test_declaration_structure.py": "ad9860698c7167925d3f6675fef537374a8062c35aaaa2d1aad46c33aaee26bb",
+    "tests/unit/core/test_deps.py": "836b794258a32d672d45acb2aeb5bfd8a791a2a5f73db94198c02cfc25109bd7"
+  },
+  "failure_review": {
+    "total": 106,
+    "new_module_missing_structure_issue": 98,
+    "old_matrix_approved_issue_updates": 8,
+    "all_errors": "empty issue dictionary versus expected invalid_structure; no other assertion failures",
+    "new_module_legacy_preservation_assertions": "run before added issue assertion except recovery test"
+  },
+  "earlier_attempt": {
+    "path": "core-red.txt",
+    "sha256": "47a56766a83e4fdd5e61a5b9229665d22e0907aeb861180ddc57b5195bbc8be9",
+    "status": "INVALID_ENVIRONMENT",
+    "reason": "basetemp inside ignored checkout directory let legacy inspect_git inherit parent repository, yielding empty file inventories; corrected by moving outside repository",
+    "summary": {
+      "failed": 231,
+      "passed": 91,
+      "skipped": 1,
+      "duration_seconds": 32.75
+    }
+  }
+}

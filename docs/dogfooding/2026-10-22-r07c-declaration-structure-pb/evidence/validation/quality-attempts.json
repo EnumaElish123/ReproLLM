@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "id": 1,
+      "status": "FAIL",
+      "source_directory": "quality",
+      "relocated_directory": "quality-attempt-1",
+      "original_artifact_hashes": {
+        "summary.json": "2d36dab2b28d1047e80296ac2424954f414b4d177948f799479aaa9ef335642f",
+        "commands.json": "d865cd47ffbb4b1fe459017d63525fe2e791672fee7aaf7dfb79b02a3ece6a90",
+        "inputs.json": "4637794327998a31bcf8fb657bd2d005ee339e0c6b99b596f1d53225b58a814e",
+        "pytest-report.xml": "393a0e4aafed78736e64c8da86ee4d87f27f7ac346690ac303c3ede9b54fb3ce",
+        "coverage.json": "44d0f60ed3940607ab4617dd45f74a17ffffa4752dd817c48c957673ee818f01",
+        "coverage.xml": "3ee47ed965c45b6d761eb1eab658d5c5c9294c0e88dc21c2802eaf36e1724d3a"
+      },
+      "frozen_original_helpers": "quality-attempt-1/input-tools",
+      "observed": "51 failed, 3647 passed, 4 skipped, 4 deselected. Long temporary path is a hypothesis until minimal short-path reproduction.",
+      "product_inputs_changed": false
+    }
+  ],
+  "next": "Run exact 51 failed nodes in a short temporary root before retrying full quality.",
+  "repair_probe": {
+    "status": "PASS",
+    "exact_failed_nodes": 51,
+    "passed": 51,
+    "failed": 0,
+    "summary_sha256": "58238c19fa42d436778e4e583b466c0e4509de1282c802e07aff46f51ef74d13",
+    "junit_sha256": "dfbd506e24657419ebe5898bc8d825400c4ef135fc9989696ab56660177d797d",
+    "source_inputs_unchanged": true,
+    "conclusion": "All 51 failures pass unchanged after shortening only process-local temporary paths; environment preparation caused the first failed quality attempt.",
+    "full_quality_retry": "PASS"
+  },
+  "final_quality": {
+    "status": "PASS",
+    "source_commit": "9bfa895a53478868c0e2cffa5978665f66556015",
+    "summary_sha256": "9bfb11a8e37ed5092693e7ef6e8e4c7ff66d45feb96f90b2ed52a53b171812e4",
+    "passed": 3698,
+    "skipped": 4,
+    "deselected": 4,
+    "wall_seconds": 597.979956,
+    "required_cli_version_supplement": "quality-supplement/summary.json"
+  }
+}

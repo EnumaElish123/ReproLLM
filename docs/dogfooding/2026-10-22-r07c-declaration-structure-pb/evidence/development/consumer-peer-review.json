@@ -1,0 +1,87 @@
+{
+  "acceptance_mapping": {
+    "A01-A21": "core raw-shape, partial-inventory, diagnostics, barrier, read-trace and exclusion tests",
+    "A22-A23": "positive-credit variants and partial-exact consumer tests",
+    "A24": "D-F/D-S and D-L precedence cases with literal whole expected findings",
+    "A25-A26": "merged sorted mixed causes and independent remaining package use",
+    "A27": "no-use, all-credit and four Python-coverage states",
+    "A28": "restoration/removal rescans without stale failures",
+    "A29": "24 additional CLI variants; full finding and summary oracle; separate whole-report affected oracle required",
+    "A30": "JSON schema, visibility, export, suppression and source immutability",
+    "A31": "conflicting exact credit; retained requirements and individual-value exclusions",
+    "A32": "repeated full JSON, existing schema reader/default compatibility; history preservation separately hash-checked"
+  },
+  "decision": "User accepted R07-C D-M-S option A and the concrete specification patch",
+  "green": {
+    "modules": [
+      "tests/unit/rules/test_env.py",
+      "tests/unit/rules/test_dependency_lock_scope.py",
+      "tests/unit/cli/test_audit.py",
+      "tests/unit/cli/test_scan_diagnostics.py",
+      "tests/unit/cli/test_export.py",
+      "tests/unit/cli/test_export_privacy_boundary.py",
+      "tests/unit/cli/test_export_research_details.py",
+      "tests/unit/cli/test_export_templates.py"
+    ],
+    "process_wall_seconds": 146.02430490000006,
+    "pytest_seconds": 145.53,
+    "result": "401 passed, 4 skipped",
+    "skip_notes": "Two existing lock-scope symlink capability skips; two explicit Windows POSIX-filename skips in scan diagnostics. No D-M-S test skipped."
+  },
+  "input_hashes": {
+    "src/reprollm/core/deps.py": "be81aa1f52ff253abbf460667c444d5a53be63d24ae531f999b5cf7f6724b8eb",
+    "src/reprollm/rules/env.py": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05",
+    "tests/unit/cli/test_audit.py": "bd3407bf8b6b95eada0e11e95ef4ea933a107d3b69c775c34221d73dbae21684",
+    "tests/unit/rules/test_dependency_lock_scope.py": "52c7a300f78cfafac24215a557e4cb6562cab564277763a0dea9d83cfcb04a3f",
+    "tests/unit/rules/test_env.py": "e34ec5653e612654a1ded6c9cdc8e117b4ecba75f19e5afd5e22132db332ad3d"
+  },
+  "inputs_unchanged_during_green_and_at_review": true,
+  "legacy_expected_changes": {
+    "former_wrong_shape_out_of_scope_control": "removed and replaced by explicit structural-policy cases",
+    "retained_assertions": "No inferred ancestor/import lock credit; explicit declaration credit remains",
+    "scope_cases_changed_to_skipped": [
+      "uncertain_manifest/project-type",
+      "uncertain_manifest/poetry-type",
+      "uncertain_manifest/tool-type",
+      "uncertain_manifest/packages-type",
+      "uncertain_manifest/dependencies-type",
+      "uncertain_tool_container/import"
+    ]
+  },
+  "raw_log_hashes": {
+    "consumer-green-selection-error.txt": "da44268cdca23758f06226ea65e122577fdc2182f19288d92f8029a3f0981d35",
+    "consumer-green.txt": "8bcab924e61f306b37953be31a6bf457e108db37167638cb3b3c3865a178ad5e",
+    "consumer-legacy-red-parent-git.txt": "9ef7b9e06b8a04e9b8fe57d884a2e1fc4d3debcb045601b166957c61b73660cb",
+    "consumer-legacy-red.txt": "ca9dd95df10477ec0199d0b7c1fde49efa09f73947f96d23ed36bbd46532a060",
+    "consumer-red-environment.txt": "f6564102643f49c7714cdea7f5f65f3614a194a931b50253ed71bda90a7ec80e",
+    "consumer-red.txt": "4113557051cfed66936e17ba4236b2e17e0a81be0ab4f3d982e52da4b4e85f77"
+  },
+  "red": [
+    {
+      "log": "consumer-red.txt",
+      "pytest_seconds": 22.43,
+      "result": "45 failed, 10 passed, 190 deselected"
+    },
+    {
+      "log": "consumer-legacy-red.txt",
+      "pytest_seconds": 0.7,
+      "result": "6 failed, 4 passed, 50 deselected"
+    }
+  ],
+  "remaining_gate_status": "Final complete quality, fresh five-project Gate A, affected whole-report validation and final-head CI remain root session gates",
+  "retained_nonsemantic_attempts": {
+    "consumer-green-selection-error.txt": "wrong export module path; zero tests collected",
+    "consumer-legacy-red-parent-git.txt": "temporary fixtures inside ignored parent checkout; 10 harness failures",
+    "consumer-red-environment.txt": "default sandbox TEMP unavailable; 55 setup errors"
+  },
+  "review_markdown_sha256": "ecb65cb85813dfedb9ffcc993e448ba1a76fdf07bb76c4d7b219c8f03f0d7b14",
+  "schema_version": 1,
+  "scope": "independent accepted-policy source and consumer regression review; not final session acceptance",
+  "spec_patch_sha256": "c1459c7e72094c4081499b501ad51895e7d075f23047645aa5037c841e1ca33c",
+  "status": "PASS",
+  "unchanged_protected_sources": {
+    "src/reprollm/core/engine.py": "27776bf0955c58005a5c48d7f12ed469c09bf4722027efeeaef7c8cacbdd8500",
+    "src/reprollm/core/redaction.py": "cd3c2cbfbb3f94d75cec04417693d6be6bcf4887ce1e275f4a6d2196a3fda74f",
+    "src/reprollm/rules/env.py": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05"
+  }
+}

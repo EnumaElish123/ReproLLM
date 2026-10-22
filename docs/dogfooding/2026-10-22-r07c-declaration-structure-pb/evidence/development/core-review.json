@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "reviewed_at_utc": "2026-10-21T23:46:09.765566+00:00",
+  "reviewer": "core-regressions agent; source review separate from implementation author",
+  "scope": "core implementation and accepted finite-table specification; not full session acceptance",
+  "files_sha256": {
+    "src/reprollm/core/deps.py": "be81aa1f52ff253abbf460667c444d5a53be63d24ae531f999b5cf7f6724b8eb",
+    "docs/plan/01_specification.md": "1a591dcfd01a9140a7e1eab330519bac0e8545ff5f268b9fa3c9d3118367ed29",
+    "tests/unit/core/test_declaration_structure.py": "ad9860698c7167925d3f6675fef537374a8062c35aaaa2d1aad46c33aaee26bb",
+    "tests/unit/core/test_deps.py": "836b794258a32d672d45acb2aeb5bfd8a791a2a5f73db94198c02cfc25109bd7",
+    "docs/plan/reliability-2026-10-03/proposals/R07-C/declaration-structure/spec-proposed.patch": "c1459c7e72094c4081499b501ad51895e7d075f23047645aa5037c841e1ca33c"
+  },
+  "findings": [],
+  "checks": [
+    "Three existing parser hooks run only after successful body decoding; unreadable/invalid_syntax original returns remain",
+    "Raw presence defaults use get(key, typed empty), never falsey-or coercion in added predicates",
+    "Child positions are visited only after parent type check; no arbitrary recursive validation",
+    "Pyproject project/tool/poetry qualification does not suppress the new file issue",
+    "Environment None exception is limited to document root; dependencies/pip None fail",
+    "Pipfile package values, Poetry values, unknown installer keys, PEP508 strings, requirements graph remain excluded",
+    "Added logic writes only issue map; original declarations, barriers, qualification, lock association and diagnostics stay intact",
+    "No new read, candidate, network, dependency, package version or persisted field",
+    "Only source diff is core/deps.py; existing rules/env.py consumption and branch priority remain",
+    "Approved spec-proposed.patch reverse apply check succeeds"
+  ],
+  "focused_evidence": [
+    "core-red-receipt.json",
+    "core-green-receipt.json"
+  ],
+  "new_module_collected": 136,
+  "remaining_development_assessment": {
+    "approved_unfinished_product_task_after_dms": "none found in current execution package",
+    "next_local_policy_preparation": "R07-C P-A for bounded requirements line/include graph uncertainty, exact scope and concrete patch still need preparation and specific acceptance before P-B",
+    "approval_contract": [
+      "docs/plan/reliability-2026-10-03/05_Policy_and_Compatibility.md:7",
+      "docs/plan/reliability-2026-10-03/00_Execution_Guide.md:184"
+    ],
+    "historical_checklists_are_not_open_tasks": [
+      "docs/plan/reliability-2026-10-03/01_Persistence_and_State.md:3",
+      "docs/plan/reliability-2026-10-03/02_Dependency_Accuracy.md:3",
+      "docs/plan/reliability-2026-10-03/03_Scan_and_Runtime_Evidence.md:3",
+      "docs/plan/reliability-2026-10-03/04_Recipe_and_Release.md:3"
+    ],
+    "other_work": {
+      "A01": "No new approved local product fix; source/input recovery and resource replay candidate-bound, five original metadata manifests and HF gated access remain external blockers",
+      "A02": "Materials READY_FOR_REVIEW; independent trials and feedback remain PENDING, not agent-code work",
+      "A03": "Can refresh dated sourced facts and verify current public form/length; maintainer identity/contact/eligibility and actual submission remain distinct; old dated fact sheet must not be relabelled",
+      "yaml_physical_source_index": "Explicit UNASSIGNED backlog in 02_Dependency_Accuracy.md:240; not silently part of this approved D-M-S slice"
+    }
+  }
+}

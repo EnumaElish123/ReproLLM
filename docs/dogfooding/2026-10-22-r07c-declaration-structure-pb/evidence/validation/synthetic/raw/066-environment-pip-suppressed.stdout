@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-22T00:25:17Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": []
+  },
+  "documents": {
+    "manifest": "sha256:54ba3576b90826860a0f8cffdc607a96ac9eb1f2e1553c4d8be147419e2f34cc",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 1,
+    "skipped": 0
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "INFO",
+      "status": "suppressed",
+      "level": 1,
+      "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=2",
+          "expected": null,
+          "note": "declared as >=2"
+        },
+        {
+          "kind": "file",
+          "path": "unrelated/environment.yml",
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "torch possible exact declaration unverified"
+        },
+        {
+          "kind": "field",
+          "path": ".reprollm/config.yaml",
+          "field": "audit.ignore",
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "suppressed: original severity INFO; reason: Reviewed declaration structure uncertainty."
+        }
+      ],
+      "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": "Reviewed declaration structure uncertainty."
+    }
+  ]
+}
+

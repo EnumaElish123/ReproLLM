@@ -1,0 +1,116 @@
+{
+  "attempts": [
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/unit/rules/test_env.py",
+        "tests/unit/cli/test_audit.py",
+        "-q",
+        "-k",
+        "structure or declaration_body_skip",
+        "--tb=short"
+      ],
+      "exit_code": 1,
+      "log": "consumer-red-environment.txt",
+      "log_sha256": "f6564102643f49c7714cdea7f5f65f3614a194a931b50253ed71bda90a7ec80e",
+      "process_wall_seconds": null,
+      "pytest_reported_elapsed_seconds": 9.5,
+      "result": "55 errors, 190 deselected",
+      "status": "ENVIRONMENT_SETUP_FAILED",
+      "test_sources": {
+        "tests/unit/cli/test_audit.py": "bd3407bf8b6b95eada0e11e95ef4ea933a107d3b69c775c34221d73dbae21684",
+        "tests/unit/rules/test_env.py": "e34ec5653e612654a1ded6c9cdc8e117b4ecba75f19e5afd5e22132db332ad3d"
+      }
+    },
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/unit/rules/test_env.py",
+        "tests/unit/cli/test_audit.py",
+        "-q",
+        "-k",
+        "structure or declaration_body_skip",
+        "--tb=short",
+        "--basetemp=.pytest_cache/consumer-red-20261022"
+      ],
+      "exit_code": 1,
+      "log": "consumer-red.txt",
+      "log_sha256": "4113557051cfed66936e17ba4236b2e17e0a81be0ab4f3d982e52da4b4e85f77",
+      "process_wall_seconds": null,
+      "pytest_reported_elapsed_seconds": 22.43,
+      "result": "45 failed, 10 passed, 190 deselected",
+      "status": "EXPECTED_RED",
+      "test_sources": {
+        "tests/unit/cli/test_audit.py": "bd3407bf8b6b95eada0e11e95ef4ea933a107d3b69c775c34221d73dbae21684",
+        "tests/unit/rules/test_env.py": "e34ec5653e612654a1ded6c9cdc8e117b4ecba75f19e5afd5e22132db332ad3d"
+      }
+    },
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/unit/rules/test_dependency_lock_scope.py",
+        "-q",
+        "-k",
+        "uncertain_manifest_blocks or uncertain_tool_container",
+        "--tb=short",
+        "--basetemp=.pytest_cache/consumer-legacy-red-20261022"
+      ],
+      "exit_code": 1,
+      "log": "consumer-legacy-red-parent-git.txt",
+      "log_sha256": "9ef7b9e06b8a04e9b8fe57d884a2e1fc4d3debcb045601b166957c61b73660cb",
+      "process_wall_seconds": null,
+      "pytest_reported_elapsed_seconds": 2.63,
+      "result": "10 failed, 50 deselected",
+      "status": "HARNESS_PARENT_GIT_CONTEXT_FAILED",
+      "test_sources": {
+        "tests/unit/rules/test_dependency_lock_scope.py": "52c7a300f78cfafac24215a557e4cb6562cab564277763a0dea9d83cfcb04a3f"
+      }
+    },
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "tests/unit/rules/test_dependency_lock_scope.py",
+        "-q",
+        "-k",
+        "uncertain_manifest_blocks or uncertain_tool_container",
+        "--tb=short",
+        "--basetemp=<PRIVATE_WORKSPACE>\\tc1"
+      ],
+      "exit_code": 1,
+      "log": "consumer-legacy-red.txt",
+      "log_sha256": "ca9dd95df10477ec0199d0b7c1fde49efa09f73947f96d23ed36bbd46532a060",
+      "process_wall_seconds": null,
+      "pytest_reported_elapsed_seconds": 0.7,
+      "result": "6 failed, 4 passed, 50 deselected",
+      "status": "EXPECTED_RED",
+      "test_sources": {
+        "tests/unit/rules/test_dependency_lock_scope.py": "52c7a300f78cfafac24215a557e4cb6562cab564277763a0dea9d83cfcb04a3f"
+      }
+    }
+  ],
+  "baseline": "bd80e78fdad1b80d150375cfea2fe68a6a2e1565",
+  "recorded_after_execution": true,
+  "schema_version": 1,
+  "source_at_red": {
+    "src/reprollm/core/deps.py": "dace7486136f14a4ae6a912838de716b259a329d505865d9a764d0a3dc301e1f",
+    "src/reprollm/rules/env.py": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05"
+  },
+  "source_identity_note": "git diff -- src/reprollm/core/deps.py was empty during RED; no source edits before final RED notification.",
+  "timing_note": "Original commands did not record process wall; only original pytest summary timings retained."
+}

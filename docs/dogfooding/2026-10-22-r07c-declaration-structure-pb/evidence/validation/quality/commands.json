@@ -1,0 +1,563 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "<UV_EXECUTABLE>",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.026442,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "locked-sync",
+      "stderr": {
+        "bytes": 55,
+        "path": "raw/000-locked-sync.stderr",
+        "sha256": "4810b8a423111e587fec8c6973359b972b34171525336f20f8ea905e4b7bcb33"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/000-locked-sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\environment.py"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.32374,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "environment",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-environment.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 708,
+        "path": "raw/001-environment.stdout",
+        "sha256": "2e0ea92a19af93c9e9527d898377d184c674e2916b2369bad7568f645519137b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 6.929961,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "quickstart",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-quickstart.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18,
+        "path": "raw/002-quickstart.stdout",
+        "sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<VALIDATION>\\quality/coverage.xml",
+        "--cov-report=json:<VALIDATION>\\quality/coverage.json",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<VALIDATION>\\quality\\pytest-report.xml",
+        "--basetemp",
+        "<SHORT_TEST_TEMP>\\p"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 506.872855,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "pytest",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 15522,
+        "path": "raw/003-pytest.stdout",
+        "sha256": "c1aaa18fc732a1e08b5e261adb7d9d13faca3d2fbfffdf51e8d451c03771d999"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-m",
+        "coverage",
+        "report",
+        "--fail-under=100",
+        "--include=src/reprollm/core/redaction.py"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.150795,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "redaction",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/004-redaction.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 340,
+        "path": "raw/004-redaction.stdout",
+        "sha256": "0cf6dc67c4313ba0349d797e3525bc678fcea6f679edd018cf11f707202729fc"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "-m",
+        "security",
+        "--basetemp",
+        "<SHORT_TEST_TEMP>\\s"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 16.519629,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "security",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/005-security.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 455,
+        "path": "raw/005-security.stdout",
+        "sha256": "04d545c8319e1a03319cff748c6a1eabc21ecf71d2929a14f4651315732221d9"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.080077,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "ruff",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/006-ruff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 19,
+        "path": "raw/006-ruff.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.14152,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "format",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/007-format.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 28,
+        "path": "raw/007-format.stdout",
+        "sha256": "aa873dcabb5a100014f2be3900d65c86721e35ba3938234c60bf973a76f4bc14"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "src/"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.740018,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mypy",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/008-mypy.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 46,
+        "path": "raw/008-mypy.stdout",
+        "sha256": "0fd28b277f6e98e8effe0f968e9e5806e258d7effddfe7c7bc46acdf973ad56b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "scripts/gen_rules_doc.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.298768,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "rules-doc",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/009-rules-doc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/009-rules-doc.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "scripts/gen_profiles_doc.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.29581,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "profiles-doc",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/010-profiles-doc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/010-profiles-doc.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "scripts/gen_cli_doc.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 8.327774,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "cli-doc",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/011-cli-doc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 19,
+        "path": "raw/011-cli-doc.stdout",
+        "sha256": "e9414be199fd2ac9f0bef9b1a6afbd8c16f42f9fd3d1a355b918ef202bbc33ae"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "schema",
+        "export",
+        "--out",
+        "<VALIDATION>\\quality\\schemas"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.398306,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "schema",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/012-schema.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 156,
+        "path": "raw/012-schema.stdout",
+        "sha256": "c0d600b24c210a2b357ed8d79c4b2ffe58188003c5d2a61f30057dd45647ab97"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        "<REPOSITORY>\\examples\\hf_vllm_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.69668,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-hf_vllm_eval-audit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/013-example-hf_vllm_eval-audit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 26582,
+        "path": "raw/013-example-hf_vllm_eval-audit.stdout",
+        "sha256": "06d075596732dcbc90386ce249de7e86b30d248007a2c5f98d55448139f0a949"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "lock",
+        "--check",
+        "<REPOSITORY>\\examples\\hf_vllm_eval"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.365124,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-hf_vllm_eval-lock",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/014-example-hf_vllm_eval-lock.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29,
+        "path": "raw/014-example-hf_vllm_eval-lock.stdout",
+        "sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        "<REPOSITORY>\\examples\\lm_eval_replay",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.69707,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-lm_eval_replay-audit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/015-example-lm_eval_replay-audit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 26521,
+        "path": "raw/015-example-lm_eval_replay-audit.stdout",
+        "sha256": "3fd92426230333f86ebf1d57b4ce645d5b518f296114a239a311fa6689e3ae1a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        "<REPOSITORY>\\examples\\openai_judge_eval",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.638976,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-openai_judge_eval-audit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/016-example-openai_judge_eval-audit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29493,
+        "path": "raw/016-example-openai_judge_eval-audit.stdout",
+        "sha256": "5dbcbdd0fe73d759b7d4ca7ac425e064a93eb1ff3ee0ecb79ced26dcdf0ca512"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "lock",
+        "--check",
+        "<REPOSITORY>\\examples\\openai_judge_eval"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.361108,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-openai_judge_eval-lock",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/017-example-openai_judge_eval-lock.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29,
+        "path": "raw/017-example-openai_judge_eval-lock.stdout",
+        "sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        "<REPOSITORY>\\examples\\privacy_custom_params",
+        "--level",
+        "1",
+        "--fail-on",
+        "never",
+        "--format",
+        "json"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.65098,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-privacy_custom_params-audit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/018-example-privacy_custom_params-audit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29738,
+        "path": "raw/018-example-privacy_custom_params-audit.stdout",
+        "sha256": "ba26f9ac00ebd2e237496b8bc0b4e0e80393c73837c8ef005af4806844495562"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "lock",
+        "--check",
+        "<REPOSITORY>\\examples\\privacy_custom_params"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.365217,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "example-privacy_custom_params-lock",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/019-example-privacy_custom_params-lock.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29,
+        "path": "raw/019-example-privacy_custom_params-lock.stdout",
+        "sha256": "7669dacf99292a9d2bb43e3715ca23fbc60f9482b405e7401bc0b7888d2b1487"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "github",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 52.883952,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "self-audit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/020-self-audit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 905,
+        "path": "raw/020-self-audit.stdout",
+        "sha256": "25f71dbaa95b0aa41a63b0953266ca0d018933e51c1ceac72276f0f2ebba56a2"
+      }
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,113 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "<UV_EXECUTABLE>",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.030783,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "locked-sync",
+      "stderr": {
+        "bytes": 55,
+        "path": "raw/000-locked-sync.stderr",
+        "sha256": "4810b8a423111e587fec8c6973359b972b34171525336f20f8ea905e4b7bcb33"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/000-locked-sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\environment.py"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.343911,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "environment",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-environment.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 708,
+        "path": "raw/001-environment.stdout",
+        "sha256": "2e0ea92a19af93c9e9527d898377d184c674e2916b2369bad7568f645519137b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 7.317668,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "quickstart",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-quickstart.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18,
+        "path": "raw/002-quickstart.stdout",
+        "sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "--cov=reprollm",
+        "--cov-report=term",
+        "--cov-report=xml:<VALIDATION>\\quality/coverage.xml",
+        "--cov-report=json:<VALIDATION>\\quality/coverage.json",
+        "--cov-fail-under=85",
+        "-m",
+        "not slow and not linux_only",
+        "--junit-xml",
+        "<VALIDATION>\\quality\\pytest-report.xml",
+        "--basetemp",
+        "<VALIDATION>\\quality\\pytest-temp"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 507.877347,
+      "exit_code": 1,
+      "expected_exit": 0,
+      "label": "pytest",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 62978,
+        "path": "raw/003-pytest.stdout",
+        "sha256": "dc46c69ffbd998ab1b37d4581769ee5741b22a298326fd997e9e10840feac890"
+      }
+    }
+  ],
+  "schema_version": 1
+}

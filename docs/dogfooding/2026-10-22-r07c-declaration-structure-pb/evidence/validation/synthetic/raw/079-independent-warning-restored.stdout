@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "generated_at": "2026-10-22T00:25:21Z",
+  "target": ".",
+  "level": 1,
+  "profiles": {
+    "declared": [],
+    "resolved": [
+      "core"
+    ],
+    "detected": []
+  },
+  "documents": {
+    "manifest": "sha256:54ba3576b90826860a0f8cffdc607a96ac9eb1f2e1553c4d8be147419e2f34cc",
+    "lock": null,
+    "runs": 0
+  },
+  "summary": {
+    "critical": 0,
+    "warning": 2,
+    "info": 0,
+    "pass": 0,
+    "suppressed": 0,
+    "skipped": 0
+  },
+  "findings": [
+    {
+      "rule_id": "env.llm_critical_deps_pinned",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 1,
+      "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": "requirements.txt",
+          "field": null,
+          "line": 1,
+          "value": ">=2",
+          "expected": null,
+          "note": "declared as >=2"
+        }
+      ],
+      "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+      "profile_origin": [],
+      "severity_origin": "profile:core",
+      "suppressed_reason": null
+    },
+    {
+      "rule_id": "env.python_version_declared",
+      "aliases": [],
+      "category": "env",
+      "severity": "WARNING",
+      "status": "fail",
+      "level": 1,
+      "message": "no Python version requirement is declared",
+      "evidence": [
+        {
+          "kind": "file",
+          "path": null,
+          "field": null,
+          "line": null,
+          "value": null,
+          "expected": null,
+          "note": "no requires-python / .python-version / conda python= found"
+        }
+      ],
+      "fix_hint": "Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.",
+      "profile_origin": [],
+      "severity_origin": "default",
+      "suppressed_reason": null
+    }
+  ]
+}
+

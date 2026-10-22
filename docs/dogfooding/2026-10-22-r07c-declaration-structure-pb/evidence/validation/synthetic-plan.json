@@ -1,0 +1,94 @@
+{
+  "acceptance_ids": [
+    "A12",
+    "A19",
+    "A20",
+    "A28",
+    "A29",
+    "A30",
+    "A32"
+  ],
+  "cases": [
+    {
+      "body": "project=0\n",
+      "mixed": false,
+      "name": "project-falsey",
+      "path": "unrelated/pyproject.toml",
+      "restored": "[project]\n",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "body": "tool=false\n",
+      "mixed": false,
+      "name": "tool-falsey-critical",
+      "path": "unrelated/pyproject.toml",
+      "restored": "[project]\n",
+      "severity": "CRITICAL",
+      "threshold": "critical"
+    },
+    {
+      "body": "[project]\noptional-dependencies={bad=false, good=[\"requests==2.1\"]}\n",
+      "mixed": false,
+      "name": "partial-optional",
+      "path": "unrelated/pyproject.toml",
+      "restored": "[project]\n",
+      "severity": "CRITICAL",
+      "threshold": "critical"
+    },
+    {
+      "body": "packages=false\n[dev-packages]\nrequests=\"==2.1\"\n",
+      "mixed": false,
+      "name": "pipfile-section",
+      "path": "unrelated/Pipfile",
+      "restored": "[packages]\n",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "body": "dependencies:\n  - pip: [\"requests==2.1\", 7]\n",
+      "mixed": false,
+      "name": "environment-pip",
+      "path": "unrelated/environment.yml",
+      "restored": "dependencies: []\n",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "body": "project=42\n",
+      "mixed": true,
+      "name": "independent-warning",
+      "path": "unrelated/pyproject.toml",
+      "restored": "[project]\n",
+      "severity": "WARNING",
+      "threshold": "warning"
+    }
+  ],
+  "expected_files": {
+    "synthetic-expected/environment-pip-malformed.json": "f19b3bafe8f4dd500a2f2d20cf133f220ba5c55c0cc59dccbc066a25d3a998ca",
+    "synthetic-expected/environment-pip-restored.json": "2e428af3227de68c1c9437a890b55829b91046edf455579e1d69921d39d6ad2d",
+    "synthetic-expected/environment-pip-suppressed.json": "2665297f9c6fd84b75b6a22af4be4762ce2a1890b853bf9b19008c257d0c0424",
+    "synthetic-expected/independent-warning-malformed.json": "37c4cd6437c02e110f4b544fc29aa3954a8d59182510b588635def3f71c8a59a",
+    "synthetic-expected/independent-warning-restored.json": "bf27448f714010c48111234f11417b258cd1ab5f915d4520379649f248594f39",
+    "synthetic-expected/independent-warning-suppressed.json": "c4429806259359582d1b93e5ab6c9120a0958efae845c07f7b59ec4533946c15",
+    "synthetic-expected/partial-optional-malformed.json": "5b3a2b610567755a632c9d361ee3550e65b093aaef90a7ddaca46c7c7a050bbf",
+    "synthetic-expected/partial-optional-restored.json": "4c6dca1d21a1b7145b6105c3fd33c01fa404359a481fbb0698beebf9a288209d",
+    "synthetic-expected/partial-optional-suppressed.json": "54909a709dad89d812b22c137721a465885dd98af386176bcc7f4c22fd08b5b3",
+    "synthetic-expected/pipfile-section-malformed.json": "3bb46fb06ca3571fcc175ded6d9b73c5f5c4598d1a2455c3070acc580e5c7214",
+    "synthetic-expected/pipfile-section-restored.json": "2e428af3227de68c1c9437a890b55829b91046edf455579e1d69921d39d6ad2d",
+    "synthetic-expected/pipfile-section-suppressed.json": "03e193a95d83df055156e55b70b9aec792136cee374b5a3947d8028e0996de78",
+    "synthetic-expected/project-falsey-malformed.json": "5b3a2b610567755a632c9d361ee3550e65b093aaef90a7ddaca46c7c7a050bbf",
+    "synthetic-expected/project-falsey-restored.json": "2e428af3227de68c1c9437a890b55829b91046edf455579e1d69921d39d6ad2d",
+    "synthetic-expected/project-falsey-suppressed.json": "54909a709dad89d812b22c137721a465885dd98af386176bcc7f4c22fd08b5b3",
+    "synthetic-expected/tool-falsey-critical-malformed.json": "5b3a2b610567755a632c9d361ee3550e65b093aaef90a7ddaca46c7c7a050bbf",
+    "synthetic-expected/tool-falsey-critical-restored.json": "4c6dca1d21a1b7145b6105c3fd33c01fa404359a481fbb0698beebf9a288209d",
+    "synthetic-expected/tool-falsey-critical-suppressed.json": "54909a709dad89d812b22c137721a465885dd98af386176bcc7f4c22fd08b5b3"
+  },
+  "export_assertions": "Complete output retained; predeclared summary/notable absence only, not whole-document independent gold.",
+  "malformed_exit": "1 only for independent-warning; otherwise 0",
+  "method": "Literal full AuditReport oracle written from accepted spec, independent fixture bytes and existing CLI contract before candidate execution. Only root generated_at and reprollm_version metadata exempted by compare_gold.",
+  "paid_api": "NOT_CALLED",
+  "restored_exit": 1,
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXECUTED"
+}
