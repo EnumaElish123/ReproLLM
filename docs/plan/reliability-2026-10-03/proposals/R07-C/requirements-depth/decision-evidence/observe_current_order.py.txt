@@ -1,0 +1,167 @@
+"""Current-product observations only; no proposed D-G behavior is executed."""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+from reprollm.core.context import AuditContext
+from reprollm.core.deps import Declarations, _RequirementsGraph, scan_dependencies
+from reprollm.core.git import GitInfo
+from reprollm.core.pyscan import scan_python
+from reprollm.core.scanner import RepoScanner
+from reprollm.rules import env
+
+
+ROOT = Path.cwd()
+OUT = Path(__file__).parent
+SOURCE_FILES = (
+    "src/reprollm/core/deps.py", "src/reprollm/core/scanner.py",
+    "src/reprollm/core/context.py", "src/reprollm/core/pyscan.py",
+    "src/reprollm/rules/env.py", "docs/plan/01_specification.md",
+)
+digest = lambda value: hashlib.sha256(value).hexdigest()
+source_before = {name: digest((ROOT / name).read_bytes()) for name in SOURCE_FILES}
+
+
+def guard(event: str, args: tuple[object, ...]) -> None:
+    if event.startswith("socket.") or event in {"subprocess.Popen", "os.system"}:
+        raise RuntimeError("Observation prohibits network and subprocesses")
+    if event == "import" and str(args[0]).split(".", 1)[0] in {
+        "torch", "transformers", "numpy", "vllm", "huggingface_hub"
+    }:
+        raise RuntimeError("Observation prohibits heavy target imports")
+
+
+sys.addaudithook(guard)
+env.installed_versions = lambda: {}
+
+
+class Scanner(RepoScanner):
+    def __init__(self, path: Path) -> None:
+        super().__init__(path, GitInfo(is_repo=False))
+        self.reads: list[str] = []
+
+    def read_text(self, rel_path: str, max_bytes: int = 512 * 1024) -> str | None:
+        self.reads.append(rel_path)
+        return super().read_text(rel_path, max_bytes)
+
+
+class ObservedGraph(_RequirementsGraph):
+    """Record after each ordinary top-level expansion without altering traversal."""
+
+    def __init__(self, scanner: Scanner, result: Declarations) -> None:
+        super().__init__(scanner, result)
+        self.observed_scanner = scanner
+        self.after_roots: list[dict] = []
+
+    def _expand(self, source: str, depth: int, active: set[str]) -> None:
+        super()._expand(source, depth, active)
+        if depth == 0:
+            self.after_roots.append({
+                "root": source,
+                "nodes": sorted(self.nodes),
+                "reads": list(self.observed_scanner.reads),
+            })
+
+
+plan = []
+for exact in (True, False):
+    for deep_first in (True, False):
+        deep = "requirements-a.txt" if deep_first else "requirements-z.txt"
+        shallow = "requirements-z.txt" if deep_first else "requirements-a.txt"
+        files = {
+            deep: "torch>=2\n-r deps/0.txt\n",
+            shallow: "-r deps/10.txt\n",
+            **{f"deps/{i}.txt": f"-r {i + 1}.txt\n" for i in range(10)},
+            "deps/10.txt": "torch==2.5.1\n" if exact else "torch>=2\n",
+        }
+        plan.append({
+            "id": ("exact" if exact else "loose") + ("-deep-first" if deep_first else "-shallow-first"),
+            "files": files,
+            "independent_expected": {
+                "deep_root": deep, "shallow_root": shallow,
+                "roots": ["requirements-a.txt", "requirements-z.txt"],
+                "target_captured_after_first_root": not deep_first,
+                "target_captured_after_all_roots": True,
+                "torch_exact": exact,
+                "torch_status": [] if exact else ["fail"],
+                "torch_severity": [] if exact else ["WARNING"],
+                "deep_closure_complete": False,
+            },
+        })
+(OUT / "inputs.json").write_bytes((json.dumps({"schema_version": 1, "cases": plan}, indent=2) + "\n").encode())
+
+started = time.perf_counter()
+records = []
+for case in plan:
+    root = OUT / "fixtures" / case["id"]
+    root.mkdir(parents=True, exist_ok=False)
+    for name, body in case["files"].items():
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body.encode())
+    scanner = Scanner(root)
+    deps = scan_dependencies(scanner)
+    ctx = AuditContext(root, level=0)
+    ctx._git = GitInfo(is_repo=False)
+    ctx._fs = scanner
+    ctx._deps = deps
+    ctx._pyscan = scan_python(scanner)
+    findings = env.LlmCriticalDepsPinnedRule().check(ctx)
+    graph_scanner = Scanner(root)
+    graph = ObservedGraph(graph_scanner, Declarations())
+    roots = sorted(name for name in graph_scanner.analysis_files()
+                   if Path(name).name.startswith("requirements") and name.endswith(".txt"))
+    graph.parse(roots)
+    expected = case["independent_expected"]
+    actual = {
+        "deep_root": expected["deep_root"], "shallow_root": expected["shallow_root"],
+        "roots": roots,
+        "target_captured_after_first_root": "deps/10.txt" in graph.after_roots[0]["nodes"],
+        "target_captured_after_all_roots": "deps/10.txt" in graph.nodes,
+        "torch_exact": any(d.name == "torch" and d.is_exact for d in deps.declarations),
+        "torch_status": [f.status.value for f in findings if f.message.startswith("torch ")],
+        "torch_severity": [f.severity.value for f in findings if f.message.startswith("torch ")],
+        "deep_closure_complete": graph.closures[expected["deep_root"]].complete,
+    }
+    assert actual == expected, (case["id"], actual, expected)
+    assert scanner.reads == graph_scanner.reads
+    assert graph_scanner.reads.count("deps/10.txt") == 1
+    if case["id"].endswith("deep-first"):
+        assert graph_scanner.reads.index("deps/9.txt") < graph_scanner.reads.index(expected["shallow_root"])
+        assert graph_scanner.reads.index(expected["shallow_root"]) < graph_scanner.reads.index("deps/10.txt")
+    records.append({
+        "id": case["id"], "projection": actual,
+        "after_each_root": graph.after_roots,
+        "scan_dependencies_reads": scanner.reads,
+        "observed_graph_reads": graph_scanner.reads,
+        "declarations": [asdict(d) for d in deps.declarations],
+        "findings": [f.model_dump(mode="json") for f in findings],
+        "unparsed": deps.unparsed, "body_issues": deps.declaration_read_issues,
+        "closures": {name: {"complete": c.complete, "sources": sorted(c.sources), "is_exact": c.is_exact}
+                     for name, c in sorted(graph.closures.items())},
+        "fixture_sha256": {name: digest(body.encode()) for name, body in case["files"].items()},
+    })
+source_after = {name: digest((ROOT / name).read_bytes()) for name in SOURCE_FILES}
+assert source_before == source_after
+report = {
+    "schema_version": 1, "status": "CURRENT_PRODUCT_OBSERVATIONS_MATCH",
+    "cases": records, "elapsed_seconds": time.perf_counter() - started,
+    "source_before_sha256": source_before, "source_after_sha256": source_after,
+    "observer_sha256": digest(Path(__file__).read_bytes()),
+    "input_sha256": digest((OUT / "inputs.json").read_bytes()),
+    "controls": ["GitInfo(is_repo=False)", "installed_versions={}", "No Python import fixture",
+                 "Audit hook rejects socket/subprocess/heavy imports",
+                 "ObservedGraph only records normal _expand returns at depth zero",
+                 "Current scan_dependencies and observed graph read traces exactly equal"],
+    "future_policy_executions": 0,
+    "scope": "Current parser/graph/rule observations; not proposed D-G implementation, test acceptance, CLI/Gate A, or CI",
+}
+(OUT / "observations.json").write_bytes((json.dumps(report, indent=2) + "\n").encode())
+print(json.dumps({"status": report["status"], "cases": len(records), "elapsed_seconds": report["elapsed_seconds"],
+                  "future_policy_executions": 0, "sources_unchanged": source_before == source_after}))

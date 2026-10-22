@@ -110,6 +110,7 @@ class Declarations:
     _project_manifests: dict[str, frozenset[str]] = field(default_factory=dict, repr=False)
     _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
     declaration_read_issues: dict[str, DeclarationReadIssue] = field(default_factory=dict)
+    unexpanded_requirement_targets: tuple[str, ...] = ()
 
     def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
         """Return lock credit supported by an associated actual package origin."""
@@ -330,6 +331,20 @@ class _RequirementsGraph:
     def parse(self, roots: list[str]) -> None:
         for root in roots:
             self._expand(root, 0, set())
+        # A later, shallower root can capture an earlier depth-limited target.
+        self.result.unexpanded_requirement_targets = tuple(
+            sorted(
+                {
+                    event.target
+                    for node in self.nodes.values()
+                    if node.readable
+                    for event in node.events
+                    if isinstance(event, _RequirementInclude)
+                    and event.target is not None
+                    and event.target not in self.nodes
+                }
+            )
+        )
         for root in roots:
             if not self.nodes[root].readable:
                 self._diagnostic(f"{root}:0: unreadable")

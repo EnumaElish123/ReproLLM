@@ -1,0 +1,801 @@
+{
+  "schema_version": 1,
+  "status": "CURRENT_PRODUCT_OBSERVATIONS_MATCH",
+  "cases": [
+    {
+      "id": "exact-deep-first",
+      "projection": {
+        "deep_root": "requirements-a.txt",
+        "shallow_root": "requirements-z.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": false,
+        "target_captured_after_all_roots": true,
+        "torch_exact": true,
+        "torch_status": [],
+        "torch_severity": [],
+        "deep_closure_complete": false
+      },
+      "after_each_root": [
+        {
+          "root": "requirements-a.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt"
+          ]
+        },
+        {
+          "root": "requirements-z.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/10.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt",
+            "requirements-z.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-z.txt",
+            "deps/10.txt"
+          ]
+        }
+      ],
+      "scan_dependencies_reads": [
+        "requirements-a.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "requirements-z.txt",
+        "deps/10.txt"
+      ],
+      "observed_graph_reads": [
+        "requirements-a.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "requirements-z.txt",
+        "deps/10.txt"
+      ],
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements-a.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "deps/10.txt",
+          "line": 1
+        }
+      ],
+      "findings": [],
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements-a.txt:2: include incomplete"
+      ],
+      "body_issues": {},
+      "closures": {
+        "requirements-a.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt"
+          ],
+          "is_exact": false
+        },
+        "requirements-z.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": true
+        }
+      },
+      "fixture_sha256": {
+        "requirements-a.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "requirements-z.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "exact-shallow-first",
+      "projection": {
+        "deep_root": "requirements-z.txt",
+        "shallow_root": "requirements-a.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": true,
+        "target_captured_after_all_roots": true,
+        "torch_exact": true,
+        "torch_status": [],
+        "torch_severity": [],
+        "deep_closure_complete": false
+      },
+      "after_each_root": [
+        {
+          "root": "requirements-a.txt",
+          "nodes": [
+            "deps/10.txt",
+            "requirements-a.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/10.txt"
+          ]
+        },
+        {
+          "root": "requirements-z.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/10.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt",
+            "requirements-z.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/10.txt",
+            "requirements-z.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt"
+          ]
+        }
+      ],
+      "scan_dependencies_reads": [
+        "requirements-a.txt",
+        "deps/10.txt",
+        "requirements-z.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "observed_graph_reads": [
+        "requirements-a.txt",
+        "deps/10.txt",
+        "requirements-z.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "deps/10.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements-z.txt",
+          "line": 1
+        }
+      ],
+      "findings": [],
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements-z.txt:2: include incomplete"
+      ],
+      "body_issues": {},
+      "closures": {
+        "requirements-a.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-a.txt"
+          ],
+          "is_exact": true
+        },
+        "requirements-z.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_sha256": {
+        "requirements-z.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "requirements-a.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "loose-deep-first",
+      "projection": {
+        "deep_root": "requirements-a.txt",
+        "shallow_root": "requirements-z.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": false,
+        "target_captured_after_all_roots": true,
+        "torch_exact": false,
+        "torch_status": [
+          "fail"
+        ],
+        "torch_severity": [
+          "WARNING"
+        ],
+        "deep_closure_complete": false
+      },
+      "after_each_root": [
+        {
+          "root": "requirements-a.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt"
+          ]
+        },
+        {
+          "root": "requirements-z.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/10.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt",
+            "requirements-z.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-z.txt",
+            "deps/10.txt"
+          ]
+        }
+      ],
+      "scan_dependencies_reads": [
+        "requirements-a.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "requirements-z.txt",
+        "deps/10.txt"
+      ],
+      "observed_graph_reads": [
+        "requirements-a.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt",
+        "requirements-z.txt",
+        "deps/10.txt"
+      ],
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements-a.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "deps/10.txt",
+          "line": 1
+        }
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements-a.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements-a.txt:2: include incomplete"
+      ],
+      "body_issues": {},
+      "closures": {
+        "requirements-a.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt"
+          ],
+          "is_exact": false
+        },
+        "requirements-z.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_sha256": {
+        "requirements-a.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "requirements-z.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "025ceb6213ca61e0121437d6cd1f7deb2099714bec3bf8deb8e1c14d9b59b465"
+      }
+    },
+    {
+      "id": "loose-shallow-first",
+      "projection": {
+        "deep_root": "requirements-z.txt",
+        "shallow_root": "requirements-a.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": true,
+        "target_captured_after_all_roots": true,
+        "torch_exact": false,
+        "torch_status": [
+          "fail"
+        ],
+        "torch_severity": [
+          "WARNING"
+        ],
+        "deep_closure_complete": false
+      },
+      "after_each_root": [
+        {
+          "root": "requirements-a.txt",
+          "nodes": [
+            "deps/10.txt",
+            "requirements-a.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/10.txt"
+          ]
+        },
+        {
+          "root": "requirements-z.txt",
+          "nodes": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/10.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-a.txt",
+            "requirements-z.txt"
+          ],
+          "reads": [
+            "requirements-a.txt",
+            "deps/10.txt",
+            "requirements-z.txt",
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt"
+          ]
+        }
+      ],
+      "scan_dependencies_reads": [
+        "requirements-a.txt",
+        "deps/10.txt",
+        "requirements-z.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "observed_graph_reads": [
+        "requirements-a.txt",
+        "deps/10.txt",
+        "requirements-z.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "deps/10.txt",
+          "line": 1
+        },
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements-z.txt",
+          "line": 1
+        }
+      ],
+      "findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "deps/10.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "unparsed": [
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements-z.txt:2: include incomplete"
+      ],
+      "body_issues": {},
+      "closures": {
+        "requirements-a.txt": {
+          "complete": true,
+          "sources": [
+            "deps/10.txt",
+            "requirements-a.txt"
+          ],
+          "is_exact": false
+        },
+        "requirements-z.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements-z.txt"
+          ],
+          "is_exact": false
+        }
+      },
+      "fixture_sha256": {
+        "requirements-z.txt": "9274d7dd83565d99831e9961dc6768c7a0fbf31ad79c009ba01fb5c789b1d986",
+        "requirements-a.txt": "c2ba5ae8941d2cf22ff681f103b3b8d53d84d122f66af7fca4d9df0537ed9311",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "025ceb6213ca61e0121437d6cd1f7deb2099714bec3bf8deb8e1c14d9b59b465"
+      }
+    }
+  ],
+  "elapsed_seconds": 0.21481060000041907,
+  "source_before_sha256": {
+    "src/reprollm/core/deps.py": "be81aa1f52ff253abbf460667c444d5a53be63d24ae531f999b5cf7f6724b8eb",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "src/reprollm/core/context.py": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b",
+    "src/reprollm/core/pyscan.py": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273",
+    "src/reprollm/rules/env.py": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05",
+    "docs/plan/01_specification.md": "1a591dcfd01a9140a7e1eab330519bac0e8545ff5f268b9fa3c9d3118367ed29"
+  },
+  "source_after_sha256": {
+    "src/reprollm/core/deps.py": "be81aa1f52ff253abbf460667c444d5a53be63d24ae531f999b5cf7f6724b8eb",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "src/reprollm/core/context.py": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b",
+    "src/reprollm/core/pyscan.py": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273",
+    "src/reprollm/rules/env.py": "11b98e28b390d8018285a168e11ccead4a5741561f49c059980f86e183d2bd05",
+    "docs/plan/01_specification.md": "1a591dcfd01a9140a7e1eab330519bac0e8545ff5f268b9fa3c9d3118367ed29"
+  },
+  "observer_sha256": "ab36136bd16addf75bfec8c8a1450136573cb8e151bef36770d076f71d3447ec",
+  "input_sha256": "a4f003c3336e5b65c7e222341b00b721abb22861c34368c17210529db1781d3f",
+  "controls": [
+    "GitInfo(is_repo=False)",
+    "installed_versions={}",
+    "No Python import fixture",
+    "Audit hook rejects socket/subprocess/heavy imports",
+    "ObservedGraph only records normal _expand returns at depth zero",
+    "Current scan_dependencies and observed graph read traces exactly equal"
+  ],
+  "future_policy_executions": 0,
+  "scope": "Current parser/graph/rule observations; not proposed D-G implementation, test acceptance, CLI/Gate A, or CI"
+}

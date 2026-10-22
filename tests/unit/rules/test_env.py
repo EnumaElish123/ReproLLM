@@ -1241,7 +1241,7 @@ def test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findin
 
 @pytest.mark.parametrize(
     "unverified",
-    ["readable-line", "directive", "cycle", "depth", "excluded-include"],
+    ["readable-line", "directive", "cycle", "excluded-include"],
 )
 def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_warning(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unverified: str
@@ -1256,10 +1256,6 @@ def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_war
         (tmp_path / "requirements-extra.txt").write_text(
             "-r requirements-extra.txt\n", encoding="utf-8"
         )
-    elif unverified == "depth":
-        (tmp_path / "requirements-extra.txt").write_text("-r 0.txt\n", encoding="utf-8")
-        for index in range(10):
-            (tmp_path / f"{index}.txt").write_text(f"-r {index + 1}.txt\n", encoding="utf-8")
     elif unverified == "excluded-include":
         (tmp_path / "requirements-extra.txt").write_text("-r .venv/missing.txt\n", encoding="utf-8")
     monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})

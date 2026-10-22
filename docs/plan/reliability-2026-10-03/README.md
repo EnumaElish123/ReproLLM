@@ -113,3 +113,13 @@ accepted product baseline, separate PB closure/CI status and unchanged current o
 Specific acceptance of [option A, the exact patch and conservative boundaries](proposals/R07-C/requirements-depth/spec-issue-draft.md)
 is required before P-B. Requirements grammar, omitted candidates/listing/framework and
 the whole R07-C scope remain OPEN. No release is authorized.
+
+## R07-C D-G delegated decision and P-B (2026-10-22)
+
+The preceding P-A paragraph retains its preparation-time state. The maintainer
+has explicitly delegated the D-G A/B adjudication; the agent
+[selected A and the concrete patch](proposals/R07-C/requirements-depth/decision-accepted.json),
+including the stated conservative repository-wide costs. The [P-B report](../../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md)
+records current implementation and validation. A separate [ordering evidence correction](proposals/R07-C/requirements-depth/decision-evidence/README.md)
+preserves the original observations and adds actual deep-first/reverse-order evidence.
+Other OPEN R07-C policies and release remain outside this specific delegated choice.

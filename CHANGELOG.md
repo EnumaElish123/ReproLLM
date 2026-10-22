@@ -9,6 +9,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-G (spec §12.3.8): record supported requirements include targets absent
+  from the final captured graph after the existing depth budget. After exact and
+  qualified-lock credit and D-F/D-S, D-L and D-M, remaining used critical packages
+  become SKIPPED/INFO with target evidence. This repository-wide uncertainty can
+  make an isolated warning/promoted critical gate stop failing; it grants no
+  credit. Later shallow capture removes a target from the new fact. No new reads,
+  probes, grammar, schema, gold, renderer, dependency or version change.
+
 - R07-C D-M-S (spec §12.3.7): record the approved bounded decoded declaration
   container/member type failures, preserving partial valid declarations, existing
   diagnostics and exact/qualified-lock credit. Remaining used critical packages

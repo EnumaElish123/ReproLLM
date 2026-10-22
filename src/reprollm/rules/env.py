@@ -241,6 +241,39 @@ class LlmCriticalDepsPinnedRule(Rule):
                     )
                 )
                 continue
+            if deps.unexpanded_requirement_targets:
+                findings.append(
+                    Finding(
+                        rule_id=self.id,
+                        aliases=list(self.aliases),
+                        category=self.category,
+                        severity=Severity.INFO,
+                        status=FindingStatus.SKIPPED,
+                        level=ctx.level,
+                        message=(
+                            f"{display} is used; a supported requirements include was not "
+                            "expanded within the depth budget, so missing pin evidence "
+                            "is not established"
+                        ),
+                        evidence=[
+                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                            *[
+                                Evidence(
+                                    kind="file",
+                                    path=path,
+                                    note=f"{display} include target unexpanded at the depth limit",
+                                )
+                                for path in sorted(set(deps.unexpanded_requirement_targets))
+                            ],
+                        ],
+                        fix_hint=(
+                            f"Review {display} declarations and unexpanded requirements include "
+                            "targets; restructure the supported include graph within the depth "
+                            "budget before deciding that exact pin evidence is absent."
+                        ),
+                    )
+                )
+                continue
             version = installed.get(display)
             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
             finding = self.finding(

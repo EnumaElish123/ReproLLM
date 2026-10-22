@@ -130,14 +130,15 @@ PROPOSED decision and [preparation report](../dogfooding/2026-10-22-r07c-declara
 remain historical snapshots. Individual package-value/string grammar, requirements
 graphs and wider R07-C remain OPEN; no release is authorized.
 
-R07-C D-G is [PROPOSED](reliability-2026-10-03/proposals/R07-C/requirements-depth/R07-C_requirements_depth_frontier.md).
-The narrow next P-A concerns normalized requirements include targets still absent
-from the final captured graph after all roots, under the unchanged depth budget.
-Its [report](../dogfooding/2026-10-22-r07c-requirements-depth-pa.md) separates the prior
-accepted product and its CI from this P-A's pending CI, and preserves original observations.
-The [concrete specification patch and decision question](reliability-2026-10-03/proposals/R07-C/requirements-depth/spec-issue-draft.md)
-require specific acceptance before P-B. No new policy has been implemented or executed.
-Whole R07-C remains OPEN; independent A03 factual drafting can continue.
+The maintainer explicitly delegated the R07-C D-G A/B adjudication; the agent
+[chose A and the exact patch](reliability-2026-10-03/proposals/R07-C/requirements-depth/decision-accepted.json),
+including its repository-wide conservative SKIP and exit-code costs. Follow the
+[P-B report](../dogfooding/2026-10-22-r07c-requirements-depth-pb/README.md) for current implementation and validation status.
+The original [P-A report](../dogfooding/2026-10-22-r07c-requirements-depth-pa.md),
+PROPOSED snapshot and raw observations remain historical. A separate
+[ordering evidence correction](reliability-2026-10-03/proposals/R07-C/requirements-depth/decision-evidence/README.md)
+preserves those bytes and adds actual deep-first/reverse-order observations.
+This specific delegated choice does not approve other OPEN R07-C policies or a release.
 
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and

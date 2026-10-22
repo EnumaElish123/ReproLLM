@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "exact-deep-first",
+      "files": {
+        "requirements-a.txt": "torch>=2\n-r deps/0.txt\n",
+        "requirements-z.txt": "-r deps/10.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "independent_expected": {
+        "deep_root": "requirements-a.txt",
+        "shallow_root": "requirements-z.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": false,
+        "target_captured_after_all_roots": true,
+        "torch_exact": true,
+        "torch_status": [],
+        "torch_severity": [],
+        "deep_closure_complete": false
+      }
+    },
+    {
+      "id": "exact-shallow-first",
+      "files": {
+        "requirements-z.txt": "torch>=2\n-r deps/0.txt\n",
+        "requirements-a.txt": "-r deps/10.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch==2.5.1\n"
+      },
+      "independent_expected": {
+        "deep_root": "requirements-z.txt",
+        "shallow_root": "requirements-a.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": true,
+        "target_captured_after_all_roots": true,
+        "torch_exact": true,
+        "torch_status": [],
+        "torch_severity": [],
+        "deep_closure_complete": false
+      }
+    },
+    {
+      "id": "loose-deep-first",
+      "files": {
+        "requirements-a.txt": "torch>=2\n-r deps/0.txt\n",
+        "requirements-z.txt": "-r deps/10.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch>=2\n"
+      },
+      "independent_expected": {
+        "deep_root": "requirements-a.txt",
+        "shallow_root": "requirements-z.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": false,
+        "target_captured_after_all_roots": true,
+        "torch_exact": false,
+        "torch_status": [
+          "fail"
+        ],
+        "torch_severity": [
+          "WARNING"
+        ],
+        "deep_closure_complete": false
+      }
+    },
+    {
+      "id": "loose-shallow-first",
+      "files": {
+        "requirements-z.txt": "torch>=2\n-r deps/0.txt\n",
+        "requirements-a.txt": "-r deps/10.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "torch>=2\n"
+      },
+      "independent_expected": {
+        "deep_root": "requirements-z.txt",
+        "shallow_root": "requirements-a.txt",
+        "roots": [
+          "requirements-a.txt",
+          "requirements-z.txt"
+        ],
+        "target_captured_after_first_root": true,
+        "target_captured_after_all_roots": true,
+        "torch_exact": false,
+        "torch_status": [
+          "fail"
+        ],
+        "torch_severity": [
+          "WARNING"
+        ],
+        "deep_closure_complete": false
+      }
+    }
+  ]
+}
