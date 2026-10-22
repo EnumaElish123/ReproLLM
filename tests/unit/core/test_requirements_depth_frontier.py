@@ -518,13 +518,16 @@ def test_g23_readable_unsupported_grammar_does_not_create_frontier(
     result, scanner, graph = _scan(tmp_path, monkeypatch)
     assert scanner.reads == ["requirements.txt"]
     assert scanner.candidate_checks == scanner.reads
+    expected = [_torch("requirements.txt")]
+    if line == "torch>=2 # comment":
+        expected.append(DependencyDeclaration("torch", "torch", ">=2", None, "requirements.txt", 2))
     assert graph.closures["requirements.txt"] == _RequirementsClosure(
-        False, frozenset({"requirements.txt"}), frozenset({_torch("requirements.txt")})
+        line == "torch>=2 # comment", frozenset({"requirements.txt"}), frozenset(expected)
     )
     _assert_state(
         result,
-        declarations=[_torch("requirements.txt")],
-        diagnostics=[f"requirements.txt:2: {line}"],
+        declarations=expected,
+        diagnostics=[] if line == "torch>=2 # comment" else [f"requirements.txt:2: {line}"],
         frontier=(),
     )
 

@@ -9,6 +9,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-C (spec §12.2): recognize a bounded inline-comment prefix only after
+  an ordinary requirements graph line fails its original parse. Preserve the
+  original routes and successful parses; reject new URL prefixes and disable
+  this fallback for a captured file with any trailing-backslash physical line.
+  Newly captured dependencies can change exact/requirements-lock credit, package
+  use, profile evidence and init scaffolds; an isolated fail-on gate can change
+  in either direction. Existing credit and uncertainty priorities remain.
+  No continuation processing, new reads, other-format grammar, schema, historical
+  gold, dependency or version change.
+
 - R07-C D-G (spec §12.3.8): record supported requirements include targets absent
   from the final captured graph after the existing depth budget. After exact and
   qualified-lock credit and D-F/D-S, D-L and D-M, remaining used critical packages

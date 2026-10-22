@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 
 from reprollm.core.errors import UserError
 from reprollm.core.manifest_scaffold import (
@@ -207,3 +208,79 @@ def test_detection_result_smoke() -> None:
         }
     )
     assert [p.profile for p in detection.profiles if p.shipped] == ["inference"]
+
+
+@pytest.mark.parametrize("override", [False, True])
+def test_inline_comments_feed_builtin_init_fields_and_keep_explicit_selection(
+    tmp_path: Path, override: bool
+) -> None:
+    root = tmp_path / "comments"
+    root.mkdir()
+    (root / "requirements.txt").write_text("vllm>=2 # use\npeft>=0.1 # use\n", encoding="utf-8")
+    selected = ["inference"] if override else ["finetuning", "inference"]
+    plan = plan_init(root, profiles_override=["inference"] if override else None)
+    assert plan.project_name == "comments"
+    assert plan.project_name_defaulted is False
+    assert plan.profiles == selected
+    assert plan.required_fields == [
+        "project.name",
+        "models.primary.id",
+        *([] if override else ["training.method", "training.learning_rate", "datasets.train.id"]),
+        "inference.backend",
+        "generation.temperature",
+        "generation.max_tokens",
+    ]
+    assert plan.primary_detection is None
+    assert plan.other_detections == plan.task_names == plan.task_sources == plan.diagnostics == []
+    assert plan.detection.model_dump(mode="json") == {
+        "profiles": [
+            {
+                "profile": name,
+                "confidence": "medium",
+                "shipped": True,
+                "evidence": [
+                    {
+                        "kind": "detection",
+                        "path": "requirements.txt",
+                        "field": None,
+                        "line": line,
+                        "value": None,
+                        "expected": None,
+                        "note": f"dependency {package}",
+                    }
+                ],
+            }
+            for name, package, line in [("finetuning", "peft", 2), ("inference", "vllm", 1)]
+        ],
+        "hints": {
+            "providers": [],
+            "backends": [],
+            "datasets": False,
+            "adapter": False,
+            "trust_remote_code": False,
+            "hf_ids": [],
+        },
+    }
+    expected: dict[str, Any] = {
+        "schema_version": 1,
+        "project": {"name": "comments"},
+        "experiment": {"profiles": selected},
+        "models": {"primary": {"id": None}},
+        "generation": {"temperature": None, "max_tokens": None},
+        "inference": {"backend": None},
+    }
+    if not override:
+        expected.update(
+            datasets={"train": {"id": None}}, training={"method": None, "learning_rate": None}
+        )
+    first, repeated = render_manifest(plan, {}), render_manifest(plan, {})
+    assert first == repeated
+    assert yaml.safe_load(first) == expected
+    assert "from detected signals" in first
+    write_scaffold(root, first, force=False)
+    assert (root / "reprollm.yaml").read_text(encoding="utf-8") == first
+    assert yaml.safe_load((root / ".reprollm/project-rules.yaml").read_text(encoding="utf-8")) == {
+        "schema_version": 1,
+        "rules": [],
+        "ignored_candidates": [],
+    }

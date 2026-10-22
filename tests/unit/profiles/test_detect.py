@@ -1,6 +1,9 @@
 """Deterministic profile detection tests (spec §13, M2-T04)."""
 
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 from reprollm.core.context import AuditContext
 from reprollm.profiles.detect import keyword_matches, run_detection
@@ -278,3 +281,62 @@ def test_user_profile_detect_signals_work(tmp_path: Path) -> None:
     result = run_detection(scanner, scan_python(scanner), scan_dependencies(scanner), signals)
     profs = {e.profile: e.confidence for e in result.profiles}
     assert profs.get("customlab") == "high"  # deterministic: user signal is honored
+
+
+@pytest.mark.parametrize("imported", [False, True])
+@pytest.mark.parametrize("later_plain_source", [False, True])
+def test_inline_comments_update_full_detection_and_first_evidence_without_inventing_hints(
+    tmp_path: Path, imported: bool, later_plain_source: bool
+) -> None:
+    (tmp_path / "requirements.txt").write_text(
+        "# heading\nvllm>=2 # use\npeft>=0.1 # use\n", encoding="utf-8"
+    )
+    if later_plain_source:
+        (tmp_path / "z").mkdir()
+        (tmp_path / "z/requirements.txt").write_text("vllm>=1\npeft>=0.1\n", encoding="utf-8")
+    if imported:
+        (tmp_path / "use.py").write_text("import peft\nimport vllm\n", encoding="utf-8")
+    expected: dict[str, Any] = {
+        "profiles": [
+            {
+                "profile": profile,
+                "confidence": "high" if imported else "medium",
+                "shipped": True,
+                "evidence": [
+                    {
+                        "kind": "detection",
+                        "path": "use.py" if imported else "requirements.txt",
+                        "field": None,
+                        "line": import_line if imported else declaration_line,
+                        "value": None,
+                        "expected": None,
+                        "note": f"{'import' if imported else 'dependency'} {package}",
+                    }
+                ],
+            }
+            for profile, package, import_line, declaration_line in (
+                ("finetuning", "peft", 1, 3),
+                ("inference", "vllm", 2, 2),
+            )
+        ],
+        "hints": {
+            "providers": [],
+            "backends": ["vllm"] if imported else [],
+            "datasets": False,
+            "adapter": imported,
+            "trust_remote_code": False,
+            "hf_ids": [],
+        },
+    }
+    assert _detect(tmp_path).model_dump(mode="json") == expected
+    assert _detect(tmp_path).model_dump(mode="json") == expected
+    (tmp_path / "requirements.txt").write_text(
+        "# heading\nvllm>=2 # use\npeft>=0.1 # use\n# veto \\\n", encoding="utf-8"
+    )
+    if not imported:
+        if later_plain_source:
+            for entry, line in zip(expected["profiles"], [2, 1], strict=True):
+                entry["evidence"][0].update(path="z/requirements.txt", line=line)
+        else:
+            expected["profiles"] = []
+    assert _detect(tmp_path).model_dump(mode="json") == expected

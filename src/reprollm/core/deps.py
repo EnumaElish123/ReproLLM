@@ -316,6 +316,18 @@ def _requirement_include(line: str, source: str, lineno: int) -> _RequirementInc
     return _RequirementInclude(lineno, normalized)
 
 
+def _requirement_comment_prefix(line: str) -> str | None:
+    comment = re.search(r"[ \t]#", line)
+    if comment is None:
+        return None
+    prefix = line[: comment.start()].strip()
+    try:
+        requirement = Requirement(prefix)
+    except Exception:  # noqa: BLE001 - preserve the original failed-line diagnostic
+        return None
+    return prefix if requirement.url is None else None
+
+
 class _RequirementsGraph:
     """One captured parse graph; depth and active-stack results stay per root."""
 
@@ -370,7 +382,9 @@ class _RequirementsGraph:
         else:
             events: list[DependencyDeclaration | _RequirementInclude | str] = []
             include_targets: set[str] = set()
-            for lineno, raw in enumerate(text.splitlines(), 1):
+            lines = text.splitlines()
+            allow_inline_comments = not any(raw.rstrip().endswith("\\") for raw in lines)
+            for lineno, raw in enumerate(lines, 1):
                 line = raw.strip()
                 if not line or line.startswith("#"):
                     continue
@@ -385,6 +399,11 @@ class _RequirementsGraph:
                 else:
                     parsed = Declarations()
                     _add_requirement_line(line, source, lineno, parsed)
+                    if parsed.unparsed and allow_inline_comments:
+                        prefix = _requirement_comment_prefix(line)
+                        if prefix is not None:
+                            parsed = Declarations()
+                            _add_requirement_line(prefix, source, lineno, parsed)
                     events.extend(parsed.declarations)
                     events.extend(parsed.unparsed)
             node = _RequirementFile(True, tuple(events))

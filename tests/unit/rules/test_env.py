@@ -1442,3 +1442,230 @@ def test_structure_gap_does_not_invent_package_use(tmp_path: Path) -> None:
     assert rule.check(ctx) == []
     assert rule.skip_reason(ctx) == "no LLM-critical package is declared or imported"
     assert ctx.deps.declaration_read_issues == {failed: "invalid_structure"}
+
+
+# --- R07-C D-C: new ordinary declarations retain all existing consumer policy ---
+
+
+def _inline_comment_files(root: Path, cause: str, exact: bool) -> AuditContext:
+    (root / "requirements.txt").write_text(
+        "torch==2.5.1 # pin\n" if exact else "torch>=2 # use\n", encoding="utf-8"
+    )
+    chain = root / "chain"
+    chain.mkdir()
+    (root / "requirements-z.txt").write_text("-r chain/0.txt\n", encoding="utf-8")
+    for number in range(9):
+        (chain / f"{number}.txt").write_text(f"-r {number + 1}.txt\n", encoding="utf-8")
+    (chain / "9.txt").write_text("-r ../unreached.txt\n", encoding="utf-8")
+    if cause != "depth":
+        other = root / "unrelated"
+        other.mkdir()
+        (other / "Pipfile").write_text(
+            "packages=false\n" if cause == "structure" else "[broken\n", encoding="utf-8"
+        )
+    if cause in {"lock-syntax", "lock-structure"}:
+        (root / "pyproject.toml").write_text("[project]\n", encoding="utf-8")
+        (root / "use.py").write_text("import torch\n", encoding="utf-8")
+        (root / "uv.lock").write_text(
+            "[broken\n" if cause == "lock-syntax" else "package=[{}]\n", encoding="utf-8"
+        )
+    elif cause == "origin":
+        (root / "uv.lock").write_text('package=[{name="torch"}]\n', encoding="utf-8")
+    ctx = _format_credit_context(root)
+    if cause == "origin":
+        ctx._pyscan = PyScanResult()
+    return ctx
+
+
+def _inline_comment_expected_skip(cause: str) -> dict[str, Any]:
+    reason, path, note, hint = {
+        "lock": (
+            "an associated format lock could not be read or parsed",
+            "uv.lock",
+            "associated; lock package contents unverified",
+            "Review torch declarations and associated format-lock files; restore readable, "
+            "valid lock contents before deciding that exact pin evidence is absent.",
+        ),
+        "origin": (
+            "Python analysis is incomplete or unavailable and a captured format lock "
+            "lists the package",
+            "uv.lock",
+            "listed; import-origin credit unverified",
+            "Review torch declarations and format-lock origins; complete Python analysis "
+            "before deciding that exact pin evidence is absent.",
+        ),
+        "body": (
+            "a dependency declaration body could not be read or parsed",
+            "unrelated/Pipfile",
+            "possible exact declaration unverified",
+            "Review torch declarations and failed dependency source files; restore readable, "
+            "valid declaration bodies before deciding that exact pin evidence is absent.",
+        ),
+        "depth": (
+            "a supported requirements include was not expanded within the depth budget",
+            "unreached.txt",
+            "include target unexpanded at the depth limit",
+            "Review torch declarations and unexpanded requirements include targets; restructure "
+            "the supported include graph within the depth budget before deciding that exact pin "
+            "evidence is absent.",
+        ),
+    }[cause]
+    return {
+        "rule_id": "env.llm_critical_deps_pinned",
+        "aliases": [],
+        "category": "env",
+        "severity": "INFO",
+        "status": "skipped",
+        "level": 0,
+        "message": f"torch is used; {reason}, so missing pin evidence is not established",
+        "evidence": [
+            {
+                "kind": "file",
+                "path": "requirements.txt",
+                "field": None,
+                "line": 1,
+                "value": ">=2",
+                "expected": None,
+                "note": "declared as >=2",
+            },
+            {
+                "kind": "file",
+                "path": path,
+                "field": None,
+                "line": None,
+                "value": None,
+                "expected": None,
+                "note": f"torch {note}",
+            },
+        ],
+        "fix_hint": hint,
+        "profile_origin": [],
+        "severity_origin": "default",
+        "suppressed_reason": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "cause", ["lock-syntax", "lock-structure", "origin", "body", "structure", "depth"]
+)
+@pytest.mark.parametrize("exact", [False, True])
+def test_inline_comment_credit_precedes_all_existing_uncertainty_and_preserves_full_reasons(
+    tmp_path: Path, cause: str, exact: bool
+) -> None:
+    ctx = _inline_comment_files(tmp_path, cause, exact)
+    rule = LlmCriticalDepsPinnedRule()
+    assert [
+        (d.name, d.specifier, d.exact_version, d.source_file, d.line) for d in ctx.deps.declarations
+    ] == [
+        ("torch", "==2.5.1" if exact else ">=2", "2.5.1" if exact else None, "requirements.txt", 1)
+    ]
+    assert ctx.deps.unexpanded_requirement_targets == ("unreached.txt",)
+    assert rule.applies(ctx) is True
+    expected_cause = (
+        "lock" if cause.startswith("lock-") else "body" if cause == "structure" else cause
+    )
+    assert [f.model_dump(mode="json") for f in rule.check(ctx)] == (
+        [] if exact else [_inline_comment_expected_skip(expected_cause)]
+    )
+    assert (rule.pass_skip_reason(ctx) is not None) == (cause == "origin")
+
+
+@pytest.mark.parametrize("coverage", ["complete", "gap", "unavailable", "inconsistent"])
+@pytest.mark.parametrize("critical", [False, True])
+def test_inline_comments_never_override_python_empty_result_veto_or_create_unknown_use(
+    tmp_path: Path, coverage: str, critical: bool
+) -> None:
+    package = "torch" if critical else "requests"
+    (tmp_path / "requirements.txt").write_text(f"{package}==2.5.1 # pin\n", encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    if coverage != "complete":
+        ctx._pyscan = PyScanResult(
+            coverage_observed=coverage != "unavailable",
+            python_candidate_count=2,
+            python_selected_count=1,
+            python_parsed_count=2 if coverage == "inconsistent" else 1,
+            python_file_limit=1,
+        )
+    rule = LlmCriticalDepsPinnedRule()
+    assert [d.name for d in ctx.deps.declarations] == [package]
+    assert rule.applies(ctx) is critical
+    assert rule.check(ctx) == []
+    assert rule.skip_reason(ctx) == (
+        None if critical else "no LLM-critical package is declared or imported"
+    )
+    expected = {
+        "complete": None,
+        "gap": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 "
+        "(limit 1); no rule-wide PASS is established.",
+        "unavailable": (
+            "Python candidate coverage is unavailable; no rule-wide PASS is established."
+        ),
+        "inconsistent": (
+            "Python candidate coverage is unavailable; no rule-wide PASS is established."
+        ),
+    }
+    assert rule.pass_skip_reason(ctx) == expected[coverage]
+
+
+@pytest.mark.parametrize("extra", ["", "requests>=2\n", "not a requirement !!!\n"])
+def test_inline_comment_requirements_lock_changes_only_for_complete_exact_closure(
+    tmp_path: Path, extra: str
+) -> None:
+    (tmp_path / "requirements.txt").write_text("torch==2.5.1 # pin\n" + extra, encoding="utf-8")
+    ctx = _format_credit_context(tmp_path)
+    assert DependencyManifestPresentRule().check(ctx) == []
+    assert [d.name for d in ctx.deps.declarations] == (
+        ["torch", "requests"] if ">=" in extra else ["torch"]
+    )
+    assert [(lock.path, lock.packages) for lock in ctx.deps.lockfiles] == (
+        [] if extra else [("requirements.txt", frozenset({"torch"}))]
+    )
+    assert ctx.deps.qualified_lock_packages([]) == (frozenset() if extra else frozenset({"torch"}))
+    findings = LockfilePresentRule().check(ctx)
+    assert len(findings) == int(bool(extra))
+    if findings:
+        assert findings[0].message == (
+            "no lockfile found and not every declared dependency is pinned with an exact version"
+        )
+    assert LlmCriticalDepsPinnedRule().check(ctx) == []
+
+
+@pytest.mark.parametrize(
+    "origin", ["requirements-only", "paired-import", "unrelated-exact", "conflicting-exact"]
+)
+def test_inline_comment_positive_credit_keeps_format_lock_ownership_and_repo_exact_scope(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, origin: str
+) -> None:
+    monkeypatch.setattr("reprollm.rules.env.installed_versions", lambda: {})
+    (tmp_path / "requirements.txt").write_text("torch>=2 # use\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("[project]\n", encoding="utf-8")
+    (tmp_path / "uv.lock").write_text('package=[{name="torch"}]\n', encoding="utf-8")
+    if origin == "paired-import":
+        (tmp_path / "use.py").write_text("import torch\n", encoding="utf-8")
+    if origin in {"unrelated-exact", "conflicting-exact"}:
+        (tmp_path / "other").mkdir()
+        (tmp_path / "other/requirements.txt").write_text("torch==2.5.1 # pin\n", encoding="utf-8")
+        if origin == "conflicting-exact":
+            (tmp_path / "requirements.txt").write_text(
+                "torch==2.4.0 # another pin\n", encoding="utf-8"
+            )
+    ctx = _format_credit_context(tmp_path)
+    assert any(d.source_file == "requirements.txt" for d in ctx.deps.declarations)
+    assert ctx.deps._project_manifests == {"pyproject.toml": frozenset({"uv.lock", "poetry.lock"})}
+    credit = ctx.deps.qualified_lock_packages(("torch", i.path) for i in ctx.pyscan.imports)
+    assert credit == (frozenset() if origin == "requirements-only" else frozenset({"torch"}))
+    findings = LlmCriticalDepsPinnedRule().check(ctx)
+    assert len(findings) == int(origin == "requirements-only")
+    if findings:
+        assert findings[0].message == (
+            "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+        )
+        assert findings[0].evidence[0].model_dump(mode="json") == {
+            "kind": "file",
+            "path": "requirements.txt",
+            "field": None,
+            "line": 1,
+            "value": ">=2",
+            "expected": None,
+            "note": "declared as >=2",
+        }

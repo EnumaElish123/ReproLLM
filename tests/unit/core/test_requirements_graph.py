@@ -386,10 +386,16 @@ def test_safe_legacy_noninclude_bytes(tmp_path: Path) -> None:
     ]
     _write(tmp_path, {"requirements.txt": "\n".join(lines) + "\n"})
     result, _ = _scan(tmp_path)
-    assert _rows(result) == [("torch", "requirements.txt", 1)]
+    assert _rows(result) == [
+        ("torch", "requirements.txt", 1),
+        ("art", "requirements.txt", 4),
+        ("tenacity", "requirements.txt", 5),
+    ]
     assert _locks(result) == {}
     assert result.unparsed == [
-        f"requirements.txt:{line}: {text}" for line, text in enumerate(lines, 1) if line > 1
+        f"requirements.txt:{line}: {text}"
+        for line, text in enumerate(lines, 1)
+        if line in {2, 3, 6}
     ]
 
 
