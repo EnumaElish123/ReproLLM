@@ -125,3 +125,14 @@ and affected D-G consumer acceptance. Exact pushed-head CI remains a separate de
 A separate [ordering evidence correction](proposals/R07-C/requirements-depth/decision-evidence/README.md)
 preserves the original observations and adds actual deep-first/reverse-order evidence.
 Other OPEN R07-C policies and release remain outside this specific delegated choice.
+
+## R07-C ordinary requirements comments P-A (2026-10-22)
+
+The next [D-C packet](proposals/R07-C/requirements-comments/README.md) is
+PROPOSED / REVIEW_READY: bounded ordinary-line comment fallback, exact unapplied
+specification patch, compatibility costs, independent future acceptance and
+unchanged-current-product observations. The [P-A report](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
+records the source-only five-project impact, including HarmBench's two declarations,
+two removed diagnostics and grammar closure change. No future policy was executed.
+Specific acceptance of A and the exact patch is required before P-B. D-G is complete;
+other R07-C work, resource gates and version release remain separately bounded.

@@ -223,6 +223,12 @@ D-F/D-S、D-L、D-M优先级，无新增读取、预算或grammar扩张。
 “later shallow root”的实际先后顺序另立 [证据勘误](proposals/R07-C/requirements-depth/decision-evidence/README.md)。
 这项委托裁决不等于其他R07-C政策的批准，也不关闭整个R07-C。
 
+2026-10-22 下一轮为 [D-C requirements 普通行内注释 P-A](proposals/R07-C/requirements-comments/README.md)。
+具体 A/B、未应用 §12.2 patch、双向退出码/lock/use/profile/init 成本及独立验收均已备齐，
+状态 **PROPOSED**；见 [P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)。
+32 组当前行为观察和五项目源码核对不等于未来政策通过；HarmBench 有非零 inventory/diagnostic/closure 预期。
+须具体接受 A 和补丁后才进入 P-B，D-G 委托不延伸至本片；其余 R07-C 仍 OPEN，不发布版本。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。

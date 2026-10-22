@@ -1,0 +1,503 @@
+{
+  "schema_version": 1,
+  "status": "PREWRITTEN_CURRENT_EXPECTATIONS",
+  "base_head": "e52e0a24f28fa3ef56cc8e49821962eb1c73869c",
+  "projection_scope": [
+    "ordered declaration name/exact pairs",
+    "raw critical rule statuses only, no synthesized PASS",
+    "body issue dictionary",
+    "final D-G frontier"
+  ],
+  "cases": [
+    {
+      "id": "C01-exact-comment",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "fail"
+        ],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Comment exact currently omitted; known loose use warns."
+    },
+    {
+      "id": "C02-tab-comment",
+      "files": {
+        "requirements.txt": "torch==2.5.1\t# pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Tab comment currently omitted; no known critical use."
+    },
+    {
+      "id": "C03-empty-comment",
+      "files": {
+        "requirements.txt": "torch==2.5.1 #\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Empty inline comment currently unsupported."
+    },
+    {
+      "id": "C04-new-loose-use",
+      "files": {
+        "requirements.txt": "peft>=0.12 # note\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Current parser omits both use and dependency profile evidence."
+    },
+    {
+      "id": "C05-new-unversioned-use",
+      "files": {
+        "requirements.txt": "peft # note\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Unversioned critical use currently omitted."
+    },
+    {
+      "id": "C06-original-exact",
+      "files": {
+        "requirements.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Existing exact positive control."
+    },
+    {
+      "id": "C07-whole-comments",
+      "files": {
+        "requirements.txt": " # comment\n\n\t# more\ntorch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Full-line comments remain skipped; physical line 4 retained."
+    },
+    {
+      "id": "C08-no-space",
+      "files": {
+        "requirements.txt": "torch==2.5.1#pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "No ASCII delimiter; remains unsupported."
+    },
+    {
+      "id": "C09-nbsp",
+      "files": {
+        "requirements.txt": "torch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "NBSP is not proposed ASCII delimiter."
+    },
+    {
+      "id": "C10-marker-comment",
+      "files": {
+        "requirements.txt": "torch==2.5.1; os_name == \"posix\" # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Valid marker prefix, old whole line fails."
+    },
+    {
+      "id": "C11-quoted-marker",
+      "files": {
+        "requirements.txt": "torch==2.5.1; os_name == \"x # y\"\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Full original line succeeds; preserve its marker and exactness."
+    },
+    {
+      "id": "C12-first-delimiter-invalid",
+      "files": {
+        "requirements.txt": "torch==2.5.1; os_name == \"x # y\" # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "First delimiter is in marker; do not scan a second delimiter."
+    },
+    {
+      "id": "C13-bad-prefix",
+      "files": {
+        "requirements.txt": "??? # note\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "No valid requirement prefix; preserve raw diagnostic."
+    },
+    {
+      "id": "C14-original-at-route",
+      "files": {
+        "requirements.txt": "torch==2.5.1 # contact @ team\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Original literal space-at-space route excludes line before new logic."
+    },
+    {
+      "id": "C15-adjacent-url-comment",
+      "files": {
+        "requirements.txt": "torch@https://example.invalid/a.whl # note\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "New prefix URL prohibited even without literal space-at-space."
+    },
+    {
+      "id": "C16-near-url-comment",
+      "files": {
+        "requirements.txt": "torch @https://example.invalid/a.whl # note\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Second URL spacing control; no new URL handling."
+    },
+    {
+      "id": "C17-existing-url",
+      "files": {
+        "requirements.txt": "torch@https://example.invalid/a.whl#frag\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "fail"
+        ],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Current accepted URL remains accepted and nonexact."
+    },
+    {
+      "id": "C18-include-comment",
+      "files": {
+        "requirements.txt": "-r pins.txt # note\n",
+        "pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Do not extend include grammar or read excluded syntax target."
+    },
+    {
+      "id": "C19-directives",
+      "files": {
+        "requirements.txt": "--index-url https://example.invalid/simple # note\n-e . # note\n-c pins.txt # note\n",
+        "pins.txt": "torch==2.5.1\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "No option/editable/constraint support."
+    },
+    {
+      "id": "C20-continuation",
+      "files": {
+        "requirements.txt": "torch==\\\n2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "No physical line joining."
+    },
+    {
+      "id": "C21-comment-backslash",
+      "files": {
+        "requirements.txt": "# comment\\\ntorch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Conservative future file-wide veto includes full-line comment backslash."
+    },
+    {
+      "id": "C22-later-backslash",
+      "files": {
+        "requirements.txt": "torch==2.5.1 # pin\n# comment\\\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Future veto sees entire captured file, including later physical line."
+    },
+    {
+      "id": "C23-double-backslash",
+      "files": {
+        "requirements.txt": "# comment\\\\\ntorch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Future veto deliberately does not interpret escaped backslashes."
+    },
+    {
+      "id": "C24-separate-files",
+      "files": {
+        "requirements.txt": "# comment\\\ntorch==2.5.1 # pin\n",
+        "requirements-extra.txt": "peft==0.12.0 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Future veto stays per file; separate root still eligible."
+    },
+    {
+      "id": "C25-child-closure",
+      "files": {
+        "requirements.txt": "-r deps/pins.txt\n",
+        "deps/pins.txt": "torch==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Future newly exact child may qualify parent closure and remove ancestor incomplete diagnostic."
+    },
+    {
+      "id": "C26-independent-old-credit",
+      "files": {
+        "requirements.txt": "torch==2.5.1\npeft==0.12.0 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Keep already captured exact credit despite other unsupported line."
+    },
+    {
+      "id": "C27-manager-isolation",
+      "files": {
+        "requirements.txt": "# empty\n",
+        "pyproject.toml": "[project]\nname=\"case\"\nversion=\"0.1\"\ndependencies=[\"torch==2.5.1 # pin\"]\n",
+        "environment.yml": "dependencies:\n  - pip:\n      - \"peft==0.12.0 # pin\"\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "PEP621 and embedded-pip strings must retain current behavior."
+    },
+    {
+      "id": "C28-body-failure-priority",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.5.1 # pin\n-r missing.txt\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "skipped"
+        ],
+        "body_issues": {
+          "missing.txt": "unreadable"
+        },
+        "frontier": []
+      },
+      "reason": "Current D-M skip; new positive exact would win without deleting body fact."
+    },
+    {
+      "id": "C29-depth-priority",
+      "files": {
+        "requirements.txt": "torch>=2\ntorch==2.5.1 # pin\n-r deps/0.txt\n",
+        "deps/0.txt": "-r 1.txt\n",
+        "deps/1.txt": "-r 2.txt\n",
+        "deps/2.txt": "-r 3.txt\n",
+        "deps/3.txt": "-r 4.txt\n",
+        "deps/4.txt": "-r 5.txt\n",
+        "deps/5.txt": "-r 6.txt\n",
+        "deps/6.txt": "-r 7.txt\n",
+        "deps/7.txt": "-r 8.txt\n",
+        "deps/8.txt": "-r 9.txt\n",
+        "deps/9.txt": "-r 10.txt\n",
+        "deps/10.txt": "peft>=0.12\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "skipped"
+        ],
+        "body_issues": {},
+        "frontier": [
+          "deps/10.txt"
+        ]
+      },
+      "reason": "Current D-G skip; new exact would retain positive-credit precedence."
+    },
+    {
+      "id": "C30-normalized-extras",
+      "files": {
+        "requirements.txt": "PyTorch[extra]==2.5.1 # pin\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Future normalize to torch but keep display, specifier, extras/physical source semantics."
+    },
+    {
+      "id": "C31-multiple-comments",
+      "files": {
+        "requirements.txt": "torch==2.5.1 # one # two\n"
+      },
+      "independent_expected_current": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "First eligible delimiter; no need parse comment content."
+    },
+    {
+      "id": "C32-no-new-veto-of-old",
+      "files": {
+        "requirements.txt": "torch==2.5.1\n# trailing\\\n"
+      },
+      "independent_expected_current": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "reason": "Veto affects only added support, never pre-existing successful lines."
+    }
+  ]
+}

@@ -176,6 +176,14 @@ Resume from the assigned session and its actual
 predecessor report, checking the current HEAD rather than resetting to the
 reviewed commit.
 
+The next local continuation is the [R07-C D-C P-A packet](reliability-2026-10-03/proposals/R07-C/requirements-comments/README.md)
+for bounded ordinary requirements inline comments. Its concrete A/B proposal,
+unapplied §12.2 patch, compatibility costs and independent acceptance expectations
+are **PROPOSED**, not implemented. The [preparation report](../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
+records unchanged-product observations and five-project source impact, including
+HarmBench's nonzero inventory/diagnostic delta. Specific acceptance is required
+before P-B; the preceding D-G delegation does not approve D-C or a release.
+
 ## Previous plans and delivery status
 
 The existing M1–M12 and UX plans remain historical task/acceptance records:

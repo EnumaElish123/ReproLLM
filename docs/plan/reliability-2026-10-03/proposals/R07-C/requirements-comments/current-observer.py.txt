@@ -1,0 +1,102 @@
+"""Observe unchanged current product; never run proposed comment preprocessing."""
+from pathlib import Path
+import dataclasses
+import hashlib
+import json
+import sys
+import time
+
+from reprollm.core.context import AuditContext
+from reprollm.core.deps import Declarations, _RequirementsGraph, scan_dependencies
+from reprollm.core.git import GitInfo
+from reprollm.core.pyscan import scan_python
+from reprollm.core.scanner import RepoScanner
+from reprollm.rules import env
+
+BASE = Path(__file__).parent
+REPO = Path.cwd()
+PACKET = REPO / "docs/plan/reliability-2026-10-03/proposals/R07-C/requirements-comments"
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+def guard(event, args):
+    if event.startswith("socket.") or event in {"subprocess.Popen", "os.system"}:
+        raise RuntimeError("No network or subprocess in current observer")
+    if event == "import" and str(args[0]).split(".", 1)[0] in {
+        "torch", "transformers", "vllm", "huggingface_hub", "numpy"
+    }:
+        raise RuntimeError("No target-library imports")
+sys.addaudithook(guard)
+env.installed_versions = lambda: {}
+class Scanner(RepoScanner):
+    def __init__(self, root):
+        super().__init__(root, GitInfo(is_repo=False))
+        self.reads = []
+    def read_text(self, rel_path, max_bytes=512*1024):
+        self.reads.append(rel_path)
+        return super().read_text(rel_path, max_bytes)
+
+baseline = json.loads((PACKET / "delivery-baseline.json").read_text(encoding="utf-8"))
+assert all(sha(REPO/p) == v for p, v in baseline["protected_file_sha256"].items())
+case_path = PACKET / "cases.json"
+cases_hash = sha(case_path)
+cases = json.loads(case_path.read_text(encoding="utf-8"))["cases"]
+records = []
+failures = []
+begun = time.perf_counter()
+for item in cases:
+    started = time.perf_counter()
+    root = BASE / "fixtures-r2" / item["id"]
+    root.mkdir(parents=True, exist_ok=False)
+    for name, body in item["files"].items():
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body.encode("utf-8"))
+    scanner = Scanner(root)
+    deps = scan_dependencies(scanner)
+    context = AuditContext(root, level=0)
+    context._git = GitInfo(is_repo=False)
+    context._fs = scanner
+    context._deps = deps
+    context._pyscan = scan_python(scanner)
+    critical = env.LlmCriticalDepsPinnedRule()
+    findings = critical.check(context)
+    projection = {"declarations": [[d.name, d.exact_version] for d in deps.declarations],
+        "critical_statuses": [f.status.value for f in findings],
+        "body_issues": deps.declaration_read_issues,
+        "frontier": list(deps.unexpanded_requirement_targets)}
+    match = projection == item["independent_expected_current"]
+    if not match:
+        failures.append({"id": item["id"], "expected": item["independent_expected_current"], "actual": projection})
+    graph_scanner = Scanner(root)
+    graph_result = Declarations()
+    graph = _RequirementsGraph(graph_scanner, graph_result)
+    roots = sorted(p for p in graph_scanner.analysis_files() if Path(p).name.startswith("requirements") and p.endswith(".txt"))
+    graph.parse(roots)
+    lock = env.LockfilePresentRule()
+    records.append({"id": item["id"], "projection_match": match, "projection": projection,
+        "elapsed_seconds": time.perf_counter()-started,
+        "declarations": [dataclasses.asdict(d) for d in deps.declarations],
+        "unparsed": deps.unparsed, "lockfiles": [{"path": l.path, "packages": sorted(l.packages), "read_issue": l.read_issue} for l in deps.lockfiles],
+        "manifest_present": deps.manifest_present,
+        "critical_applies": critical.applies(context),
+        "critical_findings": [f.model_dump(mode="json") for f in findings],
+        "lock_applies": lock.applies(context),
+        "lock_findings": [f.model_dump(mode="json") for f in lock.check(context)],
+        "read_trace": scanner.reads, "graph_read_trace": graph_scanner.reads,
+        "graph_nodes": {p: {"readable": n.readable,
+            "events": [dataclasses.asdict(e) if dataclasses.is_dataclass(e) else {"unsupported_text": e} for e in n.events]} for p,n in sorted(graph.nodes.items())},
+        "closures": {p: {"complete": c.complete, "sources": sorted(c.sources), "is_exact": c.is_exact, "packages": sorted(c.packages)} for p,c in sorted(graph.closures.items())},
+        "fixture_sha256": {p: hashlib.sha256(b.encode()).hexdigest() for p,b in item["files"].items()}})
+assert sha(case_path) == cases_hash
+assert all(sha(REPO/p) == v for p, v in baseline["protected_file_sha256"].items())
+report = {"schema_version": 1, "status": "CURRENT_PRODUCT_OBSERVATIONS_ONLY",
+    "base_head": baseline["base_head"], "future_policy_executions": 0,
+    "controls": ["GitInfo(is_repo=False)", "installed_versions={}", "network/process/heavy imports blocked", "no future comment preprocessing", "no profile/provider detection", "no engine/CLI PASS or exit-code claim"],
+    "cases_sha256": cases_hash, "observer_sha256": sha(Path(__file__)),
+    "projection_matches": len(records)-len(failures), "case_count": len(records),
+    "elapsed_seconds": time.perf_counter()-begun,
+    "failures": failures, "cases": records}
+(PACKET / "current-observations.json").write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+(PACKET / "current-observer.py.txt").write_bytes(Path(__file__).read_bytes())
+print(json.dumps({"cases": len(records), "projection_matches": report["projection_matches"], "failures": failures, "elapsed_seconds": report["elapsed_seconds"]}))
+raise SystemExit(bool(failures))

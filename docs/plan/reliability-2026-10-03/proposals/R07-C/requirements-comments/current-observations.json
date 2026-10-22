@@ -1,0 +1,2896 @@
+{
+  "schema_version": 1,
+  "status": "CURRENT_PRODUCT_OBSERVATIONS_ONLY",
+  "base_head": "e52e0a24f28fa3ef56cc8e49821962eb1c73869c",
+  "future_policy_executions": 0,
+  "controls": [
+    "GitInfo(is_repo=False)",
+    "installed_versions={}",
+    "network/process/heavy imports blocked",
+    "no future comment preprocessing",
+    "no profile/provider detection",
+    "no engine/CLI PASS or exit-code claim"
+  ],
+  "cases_sha256": "32d135247c321ff45dfaef3d7d9ab1aa2d18d7c749bec6d47e745f8f0b91f87b",
+  "observer_sha256": "4b808cf9f6f68b2d39b4dff0cf27a45ee2197adcb62350a3fb6461b368a9c8e1",
+  "projection_matches": 32,
+  "case_count": 32,
+  "elapsed_seconds": 0.2602855000004638,
+  "failures": [],
+  "cases": [
+    {
+      "id": "C01-exact-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "fail"
+        ],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005692300001101103,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "0b80fe94520d3766d7d4af728e691cd27c0885b6896d4e6468ff77590aa3476a"
+      }
+    },
+    {
+      "id": "C02-tab-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004469800000151736,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1\t# pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1\t# pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "9080dd99f0046151a9c8a61feb9c4de352df7df7ac34b28ed920d2f53b5edfb4"
+      }
+    },
+    {
+      "id": "C03-empty-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005207099999097409,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1 #"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1 #"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "cdaa747940130bb53075a04cefd353d6044cea090b688373a67deaa83b884b8a"
+      }
+    },
+    {
+      "id": "C04-new-loose-use",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004787400001077913,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: peft>=0.12 # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: peft>=0.12 # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "d1acda3d55cf87b3731dff96754e1dbb06b34c8c399b00000b049bae977b8bf7"
+      }
+    },
+    {
+      "id": "C05-new-unversioned-use",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.0046796000005997485,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: peft # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: peft # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "30fda3f959ebb07e2a30e99d069a5bf727d6be164ea8c360f2a39a2c34b0260d"
+      }
+    },
+    {
+      "id": "C06-original-exact",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005045099998824298,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [],
+      "lockfiles": [
+        {
+          "path": "requirements.txt",
+          "packages": [
+            "torch"
+          ],
+          "read_issue": null
+        }
+      ],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 1
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": true,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "C07-whole-comments",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004910199999358156,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 4
+        }
+      ],
+      "unparsed": [],
+      "lockfiles": [
+        {
+          "path": "requirements.txt",
+          "packages": [
+            "torch"
+          ],
+          "read_issue": null
+        }
+      ],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 4
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": true,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "edc99f30dbcca81432b2401694a2f5974e7e738979c539aa34b3971c4f2dd522"
+      }
+    },
+    {
+      "id": "C08-no-space",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004668399998990935,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1#pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1#pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "180d782543e75f34fb2185695f0901d9f52c353ef23f87c56db06e35399044a6"
+      }
+    },
+    {
+      "id": "C09-nbsp",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004676399999880232,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "d133f80d4357e4290c14d3b963238d137649e0ddeaf531cf6c4fdcad03dc4330"
+      }
+    },
+    {
+      "id": "C10-marker-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004924999999275315,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1; os_name == \"posix\" # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1; os_name == \"posix\" # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "a8ca52783d40ce5ffcdb8e9b158912f693386bbf5f2605f68f88e5c3f0298286"
+      }
+    },
+    {
+      "id": "C11-quoted-marker",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004695300000093994,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [],
+      "lockfiles": [
+        {
+          "path": "requirements.txt",
+          "packages": [
+            "torch"
+          ],
+          "read_issue": null
+        }
+      ],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 1
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": true,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "ac57ca49fadc38eec88e824e55dcc0ba3e08e5f60db7aca0f1c659989cc03374"
+      }
+    },
+    {
+      "id": "C12-first-delimiter-invalid",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.0049291999985143775,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1; os_name == \"x # y\" # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1; os_name == \"x # y\" # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "2411030fb6afd968436839454cf3d0dffd14bdf2dd210824569afb34e0b7567c"
+      }
+    },
+    {
+      "id": "C13-bad-prefix",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005050100000516977,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: ??? # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: ??? # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "212c95fb18ebd7f12d17387041b5869cf3e83705dec4d21343f989879870b663"
+      }
+    },
+    {
+      "id": "C14-original-at-route",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004694899998867186,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1 # contact @ team"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1 # contact @ team"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "9dccf27e2a50b14bdb55b4af6c2568ba1911ceecba1fe10d59144244d1f22f10"
+      }
+    },
+    {
+      "id": "C15-adjacent-url-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.00446150000061607,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch@https://example.invalid/a.whl # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch@https://example.invalid/a.whl # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "f4d7f28246ac27266d17330e2e66e114bcb3b69cd9aa7d3baeb836ef26600f79"
+      }
+    },
+    {
+      "id": "C16-near-url-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004450799999176525,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch @https://example.invalid/a.whl # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch @https://example.invalid/a.whl # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "e22b03fb689b605c92ccc89e485b0367b09ff1b19cbfb7534713768584a44d91"
+      }
+    },
+    {
+      "id": "C17-existing-url",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "fail"
+        ],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004420799999934388,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": null,
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": "(no version)",
+              "expected": null,
+              "note": "declared as unversioned"
+            }
+          ],
+          "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": null,
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "deb1df6723a0e974dfbf801831aa9bc420cebf1dce3eb607183510d9f457235d"
+      }
+    },
+    {
+      "id": "C18-include-comment",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005806099999972503,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: include unsupported syntax"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": null,
+              "error": "include unsupported syntax"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "665a219e0631300490d1878f78f8598f05660b0e16b5a32a25c4a842c6bf3632",
+        "pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "C19-directives",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.006332199998723809,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: --index-url https://example.invalid/simple # note",
+        "requirements.txt:2: -e . # note",
+        "requirements.txt:3: -c pins.txt # note"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: --index-url https://example.invalid/simple # note"
+            },
+            {
+              "unsupported_text": "requirements.txt:2: -e . # note"
+            },
+            {
+              "unsupported_text": "requirements.txt:3: -c pins.txt # note"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "1df9e6bbf954e0e405a859776dfbeb6074bff8303bf917e1fa841ceb410e72a4",
+        "pins.txt": "8049eb34ab1429faf23b56ab9d5edc0b20ef0e2d9a98f319eec5505a7277850e"
+      }
+    },
+    {
+      "id": "C20-continuation",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004704500001025735,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==\\",
+        "requirements.txt:2: 2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==\\"
+            },
+            {
+              "unsupported_text": "requirements.txt:2: 2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "e5612c045e67caa58353570780459470300c5d93866d2d6294a14b223a67f41f"
+      }
+    },
+    {
+      "id": "C21-comment-backslash",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005341599999155733,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "4baaf81e482f3f1713565cfccc58e7ce1b5fd9dccb9cf1994f36b37ec87eb34d"
+      }
+    },
+    {
+      "id": "C22-later-backslash",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.0045922999997856095,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "e5ff88d138020c17690201f3f0d554fc135fb9b3c62d9d63ce2426543264a4ff"
+      }
+    },
+    {
+      "id": "C23-double-backslash",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004744199999549892,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "16497c42894c20a2f19b706187a5a4a3176c8491bccd58e08e576b91ae9ead78"
+      }
+    },
+    {
+      "id": "C24-separate-files",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.008876100000634324,
+      "declarations": [],
+      "unparsed": [
+        "requirements-extra.txt:1: peft==0.12.0 # pin",
+        "requirements.txt:2: torch==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements-extra.txt",
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements-extra.txt",
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements-extra.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements-extra.txt:1: peft==0.12.0 # pin"
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements-extra.txt": {
+          "complete": false,
+          "sources": [
+            "requirements-extra.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        },
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "4baaf81e482f3f1713565cfccc58e7ce1b5fd9dccb9cf1994f36b37ec87eb34d",
+        "requirements-extra.txt": "cb8bf1698ea409183558a0e21420bf3e81ee2c545c5a7a27fd3d5baa640f790a"
+      }
+    },
+    {
+      "id": "C25-child-closure",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.010947900000246591,
+      "declarations": [],
+      "unparsed": [
+        "deps/pins.txt:1: torch==2.5.1 # pin",
+        "requirements.txt:1: include incomplete"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt",
+        "deps/pins.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt",
+        "deps/pins.txt"
+      ],
+      "graph_nodes": {
+        "deps/pins.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "deps/pins.txt:1: torch==2.5.1 # pin"
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/pins.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/pins.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "405708852fe2000f40c5ea9faed7f3685df1415271894e26bb2098d3536e5c87",
+        "deps/pins.txt": "260354097a48b1ce26fec3fbee6b74698c32accb188e669b1ac8917d9b3a7106"
+      }
+    },
+    {
+      "id": "C26-independent-old-credit",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.005186200000025565,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [
+        "requirements.txt:2: peft==0.12.0 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: peft==0.12.0 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "6b1dec4fb30fe7740231728a02883e2b7a53d2eb6b9ea550c5c5140b73907ee2"
+      }
+    },
+    {
+      "id": "C27-manager-isolation",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.009351599999718019,
+      "declarations": [],
+      "unparsed": [
+        "pyproject.toml:4: torch==2.5.1 # pin",
+        "environment.yml:1: peft==0.12.0 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "pyproject.toml",
+        "requirements.txt",
+        "environment.yml"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": []
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "f7ff302fd49cbfcfc2b3c1c9c891c6bf1d6fc1712bb2ebe5b00a8d64b709411d",
+        "pyproject.toml": "5d22549a25b5b0913e07b9fc0d0e4eebb3167dc195ffe6934465dc6f432f241a",
+        "environment.yml": "f886c642a8bf9c7010422815a6ba2518b4726cfe3546828306fced1e1a06ac9d"
+      }
+    },
+    {
+      "id": "C28-body-failure-priority",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "skipped"
+        ],
+        "body_issues": {
+          "missing.txt": "unreadable"
+        },
+        "frontier": []
+      },
+      "elapsed_seconds": 0.00792639999963285,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin",
+        "requirements.txt:3: include unreadable"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "INFO",
+          "status": "skipped",
+          "level": 0,
+          "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            },
+            {
+              "kind": "file",
+              "path": "missing.txt",
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "torch possible exact declaration unverified"
+            }
+          ],
+          "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt",
+        "missing.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt",
+        "missing.txt"
+      ],
+      "graph_nodes": {
+        "missing.txt": {
+          "readable": false,
+          "events": []
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            },
+            {
+              "line": 3,
+              "target": "missing.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "bd512bfb61dc1b262bbe98a8dc2869cefb8e7d32e670689e437f1bdda85845d7"
+      }
+    },
+    {
+      "id": "C29-depth-priority",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            null
+          ]
+        ],
+        "critical_statuses": [
+          "skipped"
+        ],
+        "body_issues": {},
+        "frontier": [
+          "deps/10.txt"
+        ]
+      },
+      "elapsed_seconds": 0.05921699999998964,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": ">=2",
+          "exact_version": null,
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [
+        "requirements.txt:2: torch==2.5.1 # pin",
+        "deps/9.txt:1: include depth limit",
+        "deps/8.txt:1: include incomplete",
+        "deps/7.txt:1: include incomplete",
+        "deps/6.txt:1: include incomplete",
+        "deps/5.txt:1: include incomplete",
+        "deps/4.txt:1: include incomplete",
+        "deps/3.txt:1: include incomplete",
+        "deps/2.txt:1: include incomplete",
+        "deps/1.txt:1: include incomplete",
+        "deps/0.txt:1: include incomplete",
+        "requirements.txt:3: include incomplete"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [
+        {
+          "rule_id": "env.llm_critical_deps_pinned",
+          "aliases": [],
+          "category": "env",
+          "severity": "INFO",
+          "status": "skipped",
+          "level": 0,
+          "message": "torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": "requirements.txt",
+              "field": null,
+              "line": 1,
+              "value": ">=2",
+              "expected": null,
+              "note": "declared as >=2"
+            },
+            {
+              "kind": "file",
+              "path": "deps/10.txt",
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "torch include target unexpanded at the depth limit"
+            }
+          ],
+          "fix_hint": "Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt",
+        "deps/0.txt",
+        "deps/1.txt",
+        "deps/2.txt",
+        "deps/3.txt",
+        "deps/4.txt",
+        "deps/5.txt",
+        "deps/6.txt",
+        "deps/7.txt",
+        "deps/8.txt",
+        "deps/9.txt"
+      ],
+      "graph_nodes": {
+        "deps/0.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/1.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/1.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/2.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/2.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/3.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/3.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/4.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/4.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/5.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/5.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/6.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/6.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/7.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/7.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/8.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/8.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/9.txt",
+              "error": null
+            }
+          ]
+        },
+        "deps/9.txt": {
+          "readable": true,
+          "events": [
+            {
+              "line": 1,
+              "target": "deps/10.txt",
+              "error": null
+            }
+          ]
+        },
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": ">=2",
+              "exact_version": null,
+              "source_file": "requirements.txt",
+              "line": 1
+            },
+            {
+              "unsupported_text": "requirements.txt:2: torch==2.5.1 # pin"
+            },
+            {
+              "line": 3,
+              "target": "deps/0.txt",
+              "error": null
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "deps/0.txt",
+            "deps/1.txt",
+            "deps/2.txt",
+            "deps/3.txt",
+            "deps/4.txt",
+            "deps/5.txt",
+            "deps/6.txt",
+            "deps/7.txt",
+            "deps/8.txt",
+            "deps/9.txt",
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "4211ac0bf54229ffe1fa99ca73a03ab7f7df7cfeda27640a11966eab466d5390",
+        "deps/0.txt": "808e7074132d8fd9f7a50037fb730a2253b269cba77580affb313075568ea13f",
+        "deps/1.txt": "246811216de427f220568770ade751486fdc500a4df968b330226333e831d874",
+        "deps/2.txt": "31e0ba43e0819ead7accc8c6e20157ad692d9468663c1828df29e9552ca0ad8b",
+        "deps/3.txt": "71e1d098f8d9adfa8dd52092c190830cb1d88744bbce88984bb8ca9df1f1dd1c",
+        "deps/4.txt": "cbfd96ab0e0d1ee18630bfa9382b427532227b890852a2c48ea405448a049e91",
+        "deps/5.txt": "1f6b2388794ffd6fa6e1b3e3e6c9246e1ed6931d7c738eb5a06cc1948b6df273",
+        "deps/6.txt": "e1eb2115ea707a7e50b9ac92876a918c15f228fa9273a2cfb024f4af3bda33de",
+        "deps/7.txt": "29b80b45cffdc08d8921409fb91ca4b6004f5576748bc60540a303eb2b3cd0ca",
+        "deps/8.txt": "25f4ad74a4a4b0a20e8810d8dc7711f440349a3d9c5482c2f6d7dbe43c64c27c",
+        "deps/9.txt": "bd549d258f0fef997db0c5c59da8c69228ac5585f9c44a92868f904b5a36d1c7",
+        "deps/10.txt": "7902f64d022bccafed98e31db67b1e9993c14a85af8d58b7649ac1653797aa53"
+      }
+    },
+    {
+      "id": "C30-normalized-extras",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.004497500000070431,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: PyTorch[extra]==2.5.1 # pin"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: PyTorch[extra]==2.5.1 # pin"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "867852abc3b564d7aa95baa9213d9d67bacd7556f53a99cdc22d18936cbb66db"
+      }
+    },
+    {
+      "id": "C31-multiple-comments",
+      "projection_match": true,
+      "projection": {
+        "declarations": [],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.0044165000017528655,
+      "declarations": [],
+      "unparsed": [
+        "requirements.txt:1: torch==2.5.1 # one # two"
+      ],
+      "lockfiles": [],
+      "manifest_present": true,
+      "critical_applies": false,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [
+        {
+          "rule_id": "env.lockfile_present",
+          "aliases": [],
+          "category": "env",
+          "severity": "WARNING",
+          "status": "fail",
+          "level": 0,
+          "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+          "evidence": [
+            {
+              "kind": "file",
+              "path": null,
+              "field": null,
+              "line": null,
+              "value": null,
+              "expected": null,
+              "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements"
+            }
+          ],
+          "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+          "profile_origin": [],
+          "severity_origin": "default",
+          "suppressed_reason": null
+        }
+      ],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "unsupported_text": "requirements.txt:1: torch==2.5.1 # one # two"
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": false,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": false,
+          "packages": []
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "3c852b55904f9f0f61da9c0525e1acfcc0934c1f3f708cf1bb41ec2819ce5394"
+      }
+    },
+    {
+      "id": "C32-no-new-veto-of-old",
+      "projection_match": true,
+      "projection": {
+        "declarations": [
+          [
+            "torch",
+            "2.5.1"
+          ]
+        ],
+        "critical_statuses": [],
+        "body_issues": {},
+        "frontier": []
+      },
+      "elapsed_seconds": 0.00485339999977441,
+      "declarations": [
+        {
+          "name": "torch",
+          "display_name": "torch",
+          "specifier": "==2.5.1",
+          "exact_version": "2.5.1",
+          "source_file": "requirements.txt",
+          "line": 1
+        }
+      ],
+      "unparsed": [],
+      "lockfiles": [
+        {
+          "path": "requirements.txt",
+          "packages": [
+            "torch"
+          ],
+          "read_issue": null
+        }
+      ],
+      "manifest_present": true,
+      "critical_applies": true,
+      "critical_findings": [],
+      "lock_applies": true,
+      "lock_findings": [],
+      "read_trace": [
+        "requirements.txt"
+      ],
+      "graph_read_trace": [
+        "requirements.txt"
+      ],
+      "graph_nodes": {
+        "requirements.txt": {
+          "readable": true,
+          "events": [
+            {
+              "name": "torch",
+              "display_name": "torch",
+              "specifier": "==2.5.1",
+              "exact_version": "2.5.1",
+              "source_file": "requirements.txt",
+              "line": 1
+            }
+          ]
+        }
+      },
+      "closures": {
+        "requirements.txt": {
+          "complete": true,
+          "sources": [
+            "requirements.txt"
+          ],
+          "is_exact": true,
+          "packages": [
+            "torch"
+          ]
+        }
+      },
+      "fixture_sha256": {
+        "requirements.txt": "24adc02da5664e0944039a33f95c78b5ec4d53154abf10da480f88771a805cc0"
+      }
+    }
+  ]
+}
