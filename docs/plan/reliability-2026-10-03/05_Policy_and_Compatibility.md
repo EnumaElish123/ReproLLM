@@ -230,17 +230,19 @@ D-C 于 2026-10-22 启动、2026-10-23 完成本地验收。维护者已[明确�
 HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预期完整验证。最终推送 head 的五项 CI 和 Linux 精确 schema 检查在交付时另行核验。
 [P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)和原 PROPOSED 材料保留准备时快照；其余 R07-C 仍 OPEN，资源阻塞不关闭，不发布版本。
 
-### R07-C D-M-P：PEP 621 字符串失败 P-A（2026-10-23）
+### R07-C D-M-P：PEP 621 字符串失败 P-B（2026-10-23）
 
-D-C 后接续的[局部 P-A](proposals/R07-C/pep621-strings/README.md)只准备两个既有 PEP 621
-解析调用的真实失败；推荐 A 内部 `unparsed_requirement` 并复用 D-M，
-保留部分提取、既有信用和优先级。[具体规范补丁](proposals/R07-C/pep621-strings/spec-proposed.patch)
-未应用，决定仍 PROPOSED／accepted=false，候选政策执行数 0。
-[会话报告](../../dogfooding/2026-10-23-r07c-pep621-strings-pa.md)记录当前源码观察、
-证据版号修复、五项目163条字符串来源和38项未来验收，不等于新政策验收。
-需要具体接受 A、精确补丁及空白／无关项目失败也可全仓 WARNING→SKIPPED、
-孤立门 exit 1→0 的保守成本后进入 P-B。旧 D-G/D-C 裁决不扩张至本片。
-本轮按文稿例外核验，不宣称产品质量门或 fresh Gate A PASS；其余 R07-C 和资源阻塞保持，不发布版本。
+维护者在具体 A、精确补丁和全仓保守成本交付后指示继续下一步；
+[接受记录](proposals/R07-C/pep621-strings/decision-accepted.json)如实记为本片上下文授权，不伪造逐字“接受 A”。
+产品提交 `26a4d30` 仅将两个现有 PEP 621 调用的实际失败记为内部 `unparsed_requirement`，
+复用 D-M，保留部分声明、已有原因、信用及优先级。规范补丁已应用，包含空白／无关项目失败
+也可全仓 WARNING→SKIPPED、孤立 exit 1→0 的成本。
+[P-B 报告](../../dogfooding/2026-10-23-r07c-pep621-strings-pb/README.md)记录 170 个新增用例、
+完整失败／修正历史、最终质量门、五项目 Gate A、受影响验证、24 份完整内部记录与归档回读，均本地 PASS。
+精确最终推送 HEAD 的五项 CI 与 Linux schema 检查在交付时另核。
+原 [P-A](proposals/R07-C/pep621-strings/README.md)、PROPOSED 决定和观察保留历史字节。
+下一片仅准备 environment 嵌入 pip 真实解析失败的独立 P-A，先核其跳过空白／strip、信用和原因优先级，
+不得自动套用本片空白触发或授权。更广 R07-C 仍 OPEN；资源与外部反馈阻塞保留，不发布版本。
 
 ### 当前问题与推荐原则
 

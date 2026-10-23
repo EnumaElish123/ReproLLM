@@ -187,15 +187,19 @@ and original PROPOSED packet retain their historical observations; broader R07-C
 resource blockers, independent adoption feedback and release remain separately bounded.
 
 
-The next bounded R07-C [D-M-P P-A packet](reliability-2026-10-03/proposals/R07-C/pep621-strings/README.md)
-covers actual PEP 621 requirement-string parse failures only. It is **PROPOSED**:
-the [exact specification patch](reliability-2026-10-03/proposals/R07-C/pep621-strings/spec-proposed.patch)
-remains unapplied, option A unaccepted and candidate-policy executions zero.
-The [P-A report](../dogfooding/2026-10-23-r07c-pep621-strings-pa.md) records current-source observations,
-a preserved evidence-version repair, 163 independently parsed portfolio strings and future acceptance.
-Specific acceptance of A, its patch and repository-wide conservative costs is required before P-B.
-This documentation session does not claim fresh product Gate A or resource acceptance.
-Broader R07-C, resource blockers and release remain separately bounded.
+The maintainer directed the specific D-M-P P-B next step after receiving option A,
+its exact patch and conservative costs; the [acceptance record](reliability-2026-10-03/proposals/R07-C/pep621-strings/decision-accepted.json)
+records that contextual authorization without inventing a verbatim acceptance quote.
+P-B implements only the two PEP 621 parse-failure sites at `26a4d30`, retaining
+partial declarations, credit and existing D-M priority. The [P-B report](../dogfooding/2026-10-23-r07c-pep621-strings-pb/README.md)
+records 170 new cases, corrected final quality, fresh five-project Gate A and
+affected checks, 24 complete internal records, final identities and independent archive readback.
+All applicable local gates pass; exact pushed-head five-job CI is checked separately at delivery.
+The [P-A packet](reliability-2026-10-03/proposals/R07-C/pep621-strings/README.md),
+PROPOSED decision and original observations remain immutable historical snapshots.
+Next, prepare an independent P-A for environment embedded-pip parse failures,
+preserving its existing blank filtering and strip behavior; this authorization does not approve that policy.
+Broader R07-C, resource blockers, independent adoption and release remain separately bounded.
 
 ## Previous plans and delivery status
 

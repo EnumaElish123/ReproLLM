@@ -139,13 +139,18 @@ schema verification are independently checked at delivery. The [P-A report](../.
 and original PROPOSED packet remain historical snapshots. Other R07-C policy, resource
 gates, real adoption and version release remain separately bounded.
 
-## R07-C PEP 621 requirement-string failures P-A (2026-10-23)
+## R07-C PEP 621 requirement-string failures P-B (2026-10-23)
 
-The next [D-M-P proposal](proposals/R07-C/pep621-strings/README.md) is **PROPOSED**;
-option A and the exact patch remain unaccepted/unapplied. The [P-A report](../../dogfooding/2026-10-23-r07c-pep621-strings-pa.md)
-records 24 current-source projections in each of two metadata-disclosed observations,
-five-project independent source evidence and 38 future acceptance cases, not a candidate implementation.
-Only two existing PEP 621 parse-failure sites are proposed; other managers and broader R07-C remain OPEN.
-Specific acceptance includes the conservative repository-wide cost before P-B.
-This documentation-only session has no fresh product quality/Gate A or resource PASS.
-No paid API, external submission or version release is authorized.
+The [contextual acceptance record](proposals/R07-C/pep621-strings/decision-accepted.json)
+binds the maintainer's specific next-step direction to the presented A and exact patch,
+including repository-wide WARNING-to-SKIPPED and isolated exit 1-to-0 costs.
+Implementation at `26a4d30` changes only the two existing PEP 621 parse-failure sites;
+partial declarations, prior causes, credit and rule priority remain.
+The [P-B report](../../dogfooding/2026-10-23-r07c-pep621-strings-pb/README.md) records
+170 new cases, final full quality, fresh five-project Gate A, affected checks,
+24 complete internal records and archive readback, all locally PASS.
+Exact final-head five-job CI and Linux exact schema are checked at delivery.
+The [P-A packet](proposals/R07-C/pep621-strings/README.md) remains an immutable historical snapshot.
+The next bounded work is an independent environment embedded-pip parse-failure P-A,
+not implementation or automatic extension of PEP 621 blank-string behavior.
+Other R07-C, resource validation, external adoption and version release remain bounded.
