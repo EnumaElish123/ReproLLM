@@ -197,8 +197,13 @@ affected checks, 24 complete internal records, final identities and independent 
 All applicable local gates pass; exact pushed-head five-job CI is checked separately at delivery.
 The [P-A packet](reliability-2026-10-03/proposals/R07-C/pep621-strings/README.md),
 PROPOSED decision and original observations remain immutable historical snapshots.
-Next, prepare an independent P-A for environment embedded-pip parse failures,
-preserving its existing blank filtering and strip behavior; this authorization does not approve that policy.
+The next [D-M-E P-A packet](reliability-2026-10-03/proposals/R07-C/environment-pip/README.md)
+is prepared and **PROPOSED**. It records 27 current-source cases with two designated
+162-assertion replays, 38 future acceptance rows and five-pin source-only zero-trigger evidence.
+The exact §12.3.10 patch remains unapplied; option A is unaccepted and candidate-policy executions are zero.
+Follow the [P-A report](../dogfooding/2026-10-23-r07c-environment-pip-pa.md).
+Specific acceptance of A, its patch and repository-wide conservative costs is required before P-B.
+Blank filtering and strip behavior remain; no new pip grammar or resource/release authorization follows.
 Broader R07-C, resource blockers, independent adoption and release remain separately bounded.
 
 ## Previous plans and delivery status

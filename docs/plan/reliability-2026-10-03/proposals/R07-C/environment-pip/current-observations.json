@@ -1,0 +1,5850 @@
+{
+  "assertion_count": 162,
+  "assertions_passed": true,
+  "baseline_commit": "72bf2fc150b8b00cc32a5a75d2ffa13387edbc3e",
+  "case_count": 27,
+  "case_plan_sha256": "decaf1d4a3add1d19dc1f2778497fcd97636d63e7ca968f92226fe110e2747d5",
+  "controls": {
+    "candidate_policy_executed": false,
+    "heavy_import_guard": true,
+    "installed_versions": {},
+    "network_and_subprocess_guard": true,
+    "real_non_git_scanner": true,
+    "synthetic_coverage_gap_cases": [
+      "E20",
+      "E22"
+    ]
+  },
+  "imported_product_modules": {
+    "reprollm": {
+      "path": "src/reprollm/__init__.py",
+      "sha256": "bef73bca093b5a6db9c110de73da7751f8fc04819ab709f56d661481f1c6a401"
+    },
+    "reprollm.core": {
+      "path": "src/reprollm/core/__init__.py",
+      "sha256": "5bb8ca3452e649857fa1ae76153b20aa87a67e68c723483fee183616937ee8ca"
+    },
+    "reprollm.core._toml": {
+      "path": "src/reprollm/core/_toml.py",
+      "sha256": "574af7030aaaab1b0b1b7a7d10ffe6e402a8c7af544e7978419bcaa126bc953b"
+    },
+    "reprollm.core.bindings": {
+      "path": "src/reprollm/core/bindings.py",
+      "sha256": "18ddc106adc8f8dc0eaeda0636e281d21dcbff54da915645522a48a66c724e10"
+    },
+    "reprollm.core.configread": {
+      "path": "src/reprollm/core/configread.py",
+      "sha256": "7bbe3824c0797258a24f04b52e40ab94c6b815052594bbfe27f717c50ab8448f"
+    },
+    "reprollm.core.context": {
+      "path": "src/reprollm/core/context.py",
+      "sha256": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b"
+    },
+    "reprollm.core.deps": {
+      "path": "src/reprollm/core/deps.py",
+      "sha256": "3c4dd9299698014516cdecfaef52aca59ed23528bbd2dbe04933fcd3f11c339b"
+    },
+    "reprollm.core.envinfo": {
+      "path": "src/reprollm/core/envinfo.py",
+      "sha256": "42cc5a068419f7f383a338fe0bfd4f9b0525ad138a8f6a36ebcda2a44647f7a8"
+    },
+    "reprollm.core.errors": {
+      "path": "src/reprollm/core/errors.py",
+      "sha256": "9611540a77232abae2b7f566c43895f59be5144be18a0221ec57a414fa414cb8"
+    },
+    "reprollm.core.git": {
+      "path": "src/reprollm/core/git.py",
+      "sha256": "40e013ffbebf0cc31ea464d288d49cdfe3d6998676757ab719b93c5a48347284"
+    },
+    "reprollm.core.hashing": {
+      "path": "src/reprollm/core/hashing.py",
+      "sha256": "16b0969f352b1ed980fb7609521afd4b5d324154cb6594c9fdd830d74d5ea281"
+    },
+    "reprollm.core.paths": {
+      "path": "src/reprollm/core/paths.py",
+      "sha256": "8aa6d0fad401e96a42ebe0a810c79d1a6f0fdf3c9a4949c9210a6cb95d0148cc"
+    },
+    "reprollm.core.persistence": {
+      "path": "src/reprollm/core/persistence.py",
+      "sha256": "7e64d00fce007e04631d7c1751e4c43aa5bbadb350096e343c51a5b207f228c8"
+    },
+    "reprollm.core.proc": {
+      "path": "src/reprollm/core/proc.py",
+      "sha256": "e54168aded3045c0e5a82e19ac84200f9cd49590ecaf22af5594c55b70353354"
+    },
+    "reprollm.core.pyscan": {
+      "path": "src/reprollm/core/pyscan.py",
+      "sha256": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273"
+    },
+    "reprollm.core.redaction": {
+      "path": "src/reprollm/core/redaction.py",
+      "sha256": "cd3c2cbfbb3f94d75cec04417693d6be6bcf4887ce1e275f4a6d2196a3fda74f"
+    },
+    "reprollm.core.registry": {
+      "path": "src/reprollm/core/registry.py",
+      "sha256": "91b86c0cf771df769ee8f48d8fb1b33307182c13510c3e1c3aa0f047e8107638"
+    },
+    "reprollm.core.scanner": {
+      "path": "src/reprollm/core/scanner.py",
+      "sha256": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503"
+    },
+    "reprollm.profiles": {
+      "path": "src/reprollm/profiles/__init__.py",
+      "sha256": "a2e3d44e337521d8756cb5ab08d40805b7f47b8feed735a42a97a2ceb8adfc92"
+    },
+    "reprollm.profiles.loader": {
+      "path": "src/reprollm/profiles/loader.py",
+      "sha256": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758"
+    },
+    "reprollm.profiles.policy": {
+      "path": "src/reprollm/profiles/policy.py",
+      "sha256": "3a5704f059ad5a395a62bdfc0b40c23f57adcafa795f2045e17941d0615f8838"
+    },
+    "reprollm.rules": {
+      "path": "src/reprollm/rules/__init__.py",
+      "sha256": "539ed4ec9911555f19c6417ba853f97862c7d655ed49f06e083a17b3adeaea8f"
+    },
+    "reprollm.rules._api": {
+      "path": "src/reprollm/rules/_api.py",
+      "sha256": "c0877c2dfeb92fde676f0488d76094d4c340a204a1e1bae88c63ad8b62b8769a"
+    },
+    "reprollm.rules._lock": {
+      "path": "src/reprollm/rules/_lock.py",
+      "sha256": "95cb9491023c676a918a600ed7366b51da9a4bf24ac2683e57254f4391bdea1a"
+    },
+    "reprollm.rules._presence": {
+      "path": "src/reprollm/rules/_presence.py",
+      "sha256": "06460fcaf3873be25d4f5659e0cc3e5105e3d5bf0d53998c91243a28628a5b41"
+    },
+    "reprollm.rules.code": {
+      "path": "src/reprollm/rules/code.py",
+      "sha256": "306db335dfbf2d18a23cf5070ec734c9f2e0045c603e1c5e1064d58a16a30060"
+    },
+    "reprollm.rules.consistency": {
+      "path": "src/reprollm/rules/consistency.py",
+      "sha256": "8a8ef534a8031a91941b4d5f3565c406d0dbca19e1e555c3d8614fc2287fa667"
+    },
+    "reprollm.rules.dataset": {
+      "path": "src/reprollm/rules/dataset.py",
+      "sha256": "d46cea065b332a883579ae6c122ebe246eb09b36005c82859092846e7c74c239"
+    },
+    "reprollm.rules.env": {
+      "path": "src/reprollm/rules/env.py",
+      "sha256": "14212913b79f3d53862173e4e316fa3d0177a8609354208de9a6b3834c97d995"
+    },
+    "reprollm.rules.eval_": {
+      "path": "src/reprollm/rules/eval_.py",
+      "sha256": "32e6f420daeffec6570cf2ed91226d7ca9296363ea9585e77d104485a1299b15"
+    },
+    "reprollm.rules.exec_": {
+      "path": "src/reprollm/rules/exec_.py",
+      "sha256": "14475250422e84feb6342078e1263fc9041cb84e400b262625107d8704f23ea0"
+    },
+    "reprollm.rules.gen": {
+      "path": "src/reprollm/rules/gen.py",
+      "sha256": "541c358b20a2855c3f05cff31a4eea22389587939b63bb810c5406e7a0a417be"
+    },
+    "reprollm.rules.judge": {
+      "path": "src/reprollm/rules/judge.py",
+      "sha256": "4207e0c887a0616108aa5ded8cf8ccbda8c89953a7bacc1aedc3edbf395f80b5"
+    },
+    "reprollm.rules.model": {
+      "path": "src/reprollm/rules/model.py",
+      "sha256": "84d6f31cf7ff31fb1f3e257a269f5e0a55c3194b1aed4f722cdf9698b196e4f5"
+    },
+    "reprollm.rules.privacy": {
+      "path": "src/reprollm/rules/privacy.py",
+      "sha256": "34fe77a6b3b89a6d8414b297fbd408bd42f84cdd43081cdc11df5d1e3b35a4b4"
+    },
+    "reprollm.rules.prompt": {
+      "path": "src/reprollm/rules/prompt.py",
+      "sha256": "bebe9bbb0285df58b288ee43caff58f0caedd4a08651fd4850e5015634a0a460"
+    },
+    "reprollm.rules.train": {
+      "path": "src/reprollm/rules/train.py",
+      "sha256": "53610587ff81519f081c7938a2d9cfd296962bf551cfbbcf34944627a99c9343"
+    },
+    "reprollm.run": {
+      "path": "src/reprollm/run/__init__.py",
+      "sha256": "0dbfa51ccd8aab76dbf440ab93176778d98240d40e35146724f9e3fcaeae72b4"
+    },
+    "reprollm.run.codec": {
+      "path": "src/reprollm/run/codec.py",
+      "sha256": "be0d1e2add84b69d3ddb7ab244ac011a0a9b00bb66728b649969b7ea0ac30275"
+    },
+    "reprollm.run.contextual_text": {
+      "path": "src/reprollm/run/contextual_text.py",
+      "sha256": "de02403895c920c2be3fa675026349b43c6fb43287f905d1da0353fd3f33230e"
+    },
+    "reprollm.run.json_text": {
+      "path": "src/reprollm/run/json_text.py",
+      "sha256": "165d1463c0b2cb5968c7efb000ad5773c24eb96cd9925386b1192d45a617bf5f"
+    },
+    "reprollm.run.privacy": {
+      "path": "src/reprollm/run/privacy.py",
+      "sha256": "768a801b7cb9ae33064fe8a0e317c03df121021583cbdff6375ca92ee371d463"
+    },
+    "reprollm.run.python_text": {
+      "path": "src/reprollm/run/python_text.py",
+      "sha256": "f7f58ef3a7b70b93bcdfd42e99ecadd9cc6388517a860ca854f7b4dbe28a3158"
+    },
+    "reprollm.run.reader": {
+      "path": "src/reprollm/run/reader.py",
+      "sha256": "da5234e4d708478188ca9eeb9d3b1d7b62de2185abc4b0358b73190e94a0dc7b"
+    },
+    "reprollm.schemas": {
+      "path": "src/reprollm/schemas/__init__.py",
+      "sha256": "7fbe9c0386e70074d0b18120a0c37325764d41590f62a3c3ecd7e638848adf61"
+    },
+    "reprollm.schemas.config": {
+      "path": "src/reprollm/schemas/config.py",
+      "sha256": "fd015c243606d6c40372db9c573702c426f215adedb173bc1e8692cae6e3efd9"
+    },
+    "reprollm.schemas.finding": {
+      "path": "src/reprollm/schemas/finding.py",
+      "sha256": "724f1b44fbaaf2f46a2b036016da8e07de08f4363f9ea2c7cd23a9cbb668a09a"
+    },
+    "reprollm.schemas.lock": {
+      "path": "src/reprollm/schemas/lock.py",
+      "sha256": "f2683162dfee51eee62cb83cd093521ae6249be236e596b99ee4a7ca51d982a2"
+    },
+    "reprollm.schemas.manifest": {
+      "path": "src/reprollm/schemas/manifest.py",
+      "sha256": "623f94fb62cbd6fef4415d5c10ab48e083ddacb3e21bd5ba2bf3cbb2bf109c90"
+    },
+    "reprollm.schemas.profile": {
+      "path": "src/reprollm/schemas/profile.py",
+      "sha256": "a14765775c8b258695ec87d7b8b3087587076ecade49732cba0e72e421c73b9b"
+    },
+    "reprollm.schemas.project_rules": {
+      "path": "src/reprollm/schemas/project_rules.py",
+      "sha256": "4ff7d510529cb52ca2efb360108ec05e1039379a40b546519f92882faa661e2f"
+    },
+    "reprollm.schemas.run_record": {
+      "path": "src/reprollm/schemas/run_record.py",
+      "sha256": "3fe8c8eb63082c3238d4083508f936205383387f35b1aab6a90f1995b096f987"
+    },
+    "reprollm.schemas.state": {
+      "path": "src/reprollm/schemas/state.py",
+      "sha256": "f8426b85334971fc4d0120c865edf1c60210ee75d90addbed72bd063e242eb75"
+    }
+  },
+  "kind": "D-M-E-current-source-observations",
+  "literal_assertion_failures": [],
+  "observer_sha256": "48fcabc3a45908dc89db9556292efa69d0997c0740dbae5072c605daaf8ec391",
+  "records": [
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E01",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": []
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"\", \" \"]\n"
+      },
+      "id": "E02",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-blank-filter",
+        "executed": false
+      },
+      "requirement_calls": [],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": []
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"\\t\", \"\\n\", \"  \"]\n"
+      },
+      "id": "E03",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-blank-filter",
+        "executed": false
+      },
+      "requirement_calls": [],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "# heading\nname: demo\ndependencies:\n  - pip:\n      - \"  torch==  \"\n"
+      },
+      "id": "E04",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "python",
+            "python",
+            "=3.12",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==",
+          "not a requirement"
+        ],
+        "unparsed": [
+          "environment.yml:2: torch==",
+          "environment.yml:2: not a requirement"
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "python",
+            "exact_version": null,
+            "line": 1,
+            "name": "python",
+            "source_file": "environment.yml",
+            "specifier": "=3.12"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:2: torch==",
+          "environment.yml:2: not a requirement"
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - python=3.12\n  - pip: [\"torch==\", \"not a requirement\"]\n"
+      },
+      "id": "E05",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch==",
+        "not a requirement"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ],
+          [
+            "numpy",
+            "numpy",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch==",
+          "numpy==2"
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": ">=2"
+          },
+          {
+            "display_name": "numpy",
+            "exact_version": "2",
+            "line": 1,
+            "name": "numpy",
+            "source_file": "environment.yml",
+            "specifier": "==2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\", \"numpy==2\"]\n"
+      },
+      "id": "E06",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as >=2",
+                  "path": "environment.yml",
+                  "value": ">=2"
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch>=2",
+        "torch==",
+        "numpy==2"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==",
+          "torch==2"
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2",
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": "==2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\", \"torch==2\"]\n"
+      },
+      "id": "E07",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch==",
+        "torch==2"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "pytorch",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "pytorch",
+            "exact_version": "2",
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": "==2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pytorch==2\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E08",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ]
+      ],
+      "all_reads": [
+        [
+          "other/requirements.txt",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            "==2",
+            "2",
+            "other/requirements.txt",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==2",
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": "2",
+            "line": 1,
+            "name": "torch",
+            "source_file": "other/requirements.txt",
+            "specifier": "==2"
+          }
+        ],
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "other/requirements.txt",
+            "read_issue": null
+          }
+        ],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/requirements.txt"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "other/requirements.txt",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "other/requirements.txt": "torch==2\n"
+      },
+      "id": "E09",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [
+        "torch"
+      ],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch==2",
+        "torch=="
+      ],
+      "scanner_candidate_calls": [
+        "other/requirements.txt"
+      ],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml",
+            "read_issue": "invalid_structure"
+          }
+        ],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "conda-lock.yml": "package: [{name: torch}, {}]\n",
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E10",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [
+        "torch"
+      ],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {
+        "torch": [
+          "conda-lock.yml"
+        ]
+      }
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "environment.yml"
+        ],
+        [
+          "environment.yml"
+        ],
+        [
+          "environment.yml"
+        ],
+        [
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "no-use",
+        "critical_status": "not-applicable",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "environment.yml"
+        ],
+        [
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E11",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [],
+        "python_candidate_count": 0,
+        "python_file_limit": 500,
+        "python_parsed_count": 0,
+        "python_selected_count": 0,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": false,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": "no LLM-critical package is declared or imported"
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: null\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E12",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch possible exact declaration unverified",
+                  "path": "environment.yml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-structure-priority",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\", false]\n"
+      },
+      "id": "E13",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch possible exact declaration unverified",
+                  "path": "environment.yml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-structure-priority",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - unknown: false\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E14",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yaml",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yaml": [],
+          "environment.yml": []
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "conda-lock.yml",
+            "read_issue": null
+          }
+        ],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yaml",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yaml",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "conda-lock.yml": "package: [{name: torch}]\n",
+        "control.py": "import torch\n",
+        "environment.yaml": "dependencies: []\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E15",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "pytorch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [],
+        "unparsed": [
+          "environment.yml:1: unsupported conda declaration"
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "pytorch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": ">=2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: unsupported conda declaration"
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies: [\"pytorch>=2\"]\n"
+      },
+      "id": "E16",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as >=2",
+                  "path": "environment.yml",
+                  "value": ">=2"
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-Conda-subset",
+        "executed": false
+      },
+      "requirement_calls": [],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            null,
+            null,
+            "environment.yml",
+            1
+          ],
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch @ https://example.invalid/torch.whl",
+          "torch>=2; python_version < '0'"
+        ],
+        "unparsed": []
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": null
+          },
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": ">=2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": []
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch @ https://example.invalid/torch.whl\", \"torch>=2; python_version < '0'\"]\n"
+      },
+      "id": "E17",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as unversioned",
+                  "path": "environment.yml",
+                  "value": "(no version)"
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-successful-parser",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch @ https://example.invalid/torch.whl",
+        "torch>=2; python_version < '0'"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ],
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ],
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ],
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "nested/environment.yaml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "nested/environment.yaml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "nested/environment.yaml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "nested/environment.yaml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ],
+        [
+          "control.py",
+          "nested/environment.yaml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "nested/environment.yaml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "nested/environment.yaml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E18",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "associated-lock",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "environment.yml",
+            "specifier": ">=2"
+          }
+        ],
+        "lockfiles": [
+          {
+            "packages": [],
+            "path": "conda-lock.yml",
+            "read_issue": "invalid_structure"
+          }
+        ],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "conda-lock.yml",
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "conda-lock.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "conda-lock.yml": "package: [{}]\n",
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\"]\n"
+      },
+      "id": "E19",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as >=2",
+                  "path": "environment.yml",
+                  "value": ">=2"
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch associated; lock package contents unverified",
+                  "path": "conda-lock.yml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and associated format-lock files; restore readable, valid lock contents before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; an associated format lock could not be read or parsed, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch>=2",
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {
+        "torch": [
+          "conda-lock.yml"
+        ]
+      }
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "other/environment.yml",
+          524288
+        ],
+        [
+          "other/conda-lock.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "origin",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ],
+          "other/environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [
+          {
+            "packages": [
+              "torch"
+            ],
+            "path": "other/conda-lock.yml",
+            "read_issue": null
+          }
+        ],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "other/conda-lock.yml",
+          "other/environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "other/environment.yml",
+          524288
+        ],
+        [
+          "other/conda-lock.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "other/conda-lock.yml": "package: [{name: torch}]\n",
+        "other/environment.yml": "dependencies: []\n"
+      },
+      "id": "E20",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 2,
+        "python_file_limit": 1,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch listed; import-origin credit unverified",
+                  "path": "other/conda-lock.yml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and format-lock origins; complete Python analysis before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; Python analysis is incomplete or unavailable and a captured format lock lists the package, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1); no rule-wide PASS is established.",
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ]
+      ],
+      "all_reads": [
+        [
+          "unrelated/requirements.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/0.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/1.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/2.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/3.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/4.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/5.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/6.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/7.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/8.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/9.txt",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "depth",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "unrelated/chain/9.txt:1: include depth limit",
+          "unrelated/chain/8.txt:1: include incomplete",
+          "unrelated/chain/7.txt:1: include incomplete",
+          "unrelated/chain/6.txt:1: include incomplete",
+          "unrelated/chain/5.txt:1: include incomplete",
+          "unrelated/chain/4.txt:1: include incomplete",
+          "unrelated/chain/3.txt:1: include incomplete",
+          "unrelated/chain/2.txt:1: include incomplete",
+          "unrelated/chain/1.txt:1: include incomplete",
+          "unrelated/chain/0.txt:1: include incomplete",
+          "unrelated/requirements.txt:1: include incomplete",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [
+          "unrelated/pins.txt"
+        ],
+        "unparsed": [
+          "unrelated/chain/9.txt:1: include depth limit",
+          "unrelated/chain/8.txt:1: include incomplete",
+          "unrelated/chain/7.txt:1: include incomplete",
+          "unrelated/chain/6.txt:1: include incomplete",
+          "unrelated/chain/5.txt:1: include incomplete",
+          "unrelated/chain/4.txt:1: include incomplete",
+          "unrelated/chain/3.txt:1: include incomplete",
+          "unrelated/chain/2.txt:1: include incomplete",
+          "unrelated/chain/1.txt:1: include incomplete",
+          "unrelated/chain/0.txt:1: include incomplete",
+          "unrelated/requirements.txt:1: include incomplete",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "unrelated/chain/0.txt",
+          "unrelated/chain/1.txt",
+          "unrelated/chain/2.txt",
+          "unrelated/chain/3.txt",
+          "unrelated/chain/4.txt",
+          "unrelated/chain/5.txt",
+          "unrelated/chain/6.txt",
+          "unrelated/chain/7.txt",
+          "unrelated/chain/8.txt",
+          "unrelated/chain/9.txt",
+          "unrelated/requirements.txt"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "unrelated/requirements.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/0.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/1.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/2.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/3.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/4.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/5.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/6.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/7.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/8.txt",
+          524288
+        ],
+        [
+          "unrelated/chain/9.txt",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "unrelated/chain/0.txt": "-r 1.txt\n",
+        "unrelated/chain/1.txt": "-r 2.txt\n",
+        "unrelated/chain/2.txt": "-r 3.txt\n",
+        "unrelated/chain/3.txt": "-r 4.txt\n",
+        "unrelated/chain/4.txt": "-r 5.txt\n",
+        "unrelated/chain/5.txt": "-r 6.txt\n",
+        "unrelated/chain/6.txt": "-r 7.txt\n",
+        "unrelated/chain/7.txt": "-r 8.txt\n",
+        "unrelated/chain/8.txt": "-r 9.txt\n",
+        "unrelated/chain/9.txt": "-r ../pins.txt\n",
+        "unrelated/requirements.txt": "-r chain/0.txt\n"
+      },
+      "id": "E21",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch include target unexpanded at the depth limit",
+                  "path": "unrelated/pins.txt",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and unexpanded requirements include targets; restructure the supported include graph within the depth budget before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; a supported requirements include was not expanded within the depth budget, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "depth-to-declaration",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [
+        "unrelated/requirements.txt",
+        "unrelated/chain/0.txt",
+        "unrelated/chain/1.txt",
+        "unrelated/chain/2.txt",
+        "unrelated/chain/3.txt",
+        "unrelated/chain/4.txt",
+        "unrelated/chain/5.txt",
+        "unrelated/chain/6.txt",
+        "unrelated/chain/7.txt",
+        "unrelated/chain/8.txt",
+        "unrelated/chain/9.txt"
+      ],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E22",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 2,
+        "python_file_limit": 1,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": "Python candidate analysis incomplete: parsed 1 of 2 candidate files; selected 1 (limit 1); no rule-wide PASS is established.",
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "pyproject.toml",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "pyproject.toml": "unparsed_requirement"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "bad !!!",
+          "torch=="
+        ],
+        "unparsed": [
+          "pyproject.toml:2: bad !!!",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ],
+          "pyproject.toml": [
+            "poetry.lock",
+            "uv.lock"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {
+          "pyproject.toml": "unparsed_requirement"
+        },
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "pyproject.toml:2: bad !!!",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "pyproject.toml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "pyproject.toml",
+          524288
+        ],
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "pyproject.toml": "[project]\ndependencies=[\"bad !!!\"]\n"
+      },
+      "id": "E23",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch possible exact declaration unverified",
+                  "path": "pyproject.toml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "expand-existing-declaration-evidence",
+        "executed": false
+      },
+      "requirement_calls": [
+        "bad !!!",
+        "torch=="
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "declarations": {
+        "_project_manifests": {},
+        "_uncertain_directories": [
+          "."
+        ],
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": []
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies: false\n"
+      },
+      "id": "E24",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                },
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "torch possible exact declaration unverified",
+                  "path": "environment.yml",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Review torch declarations and failed dependency source files; restore readable, valid declaration bodies before deciding that exact pin evidence is absent.",
+              "level": 0,
+              "message": "torch is used; a dependency declaration body could not be read or parsed, so missing pin evidence is not established",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "INFO",
+              "severity_origin": "default",
+              "status": "skipped",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-structure",
+        "executed": false
+      },
+      "requirement_calls": [],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "declarations": {
+        "_project_manifests": {},
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": []
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml"
+        ],
+        [
+          "control.py",
+          "environment.yml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "null\n"
+      },
+      "id": "E25",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unchanged-empty-root",
+        "executed": false
+      },
+      "requirement_calls": [],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ],
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ],
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ],
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ]
+      ],
+      "all_reads": [
+        [
+          "a/environment.yml",
+          524288
+        ],
+        [
+          "z/environment.yaml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "a/environment.yml",
+            1
+          ],
+          [
+            "python",
+            "python",
+            "=3.12",
+            null,
+            "z/environment.yaml",
+            1
+          ],
+          [
+            "numpy",
+            "numpy",
+            "==2",
+            "2",
+            "z/environment.yaml",
+            2
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch==",
+          "numpy==2",
+          "bad !!!"
+        ],
+        "unparsed": [
+          "a/environment.yml:1: torch==",
+          "z/environment.yaml:2: bad !!!"
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "a/environment.yml": [
+            "conda-lock.yml"
+          ],
+          "z/environment.yaml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [
+          {
+            "display_name": "torch",
+            "exact_version": null,
+            "line": 1,
+            "name": "torch",
+            "source_file": "a/environment.yml",
+            "specifier": ">=2"
+          },
+          {
+            "display_name": "python",
+            "exact_version": null,
+            "line": 1,
+            "name": "python",
+            "source_file": "z/environment.yaml",
+            "specifier": "=3.12"
+          },
+          {
+            "display_name": "numpy",
+            "exact_version": "2",
+            "line": 2,
+            "name": "numpy",
+            "source_file": "z/environment.yaml",
+            "specifier": "==2"
+          }
+        ],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "a/environment.yml:1: torch==",
+          "z/environment.yaml:2: bad !!!"
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ],
+        [
+          "a/environment.yml",
+          "control.py",
+          "z/environment.yaml"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "a/environment.yml",
+          524288
+        ],
+        [
+          "z/environment.yaml",
+          524288
+        ]
+      ],
+      "files": {
+        "a/environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\"]\n",
+        "control.py": "import torch\n",
+        "z/environment.yaml": "dependencies:\n  - python=3.12\n  - pip: [\"numpy==2\", \"bad !!!\"]\n"
+      },
+      "id": "E26",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "declared as >=2",
+                  "path": "a/environment.yml",
+                  "value": ">=2"
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      },
+      "requirement_calls": [
+        "torch>=2",
+        "torch==",
+        "numpy==2",
+        "bad !!!"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    },
+    {
+      "all_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ]
+      ],
+      "all_reads": [
+        [
+          "environment.yml",
+          524288
+        ],
+        [
+          "control.py",
+          524288
+        ]
+      ],
+      "candidate_policy_executed": false,
+      "current_projection": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "# comment",
+          "-r extras/pins.in",
+          "torch>=2 # note"
+        ],
+        "unparsed": [
+          "environment.yml:1: # comment",
+          "environment.yml:1: -r extras/pins.in",
+          "environment.yml:1: torch>=2 # note"
+        ]
+      },
+      "declarations": {
+        "_project_manifests": {
+          "environment.yml": [
+            "conda-lock.yml"
+          ]
+        },
+        "_uncertain_directories": [],
+        "declaration_read_issues": {},
+        "declarations": [],
+        "lockfiles": [],
+        "manifest_present": true,
+        "unexpanded_requirement_targets": [],
+        "unparsed": [
+          "environment.yml:1: # comment",
+          "environment.yml:1: -r extras/pins.in",
+          "environment.yml:1: torch>=2 # note"
+        ]
+      },
+      "dependency_analysis_files_calls": [
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ],
+        [
+          "control.py",
+          "environment.yml",
+          "extras/pins.in"
+        ]
+      ],
+      "dependency_reads": [
+        [
+          "environment.yml",
+          524288
+        ]
+      ],
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"# comment\", \"-r extras/pins.in\", \"torch>=2 # note\"]\n",
+        "extras/pins.in": "torch==2\n"
+      },
+      "id": "E27",
+      "literal_assertions": {
+        "critical_cause": true,
+        "critical_status": true,
+        "declaration_read_issues": true,
+        "declarations": true,
+        "requirement_calls": true,
+        "unparsed": true
+      },
+      "python": {
+        "coverage_observed": true,
+        "endpoints": [],
+        "hf_ids": [],
+        "imports": [
+          {
+            "line": 1,
+            "module": "torch",
+            "path": "control.py"
+          }
+        ],
+        "python_candidate_count": 1,
+        "python_file_limit": 500,
+        "python_parsed_count": 1,
+        "python_selected_count": 1,
+        "trainer_import": false,
+        "trust_remote_code": false,
+        "warnings": []
+      },
+      "qualified_lock_packages": [],
+      "raw_rules": {
+        "env.dependency_manifest_present": {
+          "applies": true,
+          "findings": [],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.llm_critical_deps_pinned": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": 1,
+                  "note": "imported",
+                  "path": "control.py",
+                  "value": null
+                }
+              ],
+              "fix_hint": "Pin torch exactly, e.g. `torch==<version>`.",
+              "level": 0,
+              "message": "torch is used but not pinned to an exact version (suggestion: torch==<version>)",
+              "profile_origin": [],
+              "rule_id": "env.llm_critical_deps_pinned",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        },
+        "env.lockfile_present": {
+          "applies": true,
+          "findings": [
+            {
+              "aliases": [],
+              "category": "env",
+              "evidence": [
+                {
+                  "expected": null,
+                  "field": null,
+                  "kind": "file",
+                  "line": null,
+                  "note": "no uv.lock/poetry.lock/Pipfile.lock/conda-lock.yml/all-== requirements",
+                  "path": null,
+                  "value": null
+                }
+              ],
+              "fix_hint": "Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.",
+              "level": 0,
+              "message": "no lockfile found and not every declared dependency is pinned with an exact version",
+              "profile_origin": [],
+              "rule_id": "env.lockfile_present",
+              "severity": "WARNING",
+              "severity_origin": "default",
+              "status": "fail",
+              "suppressed_reason": null
+            }
+          ],
+          "pass_skip_reason": null,
+          "skip_reason": null
+        }
+      },
+      "recommended_A": {
+        "classification": "unparsed_requirement; embedded directive and comment are unsupported extraction, not claimed invalid pip syntax; no target read",
+        "executed": false
+      },
+      "requirement_calls": [
+        "# comment",
+        "-r extras/pins.in",
+        "torch>=2 # note"
+      ],
+      "scanner_candidate_calls": [],
+      "unverified_lock_paths": {}
+    }
+  ],
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "source_files": {
+    "src/reprollm/__init__.py": "bef73bca093b5a6db9c110de73da7751f8fc04819ab709f56d661481f1c6a401",
+    "src/reprollm/cli/__init__.py": "c3e2f2a85ce26e9a8fccd9c76ab13fa44b45549718daf2dc2833e3eadc3756a4",
+    "src/reprollm/cli/audit.py": "ccb01ee35f6b22c88e464a726965815ed22116c9f4f2503043dcf0492adde7bf",
+    "src/reprollm/cli/diff.py": "85c5adcfacb700cd4e67dcdd93742ba67cde40a1fab6526665a665a098335a82",
+    "src/reprollm/cli/discover.py": "e0da1a41cda482cfb6fb9a2fc29ffd9da436446bd6065d90c907b11b21cb5934",
+    "src/reprollm/cli/doctor.py": "602ebcef9ed583de4b14bab459167fab08a637a5486988e8dedb9e28ff41ef0f",
+    "src/reprollm/cli/export.py": "af94e0bdf6b10b29240a27518558124fa4a4e9c696ddc5444317b61e7e61f68e",
+    "src/reprollm/cli/init.py": "c0c90d986da65bf40660febd98648205cb6c041a3ece17f24bf6f7e1322bd42d",
+    "src/reprollm/cli/lock.py": "34e1553606174db817b62ec5d86dccc5c8ec91cbed18787389c081f8cefb5f27",
+    "src/reprollm/cli/main.py": "b5a6bc2dc34157c7fc7b096b41ed8094b4afeab7b092dd3694c4931bec598c7a",
+    "src/reprollm/cli/profiles.py": "26d02e9c05b5518bdc5b7145a417bd0e762eb850fd9d3e0507bcfb4ad76f43b3",
+    "src/reprollm/cli/rules.py": "db3a399475f0c3281415b13d71f10b7fc12003f706238eff565efc85aad365c0",
+    "src/reprollm/cli/run.py": "f73061d1a00f369aba1cb3fab73142aed133962f4591d5623b3040fdf1be2a8b",
+    "src/reprollm/cli/runs.py": "30497d4bba75ebd89ca9bc0880df4502c899eddb98260530956d98f94a38257d",
+    "src/reprollm/cli/scan_diagnostics.py": "ddc6785fe2007fd219e4d1f9380ef4637053c12e83268678c96bbc08754cb0f1",
+    "src/reprollm/cli/schema.py": "4fbb3a0ce187cdd75531730e0d394c8e7cdd50b6e1968f8f691588b2ddabbfc5",
+    "src/reprollm/core/__init__.py": "5bb8ca3452e649857fa1ae76153b20aa87a67e68c723483fee183616937ee8ca",
+    "src/reprollm/core/_toml.py": "574af7030aaaab1b0b1b7a7d10ffe6e402a8c7af544e7978419bcaa126bc953b",
+    "src/reprollm/core/audit_state.py": "0d4af286f038fc3017046f04bc91db524c6efca931c7fae2a291481dfda8b734",
+    "src/reprollm/core/bindings.py": "18ddc106adc8f8dc0eaeda0636e281d21dcbff54da915645522a48a66c724e10",
+    "src/reprollm/core/config.py": "ae087dd2cef9cbabda1e503ef882386fd7997fda80792371fe77b60f285d349a",
+    "src/reprollm/core/configread.py": "7bbe3824c0797258a24f04b52e40ab94c6b815052594bbfe27f717c50ab8448f",
+    "src/reprollm/core/context.py": "b3035c02fcf2ab893e365e4cd2bbaea77c5fb3265861f983a62823e8a3b5445b",
+    "src/reprollm/core/deps.py": "3c4dd9299698014516cdecfaef52aca59ed23528bbd2dbe04933fcd3f11c339b",
+    "src/reprollm/core/diagnostics.py": "ff89ceed0a223f80c50521d89cdc75d47e0958e0fd8929a38ce77ade4e806d22",
+    "src/reprollm/core/engine.py": "27776bf0955c58005a5c48d7f12ed469c09bf4722027efeeaef7c8cacbdd8500",
+    "src/reprollm/core/envinfo.py": "42cc5a068419f7f383a338fe0bfd4f9b0525ad138a8f6a36ebcda2a44647f7a8",
+    "src/reprollm/core/errors.py": "9611540a77232abae2b7f566c43895f59be5144be18a0221ec57a414fa414cb8",
+    "src/reprollm/core/evidence.py": "4114747b0cb9b08e2acde43ce64584d174ebf9eaa849981acd01a6c30f36411b",
+    "src/reprollm/core/git.py": "40e013ffbebf0cc31ea464d288d49cdfe3d6998676757ab719b93c5a48347284",
+    "src/reprollm/core/hashing.py": "16b0969f352b1ed980fb7609521afd4b5d324154cb6594c9fdd830d74d5ea281",
+    "src/reprollm/core/levels.py": "fa431a258d85e39c54ce82f50862162502809c6bcc730f8c9e75a583efa34484",
+    "src/reprollm/core/manifest_scaffold.py": "3061258011ba6dadb7e2e3c1d0c38f1805f96ea31426e3473fe6c1b79c8b266c",
+    "src/reprollm/core/paths.py": "8aa6d0fad401e96a42ebe0a810c79d1a6f0fdf3c9a4949c9210a6cb95d0148cc",
+    "src/reprollm/core/persistence.py": "7e64d00fce007e04631d7c1751e4c43aa5bbadb350096e343c51a5b207f228c8",
+    "src/reprollm/core/precedence.py": "a344a35d7990adc1bb1fad61b3bd99380cc136aec41a5a036a28382b958afd31",
+    "src/reprollm/core/proc.py": "e54168aded3045c0e5a82e19ac84200f9cd49590ecaf22af5594c55b70353354",
+    "src/reprollm/core/project_rules.py": "9a9b1b7a641d007770a73afb369408770b0a5d260f03f6c2895e53a11d64c7f6",
+    "src/reprollm/core/pyscan.py": "b72aef9e5d60161d683a56c463c1960e77ded2631c8a1a0c8ae64daad7099273",
+    "src/reprollm/core/redaction.py": "cd3c2cbfbb3f94d75cec04417693d6be6bcf4887ce1e275f4a6d2196a3fda74f",
+    "src/reprollm/core/registry.py": "91b86c0cf771df769ee8f48d8fb1b33307182c13510c3e1c3aa0f047e8107638",
+    "src/reprollm/core/rule_lifecycle.py": "80d211f03d16733a79ab8af2f8bcfe04d6b1ff1a9017ee89b9c537e2e33715de",
+    "src/reprollm/core/scanner.py": "8fef58be578d0ffd63f96fc2342462af9ee76cbc5008ecb2d1a7945240781503",
+    "src/reprollm/core/yaml_io.py": "65baffa543b59736c1b12dc22e7c4b4c1cbd1ed945880064158b32b5680616fa",
+    "src/reprollm/diff/__init__.py": "d8fa66cb48ed6bddb7772c446712cac9c8e5291371e938ff56ba7fec6f863376",
+    "src/reprollm/diff/differ.py": "b164c9e1905f877750df0d83a27dd71b7e4b960b04d85b0616684356962484d7",
+    "src/reprollm/diff/inputs.py": "4d3c455a94782a9cc14cadfc70378c5a7497dadd87856bb8d17082b612777958",
+    "src/reprollm/diff/severity.py": "c907ddb66a35b7420c4b8805a47a2b427425aec06e1654c8970d7939fd864483",
+    "src/reprollm/diff/state.py": "ef2356df5363a65420bab25156eea9816fe8b447b34c3ca2e7118ce9af13b5e2",
+    "src/reprollm/discover/__init__.py": "052abf62d16e03c529b1180b3b8184341bbe802c2c134c6981ce4007f2a3d349",
+    "src/reprollm/discover/candidates.py": "ea3200adecd959297924f230c4787e20d2ea78fcf6c4377b4b8b5c3570fb7fc4",
+    "src/reprollm/discover/client.py": "554e600ce7c589c30937e955bee05634ce5796d588d55253c3f50fb9d4143d80",
+    "src/reprollm/discover/collector.py": "a5aa014f5a7b0a2825f943b8c39a03c2e64ff58979eec400c6ff45cb9f24b061",
+    "src/reprollm/export/__init__.py": "6ab20e9efca585139d7a640c897cd076bd34c6a4e1854b34b40eb4db220bed74",
+    "src/reprollm/export/exporter.py": "06d81f00ccaada06aa64579e7471fa53950057114c1ed0707a2cbacac24fcbdf",
+    "src/reprollm/integrations/__init__.py": "12f0d1d3b8673ff06e47cd7c0bcb272a923ce9ec5d114c5b12676b4d659dda48",
+    "src/reprollm/integrations/_resolution.py": "1a736354fce95fd435ac7ce138d1114e8ae3e790427db017e89829d6de92635a",
+    "src/reprollm/integrations/_static.py": "a0117409abfd75fc600f800d0b19fa7a7823c91b7b4070391cec68897eaba516",
+    "src/reprollm/integrations/base.py": "08e733f7577d6f4251bd45c86c4696d573f88208a5f5dc250a3f8cbac9a167e6",
+    "src/reprollm/integrations/frameworks.py": "02438ef77b8f21d85ef3fc8104b6e3e777829b07a8c274958fc4fec6278f3069",
+    "src/reprollm/integrations/huggingface.py": "c93332aca9c3c53acbda400c5a888777ad990e12ee85a3c0d216f4d00ef890e6",
+    "src/reprollm/integrations/inspect_ai.py": "2b4eccf57b16e7e81911bea40cb0175e659e81668af099d7511c84cf7b744824",
+    "src/reprollm/integrations/lighteval.py": "95df8c6bab00004bd053b72bee32fae8e6a8887cca431dc5dae69a4c46947ace",
+    "src/reprollm/integrations/lm_eval.py": "48fa2327c9d5cb8a8e5a77d63941e67f8607fe693d24572c9839a70cce766cd3",
+    "src/reprollm/integrations/openai_.py": "15b949260abce01dfdfa21377ee1c43d23c7f75176f4cddad9f3bb037d23e01f",
+    "src/reprollm/integrations/peft.py": "7e18b5f59e6a914a37a789940c83661c25a6c7953ae514c8f3aea3d075bc79ed",
+    "src/reprollm/integrations/providers.py": "4619737e585cb772dc3e932c7577d40beeb1fbb6b79dbccfdd2a417f9cbb2790",
+    "src/reprollm/integrations/transformers_.py": "d67fd63db34ac674b867b212532f22253997fd12aae6d5bcc7182c42685f3ebb",
+    "src/reprollm/integrations/vllm.py": "bc137ec44d2b35ce1605b3b6f9021b064611c559adc53aa1e43a1b4838a2919a",
+    "src/reprollm/lock/__init__.py": "b58d45b18da2c21300acf4b7d48b8fc5ac2f8f6db08c6e45fa01f03c817f0c7c",
+    "src/reprollm/lock/api_resolver.py": "014c9cd844898c03016529afc12f9ce35141a4e46b50bfb0894e69da936d6cbc",
+    "src/reprollm/lock/hf_client.py": "111e9a91d64d76a2ad395674711b8840f846701aa5db20c884ca1bb9da235833",
+    "src/reprollm/lock/hf_resolver.py": "596756293f82aa556efea2fb32f81ba2b841aabcbba9473f3a7ebb4503bb1426",
+    "src/reprollm/lock/local_resolver.py": "ef18f495ab41723396fffb7d7f52a4993c953f365135eef9e68e6b68e1bb8f33",
+    "src/reprollm/lock/resolver.py": "5f51a0e83c9438b803a41d03ad8124890baed243573bef7f6a997ef1025e4293",
+    "src/reprollm/lock/writer.py": "a657d5943d7f917b8138f62c46c4cd33b2d90290677b7cc05203b46c3711842a",
+    "src/reprollm/profiles/__init__.py": "a2e3d44e337521d8756cb5ab08d40805b7f47b8feed735a42a97a2ceb8adfc92",
+    "src/reprollm/profiles/detect.py": "7f9e72d61e59abcac5819fc8b028c9ca30c06b8be96c334fb7df4109f9a2e403",
+    "src/reprollm/profiles/loader.py": "badffcf9a0ead304fdbd7261227ada056d75c0c13c600df6b1d2ded2ca619758",
+    "src/reprollm/profiles/policy.py": "3a5704f059ad5a395a62bdfc0b40c23f57adcafa795f2045e17941d0615f8838",
+    "src/reprollm/reporters/__init__.py": "a06858aa2b5160c30cd4530f3d2bcc1b0e51c1154547129c1122366127d30dde",
+    "src/reprollm/reporters/diff_privacy.py": "c259f484444d02feb7d35ef61c019ad6950ab4fe689f0b1c9f9561e52b9205a2",
+    "src/reprollm/reporters/diff_text.py": "7b49d3ea6005bb84c78d5322b31593fd468fcda1fb98aa6d2f198fec74b6b6d0",
+    "src/reprollm/reporters/github.py": "3663df15130e4b15249d72d62d0affc9d53c72080a83d35fbb0d144122206472",
+    "src/reprollm/reporters/json_.py": "e5dfbb38ef795a994b5672de9b7f0ec8c2284889d28394d5edcc19649b04efdf",
+    "src/reprollm/reporters/text.py": "19211852b41d4bc94fb8d76afef974c7a142ad6d3ce3a755854eb628cab41eec",
+    "src/reprollm/rules/__init__.py": "539ed4ec9911555f19c6417ba853f97862c7d655ed49f06e083a17b3adeaea8f",
+    "src/reprollm/rules/_api.py": "c0877c2dfeb92fde676f0488d76094d4c340a204a1e1bae88c63ad8b62b8769a",
+    "src/reprollm/rules/_lock.py": "95cb9491023c676a918a600ed7366b51da9a4bf24ac2683e57254f4391bdea1a",
+    "src/reprollm/rules/_presence.py": "06460fcaf3873be25d4f5659e0cc3e5105e3d5bf0d53998c91243a28628a5b41",
+    "src/reprollm/rules/code.py": "306db335dfbf2d18a23cf5070ec734c9f2e0045c603e1c5e1064d58a16a30060",
+    "src/reprollm/rules/consistency.py": "8a8ef534a8031a91941b4d5f3565c406d0dbca19e1e555c3d8614fc2287fa667",
+    "src/reprollm/rules/dataset.py": "d46cea065b332a883579ae6c122ebe246eb09b36005c82859092846e7c74c239",
+    "src/reprollm/rules/env.py": "14212913b79f3d53862173e4e316fa3d0177a8609354208de9a6b3834c97d995",
+    "src/reprollm/rules/eval_.py": "32e6f420daeffec6570cf2ed91226d7ca9296363ea9585e77d104485a1299b15",
+    "src/reprollm/rules/exec_.py": "14475250422e84feb6342078e1263fc9041cb84e400b262625107d8704f23ea0",
+    "src/reprollm/rules/gen.py": "541c358b20a2855c3f05cff31a4eea22389587939b63bb810c5406e7a0a417be",
+    "src/reprollm/rules/judge.py": "4207e0c887a0616108aa5ded8cf8ccbda8c89953a7bacc1aedc3edbf395f80b5",
+    "src/reprollm/rules/model.py": "84d6f31cf7ff31fb1f3e257a269f5e0a55c3194b1aed4f722cdf9698b196e4f5",
+    "src/reprollm/rules/privacy.py": "34fe77a6b3b89a6d8414b297fbd408bd42f84cdd43081cdc11df5d1e3b35a4b4",
+    "src/reprollm/rules/project.py": "f715ff27627f12bcfb91818515351fc628ac8f9fdc3af60da51d332e45c2fc27",
+    "src/reprollm/rules/prompt.py": "bebe9bbb0285df58b288ee43caff58f0caedd4a08651fd4850e5015634a0a460",
+    "src/reprollm/rules/train.py": "53610587ff81519f081c7938a2d9cfd296962bf551cfbbcf34944627a99c9343",
+    "src/reprollm/run/__init__.py": "0dbfa51ccd8aab76dbf440ab93176778d98240d40e35146724f9e3fcaeae72b4",
+    "src/reprollm/run/capture.py": "c40a81eca1516795a528c033a53d34b1a2a2d6ad2afbedf9da495d54de3ef09d",
+    "src/reprollm/run/codec.py": "be0d1e2add84b69d3ddb7ab244ac011a0a9b00bb66728b649969b7ea0ac30275",
+    "src/reprollm/run/contextual_text.py": "de02403895c920c2be3fa675026349b43c6fb43287f905d1da0353fd3f33230e",
+    "src/reprollm/run/hardware.py": "9db8db2372e26dc97dbac1ef375dce275d93dfc00c9c43c3648f597e5fad0e5a",
+    "src/reprollm/run/input_capture.py": "7b02aa0d801d3b772f79829df088aba84617884600944632f0577f3ce5b8f478",
+    "src/reprollm/run/json_text.py": "165d1463c0b2cb5968c7efb000ad5773c24eb96cd9925386b1192d45a617bf5f",
+    "src/reprollm/run/preflight.py": "38e9ba9a39d2c3d4b0bd79ee0500bd6689780bc9dbff701e85799354ff8b8694",
+    "src/reprollm/run/privacy.py": "768a801b7cb9ae33064fe8a0e317c03df121021583cbdff6375ca92ee371d463",
+    "src/reprollm/run/python_text.py": "f7f58ef3a7b70b93bcdfd42e99ecadd9cc6388517a860ca854f7b4dbe28a3158",
+    "src/reprollm/run/reader.py": "da5234e4d708478188ca9eeb9d3b1d7b62de2185abc4b0358b73190e94a0dc7b",
+    "src/reprollm/run/slurm.py": "0d4207bf4f2d1d772ea7326550129624b8edf8cc843a8095d11c677a7392adfd",
+    "src/reprollm/run/wrapper.py": "05a25c2a84b0dc1d28b177dd58f92f82505795a085088d58e2e9032252d70509",
+    "src/reprollm/schemas/__init__.py": "7fbe9c0386e70074d0b18120a0c37325764d41590f62a3c3ecd7e638848adf61",
+    "src/reprollm/schemas/config.py": "fd015c243606d6c40372db9c573702c426f215adedb173bc1e8692cae6e3efd9",
+    "src/reprollm/schemas/diff_report.py": "2333fb2fc78f332ef43d22af00d4c8b87c246e213c7262b23c7001e77d911800",
+    "src/reprollm/schemas/discover_candidates.py": "47cc79e09ed7174cbf4fcae8f453402f034469bc4ac8390e4c9e124a0abd1c37",
+    "src/reprollm/schemas/finding.py": "724f1b44fbaaf2f46a2b036016da8e07de08f4363f9ea2c7cd23a9cbb668a09a",
+    "src/reprollm/schemas/lock.py": "f2683162dfee51eee62cb83cd093521ae6249be236e596b99ee4a7ca51d982a2",
+    "src/reprollm/schemas/manifest.py": "623f94fb62cbd6fef4415d5c10ab48e083ddacb3e21bd5ba2bf3cbb2bf109c90",
+    "src/reprollm/schemas/profile.py": "a14765775c8b258695ec87d7b8b3087587076ecade49732cba0e72e421c73b9b",
+    "src/reprollm/schemas/project_rules.py": "4ff7d510529cb52ca2efb360108ec05e1039379a40b546519f92882faa661e2f",
+    "src/reprollm/schemas/rule_archive.py": "5481cab69333bbfb9ddb32013f79860f7ae46064089a348644b7cdf82d269337",
+    "src/reprollm/schemas/run_record.py": "3fe8c8eb63082c3238d4083508f936205383387f35b1aab6a90f1995b096f987",
+    "src/reprollm/schemas/state.py": "f8426b85334971fc4d0120c865edf1c60210ee75d90addbed72bd063e242eb75"
+  }
+}

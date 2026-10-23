@@ -151,6 +151,10 @@ The [P-B report](../../dogfooding/2026-10-23-r07c-pep621-strings-pb/README.md) r
 24 complete internal records and archive readback, all locally PASS.
 Exact final-head five-job CI and Linux exact schema are checked at delivery.
 The [P-A packet](proposals/R07-C/pep621-strings/README.md) remains an immutable historical snapshot.
-The next bounded work is an independent environment embedded-pip parse-failure P-A,
-not implementation or automatic extension of PEP 621 blank-string behavior.
-Other R07-C, resource validation, external adoption and version release remain bounded.
+The next [environment embedded-pip P-A](proposals/R07-C/environment-pip/README.md)
+is now prepared, **PROPOSED** and not implemented. The [P-A report](../../dogfooding/2026-10-23-r07c-environment-pip-pa.md)
+records 27 current-source cases, two designated complete-record replays with 162 projected assertions each,
+38 future acceptance rows, exact unapplied §12.3.10 patch and source-only five-pin zero-trigger expectations.
+A remains unaccepted; candidate-policy executions are zero. Preserve blank filtering, strip and
+outer dependency ordinals; pip-supported syntax may be unextractable by Requirement.
+This does not extend PEP 621 approval or settle other R07-C, resource, adoption or release work.

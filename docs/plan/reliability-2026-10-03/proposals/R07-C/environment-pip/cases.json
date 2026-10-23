@@ -1,0 +1,808 @@
+{
+  "baseline_commit": "72bf2fc150b8b00cc32a5a75d2ffa13387edbc3e",
+  "cases": [
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E01",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"\", \" \"]\n"
+      },
+      "id": "E02",
+      "recommended_A": {
+        "classification": "unchanged-blank-filter",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"\\t\", \"\\n\", \"  \"]\n"
+      },
+      "id": "E03",
+      "recommended_A": {
+        "classification": "unchanged-blank-filter",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "# heading\nname: demo\ndependencies:\n  - pip:\n      - \"  torch==  \"\n"
+      },
+      "id": "E04",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "python",
+            "python",
+            "=3.12",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==",
+          "not a requirement"
+        ],
+        "unparsed": [
+          "environment.yml:2: torch==",
+          "environment.yml:2: not a requirement"
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - python=3.12\n  - pip: [\"torch==\", \"not a requirement\"]\n"
+      },
+      "id": "E05",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ],
+          [
+            "numpy",
+            "numpy",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch==",
+          "numpy==2"
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\", \"numpy==2\"]\n"
+      },
+      "id": "E06",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==",
+          "torch==2"
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\", \"torch==2\"]\n"
+      },
+      "id": "E07",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "pytorch",
+            "==2",
+            "2",
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pytorch==2\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E08",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            "==2",
+            "2",
+            "other/requirements.txt",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch==2",
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "other/requirements.txt": "torch==2\n"
+      },
+      "id": "E09",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "positive-credit",
+        "critical_status": "empty",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "conda-lock.yml": "package: [{name: torch}, {}]\n",
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E10",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "no-use",
+        "critical_status": "not-applicable",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E11",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: null\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E12",
+      "recommended_A": {
+        "classification": "unchanged-structure-priority",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\", false]\n"
+      },
+      "id": "E13",
+      "recommended_A": {
+        "classification": "unchanged-structure-priority",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:2: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - unknown: false\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E14",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "conda-lock.yml": "package: [{name: torch}]\n",
+        "control.py": "import torch\n",
+        "environment.yaml": "dependencies: []\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E15",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "pytorch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [],
+        "unparsed": [
+          "environment.yml:1: unsupported conda declaration"
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies: [\"pytorch>=2\"]\n"
+      },
+      "id": "E16",
+      "recommended_A": {
+        "classification": "unchanged-Conda-subset",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            null,
+            null,
+            "environment.yml",
+            1
+          ],
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch @ https://example.invalid/torch.whl",
+          "torch>=2; python_version < '0'"
+        ],
+        "unparsed": []
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch @ https://example.invalid/torch.whl\", \"torch>=2; python_version < '0'\"]\n"
+      },
+      "id": "E17",
+      "recommended_A": {
+        "classification": "unchanged-successful-parser",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "nested/environment.yaml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "nested/environment.yaml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E18",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "associated-lock",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "conda-lock.yml": "package: [{}]\n",
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\"]\n"
+      },
+      "id": "E19",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "gap",
+      "expected_current": {
+        "critical_cause": "origin",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "other/conda-lock.yml": "package: [{name: torch}]\n",
+        "other/environment.yml": "dependencies: []\n"
+      },
+      "id": "E20",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "depth",
+        "critical_status": "skipped",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "unrelated/chain/9.txt:1: include depth limit",
+          "unrelated/chain/8.txt:1: include incomplete",
+          "unrelated/chain/7.txt:1: include incomplete",
+          "unrelated/chain/6.txt:1: include incomplete",
+          "unrelated/chain/5.txt:1: include incomplete",
+          "unrelated/chain/4.txt:1: include incomplete",
+          "unrelated/chain/3.txt:1: include incomplete",
+          "unrelated/chain/2.txt:1: include incomplete",
+          "unrelated/chain/1.txt:1: include incomplete",
+          "unrelated/chain/0.txt:1: include incomplete",
+          "unrelated/requirements.txt:1: include incomplete",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "unrelated/chain/0.txt": "-r 1.txt\n",
+        "unrelated/chain/1.txt": "-r 2.txt\n",
+        "unrelated/chain/2.txt": "-r 3.txt\n",
+        "unrelated/chain/3.txt": "-r 4.txt\n",
+        "unrelated/chain/4.txt": "-r 5.txt\n",
+        "unrelated/chain/5.txt": "-r 6.txt\n",
+        "unrelated/chain/6.txt": "-r 7.txt\n",
+        "unrelated/chain/7.txt": "-r 8.txt\n",
+        "unrelated/chain/8.txt": "-r 9.txt\n",
+        "unrelated/chain/9.txt": "-r ../pins.txt\n",
+        "unrelated/requirements.txt": "-r chain/0.txt\n"
+      },
+      "id": "E21",
+      "recommended_A": {
+        "classification": "depth-to-declaration",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "gap",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "torch=="
+        ],
+        "unparsed": [
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n"
+      },
+      "id": "E22",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "pyproject.toml": "unparsed_requirement"
+        },
+        "declarations": [],
+        "requirement_calls": [
+          "bad !!!",
+          "torch=="
+        ],
+        "unparsed": [
+          "pyproject.toml:2: bad !!!",
+          "environment.yml:1: torch=="
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"torch==\"]\n",
+        "pyproject.toml": "[project]\ndependencies=[\"bad !!!\"]\n"
+      },
+      "id": "E23",
+      "recommended_A": {
+        "classification": "expand-existing-declaration-evidence",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "declaration",
+        "critical_status": "skipped",
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies: false\n"
+      },
+      "id": "E24",
+      "recommended_A": {
+        "classification": "unchanged-structure",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [],
+        "unparsed": []
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "null\n"
+      },
+      "id": "E25",
+      "recommended_A": {
+        "classification": "unchanged-empty-root",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "a/environment.yml",
+            1
+          ],
+          [
+            "python",
+            "python",
+            "=3.12",
+            null,
+            "z/environment.yaml",
+            1
+          ],
+          [
+            "numpy",
+            "numpy",
+            "==2",
+            "2",
+            "z/environment.yaml",
+            2
+          ]
+        ],
+        "requirement_calls": [
+          "torch>=2",
+          "torch==",
+          "numpy==2",
+          "bad !!!"
+        ],
+        "unparsed": [
+          "a/environment.yml:1: torch==",
+          "z/environment.yaml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "a/environment.yml": "dependencies:\n  - pip: [\"torch>=2\", \"torch==\"]\n",
+        "control.py": "import torch\n",
+        "z/environment.yaml": "dependencies:\n  - python=3.12\n  - pip: [\"numpy==2\", \"bad !!!\"]\n"
+      },
+      "id": "E26",
+      "recommended_A": {
+        "classification": "unparsed_requirement",
+        "executed": false
+      }
+    },
+    {
+      "coverage": "complete",
+      "expected_current": {
+        "critical_cause": "missing",
+        "critical_status": "warning",
+        "declaration_read_issues": {},
+        "declarations": [],
+        "requirement_calls": [
+          "# comment",
+          "-r extras/pins.in",
+          "torch>=2 # note"
+        ],
+        "unparsed": [
+          "environment.yml:1: # comment",
+          "environment.yml:1: -r extras/pins.in",
+          "environment.yml:1: torch>=2 # note"
+        ]
+      },
+      "files": {
+        "control.py": "import torch\n",
+        "environment.yml": "dependencies:\n  - pip: [\"# comment\", \"-r extras/pins.in\", \"torch>=2 # note\"]\n",
+        "extras/pins.in": "torch==2\n"
+      },
+      "id": "E27",
+      "recommended_A": {
+        "classification": "unparsed_requirement; embedded directive and comment are unsupported extraction, not claimed invalid pip syntax; no target read",
+        "executed": false
+      }
+    }
+  ],
+  "kind": "D-M-E-independent-case-plan",
+  "policy": "P-A proposal only; recommended_A never executed",
+  "reprollm_version": "0.7.0",
+  "schema_version": 1,
+  "status": "AUTHORED_BEFORE_OBSERVATION"
+}

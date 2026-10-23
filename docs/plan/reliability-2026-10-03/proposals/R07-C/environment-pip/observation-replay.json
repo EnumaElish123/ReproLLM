@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "reprollm_version": "0.7.0",
+  "kind": "current-source-observation-replay-summary",
+  "status": "PASS_CURRENT_SOURCE_ONLY",
+  "baseline_commit": "72bf2fc150b8b00cc32a5a75d2ffa13387edbc3e",
+  "case_count": 27,
+  "literal_assertions_per_replay": 162,
+  "current_source_observer_invocations": 5,
+  "designated_replays": 2,
+  "earlier_preserved_invocations": 3,
+  "commands": [
+    {
+      "index": 3,
+      "argv_template": [
+        "<BASELINE_PYTHON>",
+        "-X",
+        "utf8",
+        "<PACKET>/current-observer.py.txt",
+        "--repo",
+        "<BASELINE_CHECKOUT>",
+        "--cases",
+        "<PACKET>/cases.json",
+        "--root",
+        "<NEW_EMPTY_ROOT_3>",
+        "--output",
+        "<NEW_OUTPUT_3>.json"
+      ],
+      "exit_status": 0,
+      "elapsed_seconds": 0.4034523000009358,
+      "stdout_sha256": "9d8b53582da29d0ea31d78c41ff86062aa888f97ba8fb5ca6dadc1e29a727c17",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation_sha256": "f210406d2e48d24d77027f4a15762f2cf4e355d9417a3fccafa1181a69bf8ef7"
+    },
+    {
+      "index": 4,
+      "argv_template": [
+        "<BASELINE_PYTHON>",
+        "-X",
+        "utf8",
+        "<PACKET>/current-observer.py.txt",
+        "--repo",
+        "<BASELINE_CHECKOUT>",
+        "--cases",
+        "<PACKET>/cases.json",
+        "--root",
+        "<NEW_EMPTY_ROOT_4>",
+        "--output",
+        "<NEW_OUTPUT_4>.json"
+      ],
+      "exit_status": 0,
+      "elapsed_seconds": 0.39179940000758506,
+      "stdout_sha256": "9d8b53582da29d0ea31d78c41ff86062aa888f97ba8fb5ca6dadc1e29a727c17",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation_sha256": "f210406d2e48d24d77027f4a15762f2cf4e355d9417a3fccafa1181a69bf8ef7"
+    }
+  ],
+  "command_description": "Authored portable replay templates in the original argument order; private argv and stdout/stderr remain unchanged locally.",
+  "private_command_receipt_sha256": "8217ae4378c090474583cdbe6acf2b2390c2cdcdb0c5c560329a1359a2bf7b97",
+  "byte_identical": true,
+  "observations_sha256": "f210406d2e48d24d77027f4a15762f2cf4e355d9417a3fccafa1181a69bf8ef7",
+  "case_plan_sha256": "decaf1d4a3add1d19dc1f2778497fcd97636d63e7ca968f92226fe110e2747d5",
+  "observer_sha256": "48fcabc3a45908dc89db9556292efa69d0997c0740dbae5072c605daaf8ec391",
+  "candidate_policy_executions": 0,
+  "cli_exit_observations": 0,
+  "source_file_count_unchanged": 128,
+  "expectation_correction": {
+    "schema_version": 1,
+    "reprollm_version": "0.7.0",
+    "status": "EXPECTED_LITERAL_CORRECTED_ONLY",
+    "reason": "E21 authored legacy include-closure diagnostic used depth9 instead of10 and omitted existing recursive incomplete diagnostics. Source _REQUIREMENTS_MAX_DEPTH=10; _closure emits depthlimit at chain9 (requirements root depth0) and incomplete on each parent. Existing tests/unit/core/test_requirements_depth_frontier.py lines93-95 independently assert the same recursive shape. All D-M-E current issue/pip/declaration/rule expectations and recommended A remain unchanged.",
+    "first_observation_sha256": "688e335a3a046eb0523d63d0904e45425d88e9505f025e52a738d21b2877ad62",
+    "before_sha256": "0f77bead570fed675078b0e3ad132e99f592657f93f72a3d7bac82f59f1c4fef",
+    "after_sha256": "decaf1d4a3add1d19dc1f2778497fcd97636d63e7ca968f92226fe110e2747d5",
+    "changed_case_ids": [
+      "E21"
+    ],
+    "changed_fields": [
+      "expected_current.unparsed"
+    ],
+    "product_source_changes": 0,
+    "candidate_policy_executions": 0
+  },
+  "authorship": "Initial cases prewritten before observation. E27 independently-discovered-requirements-root distinction fixed before first observation. E21 existing depth diagnostics corrected after first failed observation; final expectations therefore are not all pre-observation blind assertions. Final plan frozen before the two designated replays.",
+  "limitations": [
+    "No candidate policy execution, CLI exit measurement, release, resource gate, symlink execution, GPU or paid API",
+    "E20/E22 coverage gaps are explicit metadata controls retaining real captured imports",
+    "Logical aliases reviewed against source only; native symlink cases require real acceptance tests during an approved P-B"
+  ]
+}
