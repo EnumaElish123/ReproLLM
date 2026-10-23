@@ -253,6 +253,11 @@ HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预�
 原[P-A](proposals/R07-C/environment-pip/README.md)、PROPOSED决定、38项设计和原观察保留准备时字节；不把pip可支持而提取器未解析等同非法环境。
 后续仅建议独立P-A核对Poetry显式version提取边界，不能把空值／非exact直接当失败。更广R07-C、资源、外部反馈仍OPEN；不发布版本。
 
+2026-10-23，Poetry显式version边界的独立[P-A](proposals/R07-C/poetry-version/README.md)已准备，局部D-M-V推荐A，仍PROPOSED。
+仅当前已遍历dict value的显式非str version拟在原caller setdefault invalid_structure；不扩早期预检、字符串grammar、数组/groups或Pipfile。
+[报告](../../dogfooding/2026-10-23-r07c-poetry-version-pa.md)区分35例当前观察、两次指定211项重放与48行未执行未来验收；五项目均无该输入，仅零适用源证据。
+精确未应用补丁和全仓WARNING→SKIP/孤立exit1→0成本待具体裁决；接受后才P-B先RED再实施及完整适用门。不发布版本。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。

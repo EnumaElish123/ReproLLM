@@ -1,0 +1,33 @@
+# Poetry explicit-version current-source audit
+
+This is current-source evidence at `237cd903fde777ede75a415bd75f2dc592ac5d7a`, producer `0.7.0`. It contains no candidate policy execution, implementation, policy decision, or product acceptance claim.
+
+## Source boundary
+
+- `src/reprollm/core/deps.py:70-82`: `_dependency_version_field` reads `value.get("version")` only for a dict. A missing or non-string result returns `(None, None)`. A string is stripped to a specifier or None; transport keys (`url`, `git`, `path`, `file`, `hg`, `svn`, `bzr`) withhold exact credit. Poetry permits bare PEP 440 exact versions; Pipfile does not. The helper returns no parse-success flag.
+- `src/reprollm/core/deps.py:634-648`: existing decoded-structure checks require Poetry `dependencies` to be a mapping, but do not inspect each dependency value or a nested `version` field.
+- `src/reprollm/core/deps.py:718-737`: the existing Poetry loop retains each named dependency declaration, its canonical name and indexed source line, including when the version helper returns `(None, None)`. It emits no diagnostic or typed cause for the present non-string field. It does not traverse Poetry groups or individual members of a multiple-constraint list.
+- `src/reprollm/core/deps.py:835-874`: Pipfile calls the same helper with `allow_bare=False`; it is a separate comparison surface, not authorization to change it.
+- Normative sections 12.2 and 12.3.6-12.3.10 intentionally do not certify unhandled package-value grammar. `exact_version is None` does not establish a parse error, invalid manager input, or a missing explicit version.
+
+## Evidence and honest corrections
+
+Before any synthetic observer execution, `cases-frozen-v1.json` and `current-observer-v1.py` fixed 35 cases and 211 literal assertions. They cover TOML integer zero, booleans, finite float, lists, nested mappings, date, offset datetime and local time; missing/empty/whitespace/caret/wildcard/range/unsupported strings; transport; a whole nonmapping dependency; a Poetry multiple-constraint array; partial entries, independent exact credit, qualified/failed/wrong-manager locks, an unrelated subproject, existing decoded and PEP 621 causes, an actual depth frontier, a Python coverage seam, and Pipfile comparison.
+
+The first two complete observations both passed 209 of 211 assertions and were byte-identical. `expectation-revision-01.json` retains two source-verified expectation corrections: a requirements exact declaration retains its `==2.5.1` specifier (unlike Poetry's exact representation), and malformed `poetry.lock` preserves its existing `invalid package collection` diagnostic. No input, observer, product, status, cause, or credit expectation changed. Both original complete failed records and the original frozen plan remain untouched. The final plan is therefore not wholly blind.
+
+Designated replays 03 and 04 used different new empty roots with unchanged observer and the revised plan. Both passed all 211 literal assertions, exit 0. The full records are byte-identical, SHA256 `96ce5f636d96e17881111d76c728ef8f698956336707af2867f04bd047d13877`. All four invocations and their commands/stdout/stderr/elapsed times are retained. Strict JSON uses predeclared typed ISO values for datetime/date/time traces and preserves original TOML text; it forbids NaN/Infinity. No unsupported TOML null case was invented.
+
+Each complete record includes full `Declarations` (including private manifest associations and uncertain barriers), captured Python facts, qualified lock packages, failed associated locks, all three raw environment rules, scanner listing/candidate/read traces, `Requirement` arguments, and all 36 shared version-helper calls. There were two `Requirement` calls. The existing 128 product source files were unchanged before/after; all 53 imported product modules bind to those recorded source hashes. Every replay checks its initial Git HEAD, then guards subprocesses/network and heavy imports. Installed-package lookup is fixed to `{}`; Q34 alone uses an explicit coverage metadata seam while preserving real imports.
+
+## Current behavior and compatibility implications
+
+The literal predicate `dict dependency value` plus present `version` plus non-string version matches 22 cases / 22 helper calls. Current results among these are 15 raw WARNING, two empty results due to existing positive credit, and five existing SKIPPED branches. These are only source-based classifications, not execution of a proposed policy. Overall raw critical-rule results are 26 WARNING, four empty results, five SKIPPED.
+
+Current source keeps a named declaration for all these entries; a new policy must explicitly say whether that inventory, profile/init consumers, source lines and diagnostics remain unchanged. Missing version, whitespace, unsupported but string values, legitimate nonexact Poetry strings and transport strings all overlap `(None, None)` or `exact_version=None` and cannot become failures by testing those return values. A valid Poetry multi-constraint array is a nonmapping whole dependency and must not be mistaken for a dict with a malformed explicit field. The transport plus non-string case remains a separate explicit shape decision.
+
+Placement matters: Q32 has a preexisting PEP 621 string failure (`unparsed_requirement`) before the Poetry loop. Extending the whole-document structure precheck would install `invalid_structure` first and change the winning code. Adding a bounded fact in the existing Poetry loop with `setdefault` preserves that existing cause. Q31 already has `invalid_structure`; Q33 currently reaches D-G and any new D-M fact would precede it. Qualified/exact credit and failed associated-lock/Python-origin uncertainty precede D-M under current source. An unrelated noncritical package can still matter under repository-wide existential exact-credit semantics; any candidate must name that global cost.
+
+## Limits
+
+The 211 listed fields are independent literal projections except the two explicitly revised fields. Full-record identity provides broader compatibility evidence, not an independently authored oracle for every internal field. These probes evaluate internal raw rules with a real non-Git scanner; they do not run CLI, engine, profile/init/export, a complete Gate A, a candidate policy, or a real overall exit-code comparison. No paid API, GPU, network, package manager or version release was used. Source inventory in the five pinned projects is an independent workstream. The private raw records have passed strict JSON/LF and actual user/host/profile/absolute-path literal prechecks; public inclusion still requires the root agent's publication review and must preserve field meanings.

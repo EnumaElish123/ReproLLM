@@ -207,6 +207,12 @@ Exact pushed-head five-job CI is checked separately at delivery. The original
 The next independent P-A may investigate Poetry's explicit dependency-version extraction boundary;
 no new policy is implemented by that suggestion. Wider R07-C, resource, adoption and release work remain OPEN.
 
+The next independent Poetry P-A is now [review-ready](reliability-2026-10-03/proposals/R07-C/poetry-version/README.md):
+D-M-V recommends A only for a traversed mapping's explicit non-string version field, with caller-local setdefault and unchanged declarations/credit/earlier causes.
+The [session report](../dogfooding/2026-10-23-r07c-poetry-version-pa.md) records current-source observations and five-project zero applicability;
+48 acceptance rows and the exact unapplied spec patch remain proposed. Repository-wide WARNING-to-SKIP and isolated exit1-to0 costs require the same specific decision.
+No new policy is accepted or implemented; broader R07-C/resource/adoption work stays OPEN. No release.
+
 ## Previous plans and delivery status
 
 The existing M1–M12 and UX plans remain historical task/acceptance records:

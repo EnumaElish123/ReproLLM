@@ -1,0 +1,15 @@
+# Official primary-source review
+
+Access date: 2026-10-23 UTC. Exact fetch times, response URLs, bytes and SHA-256 are in source-fetch.json. These are read-only source observations; no Poetry validation, resolution, installation, ReproLLM test or candidate execution was performed.
+
+| Source | Version and support | Boundary |
+|---|---|---|
+| [Poetry dependency specification](https://python-poetry.org/docs/dependency-specification/) | Official page displayed stable 2.5; documents string constraints/ranges/wildcards, source-only enrichment, multiple-constraint list alternatives and expanded TOML syntax. | Supports control cases; does not prove every synthetic string valid, an exact pin, or a successful solve. |
+| [Poetry-core schema 2.5.0](https://raw.githubusercontent.com/python-poetry/poetry-core/2.5.0/src/poetry/core/json/schemas/poetry-schema.json) | Tagged official schema: definitions.long-dependency.properties.version.type is string; dependency alternatives are distinct string, mapping, transport, options and multiple-constraint shapes. SHA 2bc94a40953eb002f8adab8c032cc8701af5834f5e895feb736021b170215915. | Supports the explicit field type boundary. Reading schema is not actual schema/installation validation or proof that a bad value could hide a valid exact pin. |
+| [Poetry-core schema 2.2.1](https://raw.githubusercontent.com/python-poetry/poetry-core/2.2.1/src/poetry/core/json/schemas/poetry-schema.json) | Official tagged older comparison; exact bytes match independently fetched 2.5.0 schema. | A versioned cross-check, not a claim that 2.2.1 is latest. |
+| [Poetry-core factory 2.5.0](https://raw.githubusercontent.com/python-poetry/poetry-core/2.5.0/src/poetry/core/factory.py) | Official tagged create_dependency distinguishes direct origins before nontransport version default, and group loading separately expands list alternatives. | Static source only; ReproLLM must not import Poetry or implement its full solver to add the narrow type predicate. |
+| [Poetry-core factory 2.2.1](https://raw.githubusercontent.com/python-poetry/poetry-core/2.2.1/src/poetry/core/factory.py) | Official tagged older factory comparison, separately captured exact bytes. | Additional historical boundary check only. |
+
+Browser evidence: web tool successfully opened the stable docs, 2.2.1 official raw schema/factory, and 2.5.0 factory. Two web attempts to open 2.5.0 schema returned cache miss; an independent fixed URL HTTP fetch returned 200 and the exact schema bytes match the browsed 2.2.1 schema. This failure/success distinction is retained: no claim that web browsing returned the 2.5.0 schema. Download receipts do not replace the actual successful primary-source browsing.
+
+Inference and decision: this source evidence supports a bounded explicit non-string field shape. Repository-wide D-M propagation remains a conservative product policy proposal with the stated WARNING-to-SKIPPED and exit cost. Neither the schema nor static factory establishes that propagation as a logical necessity or certifies complete manager validity. No direct quoted source prose is reproduced here.

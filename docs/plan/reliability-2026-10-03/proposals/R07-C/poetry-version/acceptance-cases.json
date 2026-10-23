@@ -1,0 +1,249 @@
+{
+  "schema_version": "1",
+  "task": "R07-C D-M-V",
+  "status": "FUTURE_INDEPENDENT_ACCEPTANCE_DESIGN_NOT_EXECUTED",
+  "candidate_policy_executions": 0,
+  "basis": "Existing source/spec and fixed official primary documentation; not candidate-output generated",
+  "rows": [
+    {
+      "id": "T01",
+      "scenario": "version=false / true",
+      "expected": "Both decoded bool values cause invalid_structure only in a reached Poetry value mapping; declaration tuple/line and diagnostics unchanged."
+    },
+    {
+      "id": "T02",
+      "scenario": "version=0 / positive integer",
+      "expected": "Both zero and nonzero integer are present non-str; do not lose zero through truthy fallback."
+    },
+    {
+      "id": "T03",
+      "scenario": "version=finite float / inf / nan",
+      "expected": "All actual TOML decoded floats cause the same shape issue; no coercion to str or numeric exact credit."
+    },
+    {
+      "id": "T04",
+      "scenario": "version=[] / [\"2.5.1\"] / mixed list",
+      "expected": "All explicit version list values trigger, including empty and apparently singleton-exact lists; do not parse list members."
+    },
+    {
+      "id": "T05",
+      "scenario": "version={} / {nested=\"2.5.1\"}",
+      "expected": "Both explicit mapping values trigger; do not recursively extract a nested version."
+    },
+    {
+      "id": "T06",
+      "scenario": "version=TOML local date / time / datetime",
+      "expected": "Successfully decoded temporal objects are non-str and trigger; fixtures must be actual TOML, not manual null."
+    },
+    {
+      "id": "T07",
+      "scenario": "version absent in empty package mapping",
+      "expected": "No new issue; current declaration (None,None) remains. This is not a completeness certificate."
+    },
+    {
+      "id": "T08",
+      "scenario": "source-only/options-only mapping, no version",
+      "expected": "No new issue; preserve enrichment/source/optional capture behavior and no invented exact pin."
+    },
+    {
+      "id": "T09",
+      "scenario": "version=empty or whitespace string",
+      "expected": "No new issue, preserve helper (None,None); blank is not inferred to be malformed from helper output."
+    },
+    {
+      "id": "T10",
+      "scenario": "version=bare valid PEP440 exact string",
+      "expected": "No new issue; retain bare exact credit, including pre/post/dev/local/epoch cases under existing grammar."
+    },
+    {
+      "id": "T11",
+      "scenario": "version=single non-wildcard == string",
+      "expected": "No new issue; retain exact version and current helper return shape."
+    },
+    {
+      "id": "T12",
+      "scenario": "version=range/caret/tilde/wildcard/compound string",
+      "expected": "No new issue despite exact=None; retain original stripped specifier, nonexact credit rules, and diagnostics."
+    },
+    {
+      "id": "T13",
+      "scenario": "version=unsupported/invalid grammar string",
+      "expected": "No new issue from this slice; no full Poetry grammar validation or Requirement invocation is added."
+    },
+    {
+      "id": "T14",
+      "scenario": "package value directly str/int/float/bool/date/list",
+      "expected": "Only value mappings with present version qualify; retain all nonmapping alternatives even if unsupported by the existing extractor."
+    },
+    {
+      "id": "T15",
+      "scenario": "package value valid multiple-constraints list",
+      "expected": "No new issue; do not descend into each element or invent exact pin from a member. Official valid alternatives are not generalized failures."
+    },
+    {
+      "id": "T16",
+      "scenario": "package value list containing a mapping version=false",
+      "expected": "No new issue from this slice: nested alternative is not an existing traversed mapping entry; wider list structure remains OPEN."
+    },
+    {
+      "id": "T17",
+      "scenario": "transport key plus absent version",
+      "expected": "No new issue for url/git/path/file/hg/svn/bzr-key combinations; retain old no-exact behavior."
+    },
+    {
+      "id": "T18",
+      "scenario": "transport key plus string version",
+      "expected": "No new issue; exact remains None even if string is bare or == exact. Do not grant new transport version credit."
+    },
+    {
+      "id": "T19",
+      "scenario": "transport key plus non-str version",
+      "expected": "Triggers the same explicit field type issue. The claim concerns this extractor field only, not complete Poetry validity or actual installation behavior; empty/false transport fields do not exempt it."
+    },
+    {
+      "id": "T20",
+      "scenario": "noncritical name / python entry mapping has version=false with independent torch use",
+      "expected": "Issue influences the existing remaining critical-use set repository-wide. Do not infer torch from malformed field; current independent use must be present."
+    },
+    {
+      "id": "T21",
+      "scenario": "only noncritical malformed Poetry entry and no critical imports",
+      "expected": "Issue recorded but no new critical applicability/package finding; preserve no-critical-use skip and existing Python empty-result veto behavior."
+    },
+    {
+      "id": "T22",
+      "scenario": "same-package surviving exact declaration plus malformed Poetry value",
+      "expected": "Exact-declaration credit wins first; preserve partial declarations, order, and any diagnostics; no SKIP for the credited package."
+    },
+    {
+      "id": "T23",
+      "scenario": "unrelated malformed nested pyproject plus used critical packages",
+      "expected": "A may replace every remaining uncredited WARNING/promoted CRITICAL with SKIPPED/INFO. This is an explicit global conservative cost, not a manager-scope lock association."
+    },
+    {
+      "id": "T24",
+      "scenario": "qualified origin lock credit plus malformed version",
+      "expected": "Actual qualified-lock credit still wins; lock package membership, origins, association and uncertain barriers remain byte/field equivalent."
+    },
+    {
+      "id": "T25",
+      "scenario": "D-F and D-S with malformed version",
+      "expected": "Existing associated format-lock failure wins with its existing message, hint and evidence; new D-M fact does not leak into higher branch evidence."
+    },
+    {
+      "id": "T26",
+      "scenario": "D-L with incomplete Python/possible lock plus malformed version",
+      "expected": "Existing D-L wins; source failure remains recorded internally but finding uses D-L contract."
+    },
+    {
+      "id": "T27",
+      "scenario": "D-G final depth frontier plus malformed version",
+      "expected": "D-M precedes D-G for remaining uncredited packages; new finding/evidence follows existing D-M contract."
+    },
+    {
+      "id": "T28",
+      "scenario": "existing same-file D-M-S precheck cause",
+      "expected": "Prior invalid_structure retained; no overwriting/reason split, and no additional diagnostics."
+    },
+    {
+      "id": "T29",
+      "scenario": "same-file PEP621 unparsed_requirement before Poetry loop",
+      "expected": "setdefault retains unparsed_requirement. Do not extend the earlier global structure precheck, which would wrongly reorder the stored cause for this chosen proposal."
+    },
+    {
+      "id": "T30",
+      "scenario": "multiple bad Poetry values in same file",
+      "expected": "One issue entry per logical file, no duplicate finding/evidence; retain all existing declarations in encounter order."
+    },
+    {
+      "id": "T31",
+      "scenario": "multiple failure sources and prior D-M finding",
+      "expected": "Distinct file paths are lexically sorted in evidence, previous current-use evidence stays first; existing skipped finding can gain a source item."
+    },
+    {
+      "id": "T32",
+      "scenario": "version key case and extra names",
+      "expected": "Only exact key version qualifies; Version/unknown extra keys remain unchanged. Do not add package-name, key-whitelist or other property checks."
+    },
+    {
+      "id": "T33",
+      "scenario": "nonmapping parents / wrong dependencies table type",
+      "expected": "Existing finite D-M-S parent checks apply; do not inspect unreachable values or replace read/syntax/structure precedence."
+    },
+    {
+      "id": "T34",
+      "scenario": "Poetry groups / dev-dependencies / PEP735 / build-system only",
+      "expected": "No new traversals, declarations or issue solely from those unvisited sections; malformed version nested there remains outside this slice."
+    },
+    {
+      "id": "T35",
+      "scenario": "Pipfile packages/dev-packages explicit version=false",
+      "expected": "No new issue from this Poetry-only slice; shared helper and Pipfile callers remain unchanged, pending independent evidence/design."
+    },
+    {
+      "id": "T36",
+      "scenario": "PEP621/environment/requirements sources",
+      "expected": "Retain prior D-M-P/D-M-E/D-C/D-G contracts and their distinct blank/strip/route semantics; no broad helper policy propagation."
+    },
+    {
+      "id": "T37",
+      "scenario": "unreadable/undecodable pyproject",
+      "expected": "Existing unreadable/invalid_syntax only; no value inspection after decoder failure and no retry/read expansion."
+    },
+    {
+      "id": "T38",
+      "scenario": "not-discovered / filtered / safely refused candidates",
+      "expected": "Do not add listing, reads, roots, include edges or budget to discover potential field failures."
+    },
+    {
+      "id": "T39",
+      "scenario": "inline vs expanded Poetry package table and line indices",
+      "expected": "Same decoded predicate when actually iterated; preserve legacy source_file and existing _TomlLineIndex package key line even if version physical line differs."
+    },
+    {
+      "id": "T40",
+      "scenario": "manual/legacy Declarations defaults",
+      "expected": "Existing empty internal dictionary remains default; no persisted schema field/new reason code or inferred issues from historical/manual tuples."
+    },
+    {
+      "id": "T41",
+      "scenario": "complete original declaration and graph trace comparison",
+      "expected": "All declaration fields/order, project roots, lock membership/association, manifest/lock presence, graph, reads/Requirement calls/diagnostics remain equal aside from the explicitly added file issue."
+    },
+    {
+      "id": "T42",
+      "scenario": "isolated ordinary WARNING at fail-on WARNING",
+      "expected": "Approved A changes qualifying finding to SKIPPED/INFO and may change CLI exit1 to0; exact full JSON must be asserted, not only counts."
+    },
+    {
+      "id": "T43",
+      "scenario": "FAIL-only promotion, suppression, independent warning and thresholds",
+      "expected": "Promoted critical failure becomes unpromoted SKIPPED/INFO; suppression and alias still apply; independent qualifying finding still exits1, exit2/3 behavior unaffected."
+    },
+    {
+      "id": "T44",
+      "scenario": "default text / verbose / JSON / default export",
+      "expected": "Existing text may show PASS plus skipped count, complete JSON retains finding, default export omits it. No renderer/export implementation changes."
+    },
+    {
+      "id": "T45",
+      "scenario": "profile detection / hints / init / manifest",
+      "expected": "Successful declaration inventory and derived profiles/hints/init output should remain unchanged; verify via affected consumers, do not infer it from summary counts."
+    },
+    {
+      "id": "T46",
+      "scenario": "determinism and privacy",
+      "expected": "Repeated same logical inputs give byte-identical relevant records; no path/host/user/secret leakage or raw malformed value added to messages."
+    },
+    {
+      "id": "T47",
+      "scenario": "five pinned projects and independent source impact",
+      "expected": "Read source before forecasting full rule/profile/hint/diagnostic/init delta. If no reached non-str version field exists, predict zero delta but do not call zero-source audit a trigger-branch validation."
+    },
+    {
+      "id": "T48",
+      "scenario": "P-B final acceptance and resources",
+      "expected": "After accepted precise patch: test-first RED/GREEN, final complete quality plus all-five Gate A and affected matrix; resource gates blocked/N-A explicitly. P-A must not claim these future rows executed."
+    }
+  ]
+}
