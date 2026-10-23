@@ -197,14 +197,15 @@ affected checks, 24 complete internal records, final identities and independent 
 All applicable local gates pass; exact pushed-head five-job CI is checked separately at delivery.
 The [P-A packet](reliability-2026-10-03/proposals/R07-C/pep621-strings/README.md),
 PROPOSED decision and original observations remain immutable historical snapshots.
-The next [D-M-E P-A packet](reliability-2026-10-03/proposals/R07-C/environment-pip/README.md)
-is prepared and **PROPOSED**. It records 27 current-source cases with two designated
-162-assertion replays, 38 future acceptance rows and five-pin source-only zero-trigger evidence.
-The exact §12.3.10 patch remains unapplied; option A is unaccepted and candidate-policy executions are zero.
-Follow the [P-A report](../dogfooding/2026-10-23-r07c-environment-pip-pa.md).
-Specific acceptance of A, its patch and repository-wide conservative costs is required before P-B.
-Blank filtering and strip behavior remain; no new pip grammar or resource/release authorization follows.
-Broader R07-C, resource blockers, independent adoption and release remain separately bounded.
+The maintainer has [specifically accepted D-M-E A and its exact patch](reliability-2026-10-03/proposals/R07-C/environment-pip/decision-accepted.json), including repository-wide conservative costs.
+P-B at `a221e9d` records only failures of the existing stripped nonblank embedded-pip call,
+preserving partial declarations, prior causes, credit and priorities. Its
+[P-B report](../dogfooding/2026-10-23-r07c-environment-pip-pb/README.md) records 154 new cases,
+final local quality, fresh five-project Gate A, affected checks, 27 full internal records and archive readback, all PASS.
+Exact pushed-head five-job CI is checked separately at delivery. The original
+[P-A packet](reliability-2026-10-03/proposals/R07-C/environment-pip/README.md), PROPOSED snapshot and observations remain immutable preparation evidence.
+The next independent P-A may investigate Poetry's explicit dependency-version extraction boundary;
+no new policy is implemented by that suggestion. Wider R07-C, resource, adoption and release work remain OPEN.
 
 ## Previous plans and delivery status
 

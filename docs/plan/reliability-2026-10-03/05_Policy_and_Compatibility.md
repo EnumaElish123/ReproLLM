@@ -244,16 +244,14 @@ HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预�
 后续 environment 嵌入 pip 独立 P-A 已准备，见下节；不得自动套用本片空白触发或授权。
 更广 R07-C 仍 OPEN；资源与外部反馈阻塞保留，不发布版本。
 
-### R07-C D-M-E：environment 嵌入 pip 提取失败 P-A（2026-10-23）
+### R07-C D-M-E：environment 嵌入 pip 提取失败 P-B（2026-10-23）
 
-[具体提案](proposals/R07-C/environment-pip/README.md)推荐 A：仅将原非空字符串经 strip 后实际 Requirement 失败的反馈
-记为既有内部 unparsed_requirement，沿用 D-M；保留空白跳过、dependencies 外层序号、部分声明、Conda／lock 信用和所有优先级。
-pip 安装器可能支持未被当前提取器解析的指令／注释，不能称整个环境文件无效；不扩展 grammar、读或安装器执行。
-[精确补丁](proposals/R07-C/environment-pip/spec-proposed.patch)未应用，[决定](proposals/R07-C/environment-pip/decision.json)
-仍 PROPOSED／accepted=false，候选政策执行数 0。A 的全仓 WARNING→SKIPPED、孤立 exit 1→0 成本须具体裁决。
-[P-A 报告](../../dogfooding/2026-10-23-r07c-environment-pip-pa.md)记录 27 当前源码案例／每次 162 字面断言的两次指定重放，
-一处旧深度诊断预期更正及全部原件、38 项未来验收和五项目 source-only 零触发预期。
-本轮按文稿例外，不宣称本地产品质量门、fresh Gate A 或资源 PASS；不调用付费 API、不使用 GPU、不发布版本。
+维护者已[明确接受 A 及精确规范补丁](proposals/R07-C/environment-pip/decision-accepted.json)，包括全仓 WARNING→SKIPPED、孤立 exit 1→0 成本。
+产品 `a221e9d` 只消费既有非空字符串经strip后的单次Requirement失败，以setdefault记录既有原因；空白、原序号、诊断、部分声明、信用和优先级保持。
+[P-B报告](../../dogfooding/2026-10-23-r07c-environment-pip-pb/README.md)记录154新增用例、最终质量门、五项目Gate A、受影响验证、27份完整内部记录和归档回读，均本地PASS。
+最终精确推送HEAD的五项CI及Linux schema/docs/examples交付时另核。
+原[P-A](proposals/R07-C/environment-pip/README.md)、PROPOSED决定、38项设计和原观察保留准备时字节；不把pip可支持而提取器未解析等同非法环境。
+后续仅建议独立P-A核对Poetry显式version提取边界，不能把空值／非exact直接当失败。更广R07-C、资源、外部反馈仍OPEN；不发布版本。
 
 ### 当前问题与推荐原则
 

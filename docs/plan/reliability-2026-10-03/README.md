@@ -151,10 +151,15 @@ The [P-B report](../../dogfooding/2026-10-23-r07c-pep621-strings-pb/README.md) r
 24 complete internal records and archive readback, all locally PASS.
 Exact final-head five-job CI and Linux exact schema are checked at delivery.
 The [P-A packet](proposals/R07-C/pep621-strings/README.md) remains an immutable historical snapshot.
-The next [environment embedded-pip P-A](proposals/R07-C/environment-pip/README.md)
-is now prepared, **PROPOSED** and not implemented. The [P-A report](../../dogfooding/2026-10-23-r07c-environment-pip-pa.md)
-records 27 current-source cases, two designated complete-record replays with 162 projected assertions each,
-38 future acceptance rows, exact unapplied §12.3.10 patch and source-only five-pin zero-trigger expectations.
-A remains unaccepted; candidate-policy executions are zero. Preserve blank filtering, strip and
-outer dependency ordinals; pip-supported syntax may be unextractable by Requirement.
-This does not extend PEP 621 approval or settle other R07-C, resource, adoption or release work.
+The original [environment embedded-pip P-A](proposals/R07-C/environment-pip/README.md) remains an immutable preparation snapshot.
+
+## R07-C environment embedded-pip P-B (2026-10-23)
+
+The maintainer [explicitly accepted D-M-E A and its exact specification patch](proposals/R07-C/environment-pip/decision-accepted.json), including conservative costs.
+Implementation at `a221e9d` changes only the existing nonblank stripped pip caller's failure handling.
+The [P-B report](../../dogfooding/2026-10-23-r07c-environment-pip-pb/README.md) records 154 new cases,
+final local quality, fresh five-project Gate A, affected validation, 27 full internal records and archive readback, all PASS.
+Blank filtering, ordinals, diagnostics, partial declarations, credit and priorities remain.
+Exact final-head five-job CI and Linux exact schema/docs/examples are checked separately at delivery.
+Poetry explicit-version extraction may be investigated in a new independent P-A; other policies,
+resources, adoption and release are not automatically approved. Wider R07-C remains OPEN.
