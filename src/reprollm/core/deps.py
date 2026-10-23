@@ -721,6 +721,12 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
     if isinstance(poetry_deps, dict):
         header = index.header_line("tool.poetry.dependencies")
         for name, value in poetry_deps.items():
+            if (
+                isinstance(value, dict)
+                and "version" in value
+                and not isinstance(value["version"], str)
+            ):
+                result.declaration_read_issues.setdefault(path, "invalid_structure")
             specifier, exact = _dependency_version_field(value, allow_bare=True)
             lineno = index.key_line("tool.poetry.dependencies", name, header)
             result.declarations.append(

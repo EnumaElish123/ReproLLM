@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-V (spec §12.3.11): record an explicit non-string `version` field
+  only inside an already-traversed Poetry dependency mapping as internal
+  `invalid_structure`, preserving earlier causes, all declarations, existing line
+  values and exact/qualified-lock credit. Reuse D-M's priority and repository-wide
+  conservative SKIP policy; an isolated warning/promoted-critical gate can change
+  from exit 1 to 0. Missing/string versions, nonmapping alternatives, groups and
+  Pipfile keep their existing behavior. No grammar/read expansion, engine/schema,
+  dependency, historical-record or version-release change.
+
 - R07-C D-M-E (spec §12.3.10): retain failed extraction of already-reached,
   stripped nonblank environment embedded-pip strings as internal declaration
   uncertainty. Preserve blank filtering, partial declarations, source ordinals,
