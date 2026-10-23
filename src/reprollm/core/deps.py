@@ -794,8 +794,12 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
             _add_conda_entry(entry, path, lineno, result)
         elif isinstance(entry, dict) and isinstance(entry.get("pip"), list):
             for pip_line in entry["pip"]:
-                if isinstance(pip_line, str) and pip_line.strip():
-                    _add_requirement_line(pip_line.strip(), path, lineno, result)
+                if (
+                    isinstance(pip_line, str)
+                    and pip_line.strip()
+                    and not _add_requirement_line(pip_line.strip(), path, lineno, result)
+                ):
+                    result.declaration_read_issues.setdefault(path, "unparsed_requirement")
 
 
 def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -> None:

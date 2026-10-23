@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-E (spec §12.3.10): retain failed extraction of already-reached,
+  stripped nonblank environment embedded-pip strings as internal declaration
+  uncertainty. Preserve blank filtering, partial declarations, source ordinals,
+  diagnostics, prior causes and exact/qualified-lock credit; reuse existing D-M
+  priority. Unrelated failed sources can conservatively change remaining used,
+  uncredited packages from WARNING to SKIPPED/INFO and an isolated gate from
+  exit 1 to 0. No pip/Conda grammar expansion, new reads, engine/schema changes,
+  historical rewriting, dependency change or version release.
+
 - R07-C D-M-P (spec §12.3.9): retain actual PEP 621 dependency-string parse
   failures at the two existing extraction sites as internal declaration uncertainty,
   including empty/whitespace strings. Preserve partial declarations, earlier source

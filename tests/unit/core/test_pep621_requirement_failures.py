@@ -566,7 +566,7 @@ def test_p13_unsupported_fields_and_excluded_candidates_add_no_parse_calls(
 
 
 @pytest.mark.parametrize("pep_failure", [False, True])
-def test_p14_other_managers_and_embedded_pip_keep_their_own_contract(
+def test_p14_other_managers_and_embedded_pip_keep_their_separately_accepted_contracts(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, requirement_calls: list[str], pep_failure: bool
 ) -> None:
     _write(
@@ -598,7 +598,14 @@ def test_p14_other_managers_and_embedded_pip_keep_their_own_contract(
                 "environment.yml": frozenset({"conda-lock.yml"}),
                 "Pipfile": frozenset({"Pipfile.lock"}),
             },
-            issues={"pyproject.toml": "unparsed_requirement"} if pep_failure else {},
+            issues=(
+                {
+                    "pyproject.toml": "unparsed_requirement",
+                    "environment.yml": "unparsed_requirement",
+                }
+                if pep_failure
+                else {"environment.yml": "unparsed_requirement"}
+            ),
         ),
         scanner,
         ["pyproject.toml", "environment.yml", "Pipfile"],

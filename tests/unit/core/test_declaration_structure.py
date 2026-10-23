@@ -458,7 +458,7 @@ def test_pep508_string_grammar_does_not_become_a_structure_issue(tmp_path: Path,
     assert result.declaration_read_issues == {"pyproject.toml": "unparsed_requirement"}
 
 
-def test_pip_string_grammar_and_unknown_nested_values_do_not_expand_structure_checks(
+def test_pip_string_failure_is_separate_from_unchanged_unknown_nested_structure_checks(
     tmp_path: Path,
 ) -> None:
     _write(
@@ -471,4 +471,4 @@ def test_pip_string_grammar_and_unknown_nested_values_do_not_expand_structure_ch
 
     assert result.declarations == []
     assert result._uncertain_directories == set()
-    assert result.declaration_read_issues == {}
+    assert result.declaration_read_issues == {"environment.yml": "unparsed_requirement"}
