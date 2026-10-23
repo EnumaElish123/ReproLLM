@@ -207,11 +207,11 @@ Exact pushed-head five-job CI is checked separately at delivery. The original
 The next independent P-A may investigate Poetry's explicit dependency-version extraction boundary;
 no new policy is implemented by that suggestion. Wider R07-C, resource, adoption and release work remain OPEN.
 
-The next independent Poetry P-A is now [review-ready](reliability-2026-10-03/proposals/R07-C/poetry-version/README.md):
-D-M-V recommends A only for a traversed mapping's explicit non-string version field, with caller-local setdefault and unchanged declarations/credit/earlier causes.
-The [session report](../dogfooding/2026-10-23-r07c-poetry-version-pa.md) records current-source observations and five-project zero applicability;
-48 acceptance rows and the exact unapplied spec patch remain proposed. Repository-wide WARNING-to-SKIP and isolated exit1-to0 costs require the same specific decision.
-No new policy is accepted or implemented; broader R07-C/resource/adoption work stays OPEN. No release.
+The maintainer [accepted D-M-V A and its exact specification patch](reliability-2026-10-03/proposals/R07-C/poetry-version/decision-accepted.json), including repository-wide conservative costs.
+P-B at `b18ed19` records only the explicit non-string version-field fact in the existing Poetry loop; declarations, credit, line fallbacks and prior causes remain.
+The [P-B report](../dogfooding/2026-10-23-r07c-poetry-version-pb/README.md) records171 new regressions, final quality, fresh five-project Gate A/affected checks and35 full internal records, all applicable local gates PASS.
+Exact final-head five-job CI is checked separately at delivery. The [original P-A](reliability-2026-10-03/proposals/R07-C/poetry-version/README.md), PROPOSED decision and observations retain historical bytes.
+A separate Pipfile P-A may be investigated next; that suggestion approves no new policy. Wider R07-C, resources and adoption remain OPEN. No release.
 
 ## Previous plans and delivery status
 

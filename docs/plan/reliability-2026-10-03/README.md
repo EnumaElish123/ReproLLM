@@ -164,10 +164,8 @@ Exact final-head five-job CI and Linux exact schema/docs/examples are checked se
 Poetry explicit-version extraction may be investigated in a new independent P-A; other policies,
 resources, adoption and release are not automatically approved. Wider R07-C remains OPEN.
 
-## 当前接续：R07-C D-M-V P-A（2026-10-23）
+## 当前接续：R07-C D-M-V P-B（2026-10-23）
 
-[Poetry显式version提案包](proposals/R07-C/poetry-version/README.md)已为PROPOSED / REVIEW_READY，推荐A尚未接受、未实施。
-仅当前已遍历Poetry dict value显式含非str version时拟在原caller setdefault invalid_structure，保留声明、信用、先因及原line/fallback。
-[报告](../../dogfooding/2026-10-23-r07c-poetry-version-pa.md)区分35当前案例、211项指定重放、五项目源零适用和48行未执行未来验收。
-下一步裁决具体A、精确未应用补丁及全仓WARNING→SKIP/孤立exit1→0成本；接受后P-B先RED再实施与适用完整门。
-更广R07-C与资源/外部反馈保持OPEN，不发布版本。
+维护者已[接受D-M-V A、精确补丁及全仓成本](proposals/R07-C/poetry-version/decision-accepted.json)。产品`b18ed19`仅在原Poetry循环记录显式非str version的invalid_structure，保留先因/声明/信用/line fallback。
+[P-B报告](../../dogfooding/2026-10-23-r07c-poetry-version-pb/README.md)记录171新增回归、最终质量、fresh五项目Gate A/受影响、35完整record和归档回读，适用本地门均PASS；最终精确HEAD五项CI交付另核。
+原[P-A](proposals/R07-C/poetry-version/README.md)、PROPOSED决定和原观察保持字节。下一步只建议独立P-A核Pipfile显式version、packages/dev-packages两节和allow_bare=False；不套用本次批准。更广R07-C、资源及外部反馈仍OPEN，不发布版本。
