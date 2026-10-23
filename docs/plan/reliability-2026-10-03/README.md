@@ -126,13 +126,15 @@ A separate [ordering evidence correction](proposals/R07-C/requirements-depth/dec
 preserves the original observations and adds actual deep-first/reverse-order evidence.
 Other OPEN R07-C policies and release remain outside this specific delegated choice.
 
-## R07-C ordinary requirements comments P-A (2026-10-22)
+## R07-C ordinary requirements comments P-B (2026-10-22 to 2026-10-23)
 
-The next [D-C packet](proposals/R07-C/requirements-comments/README.md) is
-PROPOSED / REVIEW_READY: bounded ordinary-line comment fallback, exact unapplied
-specification patch, compatibility costs, independent future acceptance and
-unchanged-current-product observations. The [P-A report](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
-records the source-only five-project impact, including HarmBench's two declarations,
-two removed diagnostics and grammar closure change. No future policy was executed.
-Specific acceptance of A and the exact patch is required before P-B. D-G is complete;
-other R07-C work, resource gates and version release remain separately bounded.
+The maintainer specifically [accepted D-C A and its exact patch](proposals/R07-C/requirements-comments/decision-accepted.json).
+P-B implements the bounded ordinary-line fallback at `0f8c4df`, preserving original
+route/full-line success, the file-wide trailing-backslash veto, existing credit and
+uncertainty priorities, and other manager grammars. The [P-B report](../../dogfooding/2026-10-22-r07c-requirements-comments-pb/README.md)
+records 141 new regression cases and their complete RED/GREEN history, the full local
+quality gate, fresh five-project Gate A, affected and CLI replay, final source identity
+checks and independent archive readback, all PASS. Final pushed-head CI and Linux exact
+schema verification are independently checked at delivery. The [P-A report](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
+and original PROPOSED packet remain historical snapshots. Other R07-C policy, resource
+gates, real adoption and version release remain separately bounded.

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "correction_receipt": "07-export-expectation-correction.json",
+  "correction_receipt_sha256": "a6c347ee108b257990c10d53fa47fff627fc4d1f626e5ea83528e5c4459602f9",
+  "old_product_red_rerun": false,
+  "reason": "The original fail-state RED stopped at the exit-code assertion before reaching export. Only the existing Markdown angle-bracket escaping assertion was corrected after implementation; original RED proof of semantic failure is retained and no new original-product RED is claimed.",
+  "exact_test_diff": {
+    "removed": "assert (message in document) == (state == \"fail\")",
+    "added": [
+      "exported_message = (",
+      "    \"torch is used but not pinned to an exact version (suggestion: torch==&lt;version&gt;)\"",
+      "    if state == \"fail\"",
+      "    else message",
+      ")",
+      "assert (exported_message in document) == (state == \"fail\")"
+    ]
+  },
+  "independent_contract": "Existing exporter _md_text uses html.escape(text, quote=False) at source line 495; notable finding message is rendered at template line 196.",
+  "product_modified_for_correction": false
+}

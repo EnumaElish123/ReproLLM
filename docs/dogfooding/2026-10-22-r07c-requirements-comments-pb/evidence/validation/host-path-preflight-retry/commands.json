@@ -1,0 +1,154 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "b954108c9baaaa934b4ad842033b31a97ee30816"
+      ],
+      "cwd": "<PINNED:lm-evaluation-harness>",
+      "elapsed_seconds": 0.038056,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "tracked-paths",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/000-tracked-paths.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1056822,
+        "path": "raw/000-tracked-paths.stdout",
+        "sha256": "de93bb96d97caf8fb4a9b5bb92219e7629b5554185af4946339c83abb57a57d7"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.longpaths=true",
+        "-c",
+        "core.autocrlf=false",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<PINNED:lm-evaluation-harness>",
+        "<PRIVATE_TEMP>\\probe-lm-host2"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.272579,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "clone",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-clone.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/001-clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "core.longpaths",
+        "true"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host2",
+      "elapsed_seconds": 0.02863,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "clone-longpaths",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-clone-longpaths.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/002-clone-longpaths.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host2",
+      "elapsed_seconds": 0.039814,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "clone-lf",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-clone-lf.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/003-clone-lf.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.longpaths=true",
+        "checkout",
+        "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "--",
+        "lm_eval/tasks/arabic_leaderboard_light/arabic_leaderboard_alghafa_light/arabic_leaderboard_alghafa_multiple_choice_grounded_statement_xglue_mlqa_task_light.yaml"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host2",
+      "elapsed_seconds": 0.029196,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "checkout-longest",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/004-checkout-longest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/004-checkout-longest.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "b954108c9baaaa934b4ad842033b31a97ee30816:lm_eval/tasks/arabic_leaderboard_light/arabic_leaderboard_alghafa_light/arabic_leaderboard_alghafa_multiple_choice_grounded_statement_xglue_mlqa_task_light.yaml"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host2",
+      "elapsed_seconds": 0.021912,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "expected-blob",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/005-expected-blob.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 676,
+        "path": "raw/005-expected-blob.stdout",
+        "sha256": "988c0a2457b115bcc3b3660a75d7e92e9dda0fe1ab0969017a5d2c8a65fe7991"
+      }
+    }
+  ],
+  "schema_version": 1
+}

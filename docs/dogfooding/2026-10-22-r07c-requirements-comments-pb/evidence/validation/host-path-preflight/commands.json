@@ -1,0 +1,131 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "b954108c9baaaa934b4ad842033b31a97ee30816"
+      ],
+      "cwd": "<PINNED:lm-evaluation-harness>",
+      "elapsed_seconds": 0.029705,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "tracked-paths",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/000-tracked-paths.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1056822,
+        "path": "raw/000-tracked-paths.stdout",
+        "sha256": "de93bb96d97caf8fb4a9b5bb92219e7629b5554185af4946339c83abb57a57d7"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.longpaths=true",
+        "-c",
+        "core.autocrlf=false",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<PINNED:lm-evaluation-harness>",
+        "<PRIVATE_TEMP>\\probe-lm-host"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.270121,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "clone",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-clone.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/001-clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host",
+      "elapsed_seconds": 0.022752,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "clone-lf",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-clone-lf.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/002-clone-lf.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.longpaths=true",
+        "checkout",
+        "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "--",
+        "lm_eval/tasks/arabic_leaderboard_light/arabic_leaderboard_alghafa_light/arabic_leaderboard_alghafa_multiple_choice_grounded_statement_xglue_mlqa_task_light.yaml"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host",
+      "elapsed_seconds": 0.024383,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "checkout-longest",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-checkout-longest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/003-checkout-longest.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "b954108c9baaaa934b4ad842033b31a97ee30816:lm_eval/tasks/arabic_leaderboard_light/arabic_leaderboard_alghafa_light/arabic_leaderboard_alghafa_multiple_choice_grounded_statement_xglue_mlqa_task_light.yaml"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\probe-lm-host",
+      "elapsed_seconds": 0.021715,
+      "exit_code": 128,
+      "expected_exit": 0,
+      "label": "expected-blob",
+      "stderr": {
+        "bytes": 245,
+        "path": "raw/004-expected-blob.stderr",
+        "sha256": "4ef172daa512ee53e60009792f5aa41991f03c4c0401769c2d944e9ce377c5fa"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/004-expected-blob.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "schema_version": 1
+}

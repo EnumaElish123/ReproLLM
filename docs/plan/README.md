@@ -176,13 +176,15 @@ Resume from the assigned session and its actual
 predecessor report, checking the current HEAD rather than resetting to the
 reviewed commit.
 
-The next local continuation is the [R07-C D-C P-A packet](reliability-2026-10-03/proposals/R07-C/requirements-comments/README.md)
-for bounded ordinary requirements inline comments. Its concrete A/B proposal,
-unapplied §12.2 patch, compatibility costs and independent acceptance expectations
-are **PROPOSED**, not implemented. The [preparation report](../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
-records unchanged-product observations and five-project source impact, including
-HarmBench's nonzero inventory/diagnostic delta. Specific acceptance is required
-before P-B; the preceding D-G delegation does not approve D-C or a release.
+The maintainer specifically [accepted D-C A and its exact specification patch](reliability-2026-10-03/proposals/R07-C/requirements-comments/decision-accepted.json).
+The bounded ordinary requirements comment fallback is implemented at `0f8c4df`;
+the session started on 2026-10-22 and completed its local acceptance on 2026-10-23.
+The [P-B report](../dogfooding/2026-10-22-r07c-requirements-comments-pb/README.md) records
+141 new cases, the full quality gate, fresh five-project Gate A, affected graph/verbose
+checks, complete CLI replay, unchanged original checkouts and independent evidence readback.
+The exact final pushed head's five-job CI and Linux exact schema check are independently verified at delivery. The [P-A report](../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
+and original PROPOSED packet retain their historical observations; broader R07-C policy,
+resource blockers, independent adoption feedback and release remain separately bounded.
 
 ## Previous plans and delivery status
 

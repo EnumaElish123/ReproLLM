@@ -1,0 +1,50 @@
+--- prior/common.py
++++ D-C/common.py
+@@ -44,7 +44,7 @@
+             result.pop(key, None)
+     result.update(PYTHONUTF8='1', PYTHONIOENCODING='utf-8', UV_OFFLINE='1', NO_COLOR='1', TERM='dumb', GIT_OPTIONAL_LOCKS='0', GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1', R04_GATE_CANDIDATE=str(ROOT), R04_GATE_VERSION='0.7.0')
+     test_root=Path(read(TOOLS/'environment-private.json')['test_temp_root'])
+-    assert test_root.parent == Path('<OS_TEMP>') and test_root.name.startswith('dgpb-')
++    assert test_root.parent == Path('<OS_TEMP>') and test_root == TOOLS.parent and test_root.name.startswith('dcpb-')
+     (test_root/'t').mkdir(parents=True,exist_ok=True)
+     result.update(TMP=str(test_root/'t'), TEMP=str(test_root/'t'), UV_CACHE_DIR=str(test_root/'uv-cache'))
+     result['PATH'] = str(PYTHON.parent)+';<GIT_INSTALLATION>/bin;<GIT_INSTALLATION>/usr/bin;'+result.get('PATH', '')
+@@ -106,6 +106,7 @@
+     assert inputs['files'] == inventory(), 'Product/test/schema/tool inputs changed after quality'
+     assert all(digest((TOOLS/name).read_bytes()) == value for name,value in inputs['validation_tools'].items())
+     verify_synthetic_oracle()
++    verify_affected_oracle()
+     return dict(summary_sha256=digest((TOOLS/'quality/summary.json').read_bytes()), inputs_sha256=digest((TOOLS/'quality/inputs.json').read_bytes()))
+ 
+ 
+@@ -113,7 +114,11 @@
+     binding = read(TOOLS/'oracle-binding.json')
+     for name, value in binding['files'].items():
+         assert digest((TOOLS/name).read_bytes()) == value, name
+-    return dict(binding_sha256=digest((TOOLS/'oracle-binding.json').read_bytes()), files=len(binding['files']))
++    prior = read(TOOLS/'prior-oracle-binding.json')
++    source = Path(read(TOOLS/'environment-private.json')['prior_tools_root'])
++    assert digest((source/'oracle-binding.json').read_bytes()) == prior['binding_sha256']
++    assert all(digest((source/name).read_bytes()) == value for name,value in prior['files'].items())
++    return dict(binding_sha256=digest((TOOLS/'oracle-binding.json').read_bytes()), files=len(binding['files']), immutable_prior_files=len(prior['files']))
+ 
+ 
+ def verify_synthetic_oracle(root=TOOLS):
+@@ -121,7 +126,16 @@
+     expected = read(root/'synthetic-plan.json')['expected_files']
+     actual = {p.relative_to(root).as_posix(): digest(p.read_bytes())
+               for p in (root/'synthetic-expected').rglob('*') if p.is_file()}
+-    assert len(expected) == 18, 'Synthetic oracle must have exactly 18 complete reports'
++    count=read(root/'synthetic-plan.json')['expected_report_count']
++    assert type(count) is int and count > 0 and len(expected)==count, 'D-C synthetic oracle cardinality differs'
+     assert actual.keys() == expected.keys(), 'Synthetic oracle paths changed'
+     assert actual == expected, 'Synthetic oracle body hash changed'
+     return dict(plan_sha256=digest((root/'synthetic-plan.json').read_bytes()), files=len(expected))
++
++
++def verify_affected_oracle(root=TOOLS):
++    root=Path(root)
++    expected=read(root/'affected-plan.json')['expected_files']
++    actual={p.relative_to(root).as_posix():digest(p.read_bytes()) for p in (root/'affected-expected').rglob('*') if p.is_file()}
++    assert len(expected)==20 and actual.keys()==expected.keys() and actual==expected, 'D-C five-project graph/verbose expected files changed'
++    return dict(plan_sha256=digest((root/'affected-plan.json').read_bytes()),files=len(expected))

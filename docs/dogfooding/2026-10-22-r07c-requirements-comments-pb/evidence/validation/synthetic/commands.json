@@ -1,0 +1,3713 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.034359,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/000-exact-warning-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/000-exact-warning-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.02919,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-exact-warning-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/001-exact-warning-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.050652,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-exact-warning-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/002-exact-warning-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.551716,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "exact-warning-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-exact-warning-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/003-exact-warning-before.stdout",
+        "sha256": "f2910998c1b2b1b938c8f0f26428315b83748a0c71871ab70d2232cb56cc6960"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-before.json",
+        "<VALIDATION>\\synthetic\\raw\\003-exact-warning-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.171493,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/004-exact-warning-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/004-exact-warning-before-compare.stdout",
+        "sha256": "130c38ec51f4660cfcb9159400336596ebed6baba54f1fd80da87bf7ee75f7c2"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.542897,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/005-exact-warning-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/005-exact-warning-after.stdout",
+        "sha256": "a53da727c35fad1731c2b280fb6c434ef3e32424fb4fe4ff738531ae3142df0a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\005-exact-warning-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.165617,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/006-exact-warning-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/006-exact-warning-after-compare.stdout",
+        "sha256": "1426dd2cb3fb3c1ff432f4fd1ee61818ea1c2ff541b785b70d22026bd4536071"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.563544,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/007-exact-warning-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/007-exact-warning-repeat.stdout",
+        "sha256": "82778165a6d4731b4ab4d68e522a7328501ddeebaea8aebee287d0be5dedc961"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\007-exact-warning-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.171071,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/008-exact-warning-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/008-exact-warning-repeat-compare.stdout",
+        "sha256": "f9228c458a2654a6817f5b8f0a6c96cbd94109c94809b94ebdcf040092974d62"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.555744,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/009-exact-warning-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/009-exact-warning-verbose.stdout",
+        "sha256": "82778165a6d4731b4ab4d68e522a7328501ddeebaea8aebee287d0be5dedc961"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\009-exact-warning-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.183874,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/010-exact-warning-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/010-exact-warning-verbose-compare.stdout",
+        "sha256": "f9228c458a2654a6817f5b8f0a6c96cbd94109c94809b94ebdcf040092974d62"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.548272,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/011-exact-warning-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 216,
+        "path": "raw/011-exact-warning-text.stdout",
+        "sha256": "6dea682001d20ac22193406863a1418e96e9600305e0926450ebc583870685bb"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.543692,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/012-exact-warning-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 372,
+        "path": "raw/012-exact-warning-text-shown.stdout",
+        "sha256": "26ce87de8357653ef46853d49af353c9e744b47755099df7da4f1939bcee0f71"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-warning-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.57327,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/013-exact-warning-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 169,
+        "path": "raw/013-exact-warning-export.stdout",
+        "sha256": "00558aee4eb8a7c820749268412eb9ac0491a51ad8e8ce49193302e550ae7d8b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-warning-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.603776,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/014-exact-warning-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 176,
+        "path": "raw/014-exact-warning-export-repeat.stdout",
+        "sha256": "4cf57730ce3c141342284b8e4bf0247baf1488c9f679df13b77e8cc45de0a016"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.563395,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/015-exact-warning-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1405,
+        "path": "raw/015-exact-warning-suppressed.stdout",
+        "sha256": "cd3a76285b9e7b4ffcf07e644680e9a987998f6dae2a5a5e40485880809a9551"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\015-exact-warning-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.170894,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/016-exact-warning-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/016-exact-warning-suppressed-compare.stdout",
+        "sha256": "fbe45163314ce5b6ad782d72f2c7398123651698b5e0fc95e27c0384b15ffaa9"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-warning",
+      "elapsed_seconds": 0.574805,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "exact-warning-restored",
+      "stderr": {
+        "bytes": 46,
+        "path": "raw/017-exact-warning-restored.stderr",
+        "sha256": "3edda28f5f657faae7cf0b9393f193df8e9be320daf53fe7ffbec0b8c798689d"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/017-exact-warning-restored.stdout",
+        "sha256": "1406ac067606ba4e4f4f917af65efbdf154da0c7785d81d8cf6c548e7f7a916a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-warning-before.json",
+        "<VALIDATION>\\synthetic\\raw\\017-exact-warning-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.173953,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-warning-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/018-exact-warning-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/018-exact-warning-restored-compare.stdout",
+        "sha256": "4917ffc89ca6d2717e0e4769c79c0002876203743abc71c03bb6da0cce346808"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.033444,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/019-exact-critical-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/019-exact-critical-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.029883,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/020-exact-critical-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/020-exact-critical-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.052928,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/021-exact-critical-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/021-exact-critical-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.607755,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "exact-critical-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/022-exact-critical-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1268,
+        "path": "raw/022-exact-critical-before.stdout",
+        "sha256": "6bfeba0c6979d4c219832fe88a4661ee89e1ea382b3b3b6dcdab61dca39af5c0"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-before.json",
+        "<VALIDATION>\\synthetic\\raw\\022-exact-critical-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167713,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/023-exact-critical-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/023-exact-critical-before-compare.stdout",
+        "sha256": "70ea6b447b5e7bf34723a08d60a0400dc1632b1945ffb7a912cff3ec530bf621"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.548397,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/024-exact-critical-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/024-exact-critical-after.stdout",
+        "sha256": "3453098a7e181c9921aa124abf2a4e181d0f30a13b08a45be8220ac6a72757e7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\024-exact-critical-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.168408,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/025-exact-critical-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/025-exact-critical-after-compare.stdout",
+        "sha256": "3fd772e77f50bf862cf6afb5d0d266b21001e3ac7933dc9b0f811e35946cba73"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.545373,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/026-exact-critical-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/026-exact-critical-repeat.stdout",
+        "sha256": "3453098a7e181c9921aa124abf2a4e181d0f30a13b08a45be8220ac6a72757e7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\026-exact-critical-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.183529,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/027-exact-critical-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/027-exact-critical-repeat-compare.stdout",
+        "sha256": "3fd772e77f50bf862cf6afb5d0d266b21001e3ac7933dc9b0f811e35946cba73"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.575837,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/028-exact-critical-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/028-exact-critical-verbose.stdout",
+        "sha256": "eb1f3c04877932252b3a56642834dc1683e3a6d2b0897c2425ef793a7ba622b7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\028-exact-critical-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.170459,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/029-exact-critical-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/029-exact-critical-verbose-compare.stdout",
+        "sha256": "72dcbd45a2c7f67845ce8ba4e83ac0db61b9b7ff41d62ef89e97108ed4e620ef"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.651504,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/030-exact-critical-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 217,
+        "path": "raw/030-exact-critical-text.stdout",
+        "sha256": "575c9f28d055353b5cf3d8845591b2427775933a5d879b0270c98f80b9557828"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.542156,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/031-exact-critical-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 373,
+        "path": "raw/031-exact-critical-text-shown.stdout",
+        "sha256": "bdcb58036478985c8f7c515f89dbf5b67728ebf5f0bb6dd3ac76822ba743e5ca"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-critical-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.587886,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/032-exact-critical-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 170,
+        "path": "raw/032-exact-critical-export.stdout",
+        "sha256": "eb0992d653a8520bf703ede429374b77efb55e1ef805318a249f6547dc0ffbe6"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-critical-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.567342,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/033-exact-critical-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 177,
+        "path": "raw/033-exact-critical-export-repeat.stdout",
+        "sha256": "2b7b7efc998b7449d4caded83d839e3bb2bdf50f6c41c3113c77753456b8d997"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.562218,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/034-exact-critical-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1405,
+        "path": "raw/034-exact-critical-suppressed.stdout",
+        "sha256": "52cf07d7fcb246558a69348314ebcde01e05c01a6e358c83be94826bceb5db32"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\034-exact-critical-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.170228,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/035-exact-critical-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/035-exact-critical-suppressed-compare.stdout",
+        "sha256": "9472dc8e5481e887ab69973cae43d3509e980ac5a630951462fb1356a7cfe0a0"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-critical",
+      "elapsed_seconds": 0.558919,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "exact-critical-restored",
+      "stderr": {
+        "bytes": 46,
+        "path": "raw/036-exact-critical-restored.stderr",
+        "sha256": "3edda28f5f657faae7cf0b9393f193df8e9be320daf53fe7ffbec0b8c798689d"
+      },
+      "stdout": {
+        "bytes": 1268,
+        "path": "raw/036-exact-critical-restored.stdout",
+        "sha256": "ade9cc039735ca437d1943c34db7c1f12e3da03283b73a215b54fb8291bc41f9"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-critical-before.json",
+        "<VALIDATION>\\synthetic\\raw\\036-exact-critical-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.174339,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-critical-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/037-exact-critical-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/037-exact-critical-restored-compare.stdout",
+        "sha256": "19eb88aacc605f5bd057cac5e1f56eea8738a46aeb7cc41fb4128288ceb04bff"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.032829,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/038-loose-warning-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/038-loose-warning-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.052356,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/039-loose-warning-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/039-loose-warning-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.05036,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/040-loose-warning-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/040-loose-warning-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.544904,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/041-loose-warning-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/041-loose-warning-before.stdout",
+        "sha256": "9cf11bced93478030086d6613a6bc9cafcbf31a9a00bd13f1e6c4428d7f3a253"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-before.json",
+        "<VALIDATION>\\synthetic\\raw\\041-loose-warning-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167952,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/042-loose-warning-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/042-loose-warning-before-compare.stdout",
+        "sha256": "171bc6e16fb5ed0027d7c0cf137e420339ccdb34cda72c8de621632198b2f3be"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.560683,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/043-loose-warning-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/043-loose-warning-after.stdout",
+        "sha256": "f95a0e5d20100e3411ca249b144183ef7e1ef6908b658c54c1178fc7f5b793e6"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\043-loose-warning-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.165364,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/044-loose-warning-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/044-loose-warning-after-compare.stdout",
+        "sha256": "59bc76e2f7725cf9130dd28280d582500393d2553a1e4598e852f162dddd3106"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.559234,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/045-loose-warning-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/045-loose-warning-repeat.stdout",
+        "sha256": "f95a0e5d20100e3411ca249b144183ef7e1ef6908b658c54c1178fc7f5b793e6"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\045-loose-warning-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167387,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/046-loose-warning-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/046-loose-warning-repeat-compare.stdout",
+        "sha256": "59bc76e2f7725cf9130dd28280d582500393d2553a1e4598e852f162dddd3106"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.535828,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/047-loose-warning-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/047-loose-warning-verbose.stdout",
+        "sha256": "2b0183e7f5addb14771d2d2128130249bad25094d1a3a360c14713651d84a6cf"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\047-loose-warning-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.169249,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/048-loose-warning-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/048-loose-warning-verbose-compare.stdout",
+        "sha256": "15dda75e1a2ef84360ec486c10c56c812000ec99372fe2081985d799e5fca625"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.53943,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/049-loose-warning-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 468,
+        "path": "raw/049-loose-warning-text.stdout",
+        "sha256": "53680d9a767fde4da1cb5e8650b03be3da748751db4058cbc3811c11a7d574b7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.545535,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/050-loose-warning-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 424,
+        "path": "raw/050-loose-warning-text-shown.stdout",
+        "sha256": "4e950f588abbcb73e505255f0135cbae4bfdc62f021b02f0e7e6c01c4e46cd2b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\loose-warning-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.590221,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/051-loose-warning-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 169,
+        "path": "raw/051-loose-warning-export.stdout",
+        "sha256": "1f73503b2f10c54c8c14435aa0913349e75a0b1fca433501cbeb2ba9bbe38bed"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\loose-warning-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.612807,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/052-loose-warning-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 176,
+        "path": "raw/052-loose-warning-export-repeat.stdout",
+        "sha256": "261ade280cb416e01d1bebb78568876faf518ed524edeeebcf3ffce889ca00da"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\alternate-location",
+      "elapsed_seconds": 0.411191,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-warning-different-path",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/053-loose-warning-different-path.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1267,
+        "path": "raw/053-loose-warning-different-path.stdout",
+        "sha256": "538b6eac98841b9304aad86bf5527b0ff3678ed328ceefa82b44e92217335a75"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-after.json",
+        "<VALIDATION>\\synthetic\\raw\\053-loose-warning-different-path.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167501,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-different-path-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/054-loose-warning-different-path-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/054-loose-warning-different-path-compare.stdout",
+        "sha256": "2b1597ba3a75922e750513031de372207e43cbc058d69f65cf9c1a3ba426f64e"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\loose-warning-different-path-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\alternate-location",
+      "elapsed_seconds": 0.43047,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-different-path-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/055-loose-warning-different-path-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 184,
+        "path": "raw/055-loose-warning-different-path-export.stdout",
+        "sha256": "3cd4ac671760c48cda1faf704f44ddf16e3d4c4898d9b3cf302fdccbdb155db2"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.555156,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/056-loose-warning-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1630,
+        "path": "raw/056-loose-warning-suppressed.stdout",
+        "sha256": "22e43837c7ca29e6bef119037fe24442841d18bca213de954b45c3e87cb8134c"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\056-loose-warning-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.169745,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/057-loose-warning-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/057-loose-warning-suppressed-compare.stdout",
+        "sha256": "2c27ad0b81bb758604bdfe6a33d431982d3513f722478a9bd336b58c13c02c46"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-warning",
+      "elapsed_seconds": 0.566778,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-restored",
+      "stderr": {
+        "bytes": 42,
+        "path": "raw/058-loose-warning-restored.stderr",
+        "sha256": "9b83874fd14ff3b0d7b76a8bdd263d9e7b4c065efec37e2b83b04b0808f2511c"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/058-loose-warning-restored.stdout",
+        "sha256": "4a39fc10ba903f292c1a78cec422a66c89bc5959e20bbfe04fc833c8f47e52b1"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-warning-before.json",
+        "<VALIDATION>\\synthetic\\raw\\058-loose-warning-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.174036,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-warning-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/059-loose-warning-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/059-loose-warning-restored-compare.stdout",
+        "sha256": "7af08e657d5bbb18f16e4b74f61cd6ae62321d63c49acc23dbdca47ac743ffb3"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.035007,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/060-loose-critical-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/060-loose-critical-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.026962,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/061-loose-critical-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/061-loose-critical-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.046398,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/062-loose-critical-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/062-loose-critical-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.567333,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/063-loose-critical-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/063-loose-critical-before.stdout",
+        "sha256": "4a12398354e3f2ea441eb102b9299c798dab2ef98e8dbe70054d0e68f25fc05f"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-before.json",
+        "<VALIDATION>\\synthetic\\raw\\063-loose-critical-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.172076,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/064-loose-critical-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/064-loose-critical-before-compare.stdout",
+        "sha256": "10c36af0640ee7a5179ede9228a2600722cb1f01e833cb31d6774a0f1e01af2a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.545026,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-critical-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/065-loose-critical-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1268,
+        "path": "raw/065-loose-critical-after.stdout",
+        "sha256": "7e6dec2fd5e7604c4e8cfe6350a2588d6e068537ced487dc45e7c53a0bcc2898"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\065-loose-critical-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.17056,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/066-loose-critical-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/066-loose-critical-after-compare.stdout",
+        "sha256": "62aaf7878b08a4411615443803192ac12850a1480fbcec5a280a4a0c794e8c00"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.548869,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-critical-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/067-loose-critical-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1268,
+        "path": "raw/067-loose-critical-repeat.stdout",
+        "sha256": "7d8d7da0cae3c6caff921ca5b3dc65ad86d9659ba3989f6c8b886ccde1e39f62"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\067-loose-critical-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.174537,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/068-loose-critical-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/068-loose-critical-repeat-compare.stdout",
+        "sha256": "003083c2680453a0feac8a1718d6654b2f06efd7a5e45a23e4a4d1f1c425d309"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.591112,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-critical-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/069-loose-critical-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1268,
+        "path": "raw/069-loose-critical-verbose.stdout",
+        "sha256": "4300788243a28cea3506ccf3f4cab9eb3baeba2be9e49c0ca1b6dff9c6ead9f4"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-after.json",
+        "<VALIDATION>\\synthetic\\raw\\069-loose-critical-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167186,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/070-loose-critical-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/070-loose-critical-verbose-compare.stdout",
+        "sha256": "e4b52af333c2982b1d586a49646cf2854580fbb3855a10f280511b8efebe214d"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.547582,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-critical-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/071-loose-critical-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 470,
+        "path": "raw/071-loose-critical-text.stdout",
+        "sha256": "b90364073a3701e12fa0579efd90e9dd5c9795e0f142b447fd905e2c8a643ffd"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.56747,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "loose-critical-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/072-loose-critical-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 426,
+        "path": "raw/072-loose-critical-text-shown.stdout",
+        "sha256": "764251a7146cbaabbcde06e56b7d38f68f65f42272111206800fa69fc2898cd7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\loose-critical-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.571468,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/073-loose-critical-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 170,
+        "path": "raw/073-loose-critical-export.stdout",
+        "sha256": "b38c41ff98bbbb3cdefcbe6a005f65e732d85cc005b6bb2d0a77ccc72e81f7f4"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\loose-critical-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.571511,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/074-loose-critical-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 177,
+        "path": "raw/074-loose-critical-export-repeat.stdout",
+        "sha256": "ab4106106a9a849039dadfe60ef0ec5d923ef163de9f5d745658c4845f7c38a2"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.557853,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/075-loose-critical-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1631,
+        "path": "raw/075-loose-critical-suppressed.stdout",
+        "sha256": "3a12111575bc5ae687f164d3c6584c24a776f090f3e06b34065c477fe12a4883"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\075-loose-critical-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.168091,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/076-loose-critical-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/076-loose-critical-suppressed-compare.stdout",
+        "sha256": "d1570dd88e7bf717dfa676646ee1d574bc5f95d5944d5e803a16509f789cbcab"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "critical"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\loose-critical",
+      "elapsed_seconds": 0.541523,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-restored",
+      "stderr": {
+        "bytes": 42,
+        "path": "raw/077-loose-critical-restored.stderr",
+        "sha256": "9b83874fd14ff3b0d7b76a8bdd263d9e7b4c065efec37e2b83b04b0808f2511c"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/077-loose-critical-restored.stdout",
+        "sha256": "0cb34b5aa40db0a0594e4c596643b0ce281744213b4028c925538628c339099e"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\loose-critical-before.json",
+        "<VALIDATION>\\synthetic\\raw\\077-loose-critical-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.166173,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "loose-critical-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/078-loose-critical-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/078-loose-critical-restored-compare.stdout",
+        "sha256": "81e9d5219f42798159b7db86db733136c992993bb92089660fa070b685203bbd"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.030898,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/079-exact-only-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/079-exact-only-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.028944,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/080-exact-only-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/080-exact-only-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.048233,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/081-exact-only-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/081-exact-only-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.544939,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/082-exact-only-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/082-exact-only-before.stdout",
+        "sha256": "0cb34b5aa40db0a0594e4c596643b0ce281744213b4028c925538628c339099e"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-before.json",
+        "<VALIDATION>\\synthetic\\raw\\082-exact-only-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167725,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/083-exact-only-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/083-exact-only-before-compare.stdout",
+        "sha256": "81e9d5219f42798159b7db86db733136c992993bb92089660fa070b685203bbd"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.570967,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/084-exact-only-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/084-exact-only-after.stdout",
+        "sha256": "cae587a8e74d5fe41b31315749bbad1fe7afe427e2d8bae871fa827abebf6679"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-after.json",
+        "<VALIDATION>\\synthetic\\raw\\084-exact-only-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167352,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/085-exact-only-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/085-exact-only-after-compare.stdout",
+        "sha256": "59ee9c3666772258086d0b6a29a7b31b97e949b7927ff6658ffbdda81c271328"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.556867,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/086-exact-only-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/086-exact-only-repeat.stdout",
+        "sha256": "6047cce83a32087a5a0277e538a08893fb1a9f9a7bbdbef7fada36e4b6315525"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-after.json",
+        "<VALIDATION>\\synthetic\\raw\\086-exact-only-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.176312,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/087-exact-only-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/087-exact-only-repeat-compare.stdout",
+        "sha256": "7722e8de3ef67ff3373b091cb5a8013a2eb984e18e7c1e0ccd4651615b76f99b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.573478,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/088-exact-only-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1035,
+        "path": "raw/088-exact-only-verbose.stdout",
+        "sha256": "af29498d0ec1c374c262fe1dee45020d04c3a8243044bcf93b4074f633e1bff0"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-after.json",
+        "<VALIDATION>\\synthetic\\raw\\088-exact-only-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.176358,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/089-exact-only-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/089-exact-only-verbose-compare.stdout",
+        "sha256": "6915e851fbddcd97a4c8a309fa9f05b577880292e518369e106fe2ab9ccde748"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.569815,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/090-exact-only-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 216,
+        "path": "raw/090-exact-only-text.stdout",
+        "sha256": "6dea682001d20ac22193406863a1418e96e9600305e0926450ebc583870685bb"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.553377,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/091-exact-only-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 372,
+        "path": "raw/091-exact-only-text-shown.stdout",
+        "sha256": "26ce87de8357653ef46853d49af353c9e744b47755099df7da4f1939bcee0f71"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-only-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.559919,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/092-exact-only-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 166,
+        "path": "raw/092-exact-only-export.stdout",
+        "sha256": "9ce3bb073328402d301f1f7098ab9ddbb98c31dfc8567407d4610563c60a1472"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\exact-only-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.568393,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/093-exact-only-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 173,
+        "path": "raw/093-exact-only-export-repeat.stdout",
+        "sha256": "a2020a4b5811bdffeaff900bf15ef33e1e0c35444df0eac9ae82b85fd759fdeb"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.553715,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/094-exact-only-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1405,
+        "path": "raw/094-exact-only-suppressed.stdout",
+        "sha256": "89948b4a5f1e49c7e2cd998a920d5b531fc4c2f9e9dc45b1ca47fdb7da136f00"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\094-exact-only-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.175784,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/095-exact-only-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/095-exact-only-suppressed-compare.stdout",
+        "sha256": "d7fd42eb30c65127319ebd677e789837e1cb3bb26ee19e9f6124f922163180b5"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\exact-only",
+      "elapsed_seconds": 0.574463,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-restored",
+      "stderr": {
+        "bytes": 46,
+        "path": "raw/096-exact-only-restored.stderr",
+        "sha256": "aabc5504caf70e4a47922ce452f23dac3298cca93c0b3b253c27433fd8ffc0c1"
+      },
+      "stdout": {
+        "bytes": 1018,
+        "path": "raw/096-exact-only-restored.stdout",
+        "sha256": "de8a3f0da997c4df766bbea6bad510fdb66b50c1ae2c8b64f4c7689d8cf33c2a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\exact-only-before.json",
+        "<VALIDATION>\\synthetic\\raw\\096-exact-only-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.172343,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "exact-only-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/097-exact-only-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/097-exact-only-restored-compare.stdout",
+        "sha256": "72f0cb8a0aedec45a78638976f3e9f4c6c27f54d9b49991d5803d473e1750467"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.029873,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/098-mixed-exact-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/098-mixed-exact-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.037642,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/099-mixed-exact-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/099-mixed-exact-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.048472,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/100-mixed-exact-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/100-mixed-exact-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.556403,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/101-mixed-exact-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1788,
+        "path": "raw/101-mixed-exact-before.stdout",
+        "sha256": "80d96a15dc8d8e0f25a393074ba96aa948ddc389d58089c795babf00db64348a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-before.json",
+        "<VALIDATION>\\synthetic\\raw\\101-mixed-exact-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167725,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/102-mixed-exact-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/102-mixed-exact-before-compare.stdout",
+        "sha256": "50347aed296cdc08218dfbc83423165c8a98be394bdaea2e1cd49070c08e6ea9"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.564932,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/103-mixed-exact-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1805,
+        "path": "raw/103-mixed-exact-after.stdout",
+        "sha256": "12dce49fc0d61f28915a6391a5ab2adf129fa1994954f2b131d35d7c4f13db38"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-after.json",
+        "<VALIDATION>\\synthetic\\raw\\103-mixed-exact-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.170289,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/104-mixed-exact-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/104-mixed-exact-after-compare.stdout",
+        "sha256": "876046c089280e787fe0bbf5833466be6f8689d798a3e7077d8ce70fa9dd95dd"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.559704,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/105-mixed-exact-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1805,
+        "path": "raw/105-mixed-exact-repeat.stdout",
+        "sha256": "09045027cc08cafc205fc22114d6d23a98829cefb6717b5c91b922e9f9683d1a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-after.json",
+        "<VALIDATION>\\synthetic\\raw\\105-mixed-exact-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167542,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/106-mixed-exact-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/106-mixed-exact-repeat-compare.stdout",
+        "sha256": "4c09c8e05824da1938b160eab6a577a10afea7e92ad806dfa7c76d76d5e5a5d6"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.556864,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/107-mixed-exact-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1805,
+        "path": "raw/107-mixed-exact-verbose.stdout",
+        "sha256": "09045027cc08cafc205fc22114d6d23a98829cefb6717b5c91b922e9f9683d1a"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-after.json",
+        "<VALIDATION>\\synthetic\\raw\\107-mixed-exact-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167064,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/108-mixed-exact-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/108-mixed-exact-verbose-compare.stdout",
+        "sha256": "4c09c8e05824da1938b160eab6a577a10afea7e92ad806dfa7c76d76d5e5a5d6"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.535499,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/109-mixed-exact-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 518,
+        "path": "raw/109-mixed-exact-text.stdout",
+        "sha256": "1d41b16768b61ed51b1e4ad74210f69d182f860fe08aad7aaf12c6ba13a3bf10"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.539553,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/110-mixed-exact-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 674,
+        "path": "raw/110-mixed-exact-text-shown.stdout",
+        "sha256": "4e7a9b7618eb016fa0945a5cb71693b0a1968dddb244d9ea6df3015bf96d4807"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\mixed-exact-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.569307,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/111-mixed-exact-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 167,
+        "path": "raw/111-mixed-exact-export.stdout",
+        "sha256": "a9d8aede30ff510867718ec2a4a42ff6679fa42c3985cda2bf34c617e58741eb"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\mixed-exact-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.658352,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/112-mixed-exact-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 174,
+        "path": "raw/112-mixed-exact-export-repeat.stdout",
+        "sha256": "055b7aefe3fb5858785e8abdd2d77692db007f79852598ab32c7a72d636bdb60"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.588042,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/113-mixed-exact-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2175,
+        "path": "raw/113-mixed-exact-suppressed.stdout",
+        "sha256": "dac54612071e51853dc8e2caba0dbb2a9e56b6376f60cf745f94119f10cd61bf"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\113-mixed-exact-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.171295,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/114-mixed-exact-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/114-mixed-exact-suppressed-compare.stdout",
+        "sha256": "ad43785d71b1ce0a4c49a6470c9722813d18425cf002c476031c11d8377baf13"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-exact",
+      "elapsed_seconds": 0.538104,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-exact-restored",
+      "stderr": {
+        "bytes": 46,
+        "path": "raw/115-mixed-exact-restored.stderr",
+        "sha256": "aabc5504caf70e4a47922ce452f23dac3298cca93c0b3b253c27433fd8ffc0c1"
+      },
+      "stdout": {
+        "bytes": 1788,
+        "path": "raw/115-mixed-exact-restored.stdout",
+        "sha256": "738ba77bea40b44198f212da57db61c17fe8f123f4d453365101572c27a0db06"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-exact-before.json",
+        "<VALIDATION>\\synthetic\\raw\\115-mixed-exact-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.167386,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-exact-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/116-mixed-exact-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/116-mixed-exact-restored-compare.stdout",
+        "sha256": "2e5361f38e51a46934d471ce51b687d2305ceabbb4f11d5b0e002369ef0b2440"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.030574,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-git-init",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/117-mixed-loose-git-init.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/117-mixed-loose-git-init.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.030479,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-git-add",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/118-mixed-loose-git-add.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/118-mixed-loose-git-add.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "user.name=Validation",
+        "-c",
+        "user.email=validation@example.invalid",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "test: fixed inline comment inputs"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.047982,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-git-commit",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/119-mixed-loose-git-commit.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/119-mixed-loose-git-commit.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.541426,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-before",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/120-mixed-loose-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1788,
+        "path": "raw/120-mixed-loose-before.stdout",
+        "sha256": "3be263329efcd10e506ac7ebe1eef28820e59816f1a0cda7602ef3beb2a076ee"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-before.json",
+        "<VALIDATION>\\synthetic\\raw\\120-mixed-loose-before.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.171857,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-before-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/121-mixed-loose-before-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/121-mixed-loose-before-compare.stdout",
+        "sha256": "041f20617d0c86f8dcfb44a03d1115ee4c3cf8c4354704f06aa59494abf36e80"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.553751,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-after",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/122-mixed-loose-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2037,
+        "path": "raw/122-mixed-loose-after.stdout",
+        "sha256": "d51e80050969768f9aa9c21574d791306d7baaded3a5cb849a585475b80918b2"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-after.json",
+        "<VALIDATION>\\synthetic\\raw\\122-mixed-loose-after.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.168929,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-after-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/123-mixed-loose-after-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/123-mixed-loose-after-compare.stdout",
+        "sha256": "8f90b825878466161adebbb0d576f8f532cb94022a5bab6e421bb0d90ebb11b7"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.560858,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/124-mixed-loose-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2037,
+        "path": "raw/124-mixed-loose-repeat.stdout",
+        "sha256": "fccc5c05ac2c112ca4859267b4d2fb7425e225a96633c494ef149977c1cf1212"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-after.json",
+        "<VALIDATION>\\synthetic\\raw\\124-mixed-loose-repeat.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.21824,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-repeat-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/125-mixed-loose-repeat-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/125-mixed-loose-repeat-compare.stdout",
+        "sha256": "8011bd8930d02a914f38270e25fccf82c238ab05580444919773c180f2f0e7fa"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.567456,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-verbose",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/126-mixed-loose-verbose.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2037,
+        "path": "raw/126-mixed-loose-verbose.stdout",
+        "sha256": "fccc5c05ac2c112ca4859267b4d2fb7425e225a96633c494ef149977c1cf1212"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-after.json",
+        "<VALIDATION>\\synthetic\\raw\\126-mixed-loose-verbose.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.171098,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-verbose-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/127-mixed-loose-verbose-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/127-mixed-loose-verbose-compare.stdout",
+        "sha256": "8011bd8930d02a914f38270e25fccf82c238ab05580444919773c180f2f0e7fa"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.571844,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-text",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/128-mixed-loose-text.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 735,
+        "path": "raw/128-mixed-loose-text.stdout",
+        "sha256": "2c2ad2017779071e802fe9c3c6c864b9bb167ce770edeef65d40475a8821773c"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--no-color",
+        "--show-passed",
+        "--show-skipped",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.546626,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-text-shown",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/129-mixed-loose-text-shown.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 691,
+        "path": "raw/129-mixed-loose-text-shown.stdout",
+        "sha256": "b140530135394798d338a386554e12bd916d664219915df3e140e7dc2b341a2b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\mixed-loose-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.589148,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-export",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/130-mixed-loose-export.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 167,
+        "path": "raw/130-mixed-loose-export.stdout",
+        "sha256": "cc1accd7a1a0100e78d76c8f502ed56c472e61aff7ec7839f74f4caaf20c9736"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "export",
+        ".",
+        "--output",
+        "<VALIDATION>\\synthetic\\mixed-loose-repeat-REPRODUCIBILITY.md"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.575085,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-export-repeat",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/131-mixed-loose-export-repeat.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 174,
+        "path": "raw/131-mixed-loose-export-repeat.stdout",
+        "sha256": "126e782e3941ff1de69fbf85c78d08047a7bcdb1057b68db01e2cb15fb1b6061"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.556333,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-suppressed",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/132-mixed-loose-suppressed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2400,
+        "path": "raw/132-mixed-loose-suppressed.stdout",
+        "sha256": "86477c217922fde16deb56882e8054182389cb29e5769b4d173ccd54107ae6a2"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-suppressed.json",
+        "<VALIDATION>\\synthetic\\raw\\132-mixed-loose-suppressed.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.16642,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-suppressed-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/133-mixed-loose-suppressed-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/133-mixed-loose-suppressed-compare.stdout",
+        "sha256": "f291059623bda0e9338b8d54a7a613e28a855e5fb3d791442c9a4c07058a99e8"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--verbose",
+        "audit",
+        ".",
+        "--format",
+        "json",
+        "--fail-on",
+        "warning"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\c\\mixed-loose",
+      "elapsed_seconds": 0.560662,
+      "exit_code": 1,
+      "expected_exit": 1,
+      "label": "mixed-loose-restored",
+      "stderr": {
+        "bytes": 42,
+        "path": "raw/134-mixed-loose-restored.stderr",
+        "sha256": "9b83874fd14ff3b0d7b76a8bdd263d9e7b4c065efec37e2b83b04b0808f2511c"
+      },
+      "stdout": {
+        "bytes": 1788,
+        "path": "raw/134-mixed-loose-restored.stdout",
+        "sha256": "986f0d2cb980dbf194897cb391ad0e7114bb615685ac7e8c883e2690edf14e33"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<REPOSITORY>\\scripts\\compare_gold.py",
+        "<VALIDATION>\\synthetic-expected\\mixed-loose-before.json",
+        "<VALIDATION>\\synthetic\\raw\\134-mixed-loose-restored.stdout",
+        "--audit-metadata"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.16826,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "mixed-loose-restored-compare",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/135-mixed-loose-restored-compare.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 329,
+        "path": "raw/135-mixed-loose-restored-compare.stdout",
+        "sha256": "edf53b7a7d97893f41fbe3fc35dabb7c321441c681b664651f8aa7462cc64786"
+      }
+    }
+  ],
+  "schema_version": 1
+}

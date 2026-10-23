@@ -1,0 +1,120 @@
+{
+  "acceptance_ids": [
+    "C22",
+    "C23",
+    "C24",
+    "C31",
+    "C32",
+    "C33",
+    "C34"
+  ],
+  "before_contract": "File-wide veto restores original complete-line parse; fixed before reports preserve observable old behavior.",
+  "cases": [
+    {
+      "after": "pass",
+      "before": "fail",
+      "body": "torch>=2\ntorch==2.5.1 # pin\n",
+      "diagnostic_line": 2,
+      "mixed": false,
+      "name": "exact-warning",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "after": "pass",
+      "before": "fail",
+      "body": "torch>=2\ntorch==2.5.1 # pin\n",
+      "diagnostic_line": 2,
+      "mixed": false,
+      "name": "exact-critical",
+      "severity": "CRITICAL",
+      "threshold": "critical"
+    },
+    {
+      "after": "fail",
+      "before": "skipped",
+      "body": "torch>=2 # use\n",
+      "diagnostic_line": 1,
+      "mixed": false,
+      "name": "loose-warning",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "after": "fail",
+      "before": "skipped",
+      "body": "torch>=2 # use\n",
+      "diagnostic_line": 1,
+      "mixed": false,
+      "name": "loose-critical",
+      "severity": "CRITICAL",
+      "threshold": "critical"
+    },
+    {
+      "after": "pass",
+      "before": "skipped",
+      "body": "torch==2.5.1 # pin\n",
+      "diagnostic_line": 1,
+      "mixed": false,
+      "name": "exact-only",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "after": "pass",
+      "before": "skipped",
+      "body": "torch==2.5.1 # pin\n",
+      "diagnostic_line": 1,
+      "mixed": true,
+      "name": "mixed-exact",
+      "severity": "WARNING",
+      "threshold": "warning"
+    },
+    {
+      "after": "fail",
+      "before": "skipped",
+      "body": "torch>=2 # use\n",
+      "diagnostic_line": 1,
+      "mixed": true,
+      "name": "mixed-loose",
+      "severity": "WARNING",
+      "threshold": "warning"
+    }
+  ],
+  "delegated_to_final_regressions": [
+    "C25 lock eligibility",
+    "C26-C28 credit and uncertainty precedence/Python veto",
+    "C29-C30 dependency detection and init"
+  ],
+  "expected_checks": 43,
+  "expected_commands": 136,
+  "expected_files": {
+    "synthetic-expected/exact-critical-after.json": "ac7ea7ca4ead1359c610072dfbf04037c1492f22b62d170343f681db27705722",
+    "synthetic-expected/exact-critical-before.json": "0be340c7baf828db29a4f0606197398abe0be9f698fa6e4276f310f81dc9ea2f",
+    "synthetic-expected/exact-critical-suppressed.json": "7daa35efa23cbfa733c8832946fcc1b660f8770004f1cdcf75c4d23d30dc59e5",
+    "synthetic-expected/exact-only-after.json": "ac7ea7ca4ead1359c610072dfbf04037c1492f22b62d170343f681db27705722",
+    "synthetic-expected/exact-only-before.json": "e753963ee666d4d8023991a25a04b4a3612e78300374917cd38b6b03bcfa07be",
+    "synthetic-expected/exact-only-suppressed.json": "7daa35efa23cbfa733c8832946fcc1b660f8770004f1cdcf75c4d23d30dc59e5",
+    "synthetic-expected/exact-warning-after.json": "ac7ea7ca4ead1359c610072dfbf04037c1492f22b62d170343f681db27705722",
+    "synthetic-expected/exact-warning-before.json": "c1dd9e5ad7f8f76c2ac53b1fafe43b56d05e779f131b37280788e9142fefef4a",
+    "synthetic-expected/exact-warning-suppressed.json": "7daa35efa23cbfa733c8832946fcc1b660f8770004f1cdcf75c4d23d30dc59e5",
+    "synthetic-expected/loose-critical-after.json": "0be340c7baf828db29a4f0606197398abe0be9f698fa6e4276f310f81dc9ea2f",
+    "synthetic-expected/loose-critical-before.json": "e753963ee666d4d8023991a25a04b4a3612e78300374917cd38b6b03bcfa07be",
+    "synthetic-expected/loose-critical-suppressed.json": "cee3e7030c2b189b00f3023da9767bcef34bc5c4d0b1241fb72778d032afec2a",
+    "synthetic-expected/loose-warning-after.json": "c1dd9e5ad7f8f76c2ac53b1fafe43b56d05e779f131b37280788e9142fefef4a",
+    "synthetic-expected/loose-warning-before.json": "e753963ee666d4d8023991a25a04b4a3612e78300374917cd38b6b03bcfa07be",
+    "synthetic-expected/loose-warning-suppressed.json": "88d9c3169064d83a2ee41ff22026636abb7e51a097dd943b56a5bb17f1f85d11",
+    "synthetic-expected/mixed-exact-after.json": "1dda2194e0677ac7ad5aa738fe283dccdc8f9a535b870527964cb98e49c59f4b",
+    "synthetic-expected/mixed-exact-before.json": "636c0ffaffd8d8639866c0501746bc3a2dc66966514468edb00d7a7c7a4fc4d0",
+    "synthetic-expected/mixed-exact-suppressed.json": "8fe56635c3687f241d64632a810b07aea3fe103de528b60749ed184681087568",
+    "synthetic-expected/mixed-loose-after.json": "ebf2df751944b9dd04190062afbf293e61006c0aef637565e4edc0cea022de7e",
+    "synthetic-expected/mixed-loose-before.json": "636c0ffaffd8d8639866c0501746bc3a2dc66966514468edb00d7a7c7a4fc4d0",
+    "synthetic-expected/mixed-loose-suppressed.json": "9e91f2ed97a599a1feaa5b69c345db16f70ff503c730c261c5bd4126899cf8b6"
+  },
+  "expected_report_count": 21,
+  "export_assertions": "Prewritten full summary and notable rule/message visibility; repeated whole export bytes equal. Five-project exports have separate whole-document gold.",
+  "method": "Literal full AuditReport expectations from accepted D-C policy, preimplementation consumer test literals, fixed fixture inputs and existing renderer contract; no candidate output used.",
+  "paid_api": "NOT_CALLED",
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXECUTED"
+}

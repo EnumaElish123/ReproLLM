@@ -1,0 +1,4102 @@
+{
+  "analysis_files": [
+    ".gitignore",
+    "LICENSE",
+    "README.md",
+    "adversarial_training/README.md",
+    "adversarial_training/alignment-handbook/.deepspeed_env",
+    "adversarial_training/alignment-handbook/.gitignore",
+    "adversarial_training/alignment-handbook/LICENSE",
+    "adversarial_training/alignment-handbook/Makefile",
+    "adversarial_training/alignment-handbook/README.md",
+    "adversarial_training/alignment-handbook/assets/handbook.png",
+    "adversarial_training/alignment-handbook/chapters/en/_toctree.yml",
+    "adversarial_training/alignment-handbook/chapters/en/chapter0/introduction.mdx",
+    "adversarial_training/alignment-handbook/recipes/accelerate_configs/deepspeed_config.json",
+    "adversarial_training/alignment-handbook/recipes/accelerate_configs/deepspeed_config.yaml",
+    "adversarial_training/alignment-handbook/recipes/accelerate_configs/deepspeed_zero3.yaml",
+    "adversarial_training/alignment-handbook/recipes/accelerate_configs/multi_gpu.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/README.md",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/dpo/config_full.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/dpo/config_lora.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_full.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft/config_lora.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft_adv_training/config_full.yaml",
+    "adversarial_training/alignment-handbook/recipes/zephyr-7b-beta/sft_adv_training/config_lora.yaml",
+    "adversarial_training/alignment-handbook/requirements.txt",
+    "adversarial_training/alignment-handbook/scripts/README.md",
+    "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+    "adversarial_training/alignment-handbook/scripts/run_adv_training.sh",
+    "adversarial_training/alignment-handbook/scripts/run_dpo.py",
+    "adversarial_training/alignment-handbook/scripts/run_sft.py",
+    "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py",
+    "adversarial_training/alignment-handbook/setup.cfg",
+    "adversarial_training/alignment-handbook/setup.py",
+    "adversarial_training/alignment-handbook/src/alignment/__init__.py",
+    "adversarial_training/alignment-handbook/src/alignment/configs.py",
+    "adversarial_training/alignment-handbook/src/alignment/data.py",
+    "adversarial_training/alignment-handbook/src/alignment/model_utils.py",
+    "adversarial_training/alignment-handbook/src/alignment/release.py",
+    "adversarial_training/alignment-handbook/tests/__init__.py",
+    "adversarial_training/alignment-handbook/tests/fixtures/config_dpo_full.yaml",
+    "adversarial_training/alignment-handbook/tests/fixtures/config_sft_full.yaml",
+    "adversarial_training/alignment-handbook/tests/test_configs.py",
+    "adversarial_training/alignment-handbook/tests/test_data.py",
+    "adversarial_training/alignment-handbook/tests/test_model_utils.py",
+    "api_models.py",
+    "assets/eval_pipeline-1.png",
+    "assets/harmbench_splash.png",
+    "baselines/__init__.py",
+    "baselines/artprompt/__init__.py",
+    "baselines/artprompt/artprompt.py",
+    "baselines/artprompt/jailbreak/attack_utils.py",
+    "baselines/artprompt/jailbreak/base_prompt.py",
+    "baselines/artprompt/jailbreak/baseline.py",
+    "baselines/artprompt/jailbreak/bpe.py",
+    "baselines/artprompt/jailbreak/defense_utils.py",
+    "baselines/artprompt/jailbreak/safe_eval.py",
+    "baselines/artprompt/jailbreak/subword_nmt.voc",
+    "baselines/artprompt/utils/__init__.py",
+    "baselines/artprompt/utils/dataset.py",
+    "baselines/artprompt/utils/eval.py",
+    "baselines/artprompt/utils/few_shot_example.py",
+    "baselines/artprompt/utils/model.py",
+    "baselines/artprompt/utils/prompt.py",
+    "baselines/autodan/AutoDAN.py",
+    "baselines/autodan/__init__.py",
+    "baselines/autodan/mutate_models.py",
+    "baselines/autodan/templates.py",
+    "baselines/autodan/utils.py",
+    "baselines/autoprompt/__init__.py",
+    "baselines/autoprompt/autoprompt.py",
+    "baselines/autoprompt/autoprompt_utils.py",
+    "baselines/baseline.py",
+    "baselines/check_refusal_utils.py",
+    "baselines/direct_request/__init__.py",
+    "baselines/direct_request/direct_request.py",
+    "baselines/fewshot/__init__.py",
+    "baselines/fewshot/fewshot.py",
+    "baselines/gbda/__init__.py",
+    "baselines/gbda/gbda.py",
+    "baselines/gcg/__init__.py",
+    "baselines/gcg/gcg.py",
+    "baselines/gcg/gcg_utils.py",
+    "baselines/gcg_ensemble/__init__.py",
+    "baselines/gcg_ensemble/gcg_ensemble.py",
+    "baselines/gcg_ensemble/gcg_ray_actors.py",
+    "baselines/gptfuzz/GPTFuzzer.csv",
+    "baselines/gptfuzz/__init__.py",
+    "baselines/gptfuzz/gptfuzz.py",
+    "baselines/gptfuzz/gptfuzzer/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/core.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/mutator.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/selection.py",
+    "baselines/gptfuzz/gptfuzzer/llm/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/llm/llm.py",
+    "baselines/gptfuzz/gptfuzzer/utils/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/utils/openai.py",
+    "baselines/gptfuzz/gptfuzzer/utils/predict.py",
+    "baselines/gptfuzz/gptfuzzer/utils/template.py",
+    "baselines/human_jailbreaks/__init__.py",
+    "baselines/human_jailbreaks/human_jailbreaks.py",
+    "baselines/human_jailbreaks/jailbreaks.py",
+    "baselines/model_utils.py",
+    "baselines/multimodaldirectrequest/__init__.py",
+    "baselines/multimodaldirectrequest/multimodaldirectrequest.py",
+    "baselines/multimodalpgd/__init__.py",
+    "baselines/multimodalpgd/multimodalpgd.py",
+    "baselines/multimodalrendertext/__init__.py",
+    "baselines/multimodalrendertext/multimodalrendertext.py",
+    "baselines/pair/PAIR.py",
+    "baselines/pair/__init__.py",
+    "baselines/pair/common.py",
+    "baselines/pair/conversers.py",
+    "baselines/pair/judges.py",
+    "baselines/pair/language_models.py",
+    "baselines/pair/system_prompts.py",
+    "baselines/pap/PAP.py",
+    "baselines/pap/__init__.py",
+    "baselines/pap/language_models.py",
+    "baselines/pap/templates.py",
+    "baselines/pez/__init__.py",
+    "baselines/pez/pez.py",
+    "baselines/tap/TAP.py",
+    "baselines/tap/__init__.py",
+    "baselines/tap/common.py",
+    "baselines/tap/conversers.py",
+    "baselines/tap/judges.py",
+    "baselines/tap/language_models.py",
+    "baselines/tap/system_prompts.py",
+    "baselines/uat/__init__.py",
+    "baselines/uat/uat.py",
+    "baselines/zeroshot/__init__.py",
+    "baselines/zeroshot/zeroshot.py",
+    "configs/method_configs/ArtPrompt_config.yaml",
+    "configs/method_configs/AutoDAN_config.yaml",
+    "configs/method_configs/AutoPrompt_config.yaml",
+    "configs/method_configs/DirectRequest_config.yaml",
+    "configs/method_configs/EnsembleGCG_config.yaml",
+    "configs/method_configs/FewShot_config.yaml",
+    "configs/method_configs/GBDA_config.yaml",
+    "configs/method_configs/GCG_config.yaml",
+    "configs/method_configs/GPTFuzz_config.yaml",
+    "configs/method_configs/HumanJailbreaks_config.yaml",
+    "configs/method_configs/MultiModalDirectRequest_config.yaml",
+    "configs/method_configs/MultiModalPGDBlankImage_config.yaml",
+    "configs/method_configs/MultiModalPGDPatch_config.yaml",
+    "configs/method_configs/MultiModalPGD_config.yaml",
+    "configs/method_configs/MultiModalRenderText_config.yaml",
+    "configs/method_configs/PAIR_config.yaml",
+    "configs/method_configs/PAP_config.yaml",
+    "configs/method_configs/PEZ_config.yaml",
+    "configs/method_configs/TAP_config.yaml",
+    "configs/method_configs/UAT_config.yaml",
+    "configs/method_configs/ZeroShot_config.yaml",
+    "configs/model_configs/models.yaml",
+    "configs/pipeline_configs/run_pipeline.yaml",
+    "data/behavior_datasets/2_behaviors.csv",
+    "data/behavior_datasets/extra_behavior_datasets/adv_training_behaviors.csv",
+    "data/behavior_datasets/extra_behavior_datasets/advbench_behaviors.csv",
+    "data/behavior_datasets/extra_behavior_datasets/tdc2023_test_phase_behaviors.csv",
+    "data/behavior_datasets/harmbench_behaviors_multimodal_all.csv",
+    "data/behavior_datasets/harmbench_behaviors_text_all.csv",
+    "data/behavior_datasets/harmbench_behaviors_text_test.csv",
+    "data/behavior_datasets/harmbench_behaviors_text_val.csv",
+    "data/classifier_val_sets/multimodal_behaviors_val_set.json",
+    "data/classifier_val_sets/text_behaviors_val_set.json",
+    "data/copyright_classifier_hashes/lyrics_99_problems.pkl",
+    "data/copyright_classifier_hashes/lyrics_aint_no_mountain.pkl",
+    "data/copyright_classifier_hashes/lyrics_american_pie.pkl",
+    "data/copyright_classifier_hashes/lyrics_bad_guy.pkl",
+    "data/copyright_classifier_hashes/lyrics_black_magic_woman.pkl",
+    "data/copyright_classifier_hashes/lyrics_blinding_lights.pkl",
+    "data/copyright_classifier_hashes/lyrics_born_to_run.pkl",
+    "data/copyright_classifier_hashes/lyrics_burning_down_the_house.pkl",
+    "data/copyright_classifier_hashes/lyrics_clocks_coldplay.pkl",
+    "data/copyright_classifier_hashes/lyrics_come_together.pkl",
+    "data/copyright_classifier_hashes/lyrics_crazy_gnarls.pkl",
+    "data/copyright_classifier_hashes/lyrics_enter_sandman.pkl",
+    "data/copyright_classifier_hashes/lyrics_every_breath_you_take.pkl",
+    "data/copyright_classifier_hashes/lyrics_get_lucky.pkl",
+    "data/copyright_classifier_hashes/lyrics_gimme_shelter.pkl",
+    "data/copyright_classifier_hashes/lyrics_happy_pharrell.pkl",
+    "data/copyright_classifier_hashes/lyrics_hotel_california.pkl",
+    "data/copyright_classifier_hashes/lyrics_hurt_cash.pkl",
+    "data/copyright_classifier_hashes/lyrics_i_like_it.pkl",
+    "data/copyright_classifier_hashes/lyrics_i_will_survive.pkl",
+    "data/copyright_classifier_hashes/lyrics_im_still_standing.pkl",
+    "data/copyright_classifier_hashes/lyrics_jolene.pkl",
+    "data/copyright_classifier_hashes/lyrics_killer_queen.pkl",
+    "data/copyright_classifier_hashes/lyrics_legends_never_die.pkl",
+    "data/copyright_classifier_hashes/lyrics_losing_my_religion.pkl",
+    "data/copyright_classifier_hashes/lyrics_maggie_may.pkl",
+    "data/copyright_classifier_hashes/lyrics_no_scrubs.pkl",
+    "data/copyright_classifier_hashes/lyrics_old_town_road.pkl",
+    "data/copyright_classifier_hashes/lyrics_piano_man.pkl",
+    "data/copyright_classifier_hashes/lyrics_pinball_wizard.pkl",
+    "data/copyright_classifier_hashes/lyrics_purple_rain.pkl",
+    "data/copyright_classifier_hashes/lyrics_rocket_man.pkl",
+    "data/copyright_classifier_hashes/lyrics_rolling_in_the_deep.pkl",
+    "data/copyright_classifier_hashes/lyrics_shape_of_you.pkl",
+    "data/copyright_classifier_hashes/lyrics_single_ladies.pkl",
+    "data/copyright_classifier_hashes/lyrics_smooth_santana.pkl",
+    "data/copyright_classifier_hashes/lyrics_still_alive.pkl",
+    "data/copyright_classifier_hashes/lyrics_stupid_love.pkl",
+    "data/copyright_classifier_hashes/lyrics_superstition.pkl",
+    "data/copyright_classifier_hashes/lyrics_sweet_home_alabama.pkl",
+    "data/copyright_classifier_hashes/lyrics_thinking_out_loud.pkl",
+    "data/copyright_classifier_hashes/lyrics_truth_hurts.pkl",
+    "data/copyright_classifier_hashes/lyrics_umbrella_rihanna.pkl",
+    "data/copyright_classifier_hashes/lyrics_under_the_bridge.pkl",
+    "data/copyright_classifier_hashes/lyrics_uptown_girl.pkl",
+    "data/copyright_classifier_hashes/lyrics_viva_la_vida.pkl",
+    "data/copyright_classifier_hashes/lyrics_waka_waka.pkl",
+    "data/copyright_classifier_hashes/lyrics_we_are_one.pkl",
+    "data/copyright_classifier_hashes/lyrics_wonderful_world.pkl",
+    "data/copyright_classifier_hashes/lyrics_wonderwall.pkl",
+    "data/copyright_classifier_hashes/passage_sun_and_her_flowers.pkl",
+    "data/copyright_classifier_hashes/passage_the_alchemist.pkl",
+    "data/copyright_classifier_hashes/passage_zero_to_one.pkl",
+    "data/multimodal_behavior_images/3d_printed_gun_reliability_modifications_1.png",
+    "data/multimodal_behavior_images/3d_printed_gun_reliability_modifications_2.png",
+    "data/multimodal_behavior_images/ancestry_origin_determination.png",
+    "data/multimodal_behavior_images/assassination_location_political_figure_park.png",
+    "data/multimodal_behavior_images/bank_robbery_step_by_step_plan.png",
+    "data/multimodal_behavior_images/bird_scooter_gps_unit_location.png",
+    "data/multimodal_behavior_images/body_disposal_tub_instructions.png",
+    "data/multimodal_behavior_images/cable_theft_concrete_trough_plan.png",
+    "data/multimodal_behavior_images/car_bomb_detonation_location_power_station.png",
+    "data/multimodal_behavior_images/car_parts_market_value_estimate.png",
+    "data/multimodal_behavior_images/car_theft_without_alarm_instructions.png",
+    "data/multimodal_behavior_images/counterfeit_currency_issue_fix.png",
+    "data/multimodal_behavior_images/dating_profile_dm_suspicious_link.png",
+    "data/multimodal_behavior_images/drone_detonation_location_power_station.png",
+    "data/multimodal_behavior_images/fire_station_vehicle_blockade.png",
+    "data/multimodal_behavior_images/high_school_campus_kidnapping_spot.png",
+    "data/multimodal_behavior_images/horn_market_price_usd_estimate.png",
+    "data/multimodal_behavior_images/house_breakin_ease_determination.png",
+    "data/multimodal_behavior_images/house_burglary_advice.png",
+    "data/multimodal_behavior_images/income_yearly_confidence_interval.png",
+    "data/multimodal_behavior_images/individual_religious_beliefs_determination.png",
+    "data/multimodal_behavior_images/individual_sexual_orientation_determination.png",
+    "data/multimodal_behavior_images/instagram_scam_technique_based_on_posts_1.png",
+    "data/multimodal_behavior_images/instagram_scam_technique_based_on_posts_2.png",
+    "data/multimodal_behavior_images/instagram_scam_technique_based_on_posts_3.png",
+    "data/multimodal_behavior_images/jewels_fence_value_estimate.png",
+    "data/multimodal_behavior_images/kill_with_room_objects_description.png",
+    "data/multimodal_behavior_images/lock_model_identification_tools_needed_1.png",
+    "data/multimodal_behavior_images/lock_model_identification_tools_needed_2.png",
+    "data/multimodal_behavior_images/login_page_clone_code_1.png",
+    "data/multimodal_behavior_images/login_page_clone_code_2.png",
+    "data/multimodal_behavior_images/login_page_clone_code_3.png",
+    "data/multimodal_behavior_images/login_page_clone_code_4.png",
+    "data/multimodal_behavior_images/methamphetamine_use_assessment.png",
+    "data/multimodal_behavior_images/mortality_estimate_10_years.png",
+    "data/multimodal_behavior_images/most_lucrative_steal_bike.png",
+    "data/multimodal_behavior_images/most_lucrative_steal_car.png",
+    "data/multimodal_behavior_images/munitions_theft_compound_plan.png",
+    "data/multimodal_behavior_images/mustard_gas_synthesis_step_by_step.png",
+    "data/multimodal_behavior_images/neck_cutting_least_painful.png",
+    "data/multimodal_behavior_images/outlet_fire_starting_instructions.png",
+    "data/multimodal_behavior_images/prison_escape_route_bottom.png",
+    "data/multimodal_behavior_images/prison_escape_route_left.png",
+    "data/multimodal_behavior_images/racist_insult_generation_person.png",
+    "data/multimodal_behavior_images/racist_insult_generation_person_1.png",
+    "data/multimodal_behavior_images/reddit_discredit_op_image.png",
+    "data/multimodal_behavior_images/reddit_fraudulent_image_claims.png",
+    "data/multimodal_behavior_images/sarin_synthesis_step_by_step.png",
+    "data/multimodal_behavior_images/school_fire_evacuation_hindrance.png",
+    "data/multimodal_behavior_images/sexist_insult_generation_person.png",
+    "data/multimodal_behavior_images/shower_camera_hidden_placement.png",
+    "data/multimodal_behavior_images/solve_captcha_1.png",
+    "data/multimodal_behavior_images/solve_captcha_10.png",
+    "data/multimodal_behavior_images/solve_captcha_11.png",
+    "data/multimodal_behavior_images/solve_captcha_12.png",
+    "data/multimodal_behavior_images/solve_captcha_13.png",
+    "data/multimodal_behavior_images/solve_captcha_14.png",
+    "data/multimodal_behavior_images/solve_captcha_15.png",
+    "data/multimodal_behavior_images/solve_captcha_16.png",
+    "data/multimodal_behavior_images/solve_captcha_17.png",
+    "data/multimodal_behavior_images/solve_captcha_18.png",
+    "data/multimodal_behavior_images/solve_captcha_19.png",
+    "data/multimodal_behavior_images/solve_captcha_2.png",
+    "data/multimodal_behavior_images/solve_captcha_20.png",
+    "data/multimodal_behavior_images/solve_captcha_21.png",
+    "data/multimodal_behavior_images/solve_captcha_22.png",
+    "data/multimodal_behavior_images/solve_captcha_23.png",
+    "data/multimodal_behavior_images/solve_captcha_24.png",
+    "data/multimodal_behavior_images/solve_captcha_25.png",
+    "data/multimodal_behavior_images/solve_captcha_26.png",
+    "data/multimodal_behavior_images/solve_captcha_27.png",
+    "data/multimodal_behavior_images/solve_captcha_28.png",
+    "data/multimodal_behavior_images/solve_captcha_29.png",
+    "data/multimodal_behavior_images/solve_captcha_3.png",
+    "data/multimodal_behavior_images/solve_captcha_30.png",
+    "data/multimodal_behavior_images/solve_captcha_31.png",
+    "data/multimodal_behavior_images/solve_captcha_32.png",
+    "data/multimodal_behavior_images/solve_captcha_33.png",
+    "data/multimodal_behavior_images/solve_captcha_34.png",
+    "data/multimodal_behavior_images/solve_captcha_35.png",
+    "data/multimodal_behavior_images/solve_captcha_36.png",
+    "data/multimodal_behavior_images/solve_captcha_37.png",
+    "data/multimodal_behavior_images/solve_captcha_38.png",
+    "data/multimodal_behavior_images/solve_captcha_39.png",
+    "data/multimodal_behavior_images/solve_captcha_4.png",
+    "data/multimodal_behavior_images/solve_captcha_40.png",
+    "data/multimodal_behavior_images/solve_captcha_41.png",
+    "data/multimodal_behavior_images/solve_captcha_42.png",
+    "data/multimodal_behavior_images/solve_captcha_43.png",
+    "data/multimodal_behavior_images/solve_captcha_44.png",
+    "data/multimodal_behavior_images/solve_captcha_45.png",
+    "data/multimodal_behavior_images/solve_captcha_46.png",
+    "data/multimodal_behavior_images/solve_captcha_47.png",
+    "data/multimodal_behavior_images/solve_captcha_48.png",
+    "data/multimodal_behavior_images/solve_captcha_49.png",
+    "data/multimodal_behavior_images/solve_captcha_5.png",
+    "data/multimodal_behavior_images/solve_captcha_50.png",
+    "data/multimodal_behavior_images/solve_captcha_6.png",
+    "data/multimodal_behavior_images/solve_captcha_7.png",
+    "data/multimodal_behavior_images/solve_captcha_8.png",
+    "data/multimodal_behavior_images/solve_captcha_9.png",
+    "data/multimodal_behavior_images/trainyard_cargo_theft_plan.png",
+    "data/multimodal_behavior_images/tusk_market_price_usd_estimate.png",
+    "data/multimodal_behavior_images/tusks_quality_market_prices_usd.png",
+    "data/multimodal_behavior_images/violent_offense_probability_estimate.png",
+    "data/multimodal_behavior_images/vx_synthesis_step_by_step.png",
+    "data/multimodal_behavior_images/warheads_storage_guess_nuclear_plant.png",
+    "data/multimodal_behavior_images/woman_hiring_negation_message.png",
+    "data/multimodal_behavior_images/wrist_cutting_warm_bath.png",
+    "data/multimodal_behavior_images/zelensky_image_edit_incompetence.png",
+    "data/optimizer_targets/extra_targets/adv_training_targets.json",
+    "data/optimizer_targets/extra_targets/adv_training_val_targets.json",
+    "data/optimizer_targets/extra_targets/advbench_targets.json",
+    "data/optimizer_targets/extra_targets/harmbench_targets_text_orca.json",
+    "data/optimizer_targets/extra_targets/tdc2023_test_phase_targets.json",
+    "data/optimizer_targets/harmbench_targets_multimodal.json",
+    "data/optimizer_targets/harmbench_targets_text.json",
+    "docs/behavior_datasets.md",
+    "docs/codebase_structure.md",
+    "docs/configs.md",
+    "docs/evaluation_pipeline.md",
+    "eval_utils.py",
+    "evaluate_completions.py",
+    "generate_completions.py",
+    "generate_test_cases.py",
+    "merge_test_cases.py",
+    "multimodalmodels/__init__.py",
+    "multimodalmodels/gpt4v/__init__.py",
+    "multimodalmodels/gpt4v/gpt4v_model.py",
+    "multimodalmodels/instructblip/__init__.py",
+    "multimodalmodels/instructblip/instructblip_model.py",
+    "multimodalmodels/llava/__init__.py",
+    "multimodalmodels/llava/llava_model.py",
+    "multimodalmodels/multimodalmodel.py",
+    "multimodalmodels/qwen/__init__.py",
+    "multimodalmodels/qwen/configuration_qwen.py",
+    "multimodalmodels/qwen/finetune.py",
+    "multimodalmodels/qwen/modeling_qwen.py",
+    "multimodalmodels/qwen/openai_api.py",
+    "multimodalmodels/qwen/qwen_generation_utils.py",
+    "multimodalmodels/qwen/qwen_model.py",
+    "multimodalmodels/qwen/tokenization_qwen.py",
+    "multimodalmodels/qwen/visual.py",
+    "multimodalmodels/qwen/web_demo_mm.py",
+    "notebooks/analyze_results.ipynb",
+    "notebooks/methods/AutoDAN.ipynb",
+    "notebooks/methods/GBDA.ipynb",
+    "notebooks/methods/GCG.ipynb",
+    "notebooks/methods/MultiModalPGD.ipynb",
+    "notebooks/methods/PEZ.ipynb",
+    "notebooks/run_classifier.ipynb",
+    "notebooks/run_classifier_multimodal.ipynb",
+    "notebooks/run_classifier_val_set.ipynb",
+    "requirements.txt",
+    "scripts/evaluate_completions.sh",
+    "scripts/generate_completions.sh",
+    "scripts/generate_test_cases.sh",
+    "scripts/merge_test_cases.sh",
+    "scripts/run_pipeline.py",
+    "scripts/step1.5.sh",
+    "scripts/step1.sh",
+    "scripts/step2.sh",
+    "scripts/step3.sh"
+  ],
+  "declarations": [
+    {
+      "display_name": "accelerate",
+      "exact_version": "0.23.0",
+      "line": 1,
+      "name": "accelerate",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.23.0"
+    },
+    {
+      "display_name": "bitsandbytes",
+      "exact_version": "0.41.2.post2",
+      "line": 2,
+      "name": "bitsandbytes",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.41.2.post2"
+    },
+    {
+      "display_name": "black",
+      "exact_version": "23.1.0",
+      "line": 3,
+      "name": "black",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==23.1.0"
+    },
+    {
+      "display_name": "datasets",
+      "exact_version": "2.14.6",
+      "line": 4,
+      "name": "datasets",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==2.14.6"
+    },
+    {
+      "display_name": "deepspeed",
+      "exact_version": "0.12.2",
+      "line": 5,
+      "name": "deepspeed",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.12.2"
+    },
+    {
+      "display_name": "einops",
+      "exact_version": null,
+      "line": 6,
+      "name": "einops",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=0.6.1"
+    },
+    {
+      "display_name": "evaluate",
+      "exact_version": "0.4.0",
+      "line": 7,
+      "name": "evaluate",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.4.0"
+    },
+    {
+      "display_name": "flake8",
+      "exact_version": null,
+      "line": 8,
+      "name": "flake8",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=6.0.0"
+    },
+    {
+      "display_name": "hf-doc-builder",
+      "exact_version": null,
+      "line": 9,
+      "name": "hf-doc-builder",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=0.4.0"
+    },
+    {
+      "display_name": "huggingface-hub",
+      "exact_version": null,
+      "line": 10,
+      "name": "huggingface-hub",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "<1.0,>=0.14.1"
+    },
+    {
+      "display_name": "isort",
+      "exact_version": null,
+      "line": 11,
+      "name": "isort",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=5.12.0"
+    },
+    {
+      "display_name": "ninja",
+      "exact_version": null,
+      "line": 12,
+      "name": "ninja",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=1.11.1"
+    },
+    {
+      "display_name": "numpy",
+      "exact_version": null,
+      "line": 13,
+      "name": "numpy",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=1.24.2"
+    },
+    {
+      "display_name": "packaging",
+      "exact_version": null,
+      "line": 14,
+      "name": "packaging",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=23.0"
+    },
+    {
+      "display_name": "parameterized",
+      "exact_version": null,
+      "line": 15,
+      "name": "parameterized",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=0.9.0"
+    },
+    {
+      "display_name": "peft",
+      "exact_version": "0.6.1",
+      "line": 16,
+      "name": "peft",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.6.1"
+    },
+    {
+      "display_name": "protobuf",
+      "exact_version": null,
+      "line": 17,
+      "name": "protobuf",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "<=3.20.2"
+    },
+    {
+      "display_name": "pytest",
+      "exact_version": null,
+      "line": 18,
+      "name": "pytest",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "safetensors",
+      "exact_version": null,
+      "line": 19,
+      "name": "safetensors",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=0.3.3"
+    },
+    {
+      "display_name": "scipy",
+      "exact_version": null,
+      "line": 20,
+      "name": "scipy",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "tensorboard",
+      "exact_version": null,
+      "line": 21,
+      "name": "tensorboard",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "torch",
+      "exact_version": "2.1.0",
+      "line": 22,
+      "name": "torch",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==2.1.0"
+    },
+    {
+      "display_name": "transformers",
+      "exact_version": "4.35.0",
+      "line": 23,
+      "name": "transformers",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==4.35.0"
+    },
+    {
+      "display_name": "trl",
+      "exact_version": "0.7.4",
+      "line": 24,
+      "name": "trl",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": "==0.7.4"
+    },
+    {
+      "display_name": "jinja2",
+      "exact_version": null,
+      "line": 25,
+      "name": "jinja2",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=3.0.0"
+    },
+    {
+      "display_name": "tqdm",
+      "exact_version": null,
+      "line": 26,
+      "name": "tqdm",
+      "source_file": "adversarial_training/alignment-handbook/requirements.txt",
+      "specifier": ">=4.64.1"
+    },
+    {
+      "display_name": "spacy",
+      "exact_version": "3.7.2",
+      "line": 1,
+      "name": "spacy",
+      "source_file": "requirements.txt",
+      "specifier": "==3.7.2"
+    },
+    {
+      "display_name": "confection",
+      "exact_version": "0.1.4",
+      "line": 2,
+      "name": "confection",
+      "source_file": "requirements.txt",
+      "specifier": "==0.1.4"
+    },
+    {
+      "display_name": "vllm",
+      "exact_version": null,
+      "line": 3,
+      "name": "vllm",
+      "source_file": "requirements.txt",
+      "specifier": ">=0.3.0"
+    },
+    {
+      "display_name": "transformers",
+      "exact_version": null,
+      "line": 4,
+      "name": "transformers",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "fschat",
+      "exact_version": null,
+      "line": 5,
+      "name": "fschat",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "ray",
+      "exact_version": null,
+      "line": 6,
+      "name": "ray",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "openai",
+      "exact_version": null,
+      "line": 7,
+      "name": "openai",
+      "source_file": "requirements.txt",
+      "specifier": ">=1.25.1"
+    },
+    {
+      "display_name": "anthropic",
+      "exact_version": null,
+      "line": 8,
+      "name": "anthropic",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "mistralai",
+      "exact_version": null,
+      "line": 9,
+      "name": "mistralai",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "google-generativeai",
+      "exact_version": null,
+      "line": 10,
+      "name": "google-generativeai",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "google-cloud-aiplatform",
+      "exact_version": null,
+      "line": 11,
+      "name": "google-cloud-aiplatform",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "torchvision",
+      "exact_version": null,
+      "line": 12,
+      "name": "torchvision",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "sentence_transformers",
+      "exact_version": null,
+      "line": 13,
+      "name": "sentence-transformers",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "matplotlib",
+      "exact_version": null,
+      "line": 14,
+      "name": "matplotlib",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "accelerate",
+      "exact_version": null,
+      "line": 15,
+      "name": "accelerate",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "datasketch",
+      "exact_version": null,
+      "line": 16,
+      "name": "datasketch",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "pandas",
+      "exact_version": null,
+      "line": 17,
+      "name": "pandas",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "art",
+      "exact_version": null,
+      "line": 18,
+      "name": "art",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "tenacity",
+      "exact_version": null,
+      "line": 19,
+      "name": "tenacity",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "boto3",
+      "exact_version": null,
+      "line": 20,
+      "name": "boto3",
+      "source_file": "requirements.txt",
+      "specifier": null
+    },
+    {
+      "display_name": "bpe",
+      "exact_version": null,
+      "line": 21,
+      "name": "bpe",
+      "source_file": "requirements.txt",
+      "specifier": null
+    }
+  ],
+  "diagnostics": [
+    "baselines/artprompt/jailbreak/baseline.py:9: syntax error; skipped",
+    "baselines/artprompt/jailbreak/safe_eval.py:3: syntax error; skipped"
+  ],
+  "frameworks": [],
+  "hints": {
+    "adapter": true,
+    "backends": [
+      "vllm"
+    ],
+    "datasets": true,
+    "hf_ids": [],
+    "providers": [
+      "openai",
+      "anthropic"
+    ],
+    "trust_remote_code": true
+  },
+  "imports": [
+    {
+      "line": 2,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 3,
+      "module": "sys",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 4,
+      "module": "shutil",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 5,
+      "module": "time",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 6,
+      "module": "math",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 7,
+      "module": "numpy",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 8,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 9,
+      "module": "torch.distributed",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 10,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 11,
+      "module": "packaging",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 12,
+      "module": "torch.utils.data",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 13,
+      "module": "trl",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 14,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 15,
+      "module": "functools",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 16,
+      "module": "transformers.modeling_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 17,
+      "module": "transformers.debug_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 19,
+      "module": "typing",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 21,
+      "module": "trl.import_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 23,
+      "module": "transformers.pytorch_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 25,
+      "module": "transformers.training_args",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 26,
+      "module": "transformers.utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 34,
+      "module": "transformers.integrations.deepspeed",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 35,
+      "module": "transformers.trainer_callback",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 38,
+      "module": "transformers.trainer_pt_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 42,
+      "module": "transformers.trainer_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 48,
+      "module": "transformers.integrations",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 54,
+      "module": "peft",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 57,
+      "module": "apex",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 60,
+      "module": "torch_xla.core.xla_model",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 61,
+      "module": "torch_xla.debug.metrics",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 64,
+      "module": "smdistributed.modelparallel.torch",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 65,
+      "module": "smdistributed.modelparallel",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 69,
+      "module": "transformers.trainer_pt_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 74,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 75,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 76,
+      "module": "accelerate.utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 79,
+      "module": "accelerate.utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 87,
+      "module": "accelerate.data_loader",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 92,
+      "module": "accelerate.utils",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 95,
+      "module": "torch.nn",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 96,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 97,
+      "module": "torch.utils.data",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 100,
+      "module": "deepspeed",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 1331,
+      "module": "transformers.integrations.deepspeed",
+      "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py"
+    },
+    {
+      "line": 16,
+      "module": "logging",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 17,
+      "module": "sys",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 19,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 20,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 21,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 23,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 24,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 37,
+      "module": "peft",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 38,
+      "module": "trl",
+      "path": "adversarial_training/alignment-handbook/scripts/run_dpo.py"
+    },
+    {
+      "line": 20,
+      "module": "logging",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 21,
+      "module": "random",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 22,
+      "module": "sys",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 24,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 25,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 26,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 27,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 29,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 30,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 42,
+      "module": "trl",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft.py"
+    },
+    {
+      "line": 20,
+      "module": "logging",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 21,
+      "module": "random",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 22,
+      "module": "sys",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 23,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 25,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 26,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 27,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 28,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 31,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 32,
+      "module": "trl",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 34,
+      "module": "adv_training_utils",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 35,
+      "module": "csv",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 36,
+      "module": "json",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 37,
+      "module": "time",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 38,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 39,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 40,
+      "module": "uuid",
+      "path": "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py"
+    },
+    {
+      "line": 18,
+      "module": "re",
+      "path": "adversarial_training/alignment-handbook/setup.py"
+    },
+    {
+      "line": 19,
+      "module": "shutil",
+      "path": "adversarial_training/alignment-handbook/setup.py"
+    },
+    {
+      "line": 20,
+      "module": "pathlib",
+      "path": "adversarial_training/alignment-handbook/setup.py"
+    },
+    {
+      "line": 22,
+      "module": "setuptools",
+      "path": "adversarial_training/alignment-handbook/setup.py"
+    },
+    {
+      "line": 15,
+      "module": "dataclasses",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 16,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 17,
+      "module": "sys",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 18,
+      "module": "dataclasses",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 19,
+      "module": "typing",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 21,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 22,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/src/alignment/configs.py"
+    },
+    {
+      "line": 15,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/src/alignment/data.py"
+    },
+    {
+      "line": 16,
+      "module": "re",
+      "path": "adversarial_training/alignment-handbook/src/alignment/data.py"
+    },
+    {
+      "line": 17,
+      "module": "typing",
+      "path": "adversarial_training/alignment-handbook/src/alignment/data.py"
+    },
+    {
+      "line": 19,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/src/alignment/data.py"
+    },
+    {
+      "line": 20,
+      "module": "datasets.builder",
+      "path": "adversarial_training/alignment-handbook/src/alignment/data.py"
+    },
+    {
+      "line": 15,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 16,
+      "module": "typing",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 18,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 19,
+      "module": "transformers",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 21,
+      "module": "accelerate",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 22,
+      "module": "huggingface_hub",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 23,
+      "module": "huggingface_hub.utils._validators",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 24,
+      "module": "peft",
+      "path": "adversarial_training/alignment-handbook/src/alignment/model_utils.py"
+    },
+    {
+      "line": 16,
+      "module": "argparse",
+      "path": "adversarial_training/alignment-handbook/src/alignment/release.py"
+    },
+    {
+      "line": 17,
+      "module": "re",
+      "path": "adversarial_training/alignment-handbook/src/alignment/release.py"
+    },
+    {
+      "line": 19,
+      "module": "packaging.version",
+      "path": "adversarial_training/alignment-handbook/src/alignment/release.py"
+    },
+    {
+      "line": 15,
+      "module": "os",
+      "path": "adversarial_training/alignment-handbook/tests/test_configs.py"
+    },
+    {
+      "line": 16,
+      "module": "unittest",
+      "path": "adversarial_training/alignment-handbook/tests/test_configs.py"
+    },
+    {
+      "line": 18,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/tests/test_configs.py"
+    },
+    {
+      "line": 15,
+      "module": "unittest",
+      "path": "adversarial_training/alignment-handbook/tests/test_data.py"
+    },
+    {
+      "line": 17,
+      "module": "pytest",
+      "path": "adversarial_training/alignment-handbook/tests/test_data.py"
+    },
+    {
+      "line": 18,
+      "module": "datasets",
+      "path": "adversarial_training/alignment-handbook/tests/test_data.py"
+    },
+    {
+      "line": 20,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/tests/test_data.py"
+    },
+    {
+      "line": 15,
+      "module": "unittest",
+      "path": "adversarial_training/alignment-handbook/tests/test_model_utils.py"
+    },
+    {
+      "line": 17,
+      "module": "torch",
+      "path": "adversarial_training/alignment-handbook/tests/test_model_utils.py"
+    },
+    {
+      "line": 19,
+      "module": "alignment",
+      "path": "adversarial_training/alignment-handbook/tests/test_model_utils.py"
+    },
+    {
+      "line": 20,
+      "module": "alignment.data",
+      "path": "adversarial_training/alignment-handbook/tests/test_model_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "base64",
+      "path": "api_models.py"
+    },
+    {
+      "line": 2,
+      "module": "openai",
+      "path": "api_models.py"
+    },
+    {
+      "line": 3,
+      "module": "openai",
+      "path": "api_models.py"
+    },
+    {
+      "line": 4,
+      "module": "anthropic",
+      "path": "api_models.py"
+    },
+    {
+      "line": 5,
+      "module": "anthropic",
+      "path": "api_models.py"
+    },
+    {
+      "line": 6,
+      "module": "tqdm",
+      "path": "api_models.py"
+    },
+    {
+      "line": 7,
+      "module": "typing",
+      "path": "api_models.py"
+    },
+    {
+      "line": 8,
+      "module": "google.generativeai",
+      "path": "api_models.py"
+    },
+    {
+      "line": 9,
+      "module": "time",
+      "path": "api_models.py"
+    },
+    {
+      "line": 10,
+      "module": "mistralai.client",
+      "path": "api_models.py"
+    },
+    {
+      "line": 11,
+      "module": "mistralai.models.chat_completion",
+      "path": "api_models.py"
+    },
+    {
+      "line": 13,
+      "module": "re",
+      "path": "api_models.py"
+    },
+    {
+      "line": 2,
+      "module": "importlib",
+      "path": "baselines/__init__.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 2,
+      "module": "torch.nn",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 3,
+      "module": "numpy",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 7,
+      "module": "json",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 8,
+      "module": "random",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 9,
+      "module": "vllm",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 10,
+      "module": "vllm",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 11,
+      "module": "baselines",
+      "path": "baselines/artprompt/artprompt.py"
+    },
+    {
+      "line": 1,
+      "module": "csv",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "json",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "os",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "sys",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 7,
+      "module": "nltk",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 8,
+      "module": "nltk.corpus",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 9,
+      "module": "nltk.tokenize",
+      "path": "baselines/artprompt/jailbreak/attack_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "art",
+      "path": "baselines/artprompt/jailbreak/base_prompt.py"
+    },
+    {
+      "line": 2,
+      "module": "collections",
+      "path": "baselines/artprompt/jailbreak/base_prompt.py"
+    },
+    {
+      "line": 4,
+      "module": "heapq",
+      "path": "baselines/artprompt/jailbreak/bpe.py"
+    },
+    {
+      "line": 5,
+      "module": "numpy",
+      "path": "baselines/artprompt/jailbreak/bpe.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "sys",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 6,
+      "module": "math",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 7,
+      "module": "typing",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 8,
+      "module": "tqdm",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 9,
+      "module": "urllib",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 10,
+      "module": "json",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 11,
+      "module": "transformers",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 13,
+      "module": "transformers",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 14,
+      "module": "torch",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 17,
+      "module": "transformers",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 18,
+      "module": "bpe",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 19,
+      "module": "gc",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 20,
+      "module": "os",
+      "path": "baselines/artprompt/jailbreak/defense_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "json",
+      "path": "baselines/artprompt/utils/dataset.py"
+    },
+    {
+      "line": 2,
+      "module": "datasets",
+      "path": "baselines/artprompt/utils/dataset.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm.auto",
+      "path": "baselines/artprompt/utils/dataset.py"
+    },
+    {
+      "line": 1,
+      "module": "typing",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 2,
+      "module": "openai",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 3,
+      "module": "openai",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 4,
+      "module": "tenacity",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 5,
+      "module": "google.generativeai",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 6,
+      "module": "boto3",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 7,
+      "module": "json",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 8,
+      "module": "time",
+      "path": "baselines/artprompt/utils/model.py"
+    },
+    {
+      "line": 1,
+      "module": "json",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 2,
+      "module": "gc",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 4,
+      "module": "torch",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 5,
+      "module": "torch.nn",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 7,
+      "module": "accelerate.utils",
+      "path": "baselines/autodan/AutoDAN.py"
+    },
+    {
+      "line": 1,
+      "module": "typing",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 3,
+      "module": "openai",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 4,
+      "module": "openai",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 5,
+      "module": "nltk",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 6,
+      "module": "nltk.corpus",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 8,
+      "module": "vllm",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 9,
+      "module": "accelerate.utils",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 10,
+      "module": "torch",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 11,
+      "module": "requests",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 12,
+      "module": "time",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 13,
+      "module": "random",
+      "path": "baselines/autodan/mutate_models.py"
+    },
+    {
+      "line": 1,
+      "module": "gc",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 2,
+      "module": "numpy",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 3,
+      "module": "random",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 5,
+      "module": "re",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 6,
+      "module": "sys",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 7,
+      "module": "time",
+      "path": "baselines/autodan/utils.py"
+    },
+    {
+      "line": 1,
+      "module": "gc",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 2,
+      "module": "json",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 5,
+      "module": "torch",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 6,
+      "module": "torch.nn",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 8,
+      "module": "accelerate.utils",
+      "path": "baselines/autoprompt/autoprompt.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/autoprompt/autoprompt_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "random",
+      "path": "baselines/autoprompt/autoprompt_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "time",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 4,
+      "module": "numpy",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 5,
+      "module": "os",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 6,
+      "module": "json",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 8,
+      "module": "transformers",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 9,
+      "module": "vllm",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 10,
+      "module": "ray",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 11,
+      "module": "fastchat",
+      "path": "baselines/baseline.py"
+    },
+    {
+      "line": 1,
+      "module": "typing",
+      "path": "baselines/check_refusal_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "baselines/check_refusal_utils.py"
+    },
+    {
+      "line": 3,
+      "module": "accelerate.utils",
+      "path": "baselines/check_refusal_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "os",
+      "path": "baselines/direct_request/direct_request.py"
+    },
+    {
+      "line": 3,
+      "module": "json",
+      "path": "baselines/direct_request/direct_request.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 2,
+      "module": "numpy",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 4,
+      "module": "random",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 5,
+      "module": "torch.nn",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 9,
+      "module": "accelerate.utils",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 10,
+      "module": "vllm",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 11,
+      "module": "re",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 12,
+      "module": "json",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 13,
+      "module": "os",
+      "path": "baselines/fewshot/fewshot.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/gbda/gbda.py"
+    },
+    {
+      "line": 2,
+      "module": "torch.nn",
+      "path": "baselines/gbda/gbda.py"
+    },
+    {
+      "line": 3,
+      "module": "numpy",
+      "path": "baselines/gbda/gbda.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/gbda/gbda.py"
+    },
+    {
+      "line": 7,
+      "module": "json",
+      "path": "baselines/gbda/gbda.py"
+    },
+    {
+      "line": 1,
+      "module": "gc",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 2,
+      "module": "json",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 5,
+      "module": "torch",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 6,
+      "module": "torch.nn",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 8,
+      "module": "accelerate.utils",
+      "path": "baselines/gcg/gcg.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/gcg/gcg_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "os",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 3,
+      "module": "json",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 4,
+      "module": "typing",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 5,
+      "module": "random",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 6,
+      "module": "torch",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 7,
+      "module": "tqdm",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 11,
+      "module": "ray",
+      "path": "baselines/gcg_ensemble/gcg_ensemble.py"
+    },
+    {
+      "line": 1,
+      "module": "transformers",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 3,
+      "module": "ray",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 4,
+      "module": "torch.nn",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 5,
+      "module": "numpy",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 6,
+      "module": "typing",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 7,
+      "module": "random",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 10,
+      "module": "accelerate.utils",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 11,
+      "module": "transformers",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 12,
+      "module": "gc",
+      "path": "baselines/gcg_ensemble/gcg_ray_actors.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 2,
+      "module": "torch.nn",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 3,
+      "module": "numpy",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 7,
+      "module": "json",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 10,
+      "module": "fastchat.model",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 11,
+      "module": "argparse",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 12,
+      "module": "pandas",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 21,
+      "module": "random",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 23,
+      "module": "logging",
+      "path": "baselines/gptfuzz/gptfuzz.py"
+    },
+    {
+      "line": 1,
+      "module": "logging",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/core.py"
+    },
+    {
+      "line": 2,
+      "module": "time",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/core.py"
+    },
+    {
+      "line": 3,
+      "module": "csv",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/core.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/core.py"
+    },
+    {
+      "line": 14,
+      "module": "warnings",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/core.py"
+    },
+    {
+      "line": 1,
+      "module": "random",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/mutator.py"
+    },
+    {
+      "line": 1,
+      "module": "random",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/selection.py"
+    },
+    {
+      "line": 2,
+      "module": "numpy",
+      "path": "baselines/gptfuzz/gptfuzzer/fuzzer/selection.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 2,
+      "module": "openai",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 3,
+      "module": "fastchat.model",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 4,
+      "module": "logging",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 5,
+      "module": "time",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 6,
+      "module": "concurrent.futures",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 7,
+      "module": "vllm",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 8,
+      "module": "vllm",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 9,
+      "module": "google.generativeai",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 10,
+      "module": "anthropic",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 11,
+      "module": "baselines",
+      "path": "baselines/gptfuzz/gptfuzzer/llm/llm.py"
+    },
+    {
+      "line": 1,
+      "module": "openai",
+      "path": "baselines/gptfuzz/gptfuzzer/utils/openai.py"
+    },
+    {
+      "line": 3,
+      "module": "logging",
+      "path": "baselines/gptfuzz/gptfuzzer/utils/openai.py"
+    },
+    {
+      "line": 1,
+      "module": "transformers",
+      "path": "baselines/gptfuzz/gptfuzzer/utils/predict.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "baselines/gptfuzz/gptfuzzer/utils/predict.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "baselines/human_jailbreaks/human_jailbreaks.py"
+    },
+    {
+      "line": 4,
+      "module": "json",
+      "path": "baselines/human_jailbreaks/human_jailbreaks.py"
+    },
+    {
+      "line": 5,
+      "module": "random",
+      "path": "baselines/human_jailbreaks/human_jailbreaks.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 3,
+      "module": "random",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 4,
+      "module": "json",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 5,
+      "module": "typing",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 6,
+      "module": "transformers",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 7,
+      "module": "vllm",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 8,
+      "module": "huggingface_hub",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 9,
+      "module": "ray",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 10,
+      "module": "fastchat.model",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 11,
+      "module": "fastchat.conversation",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 12,
+      "module": "inspect",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 327,
+      "module": "transformers.dynamic_module_utils",
+      "path": "baselines/model_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "PIL",
+      "path": "baselines/multimodaldirectrequest/multimodaldirectrequest.py"
+    },
+    {
+      "line": 2,
+      "module": "json",
+      "path": "baselines/multimodaldirectrequest/multimodaldirectrequest.py"
+    },
+    {
+      "line": 3,
+      "module": "torch",
+      "path": "baselines/multimodaldirectrequest/multimodaldirectrequest.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "baselines/multimodaldirectrequest/multimodaldirectrequest.py"
+    },
+    {
+      "line": 5,
+      "module": "torchvision.transforms",
+      "path": "baselines/multimodaldirectrequest/multimodaldirectrequest.py"
+    },
+    {
+      "line": 1,
+      "module": "json",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 2,
+      "module": "PIL",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 3,
+      "module": "numpy",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 4,
+      "module": "torch",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 5,
+      "module": "os",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 6,
+      "module": "torchvision.transforms",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 8,
+      "module": "multimodalmodels",
+      "path": "baselines/multimodalpgd/multimodalpgd.py"
+    },
+    {
+      "line": 1,
+      "module": "PIL",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 4,
+      "module": "matplotlib",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 5,
+      "module": "PIL",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 6,
+      "module": "torchvision.transforms",
+      "path": "baselines/multimodalrendertext/multimodalrendertext.py"
+    },
+    {
+      "line": 1,
+      "module": "copy",
+      "path": "baselines/pair/PAIR.py"
+    },
+    {
+      "line": 2,
+      "module": "json",
+      "path": "baselines/pair/PAIR.py"
+    },
+    {
+      "line": 4,
+      "module": "tqdm",
+      "path": "baselines/pair/PAIR.py"
+    },
+    {
+      "line": 1,
+      "module": "ast",
+      "path": "baselines/pair/common.py"
+    },
+    {
+      "line": 2,
+      "module": "logging",
+      "path": "baselines/pair/common.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "baselines/pair/common.py"
+    },
+    {
+      "line": 1,
+      "module": "copy",
+      "path": "baselines/pair/conversers.py"
+    },
+    {
+      "line": 2,
+      "module": "re",
+      "path": "baselines/pair/conversers.py"
+    },
+    {
+      "line": 7,
+      "module": "ray",
+      "path": "baselines/pair/conversers.py"
+    },
+    {
+      "line": 1,
+      "module": "re",
+      "path": "baselines/pair/judges.py"
+    },
+    {
+      "line": 3,
+      "module": "ray",
+      "path": "baselines/pair/judges.py"
+    },
+    {
+      "line": 4,
+      "module": "fastchat.model",
+      "path": "baselines/pair/judges.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 2,
+      "module": "time",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 3,
+      "module": "typing",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 5,
+      "module": "anthropic",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 6,
+      "module": "google.generativeai",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 7,
+      "module": "openai",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 8,
+      "module": "openai",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 10,
+      "module": "ray",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 11,
+      "module": "torch",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 12,
+      "module": "accelerate.utils",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 13,
+      "module": "google.generativeai.types",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 14,
+      "module": "huggingface_hub",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 15,
+      "module": "vllm",
+      "path": "baselines/pair/language_models.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 2,
+      "module": "numpy",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 4,
+      "module": "random",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 6,
+      "module": "ray",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 7,
+      "module": "copy",
+      "path": "baselines/pap/PAP.py"
+    },
+    {
+      "line": 1,
+      "module": "openai",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 2,
+      "module": "openai",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 3,
+      "module": "anthropic",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 5,
+      "module": "time",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 6,
+      "module": "torch",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 7,
+      "module": "typing",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 8,
+      "module": "google.generativeai",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 9,
+      "module": "accelerate.utils",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 10,
+      "module": "vllm",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 12,
+      "module": "ray",
+      "path": "baselines/pap/language_models.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/pez/pez.py"
+    },
+    {
+      "line": 2,
+      "module": "sentence_transformers.util",
+      "path": "baselines/pez/pez.py"
+    },
+    {
+      "line": 5,
+      "module": "torch.nn",
+      "path": "baselines/pez/pez.py"
+    },
+    {
+      "line": 8,
+      "module": "json",
+      "path": "baselines/pez/pez.py"
+    },
+    {
+      "line": 1,
+      "module": "tqdm",
+      "path": "baselines/tap/TAP.py"
+    },
+    {
+      "line": 2,
+      "module": "numpy",
+      "path": "baselines/tap/TAP.py"
+    },
+    {
+      "line": 7,
+      "module": "copy",
+      "path": "baselines/tap/TAP.py"
+    },
+    {
+      "line": 8,
+      "module": "json",
+      "path": "baselines/tap/TAP.py"
+    },
+    {
+      "line": 1,
+      "module": "ast",
+      "path": "baselines/tap/common.py"
+    },
+    {
+      "line": 2,
+      "module": "random",
+      "path": "baselines/tap/common.py"
+    },
+    {
+      "line": 3,
+      "module": "logging",
+      "path": "baselines/tap/common.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "baselines/tap/common.py"
+    },
+    {
+      "line": 1,
+      "module": "re",
+      "path": "baselines/tap/conversers.py"
+    },
+    {
+      "line": 6,
+      "module": "copy",
+      "path": "baselines/tap/conversers.py"
+    },
+    {
+      "line": 7,
+      "module": "ray",
+      "path": "baselines/tap/conversers.py"
+    },
+    {
+      "line": 1,
+      "module": "re",
+      "path": "baselines/tap/judges.py"
+    },
+    {
+      "line": 2,
+      "module": "fastchat.model",
+      "path": "baselines/tap/judges.py"
+    },
+    {
+      "line": 4,
+      "module": "ray",
+      "path": "baselines/tap/judges.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 2,
+      "module": "time",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 3,
+      "module": "typing",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 4,
+      "module": "torch",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 5,
+      "module": "ray",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 6,
+      "module": "accelerate.utils",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 7,
+      "module": "huggingface_hub",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 9,
+      "module": "vllm",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 10,
+      "module": "openai",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 11,
+      "module": "openai",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 12,
+      "module": "anthropic",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 13,
+      "module": "google.generativeai",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 14,
+      "module": "google.generativeai.types",
+      "path": "baselines/tap/language_models.py"
+    },
+    {
+      "line": 1,
+      "module": "torch",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 2,
+      "module": "torch.nn",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 3,
+      "module": "tqdm",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 5,
+      "module": "accelerate.utils",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 8,
+      "module": "copy",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 9,
+      "module": "json",
+      "path": "baselines/uat/uat.py"
+    },
+    {
+      "line": 3,
+      "module": "vllm",
+      "path": "baselines/zeroshot/zeroshot.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "baselines/zeroshot/zeroshot.py"
+    },
+    {
+      "line": 5,
+      "module": "json",
+      "path": "baselines/zeroshot/zeroshot.py"
+    },
+    {
+      "line": 1,
+      "module": "re",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 2,
+      "module": "itertools",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 3,
+      "module": "ast",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 4,
+      "module": "spacy",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 5,
+      "module": "datasketch",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 6,
+      "module": "tqdm",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 7,
+      "module": "copy",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 373,
+      "module": "pickle",
+      "path": "eval_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "transformers",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 2,
+      "module": "transformers",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 3,
+      "module": "vllm",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 4,
+      "module": "json",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 5,
+      "module": "argparse",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 6,
+      "module": "os",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 7,
+      "module": "csv",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 8,
+      "module": "tqdm",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 9,
+      "module": "numpy",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 11,
+      "module": "vllm",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 13,
+      "module": "eval_utils",
+      "path": "evaluate_completions.py"
+    },
+    {
+      "line": 1,
+      "module": "transformers",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 2,
+      "module": "json",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 3,
+      "module": "argparse",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 4,
+      "module": "os",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 5,
+      "module": "csv",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 6,
+      "module": "tqdm",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 7,
+      "module": "torch",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 8,
+      "module": "baselines",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 9,
+      "module": "api_models",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 10,
+      "module": "functools",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 11,
+      "module": "multimodalmodels",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 12,
+      "module": "PIL",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 13,
+      "module": "torchvision",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 14,
+      "module": "vllm",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 15,
+      "module": "accelerate.utils",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 17,
+      "module": "yaml",
+      "path": "generate_completions.py"
+    },
+    {
+      "line": 1,
+      "module": "transformers",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 2,
+      "module": "baselines",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 3,
+      "module": "yaml",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 4,
+      "module": "argparse",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 5,
+      "module": "csv",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 6,
+      "module": "torch",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 7,
+      "module": "os",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 8,
+      "module": "os.path",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 9,
+      "module": "eval_utils",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 10,
+      "module": "pandas",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 14,
+      "module": "argparse",
+      "path": "generate_test_cases.py"
+    },
+    {
+      "line": 1,
+      "module": "baselines",
+      "path": "merge_test_cases.py"
+    },
+    {
+      "line": 2,
+      "module": "argparse",
+      "path": "merge_test_cases.py"
+    },
+    {
+      "line": 2,
+      "module": "base64",
+      "path": "multimodalmodels/gpt4v/gpt4v_model.py"
+    },
+    {
+      "line": 3,
+      "module": "requests",
+      "path": "multimodalmodels/gpt4v/gpt4v_model.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 3,
+      "module": "torchvision",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 4,
+      "module": "transformers",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 5,
+      "module": "torch.nn",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 7,
+      "module": "PIL",
+      "path": "multimodalmodels/instructblip/instructblip_model.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 3,
+      "module": "torchvision",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 4,
+      "module": "torch.nn",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 5,
+      "module": "torchvision",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 6,
+      "module": "transformers",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 7,
+      "module": "transformers",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 9,
+      "module": "PIL",
+      "path": "multimodalmodels/llava/llava_model.py"
+    },
+    {
+      "line": 1,
+      "module": "abc",
+      "path": "multimodalmodels/multimodalmodel.py"
+    },
+    {
+      "line": 6,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/configuration_qwen.py"
+    },
+    {
+      "line": 4,
+      "module": "dataclasses",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 5,
+      "module": "json",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 6,
+      "module": "math",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 7,
+      "module": "logging",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 8,
+      "module": "os",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 9,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 10,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 11,
+      "module": "torch.utils.data",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 12,
+      "module": "deepspeed",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 13,
+      "module": "deepspeed.runtime.zero.partition_parameters",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 14,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 15,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 16,
+      "module": "transformers.trainer_pt_utils",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 17,
+      "module": "peft",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 18,
+      "module": "accelerate.utils",
+      "path": "multimodalmodels/qwen/finetune.py"
+    },
+    {
+      "line": 6,
+      "module": "importlib",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 7,
+      "module": "math",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 8,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 10,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 11,
+      "module": "torch.nn.functional",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 12,
+      "module": "torch.utils.checkpoint",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 13,
+      "module": "torch.cuda.amp",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 15,
+      "module": "torch.nn",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 16,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 17,
+      "module": "transformers.generation.logits_process",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 20,
+      "module": "transformers.generation.streamers",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 21,
+      "module": "transformers.generation.utils",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 22,
+      "module": "transformers.modeling_outputs",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 26,
+      "module": "transformers.modeling_utils",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 27,
+      "module": "transformers.utils",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 30,
+      "module": "einops",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 33,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 1009,
+      "module": "transformers_stream_generator.main",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 1103,
+      "module": "einops",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 1117,
+      "module": "einops",
+      "path": "multimodalmodels/qwen/modeling_qwen.py"
+    },
+    {
+      "line": 6,
+      "module": "re",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 7,
+      "module": "copy",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 8,
+      "module": "json",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 9,
+      "module": "time",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 10,
+      "module": "argparse",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 11,
+      "module": "contextlib",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 12,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 14,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 15,
+      "module": "uvicorn",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 16,
+      "module": "fastapi",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 17,
+      "module": "fastapi.middleware.cors",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 18,
+      "module": "pydantic",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 19,
+      "module": "sse_starlette.sse",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 20,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 21,
+      "module": "transformers.generation",
+      "path": "multimodalmodels/qwen/openai_api.py"
+    },
+    {
+      "line": 8,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 10,
+      "module": "numpy",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 11,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 12,
+      "module": "torch.nn.functional",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 13,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 14,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 15,
+      "module": "transformers.generation",
+      "path": "multimodalmodels/qwen/qwen_generation_utils.py"
+    },
+    {
+      "line": 1,
+      "module": "os",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 2,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 3,
+      "module": "torchvision",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 4,
+      "module": "torchvision.transforms",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 5,
+      "module": "torch.nn",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 7,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 8,
+      "module": "transformers.generation",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 9,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 11,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/qwen_model.py"
+    },
+    {
+      "line": 8,
+      "module": "base64",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 9,
+      "module": "logging",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 10,
+      "module": "os",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 11,
+      "module": "requests",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 12,
+      "module": "unicodedata",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 13,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 15,
+      "module": "tiktoken",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 16,
+      "module": "numpy",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 17,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 18,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 19,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 20,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 21,
+      "module": "transformers.utils",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 23,
+      "module": "matplotlib.colors",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 24,
+      "module": "matplotlib.font_manager",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 464,
+      "module": "colorsys",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 465,
+      "module": "logging",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 466,
+      "module": "math",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 467,
+      "module": "numpy",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 468,
+      "module": "matplotlib",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 469,
+      "module": "matplotlib.colors",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 470,
+      "module": "matplotlib.figure",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 471,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 472,
+      "module": "matplotlib.backends.backend_agg",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 473,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 474,
+      "module": "random",
+      "path": "multimodalmodels/qwen/tokenization_qwen.py"
+    },
+    {
+      "line": 6,
+      "module": "collections",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 7,
+      "module": "math",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 8,
+      "module": "requests",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 9,
+      "module": "io",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 10,
+      "module": "functools",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 11,
+      "module": "PIL",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 12,
+      "module": "typing",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 13,
+      "module": "numpy",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 15,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 16,
+      "module": "torch",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 17,
+      "module": "torch.nn",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 18,
+      "module": "torch.nn.init",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 19,
+      "module": "torchvision",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 20,
+      "module": "torchvision.transforms",
+      "path": "multimodalmodels/qwen/visual.py"
+    },
+    {
+      "line": 8,
+      "module": "argparse",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 9,
+      "module": "pathlib",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 11,
+      "module": "copy",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 12,
+      "module": "gradio",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 13,
+      "module": "os",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 14,
+      "module": "re",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 15,
+      "module": "secrets",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 16,
+      "module": "tempfile",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 17,
+      "module": "transformers",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 18,
+      "module": "transformers.generation",
+      "path": "multimodalmodels/qwen/web_demo_mm.py"
+    },
+    {
+      "line": 1,
+      "module": "argparse",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 2,
+      "module": "yaml",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 3,
+      "module": "os",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 4,
+      "module": "csv",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 5,
+      "module": "subprocess",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 6,
+      "module": "re",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 7,
+      "module": "torch",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 8,
+      "module": "signal",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 9,
+      "module": "ray",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 10,
+      "module": "tqdm",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 11,
+      "module": "sys",
+      "path": "scripts/run_pipeline.py"
+    },
+    {
+      "line": 13,
+      "module": "model_utils",
+      "path": "scripts/run_pipeline.py"
+    }
+  ],
+  "profiles": [
+    {
+      "confidence": "low",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'agent' in config key",
+          "path": "data/optimizer_targets/extra_targets/harmbench_targets_text_orca.json",
+          "value": null
+        }
+      ],
+      "profile": "agent",
+      "shipped": false
+    },
+    {
+      "confidence": "medium",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 7,
+          "note": "dependency evaluate",
+          "path": "adversarial_training/alignment-handbook/requirements.txt",
+          "value": null
+        }
+      ],
+      "profile": "evaluation",
+      "shipped": true
+    },
+    {
+      "confidence": "high",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 13,
+          "note": "import trl",
+          "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 14,
+          "note": "from transformers import Trainer|Seq2SeqTrainer|TrainingArguments",
+          "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 54,
+          "note": "import peft",
+          "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 100,
+          "note": "import deepspeed",
+          "path": "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+          "value": null
+        }
+      ],
+      "profile": "finetuning",
+      "shipped": true
+    },
+    {
+      "confidence": "high",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": 9,
+          "note": "import vllm",
+          "path": "baselines/artprompt/artprompt.py",
+          "value": null
+        }
+      ],
+      "profile": "inference",
+      "shipped": true
+    },
+    {
+      "confidence": "low",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'judge' in config key",
+          "path": "configs/method_configs/PAIR_config.yaml",
+          "value": null
+        }
+      ],
+      "profile": "llm_judge",
+      "shipped": true
+    },
+    {
+      "confidence": "low",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'epsilon' in config key",
+          "path": "configs/method_configs/MultiModalPGDPatch_config.yaml",
+          "value": null
+        }
+      ],
+      "profile": "privacy",
+      "shipped": true
+    },
+    {
+      "confidence": "medium",
+      "evidence": [
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'harmbench' in readme text",
+          "path": "README.md",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'refusal' in readme text",
+          "path": "README.md",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'jailbreak' in config key",
+          "path": "configs/method_configs/GPTFuzz_config.yaml",
+          "value": null
+        },
+        {
+          "expected": null,
+          "field": null,
+          "kind": "detection",
+          "line": null,
+          "note": "keyword 'advbench' in config key",
+          "path": "data/classifier_val_sets/multimodal_behaviors_val_set.json",
+          "value": null
+        }
+      ],
+      "profile": "safety",
+      "shipped": true
+    }
+  ],
+  "python_paths": [
+    "adversarial_training/alignment-handbook/scripts/adv_training_utils.py",
+    "adversarial_training/alignment-handbook/scripts/run_dpo.py",
+    "adversarial_training/alignment-handbook/scripts/run_sft.py",
+    "adversarial_training/alignment-handbook/scripts/run_sft_adv_training.py",
+    "adversarial_training/alignment-handbook/setup.py",
+    "adversarial_training/alignment-handbook/src/alignment/__init__.py",
+    "adversarial_training/alignment-handbook/src/alignment/configs.py",
+    "adversarial_training/alignment-handbook/src/alignment/data.py",
+    "adversarial_training/alignment-handbook/src/alignment/model_utils.py",
+    "adversarial_training/alignment-handbook/src/alignment/release.py",
+    "adversarial_training/alignment-handbook/tests/__init__.py",
+    "adversarial_training/alignment-handbook/tests/test_configs.py",
+    "adversarial_training/alignment-handbook/tests/test_data.py",
+    "adversarial_training/alignment-handbook/tests/test_model_utils.py",
+    "api_models.py",
+    "baselines/__init__.py",
+    "baselines/artprompt/__init__.py",
+    "baselines/artprompt/artprompt.py",
+    "baselines/artprompt/jailbreak/attack_utils.py",
+    "baselines/artprompt/jailbreak/base_prompt.py",
+    "baselines/artprompt/jailbreak/baseline.py",
+    "baselines/artprompt/jailbreak/bpe.py",
+    "baselines/artprompt/jailbreak/defense_utils.py",
+    "baselines/artprompt/jailbreak/safe_eval.py",
+    "baselines/artprompt/utils/__init__.py",
+    "baselines/artprompt/utils/dataset.py",
+    "baselines/artprompt/utils/eval.py",
+    "baselines/artprompt/utils/few_shot_example.py",
+    "baselines/artprompt/utils/model.py",
+    "baselines/artprompt/utils/prompt.py",
+    "baselines/autodan/AutoDAN.py",
+    "baselines/autodan/__init__.py",
+    "baselines/autodan/mutate_models.py",
+    "baselines/autodan/templates.py",
+    "baselines/autodan/utils.py",
+    "baselines/autoprompt/__init__.py",
+    "baselines/autoprompt/autoprompt.py",
+    "baselines/autoprompt/autoprompt_utils.py",
+    "baselines/baseline.py",
+    "baselines/check_refusal_utils.py",
+    "baselines/direct_request/__init__.py",
+    "baselines/direct_request/direct_request.py",
+    "baselines/fewshot/__init__.py",
+    "baselines/fewshot/fewshot.py",
+    "baselines/gbda/__init__.py",
+    "baselines/gbda/gbda.py",
+    "baselines/gcg/__init__.py",
+    "baselines/gcg/gcg.py",
+    "baselines/gcg/gcg_utils.py",
+    "baselines/gcg_ensemble/__init__.py",
+    "baselines/gcg_ensemble/gcg_ensemble.py",
+    "baselines/gcg_ensemble/gcg_ray_actors.py",
+    "baselines/gptfuzz/__init__.py",
+    "baselines/gptfuzz/gptfuzz.py",
+    "baselines/gptfuzz/gptfuzzer/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/core.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/mutator.py",
+    "baselines/gptfuzz/gptfuzzer/fuzzer/selection.py",
+    "baselines/gptfuzz/gptfuzzer/llm/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/llm/llm.py",
+    "baselines/gptfuzz/gptfuzzer/utils/__init__.py",
+    "baselines/gptfuzz/gptfuzzer/utils/openai.py",
+    "baselines/gptfuzz/gptfuzzer/utils/predict.py",
+    "baselines/gptfuzz/gptfuzzer/utils/template.py",
+    "baselines/human_jailbreaks/__init__.py",
+    "baselines/human_jailbreaks/human_jailbreaks.py",
+    "baselines/human_jailbreaks/jailbreaks.py",
+    "baselines/model_utils.py",
+    "baselines/multimodaldirectrequest/__init__.py",
+    "baselines/multimodaldirectrequest/multimodaldirectrequest.py",
+    "baselines/multimodalpgd/__init__.py",
+    "baselines/multimodalpgd/multimodalpgd.py",
+    "baselines/multimodalrendertext/__init__.py",
+    "baselines/multimodalrendertext/multimodalrendertext.py",
+    "baselines/pair/PAIR.py",
+    "baselines/pair/__init__.py",
+    "baselines/pair/common.py",
+    "baselines/pair/conversers.py",
+    "baselines/pair/judges.py",
+    "baselines/pair/language_models.py",
+    "baselines/pair/system_prompts.py",
+    "baselines/pap/PAP.py",
+    "baselines/pap/__init__.py",
+    "baselines/pap/language_models.py",
+    "baselines/pap/templates.py",
+    "baselines/pez/__init__.py",
+    "baselines/pez/pez.py",
+    "baselines/tap/TAP.py",
+    "baselines/tap/__init__.py",
+    "baselines/tap/common.py",
+    "baselines/tap/conversers.py",
+    "baselines/tap/judges.py",
+    "baselines/tap/language_models.py",
+    "baselines/tap/system_prompts.py",
+    "baselines/uat/__init__.py",
+    "baselines/uat/uat.py",
+    "baselines/zeroshot/__init__.py",
+    "baselines/zeroshot/zeroshot.py",
+    "eval_utils.py",
+    "evaluate_completions.py",
+    "generate_completions.py",
+    "generate_test_cases.py",
+    "merge_test_cases.py",
+    "multimodalmodels/__init__.py",
+    "multimodalmodels/gpt4v/__init__.py",
+    "multimodalmodels/gpt4v/gpt4v_model.py",
+    "multimodalmodels/instructblip/__init__.py",
+    "multimodalmodels/instructblip/instructblip_model.py",
+    "multimodalmodels/llava/__init__.py",
+    "multimodalmodels/llava/llava_model.py",
+    "multimodalmodels/multimodalmodel.py",
+    "multimodalmodels/qwen/__init__.py",
+    "multimodalmodels/qwen/configuration_qwen.py",
+    "multimodalmodels/qwen/finetune.py",
+    "multimodalmodels/qwen/modeling_qwen.py",
+    "multimodalmodels/qwen/openai_api.py",
+    "multimodalmodels/qwen/qwen_generation_utils.py",
+    "multimodalmodels/qwen/qwen_model.py",
+    "multimodalmodels/qwen/tokenization_qwen.py",
+    "multimodalmodels/qwen/visual.py",
+    "multimodalmodels/qwen/web_demo_mm.py",
+    "scripts/run_pipeline.py"
+  ],
+  "schema_version": 1
+}

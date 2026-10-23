@@ -1,0 +1,10 @@
+--- prior/quality-admin.ps1
++++ D-C/quality-admin.ps1
+@@ -1,6 +1,6 @@
+ param([ValidateSet('preflight','quality')][string]$Mode = 'preflight')
+ $ErrorActionPreference = 'Stop'
+-$taskDir = '<PRIOR_VALIDATION>'
++$taskDir = '<VALIDATION>'
+ Set-Location -LiteralPath '<REPOSITORY>'
+ $env:PATH = "<REPOSITORY>\.venv\Scripts;<GIT_INSTALLATION>\bin;<GIT_INSTALLATION>\usr\bin;$env:PATH"
+ $testRoot = (Get-Content -LiteralPath "$taskDir\environment-private.json" -Raw | ConvertFrom-Json).test_temp_root

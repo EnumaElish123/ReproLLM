@@ -1,0 +1,36 @@
+--- prior/quality.py
++++ D-C/quality.py
+@@ -6,13 +6,13 @@
+ import sys
+ import xml.etree.ElementTree as ET
+ 
+-from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write, verify_oracle, verify_synthetic_oracle
++from common import ROOT, TOOLS, PYTHON, UV, Runner, digest, inventory, read, write, verify_oracle, verify_synthetic_oracle, verify_affected_oracle
+ 
+ 
+ def main():
+     runner = Runner(TOOLS/'quality')
+     files = inventory()
+-    inputs = dict(schema_version=1, files=files, validation_tools={p.name:digest(p.read_bytes()) for p in sorted(TOOLS.iterdir()) if p.is_file() and (p.suffix in {'.py','.ps1'} or p.name in {'locations-private.json','oracle-binding.json','synthetic-plan.json','environment-private.json','preparation-binding.json','execution-plan.json'})})
++    inputs = dict(schema_version=1, files=files, validation_tools={p.name:digest(p.read_bytes()) for p in sorted(TOOLS.iterdir()) if p.is_file() and (p.suffix in {'.py','.ps1'} or p.name in {'locations-private.json','oracle-binding.json','synthetic-plan.json','environment-private.json','preparation-binding.json','execution-plan.json','affected-plan.json','prior-oracle-binding.json','adaptation-provenance.json','oracle-adaptation.json'})})
+     write(runner.output/'inputs.json', inputs)
+     head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+     result = None
+@@ -20,7 +20,7 @@
+     error = None
+     test_root=Path(read(TOOLS/'environment-private.json')['test_temp_root'])
+     try:
+-        verify_oracle(); verify_synthetic_oracle()
++        verify_oracle(); verify_synthetic_oracle(); verify_affected_oracle()
+         commands = [
+             ('candidate-head',['git','--no-optional-locks','rev-parse','HEAD']),
+             ('candidate-status',['git','--no-optional-locks','status','--porcelain=v1','--untracked-files=all']),
+@@ -63,7 +63,7 @@
+         assert all(x['lf_equal'] for x in comparison.values())
+         assert inventory() == files
+         assert all(digest((TOOLS/name).read_bytes()) == value for name,value in inputs['validation_tools'].items())
+-        verify_oracle(); verify_synthetic_oracle()
++        verify_oracle(); verify_synthetic_oracle(); verify_affected_oracle()
+         status = 'PASS'
+     except Exception as exc:
+         error = str(exc)

@@ -1,0 +1,219 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "<UV_EXECUTABLE>",
+        "sync",
+        "--locked",
+        "--dev",
+        "--offline"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.400831,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "locked-sync",
+      "stderr": {
+        "bytes": 55,
+        "path": "raw/000-locked-sync.stderr",
+        "sha256": "1cb30aaa239cdab3ba03918c27a8d21eca328b209084e2fb57dd6ba05d17aabe"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/000-locked-sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.022483,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "git-version",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-git-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 29,
+        "path": "raw/001-git-version.stdout",
+        "sha256": "f4ffa38472ab31ed0bfc96b45ada79ba546e767b0051532a34ea3640faf102fa"
+      }
+    },
+    {
+      "argv": [
+        "<UV_EXECUTABLE>",
+        "--version"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.015095,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "uv-version",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-uv-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 56,
+        "path": "raw/002-uv-version.stdout",
+        "sha256": "d611f21df815fa55cc159e977fc6d2f3a0cc41197c5545d066e2908846787018"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\environment-preflight.py"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.378534,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "environment",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-environment.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 704,
+        "path": "raw/003-environment.stdout",
+        "sha256": "e80389cacaa2807f837dd451293cfce1906ee471c1bf75cb3f0f252b91eac673"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\cli.py",
+        "--version"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.470222,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "version",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/004-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 16,
+        "path": "raw/004-version.stdout",
+        "sha256": "077c86548e5ec9f03e4ca3def69d1a57848f5b84e733ca4a8b6a6bde1bf70a81"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "scripts/gen_quickstart.py",
+        "--check"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 10.068817,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "quickstart",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/005-quickstart.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18,
+        "path": "raw/005-quickstart.stdout",
+        "sha256": "004f2055b91e1216ef1d73af8a4a3ccd0d78acfe4a124e65dc2deafd0e4dce85"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "<PRIVATE_TEMP>\\no-git-probe",
+      "elapsed_seconds": 0.024072,
+      "exit_code": 128,
+      "expected_exit": 128,
+      "label": "outside-repository",
+      "stderr": {
+        "bytes": 69,
+        "path": "raw/006-outside-repository.stderr",
+        "sha256": "d2b35cacadc66b7fad8dedd1be5244e17150a6625978c9330f831bd7a9cd6b1e"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/006-outside-repository.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "b954108c9baaaa934b4ad842033b31a97ee30816"
+      ],
+      "cwd": "<PINNED:lm-evaluation-harness>",
+      "elapsed_seconds": 0.032993,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "lm-tracked-paths",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/007-lm-tracked-paths.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1056822,
+        "path": "raw/007-lm-tracked-paths.stdout",
+        "sha256": "de93bb96d97caf8fb4a9b5bb92219e7629b5554185af4946339c83abb57a57d7"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.longpaths=true",
+        "-c",
+        "core.autocrlf=false",
+        "clone",
+        "--quiet",
+        "--no-hardlinks",
+        "--no-checkout",
+        "<PINNED:lm-evaluation-harness>",
+        "<PRIVATE_TEMP>\\probe-lm"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.169318,
+      "exit_code": 128,
+      "expected_exit": 0,
+      "label": "long-path-clone",
+      "stderr": {
+        "bytes": 290,
+        "path": "raw/008-long-path-clone.stderr",
+        "sha256": "454a53249ce21b9fa9d5dae48e4f56777373525e8e37db550f8ff91fe7e1736f"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/008-long-path-clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "schema_version": 1
+}

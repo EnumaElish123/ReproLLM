@@ -223,11 +223,12 @@ D-F/D-S、D-L、D-M优先级，无新增读取、预算或grammar扩张。
 “later shallow root”的实际先后顺序另立 [证据勘误](proposals/R07-C/requirements-depth/decision-evidence/README.md)。
 这项委托裁决不等于其他R07-C政策的批准，也不关闭整个R07-C。
 
-2026-10-22 下一轮为 [D-C requirements 普通行内注释 P-A](proposals/R07-C/requirements-comments/README.md)。
-具体 A/B、未应用 §12.2 patch、双向退出码/lock/use/profile/init 成本及独立验收均已备齐，
-状态 **PROPOSED**；见 [P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)。
-32 组当前行为观察和五项目源码核对不等于未来政策通过；HarmBench 有非零 inventory/diagnostic/closure 预期。
-须具体接受 A 和补丁后才进入 P-B，D-G 委托不延伸至本片；其余 R07-C 仍 OPEN，不发布版本。
+D-C 于 2026-10-22 启动、2026-10-23 完成本地验收。维护者已[明确接受方案 A 及具体补丁](proposals/R07-C/requirements-comments/decision-accepted.json)，
+产品提交为 `0f8c4df`，见[P-B 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pb/README.md)。
+仅实施 requirements ordinary 分支有界注释回退，保留原 route／完整行成功优先、整文件尾反斜线 veto、既有信用和不确定性优先级。
+141 个新增回归、完整本地质量门、五项目 Gate A、graph／verbose 与公共 CLI 重放、原件最终身份及归档独立回读均 PASS；
+HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预期完整验证。最终推送 head 的五项 CI 和 Linux 精确 schema 检查在交付时另行核验。
+[P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)和原 PROPOSED 材料保留准备时快照；其余 R07-C 仍 OPEN，资源阻塞不关闭，不发布版本。
 
 ### 当前问题与推荐原则
 

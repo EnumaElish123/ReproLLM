@@ -1,0 +1,1794 @@
+{
+  "schema_version": 1,
+  "task": "R07-C D-C P-B",
+  "status": "LOCAL_ACCEPTANCE_PASS_DELIVERY_CHECKS_SEPARATE",
+  "prepared_date_local": "2026-10-23",
+  "prepared_at_utc": "2026-10-23T01:25:14.469059+00:00",
+  "candidate_commit": "0f8c4dfaf5822f4784c1b9bb9033509b9e8097dd",
+  "candidate_worktree_clean_at_preparation": true,
+  "candidate_push_status": "REPORT_SNAPSHOT_BEFORE_PUSH",
+  "acceptance_source": "docs/plan/reliability-2026-10-03/proposals/R07-C/requirements-comments/acceptance-cases.md",
+  "authority_source": "docs/plan/reliability-2026-10-03/proposals/R07-C/requirements-comments/decision-accepted.json",
+  "accepted_patch_sha256": "e7202a79fdbe8a99a4cd0343688f4499e8d674af5429dd9f03d3f12a4f2a7a79",
+  "new_test_case_count": 141,
+  "new_core_cases": 85,
+  "new_consumer_cases": 56,
+  "counting_rule": "Parameterized cases are counted once in new_test_inventory; acceptance rows reuse families and must not be summed. Existing controls are not added to the 141.",
+  "final_gates": {
+    "quality": "PASS",
+    "five_project_Gate_A": "PASS",
+    "affected_graph_verbose": "PASS",
+    "synthetic_cli": "PASS",
+    "post_gates_identity": "PASS",
+    "CI_five_jobs_exact_head": "REQUIRED_AT_DELIVERY",
+    "Gate_B": "NOT_APPLICABLE_FOR_THIS_BOUNDED_NONRELEASE_SESSION",
+    "archive_and_independent_readback": "PASS",
+    "final_document_check": "REQUIRED_BEFORE_PUSH"
+  },
+  "quality_precondition": "Administrator safety preflight and final preflight passed. The unique full final quality run now has a stable PASS summary for candidate 0f8c4df; other formal gates and exact-head CI remain PENDING. No build step was executed.",
+  "new_test_inventory": [
+    {
+      "id": "T01",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c01_c06_literal_comment_capture_and_exact_contract",
+      "line": 138,
+      "parameterized_cases": 16,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T02",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c05_empty_comments_do_not_create_a_lock",
+      "line": 163,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T03",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c04_c08_c13_excluded_routes_retain_original_diagnostic_and_reads",
+      "line": 201,
+      "parameterized_cases": 20,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T04",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c07_c13_original_success_wins_even_with_file_veto",
+      "line": 229,
+      "parameterized_cases": 6,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T05",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c14_c15_any_trailing_backslash_vetoes_whole_file_without_revoking_old_credit",
+      "line": 254,
+      "parameterized_cases": 16,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T06",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c16_nonterminal_backslash_does_not_veto",
+      "line": 279,
+      "parameterized_cases": 2,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T07",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c17_file_veto_does_not_cross_include_boundary",
+      "line": 291,
+      "parameterized_cases": 2,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T08",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c18_shared_child_preserves_root_order_duplicates_and_physical_identity",
+      "line": 322,
+      "parameterized_cases": 1,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T09",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c19_c25_comment_recovery_only_repairs_its_own_closure_gap",
+      "line": 363,
+      "parameterized_cases": 6,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T10",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c20_comment_credit_does_not_rewrite_depth_frontier_or_root_order",
+      "line": 431,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T11",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c21_shared_manager_strings_keep_their_existing_grammar",
+      "line": 480,
+      "parameterized_cases": 5,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T12",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c26_c27_new_exact_keeps_format_origins_partial_credit_and_body_barriers",
+      "line": 536,
+      "parameterized_cases": 1,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T13",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c33_fresh_scan_recomputes_changed_comment_and_file_veto",
+      "line": 596,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T14",
+      "path": "tests/unit/core/test_requirements_inline_comments.py",
+      "function": "test_c34_same_bytes_in_separate_paths_have_identical_complete_facts",
+      "line": 629,
+      "parameterized_cases": 1,
+      "focused_status": "PASS",
+      "evidence": "development/core/green-01.junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T15",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comments_change_exit_in_both_directions_and_veto_restores_history",
+      "line": 203,
+      "parameterized_cases": 12,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T16",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comment_credit_does_not_hide_an_independent_warning",
+      "line": 232,
+      "parameterized_cases": 2,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T17",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comment_exact_credit_still_reaches_engine_python_pass_veto",
+      "line": 244,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T18",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comments_keep_package_sorting_credit_and_first_declaration_evidence",
+      "line": 271,
+      "parameterized_cases": 1,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T19",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comment_full_json_diagnostics_text_export_suppression_and_determinism",
+      "line": 283,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T20",
+      "path": "tests/unit/cli/test_requirements_inline_comments.py",
+      "function": "test_inline_comment_default_and_explicit_init_feed_complete_l1_and_export",
+      "line": 358,
+      "parameterized_cases": 2,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T21",
+      "path": "tests/unit/rules/test_env.py",
+      "function": "test_inline_comment_credit_precedes_all_existing_uncertainty_and_preserves_full_reasons",
+      "line": 1552,
+      "parameterized_cases": 12,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T22",
+      "path": "tests/unit/rules/test_env.py",
+      "function": "test_inline_comments_never_override_python_empty_result_veto_or_create_unknown_use",
+      "line": 1575,
+      "parameterized_cases": 8,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T23",
+      "path": "tests/unit/rules/test_env.py",
+      "function": "test_inline_comment_requirements_lock_changes_only_for_complete_exact_closure",
+      "line": 1611,
+      "parameterized_cases": 3,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T24",
+      "path": "tests/unit/rules/test_env.py",
+      "function": "test_inline_comment_positive_credit_keeps_format_lock_ownership_and_repo_exact_scope",
+      "line": 1636,
+      "parameterized_cases": 4,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T25",
+      "path": "tests/unit/profiles/test_detect.py",
+      "function": "test_inline_comments_update_full_detection_and_first_evidence_without_inventing_hints",
+      "line": 288,
+      "parameterized_cases": 4,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    },
+    {
+      "id": "T26",
+      "path": "tests/unit/core/test_manifest_scaffold.py",
+      "function": "test_inline_comments_feed_builtin_init_fields_and_keep_explicit_selection",
+      "line": 214,
+      "parameterized_cases": 2,
+      "focused_status": "PASS",
+      "evidence": "development/consumer/09-green-junit.xml",
+      "final_quality_status": "PASS",
+      "final_quality_evidence": "tools/quality/pytest-report.xml"
+    }
+  ],
+  "acceptance_mapping": [
+    {
+      "id": "C01",
+      "contract": "Exact comment capture and requirements-lock eligibility",
+      "new_test_families": [
+        "T01"
+      ],
+      "parameter_scope": "exact == forms",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C02",
+      "contract": "Loose/unversioned comments create declarations without exact credit",
+      "new_test_families": [
+        "T01",
+        "T15"
+      ],
+      "parameter_scope": "range/unversioned; CLI exact=False",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C03",
+      "contract": "First ASCII delimiter; tab/mixed spacing/multiple hashes",
+      "new_test_families": [
+        "T01"
+      ],
+      "parameter_scope": "space/tab/mixed and multiple comment markers",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C04",
+      "contract": "Adjacent hash and non-ASCII delimiter preserve old behavior",
+      "new_test_families": [
+        "T03"
+      ],
+      "parameter_scope": "adjacent #, NBSP, EM SPACE",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C05",
+      "contract": "Empty/full-comment files preserve no-use and no-lock",
+      "new_test_families": [
+        "T02"
+      ],
+      "parameter_scope": "three empty/full-comment controls",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C06",
+      "contract": "Existing exact/extras/marker/canonical version semantics",
+      "new_test_families": [
+        "T01"
+      ],
+      "parameter_scope": "all 16 literal forms including local/pre/post/dev/epoch/range/wildcard/arbitrary/compound",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C07",
+      "contract": "Whole-line success wins; first quoted delimiter does not search later",
+      "new_test_families": [
+        "T03",
+        "T04"
+      ],
+      "parameter_scope": "valid quoted marker; invalid prefix before outer comment",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C08",
+      "contract": "Original failure diagnostic preserved",
+      "new_test_families": [
+        "T03",
+        "T02"
+      ],
+      "parameter_scope": "invalid first prefix/multiple hashes; full-comment route handles empty prefix",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C09",
+      "contract": "Include routes precede comment handling",
+      "new_test_families": [
+        "T03"
+      ],
+      "parameter_scope": "five spaced/quoted/attached/include-equals unsupported comment forms",
+      "existing_controls": [
+        {
+          "path": "tests/unit/core/test_requirements_graph.py",
+          "function": "test_safe_legacy_noninclude_bytes",
+          "line": 378,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        }
+      ],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C10",
+      "contract": "Directives/constraints/editable stay unchanged",
+      "new_test_families": [
+        "T03"
+      ],
+      "parameter_scope": "index, constraint, editable controls",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C11",
+      "contract": "Literal space-at-space anywhere keeps original route",
+      "new_test_families": [
+        "T03"
+      ],
+      "parameter_scope": "torch==2.5.1 # contact @ team",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C12",
+      "contract": "New fallback rejects direct-reference prefixes",
+      "new_test_families": [
+        "T03"
+      ],
+      "parameter_scope": "adjacent/space/tab @ variants with URL prefix",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C13",
+      "contract": "Original complete URL/marker parses retained",
+      "new_test_families": [
+        "T03",
+        "T04"
+      ],
+      "parameter_scope": "three successful old forms with and without file veto; VCS/path failures",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C14",
+      "contract": "Any trailing backslash vetoes entire captured file",
+      "new_test_families": [
+        "T05"
+      ],
+      "parameter_scope": "before/after target line, retained old plain exact",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C15",
+      "contract": "Trailing whitespace/double slash/comment/directive/newline controls",
+      "new_test_families": [
+        "T05"
+      ],
+      "parameter_scope": "16 cross-product cases",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C16",
+      "contract": "Nonterminal backslash does not veto",
+      "new_test_families": [
+        "T06"
+      ],
+      "parameter_scope": "two middle-slash controls",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C17",
+      "contract": "File-local veto across include boundary",
+      "new_test_families": [
+        "T07"
+      ],
+      "parameter_scope": "parent veto and child veto",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C18",
+      "contract": "Shared-node traversal/read-once/duplicate/order/source identity",
+      "new_test_families": [
+        "T08",
+        "T18",
+        "T25"
+      ],
+      "parameter_scope": "shared child; new first evidence; later plain dependency source",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C19",
+      "contract": "Only own grammar gap repaired; other closure blockers retained",
+      "new_test_families": [
+        "T09",
+        "T10"
+      ],
+      "parameter_scope": "exact/loose/bad/cycle/missing/excluded/depth combinations",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C20",
+      "contract": "D-G final-node frontier and root order unchanged",
+      "new_test_families": [
+        "T10"
+      ],
+      "parameter_scope": "deep only, later shallow, earlier shallow",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C21",
+      "contract": "Other managers preserve shared-string grammar",
+      "new_test_families": [
+        "T11"
+      ],
+      "parameter_scope": "PEP621, optional, Poetry, Pipfile, environment pip",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C22",
+      "contract": "New exact credit removes old pin failure and can produce exit 1 to 0",
+      "new_test_families": [
+        "T15",
+        "T16"
+      ],
+      "parameter_scope": "exact=True all six severity/threshold pairs; independent warning",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C23",
+      "contract": "New loose use activates check and can produce exit 0 to 1",
+      "new_test_families": [
+        "T15",
+        "T16"
+      ],
+      "parameter_scope": "exact=False all six severity/threshold pairs; independent warning",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C24",
+      "contract": "Only exact comment changes no-use skip to known-use credited pass",
+      "new_test_families": [
+        "T19",
+        "T17"
+      ],
+      "parameter_scope": "pass state; incomplete/unavailable/inconsistent Python veto controls",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C25",
+      "contract": "Complete exact closure controls lock rule and exact package set",
+      "new_test_families": [
+        "T09",
+        "T23"
+      ],
+      "parameter_scope": "new exact-only root; loose or unsupported sibling prevents root lock",
+      "existing_controls": [
+        {
+          "path": "tests/unit/rules/test_env.py",
+          "function": "test_lockfile_present_warning_when_loose",
+          "line": 46,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        },
+        {
+          "path": "tests/unit/rules/test_env.py",
+          "function": "test_lockfile_present_pass_when_all_pinned",
+          "line": 52,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        }
+      ],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C26",
+      "contract": "Positive exact and qualified format credit preserve ownership",
+      "new_test_families": [
+        "T12",
+        "T24"
+      ],
+      "parameter_scope": "requirements-only, paired import, unrelated exact, conflicting exact",
+      "existing_controls": [
+        {
+          "path": "tests/unit/rules/test_dependency_lock_scope.py",
+          "function": "test_repository_exact_evidence_is_independent_of_ownership_and_closure_qualification",
+          "line": 457,
+          "current_focused_scope": "NOT_IN_CURRENT_FOCUSED_RUN; FINAL_QUALITY_PENDING",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 3
+        },
+        {
+          "path": "tests/unit/rules/test_dependency_lock_scope.py",
+          "function": "test_multiple_origins_still_emit_one_warning_with_original_first_evidence",
+          "line": 596,
+          "current_focused_scope": "NOT_IN_CURRENT_FOCUSED_RUN; FINAL_QUALITY_PENDING",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        }
+      ],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C27",
+      "contract": "Credit and D-F/S to D-L to D-M/S to D-G priorities",
+      "new_test_families": [
+        "T12",
+        "T21"
+      ],
+      "parameter_scope": "six cause forms times exact/loose; full findings and current physical evidence",
+      "existing_controls": [
+        {
+          "path": "tests/unit/rules/test_env.py",
+          "function": "test_associated_format_lock_failure_keeps_precedence_over_declaration_body_failure",
+          "line": 1096,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 2
+        },
+        {
+          "path": "tests/unit/rules/test_env.py",
+          "function": "test_possible_format_credit_with_python_gap_keeps_precedence_over_body_failure",
+          "line": 1112,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        },
+        {
+          "path": "tests/unit/rules/test_env.py",
+          "function": "test_associated_lock_failure_retains_precedence_over_structure_gap",
+          "line": 1351,
+          "current_focused_scope": "INCLUDED_PASS",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 2
+        },
+        {
+          "path": "tests/unit/rules/test_requirement_frontier_rule.py",
+          "function": "test_associated_lock_failure_keeps_entire_finding_before_body_and_depth",
+          "line": 229,
+          "current_focused_scope": "NOT_IN_CURRENT_FOCUSED_RUN; FINAL_QUALITY_PENDING",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 2
+        }
+      ],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C28",
+      "contract": "Known-use/applicability and Python empty-result veto preserved",
+      "new_test_families": [
+        "T17",
+        "T22"
+      ],
+      "parameter_scope": "critical/noncritical packages times four coverage states, plus three engine cases",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C29",
+      "contract": "Complete detection/evidence/hints and high import precedence",
+      "new_test_families": [
+        "T25"
+      ],
+      "parameter_scope": "two imported states times later plain source; rewrite with veto",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C30",
+      "contract": "Builtin default/explicit scaffold and complete isolated L1/export",
+      "new_test_families": [
+        "T20",
+        "T26"
+      ],
+      "parameter_scope": "builtin finetuning+inference vs inference override; isolated default inference vs manual override",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "gate",
+          "status": "PASS",
+          "evidence": "tools/gate/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C31",
+      "contract": "Threshold matrix and independent finding retention",
+      "new_test_families": [
+        "T15",
+        "T16"
+      ],
+      "parameter_scope": "all thresholds and own WARNING/CRITICAL; new independent WARNING cases",
+      "existing_controls": [
+        {
+          "path": "tests/unit/core/test_engine.py",
+          "function": "test_level0_not_a_git_repo",
+          "line": 50,
+          "current_focused_scope": "NOT_IN_CURRENT_FOCUSED_RUN; FINAL_QUALITY_PENDING",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        },
+        {
+          "path": "tests/unit/cli/test_audit.py",
+          "function": "test_audit_text_fail_result_line",
+          "line": 385,
+          "current_focused_scope": "NOT_IN_CURRENT_FOCUSED_RUN; FINAL_QUALITY_PENDING",
+          "final_quality_status": "PASS",
+          "final_quality_cases": 1
+        }
+      ],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING",
+      "coverage_boundary": "New D-C tests isolate independent WARNING plus own promoted CRITICAL. Existing generic engine/CLI unrelated-CRITICAL controls now passed in the final full quality run; no new comment-specific independent-CRITICAL fixture is claimed."
+    },
+    {
+      "id": "C32",
+      "contract": "Suppression/rendering/default export retains status contracts",
+      "new_test_families": [
+        "T19"
+      ],
+      "parameter_scope": "FAIL/PASS/SKIPPED; full JSON; original suppression severity; expected safe export escaping",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C33",
+      "contract": "Fresh exact/loose/veto/restoration recomputes from current input",
+      "new_test_families": [
+        "T13",
+        "T15",
+        "T25"
+      ],
+      "parameter_scope": "fresh scan and public CLI restoration; no stale graph/credit/detection",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    },
+    {
+      "id": "C34",
+      "contract": "Deterministic schema/full-report/export/diagnostics/path facts",
+      "new_test_families": [
+        "T14",
+        "T19",
+        "T20"
+      ],
+      "parameter_scope": "two-root full facts; repeated raw JSON modulo timestamp, schema validation, complete exports, unchanged historical stdout",
+      "existing_controls": [],
+      "local_status": "FOCUSED_AND_FINAL_QUALITY_ASSERTIONS_PASS",
+      "planned_gates": [
+        {
+          "name": "quality",
+          "status": "PASS",
+          "evidence": "tools/quality/summary.json"
+        },
+        {
+          "name": "synthetic",
+          "status": "PASS",
+          "evidence": "tools/synthetic/summary.json"
+        },
+        {
+          "name": "affected",
+          "status": "PASS",
+          "evidence": "tools/affected/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING",
+      "coverage_boundary": "New different-root facts tests and final synthetic different-path full AuditReport/default export replay passed. Historical report bytes were retained; archive/readback passed. Exact-head CI remains separate."
+    },
+    {
+      "id": "C35",
+      "contract": "Fresh complete five-project Gate A and source-derived HarmBench delta",
+      "new_test_families": [],
+      "parameter_scope": "full L0/facts/graph/verbose/init/L1/default export; final identity checks",
+      "existing_controls": [],
+      "local_status": "FRESH_GATE_A_AFFECTED_AND_FINAL_IDENTITY_PASS",
+      "planned_gates": [
+        {
+          "name": "gate",
+          "status": "PASS",
+          "evidence": "tools/gate/summary.json"
+        },
+        {
+          "name": "affected",
+          "status": "PASS",
+          "evidence": "tools/affected/summary.json"
+        },
+        {
+          "name": "post_gates",
+          "status": "PASS",
+          "evidence": "tools/post-gates/summary.json"
+        }
+      ],
+      "final_acceptance": "LOCAL_PASS_EXACT_HEAD_CI_PENDING"
+    }
+  ],
+  "material_root": "Original logical sources bound by evidence/source-index.json; original and projected hashes are distinct.",
+  "materials": {
+    "development/core/core-red-summary.json": {
+      "sha256": "fb9cf4e3656d868d9626442cbad721fa262dbc2d4a4219d9c7b927fa7a719ba9",
+      "bytes": 15589,
+      "source_index_key": "development/core/core-red-summary.json",
+      "public_path": "evidence/development/core/core-red-summary.json",
+      "public_sha256": "fb9cf4e3656d868d9626442cbad721fa262dbc2d4a4219d9c7b927fa7a719ba9",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/core/core-green-summary.json": {
+      "sha256": "2e45ca889c6da003245f68c5604bfe12bd082f436d9b89fa788d18754331d735",
+      "bytes": 3927,
+      "source_index_key": "development/core/core-green-summary.json",
+      "public_path": "evidence/development/core/core-green-summary.json",
+      "public_sha256": "2e45ca889c6da003245f68c5604bfe12bd082f436d9b89fa788d18754331d735",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/core/red-01.receipt.json": {
+      "sha256": "0a39c37d82de65d6aecadb0042f21a351714fae56b39070314011ce063b8fa77",
+      "bytes": 4252,
+      "source_index_key": "development/core/red-01.receipt.json",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "development/core/green-01.receipt.json": {
+      "sha256": "cff59ba67baa060e2fe4b66cc48bb71d480e4d4b885d8eb1c327ec1d2b1e7f3c",
+      "bytes": 5643,
+      "source_index_key": "development/core/green-01.receipt.json",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "development/consumer/consumer-red-summary.json": {
+      "sha256": "b5966c7a585b7d9a9af709dc5d301ef27a568271479e7f119583c908ed0f915d",
+      "bytes": 4555,
+      "source_index_key": "development/consumer/consumer-red-summary.json",
+      "public_path": "evidence/development/consumer/consumer-red-summary.json",
+      "public_sha256": "b5966c7a585b7d9a9af709dc5d301ef27a568271479e7f119583c908ed0f915d",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/consumer-final-summary.json": {
+      "sha256": "2448a665f6efa0a552177fe1ad50e054d4278d5b4744baeb028e0a2d59dacbf1",
+      "bytes": 8038,
+      "source_index_key": "development/consumer/consumer-final-summary.json",
+      "public_path": "evidence/development/consumer/consumer-final-summary.json",
+      "public_sha256": "2448a665f6efa0a552177fe1ad50e054d4278d5b4744baeb028e0a2d59dacbf1",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/03-red-receipt.json": {
+      "sha256": "944e8e367821418701040d3abdebd7367a2382f3cefeb5f5537a0c7d44586f63",
+      "bytes": 17318,
+      "source_index_key": "development/consumer/03-red-receipt.json",
+      "public_path": "evidence/development/consumer/03-red-receipt.json",
+      "public_sha256": "2e7d030705f14a3523cd0cf0cfc9fc551bc451a0a0fc49af30b2a27231e83d0c",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/06-green-receipt.json": {
+      "sha256": "da63bfd22f4c47525edac0ec7cb6120ed0f3cbcca3c77f6d90a7bc9a82e317fa",
+      "bytes": 17325,
+      "source_index_key": "development/consumer/06-green-receipt.json",
+      "public_path": "evidence/development/consumer/06-green-receipt.json",
+      "public_sha256": "814155981fa48d4420f59290771de422b52de2ba096dd714d96b611bcb779419",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/07-export-expectation-correction.json": {
+      "sha256": "a6c347ee108b257990c10d53fa47fff627fc4d1f626e5ea83528e5c4459602f9",
+      "bytes": 873,
+      "source_index_key": "development/consumer/07-export-expectation-correction.json",
+      "public_path": "evidence/development/consumer/07-export-expectation-correction.json",
+      "public_sha256": "a6c347ee108b257990c10d53fa47fff627fc4d1f626e5ea83528e5c4459602f9",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/07b-export-correction-followup.json": {
+      "sha256": "167126fdd8626a3c499f21bcc22f0dcf8f9e7cc7812d4870d4b8a2b39a73b091",
+      "bytes": 1143,
+      "source_index_key": "development/consumer/07b-export-correction-followup.json",
+      "public_path": "evidence/development/consumer/07b-export-correction-followup.json",
+      "public_sha256": "167126fdd8626a3c499f21bcc22f0dcf8f9e7cc7812d4870d4b8a2b39a73b091",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/08-probe-receipt.json": {
+      "sha256": "d13115e705fc4f4332ce416a4aee2a8c8e1810abab0e1342d0af4b32422d20e6",
+      "bytes": 1502,
+      "source_index_key": "development/consumer/08-probe-receipt.json",
+      "public_path": "evidence/development/consumer/08-probe-receipt.json",
+      "public_sha256": "40886cb0491dc77eedd8f449e595ccfef09aaf3d27c750f97df97cb12968dca0",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/09-green-receipt.json": {
+      "sha256": "edcfecd38d0295afb1482a4116a70221144fcbad3320a95d4675ec17ed7b581b",
+      "bytes": 17324,
+      "source_index_key": "development/consumer/09-green-receipt.json",
+      "public_path": "evidence/development/consumer/09-green-receipt.json",
+      "public_sha256": "86cf4fa908d7ad38f2e282dac03b8fe184ed5997d13fb236e7b2a0be9270b727",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "development/consumer/consumer-source-review.json": {
+      "sha256": "abd3a7793eee926c43e1beb61ae5d9eeab965cf29ecd752d49add8a6dc2e478a",
+      "bytes": 1720,
+      "source_index_key": "development/consumer/consumer-source-review.json",
+      "public_path": "evidence/development/consumer/consumer-source-review.json",
+      "public_sha256": "abd3a7793eee926c43e1beb61ae5d9eeab965cf29ecd752d49add8a6dc2e478a",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/execution-plan.json": {
+      "sha256": "55776fa5065fbaeaaeccc46c60e275f3bbb8f1f4e00cc958bd2af5fdd73cdb28",
+      "bytes": 2357,
+      "source_index_key": "validation/execution-plan.json",
+      "public_path": "evidence/validation/execution-plan.json",
+      "public_sha256": "55776fa5065fbaeaaeccc46c60e275f3bbb8f1f4e00cc958bd2af5fdd73cdb28",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/affected-plan.json": {
+      "sha256": "6dc88d9bcc37ca4a766413e022c052013ccd414f5782c2147205efc360e1b4ec",
+      "bytes": 5291,
+      "source_index_key": "validation/affected-plan.json",
+      "public_path": "evidence/validation/affected-plan.json",
+      "public_sha256": "6dc88d9bcc37ca4a766413e022c052013ccd414f5782c2147205efc360e1b4ec",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/synthetic-plan.json": {
+      "sha256": "0dd0326bfb56bce59eb64d2c511171267a9882a739e58b2a283cb63df32bb95f",
+      "bytes": 5213,
+      "source_index_key": "validation/synthetic-plan.json",
+      "public_path": "evidence/validation/synthetic-plan.json",
+      "public_sha256": "0dd0326bfb56bce59eb64d2c511171267a9882a739e58b2a283cb63df32bb95f",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight-admin/summary.json": {
+      "sha256": "7ec4f396dbf3c367789b5af3879343e564cafbaadd1468634cd91ca55b7e73cf",
+      "bytes": 199,
+      "source_index_key": "validation/preflight-admin/summary.json",
+      "public_path": "evidence/validation/preflight-admin/summary.json",
+      "public_sha256": "7ec4f396dbf3c367789b5af3879343e564cafbaadd1468634cd91ca55b7e73cf",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight-admin/commands.json": {
+      "sha256": "9920cedf157b6b9658a4a121b94cdd488b7529af18670a6473b5daa28e302345",
+      "bytes": 1974,
+      "source_index_key": "validation/preflight-admin/commands.json",
+      "public_path": "evidence/validation/preflight-admin/commands.json",
+      "public_sha256": "e4a854c4d44891eca52cd0fcb21a943eec31fb715b0f3c60163394435441389a",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight-admin/raw/001-symlinks-and-no-leaks.stdout": {
+      "sha256": "a37b506a8388c00b72a49dc65db87ae6a54c9602d0793883b7c1314f4882d710",
+      "bytes": 100,
+      "source_index_key": "validation/preflight-admin/raw/001-symlinks-and-no-leaks.stdout",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/preparation-attempt-01.json": {
+      "sha256": "dc379a19722839debd73b32166173510cd8a0074406833c3ef166d9bcd7ef90e",
+      "bytes": 736,
+      "source_index_key": "validation/preparation-attempt-01.json",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/preflight/summary.json": {
+      "sha256": "d23297115b18300b36f0f7ce9aba0f36f0e293eb58ab8a7763e927e424470d55",
+      "bytes": 1303,
+      "source_index_key": "validation/preflight/summary.json",
+      "public_path": "evidence/validation/preflight/summary.json",
+      "public_sha256": "d23297115b18300b36f0f7ce9aba0f36f0e293eb58ab8a7763e927e424470d55",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight/commands.json": {
+      "sha256": "647a03f42b4e697a4ccc3d586402e94113ece9c7e7c73f0f05c0e0c0169e9ff6",
+      "bytes": 6354,
+      "source_index_key": "validation/preflight/commands.json",
+      "public_path": "evidence/validation/preflight/commands.json",
+      "public_sha256": "cf6bd790eb815bd07d0821f149e0c166ce6d5a1490aa77cdb0dff00708880fc4",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight/raw/008-long-path-clone.stderr": {
+      "sha256": "454a53249ce21b9fa9d5dae48e4f56777373525e8e37db550f8ff91fe7e1736f",
+      "bytes": 290,
+      "source_index_key": "validation/preflight/raw/008-long-path-clone.stderr",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/host-path-preflight/summary.json": {
+      "sha256": "518069fa9b455b49df99938174fbe1a93fcac178fe0c00c3db2d552b7d440baf",
+      "bytes": 292,
+      "source_index_key": "validation/host-path-preflight/summary.json",
+      "public_path": "evidence/validation/host-path-preflight/summary.json",
+      "public_sha256": "518069fa9b455b49df99938174fbe1a93fcac178fe0c00c3db2d552b7d440baf",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/host-path-preflight/commands.json": {
+      "sha256": "88378aaec0f6e82c3200a446324e8b96056124da433c562fa4d29fb4144dd6f6",
+      "bytes": 4065,
+      "source_index_key": "validation/host-path-preflight/commands.json",
+      "public_path": "evidence/validation/host-path-preflight/commands.json",
+      "public_sha256": "79f43755ca3f5003a034f5c1faa1f991d3779bfbb1c50417a1193df8b4ba0c67",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/host-path-preflight/raw/004-expected-blob.stderr": {
+      "sha256": "4ef172daa512ee53e60009792f5aa41991f03c4c0401769c2d944e9ce377c5fa",
+      "bytes": 245,
+      "source_index_key": "validation/host-path-preflight/raw/004-expected-blob.stderr",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/host-path-preflight-retry/summary.json": {
+      "sha256": "0b53e3e3ebbe2dc7887c899cd408a3e1a86f371f4f4a55ed65e3a7bf1a7fcd57",
+      "bytes": 860,
+      "source_index_key": "validation/host-path-preflight-retry/summary.json",
+      "public_path": "evidence/validation/host-path-preflight-retry/summary.json",
+      "public_sha256": "0b53e3e3ebbe2dc7887c899cd408a3e1a86f371f4f4a55ed65e3a7bf1a7fcd57",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/host-path-preflight-retry/commands.json": {
+      "sha256": "2c933679026b1574f69139730c0442678672f0713cd62ae0b444c7a41616d2c8",
+      "bytes": 4744,
+      "source_index_key": "validation/host-path-preflight-retry/commands.json",
+      "public_path": "evidence/validation/host-path-preflight-retry/commands.json",
+      "public_sha256": "988e1bd26ef73043a4683664dfb0b07ebbff4af607eec49b57ee3c82f7a53e85",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preparation-revisions/admin-preflight-readback-attempt-01.json": {
+      "sha256": "f9f509060d06504ddfe039912b004222bfdf127d7b0266647b180a15434eeb32",
+      "bytes": 262,
+      "source_index_key": "validation/preparation-revisions/admin-preflight-readback-attempt-01.json",
+      "public_path": "evidence/validation/preparation-revisions/admin-preflight-readback-attempt-01.json",
+      "public_sha256": "f9f509060d06504ddfe039912b004222bfdf127d7b0266647b180a15434eeb32",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preparation-revisions/admin-preflight-readback.json": {
+      "sha256": "33b3c50701a898ebc356a5903814c6f83853143e7e3c6b4bfb8570309ed897f4",
+      "bytes": 491,
+      "source_index_key": "validation/preparation-revisions/admin-preflight-readback.json",
+      "public_path": "evidence/validation/preparation-revisions/admin-preflight-readback.json",
+      "public_sha256": "33b3c50701a898ebc356a5903814c6f83853143e7e3c6b4bfb8570309ed897f4",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/preflight-final/summary.json": {
+      "sha256": "fc7df5a9d75b255a2f7af79482b1d4ec324847b8a7409629e647159459225bb3",
+      "bytes": 199,
+      "source_index_key": "validation/preflight-final/summary.json",
+      "public_path": "evidence/validation/preflight-final/summary.json",
+      "public_sha256": "fc7df5a9d75b255a2f7af79482b1d4ec324847b8a7409629e647159459225bb3",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/quality/summary.json": {
+      "sha256": "b4c96e4c7a39a39d8d3b56933bc9be1dcf354c6484a8c3c4b2401a5662070552",
+      "bytes": 1599,
+      "source_index_key": "validation/quality/summary.json",
+      "public_path": "evidence/validation/quality/summary.json",
+      "public_sha256": "b4c96e4c7a39a39d8d3b56933bc9be1dcf354c6484a8c3c4b2401a5662070552",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/quality/commands.json": {
+      "sha256": "ae7a150b6e1859d71cef2fc055f942b310ce8e857e9077b528eb81ac8ff604c7",
+      "bytes": 18916,
+      "source_index_key": "validation/quality/commands.json",
+      "public_path": "evidence/validation/quality/commands.json",
+      "public_sha256": "ea85bd771b3872486696be2d1e2958c2e43e7e54ad42390b683679ce7a4d09e4",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/quality/inputs.json": {
+      "sha256": "d563d8f762fc01d3d33cb656c5a55ba30e05ddcbeba6d4dd3ffb8de828e12db5",
+      "bytes": 63361,
+      "source_index_key": "validation/quality/inputs.json",
+      "public_path": "evidence/validation/quality/inputs.json",
+      "public_sha256": "d563d8f762fc01d3d33cb656c5a55ba30e05ddcbeba6d4dd3ffb8de828e12db5",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/quality/schema-comparison.json": {
+      "sha256": "537a64cca6d22cf811ae3f8b1651f582b5b2ddb7a8b7c23b98ef4d2966bd111b",
+      "bytes": 2830,
+      "source_index_key": "validation/quality/schema-comparison.json",
+      "public_path": "evidence/validation/quality/schema-comparison.json",
+      "public_sha256": "537a64cca6d22cf811ae3f8b1651f582b5b2ddb7a8b7c23b98ef4d2966bd111b",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/quality/pytest-report.xml": {
+      "sha256": "f5a65a30ee933cf4900a86cf1ef4608166ab1e6d3f6ce9d1c92475462a9baf04",
+      "bytes": 598655,
+      "source_index_key": "validation/quality/pytest-report.xml",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/quality/coverage.json": {
+      "sha256": "4c9ffd7f97332428f52bbb2bf07eb75f6acc7a5e68ae9390903b0fa73b16c711",
+      "bytes": 1033144,
+      "source_index_key": "validation/quality/coverage.json",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/quality/coverage.xml": {
+      "sha256": "54047cf8552accf5f395919270b3ca8b4c3fda9ac2019990f45eee0a75b754d1",
+      "bytes": 481836,
+      "source_index_key": "validation/quality/coverage.xml",
+      "public_path": null,
+      "retention": "WHOLE_PRIVATE_ORIGINAL_HASH_ONLY",
+      "reference_index": "evidence/source-index.json"
+    },
+    "tools/gate/summary.json": {
+      "sha256": "0aeafddae025ce55333f475d7dda99079d4e7e47f93b2299ce16e4af8998297b",
+      "bytes": 856,
+      "source_index_key": "validation/gate/summary.json",
+      "public_path": "evidence/validation/gate/summary.json",
+      "public_sha256": "0aeafddae025ce55333f475d7dda99079d4e7e47f93b2299ce16e4af8998297b",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/gate/commands.json": {
+      "sha256": "7615bd1b360a29784fcfa015c9ad235967414022f9ebd802b06cf597fc357f08",
+      "bytes": 101808,
+      "source_index_key": "validation/gate/commands.json",
+      "public_path": "evidence/validation/gate/commands.json",
+      "public_sha256": "81bd434c19da58d7612d8cd4aa16a5f096de8a65b791adb6b087ec1200837376",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/gate/checks.json": {
+      "sha256": "7ec50bfb60b08169beac963ece5f89500c1719d7ab19538120b44e0049378655",
+      "bytes": 10894,
+      "source_index_key": "validation/gate/checks.json",
+      "public_path": "evidence/validation/gate/checks.json",
+      "public_sha256": "7ec50bfb60b08169beac963ece5f89500c1719d7ab19538120b44e0049378655",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/affected/summary.json": {
+      "sha256": "94b89d506fde760567469cd0b934da40a5ce0eb314bebd216c0efa297e6eba70",
+      "bytes": 650,
+      "source_index_key": "validation/affected/summary.json",
+      "public_path": "evidence/validation/affected/summary.json",
+      "public_sha256": "94b89d506fde760567469cd0b934da40a5ce0eb314bebd216c0efa297e6eba70",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/affected/commands.json": {
+      "sha256": "04ae861b3cdadf36a33fea59ec050c6aac5f9f535ab3cb345d5285641a058efa",
+      "bytes": 19349,
+      "source_index_key": "validation/affected/commands.json",
+      "public_path": "evidence/validation/affected/commands.json",
+      "public_sha256": "9b6d73f47beda321125fc08471cb4610d328b58b0a850dd0a7b3d0615e76c544",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/affected/checks.json": {
+      "sha256": "7f30d5ff3530f2eb612c0be17b8f0e65f79c7d063873756a7d71a61da7c62936",
+      "bytes": 5284,
+      "source_index_key": "validation/affected/checks.json",
+      "public_path": "evidence/validation/affected/checks.json",
+      "public_sha256": "7f30d5ff3530f2eb612c0be17b8f0e65f79c7d063873756a7d71a61da7c62936",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/synthetic/summary.json": {
+      "sha256": "ab93392fe1531b2a9428a54f913d05f2485ba265b4b6abb07e8fc051fe2f64d9",
+      "bytes": 484,
+      "source_index_key": "validation/synthetic/summary.json",
+      "public_path": "evidence/validation/synthetic/summary.json",
+      "public_sha256": "ab93392fe1531b2a9428a54f913d05f2485ba265b4b6abb07e8fc051fe2f64d9",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/synthetic/commands.json": {
+      "sha256": "32d4e20a0abb717818f9ec96e10d29ac3d8e4cd497dddea442b07d31da0a6cf6",
+      "bytes": 125568,
+      "source_index_key": "validation/synthetic/commands.json",
+      "public_path": "evidence/validation/synthetic/commands.json",
+      "public_sha256": "dd85bebb7ad8a50482a277fb435699fea57443ecb831e7698f34cea4c165d2a0",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/synthetic/checks.json": {
+      "sha256": "0d5b956e4a92a08a104767e0726d96b43f7ec21c881e01c0a4c2a07c85b6183d",
+      "bytes": 6704,
+      "source_index_key": "validation/synthetic/checks.json",
+      "public_path": "evidence/validation/synthetic/checks.json",
+      "public_sha256": "0d5b956e4a92a08a104767e0726d96b43f7ec21c881e01c0a4c2a07c85b6183d",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/post-gates/summary.json": {
+      "sha256": "8019286563d84c2a6c36d20991a220602bf48de5f13d5b0f372aa38a4f8c3e7b",
+      "bytes": 1427,
+      "source_index_key": "validation/post-gates/summary.json",
+      "public_path": "evidence/validation/post-gates/summary.json",
+      "public_sha256": "8019286563d84c2a6c36d20991a220602bf48de5f13d5b0f372aa38a4f8c3e7b",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    },
+    "tools/post-gates/commands.json": {
+      "sha256": "c998cd9d1543b800e9bf2164c50a470ca553c8548649044889342e0f7c551384",
+      "bytes": 11986,
+      "source_index_key": "validation/post-gates/commands.json",
+      "public_path": "evidence/validation/post-gates/commands.json",
+      "public_sha256": "d47c053db4767f4e27b2302966eea61e7a1833b1c57f5730dfc765bde2bed46e",
+      "retention": "COPIED_WITH_DECLARED_PATH_PROJECTION"
+    }
+  },
+  "remaining_resource_status": {
+    "VAL_R03": "BLOCKED: latest recorded authenticated HF small-file preflight returned 403; five original metadata manifests still missing. No new access preflight in this drafting task.",
+    "historical_VAL_R01_R02": "Remain bound to their historical candidates; no fresh GPU or paid judge acceptance at this candidate.",
+    "A02": "Real independent use/feedback remains PENDING; no adoption metric invented.",
+    "A03": "Draft prepared, not submitted; identity/role/org and submission authorization remain separate.",
+    "broader_R07_C": "OPEN: remaining requirements/include/continuation/URL/constraints/manager-value grammar, listing/framework coverage and sufficient-evidence policy need separate concrete P-A/approval."
+  },
+  "gpu": "NOT_USED",
+  "paid_api": "NOT_CALLED",
+  "release": "NOT_AUTHORIZED",
+  "session_start_date_local": "2026-10-22",
+  "session_closure_record_date_local": "2026-10-23",
+  "closure_date_is_not_acceptance": "Final acceptance remains PENDING until the actual final gates and exact-head CI are complete.",
+  "planned_public_report": "docs/dogfooding/2026-10-22-r07c-requirements-comments-pb/README.md",
+  "planned_public_evidence": "docs/dogfooding/2026-10-22-r07c-requirements-comments-pb/evidence",
+  "administrator_preflight": {
+    "status": "PREFLIGHT_PASS",
+    "commands": 2,
+    "safety_passed": 5,
+    "pytest_seconds": 1.29,
+    "summary": "tools/preflight-admin/summary.json",
+    "commands_receipt": "tools/preflight-admin/commands.json",
+    "safety_stdout": "tools/preflight-admin/raw/001-symlinks-and-no-leaks.stdout",
+    "does_not_establish_final_quality": true
+  },
+  "preparation_failures": [
+    {
+      "id": "helper_compile",
+      "status": "PREPARATION_COMPILE_FAIL_PRESERVED",
+      "receipt": "tools/preparation-attempt-01.json",
+      "product_executions": 0,
+      "correction": "Remove accidental non-ASCII byte-literal character before any future product execution or expected file creation."
+    },
+    {
+      "id": "sandbox_msys_clone",
+      "status": "FAIL",
+      "receipt": "tools/preflight/summary.json",
+      "failed_command": "long-path-clone",
+      "actual_exit": 128,
+      "expected_exit": 0,
+      "separate_expected_control": {
+        "label": "outside-repository",
+        "actual_exit": 128,
+        "expected_exit": 128,
+        "status": "PASS"
+      },
+      "cause": "Sandbox denied Git/MSYS NtCreateDirectoryObject; not a product gate failure."
+    },
+    {
+      "id": "host_long_path_blob",
+      "status": "FAIL",
+      "receipt": "tools/host-path-preflight/summary.json",
+      "failed_command": "expected-blob",
+      "actual_exit": 128,
+      "cause": "Filename too long; clone and checkout in this attempt passed.",
+      "retry": "tools/host-path-preflight-retry/summary.json",
+      "retry_status": "PREFLIGHT_PASS",
+      "retry_commands": 6
+    },
+    {
+      "id": "admin_readback_field",
+      "status": "READBACK_SCRIPT_ERROR",
+      "receipt": "tools/preparation-revisions/admin-preflight-readback-attempt-01.json",
+      "cause": "Expected administrator field instead of actual admin field.",
+      "product_executions": 0,
+      "original_test_results_unchanged": true,
+      "corrected_readback": "tools/preparation-revisions/admin-preflight-readback.json",
+      "corrected_status": "PREFLIGHT_RAW_READBACK_PASS"
+    }
+  ],
+  "private_administrator_access_receipts": {
+    "evidence-read-access.json": {
+      "sha256": "697cae1d43a9c97acb07311413b08334513bf91d23b9c6178a5490662c3fd54a",
+      "bytes": 670,
+      "public_handling": "Whole private original retained by hash only; do not publish identity/SDDL fields."
+    },
+    "admin-read-bridge-receipt.json": {
+      "sha256": "e4097d676b1d038758787edf34c4feaef8d86bc8900f80cbac5d0d9eeddc8085",
+      "bytes": 5584,
+      "public_handling": "Whole private original retained by hash only; do not publish identity/SDDL fields."
+    },
+    "evidence_read_bridge.ps1": {
+      "sha256": "9e67bb57784b6bbe42a7ccb5781e13d1232437f35290c1394af992aa1760cf55",
+      "bytes": 3346,
+      "public_handling": "Whole private original retained by hash only; do not publish identity/SDDL fields."
+    }
+  },
+  "final_quality_actual": {
+    "status": "PASS",
+    "summary": "tools/quality/summary.json",
+    "summary_sha256": "b4c96e4c7a39a39d8d3b56933bc9be1dcf354c6484a8c3c4b2401a5662070552",
+    "commands": 24,
+    "command_seconds": 670.692762,
+    "wall_seconds": 670.954901,
+    "passed": 3948,
+    "failed": 0,
+    "skipped": 4,
+    "deselected": 4,
+    "coverage_percent": 94.4579915761472,
+    "redaction_line_and_branch_percent": 100,
+    "security_passed": 343,
+    "security_skipped": 2,
+    "security_deselected": 3611,
+    "input_count": 518,
+    "validation_tools_count": 39,
+    "input_inventory_sha256": "d563d8f762fc01d3d33cb656c5a55ba30e05ddcbeba6d4dd3ffb8de828e12db5",
+    "all_48_raw_stream_hashes_rechecked": true,
+    "new_141_cases_individually_verified_pass_in_final_junit": true,
+    "schema_files": 10,
+    "schema_exact_bytes": false,
+    "schema_lf_only_equal": true,
+    "Linux_exact_schema_CI": "PENDING",
+    "build": "NOT_EXECUTED",
+    "skip_boundaries": [
+      "One existing Windows symlink invocation skip",
+      "Two POSIX colon/control filename cases",
+      "One POSIX permission-bit case"
+    ],
+    "full_cross_platform_acceptance": false
+  },
+  "replay_scope": {
+    "product_commit": "0f8c4dfaf5822f4784c1b9bb9033509b9e8097dd",
+    "environment": "uv sync --locked --dev; exact candidate uv.lock",
+    "new_test_selection": "Unique path::function selectors from new_test_inventory; 141 parameterized cases, do not repeat shared families.",
+    "canonical_L0": "uv run --locked reprollm audit <PIN_CHECKOUT> --level 0 --format json --fail-on never",
+    "mutation_scope": "Disposable clones only for init, L1 and default export.",
+    "comparison": "scripts/compare_gold.py; --audit-metadata only for AuditReport; no business-field exemptions.",
+    "expected_binding": "evidence/validation/oracle-binding.json",
+    "actual_source_index": "evidence/source-index.json",
+    "historical_body_recovery": "source_commit + source_path + SHA256; independently authored accepted HarmBench delta, not copied candidate output.",
+    "private_helpers": "Private original helper bodies retained by hash because of machine paths or safety canaries.",
+    "bundled_one_click_runner": false,
+    "new_replay_execution_claimed": false
+  },
+  "Gate_A_actual": {
+    "status": "PASS",
+    "summary": "tools/gate/summary.json",
+    "summary_sha256": "0aeafddae025ce55333f475d7dda99079d4e7e47f93b2299ce16e4af8998297b",
+    "commands": 125,
+    "checks": 35,
+    "command_seconds": 230.544427,
+    "wall_seconds": 230.871222,
+    "full_L0": 5,
+    "full_facts": 5,
+    "full_L1": 5,
+    "full_export": 5,
+    "exact_init_files": 15,
+    "all_250_raw_stream_hashes_rechecked": true,
+    "oracle_binding_sha256": "b5a7477fa4ce1fde5a5d63b2e39c348dcbb91e76c4bd32b57f576d841a0f50cc",
+    "original_immutable_oracle_files": 47,
+    "current_oracle_files": 47,
+    "targets": {
+      "FastChat": {
+        "head": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "origin": "https://github.com/lm-sys/FastChat",
+        "status": ""
+      },
+      "HarmBench": {
+        "head": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+        "origin": "https://github.com/centerforaisafety/HarmBench",
+        "status": ""
+      },
+      "LlamaFactory": {
+        "head": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+        "origin": "https://github.com/hiyouga/LlamaFactory",
+        "status": ""
+      },
+      "llm-dp-finetune": {
+        "head": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+        "origin": "https://github.com/jyhong836/llm-dp-finetune",
+        "status": ""
+      },
+      "lm-evaluation-harness": {
+        "head": "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "origin": "https://github.com/EleutherAI/lm-evaluation-harness",
+        "status": ""
+      }
+    },
+    "final_after_all_gates_identity": "PASS"
+  },
+  "affected_actual": {
+    "status": "PASS",
+    "summary": "tools/affected/summary.json",
+    "summary_sha256": "94b89d506fde760567469cd0b934da40a5ce0eb314bebd216c0efa297e6eba70",
+    "commands": 20,
+    "checks": 15,
+    "command_seconds": 55.764155,
+    "wall_seconds": 55.854853,
+    "full_graph_comparisons": 5,
+    "full_verbose_AuditReports": 5,
+    "full_verbose_stderr": 5,
+    "prewritten_expected_files": 20,
+    "all_40_raw_stream_hashes_rechecked": true,
+    "HarmBench_root_complete_change": "false to true",
+    "HarmBench_root_is_exact": false,
+    "unexplained_deltas": []
+  },
+  "synthetic_actual": {
+    "status": "PASS",
+    "summary": "tools/synthetic/summary.json",
+    "summary_sha256": "ab93392fe1531b2a9428a54f913d05f2485ba265b4b6abb07e8fc051fe2f64d9",
+    "commands": 136,
+    "checks": 43,
+    "cases": 7,
+    "complete_prewritten_reports": 21,
+    "command_seconds": 48.537243,
+    "wall_seconds": 48.937761,
+    "all_272_raw_stream_hashes_rechecked": true,
+    "different_path_replay": "PASS",
+    "default_text_export_repeat": "PASS",
+    "full_AuditReports_and_verbose": "PASS",
+    "threshold_both_directions_suppression_veto_restoration": "PASS"
+  },
+  "post_gates_actual": {
+    "status": "PASS",
+    "summary": "tools/post-gates/summary.json",
+    "summary_sha256": "8019286563d84c2a6c36d20991a220602bf48de5f13d5b0f372aa38a4f8c3e7b",
+    "commands": 15,
+    "command_seconds": 0.608143,
+    "wall_seconds": 0.684607,
+    "all_30_raw_stream_hashes_rechecked": true,
+    "identities": {
+      "FastChat": {
+        "head": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "origin": "https://github.com/lm-sys/FastChat",
+        "status": ""
+      },
+      "HarmBench": {
+        "head": "8e1604d1171fe8a48d8febecd22f600e462bdcdd",
+        "origin": "https://github.com/centerforaisafety/HarmBench",
+        "status": ""
+      },
+      "LlamaFactory": {
+        "head": "673048c6a543cbbeaed5b8444b8223dc4e23c721",
+        "origin": "https://github.com/hiyouga/LlamaFactory",
+        "status": ""
+      },
+      "llm-dp-finetune": {
+        "head": "7f8b5dff4b92aae90ceccce3ec959b48307bed9e",
+        "origin": "https://github.com/jyhong836/llm-dp-finetune",
+        "status": ""
+      },
+      "lm-evaluation-harness": {
+        "head": "b954108c9baaaa934b4ad842033b31a97ee30816",
+        "origin": "https://github.com/EleutherAI/lm-evaluation-harness",
+        "status": ""
+      }
+    }
+  },
+  "archive_actual": {
+    "status": "PASS",
+    "public_file_count_excluding_SHA256SUMS": 793,
+    "public_file_count_including_SHA256SUMS": 794,
+    "copied_sources": 788,
+    "projected_sources": 60,
+    "strict_json_projections": 262,
+    "whole_private_source_references": 387,
+    "synthetic_expected_original_hashes_verified": 21,
+    "affected_expected_original_hashes_verified": 20,
+    "privacy": "PASS",
+    "newline_and_eof": "PASS",
+    "checksum_manifest_sha256": "b89869032ab3c16f7c9b345cfdc29d612c6512a8b0a6c5e8196681cb30778543",
+    "reader_receipt": "archive-readback.json",
+    "reader_receipt_sha256": "ae7bdcc59b118255574963bca7d30546a1446d6755c4372788169f5c94a5444c",
+    "run_receipt": "archive-run-summary.json",
+    "run_receipt_sha256": "839067a752cafcb80b0584c18be5d9fb647f090e868b05a5a7eadc3f209d03dc",
+    "commands": 2,
+    "wall_seconds": 3.1272995000035735,
+    "public_bundle_contains_one_click_runner": false
+  },
+  "evidence_reference_policy": "tools/... in historical test/preparation records denotes original validation/... source-index keys, not a public file URL. Public paths and projected hashes are supplied per materials entry; whole-private raw bodies are only referenced by original hash.",
+  "delivery_receipt_location": "Exact final main SHA and five-job CI URL/result are verified and recorded in the delivery response after push."
+}

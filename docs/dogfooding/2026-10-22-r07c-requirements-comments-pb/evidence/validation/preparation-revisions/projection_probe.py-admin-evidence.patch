@@ -1,0 +1,29 @@
+--- before-admin-evidence/projection_probe.py
++++ after-admin-evidence/projection_probe.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,json,os,re,socket
+ from common import TOOLS,write,digest
+-from archive_evidence import replacements,roots,projected,CANARY_PATTERN,privacy,project_text
++from archive_evidence import replacements,roots,projected,CANARY_PATTERN,privacy,project_text,private_admin_source
+ 
+ def main():
+     parser=argparse.ArgumentParser();parser.add_argument('--output',default='projection-dryprobe.json');args=parser.parse_args()
+@@ -10,13 +10,16 @@
+     pairs=replacements(roots());checks=[];retained=[];status='FAIL';error=None
+     try:
+         candidates=list(TOOLS.glob('*.json'))
+-        for directory in ['preparation-revisions','adaptations','preparation','preflight','host-path-preflight','host-path-preflight-retry','preflight-admin','self-tests','self-tests-final','self-tests-final-2']:
++        for directory in ['preparation-revisions','adaptations','preparation','preflight','host-path-preflight','host-path-preflight-retry','preflight-admin','self-tests','self-tests-final','self-tests-final-2','self-tests-admin-access']:
+             candidates.extend((TOOLS/directory).rglob('*.json'))
+         candidates.extend((TOOLS.parent/'development').rglob('*.json'))
+         candidates.extend(TOOLS.parent.glob('*.json'))
++        candidates.append(TOOLS.parent/'evidence_read_bridge.ps1')
+         candidates.extend((TOOLS/'adaptations').glob('*.patch'))
+         for path in sorted(set(candidates)):
+             raw=path.read_bytes();text=raw.decode('utf-8-sig')
++            if private_admin_source(path):
++                retained.append(dict(path=path.relative_to(TOOLS.parent).as_posix(),sha256=digest(raw),reason='Whole private administrator SID/SDDL receipt or scoped bridge script; retained unchanged by hash only.'));continue
+             if path.is_relative_to(TOOLS.parent/'development') and (re.search(CANARY_PATTERN,text) or any(host and len(host)>=5 and host in text for host in [os.environ.get('COMPUTERNAME'),socket.gethostname()])):
+                 retained.append(dict(path=path.relative_to(TOOLS.parent).as_posix(),sha256=digest(raw),reason='Whole test receipt with private canary/hostname; hash-only retention, independently authored summary remains public.'));continue
+             if path.suffix=='.patch':

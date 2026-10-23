@@ -1,0 +1,12 @@
+--- before-admin-evidence/freeze_tools.py
++++ after-admin-evidence/freeze_tools.py
+@@ -13,7 +13,8 @@
+         destination=TOOLS/'adaptations'/(name+'.patch');destination.write_bytes(patch.encode())
+         originals[name]=digest(raw)
+         adaptations.append(dict(path=name,prior_sha256=digest(raw),sha256=digest(actual),changed=raw!=actual,diff=destination.relative_to(TOOLS).as_posix(),diff_sha256=digest(patch.encode())))
+-    write(TOOLS/'adaptation-provenance.json',dict(schema_version=1,status='REVIEW_READY_NOT_EXECUTED',prior_tools_root=str(old),prior_tool_manifest_sha256=digest((old/'tool-manifest.json').read_bytes()),all_21_prior_helpers=previous['helpers'],copied_originals=originals,adaptations=adaptations,authenticated_ci_reader_source='Prior requirements-comments P-A read_ci_authenticated.py; reviewed memory-only credential, no network execution during preparation',new_tools=[p.name for p in sorted(TOOLS.glob('*.py')) if p.name not in originals],scope='D-C path/config and bound independent oracle/tooling adaptation only. Prior evidence never edited.'))
++    admin_files={name:dict(sha256=digest((TOOLS.parent/name).read_bytes()),bytes=(TOOLS.parent/name).stat().st_size,retention='Whole original private by hash only') for name in ['evidence-read-access.json','admin-read-bridge-receipt.json','evidence_read_bridge.ps1']}
++    write(TOOLS/'adaptation-provenance.json',dict(private_administrator_evidence=admin_files,schema_version=1,status='REVIEW_READY_NOT_EXECUTED',prior_tools_root=str(old),prior_tool_manifest_sha256=digest((old/'tool-manifest.json').read_bytes()),all_21_prior_helpers=previous['helpers'],copied_originals=originals,adaptations=adaptations,authenticated_ci_reader_source='Prior requirements-comments P-A read_ci_authenticated.py; reviewed memory-only credential, no network execution during preparation',new_tools=[p.name for p in sorted(TOOLS.glob('*.py')) if p.name not in originals],scope='D-C path/config and bound independent oracle/tooling adaptation only. Prior evidence never edited.'))
+     helpers={p.name:digest(p.read_bytes()) for p in sorted(TOOLS.iterdir()) if p.is_file() and p.suffix in {'.py','.ps1'}}
+     names=['environment-private.json','execution-plan.json','locations-private.json','oracle-binding.json','prior-oracle-binding.json','synthetic-plan.json','affected-plan.json','preparation-binding.json','adaptation-provenance.json','oracle-adaptation.json']
+     bindings={name:digest((TOOLS/name).read_bytes()) for name in names}

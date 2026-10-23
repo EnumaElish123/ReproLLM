@@ -1,0 +1,59 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "<VALIDATION>\\environment.py"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 0.416798,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "environment",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/000-environment.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 708,
+        "path": "raw/000-environment.stdout",
+        "sha256": "2e0ea92a19af93c9e9527d898377d184c674e2916b2369bad7568f645519137b"
+      }
+    },
+    {
+      "argv": [
+        "<REPOSITORY>\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/cli/test_rule_lifecycle.py::test_archive_symlink_refused_without_reading_target",
+        "tests/unit/cli/test_rule_lifecycle.py::test_archive_file_symlink_is_rejected_before_read",
+        "tests/unit/cli/test_rule_lifecycle.py::test_rule_source_symlink_is_rejected_before_archival",
+        "tests/integration/test_no_leaks.py::test_no_leaks_across_every_run_artifact",
+        "--basetemp",
+        "<PRIVATE_TEMP>\\preflight-final"
+      ],
+      "cwd": "<REPOSITORY>",
+      "elapsed_seconds": 1.753889,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "label": "symlinks-and-no-leaks",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-symlinks-and-no-leaks.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 100,
+        "path": "raw/001-symlinks-and-no-leaks.stdout",
+        "sha256": "b9534a006608d195ea1b7393028bd791154801c4784cff7781c3ef6886ea3ae7"
+      }
+    }
+  ],
+  "schema_version": 1
+}

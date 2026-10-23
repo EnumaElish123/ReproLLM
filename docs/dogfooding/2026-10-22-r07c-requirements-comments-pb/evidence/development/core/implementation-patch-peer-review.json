@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "READ_ONLY_PATCH_REVIEW_PASS",
+  "patch_sha256": "9527c271dd33ae144a6dc02023a33f334fea2c06557c3937891eba2508bed6cf",
+  "source_sha256": "6b8ff77d65ecbea3dae0cd057ac9898aa1a0fa2bc092623ebf463ec98dfb9953",
+  "reviewed_without_application_or_future_policy_execution": true,
+  "findings": [],
+  "checks": [
+    "Helper invoked only after current whole-line ordinary parse fails; URL restriction affects only new prefix.",
+    "First [space/tab]# is equivalent to first [space/tab]+# after prefix.strip; never searches later delimiter.",
+    "Single captured splitlines list and one file-local trailing-backslash pass; no extra I/O, node, root, edge, probe or budget change.",
+    "Original _add_requirement_line construction reused; manager call sites unchanged.",
+    "Existing closure/frontier/lock code receives new declaration events without its own policy change."
+  ],
+  "cost": "On an eligible failed ordinary line, the complete line is parsed once, the candidate prefix is validated once, then that accepted prefix is parsed again by the unchanged declaration constructor. Bounded extra CPU only; the file is not reread."
+}
