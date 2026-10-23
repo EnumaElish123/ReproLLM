@@ -230,6 +230,18 @@ D-C 于 2026-10-22 启动、2026-10-23 完成本地验收。维护者已[明确�
 HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预期完整验证。最终推送 head 的五项 CI 和 Linux 精确 schema 检查在交付时另行核验。
 [P-A 报告](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)和原 PROPOSED 材料保留准备时快照；其余 R07-C 仍 OPEN，资源阻塞不关闭，不发布版本。
 
+### R07-C D-M-P：PEP 621 字符串失败 P-A（2026-10-23）
+
+D-C 后接续的[局部 P-A](proposals/R07-C/pep621-strings/README.md)只准备两个既有 PEP 621
+解析调用的真实失败；推荐 A 内部 `unparsed_requirement` 并复用 D-M，
+保留部分提取、既有信用和优先级。[具体规范补丁](proposals/R07-C/pep621-strings/spec-proposed.patch)
+未应用，决定仍 PROPOSED／accepted=false，候选政策执行数 0。
+[会话报告](../../dogfooding/2026-10-23-r07c-pep621-strings-pa.md)记录当前源码观察、
+证据版号修复、五项目163条字符串来源和38项未来验收，不等于新政策验收。
+需要具体接受 A、精确补丁及空白／无关项目失败也可全仓 WARNING→SKIPPED、
+孤立门 exit 1→0 的保守成本后进入 P-B。旧 D-G/D-C 裁决不扩张至本片。
+本轮按文稿例外核验，不宣称产品质量门或 fresh Gate A PASS；其余 R07-C 和资源阻塞保持，不发布版本。
+
 ### 当前问题与推荐原则
 
 `src/reprollm/core/engine.py` 可在规则 applicable 且没有 finding 时合成 PASS。当分析因 cap、不可读或其他限制不完整时，“没有发现反例”不总能支持整个仓库通过。

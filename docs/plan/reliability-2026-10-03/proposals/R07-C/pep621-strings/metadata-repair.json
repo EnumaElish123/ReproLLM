@@ -1,0 +1,85 @@
+{
+  "authority": "Frozen architecture D-39 and specification section 0 require integer schema_version; no policy exception or product change.",
+  "business_comparison": {
+    "all_other_fields_compared_exactly": true,
+    "both_attempts_projection_pass_count": 24,
+    "case_count": 24,
+    "equal": true,
+    "ignored_top_level_execution_and_version_metadata": [
+      "cases_sha256",
+      "elapsed_seconds",
+      "observer_sha256",
+      "reprollm_version",
+      "schema_version",
+      "started_utc"
+    ]
+  },
+  "candidate_policy_executions": 0,
+  "corrections": [
+    {
+      "artifact": "cases.json",
+      "changes": [
+        "/schema_version: string 1 to integer 1",
+        "/reprollm_version: add unchanged product producer version 0.7.0"
+      ],
+      "files_and_expected_projections_identical": true
+    },
+    {
+      "artifact": "current-observer.py.txt",
+      "changes": [
+        "Only output metadata: schema_version integer 1; add reprollm_version from cases."
+      ],
+      "product_call_code_unchanged": true
+    },
+    {
+      "artifact": "observation-replay.json",
+      "changes": [
+        "Replace current freeze/command, including nested schema_version, with integer-version attempt-02 receipts.",
+        "Preserve historical raw hashes and both attempts; no blanket string-to-number rewriting of findings."
+      ]
+    },
+    {
+      "artifact": "decision.json / delivery-baseline.json / portfolio-source-evidence.json",
+      "changes": [
+        "Add reprollm_version 0.7.0 documentary producer metadata; all prior fields unchanged."
+      ]
+    }
+  ],
+  "kind": "evidence-version-metadata-repair",
+  "new_input_freeze": {
+    "attempt": "observation-attempt-02",
+    "cases_sha256": "439193e8b549e3ab8b90f00fbe263a57c62828b9a02285a12a9537010c958e13",
+    "execution_started": false,
+    "expected_projections_authored_before_execution": true,
+    "frozen_utc": "2026-10-23T03:13:39.662737+00:00",
+    "kind": "pre-execution-freeze",
+    "observer_sha256": "d6508146a983493e04a1da145d3144a2216df13b07d46a0344aec2bf8874f630",
+    "previous_original_cases_sha256": "71f2bda8afd68de625d4efbc15ec42b001aacf9eeeb64a83ae59eb2ff80abc5c",
+    "previous_original_observer_sha256": "0c4e8bd9b7a00760997b2544c3674945e63f8c9d2376d1f486145656f67c3fdb",
+    "reason": "Repair evidence version metadata only; no changed case files, expected projections or observer product calls.",
+    "reprollm_version": "0.7.0",
+    "schema_version": 1
+  },
+  "new_published": {
+    "cases.json": "439193e8b549e3ab8b90f00fbe263a57c62828b9a02285a12a9537010c958e13",
+    "current-observations.json": "7c0f0c69741ea91231eddd981639901d8e5e19e09bf4dedfbc4bd026cf7907ae",
+    "current-observer.py.txt": "d6508146a983493e04a1da145d3144a2216df13b07d46a0344aec2bf8874f630",
+    "observation-replay.json": "ae841ecccbc579846cf626a5aa1a6f403340345a60a5a84e5c4d678a1a832ffa"
+  },
+  "original_archive": {
+    "cases.json": "71f2bda8afd68de625d4efbc15ec42b001aacf9eeeb64a83ae59eb2ff80abc5c",
+    "current-behavior.md": "197430f5b538c7fe5ede4730c327a16bf48f93a260f6ac456d8ad664c95db9ee",
+    "current-observations.json": "a22d591a5d30caf24f45d8747410a61513422a0d19233786402d57a446008121",
+    "current-observer.py.txt": "0c4e8bd9b7a00760997b2544c3674945e63f8c9d2376d1f486145656f67c3fdb",
+    "observation-replay.json": "f3b6a1c3b4f52c8bc1376bda1677a57d141c205c4b2c00d47b094fd6b619d03d"
+  },
+  "originals_edited": false,
+  "privacy_check_controls": {
+    "absolute_windows_path_rejected": true,
+    "escaped_newline_and_https_accepted": true,
+    "secret_token_pattern_rejected": true
+  },
+  "published_raw_output_normalized": false,
+  "reprollm_version": "0.7.0",
+  "schema_version": 1
+}

@@ -138,3 +138,14 @@ checks and independent archive readback, all PASS. Final pushed-head CI and Linu
 schema verification are independently checked at delivery. The [P-A report](../../dogfooding/2026-10-22-r07c-requirements-comments-pa.md)
 and original PROPOSED packet remain historical snapshots. Other R07-C policy, resource
 gates, real adoption and version release remain separately bounded.
+
+## R07-C PEP 621 requirement-string failures P-A (2026-10-23)
+
+The next [D-M-P proposal](proposals/R07-C/pep621-strings/README.md) is **PROPOSED**;
+option A and the exact patch remain unaccepted/unapplied. The [P-A report](../../dogfooding/2026-10-23-r07c-pep621-strings-pa.md)
+records 24 current-source projections in each of two metadata-disclosed observations,
+five-project independent source evidence and 38 future acceptance cases, not a candidate implementation.
+Only two existing PEP 621 parse-failure sites are proposed; other managers and broader R07-C remain OPEN.
+Specific acceptance includes the conservative repository-wide cost before P-B.
+This documentation-only session has no fresh product quality/Gate A or resource PASS.
+No paid API, external submission or version release is authorized.

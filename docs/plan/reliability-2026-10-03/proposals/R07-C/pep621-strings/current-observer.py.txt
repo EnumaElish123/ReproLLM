@@ -1,0 +1,216 @@
+"""Documentation-only, current-policy observer for R07-C D-M-P P-A.
+
+Run against the unchanged baseline source. This is not a candidate implementation,
+test-suite extension, CLI audit, profile detector or engine acceptance tool.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.metadata
+import json
+import os
+import subprocess
+import sys
+from dataclasses import asdict
+from datetime import datetime, timezone
+from pathlib import Path
+from time import perf_counter
+from unittest.mock import patch
+
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def audit(event: str, args: tuple[object, ...]) -> None:
+    if event in {"socket.connect", "socket.connect_ex", "socket.bind", "socket.sendto"}:
+        raise RuntimeError("Network activity is forbidden in this observer")
+    if event == "import" and args and isinstance(args[0], str):
+        top = args[0].split(".", 1)[0]
+        if top in {"torch", "transformers", "vllm", "huggingface_hub", "numpy"}:
+            raise RuntimeError("Heavy dependency import is forbidden in this observer")
+
+
+def document(path: Path, value: object) -> None:
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--cases", type=Path, required=True)
+    parser.add_argument("--attempt", type=Path, required=True)
+    options = parser.parse_args()
+    repo = options.repo.resolve(strict=True)
+    cases_path = options.cases.resolve(strict=True)
+    attempt = options.attempt.resolve()
+    if attempt.exists():
+        raise RuntimeError("Refuse to overwrite an existing observation attempt")
+    attempt.mkdir(parents=True)
+    started = datetime.now(timezone.utc).isoformat()
+    started_clock = perf_counter()
+    sys.dont_write_bytecode = True
+    sys.addaudithook(audit)
+    sys.path.insert(0, str(repo / "src"))
+
+    from reprollm.core.context import AuditContext
+    from reprollm.core.deps import scan_dependencies
+    from reprollm.core.git import GitInfo
+    from reprollm.core.scanner import RepoScanner
+    from reprollm.rules.env import LlmCriticalDepsPinnedRule
+
+    class RecordingScanner(RepoScanner):
+        def __init__(self, root: Path) -> None:
+            super().__init__(root, GitInfo(is_repo=False))
+            self.reads: list[tuple[str, int]] = []
+
+        def read_text(self, rel_path: str, max_bytes: int = 512 * 1024) -> str | None:
+            self.reads.append((rel_path, max_bytes))
+            return super().read_text(rel_path, max_bytes)
+
+    raw_cases = cases_path.read_bytes()
+    cases = json.loads(raw_cases)
+    current_head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    if current_head != cases["baseline_git_sha"]:
+        raise RuntimeError("Current HEAD differs from the independently frozen baseline")
+    source_hashes = {}
+    for path in cases["source_files"]:
+        source_hashes[path] = sha256((repo / path).read_bytes())
+
+    records = []
+    for case in cases["cases"]:
+        root = attempt / "inputs" / case["id"]
+        root.mkdir(parents=True)
+        input_hashes = {}
+        for rel_path, content in case["files"].items():
+            target = root / rel_path
+            if not target.resolve().is_relative_to(root.resolve()):
+                raise RuntimeError("Case input escapes its disposable directory")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            data = content.encode("utf-8")
+            with target.open("xb") as stream:
+                stream.write(data)
+            input_hashes[rel_path] = sha256(data)
+        scanner = RecordingScanner(root)
+        deps = scan_dependencies(scanner)
+        dependency_reads = list(scanner.reads)
+        context = AuditContext(root, level=0)
+        context._git = scanner.git
+        context._fs = scanner
+        context._deps = deps
+        rule = LlmCriticalDepsPinnedRule()
+        with patch("reprollm.rules.env.installed_versions", return_value={}):
+            applies = rule.applies(context)
+            skip_reason = rule.skip_reason(context)
+            pass_skip_reason = rule.pass_skip_reason(context)
+            findings = rule.check(context)
+        raw_findings = [finding.model_dump(mode="json") for finding in findings]
+        declaration_rows = [
+            [d.name, d.display_name, d.specifier, d.exact_version, d.source_file, d.line]
+            for d in deps.declarations
+        ]
+        lock_rows = [[lock.path, sorted(lock.packages), lock.read_issue] for lock in deps.lockfiles]
+        projection = {
+            "declaration_rows": declaration_rows,
+            "declaration_read_issues": deps.declaration_read_issues,
+            "dependency_read_paths": [path for path, _ in dependency_reads],
+            "lock_rows": lock_rows,
+            "manifest_present": deps.manifest_present,
+            "rule_projection": {
+                "applies": applies,
+                "statuses": [[finding.status.value, finding.severity.value] for finding in findings],
+                "evidence_paths": [[e.path for e in finding.evidence] for finding in findings],
+            },
+            "unparsed": deps.unparsed,
+        }
+        expected = case["expected_current_projection"]
+        mismatches = [key for key in sorted(expected) if projection[key] != expected[key]]
+        complete = {
+            "declarations": [asdict(d) for d in deps.declarations],
+            "unparsed": list(deps.unparsed),
+            "lockfiles": [
+                {"path": lock.path, "packages": sorted(lock.packages), "read_issue": lock.read_issue}
+                for lock in deps.lockfiles
+            ],
+            "manifest_present": deps.manifest_present,
+            "_project_manifests": {k: sorted(v) for k, v in sorted(deps._project_manifests.items())},
+            "_uncertain_directories": sorted(str(p) for p in deps._uncertain_directories),
+            "declaration_read_issues": dict(sorted(deps.declaration_read_issues.items())),
+            "unexpanded_requirement_targets": list(deps.unexpanded_requirement_targets),
+        }
+        records.append({
+            "id": case["id"],
+            "input_files": case["files"],
+            "input_sha256": input_hashes,
+            "complete_dependencies": complete,
+            "dependency_reads": [list(item) for item in dependency_reads],
+            "all_reads": [list(item) for item in scanner.reads],
+            "scanner_warnings": list(scanner.warnings),
+            "python_scan": asdict(context.pyscan),
+            "raw_rule": {
+                "rule_id": rule.id,
+                "applies": applies,
+                "skip_reason": skip_reason,
+                "pass_skip_reason": pass_skip_reason,
+                "findings": raw_findings,
+            },
+            "actual_projection": projection,
+            "checked_projection_keys": sorted(expected),
+            "mismatched_projection_keys": mismatches,
+            "expected_projection_passed": not mismatches,
+        })
+
+    source_unchanged = all(
+        sha256((repo / path).read_bytes()) == digest for path, digest in source_hashes.items()
+    )
+    passed = sum(record["expected_projection_passed"] for record in records)
+    output = {
+        "schema_version": 1,
+        "reprollm_version": cases["reprollm_version"],
+        "kind": "current-policy-observation",
+        "status": "PASS" if passed == len(records) and source_unchanged else "FAIL",
+        "baseline_git_sha": current_head,
+        "started_utc": started,
+        "elapsed_seconds": round(perf_counter() - started_clock, 6),
+        "environment": {
+            "python_version": ".".join(str(v) for v in sys.version_info[:3]),
+            "python_executable_name": Path(sys.executable).name,
+            "os_name": os.name,
+            "packaging_version": importlib.metadata.version("packaging"),
+        },
+        "cases_sha256": sha256(raw_cases),
+        "observer_sha256": sha256(Path(__file__).read_bytes()),
+        "source_sha256": source_hashes,
+        "source_unchanged": source_unchanged,
+        "case_count": len(records),
+        "projection_pass_count": passed,
+        "projection_fail_count": len(records) - passed,
+        "scope": {
+            "real_filesystem_scanner": True,
+            "git_input": "GitInfo(is_repo=False); disposable non-repository inputs",
+            "installed_versions_adapter": "unittest.mock.patch returning an empty mapping",
+            "product_policy": "unchanged current source only; no candidate implementation",
+            "assertions": "only independently frozen expected_current_projection keys",
+            "other_fields": "actual observations only; not acceptance assertions",
+            "not_executed": ["CLI", "engine", "profile detection", "init", "export", "quality gate", "Gate A", "Gate B"],
+            "network": "audit hook rejects socket connect/connect_ex/bind/sendto",
+            "heavy_dependencies": "audit hook rejects torch/transformers/vllm/huggingface_hub/numpy imports",
+            "hostname": "gethostname is not prohibited; no hostname is collected or persisted",
+        },
+        "cases": records,
+    }
+    document(attempt / "raw-observations.json", output)
+    print(json.dumps({k: output[k] for k in (
+        "status", "case_count", "projection_pass_count", "projection_fail_count", "elapsed_seconds",
+        "cases_sha256", "observer_sha256", "source_unchanged",
+    )}, sort_keys=True))
+    return 0 if output["status"] == "PASS" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

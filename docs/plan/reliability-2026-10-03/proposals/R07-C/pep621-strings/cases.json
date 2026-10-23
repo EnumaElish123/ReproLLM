@@ -1,0 +1,988 @@
+{
+  "reprollm_version": "0.7.0",
+  "baseline_git_sha": "cc6e891c07aea9c8d585e80e2a14eff3b98b32af",
+  "cases": [
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: not a requirement !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"not a requirement !!!\"]\n"
+      },
+      "id": "P01",
+      "independent_basis": "Existing §12.2 partial extraction: the valid first string declares torch; the unsupported second string is diagnosed and currently outside D-M-S.",
+      "title": "main dependency: loose sibling survives failed string"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            "==2.5.1",
+            "2.5.1",
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": [
+          "pyproject.toml:2: not a requirement !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch==2.5.1\", \"not a requirement !!!\"]\n"
+      },
+      "id": "P02",
+      "independent_basis": "Existing existential exact credit wins before any uncertainty; no raw per-package PASS is generated.",
+      "title": "main dependency: exact sibling retains credit"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "main.py"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: not a requirement !!!"
+        ]
+      },
+      "files": {
+        "main.py": "import torch\n",
+        "pyproject.toml": "[project]\ndependencies=[\"not a requirement !!!\"]\n"
+      },
+      "id": "P03",
+      "independent_basis": "Existing current-use contract uses a real captured import when failed text itself yields no declaration.",
+      "title": "failed string plus actual import establishes current use"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": false,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": [
+          "pyproject.toml:2: torch==broken"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch==broken\"]\n"
+      },
+      "id": "P04",
+      "independent_basis": "A failed PEP 508 string has no successfully extracted package name; unknown use is not reconstructed from diagnostic text.",
+      "title": "failed string alone does not infer unknown use"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: ",
+          "pyproject.toml:2:   "
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"\", \"  \"]\n"
+      },
+      "id": "P05",
+      "independent_basis": "PEP 621 dependency strings must be dependency specifiers; empty and whitespace strings are existing failed Requirement calls, not absent entries.",
+      "title": "empty and whitespace strings fail as actual entries"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "transformers",
+            "transformers",
+            ">=4",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: torch==broken"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project.optional-dependencies]\ntrain=[\"transformers>=4\", \"torch==broken\"]\n"
+      },
+      "id": "P06",
+      "independent_basis": "Optional dependency string arrays share the current Requirement parser and partial extraction; no marker or extra evaluation is added.",
+      "title": "optional dependencies preserve a valid sibling"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            3
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:4: bad !!!",
+          "pyproject.toml:5: bad !!!",
+          "pyproject.toml:9: bad !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\n  \"torch>=2\",\n  \"bad !!!\",\n  \"bad !!!\",\n]\n[project.optional-dependencies]\ntrain=[\n  \"bad !!!\",\n]\n"
+      },
+      "id": "P07",
+      "independent_basis": "The existing TOML line index consumes repeated decoded strings in source order within each section; diagnostics remain per entry.",
+      "title": "repeated failures retain physical lines and order"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            "<3,>=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2,<3\"]\n"
+      },
+      "id": "P08",
+      "independent_basis": "Valid range syntax succeeds while remaining nonexact under §12.2; comma order follows existing SpecifierSet normalization.",
+      "title": "valid nonexact range is not a parser failure"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            "==2.5.1",
+            "2.5.1",
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch==2.5.1\"]\n"
+      },
+      "id": "P09",
+      "independent_basis": "A single nonwildcard == clause containing a valid PEP 440 version retains existing exact credit.",
+      "title": "valid exact declaration control"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            "==2.5.1",
+            "2.5.1",
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch==2.5.1; python_version < '3.10'\"]\n"
+      },
+      "id": "P10",
+      "independent_basis": "Existing static declaration extraction parses marker syntax but does not evaluate it against the observer host.",
+      "title": "marker is retained without evaluating its truth"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            null,
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch @ https://example.invalid/torch.whl\"]\n"
+      },
+      "id": "P11",
+      "independent_basis": "The current shared parser accepts this complete PEP 508 URL string; URL forms receive no exact version credit.",
+      "title": "accepted URL remains a nonexact declaration"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "main.py"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: torch>=2 # note"
+        ]
+      },
+      "files": {
+        "main.py": "import torch\n",
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2 # note\"]\n"
+      },
+      "id": "P12",
+      "independent_basis": "Accepted D-C §12.2 explicitly limits comment fallback to the ordinary requirements graph route.",
+      "title": "requirements comment fallback does not apply inside PEP 621 string"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {
+          "pyproject.toml": "invalid_structure"
+        },
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml",
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "skipped",
+              "INFO"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", 7, \"bad !!!\"]\n"
+      },
+      "id": "P13",
+      "independent_basis": "D-M-S detects the nonstring list member; existing D-M consumes that file-level issue after preserving valid siblings.",
+      "title": "existing structural failure coexists with string failure"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {
+          "pyproject.toml": "invalid_structure"
+        },
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            3
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml",
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "skipped",
+              "INFO"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:3: bad !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "tool=false\n[project]\ndependencies=[\"torch>=2\", \"bad !!!\"]\n"
+      },
+      "id": "P14",
+      "independent_basis": "A present nonmapping tool is a D-M-S issue independent of qualified project extraction; falsey compatibility retains no extra prose.",
+      "title": "unrelated tool structure failure keeps its current issue"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml",
+          "other/pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "other/pyproject.toml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "other/pyproject.toml": "[project]\ndependencies=[\"bad !!!\"]\n",
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\"]\n"
+      },
+      "id": "P15",
+      "independent_basis": "All captured pyprojects contribute to the existing repository inventory; unsupported readable strings currently do not add a D-M fact.",
+      "title": "failed string in an unrelated captured project is currently only diagnostic"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ],
+          [
+            "torch",
+            "torch",
+            "==2.5.1",
+            "2.5.1",
+            "other/pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml",
+          "other/pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": [
+          "pyproject.toml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "other/pyproject.toml": "[project]\ndependencies=[\"torch==2.5.1\"]\n",
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"bad !!!\"]\n"
+      },
+      "id": "P16",
+      "independent_basis": "The current §12.2 existential exact declaration contract aggregates all captured declaration sources without narrowing ownership.",
+      "title": "separate exact declaration retains repository-wide credit"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "lock_rows": [
+          [
+            "uv.lock",
+            [
+              "torch"
+            ],
+            null
+          ]
+        ],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": [
+          "pyproject.toml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"bad !!!\"]\n",
+        "uv.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "id": "P17",
+      "independent_basis": "D-L associates a same-directory uv.lock with a qualifying project and that project declaration origin; qualified credit wins.",
+      "title": "qualified format-lock credit remains positive"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml",
+          "uv.lock"
+        ],
+        "lock_rows": [
+          [
+            "uv.lock",
+            [],
+            "invalid_structure"
+          ]
+        ],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml",
+              "uv.lock"
+            ]
+          ],
+          "statuses": [
+            [
+              "skipped",
+              "INFO"
+            ]
+          ]
+        },
+        "unparsed": [
+          "pyproject.toml:2: bad !!!"
+        ]
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"bad !!!\"]\n",
+        "uv.lock": "package=[7]\n"
+      },
+      "id": "P18",
+      "independent_basis": "D-S records a nonmapping package item without adding diagnostic prose; associated lock uncertainty takes priority over declaration issues.",
+      "title": "known associated lock structure failure precedes declaration gaps"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {
+          "other/Pipfile": "invalid_syntax"
+        },
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml",
+          "other/Pipfile"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml",
+              "other/Pipfile"
+            ]
+          ],
+          "statuses": [
+            [
+              "skipped",
+              "INFO"
+            ]
+          ]
+        }
+      },
+      "files": {
+        "other/Pipfile": "[\n",
+        "pyproject.toml": "[project]\ndependencies=[\"torch>=2\", \"bad !!!\"]\n"
+      },
+      "id": "P19",
+      "independent_basis": "D-M already records a separate invalid TOML document. The exact decoder diagnostic prose is observed but intentionally not an asserted projection.",
+      "title": "existing document decode failure remains separate"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "requirements.txt",
+            1
+          ]
+        ],
+        "dependency_read_paths": [
+          "requirements.txt"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "requirements.txt"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "requirements.txt:2: not a requirement !!!"
+        ]
+      },
+      "files": {
+        "requirements.txt": "torch>=2\nnot a requirement !!!\n"
+      },
+      "id": "P20",
+      "independent_basis": "Readable unsupported requirements lines remain outside D-M-P; D-C does not accept a string with no bounded comment delimiter.",
+      "title": "ordinary requirements grammar remains outside this proposed slice"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            ">=2",
+            null,
+            "environment.yml",
+            1
+          ]
+        ],
+        "dependency_read_paths": [
+          "environment.yml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "environment.yml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": [
+          "environment.yml:1: -r base.txt"
+        ]
+      },
+      "files": {
+        "environment.yml": "dependencies:\n  - pip:\n      - \"torch>=2\"\n      - \"-r base.txt\"\n      - \"\"\n"
+      },
+      "id": "P21",
+      "independent_basis": "Existing environment parsing uses dependency-entry index rather than YAML physical line, diagnoses -r and skips blank embedded strings; this slice must preserve that behavior.",
+      "title": "embedded pip grammar remains outside this proposed slice"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            null,
+            null,
+            "pyproject.toml",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "pyproject.toml"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[tool.poetry.dependencies]\ntorch=[{version=\"==2.5.1\",python=\"<3.12\"},{version=\"==2.6.0\",python=\">=3.12\"}]\n"
+      },
+      "id": "P22",
+      "independent_basis": "A valid Poetry multi-constraint array is outside current individual-value extraction checks; it retains the existing unversioned declaration.",
+      "title": "Poetry multiple constraints remain outside this proposed slice"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [
+          [
+            "torch",
+            "torch",
+            null,
+            null,
+            "Pipfile",
+            2
+          ]
+        ],
+        "dependency_read_paths": [
+          "Pipfile"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": true,
+          "evidence_paths": [
+            [
+              "Pipfile"
+            ]
+          ],
+          "statuses": [
+            [
+              "fail",
+              "WARNING"
+            ]
+          ]
+        },
+        "unparsed": []
+      },
+      "files": {
+        "Pipfile": "[packages]\ntorch={version=false}\n"
+      },
+      "id": "P23",
+      "independent_basis": "D-M-S expressly excludes individual Pipfile package values; no PEP 621 string call occurs here.",
+      "title": "Pipfile individual package value remains outside this proposed slice"
+    },
+    {
+      "expected_current_projection": {
+        "declaration_read_issues": {},
+        "declaration_rows": [],
+        "dependency_read_paths": [
+          "pyproject.toml"
+        ],
+        "lock_rows": [],
+        "manifest_present": true,
+        "rule_projection": {
+          "applies": false,
+          "evidence_paths": [],
+          "statuses": []
+        },
+        "unparsed": []
+      },
+      "files": {
+        "pyproject.toml": "[project]\ndynamic=[\"dependencies\"]\n[project.optional-dependencies]\ntrain=[]\n"
+      },
+      "id": "P24",
+      "independent_basis": "Existing dynamic declarations are not executed or expanded; empty optional groups contain no actual Requirement calls.",
+      "title": "missing and shape-compatible empty lists remain absent controls"
+    }
+  ],
+  "independent_authority": [
+    "docs/plan/01_specification.md sections 12.2, 12.3.3-12.3.8",
+    "src/reprollm/core/deps.py and src/reprollm/rules/env.py existing control flow read before observation",
+    "PyPA pyproject specification: dependency strings and optional dependency arrays",
+    "Existing approved D-M-S and D-C explicit exclusions"
+  ],
+  "kind": "independently-authored-current-policy-cases",
+  "schema_version": 1,
+  "scope": "Current-policy source observation only. Expected projections were authored before executing current-observer.py.txt. They are not proposed-policy gold or complete CLI/engine/profile acceptance.",
+  "source_files": [
+    "src/reprollm/core/deps.py",
+    "src/reprollm/core/scanner.py",
+    "src/reprollm/core/context.py",
+    "src/reprollm/core/pyscan.py",
+    "src/reprollm/rules/env.py",
+    "src/reprollm/core/registry.py",
+    "src/reprollm/schemas/finding.py",
+    "docs/plan/01_specification.md"
+  ]
+}

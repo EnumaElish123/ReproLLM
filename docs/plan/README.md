@@ -186,6 +186,17 @@ The exact final pushed head's five-job CI and Linux exact schema check are indep
 and original PROPOSED packet retain their historical observations; broader R07-C policy,
 resource blockers, independent adoption feedback and release remain separately bounded.
 
+
+The next bounded R07-C [D-M-P P-A packet](reliability-2026-10-03/proposals/R07-C/pep621-strings/README.md)
+covers actual PEP 621 requirement-string parse failures only. It is **PROPOSED**:
+the [exact specification patch](reliability-2026-10-03/proposals/R07-C/pep621-strings/spec-proposed.patch)
+remains unapplied, option A unaccepted and candidate-policy executions zero.
+The [P-A report](../dogfooding/2026-10-23-r07c-pep621-strings-pa.md) records current-source observations,
+a preserved evidence-version repair, 163 independently parsed portfolio strings and future acceptance.
+Specific acceptance of A, its patch and repository-wide conservative costs is required before P-B.
+This documentation session does not claim fresh product Gate A or resource acceptance.
+Broader R07-C, resource blockers and release remain separately bounded.
+
 ## Previous plans and delivery status
 
 The existing M1–M12 and UX plans remain historical task/acceptance records:
