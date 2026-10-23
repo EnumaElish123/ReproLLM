@@ -28,7 +28,9 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 #: Distribution-name overrides applied before canonicalization (spec M2-T03).
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
-DeclarationReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
+DeclarationReadIssue = Literal[
+    "unreadable", "invalid_syntax", "invalid_structure", "unparsed_requirement"
+]
 LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
 
@@ -482,12 +484,12 @@ class _RequirementsGraph:
         return closure
 
 
-def _add_requirement_line(line: str, path: str, lineno: int, result: Declarations) -> None:
+def _add_requirement_line(line: str, path: str, lineno: int, result: Declarations) -> bool:
     try:
         req = Requirement(line)
     except Exception:  # noqa: BLE001 - never crash on odd requirements syntax
         result.unparsed.append(f"{path}:{lineno}: {line}")
-        return
+        return False
     exact = _python_exact_version(req.specifier)
     result.declarations.append(
         DependencyDeclaration(
@@ -499,6 +501,7 @@ def _add_requirement_line(line: str, path: str, lineno: int, result: Declaration
             line=lineno,
         )
     )
+    return True
 
 
 # --- TOML source-location index (M2F-T04, F-05) ------------------------------
@@ -694,7 +697,8 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
             for entry in deps:
                 if isinstance(entry, str):
                     lineno = index.requirement_line("project", entry, header)
-                    _add_requirement_line(entry, path, lineno, result)
+                    if not _add_requirement_line(entry, path, lineno, result):
+                        result.declaration_read_issues.setdefault(path, "unparsed_requirement")
         optional = project.get("optional-dependencies") or {}
         header = index.header_line("project.optional-dependencies")
         if isinstance(optional, dict):
@@ -705,7 +709,10 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
                             lineno = index.requirement_line(
                                 "project.optional-dependencies", entry, header
                             )
-                            _add_requirement_line(entry, path, lineno, result)
+                            if not _add_requirement_line(entry, path, lineno, result):
+                                result.declaration_read_issues.setdefault(
+                                    path, "unparsed_requirement"
+                                )
 
     if not isinstance(poetry, dict):
         result.unparsed.append(f"{path}:0: invalid poetry table")

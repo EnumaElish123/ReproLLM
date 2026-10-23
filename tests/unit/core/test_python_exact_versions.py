@@ -135,7 +135,12 @@ def _write_format(tmp_path: Path, format_name: str, expression: str) -> tuple[st
 
 
 def _assert_format_consumers(
-    tmp_path: Path, filename: str, line: int, expected_exact: str | None
+    tmp_path: Path,
+    filename: str,
+    line: int,
+    expected_exact: str | None,
+    *,
+    declaration_failed: bool = False,
 ) -> None:
     context = AuditContext(tmp_path)
     declarations = context.deps.declarations
@@ -158,9 +163,16 @@ def _assert_format_consumers(
     assert len(lock_findings) == (0 if expected_lock else 1)
     critical_findings = LlmCriticalDepsPinnedRule().check(context)
     assert len(critical_findings) == (0 if expected_exact is not None else 1)
-    for finding in lock_findings + critical_findings:
+    for finding in lock_findings:
         assert finding.status == FindingStatus.FAIL
         assert finding.severity == Severity.WARNING
+    for finding in critical_findings:
+        assert finding.status == (
+            FindingStatus.SKIPPED if declaration_failed else FindingStatus.FAIL
+        )
+        assert finding.severity == (Severity.INFO if declaration_failed else Severity.WARNING)
+    if declaration_failed:
+        assert context.deps.declaration_read_issues == {filename: "unparsed_requirement"}
     if critical_findings and any(item.name == "torch" for item in declarations):
         assert critical_findings[0].evidence[0].path == filename
         assert critical_findings[0].evidence[0].line == line
@@ -196,7 +208,13 @@ def test_accepted_format_table(
         elif kind == "bare":
             expected_exact = "2.5.1"
     filename, line = _write_format(tmp_path, format_name, expression)
-    _assert_format_consumers(tmp_path, filename, line, expected_exact)
+    _assert_format_consumers(
+        tmp_path,
+        filename,
+        line,
+        expected_exact,
+        declaration_failed=format_name == "pep621" and kind == "malformed",
+    )
 
 
 @pytest.mark.parametrize("format_name", ["requirements", "pep621"])

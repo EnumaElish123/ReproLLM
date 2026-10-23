@@ -455,7 +455,7 @@ def test_pep508_string_grammar_does_not_become_a_structure_issue(tmp_path: Path,
     result = scan_dependencies(_RecordingScanner(tmp_path))
 
     assert result.declarations == []
-    assert result.declaration_read_issues == {}
+    assert result.declaration_read_issues == {"pyproject.toml": "unparsed_requirement"}
 
 
 def test_pip_string_grammar_and_unknown_nested_values_do_not_expand_structure_checks(

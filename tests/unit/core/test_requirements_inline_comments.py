@@ -525,6 +525,7 @@ def test_c21_shared_manager_strings_keep_their_existing_grammar(
         diagnostics,
         locks=[Lockfile("requirements.txt", frozenset({"peft"}))],
         projects={source: frozenset(formats[manager])},
+        issues={source: "unparsed_requirement"} if manager in {"project", "optional"} else {},
     )
     assert graph.closures == {
         "requirements.txt": _RequirementsClosure(

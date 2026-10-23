@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-P (spec §12.3.9): retain actual PEP 621 dependency-string parse
+  failures at the two existing extraction sites as internal declaration uncertainty,
+  including empty/whitespace strings. Preserve partial declarations, earlier source
+  failures, exact/qualified-lock credit, diagnostics and reads; reuse D-M after
+  D-F/D-S and D-L. Unrelated failed sources can conservatively change remaining
+  used, uncredited packages from WARNING to SKIPPED/INFO and an isolated gate from
+  exit 1 to 0. Other grammars, engine, persisted schemas, historical artifacts,
+  dependencies and version remain unchanged.
+
 - R07-C D-C (spec §12.2): recognize a bounded inline-comment prefix only after
   an ordinary requirements graph line fails its original parse. Preserve the
   original routes and successful parses; reject new URL prefixes and disable
