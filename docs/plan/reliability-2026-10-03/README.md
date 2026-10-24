@@ -173,3 +173,8 @@ resources, adoption and release are not automatically approved. Wider R07-C rema
 ## 当前接续：Pipfile 显式 version P-A（2026-10-24）
 
 [独立D-M-PF提案](proposals/R07-C/pipfile-version/README.md)、[报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)已完成准备，PROPOSED推荐A，未批准/未实施。38例当前观察两次一致、五项目源中无Pipfile，未执行候选。先裁决A、精确未应用补丁及repository-wide WARNING→SKIPPED/孤立exit1→0成本；接受后先RED再P-B最终质量/fresh Gate A及受影响检查。Poetry接受不涵盖本片；更广R07-C、资源、外部反馈仍OPEN，无发布。
+
+## 当前接续：D-M-PF P-B 完成本地验收（2026-10-24）
+
+[具体接受记录](proposals/R07-C/pipfile-version/decision-accepted.json)绑定A/精确补丁及全仓WARNING→SKIPPED、孤立exit1→0成本。产品`ba1415b`仅原Pipfile packages/dev-packages循环6行，其他manager/helper/credit/line/barrier保持。
+[P-B报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pb/README.md)记录267新增、8旧预期同步及首轮5旧断言失败原件、重跑后的最终质量、fresh五项目Gate A/受影响和38完整记录，适用本地门均PASS，final exact-head CI交付另核。原P-A34文件和PROPOSED保持历史字节；更广R07-C、资源及外部反馈仍OPEN，无付费API/GPU/版本发布。

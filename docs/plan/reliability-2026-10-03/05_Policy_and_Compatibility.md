@@ -353,3 +353,8 @@ LOW/NONE、first-match、其他参数及历史 gold 保持。原[提案](proposa
 ### R07-C D-M-PF：Pipfile 显式 version 独立 P-A（2026-10-24）
 
 [具体提案与精确未应用补丁](proposals/R07-C/pipfile-version/README.md)、[P-A报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)为PROPOSED，推荐A，候选执行0。当前规范/实现一致；只建议在已有packages/dev-packages entry循环按dict+显式version+非str setdefault invalid_structure，原allow_bare=False、声明、信用、line fallback及barrier保持。官方类型边界不证明隐藏exact；全仓保守WARNING→SKIPPED、孤立exit1→0及text/export成本必须具体接受。38例当前观察、五项目源盘点、45组未执行未来验收及独立审阅已备齐；Poetry批准不扩大。下一步先裁决A/精确补丁/成本，再P-B先RED实施与最终质量、fresh五项目Gate A及受影响验证。更广R07-C、资源/采用保持OPEN，不发布版本。
+
+### R07-C D-M-PF：接受A并完成P-B本地验收（2026-10-24）
+
+维护者[明确接受A/精确补丁及全仓成本](proposals/R07-C/pipfile-version/decision-accepted.json)。产品`ba1415b`仅在已有Pipfile两节entry循环对dict+显式version+非str setdefault既有invalid_structure；allow_bare=False、声明、先因、credit、line fallback和barrier保持。
+[P-B报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pb/README.md)记录267新增回归、8既有预期同步、首轮5旧断言失败与完整原件保留，新的最终输入上质量、fresh五项目Gate A/受影响、38完整记录均通过；精确最终HEAD五项CI交付另核。原P-A/PROPOSED和历史记录不重写。全仓WARNING→SKIPPED及孤立exit1→0是已接受成本，不是pin或完整分析证书。更广R07-C、资源/采用仍OPEN，不发布版本。

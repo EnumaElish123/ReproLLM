@@ -234,3 +234,8 @@ dates alone.
 ## Pipfile 显式 version 独立 P-A（2026-10-24）
 
 [当前提案](reliability-2026-10-03/proposals/R07-C/pipfile-version/README.md)及[报告](../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)已准备：38例当前行为、fresh五项目来源、官方类型边界、A/B、精确未应用补丁及45组未来验收。状态PROPOSED，推荐A；Poetry批准不扩展，候选执行0。下一步先裁决具体A/补丁及全仓warning→SKIP、孤立exit1→0成本，再P-B先RED实施。文稿会话不冒充Gate A；资源/采用仍OPEN，不发布版本。
+
+## Pipfile D-M-PF P-B（2026-10-24）
+
+维护者[已接受A、精确补丁与全仓成本](reliability-2026-10-03/proposals/R07-C/pipfile-version/decision-accepted.json)。产品`ba1415b`仅在原Pipfile两节loop新增6行typed fact，保留声明/信用/先因/helper False及line fallback/barrier。
+[P-B报告](../dogfooding/2026-10-24-r07c-pipfile-version-pb/README.md)记录267新增回归、8旧预期同步、首轮5旧断言失败及重验、最终质量、fresh五项目Gate A/受影响与38完整记录，适用本地门均PASS；精确最终HEAD五项CI在交付核验。原P-A/PROPOSED快照保持，其他R07-C、资源与实际反馈仍OPEN；不发布版本。
