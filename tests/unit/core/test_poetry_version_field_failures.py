@@ -546,6 +546,7 @@ def test_t35_pipfile_shared_helper_keeps_separate_opt_in_and_original_line_value
                 _decl("peft", None, "0.13.0", 3, "Pipfile", "peft"),
             ),
             projects={"Pipfile": frozenset({"Pipfile.lock"})},
+            issues={"Pipfile": "invalid_structure"},
         ),
         scanner,
         ["Pipfile"],
@@ -749,6 +750,7 @@ def test_t36_t41_complete_graph_and_other_manager_facts_do_not_follow_poetry_fie
             issues={
                 "pyproject.toml": "invalid_structure",
                 "environment.yml": "unparsed_requirement",
+                "Pipfile": "invalid_structure",
             },
         ),
         scanner,

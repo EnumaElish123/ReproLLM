@@ -529,7 +529,7 @@ def test_a15_conda_grammar_diagnostics_do_not_themselves_opt_in_to_pip_failure(
 
 
 @pytest.mark.parametrize("pip_failure", [False, True])
-def test_a16_other_shared_helper_and_manager_callers_do_not_gain_new_causes(
+def test_a16_other_shared_helper_and_manager_callers_keep_their_accepted_causes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     requirement_calls: list[str],
@@ -566,7 +566,10 @@ def test_a16_other_shared_helper_and_manager_callers_do_not_gain_new_causes(
                 "environment.yml": _CONDA_FORMATS,
                 "Pipfile": frozenset({"Pipfile.lock"}),
             },
-            issues={"environment.yml": "unparsed_requirement"} if pip_failure else {},
+            issues={
+                **({"environment.yml": "unparsed_requirement"} if pip_failure else {}),
+                "Pipfile": "invalid_structure",
+            },
         ),
         scanner,
         ["pyproject.toml", "requirements.txt", "environment.yml", "Pipfile"],

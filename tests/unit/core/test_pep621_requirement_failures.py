@@ -602,9 +602,10 @@ def test_p14_other_managers_and_embedded_pip_keep_their_separately_accepted_cont
                 {
                     "pyproject.toml": "unparsed_requirement",
                     "environment.yml": "unparsed_requirement",
+                    "Pipfile": "invalid_structure",
                 }
                 if pep_failure
-                else {"environment.yml": "unparsed_requirement"}
+                else {"environment.yml": "unparsed_requirement", "Pipfile": "invalid_structure"}
             ),
         ),
         scanner,

@@ -867,6 +867,12 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
         if not isinstance(table, dict):
             continue
         for name, value in table.items():
+            if (
+                isinstance(value, dict)
+                and "version" in value
+                and not isinstance(value["version"], str)
+            ):
+                result.declaration_read_issues.setdefault(path, "invalid_structure")
             specifier, exact = _dependency_version_field(value, allow_bare=False)
             lineno = index.key_line("pipfile.packages", name, header)
             result.declarations.append(

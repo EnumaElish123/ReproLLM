@@ -192,7 +192,7 @@ def test_optional_bad_group_does_not_drop_good_sibling_groups(
 
 @pytest.mark.parametrize("manager", ["poetry", "pipfile"])
 @pytest.mark.parametrize(
-    ("value", "specifier", "exact", "poetry_issue"),
+    ("value", "specifier", "exact", "version_issue"),
     [
         ('[{version="^2", python="<3.11"}, {version="^3", python=">=3.11"}]', None, None, None),
         ('{git="public"}', None, None, None),
@@ -203,13 +203,13 @@ def test_optional_bad_group_does_not_drop_good_sibling_groups(
         ("0", None, None, None),
     ],
 )
-def test_individual_manager_values_keep_bounded_capture_and_poetry_opt_in(
+def test_individual_manager_values_keep_bounded_capture_and_separate_version_opt_ins(
     tmp_path: Path,
     manager: str,
     value: str,
     specifier: str | None,
     exact: str | None,
-    poetry_issue: str | None,
+    version_issue: str | None,
 ) -> None:
     name = "pyproject.toml" if manager == "poetry" else "Pipfile"
     section = "tool.poetry.dependencies" if manager == "poetry" else "packages"
@@ -221,7 +221,7 @@ def test_individual_manager_values_keep_bounded_capture_and_poetry_opt_in(
     assert result.unparsed == []
     assert result.manifest_present is True
     assert result.declaration_read_issues == (
-        {name: poetry_issue} if manager == "poetry" and poetry_issue is not None else {}
+        {name: version_issue} if version_issue is not None else {}
     )
 
 
