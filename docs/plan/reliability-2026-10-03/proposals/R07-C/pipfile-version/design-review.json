@@ -1,0 +1,405 @@
+{
+  "alternatives": {
+    "A": "Record only traversed Pipfile mapping present non-string version with existing per-path setdefault; preserve current extraction and all credit/priority contracts.",
+    "B": "Keep current captured-view bounded warning; no patch and explicit field-extraction gap remains OPEN.",
+    "NOT_NEEDED": "Not recommended: explicit field type evidence and current extraction gap are real, although zero portfolio applicability alone would allow deferment."
+  },
+  "candidate_policy_executions": 0,
+  "future_acceptance": [
+    {
+      "executed": false,
+      "expected": "Run packages and dev-packages separately with version=false and true; only file-level invalid_structure is added, including false before fallback.",
+      "id": "A01",
+      "scenario": "both sections / bool"
+    },
+    {
+      "executed": false,
+      "expected": "version=0 and a nonzero integer trigger in a traversed dict; no string coercion/exact credit.",
+      "id": "A02",
+      "scenario": "integers"
+    },
+    {
+      "executed": false,
+      "expected": "Finite, inf and nan TOML version values trigger; preserve typed lossless strict-JSON evidence if observed.",
+      "id": "A03",
+      "scenario": "floating point"
+    },
+    {
+      "executed": false,
+      "expected": "Empty, singleton-string and mixed version arrays trigger; no recursive extraction.",
+      "id": "A04",
+      "scenario": "lists"
+    },
+    {
+      "executed": false,
+      "expected": "Empty and nested version mappings trigger; no recursive version search.",
+      "id": "A05",
+      "scenario": "mapping"
+    },
+    {
+      "executed": false,
+      "expected": "Actual TOML date, local time, local datetime and offset datetime are non-str triggers, not manually fabricated TOML null.",
+      "id": "A06",
+      "scenario": "temporal"
+    },
+    {
+      "executed": false,
+      "expected": "Empty package dict or other-options-only dict without exact raw version key does not trigger; original tuple remains.",
+      "id": "A07",
+      "scenario": "absent version"
+    },
+    {
+      "executed": false,
+      "expected": "Empty, whitespace, ranges, wildcard, caret, compound and malformed-looking strings add no issue; keep existing stripped specifier/exact.",
+      "id": "A08",
+      "scenario": "all strings"
+    },
+    {
+      "executed": false,
+      "expected": "Single non-wildcard valid == string keeps exact; bare PEP440 string remains nonexact under allow_bare=False, unlike Poetry.",
+      "id": "A09",
+      "scenario": "Pipfile exact contract"
+    },
+    {
+      "executed": false,
+      "expected": "Existing local/pre/post/dev/epoch == strings remain exact; ===, wildcard == and multiple distinct clauses remain nonexact without a new issue.",
+      "id": "A10",
+      "scenario": "special exact forms"
+    },
+    {
+      "executed": false,
+      "expected": "Direct str/int/float/bool/date/list package values do not trigger; preserve existing extractor even where manager accepts direct numeric TOML values.",
+      "id": "A11",
+      "scenario": "direct values"
+    },
+    {
+      "executed": false,
+      "expected": "Package list containing version=false mapping does not trigger because loop value itself is not dict; no descent.",
+      "id": "A12",
+      "scenario": "nested alternative"
+    },
+    {
+      "executed": false,
+      "expected": "url/git/path/file/hg/svn/bzr key plus no version creates no field issue; no source validation.",
+      "id": "A13",
+      "scenario": "transport without version"
+    },
+    {
+      "executed": false,
+      "expected": "Each recognized extractor transport key plus == or bare string retains exact=None and no new issue, including false/empty transport values.",
+      "id": "A14",
+      "scenario": "transport with string"
+    },
+    {
+      "executed": false,
+      "expected": "Transport plus present non-str version triggers the field predicate; does not assert installer rejection/precedence/hidden pin.",
+      "id": "A15",
+      "scenario": "transport with nonstring"
+    },
+    {
+      "executed": false,
+      "expected": "Only raw lowercase version checked; Version and unrelated unknown extra keys/options are not validated.",
+      "id": "A16",
+      "scenario": "key identity and extra fields"
+    },
+    {
+      "executed": false,
+      "expected": "Visit packages then dev-packages regardless of physical TOML order; retain each mapping insertion order and declaration count.",
+      "id": "A17",
+      "scenario": "section order"
+    },
+    {
+      "executed": false,
+      "expected": "Repeated malformed version entries across both sections yield one file issue and no duplicate file evidence; append all original named declarations.",
+      "id": "A18",
+      "scenario": "section deduplication"
+    },
+    {
+      "executed": false,
+      "expected": "Wrong-shaped packages with usable dev-packages, and inverse, preserve original parent invalid_structure and uncertain barrier; retain usable siblings.",
+      "id": "A19",
+      "scenario": "valid sibling section"
+    },
+    {
+      "executed": false,
+      "expected": "Same-file surviving exact declaration in either section wins for its package; malformed sibling grants no credit and drops nothing.",
+      "id": "A20",
+      "scenario": "valid exact sibling"
+    },
+    {
+      "executed": false,
+      "expected": "Captured exact requirements/PEP621/environment/Poetry/Pipfile declaration anywhere retains existential credit before uncertainty, without new origins.",
+      "id": "A21",
+      "scenario": "crossfile exact credit"
+    },
+    {
+      "executed": false,
+      "expected": "Existing qualified same-directory Pipfile.lock package/origin credit wins; default/develop membership and nearest-parent boundaries unchanged.",
+      "id": "A22",
+      "scenario": "qualified lock credit"
+    },
+    {
+      "executed": false,
+      "expected": "Wrong-directory/unpaired/wrong-format/missing-package lock stays noncredit; new field cause does not establish a project/lock origin.",
+      "id": "A23",
+      "scenario": "nonqualifying lock"
+    },
+    {
+      "executed": false,
+      "expected": "New entry predicate only adds issue; does not add _uncertain_directories. Test child malformed entry versus existing qualified parent lock to preserve association.",
+      "id": "A24",
+      "scenario": "no new uncertain barrier"
+    },
+    {
+      "executed": false,
+      "expected": "Associated format-lock failure retains entire prior finding/message/hint/evidence before new DM issue.",
+      "id": "A25",
+      "scenario": "DF and DS priority"
+    },
+    {
+      "executed": false,
+      "expected": "Incomplete Python/possible-lock DL retains entire prior finding and does not append DM source paths.",
+      "id": "A26",
+      "scenario": "DL priority"
+    },
+    {
+      "executed": false,
+      "expected": "Existing DM precedes depth-frontier DG; new DM uses only existing DM evidence paths, never lower DG paths.",
+      "id": "A27",
+      "scenario": "DG priority"
+    },
+    {
+      "executed": false,
+      "expected": "New setdefault leaves any prior cause at that path after existing parent checks unchanged; do not alter pre-existing parser assignments.",
+      "id": "A28",
+      "scenario": "prior DM cause"
+    },
+    {
+      "executed": false,
+      "expected": "Unreadable and invalid syntax stop before value checks, preserve old issue/diagnostics and do not retry/read rejected bytes.",
+      "id": "A29",
+      "scenario": "read/decode returns"
+    },
+    {
+      "executed": false,
+      "expected": "Shape-compatible absent/empty tables retain zero declarations, current manifest qualification and existing applicability; not completeness proof.",
+      "id": "A30",
+      "scenario": "empty and missing sections"
+    },
+    {
+      "executed": false,
+      "expected": "Pipfile docs/tests/other custom categories are not traversed; even version=false there alone does not create a new issue.",
+      "id": "A31",
+      "scenario": "custom categories"
+    },
+    {
+      "executed": false,
+      "expected": "Inline and expanded package table forms, duplicate names across both sections, and reversed headers preserve exact existing _TomlLineIndex line values; no inferred physical version location.",
+      "id": "A32",
+      "scenario": "line fallback"
+    },
+    {
+      "executed": false,
+      "expected": "Unrelated requests version=false with independently imported torch records cause and can change torch warning to SKIPPED/INFO globally.",
+      "id": "A33",
+      "scenario": "noncritical trigger with independent use"
+    },
+    {
+      "executed": false,
+      "expected": "A malformed critical package value already creates same in-use name under old declaration inventory; do not change that current use, only remaining missing-pin outcome.",
+      "id": "A34",
+      "scenario": "critical declaration without import"
+    },
+    {
+      "executed": false,
+      "expected": "Noncritical-only input records issue but adds no critical-use applicability; retain current no-use and empty-result primary-Python veto.",
+      "id": "A35",
+      "scenario": "no critical use and Python veto"
+    },
+    {
+      "executed": false,
+      "expected": "Unrelated nested source can replace every remaining currently used uncredited critical warning, including promoted critical, with SKIPPED/INFO. Assert complete findings, not counts.",
+      "id": "A36",
+      "scenario": "global conservative cost"
+    },
+    {
+      "executed": false,
+      "expected": "Keep first matching declaration else first import and every distinct failing logical source in lexical order; already DM-skipped finding may gain a source path.",
+      "id": "A37",
+      "scenario": "sorted evidence"
+    },
+    {
+      "executed": false,
+      "expected": "Poetry non-str version remains accepted DM-V trigger with allow_bare=True; Pipfile bare string remains nonexact. PEP621/environment/requirements/Conda prior policies unchanged.",
+      "id": "A38",
+      "scenario": "accepted Poetry isolation"
+    },
+    {
+      "executed": false,
+      "expected": "Compare all declaration fields/order, lock package sets/origins, manifest/lock presence, roots/barriers, graph, unparsed, reads, helper/Requirement traces; only allowed new issue differs.",
+      "id": "A39",
+      "scenario": "internal record equality"
+    },
+    {
+      "executed": false,
+      "expected": "Full audit JSON retains SKIP; text may show Findings PASS and skipped count; default export can lose former notable warning. No renderer/export change.",
+      "id": "A40",
+      "scenario": "public presentation"
+    },
+    {
+      "executed": false,
+      "expected": "FAIL-only override does not promote SKIP; suppression/threshold unchanged; isolated warning/promoted critical may exit1->0; independent warning still exits1; exit2/3 unaffected.",
+      "id": "A41",
+      "scenario": "overrides and exits"
+    },
+    {
+      "executed": false,
+      "expected": "Same inventory preserves profile detection, hints, init generated manifest; verify complete outputs in affected future PB matrix.",
+      "id": "A42",
+      "scenario": "consumer stability"
+    },
+    {
+      "executed": false,
+      "expected": "Repeated identical logical inputs produce identical records; no raw malformed value/absolute path/host/user/secret added; legacy/manual default dict empty and old records unchanged.",
+      "id": "A43",
+      "scenario": "determinism privacy compatibility"
+    },
+    {
+      "executed": false,
+      "expected": "Fresh independent source inventory precedes conditional five-project forecast; no Pipfile means zero applicability, not trigger validation. Future accepted PB requires test-first plus final full quality/Gate A/affected checks.",
+      "id": "A44",
+      "scenario": "five sources and local gate"
+    },
+    {
+      "executed": false,
+      "expected": "No engine/redaction/schema/dependencies/scanner/new sources/groups/solver/version/gold edits; D41 not crossed. PA gates explicit documentation-only NA; GPU/provider/credential/budget/adoption/release blockers stay historical, never PASS.",
+      "id": "A45",
+      "scenario": "boundary and resources"
+    }
+  ],
+  "future_acceptance_group_count": 45,
+  "installer_solver_executions": 0,
+  "normative_section_proposed": "12.3.12",
+  "official_release_refs": {
+    "pipenv": {
+      "commit": "83627fdcc2a1fdce8a1daaec3983857382137cbd",
+      "tag": "v2026.10.2",
+      "tag_object": "f8c4c115b07b293397110a64d5f01a7a3245c474",
+      "vendored_plette_version": "2.4.0"
+    },
+    "plette": {
+      "commit": "fb5bcc588f5a749076af3a8594750e4b9db2580e",
+      "tag": "v2.4.0"
+    }
+  },
+  "recommendation": "A_PENDING_SPECIFIC_ACCEPTANCE",
+  "schema_version": 1,
+  "slice": "D-M-PF",
+  "source_baseline": {
+    "docs/plan/01_specification.md": "1ab7e083e6a73e45632019792499c14bae6b22a332ee166670c7f9bbefa03d75",
+    "src/reprollm/core/deps.py": "c73eb3e63f1299cc65a4f19ad152d82d3ed3e3db847c96256f0c39974df8fb9b",
+    "src/reprollm/rules/env.py": "14212913b79f3d53862173e4e316fa3d0177a8609354208de9a6b3834c97d995"
+  },
+  "sources": [
+    {
+      "bytes": 3708,
+      "direct_numeric_acceptance_lines": [
+        93,
+        101
+      ],
+      "fetched_utc": "2026-10-24T06:47:57.294736+00:00",
+      "git_blob_sha1": "e5185f02d291b209ea29b0b06cda04026d04009c",
+      "id": "pipenv-2026.10.2-packages.py",
+      "relevant_line_ranges": {
+        "direct_numeric_acceptance": [
+          93,
+          94
+        ],
+        "version_type": [
+          56,
+          56
+        ]
+      },
+      "sha256": "53df67e43c82cfc28316da89db86f6be0202ce02d26682abb1e62314d9383811",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/pipenv/vendor/plette/models/packages.py",
+      "version_type_line": 56
+    },
+    {
+      "bytes": 4817,
+      "fetched_utc": "2026-10-24T06:47:58.278368+00:00",
+      "git_blob_sha1": "9b01a374007ee21c9e2fe82938492e17a919a9b0",
+      "id": "pipenv-2026.10.2-pipfiles.py",
+      "sha256": "4ab42d14f6f9c1bc7c1bdf509f9b4f6266eab0eb1c2c36433eec3ea8a5ceac6f",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/pipenv/vendor/plette/pipfiles.py"
+    },
+    {
+      "bytes": 214,
+      "fetched_utc": "2026-10-24T06:47:58.916390+00:00",
+      "git_blob_sha1": "3b80efdf36a9a2b690ab5ad992a77b55e8f85c93",
+      "id": "pipenv-2026.10.2-vendor.txt",
+      "sha256": "f0f4b584dc7084c90384a95dd7d5836d515d4b95672bbb6697bc052c70b58bb8",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/pipenv/vendor/vendor.txt"
+    },
+    {
+      "bytes": 3683,
+      "direct_numeric_acceptance_lines": [
+        93,
+        101
+      ],
+      "fetched_utc": "2026-10-24T06:47:59.601077+00:00",
+      "git_blob_sha1": "ab0adc894fe1b1058448b5f0c73e2fbc269422c0",
+      "id": "plette-2.4.0-packages.py",
+      "relevant_line_ranges": {
+        "direct_numeric_acceptance": [
+          93,
+          94
+        ],
+        "version_type": [
+          56,
+          56
+        ]
+      },
+      "sha256": "8acfb83efbc3f7ff71e57355f23eb44342a07c992a26680203bdfe1d8556009e",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/sarugaku/plette/fb5bcc588f5a749076af3a8594750e4b9db2580e/src/plette/models/packages.py",
+      "version_type_line": 56
+    },
+    {
+      "bytes": 22487,
+      "fetched_utc": "2026-10-24T06:48:00.263916+00:00",
+      "git_blob_sha1": "624104b8442fa7a9e55f93b2778f62cb0d82ddeb",
+      "id": "pipenv-2026.10.2-pipfile.md",
+      "sha256": "7bcceb62417d127c0c3df4f487baf98bf9f15d926b1af21c87fb67a3b1209ffe",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/docs/pipfile.md"
+    },
+    {
+      "bytes": 13085,
+      "fetched_utc": "2026-10-24T06:48:01.249075+00:00",
+      "git_blob_sha1": "637d12f3e07143964b638ad814daaeef21741601",
+      "id": "pipenv-2026.10.2-specifiers.md",
+      "sha256": "19e1cd3dcc585c76b429ce6a87323f2d642a51d126bca1a39cf9a118002bbf90",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/docs/specifiers.md"
+    },
+    {
+      "bytes": 3506,
+      "fetched_utc": "2026-10-24T06:48:16.796465+00:00",
+      "git_blob_sha1": "c3d6937f0976c4c60fcb632aba7c9d0757a1adb5",
+      "id": "pipenv-2026.10.2-base.py",
+      "relevant_line_ranges": {
+        "present_optional_field_type_validation": [
+          48,
+          49
+        ]
+      },
+      "sha256": "0f0b363a29333a077314a6ae6d2052d58a42ca3fdbf3b979bec64705e3b5e220",
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/pypa/pipenv/83627fdcc2a1fdce8a1daaec3983857382137cbd/pipenv/vendor/plette/models/base.py"
+    }
+  ],
+  "status": "DESIGN_ONLY_PROPOSED_NOT_APPROVED"
+}

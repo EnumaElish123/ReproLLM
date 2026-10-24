@@ -349,3 +349,7 @@ LOW/NONE、first-match、其他参数及历史 gold 保持。原[提案](proposa
 每项记录 `PROPOSED / APPROVED / REJECTED / NOT_NEEDED`，附具体范围与证据。被拒绝的选择不是产品失败；待决项不是已完成修复。把被批准的任务精确插回相关 Sprint 或具名后续 Sprint，并列出接续提交。
 
 依据：[Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9)、[severity resolver](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/diff/severity.py)、[默认 drift 表](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/src/reprollm/diff/drift_severity.yaml)、[val.md](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/val.md)。
+
+### R07-C D-M-PF：Pipfile 显式 version 独立 P-A（2026-10-24）
+
+[具体提案与精确未应用补丁](proposals/R07-C/pipfile-version/README.md)、[P-A报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)为PROPOSED，推荐A，候选执行0。当前规范/实现一致；只建议在已有packages/dev-packages entry循环按dict+显式version+非str setdefault invalid_structure，原allow_bare=False、声明、信用、line fallback及barrier保持。官方类型边界不证明隐藏exact；全仓保守WARNING→SKIPPED、孤立exit1→0及text/export成本必须具体接受。38例当前观察、五项目源盘点、45组未执行未来验收及独立审阅已备齐；Poetry批准不扩大。下一步先裁决A/精确补丁/成本，再P-B先RED实施与最终质量、fresh五项目Gate A及受影响验证。更广R07-C、资源/采用保持OPEN，不发布版本。

@@ -230,3 +230,7 @@ The existing M1–M12 and UX plans remain historical task/acceptance records:
 
 Do not infer current feature availability or approval from historical sprint
 dates alone.
+
+## Pipfile 显式 version 独立 P-A（2026-10-24）
+
+[当前提案](reliability-2026-10-03/proposals/R07-C/pipfile-version/README.md)及[报告](../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)已准备：38例当前行为、fresh五项目来源、官方类型边界、A/B、精确未应用补丁及45组未来验收。状态PROPOSED，推荐A；Poetry批准不扩展，候选执行0。下一步先裁决具体A/补丁及全仓warning→SKIP、孤立exit1→0成本，再P-B先RED实施。文稿会话不冒充Gate A；资源/采用仍OPEN，不发布版本。

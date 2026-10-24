@@ -169,3 +169,7 @@ resources, adoption and release are not automatically approved. Wider R07-C rema
 维护者已[接受D-M-V A、精确补丁及全仓成本](proposals/R07-C/poetry-version/decision-accepted.json)。产品`b18ed19`仅在原Poetry循环记录显式非str version的invalid_structure，保留先因/声明/信用/line fallback。
 [P-B报告](../../dogfooding/2026-10-23-r07c-poetry-version-pb/README.md)记录171新增回归、最终质量、fresh五项目Gate A/受影响、35完整record和归档回读，适用本地门均PASS；最终精确HEAD五项CI交付另核。
 原[P-A](proposals/R07-C/poetry-version/README.md)、PROPOSED决定和原观察保持字节。下一步只建议独立P-A核Pipfile显式version、packages/dev-packages两节和allow_bare=False；不套用本次批准。更广R07-C、资源及外部反馈仍OPEN，不发布版本。
+
+## 当前接续：Pipfile 显式 version P-A（2026-10-24）
+
+[独立D-M-PF提案](proposals/R07-C/pipfile-version/README.md)、[报告](../../dogfooding/2026-10-24-r07c-pipfile-version-pa.md)已完成准备，PROPOSED推荐A，未批准/未实施。38例当前观察两次一致、五项目源中无Pipfile，未执行候选。先裁决A、精确未应用补丁及repository-wide WARNING→SKIPPED/孤立exit1→0成本；接受后先RED再P-B最终质量/fresh Gate A及受影响检查。Poetry接受不涵盖本片；更广R07-C、资源、外部反馈仍OPEN，无发布。
