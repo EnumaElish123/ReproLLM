@@ -96,10 +96,25 @@ manifests remain missing. The subsequent R06-B policy change has separate CPU
 quality/Gate A evidence; these resource runs are not relabelled to its commit.
 No release is authorized.
 
+Updated 2026-10-26: the [current-candidate validation completion](2026-10-26-validation-completion/README.md)
+executes fresh quality, five-project Gate A and affected consumers, anonymous
+supplementary Linux H2, all ten native GPU children/five pairs/20 exports and
+25 complete native audit comparisons at
+`6afe8f40ab8d33e191ca0e75c4e5e08a57cabc46`.
+The DP epsilon leaf is HIGH under accepted R08-B. A newly approved CNY 3
+ceiling covers two original-input formal judge requests, complete captures,
+independent exports and the full HIGH-cap pair. VAL-R01 and VAL-R02 pass for
+these product bytes. A separately approved CNY 4 current-input discover case
+also completes one request, independent source review and candidate acceptance.
+Historical inputs, gold and earlier failures remain unchanged. The current
+authenticated HF preflight is 200 for identity and 403 for both selected small
+files; all five original metadata manifests remain missing. The maintainer
+directed completion of the other checks. VAL-R03 remains BLOCKED; no release.
+
 | Tracking ID | Outstanding coverage | Current cause | Status |
 |---|---|---|---|
-| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Fresh available H2/native/capture/diff/export matrix at `948d164`; original §8.1 inputs remain separate | PASS — 2026-10-20, `948d164` |
-| VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Both original-input provider requests, full capture fidelity and the complete HIGH direct-cap pair pass under a newly approved CNY 3 ceiling | PASS — 2026-10-19, `75d1b0` |
+| VAL-R01 | Linux H2; five bounded native inference/training A/B pairs; capture/consumption/diff/export | Fresh anonymous supplementary H2/native/capture/diff/25 full audits/20 exports at `6afe8f4`; original §8.1 inputs remain separate | PASS — 2026-10-26, `6afe8f4` |
+| VAL-R02 | Formal FastChat/DeepSeek judge pair and M7 API-judge acceptance | Two new original-input provider requests, full capture fidelity, independent exports and complete HIGH direct-cap pair under a newly approved CNY 3 ceiling | PASS — 2026-10-26, `6afe8f4` |
 | VAL-R03 | Successful authenticated HF gated-file resolution | Authenticated small files still return 403; original Project C metadata manifest remains missing | BLOCKED |
 
 
@@ -152,7 +167,15 @@ approved DistilGPT2 standard. Original §8.1 metadata input gaps remain separate
 
 ## VAL-R02 — Formal FastChat/DeepSeek judge replay
 
-**Current result — `75d1b0`:** the product repair, final quality and fresh
+**Current result — `6afe8f4`:** the
+[2026-10-26 replay](2026-10-26-validation-completion/README.md) completes two
+newly authorized requests without retry, full source/JSONL snapshot fidelity,
+154 independent export comparisons and 214 terminal comparisons. Scores 7/8
+are observations, not gold. The peak-tariff estimate is CNY 0.002740, not an
+account invoice. The seven-change HIGH-cap pair, empty self-diff and HIGH gate
+exit 1 pass; unrelated upstream findings remain visible.
+
+**Historical result — `75d1b0`:** the product repair, final quality and fresh
 five-project CPU acceptance PASS. Both formal provider requests, complete
 captures and semantic-pair acceptance PASS under a newly approved CNY 3 budget.
 The original parser returns observed scores 7/7, which are observations rather
@@ -216,6 +239,12 @@ the existing HTTP proxy, while official pinned `config.json` and
 `tokenizer_config.json` requests both return 403. Direct official-HF connectivity
 also fails without that transport. No token value, model weight or private data
 is persisted. Successful authorized-file resolution remains unverified.
+
+**2026-10-26 preflight:** identity again returns 200 and both pinned small files
+return 403; no weights or identity-response body are persisted. Five original
+§8.1 manifests are still absent, and the maintainer has confirmed no additional
+copy is currently available. This remains BLOCKED, independently of the new
+anonymous supplementary H2 and native/judge/discover successes.
 
 **Resources:** model-author approval for `meta-llama/Llama-2-7b-hf` and a locally
 provisioned token with permission to read that repository. HF login alone does

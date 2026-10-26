@@ -239,3 +239,13 @@ dates alone.
 
 维护者[已接受A、精确补丁与全仓成本](reliability-2026-10-03/proposals/R07-C/pipfile-version/decision-accepted.json)。产品`ba1415b`仅在原Pipfile两节loop新增6行typed fact，保留声明/信用/先因/helper False及line fallback/barrier。
 [P-B报告](../dogfooding/2026-10-24-r07c-pipfile-version-pb/README.md)记录267新增回归、8旧预期同步、首轮5旧断言失败及重验、最终质量、fresh五项目Gate A/受影响与38完整记录，适用本地门均PASS；精确最终HEAD五项CI在交付核验。原P-A/PROPOSED快照保持，其他R07-C、资源与实际反馈仍OPEN；不发布版本。
+
+## 当前候选资源补验（2026-10-26）
+
+维护者要求先补齐已开发部分的验证。[本轮报告](../dogfooding/2026-10-26-validation-completion/README.md)
+在 `6afe8f4` 完成新质量门、五项目 Gate A/受影响消费者、匿名 supplementary H2、
+十次原生 GPU 运行/五配对/二十 export、原输入正式 judge A/B 与 current-input discover 接受。
+DP epsilon 8→4 和 direct judge cap 均按已接受的前瞻政策独立验为 HIGH。
+VAL-R01/R02 的新通过绑定本候选；历史候选和失败记录保持。
+VAL-R03 仍缺五份原始 metadata manifest，认证 200 后限定小文件仍 403；维护者已要求先完成其余检查。
+本轮只补验与更新证据，没有推进下一项产品开发，也未发布版本；更广 R07-C、独立试用与申请条件继续分别登记。

@@ -1,6 +1,6 @@
 # 专项方案：可重放证据、独立试用与申请材料
 
-版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-20 更新）
+版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-26 更新）
 
 共同合同：[00_Execution_Guide.md](00_Execution_Guide.md)。审查 SHA：`590ee1739484bd21e21594e294e7ddf14bfd093f`。
 
@@ -27,6 +27,14 @@
 
 2026-10-20 接续：[先行补验](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成质量、Gate A、H2、五原生 GPU pairs 和20 exports。新输入 discover 案例亦完成一次 provider 和候选接受；其三个变化 hash 经维护者单独接受，历史 gold 不变。VAL-R02 继续绑定 `75d1b0`，没有新 judge 请求；原始五 metadata 与 gated HF 403 仍阻塞。后续 R06-B 的静态 policy 验证单独绑定，不声称新 GPU/付费/HF 成功。
 
+2026-10-26 接续：[当前候选补验](../../dogfooding/2026-10-26-validation-completion/README.md)
+在 `6afe8f4` 完成质量、fresh 五项目基础/受影响层、匿名 supplementary H2、十个原生 child、
+五配对和20 export；DP epsilon 叶按已接受 R08-B 验为 HIGH。
+新批准的 3 元 judge 预算覆盖两次原输入正式请求，完整捕获/导出/七变化配对通过，direct cap 为 HIGH。
+新批准的 4 元 discover 预算覆盖一次 current-input 请求及源码审阅后的规则接受；历史输入/gold 保持。
+VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 HF 认证 200、两小文件 403，VAL-R03 继续 BLOCKED。
+本轮不推进产品任务、不发布版本，不以资源成功替代 A02 独立反馈或 A03 身份/提交授权。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放
@@ -48,8 +56,8 @@
 
 | 项目 | 已有验收 / 当前缺口 | 后续验收边界 |
 |---|---|---|
-| VAL-R01 | `948d164` 新通过可执行 H2 与五项目真实 A/B；原始 §8.1 metadata 身份仍独立 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
-| VAL-R02 | `75d1b0` 已通过原始 formal 输入的新 provider A/B、完整捕获与语义配对 | 后续付费回放仍核对输入、当轮 provider/凭据和有效预算；保留旧失败，不复用历史成功冒充新执行 |
+| VAL-R01 | `6afe8f4` 新通过匿名 supplementary H2、五项目真实 A/B/完整捕获/消费/25审计及20 export；原始 §8.1 metadata 身份仍独立 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
+| VAL-R02 | `6afe8f4` 新通过原始 formal 输入的两次 provider、完整捕获/导出与 HIGH direct-cap 配对 | 后续付费回放仍核对输入、当轮 provider/凭据和有效预算；保留旧失败，不复用历史成功冒充新执行 |
 | VAL-R03 | 原始 Project C metadata manifest 仍缺失；已提供 token 能认证但限定文件仍 403 | 恢复并核验原始输入，获得模型作者允许的小文件访问；成功解析并验证 revision/hash/provenance，401/403 安全处理不能替代成功访问 |
 
 Linux 节点的 45/50 输入清单仍有五个 §8.1 原始 manifest 缺口；它与无资源本地层、H2 supplementary 输入和其他历史输入的身份分别保留。各次结果及具体恢复动作以[资源账本](../../dogfooding/pending-resource-validation.md)与对应机器的输入清单为准。
