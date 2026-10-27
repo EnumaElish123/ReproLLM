@@ -63,6 +63,14 @@ supported Conda环境文件为0，只形成条件零delta预期，不冒充候�
 [提案](proposals/R07-C/conda-retained-suffix/README.md)的产品门和资源门均不作本轮PASS；
 VAL-R01/R02及公共模型VAL-R03保持各自既有身份，新policy须具体决定后再P-B。
 
+同日D-M-CS P-B：具体A及补丁已接受，最终`bd74330`的一次完整质量24项、5,118测试，
+以及fresh五项目180命令/25完整JSON和init/export全文比较均通过，gold差异为空。
+首轮`1607ee0`质量的两处旧首因期待失败及测试修订保留，局部观察按原候选字节绑定，
+不冒充新HEAD重跑。见[P-B报告](../../dogfooding/2026-10-27-r07c-conda-retained-pb/README.md)。
+本次为普通策略会话，Gate B为NOT_APPLICABLE_NO_MILESTONE_OR_RELEASE；
+没有GPU/Hub/付费回放，不改绑VAL-R01/R02/公共模型VAL-R03，不改变gold或发布条件。
+精确交付HEAD五项CI在推送后另核；原P-A文稿和准备状态保持历史身份。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放

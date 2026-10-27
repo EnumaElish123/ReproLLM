@@ -8,13 +8,18 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The next bounded R07-C P-A is
-[D-M-CS: retained-name Conda specifier extraction](reliability-2026-10-03/proposals/R07-C/conda-retained-suffix/README.md),
-prepared from `22e3dbc` on 2026-10-27. It proposes an independent internal cause
-only at the existing specifier-placeholder assignment, retaining numeric ranges,
-both omission returns, declarations, exact credit and current consumption.
-Status is PROPOSED; concrete patches and repository-wide SKIP/exit costs require
-their own decision. It adds no Conda grammar support and does not execute a new policy.
+The maintainer specifically
+[accepted D-M-CS A and both exact patches](reliability-2026-10-03/proposals/R07-C/conda-retained-suffix/decision-accepted.json)
+on 2026-10-27. P-B at `1607ee0` adds only the internal retained-name Conda
+specifier cause at the existing placeholder assignment. The test-only `bd74330`
+follow-up aligns two cross-manager first-cause expectations; runtime/spec bytes
+remain identical. Final local quality, fresh all-five Gate A and affected consumers
+pass at `bd74330`; see the [P-B report](../dogfooding/2026-10-27-r07c-conda-retained-pb/README.md)
+for full comparisons, retained first-attempt failure, compatibility costs and
+separate exact-delivery-head CI. The original
+[P-A packet](reliability-2026-10-03/proposals/R07-C/conda-retained-suffix/README.md)
+and its PROPOSED snapshot retain all 29 original files. Wider R07-C stays OPEN;
+this adds no grammar support, resource replay or release authorization.
 The preceding D-M-CE delivery and Windows test correction are complete:
 [all five exact-`22e3dbc` CI jobs](https://github.com/EnumaElish123/ReproLLM/actions/runs/40462446381)
 passed. Historical PROPOSED snapshots with separate acceptance records are not new blockers.

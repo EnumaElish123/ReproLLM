@@ -308,6 +308,15 @@ numeric RANGE、CE两返回、regex/声明/信用/消费优先级。明确非exa
 全仓WARNING→SKIP、孤立exit1→0，须独立接受具体patch和成本；B保持当前合同。
 本片PROPOSED，不实施grammar或候选；完整材料及38组未来验收见该目录。
 
+同日P-B：维护者已[明确接受D-M-CS A及两份具体补丁](proposals/R07-C/conda-retained-suffix/decision-accepted.json)。
+`1607ee0`只增加原placeholder分支的内部`unparsed_conda_specifier`；`bd74330`仅补齐
+两处跨管理器首因旧预期，产品/规范字节相同。230项新增回归、51项旧预期同步及
+最终`bd74330`完整质量、fresh五项目基础/受影响验收均通过；首轮质量失败保持原身份。
+详见[P-B报告](../../dogfooding/2026-10-27-r07c-conda-retained-pb/README.md)及38组实际映射，
+精确交付HEAD五项CI另核。原29份P-A/PROPOSED字节不重写；六种numeric RANGE、CE省略、
+声明/诊断/信用/现消费优先级保持，全仓SKIP和孤立exit1→0是已接受成本。
+Conda其余grammar、遗漏use/listing/framework及更广R07-C仍OPEN，不发布版本。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
