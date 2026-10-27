@@ -264,7 +264,7 @@ and complete every unaffected gate.
 
 ### 8.1 M4 metadata-resolution scenarios (reviewed 2026-09-19)
 
-**Current input selection (2026-10-27):** use §8.1.1 for future formal metadata
+**Current input selection (2026-10-27):** use §8.1.2 for future formal metadata
 validation. The five original manifest hashes and their historical executions
 below remain archived; recovering those unavailable bytes is no longer a
 prerequisite for the current baseline. Other §8.1 expectations remain applicable
@@ -384,6 +384,9 @@ bypassed or reclassified as successful access.
 
 ### 8.1.1 Current formal metadata inputs (2026-10-27)
 
+**Follow-up:** §8.1.2 now replaces this bundle's Project C model/config input.
+The other four manifest bytes and all five upstream pins remain applicable.
+
 The maintainer directed: “直接制定一份新的正式验证配置，替代旧文件”.
 This is the §9 authorization to replace the five missing §8.1 inputs for future
 formal M4 validation. Adopt **M4-META-20261027**, whose five YAML files,
@@ -416,6 +419,58 @@ authorized access. **VAL-R03 remains BLOCKED on Llama-2 small-file permission**;
 its manifest-input prerequisite is now satisfied by the new Project C file.
 Five repository pins, Level 0 gold, native/GPU inputs, paid judge/discover cases,
 budgets and all historical receipts are unchanged.
+
+### 8.1.2 Public-model replacement (2026-10-27)
+
+Maintainer direction: “无法获取llama2权限，请更换一个模型”. Adopt
+**M4-META-PUBLIC-20261027** as the current formal metadata baseline, with the
+[input bundle](docs/dogfooding/metadata-public-model-2026-10-27/README.md) and
+[complete five-case catalog](docs/dogfooding/metadata-public-model-2026-10-27/baseline.json).
+Only Project C changes: use public `distilbert/distilgpt2` instead of
+`meta-llama/Llama-2-7b-hf`. The other four manifests retain §8.1.1 bytes.
+This explicitly accepted scope change retires the mandatory successful
+Llama-2 gated-file branch as **SUPERSEDED_NOT_PASSED**; do not wait for author
+permission or claim that the historical 403 became successful access.
+Denial handling remains covered by its historical observations and mocked tests.
+
+Before running ReproLLM, an anonymous bounded HTTP review independently checked
+official Hub metadata (`private=false`, `gated=false`), the fixed revision and
+raw-file hashes. All responses returned 200; no credential or mirror was used.
+
+| Public input | Expected value |
+|---|---|
+| Model and tokenizer revision | `2290a62682d06624634c1f46a6ad5be0f47f38aa` |
+| `config.json` SHA-256 (762 bytes) | `sha256:4ec5947c1d59fee6212cdf3b0ec1a53eac02092554c5ff0a733488cbd2c64f3a` |
+| `tokenizer_config.json` SHA-256 (26 bytes) | `sha256:5e04eb606e3a1583530a42e36c2a6b6615c86f34fe77e44d9ddeb43ff940931f` |
+| Chat template | `absent`, exact `hf_api` evidence; no template file/key exists |
+| ECHR dataset revision | `1351ba4211ed9bc44692e6a1e2f237c4e3775b41` (unchanged) |
+| New Project C manifest SHA-256 | `sha256:7c4a221ba31c7a32249dc5c3e441b1b5daacf1d72e98002b1254f0029edf530b` |
+| Superseded §8.1.1 Project C manifest SHA-256 | `sha256:4967f1ed18b8f2484f1a8de6b1252dc7049f7deb3ec2afe2a47959b9e12cea36` |
+
+Project C also replaces the selected Llama-2 DP8 execution config with an
+authored metadata-only intent file at `validation/metadata-dp-public.yaml`,
+distributed in the bundle. Copy both files to their catalog target paths in
+the disposable clone. The new intent names DistilGPT2 and retains ECHR/epsilon=8;
+it is not a runnable training recipe. Four other tracked source/config files
+remain independently hashed. The upstream Llama-2 YAML remains untouched in
+its pinned repository and is no longer a selected input for this case.
+
+Run the same offline/two-online lock/check/audit sequence and complete comparisons
+from §8.1.1, with the following independently fixed Project C deltas: online
+model/tokenizer identity and config hash resolve exactly; chat-template absence
+is established successfully instead of unresolved forbidden provenance; the
+manifest digest and one local file identity/hash change. All other lock fields
+and the complete audit finding set retain their prior expected semantics,
+including genuine missing-presence findings. Freeze expected documents before
+new product execution; recompute only the report's current lock digest from
+its raw bytes and remove only schema-owned timestamps for comparison.
+
+The revised VAL-R03 completion target is successful **public** metadata/config
+resolution, lock repeatability, freshness and clean persistence. It requires no
+HF token, paid API, model weights, dataset contents or GPU. A new pass covers
+this revised case, not gated authorization or Llama-2 identity. Original gated
+inputs and denial receipts remain historical; no release or runtime scenario
+is changed by this metadata-only replacement.
 
 ### 8.2 Linux resource follow-up (2026-09-26)
 
@@ -902,8 +957,9 @@ unaffected cases, and preserve the independent gold instead of copying current
 tool output into it. The patch session report lists actual results and deltas.
 
 The [pending resource checklist](docs/dogfooding/pending-resource-validation.md)
-tracks these checks and the separately blocked successful HF gated-file path
-from §8.1, with required resources, resumption steps and closure criteria.
+tracks these checks and the historical blocked HF gated-file path from §8.1,
+with dated resources and results. The current public replacement and revised
+metadata completion target are defined in §8.1.2.
 The checklist does not change this baseline or turn deferred checks into passes.
 
 ## 9. Baseline maintenance

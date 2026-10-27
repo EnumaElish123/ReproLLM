@@ -8,12 +8,21 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The later 2026-10-27 maintainer instruction replaces the inaccessible Llama-2
+metadata model with public DistilGPT2. The current five-case catalog is
+[M4-META-PUBLIC-20261027](../dogfooding/metadata-public-model-2026-10-27/README.md)
+under `val.md §8.1.2`; the other four manifests retain their bytes. The old
+mandatory gated-success branch is superseded, without claiming gated access.
+Fresh five-project/15-mode metadata replay, 51 product commands and full
+comparisons pass at product candidate `00c2392`; current VAL-R03 is PASS under
+the revised public-model contract. Release readiness and wider R07-C remain separate.
+
 The maintainer directed a new formal metadata baseline on 2026-10-27. The
 [M4-META-20261027 input bundle](../dogfooding/metadata-formal-2026-10-27/README.md)
 now supplies all five version-controlled manifests for future M4 validation,
 superseding the unavailable original files under `val.md §8.1.1`.
-Old input hashes/results remain historical; VAL-R03 still requires successful
-authorized Llama-2 small-file access. Input replacement does not authorize a release.
+Old input hashes/results remain historical; the later public-model replacement
+above defines the current VAL-R03 target. Input replacement does not authorize a release.
 
 The maintainer-approved [validation workflow optimization](validation-workflow-2026-10-13.md)
 defines validation cadence for this package: focused checks per task, one complete final session

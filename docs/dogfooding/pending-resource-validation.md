@@ -2,7 +2,20 @@
 
 Recorded: 2026-10-01. Owner: ReproLLM maintainers.
 
-**Current input update — 2026-10-27:** the maintainer directed replacement of the
+**Later model replacement — 2026-10-27:** the maintainer cannot obtain Llama-2
+permission and directed a model change. [M4-META-PUBLIC-20261027](metadata-public-model-2026-10-27/README.md)
+and `val.md §8.1.2` replace Project C with public DistilGPT2. The old mandatory
+gated-success gate is **SUPERSEDED_NOT_PASSED**. Current VAL-R03 tests public
+metadata/file resolution and persistence, with results in the new bundle.
+No Llama-2 access request is required for future formal validation.
+
+The revised public-model gate **PASS** at product candidate `00c2392`: anonymous
+official model/config/tokenizer access, all five metadata cases/15 modes,
+complete locks/audits/stderr and repeat locks pass; 51 product commands and
+the gpt2 metadata probe exit 0. This closes the current VAL-R03 prerequisite,
+without turning the retired gated-success branch into a pass.
+
+**Earlier input update — 2026-10-27:** the maintainer directed replacement of the
 five unavailable metadata manifests. [M4-META-20261027](metadata-formal-2026-10-27/README.md),
 adopted by `val.md §8.1.1`, supplies all five new formal inputs in version control.
 Future validation uses these files; historical 45/50 recovery and old MISSING
@@ -240,7 +253,25 @@ The already-passed real `discover` request remains separate evidence and is not
 a substitute for this formal judge pair. The earlier CNY 3 execution and formal
 promotion are historical records in §§8.4–8.5.
 
-## VAL-R03 — Successful HF gated-file resolution
+## VAL-R03 — HF small-file resolution; public-model replacement
+
+**Current contract:** follow `val.md §8.1.2` and the
+[public-model input/report](metadata-public-model-2026-10-27/README.md).
+The success criteria are exact public model/tokenizer/config identity,
+independently established template absence, two matching online locks,
+freshness, complete audit/diagnostic comparison and clean persistence.
+No HF credential, weight, data-content download or GPU is required.
+
+**Current result: PASS** at `00c2392`, with unchanged product bytes from `6afe8f4`.
+The new case completes anonymous model/tokenizer/config resolution, independently
+verified config hash and template absence, two matching online locks and complete
+five-project lock/audit/diagnostic comparisons. Exact commands, input/source hashes,
+elapsed times and output references are in the linked bundle's checks.json.
+
+**Retired contract — SUPERSEDED_NOT_PASSED:** all Llama-2 access conditions and
+unchecked items below document the historical gate, not requirements to resume
+current development. Its author-approval branch is no longer mandatory under
+the maintainer's explicit model-change instruction. The old 403 did not pass.
 
 **2026-10-19 preflight:** the supplied token authenticates successfully through
 the existing HTTP proxy, while official pinned `config.json` and

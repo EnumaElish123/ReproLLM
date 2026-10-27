@@ -41,6 +41,14 @@ VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 
 45/50，不伪造找回；当前五份正式输入为 5/5 AVAILABLE。VAL-R03 的输入阻塞解除，
 受限小文件成功访问仍 BLOCKED。历史资源回放不重新绑定，不改变 GPU/付费场景。
 
+同日后续：维护者明确无法获取 Llama-2 权限并要求更换模型。
+[公共 DistilGPT2 配置](../../dogfooding/metadata-public-model-2026-10-27/README.md)
+按 `val.md §8.1.2` 接替 Project C，其他四份 manifest 及五项目 pin 保持。
+旧 gated 成功门撤为 SUPERSEDED_NOT_PASSED，当前 VAL-R03 改验公开小文件成功解析、
+哈希/provenance 和持久化；真实回放结果见新包的 checks.json，不要求继续申请 Llama-2。
+新案例在 `00c2392` 产品字节通过五项目15阶段 metadata 回放、51次产品命令及
+完整比较，当前 VAL-R03 为 PASS；原 gated 成功门保持 SUPERSEDED_NOT_PASSED。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放
@@ -64,7 +72,7 @@ VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 
 |---|---|---|
 | VAL-R01 | `6afe8f4` 新通过匿名 supplementary H2、五项目真实 A/B/完整捕获/消费/25审计及20 export；原始 §8.1 metadata 身份仍独立 | 为后续候选或发布执行适用同候选矩阵时，重新核对输入身份与实际可用资源；旧结果不自动改绑 |
 | VAL-R02 | `6afe8f4` 新通过原始 formal 输入的两次 provider、完整捕获/导出与 HIGH direct-cap 配对 | 后续付费回放仍核对输入、当轮 provider/凭据和有效预算；保留旧失败，不复用历史成功冒充新执行 |
-| VAL-R03 | 新正式 Project C metadata manifest 已提供（§8.1.1）；最近认证成功但限定文件仍 403 | 核验新正式输入，获得模型作者允许的小文件访问；成功解析并验证 revision/hash/provenance，401/403 安全处理不能替代成功访问 |
+| VAL-R03 | 公开 DistilGPT2 新案例在 `00c2392` PASS（§8.1.2）；旧 Llama-2 授权成功门为 SUPERSEDED_NOT_PASSED | 后续适用候选按新正式输入重放匿名小文件解析、固定 revision/hash/provenance、两次锁一致及安全持久化；不要求 Llama-2 权限 |
 
 Linux 节点的历史 45/50 输入清单仍有五个 §8.1 原始 manifest 缺口；它与无资源本地层、历史 H2 supplementary 输入和其他历史输入的身份分别保留。2026-10-27 新正式配置已替代后续执行对旧 manifest 的依赖；不再把找回旧文件列为当前输入前置条件。各次结果以[资源账本](../../dogfooding/pending-resource-validation.md)与对应输入清单为准。
 
