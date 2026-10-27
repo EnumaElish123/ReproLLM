@@ -1,0 +1,157 @@
+{
+  "acceptance_status": "38FUTURE_GROUPS_NOT_RUN; no candidate policy accepted or executed. Independent current-baseline observations are not consumed as future-policy PASS in this review.",
+  "base_commit": "22e3dbcb799a18b8ef096c6fc42e5f5ab7ae9a0d",
+  "before_after_targets": [
+    {
+      "after_sha256": "2fd1e44671f56ba5171d9ec27ae569f23258478462ec97a9bafa2e5fa14bb38f",
+      "before_sha256": "97efa89233759a4e6cbe626c61ff9599d6ef74b3e8dfd13807ea69d42208f729",
+      "file": "src/reprollm/core/deps.py",
+      "matches_exact_patch_binding": true
+    },
+    {
+      "after_sha256": "71cf22a02ff1c032f6631eab3a31dbc32985d662da808da54b55ad9ccb0a9868",
+      "before_sha256": "8e61c666564bc46c8b38ea882851f00c5666e5fb954bdb3d8050260850070b7a",
+      "file": "docs/plan/01_specification.md",
+      "matches_exact_patch_binding": true
+    }
+  ],
+  "blocking_findings": 0,
+  "candidate_policy_executions": 0,
+  "commands": [
+    {
+      "elapsed_seconds": 0.005355,
+      "exit_code": 0,
+      "label": "source-head",
+      "static_candidate_input_sha256": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-head.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "path": "source-head.stdout",
+        "sha256": "7a24d861f2dce1bdf9c87465ab0f0b2796f46ce36d49355a724eccf6363b4895"
+      }
+    },
+    {
+      "elapsed_seconds": 0.005913,
+      "exit_code": 0,
+      "label": "before-deps",
+      "static_candidate_input_sha256": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "before-deps.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 40747,
+        "path": "before-deps.stdout",
+        "sha256": "97efa89233759a4e6cbe626c61ff9599d6ef74b3e8dfd13807ea69d42208f729"
+      }
+    },
+    {
+      "elapsed_seconds": 0.011601,
+      "exit_code": 0,
+      "label": "before-01_specification",
+      "static_candidate_input_sha256": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "before-01_specification.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 186218,
+        "path": "before-01_specification.stdout",
+        "sha256": "8e61c666564bc46c8b38ea882851f00c5666e5fb954bdb3d8050260850070b7a"
+      }
+    },
+    {
+      "elapsed_seconds": 0.00719,
+      "exit_code": 0,
+      "label": "git-apply-check-only",
+      "static_candidate_input_sha256": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "git-apply-check-only.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "git-apply-check-only.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "elapsed_seconds": 0.014257,
+      "exit_code": 0,
+      "label": "static-ruff-check",
+      "static_candidate_input_sha256": "2fd1e44671f56ba5171d9ec27ae569f23258478462ec97a9bafa2e5fa14bb38f",
+      "stderr": {
+        "bytes": 0,
+        "path": "static-ruff-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 19,
+        "path": "static-ruff-check.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    },
+    {
+      "elapsed_seconds": 0.016126,
+      "exit_code": 0,
+      "label": "static-ruff-format-check",
+      "static_candidate_input_sha256": "2fd1e44671f56ba5171d9ec27ae569f23258478462ec97a9bafa2e5fa14bb38f",
+      "stderr": {
+        "bytes": 0,
+        "path": "static-ruff-format-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "static-ruff-format-check.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "design_review": {
+    "first_cause": "Existing document shape precheck remains first; new setdefault retains prior cause and participates in existing CS/CE/pip traversal-first ordering. No consumer changes.",
+    "frozen_boundaries": "Implementation patch touches only core/deps.py; spec patch only01_specification.md. No D-41 engine/redaction/schema changes, dependencies, scanner, network, manager execution, persisted fields, rule IDs, version or gold changes.",
+    "global_cost": "A knowingly maps even clearly nonexact or unrelated retained-placeholder entries to existing repository-wide D-M SKIP; this is explicitly disclosed as a discretionary product decision, including isolated WARNING/promoted CRITICAL1-to-0 and text/export costs. B remains a coherent rejection option.",
+    "priority": "Current rule source grants qualified/exact credit first, then D-F/D-S, D-L, D-M dictionary, D-G; unchanged rule text preserves full higher-priority finding/evidence and original first package evidence.",
+    "spec": "New12.3.14 and limited cross-reference extensions preserve12.2 exact grammar and12.3.13 omission scope, with prior append declaration preservation clarified and broader grammar/use/listing completeness remaining OPEN.",
+    "trigger": "Exact existing placeholder path, without diagnostic/exact/count inference; excludes known numeric RANGE and both independently accepted CE early returns."
+  },
+  "findings": [],
+  "network_or_resource_requests": 0,
+  "official_sources_scope": "Reviewed packet primary-source citations and their explicit limits as rationale framing. This code/spec review did not independently re-fetch external pages or execute Conda and does not certify compatibility with installed/historical Conda clients.",
+  "product_tests_or_gate_commands": 0,
+  "repo_mutations": 0,
+  "review_is_policy_acceptance": false,
+  "reviewed_packet_sha256": {
+    "README.md": "9cc455b523f7f97f2ba107c8264a7cc351172527937dc61276ac697b128d7247",
+    "acceptance-cases.md": "ee83449c4e4610fd803494cfc106c389afc05d59824d9d8e1599b712e6deef74",
+    "decision.json": "7e731d96a3b47dca45a1f0cdc40ce172cbdc282f5418be26bd8436a91f2f3fa2",
+    "implementation-proposed.patch": "bf485306c03994cb765d6124e5edaa7328b65b2eaa924dc09a6eb44a61ac4d1c",
+    "official-sources.md": "08c5b9232503a2aaab40e975b570a42857d476e40a079efcc85a099e5978add4",
+    "patch-binding.json": "a1149e1f21c8594bf5386fdb88097fb876dbac6669f30079d67fe59bedd86bc3",
+    "portfolio-impact.md": "41e89eb80660d0074dded7fad63bcc27c2c183604424a4e1fb79eaddaac00913",
+    "portfolio-source-evidence.json": "bac16398fafe7cffd7cb1710e31273a5ba2498caa2106248868c8ca2d6c4fa2d",
+    "proposal.md": "d9dfd99bb62dc13fe0f75b777866ef5f74a793cc747be4e6c753646e27c37536",
+    "spec-issue-draft.md": "808fb88c51f05ef143501ba1300bd037a19c8539ef4d7ead4196695cf5d36749",
+    "spec-proposed.patch": "23793473118250fc1c9a2d881e5af4b364ead1dc4aea3f5e277b2ae6886c2dde"
+  },
+  "schema_version": 1,
+  "static_checks": {
+    "existing_regexes_early_returns_declaration_appends_other_code_ast_unchanged": true,
+    "git_apply_check_only": "PASS",
+    "only_semantic_code_delta": "One internal Literal member plus one setdefault expression at existing RANGE-failed placeholder branch",
+    "planned_acceptance_groups": 38,
+    "python_3_10_ast_parse": "PASS",
+    "static_ruff_check": "PASS",
+    "static_ruff_format_check": "PASS",
+    "unique_spec_subsections": 14
+  },
+  "status": "PASS_STATIC_DESIGN_AND_PATCH_REVIEW"
+}

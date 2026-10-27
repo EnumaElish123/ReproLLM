@@ -58,6 +58,11 @@ VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 
 [P-B报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pb/README.md)。
 本片为普通策略会话，资源Gate B按无milestone/release不激活；不把旧资源成功重新绑定。
 
+同日后续D-M-CS为文稿P-A：基线`22e3dbc`的既有验收闭合；重新做五项目源码盘点，
+supported Conda环境文件为0，只形成条件零delta预期，不冒充候选执行或fresh Gate A。
+[提案](proposals/R07-C/conda-retained-suffix/README.md)的产品门和资源门均不作本轮PASS；
+VAL-R01/R02及公共模型VAL-R03保持各自既有身份，新policy须具体决定后再P-B。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放

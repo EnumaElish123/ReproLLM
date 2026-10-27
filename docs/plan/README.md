@@ -8,6 +8,17 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The next bounded R07-C P-A is
+[D-M-CS: retained-name Conda specifier extraction](reliability-2026-10-03/proposals/R07-C/conda-retained-suffix/README.md),
+prepared from `22e3dbc` on 2026-10-27. It proposes an independent internal cause
+only at the existing specifier-placeholder assignment, retaining numeric ranges,
+both omission returns, declarations, exact credit and current consumption.
+Status is PROPOSED; concrete patches and repository-wide SKIP/exit costs require
+their own decision. It adds no Conda grammar support and does not execute a new policy.
+The preceding D-M-CE delivery and Windows test correction are complete:
+[all five exact-`22e3dbc` CI jobs](https://github.com/EnumaElish123/ReproLLM/actions/runs/40462446381)
+passed. Historical PROPOSED snapshots with separate acceptance records are not new blockers.
+
 The maintainer specifically [accepted D-M-CE A and both exact patches](reliability-2026-10-03/proposals/R07-C/conda-omissions/decision-accepted.json)
 on 2026-10-27, including repository-wide SKIP and isolated exit-code costs.
 P-B at `c9ee53d` adds only the internal `unparsed_conda` fact at the two existing

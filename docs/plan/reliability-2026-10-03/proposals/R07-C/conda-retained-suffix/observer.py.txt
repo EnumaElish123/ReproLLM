@@ -1,0 +1,233 @@
+"""Observe frozen CURRENT Conda behavior; never apply the proposed policy.
+
+All machine locations are command-line inputs. The module body is shareable
+without rewriting source paths; command receipts remain private.
+"""
+from __future__ import annotations
+
+import argparse
+import dataclasses
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path, PurePath, PurePosixPath
+from typing import get_args
+
+sys.dont_write_bytecode = True
+HEAVY = frozenset({'torch','transformers','vllm','huggingface_hub','numpy','peft','datasets','deepspeed','openai','sglang'})
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_bytes())
+
+
+def write_new(path, data):
+    raw=(json.dumps(data,ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False)+'\n').encode()
+    with path.open('xb') as stream:
+        stream.write(raw)
+
+
+def encode(value):
+    if dataclasses.is_dataclass(value) and not isinstance(value,type):
+        return {field.name:encode(getattr(value,field.name)) for field in dataclasses.fields(value)}
+    if isinstance(value,dict):
+        return {str(key):encode(item) for key,item in value.items()}
+    if isinstance(value,(list,tuple)):
+        return [encode(item) for item in value]
+    if isinstance(value,(set,frozenset)):
+        return sorted((encode(item) for item in value),key=lambda item:json.dumps(item,sort_keys=True,ensure_ascii=False))
+    if isinstance(value,PurePath):
+        return value.as_posix()
+    if value is None or isinstance(value,(str,int,float,bool)):
+        return value
+    raise TypeError('Unexpected observed type')
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--repo',type=Path,required=True)
+    parser.add_argument('--expected-executable',type=Path,required=True)
+    parser.add_argument('--interfaces',type=Path,required=True)
+    parser.add_argument('--source-binding',type=Path,required=True)
+    parser.add_argument('--cases',type=Path,required=True)
+    parser.add_argument('--extensions',type=Path,required=True)
+    parser.add_argument('--root',type=Path,required=True)
+    parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--metadata',type=Path,required=True)
+    args=parser.parse_args()
+    assert not args.root.exists() and not args.output.exists() and not args.metadata.exists(), 'Use new paths'
+    assert Path(sys.executable).resolve()==args.expected_executable.resolve(), 'Wrong Python executable'
+    assert Path(sys.prefix).resolve()==args.expected_executable.parent.parent.resolve(), 'Wrong virtual environment'
+    interfaces=load(args.interfaces); binding=load(args.source_binding); plan=load(args.cases); extensions=load(args.extensions)
+    assert interfaces['candidate_policy_executions']==plan['candidate_policy_executions']==extensions['candidate_policy_executions']==0
+    assert interfaces['baseline_commit']==binding['baseline_commit']==plan['baseline_commit']==extensions['baseline_commit']
+    assert extensions['cases_sha256']==sha(args.cases)
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=args.repo,text=True).strip()
+    assert head==binding['baseline_commit'], 'Baseline HEAD mismatch'
+    before={}
+    for relative,expected in binding['source_files'].items():
+        raw=(args.repo/relative).read_bytes()
+        value={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'git_blob_sha1':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()}
+        assert value==expected, 'Source binding mismatch'
+        before[relative]=value
+    args.root.mkdir(parents=True)
+    for case in plan['integrated_cases']:
+        root=args.root/case['id']
+        for relative,text in case['files'].items():
+            logical=PurePosixPath(relative)
+            assert not logical.is_absolute() and '..' not in logical.parts
+            target=root/relative
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(text.encode('utf-8'))
+        assert {name:sha(root/name) for name in case['files']}==case['file_sha256']
+    sys.path.insert(0,str(args.repo/'src'))
+    import reprollm
+    from packaging.requirements import Requirement
+    from reprollm.core import deps
+    from reprollm.core.context import AuditContext
+    from reprollm.core.envinfo import installed_versions
+    from reprollm.core.git import GitInfo
+    from reprollm.core.scanner import RepoScanner
+    from reprollm.rules.env import DependencyManifestPresentRule, LockfilePresentRule, LlmCriticalDepsPinnedRule
+    assert Path(deps.__file__).resolve()==(args.repo/'src/reprollm/core/deps.py').resolve(), 'Imported source root mismatch'
+    assert deps.Requirement is Requirement
+    assert 'unparsed_conda_specifier' not in get_args(deps.DeclarationReadIssue), 'Candidate policy unexpectedly installed'
+    real_versions=installed_versions()
+    assert real_versions==interfaces['environment']['expected_real_installed_versions'], 'Unexpected installed critical package metadata'
+    assert not any(name.split('.',1)[0] in HEAVY for name in sys.modules)
+    originals=(deps._add_conda_entry,deps._parse_environment,deps.Requirement,deps._RequirementsGraph,RepoScanner.read_text,RepoScanner.analysis_files,LlmCriticalDepsPinnedRule.check)
+    forbidden=[]
+    def guard(event,event_args):
+        if event.startswith('socket.') or event in {'subprocess.Popen','os.system','os.posix_spawn','os.posix_spawnp','os.fork','os.exec'}:
+            forbidden.append(event)
+            raise RuntimeError('Forbidden external activity')
+        if event=='import' and event_args[0].split('.',1)[0] in HEAVY:
+            forbidden.append('heavy-import')
+            raise RuntimeError('Forbidden heavy import')
+    sys.addaudithook(guard)
+    native_code=deps._add_conda_entry.__code__; requirement_code=Requirement.__init__.__code__
+    requirement_arg=requirement_code.co_varnames[1]
+    graph_code=deps._RequirementsGraph.parse.__code__
+    read_code=RepoScanner.read_text.__code__; physical_code=RepoScanner._read_text_uncached.__code__
+    candidate_code=RepoScanner.is_analysis_candidate.__code__; analysis_code=RepoScanner.analysis_files.__code__
+    version_code=deps._dependency_version_field.__code__
+    checks=[]; helper_results=[]; integrated_results=[]; failed=[]
+    canary=next(case['entry'][len('pytorch=='):] for case in plan['helper_cases'] if case['id']=='CS-H32')
+
+    def compare(case_id,field,actual,expected):
+        ok=actual==expected
+        checks.append({'case':case_id,'field':field,'passed':ok})
+        if not ok:
+            failed.append({'case':case_id,'field':field})
+
+    def trace():
+        logs={'native_calls':[],'requirement_calls':[],'combined_call_order':[],'scanner_reads':[],'scanner_physical_reads':[],'scanner_candidate_checks':[],'scanner_analysis_results':[],'version_field_calls':[],'graphs':[]}
+        def profile(frame,event,arg):
+            code=frame.f_code; local=frame.f_locals
+            if event=='call':
+                if code is native_code:
+                    item={'entry':local['entry'],'path':local['path'],'lineno':local['lineno']}
+                    logs['native_calls'].append(item); logs['combined_call_order'].append({'kind':'native',**item})
+                elif code is requirement_code:
+                    value=local[requirement_arg]
+                    logs['requirement_calls'].append(value); logs['combined_call_order'].append({'kind':'Requirement.__init__','value':value})
+                elif code is read_code:
+                    logs['scanner_reads'].append({'path':local['rel_path'],'max_bytes':local['max_bytes']})
+                elif code is physical_code:
+                    logs['scanner_physical_reads'].append({'path':local['rel_path'],'physical_relative_path':local['target'].relative_to(local['self'].root.resolve()).as_posix(),'max_bytes':local['max_bytes']})
+                elif code is candidate_code:
+                    logs['scanner_candidate_checks'].append(local['rel_path'])
+                elif code is version_code:
+                    logs['version_field_calls'].append({'value':encode(local['value']),'allow_bare':local['allow_bare']})
+            elif event=='return':
+                if code is graph_code:
+                    logs['graphs'].append(local['self'])
+                elif code is analysis_code:
+                    logs['scanner_analysis_results'].append(list(arg))
+        return logs,profile
+
+    for case in plan['helper_cases']:
+        result=deps.Declarations(); logs,profile=trace()
+        assert sys.getprofile() is None
+        sys.setprofile(profile)
+        try:
+            deps._add_conda_entry(case['entry'],case['path'],case['line'],result)
+        finally:
+            sys.setprofile(None)
+        actual=encode(result)
+        record={'id':case['id'],'actual_current':actual,'native_calls':logs['native_calls'],'requirement_calls':logs['requirement_calls'],'graph_instances':len(logs['graphs'])}
+        helper_results.append(record)
+        compare(case['id'],'complete_declarations',actual,case['expected_current'])
+        compare(case['id'],'actual_native_call',logs['native_calls'],[{'entry':case['entry'],'path':case['path'],'lineno':case['line']}])
+        compare(case['id'],'no_requirement_calls',logs['requirement_calls'],[])
+        compare(case['id'],'canary_not_in_product_capture',canary not in json.dumps(actual,ensure_ascii=False),True)
+    for case in plan['integrated_cases']:
+        root=args.root/case['id']; context=AuditContext(root)
+        context._git=GitInfo(is_repo=False)
+        logs,profile=trace(); assert sys.getprofile() is None
+        sys.setprofile(profile)
+        try:
+            declarations=context.deps
+            pyscan=context.pyscan
+            raw={}
+            for cls in (DependencyManifestPresentRule,LockfilePresentRule,LlmCriticalDepsPinnedRule):
+                rule=cls()
+                raw[rule.id]={'applies':rule.applies(context),'skip_reason':rule.skip_reason(context),'pass_skip_reason':rule.pass_skip_reason(context),'findings':[item.model_dump(mode='json') for item in rule.check(context)]}
+            origins=[(deps.canonical_dep_name(info.module.split('.',1)[0]),info.path) for info in pyscan.imports]
+            qualified=declarations.qualified_lock_packages(origins)
+            unverified=declarations.unverified_lock_paths(origins)
+        finally:
+            sys.setprofile(None)
+        assert len(logs['graphs'])==1
+        graph=logs['graphs'][0]
+        graph_record={'actual_attribute_names':list(vars(graph)),'scanner_reference_is_context_scanner':graph.scanner is context.fs,'result_reference_is_context_deps':graph.result is declarations,'state':{name:encode(value) for name,value in vars(graph).items() if name not in {'scanner','result'}},'node_order':list(graph.nodes),'closure_order':list(graph.closures)}
+        record={
+          'id':case['id'],
+          'declarations':encode(declarations),'python':encode(pyscan),'raw_rules':raw,
+          'qualified_lock_packages':encode(qualified),'unverified_lock_paths':encode(unverified),
+          'native_calls':logs['native_calls'],'requirement_calls':logs['requirement_calls'],
+          'scanner_reads':logs['scanner_reads'],'scanner_candidate_checks':logs['scanner_candidate_checks'],
+          'scanner_analysis_list_count':len(logs['scanner_analysis_results']),
+          'scanner_analysis_results':logs['scanner_analysis_results'],'scanner_physical_reads':logs['scanner_physical_reads'],
+          'combined_call_order':logs['combined_call_order'],'version_field_calls':logs['version_field_calls'],
+          'graph':graph_record,'input_sha256_after':{name:sha(root/name) for name in case['files']},
+        }
+        integrated_results.append(record)
+        for field,expected in case['expected_current'].items():
+            compare(case['id'],field,record[field],expected)
+        for field,expected in extensions['expected_additional_current'][case['id']].items():
+            compare(case['id'],field,record[field],expected)
+        compare(case['id'],'input_bytes_unchanged',record['input_sha256_after'],case['file_sha256'])
+        compare(case['id'],'canary_not_in_product_capture',canary not in json.dumps({'declarations':record['declarations'],'raw_rules':raw},ensure_ascii=False),True)
+    after={relative:{'bytes':len((args.repo/relative).read_bytes()),'sha256':sha(args.repo/relative),'git_blob_sha1':hashlib.sha1(b'blob '+str(len((args.repo/relative).read_bytes())).encode()+b'\0'+(args.repo/relative).read_bytes()).hexdigest()} for relative in before}
+    assert before==after
+    assert originals==(deps._add_conda_entry,deps._parse_environment,deps.Requirement,deps._RequirementsGraph,RepoScanner.read_text,RepoScanner.analysis_files,LlmCriticalDepsPinnedRule.check)
+    assert not forbidden and sys.getprofile() is None
+    assert not any(name.split('.',1)[0] in HEAVY for name in sys.modules)
+    imported={}
+    for name,module in sorted(sys.modules.items()):
+        if name=='reprollm' or name.startswith('reprollm.'):
+            filename=getattr(module,'__file__',None)
+            if filename:
+                relative=Path(filename).resolve().relative_to(args.repo.resolve()).as_posix()
+                assert relative in before and sha(Path(filename))==before[relative]['sha256']
+                imported[name]={'path':relative,'sha256':before[relative]['sha256']}
+    value={'schema_version':1,'status':'PASS_CURRENT_LITERAL_EXPECTATIONS' if not failed else 'CURRENT_LITERAL_EXPECTATION_MISMATCH','baseline_commit':head,'candidate_policy_executions':0,'helper_observations':helper_results,'integrated_observations':integrated_results,'literal_checks':checks,'failed_literal_checks':failed}
+    write_new(args.output,value)
+    metadata={'schema_version':1,'status':value['status'],'baseline_commit':head,'producer':reprollm.__version__,'python_version':'.'.join(map(str,sys.version_info[:3])),'candidate_policy_executions':0,'source_files_verified':len(before),'source_before_after_identical':True,'source_manifest_sha256':sha(args.source_binding),'cases_sha256':sha(args.cases),'interfaces_sha256':sha(args.interfaces),'extensions_sha256':sha(args.extensions),'observer_sha256':sha(Path(__file__)),'output_sha256':sha(args.output),'actual_installed_critical_versions':real_versions,'imported_product_modules':imported,'original_product_functions_unchanged':True,'forbidden_operations_attempted':forbidden,'helper_cases':len(helper_results),'integrated_cases':len(integrated_results),'complete_raw_rule_objects':3*len(integrated_results),'literal_checks':len(checks),'passed_literal_checks':len(checks)-len(failed),'failed_literal_checks':failed,'input_file_instances_verified':sum(len(case['files']) for case in plan['integrated_cases']),'scope':'Current helper/public capture/raw rules only; zero candidate policy, engine/CLI/manager/network/resource acceptance.'}
+    write_new(args.metadata,metadata)
+    print(json.dumps({'status':value['status'],'helper_cases':len(helper_results),'integrated_cases':len(integrated_results),'literal_checks':len(checks),'failed':failed,'output_sha256':sha(args.output)},sort_keys=True))
+    return 0 if not failed else 1
+
+
+if __name__=='__main__':
+    try:
+        raise SystemExit(main())
+    except Exception as exc:
+        print(json.dumps({'schema_version':1,'status':'OBSERVER_REJECTED','exception_type':type(exc).__name__},sort_keys=True))
+        raise SystemExit(2)

@@ -301,6 +301,13 @@ Pipfile/Poetry接受不扩展。详见[P-A报告](../../dogfooding/2026-10-27-r0
 [P-B报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pb/README.md)分别记录已完成和待完成门。
 原P-A/PROPOSED字节不重写，Conda其余grammar和更广R07-C保持OPEN。
 
+同日接续P-A：[D-M-CS保留名称的specifier提取边界](proposals/R07-C/conda-retained-suffix/README.md)。
+基线`22e3dbc`已有全部适用验收及五项CI；本片按相邻OPEN范围准备，不重开旧验证。
+A仅建议在原specifier-placeholder赋值点记录独立`unparsed_conda_specifier`，保留六种原
+numeric RANGE、CE两返回、regex/声明/信用/消费优先级。明确非exact或无关条目也可
+全仓WARNING→SKIP、孤立exit1→0，须独立接受具体patch和成本；B保持当前合同。
+本片PROPOSED，不实施grammar或候选；完整材料及38组未来验收见该目录。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。

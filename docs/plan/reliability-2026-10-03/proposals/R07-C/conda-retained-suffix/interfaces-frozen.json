@@ -1,0 +1,22 @@
+{
+  "baseline_commit": "22e3dbcb799a18b8ef096c6fc42e5f5ab7ae9a0d",
+  "candidate_policy_executions": 0,
+  "environment": {
+    "expected_real_installed_versions": {},
+    "python_executable": "FOLLOWUP_CANDIDATE_VENV_PYTHON"
+  },
+  "instrumentation": "Read-only sys.setprofile observes original code frames and actual graph self. No parser/rule/Requirement/graph factory replacement. Non-Git GitInfo is an explicit subprocess-free input seam.",
+  "interfaces": [
+    "actual _add_conda_entry direct helper",
+    "actual scan_dependencies via real AuditContext.deps using non-Git RepoScanner",
+    "actual scan_python via real AuditContext.pyscan",
+    "raw DependencyManifestPresentRule / LockfilePresentRule / LlmCriticalDepsPinnedRule"
+  ],
+  "privacy": "One helper input contains a private synthetic canary. Assert absent from all product declaration/diagnostic/rule outputs; public helper input/argument fields use a hash envelope rather than echo its value.",
+  "prospective_cause": "unparsed_conda_specifier",
+  "prospective_label": "D-M-CS",
+  "prospective_predicate_not_executed": "Only the current placeholder assignment branch; no change to preserved declarations/exact/diagnostics. All future flags are independently authored literal classifications.",
+  "schema_version": 1,
+  "source_root_id": "REPOSITORY_ROOT_SRC",
+  "status": "FROZEN_BEFORE_CURRENT_OBSERVATIONS"
+}
