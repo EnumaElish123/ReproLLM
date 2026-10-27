@@ -8,6 +8,13 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer directed a new formal metadata baseline on 2026-10-27. The
+[M4-META-20261027 input bundle](../dogfooding/metadata-formal-2026-10-27/README.md)
+now supplies all five version-controlled manifests for future M4 validation,
+superseding the unavailable original files under `val.md §8.1.1`.
+Old input hashes/results remain historical; VAL-R03 still requires successful
+authorized Llama-2 small-file access. Input replacement does not authorize a release.
+
 The maintainer-approved [validation workflow optimization](validation-workflow-2026-10-13.md)
 defines validation cadence for this package: focused checks per task, one complete final session
 quality gate, and five-project Gate A with affected extensions. Its VOPT-01–03 tasks are a scoped

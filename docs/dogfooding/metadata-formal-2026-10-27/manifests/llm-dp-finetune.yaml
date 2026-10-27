@@ -1,0 +1,21 @@
+schema_version: 1
+project:
+  name: llm-dp-linux-metadata
+experiment:
+  profiles: [finetuning, privacy]
+models:
+  primary:
+    provider: huggingface
+    id: meta-llama/Llama-2-7b-hf
+datasets:
+  train:
+    provider: huggingface
+    id: ecthr_cases
+    split: train
+execution:
+  config_files:
+    - configs/fine-tune/echr-llama2-7b-dp8.yml
+    - configs/fine-tune/deepspeed_stage3.json
+    - data/echr/echr.py
+    - src/llm_pft/arguments/privacy_args.py
+    - src/llm_pft/models/language_model.py

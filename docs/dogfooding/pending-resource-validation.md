@@ -2,6 +2,14 @@
 
 Recorded: 2026-10-01. Owner: ReproLLM maintainers.
 
+**Current input update — 2026-10-27:** the maintainer directed replacement of the
+five unavailable metadata manifests. [M4-META-20261027](metadata-formal-2026-10-27/README.md),
+adopted by `val.md §8.1.1`, supplies all five new formal inputs in version control.
+Future validation uses these files; historical 45/50 recovery and old MISSING
+records remain unchanged. VAL-R03's input prerequisite is satisfied, but its
+successful-access branch remains BLOCKED on Llama-2 authorization. Existing
+VAL-R01/R02 results remain candidate-bound.
+
 These are the three unfinished validation groups reported after the **0.6.1**
 patch release (`9ed6d9964d39281cf62cca667b0457c90fb352c1`). They track fresh
 release coverage, not missing feature implementations. The maintainer directed
@@ -250,8 +258,9 @@ anonymous supplementary H2 and native/judge/discover successes.
 provisioned token with permission to read that repository. HF login alone does
 not grant model-author access. This check needs neither GPU nor paid inference.
 
-**Resume:** use Project C at the §2 pin and the reviewed metadata inputs in
-[`val.md` §8.1](../../val.md#81-m4-metadata-resolution-scenarios-reviewed-2026-09-19).
+**Resume:** use Project C at the §2 pin and its new formal manifest in
+[`val.md` §8.1.1](../../val.md#811-current-formal-metadata-inputs-2026-10-27).
+Recovering the old manifest is no longer required; verify the new catalog hash.
 First establish independently reviewed successful-access expectations from
 official metadata and direct file hashes at the recorded revision. Limit file
 reads to the approved small config/tokenizer/template files (2 MiB each);

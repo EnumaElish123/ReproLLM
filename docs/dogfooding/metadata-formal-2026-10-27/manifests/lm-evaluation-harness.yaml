@@ -1,0 +1,25 @@
+schema_version: 1
+project:
+  name: lm-eval-linux-metadata
+experiment:
+  profiles: [inference, evaluation]
+models:
+  primary:
+    provider: huggingface
+    id: Qwen/Qwen2.5-0.5B-Instruct
+    dtype: bfloat16
+    quantization: none
+    trust_remote_code: false
+datasets:
+  eval:
+    provider: huggingface
+    id: openai/gsm8k
+    subset: main
+    split: test
+prompts:
+  task:
+    path: lm_eval/tasks/gsm8k/gsm8k.yaml
+inference:
+  backend: vllm
+execution:
+  config_files: [lm_eval/tasks/gsm8k/gsm8k.yaml]

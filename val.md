@@ -51,6 +51,10 @@ refer to the similarly shaped golden fixtures under `tests/fixtures/repos/`.
 Clone once, then detach at the required commit. Never commit these repositories, their model
 weights, data, generated manifests, or run artifacts into ReproLLM.
 
+The reviewed, human-authored metadata input fixtures in §8.1.1 are an explicit
+exception for lightweight validation configurations; upstream checkouts and
+generated target artifacts remain external.
+
 Before every validation, all five checkouts must satisfy:
 
 ```bash
@@ -260,6 +264,12 @@ and complete every unaffected gate.
 
 ### 8.1 M4 metadata-resolution scenarios (reviewed 2026-09-19)
 
+**Current input selection (2026-10-27):** use §8.1.1 for future formal metadata
+validation. The five original manifest hashes and their historical executions
+below remain archived; recovering those unavailable bytes is no longer a
+prerequisite for the current baseline. Other §8.1 expectations remain applicable
+subject to the explicit metadata-only scope and deltas in §8.1.1.
+
 These expectations were established from the pinned upstream sources, direct HF
 metadata/file HTTP responses, and independent `hashlib.sha256` calculations before
 running ReproLLM. They do not change the five commits or Level 0 gold above.
@@ -372,6 +382,41 @@ and `/api/datasets/.../revision/main` on [Hugging Face](https://huggingface.co/)
 and each model file at the recorded SHA. Model-author rejection must not be
 bypassed or reclassified as successful access.
 
+### 8.1.1 Current formal metadata inputs (2026-10-27)
+
+The maintainer directed: “直接制定一份新的正式验证配置，替代旧文件”.
+This is the §9 authorization to replace the five missing §8.1 inputs for future
+formal M4 validation. Adopt **M4-META-20261027**, whose five YAML files,
+old/new hashes, fixed upstream pins, source evidence and execution instructions
+are version-controlled in the [formal input bundle](docs/dogfooding/metadata-formal-2026-10-27/README.md)
+and [machine-readable catalog](docs/dogfooding/metadata-formal-2026-10-27/baseline.json).
+No further recovery of the five old manifests is required for these new cases.
+
+The new files are byte-identical to the five reviewed §8.2 H2 manifests, now
+adopted prospectively as formal metadata inputs. Use the new case IDs from the
+catalog, not the old M3/M4 identities. The old five originals remain MISSING;
+historical H2 executions remain supplementary evidence at their actual candidates.
+This decision does not relabel an old run as a fresh execution.
+
+All five new manifests intentionally exercise metadata resolution only.
+In particular, the original M3 A/B complete-experiment presence expectations do
+not apply to them: omitted generation/training/evaluation fields keep their
+specified findings. Runtime coverage remains in §§8.3–8.5. Selected remote
+identities, local file hashes, config/template hashes and denial semantics come
+from the independently established §8.1 tables; no value is learned from current
+tool output. The §8.1 command sequence, complete comparisons, doctor checks,
+small-file limits and credential boundary continue to apply. §8.2 describes the
+historical inputs and transport alternatives, not an additional duplicate matrix.
+
+The manifests deliberately omit HF revisions to test resolution. The expected
+remote SHAs in the catalog are fixed: a different main tip is a blocking delta,
+not permission to refresh gold. Both online locks must agree modulo only
+schema-owned timestamps. Valid denial handling is separate from successful
+authorized access. **VAL-R03 remains BLOCKED on Llama-2 small-file permission**;
+its manifest-input prerequisite is now satisfied by the new Project C file.
+Five repository pins, Level 0 gold, native/GPU inputs, paid judge/discover cases,
+budgets and all historical receipts are unchanged.
+
 ### 8.2 Linux resource follow-up (2026-09-26)
 
 The maintainer authorized public-model downloads and bounded GPU validation,
@@ -392,9 +437,11 @@ ceiling** on 2026-09-27. The activated scenario and pre-execution gold are in
 The Linux checkout lacks the external `manifests/` and
 `m4-lock-2026-09-19/` evidence directories. The five exact §8.1 manifests cannot
 be recovered from their hashes. Do not label reconstructed manifests as those
-original inputs or replace their gold. The following new, metadata-only inputs
+original inputs or rewrite their historical gold. The following metadata-only inputs
 exercise the same remote identities and tracked files, independently of runtime
 training scenarios; they intentionally do not fill unrelated presence fields.
+Their original supplementary classification is retained below; §8.1.1 adopts
+these exact bytes as the prospective formal baseline from 2026-10-27.
 
 | Target | Supplementary metadata manifest SHA-256 |
 |---|---|

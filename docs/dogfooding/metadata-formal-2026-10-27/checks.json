@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "task": "A01-A formal metadata input replacement",
+  "baseline_id": "M4-META-20261027",
+  "repository_base": "615c12628487c8a220d5127d3af1b65b94c80bc9",
+  "scope": "Documentation and authored validation input maintenance; no product or validation-tool change.",
+  "historical_comparison_candidate": "6afe8f40ab8d33e191ca0e75c4e5e08a57cabc46",
+  "complete_comparison_exemptions": [
+    "AuditReport root timestamps/version allowed by compare_gold --audit-metadata",
+    "AuditReport documents.lock independently computed from fresh lock bytes",
+    "Lock schema-owned generated_at, model observed_at and typed Provenance resolved_at only"
+  ],
+  "fresh_offline_cases": [
+    {
+      "case_id": "M4-META-20261027-FastChat",
+      "manifest_sha256": "sha256:73b25168de2f52cc994f8b1535fdf04898ad8d8839e260f2f10893f38a3d9ae9",
+      "schema": "PASS",
+      "offline_lock_check_audit": "PASS",
+      "complete_lock_comparison": "PASS",
+      "complete_audit_comparison": "PASS",
+      "exact_stderr_comparison": "PASS",
+      "original_checkout_unchanged": true
+    },
+    {
+      "case_id": "M4-META-20261027-HarmBench",
+      "manifest_sha256": "sha256:73164c087770e87b62aaa9b45fcb831134b47c8bf36c04716b8e1bca57847aa5",
+      "schema": "PASS",
+      "offline_lock_check_audit": "PASS",
+      "complete_lock_comparison": "PASS",
+      "complete_audit_comparison": "PASS",
+      "exact_stderr_comparison": "PASS",
+      "original_checkout_unchanged": true
+    },
+    {
+      "case_id": "M4-META-20261027-LlamaFactory",
+      "manifest_sha256": "sha256:7644338fcc0f7f184bbd031d1b89d6bccc24cacb657e254e1c324df3f13defae",
+      "schema": "PASS",
+      "offline_lock_check_audit": "PASS",
+      "complete_lock_comparison": "PASS",
+      "complete_audit_comparison": "PASS",
+      "exact_stderr_comparison": "PASS",
+      "original_checkout_unchanged": true
+    },
+    {
+      "case_id": "M4-META-20261027-llm-dp-finetune",
+      "manifest_sha256": "sha256:4967f1ed18b8f2484f1a8de6b1252dc7049f7deb3ec2afe2a47959b9e12cea36",
+      "schema": "PASS",
+      "offline_lock_check_audit": "PASS",
+      "complete_lock_comparison": "PASS",
+      "complete_audit_comparison": "PASS",
+      "exact_stderr_comparison": "PASS",
+      "original_checkout_unchanged": true
+    },
+    {
+      "case_id": "M4-META-20261027-lm-evaluation-harness",
+      "manifest_sha256": "sha256:7a524a1dd41cdca08ca1514cbd5eb4874175bfeff73ae69e94eac2d22fc2bc4f",
+      "schema": "PASS",
+      "offline_lock_check_audit": "PASS",
+      "complete_lock_comparison": "PASS",
+      "complete_audit_comparison": "PASS",
+      "exact_stderr_comparison": "PASS",
+      "original_checkout_unchanged": true
+    }
+  ],
+  "commands": [
+    {
+      "label": "FastChat-clone",
+      "exit": 0,
+      "seconds": 0.424944,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:11a90513fdce3f7bd927c924a29b355ae8a3811cbc032f066715f58a832ce407"
+    },
+    {
+      "label": "FastChat-checkout",
+      "exit": 0,
+      "seconds": 0.144063,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:f2cbd59d1f185d4aa621481ae6221ba7dc40a1f764eb510edb416e7b97a55fad"
+    },
+    {
+      "label": "FastChat-input-add",
+      "exit": 0,
+      "seconds": 0.089769,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-input-commit",
+      "exit": 0,
+      "seconds": 0.058465,
+      "stdout_sha256": "sha256:1ec32201ec4b33ca9714b66c99772889f928677b22b6305454cd8dcea960d4f8",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-lock",
+      "exit": 0,
+      "seconds": 1.614853,
+      "stdout_sha256": "sha256:e5d76ee53a158bd3862407893bad29ab9e34602c891c9c82a94052c18a5f473d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-check",
+      "exit": 0,
+      "seconds": 0.448175,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-lock-add",
+      "exit": 0,
+      "seconds": 0.054238,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-lock-commit",
+      "exit": 0,
+      "seconds": 0.021894,
+      "stdout_sha256": "sha256:5060ad0b0da2580a25a4b852965248aff9a678682ed3f7a695990437438cc6a6",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-audit",
+      "exit": 0,
+      "seconds": 1.609865,
+      "stdout_sha256": "sha256:4d4790f148f54c491b41e7646aa62b244809ce6e7cf7c37beb48e2f66448a237",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-compare",
+      "exit": 0,
+      "seconds": 0.198137,
+      "stdout_sha256": "sha256:93b00a1be28203a925d77d8e2f71f6e7884c0cff261de93b1a6c2c89361cabfe",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "FastChat-original-clean",
+      "exit": 0,
+      "seconds": 0.015532,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-clone",
+      "exit": 0,
+      "seconds": 3.182276,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:3cfa7fd3acf9daf1f070383f2415779b8112e4fd220353d93c8495d9d8f4c33e"
+    },
+    {
+      "label": "HarmBench-checkout",
+      "exit": 0,
+      "seconds": 1.382809,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:065c2d0fd610bde5c61d9149f3233092135ab70326e072e23922b07e81f9e2fd"
+    },
+    {
+      "label": "HarmBench-input-add",
+      "exit": 0,
+      "seconds": 0.215346,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-input-commit",
+      "exit": 0,
+      "seconds": 0.129858,
+      "stdout_sha256": "sha256:edc82f203faea88edda4965dafb803aec683e474a6c985fd3569144fe624bf07",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-lock",
+      "exit": 0,
+      "seconds": 1.884846,
+      "stdout_sha256": "sha256:8d589586c58185eda8b415dc03c73166b22e0964f22acaa52e11fcfacb701a28",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-check",
+      "exit": 0,
+      "seconds": 0.448661,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-lock-add",
+      "exit": 0,
+      "seconds": 0.120897,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-lock-commit",
+      "exit": 0,
+      "seconds": 0.014995,
+      "stdout_sha256": "sha256:ee5f93db2a7f221b5704ff978c0b7f158bb683a6f5de4cf04b1dc6a353291aa7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-audit",
+      "exit": 0,
+      "seconds": 1.912386,
+      "stdout_sha256": "sha256:7ef3a0e87940cd875021ae114912d533fbcc03c77c4ce48fb79e3203496c9101",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-compare",
+      "exit": 0,
+      "seconds": 0.197498,
+      "stdout_sha256": "sha256:0fc4de6c44a786cb43c771c03c873a9349d0263eba025f29e79841dbc9d1656e",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "HarmBench-original-clean",
+      "exit": 0,
+      "seconds": 0.019263,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-clone",
+      "exit": 0,
+      "seconds": 0.329408,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:c72d118d1780127bedbc648d622f7897e8afc0cc939b20c275daf49e97ccef83"
+    },
+    {
+      "label": "LlamaFactory-checkout",
+      "exit": 0,
+      "seconds": 0.138394,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:588b6c68d250a087edd24ce963b15a8bd6415290dac9a99b84ae508ed1edd2f1"
+    },
+    {
+      "label": "LlamaFactory-input-add",
+      "exit": 0,
+      "seconds": 0.149977,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-input-commit",
+      "exit": 0,
+      "seconds": 0.119812,
+      "stdout_sha256": "sha256:d2b23ad1298b992b8d052596762016fe984076d6e87786e7964af4aa3efd7d67",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-lock",
+      "exit": 0,
+      "seconds": 1.600379,
+      "stdout_sha256": "sha256:8d589586c58185eda8b415dc03c73166b22e0964f22acaa52e11fcfacb701a28",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-check",
+      "exit": 0,
+      "seconds": 0.443714,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-lock-add",
+      "exit": 0,
+      "seconds": 0.122039,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-lock-commit",
+      "exit": 0,
+      "seconds": 0.024354,
+      "stdout_sha256": "sha256:3e0415f58e1ea81ba25b88aac19244fc0985a7ec99f4e25d3aa6bbb33271eeca",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-audit",
+      "exit": 0,
+      "seconds": 2.497657,
+      "stdout_sha256": "sha256:b2b0dfc8bc43a801eb8c062791c8d05902d2eeab9d10f239857078924fa7b89c",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-compare",
+      "exit": 0,
+      "seconds": 0.195611,
+      "stdout_sha256": "sha256:384ba3d9348be994779d469b3e75942ac676ded01d00eacfd3fa6b642c1ff7d5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "LlamaFactory-original-clean",
+      "exit": 0,
+      "seconds": 0.022527,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-clone",
+      "exit": 0,
+      "seconds": 0.133021,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:37ebfdc9a490260391a605215880318fed87f764f23d928e44ef5b90ba36b10e"
+    },
+    {
+      "label": "llm-dp-finetune-checkout",
+      "exit": 0,
+      "seconds": 0.020354,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:b8adba9c296227f41dea5ef2c66060a2a4b8f566f412f63d7bc79a7fd4cae3de"
+    },
+    {
+      "label": "llm-dp-finetune-input-add",
+      "exit": 0,
+      "seconds": 0.010321,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-input-commit",
+      "exit": 0,
+      "seconds": 0.015506,
+      "stdout_sha256": "sha256:2a79acc29f8dd43f66bb10dbda4d80b470951ad9c67bc73e585ef3e6adcc0cce",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-lock",
+      "exit": 0,
+      "seconds": 1.669973,
+      "stdout_sha256": "sha256:c036684a26f325e7352bd8bbf44472078e259a9e8aab91e41e5dd1df25b23590",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-check",
+      "exit": 0,
+      "seconds": 0.482055,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-lock-add",
+      "exit": 0,
+      "seconds": 0.009572,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-lock-commit",
+      "exit": 0,
+      "seconds": 0.015943,
+      "stdout_sha256": "sha256:4c87f991586f905b1f3eb6075e190d674c552a196fbc9bf6eb13e2e474a2a8c2",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-audit",
+      "exit": 0,
+      "seconds": 0.713974,
+      "stdout_sha256": "sha256:4533cc9dac3d3a64241c449aad74199e49cb39dc8cf98fae886cfffe57c5bdb5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-compare",
+      "exit": 0,
+      "seconds": 0.193532,
+      "stdout_sha256": "sha256:cb2343f290a3530951e18d80c7f6635c970b994cebdae668fbb277c677e97818",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "llm-dp-finetune-original-clean",
+      "exit": 0,
+      "seconds": 0.008625,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-clone",
+      "exit": 0,
+      "seconds": 0.396485,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:d84f8e1339a5d56e8f540a155196bcad1115c86a84908458f9e002222eda0da9"
+    },
+    {
+      "label": "lm-evaluation-harness-checkout",
+      "exit": 0,
+      "seconds": 2.202459,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:7e8ae4af5b79397a8a7cbc4fca68670d274d5f84ed6619216f52bac0d9f28a88"
+    },
+    {
+      "label": "lm-evaluation-harness-input-add",
+      "exit": 0,
+      "seconds": 0.208758,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-input-commit",
+      "exit": 0,
+      "seconds": 0.092634,
+      "stdout_sha256": "sha256:01d5795c50b20bd77e72defefd1f966f22cc591f97427341f6749020e66d3626",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-lock",
+      "exit": 0,
+      "seconds": 1.759317,
+      "stdout_sha256": "sha256:b089e6ecf04a878946b62617d67db2cede166581e19b6f5c90a9eb3b248626c5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-check",
+      "exit": 0,
+      "seconds": 0.449508,
+      "stdout_sha256": "sha256:c9ab910bbad7616d74ae32f3a5447685091a9979b3a42de02664fda2017696c7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-lock-add",
+      "exit": 0,
+      "seconds": 0.034245,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-lock-commit",
+      "exit": 0,
+      "seconds": 0.093068,
+      "stdout_sha256": "sha256:826611e2bfaf637061861b121d425cb35dd5cf95ca54257cf5dd98f314175ac7",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-audit",
+      "exit": 0,
+      "seconds": 34.4077,
+      "stdout_sha256": "sha256:2c73fbc12d005d0631e5865549f8cfe05ebce0143f02f22f434055924a5735cf",
+      "stderr_sha256": "sha256:07c83aa686eb4056ed2f73266120467dce3070ec6f9170a6fbc9274d5e9e5188"
+    },
+    {
+      "label": "lm-evaluation-harness-compare",
+      "exit": 0,
+      "seconds": 0.198155,
+      "stdout_sha256": "sha256:5c0931416236f4b7c6ce84bce4f85d7dc628d27315daab665ee429d8fe8c140d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "lm-evaluation-harness-original-clean",
+      "exit": 0,
+      "seconds": 0.107307,
+      "stdout_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "online_gate_b": "NOT_APPLICABLE_NO_FRESH_ONLINE_REPLAY",
+  "product_quality_gate": "NOT_APPLICABLE_DOCUMENTATION_INPUT_MAINTENANCE",
+  "product_gate_a": "NOT_APPLICABLE_DOCUMENTATION_INPUT_MAINTENANCE",
+  "val_r03": "BLOCKED_MODEL_AUTHOR_ACCESS",
+  "validation_script_sha256": "sha256:49c4356d6fd657d796ff73d939d828b9c0bf3ede07a388240c6ce93ea3f87b59",
+  "input_and_document_checks": {
+    "status": "PASS",
+    "schema_valid_manifests": 5,
+    "source_file_hashes": 18,
+    "upstream_pins_and_clean_checkouts": 5,
+    "local_links_exist": 160,
+    "old_and_new_manifest_hashes_distinct": true,
+    "prior_h2_evidence_hashes_verified": true,
+    "protected_user_files_unchanged": true,
+    "public_bundle_private_path_and_token_pattern_scan": "PASS",
+    "generated_document_freshness": "NOT_APPLICABLE_NO_GENERATED_DOCUMENT_INPUT_CHANGE",
+    "baseline_catalog_sha256": "sha256:d5206eda93939402160c758276cd6d10211c70a632c0b580697f3a27755042cf",
+    "document_check_script_sha256": "sha256:8fe9e5bab349b9c5d4852a55927f8136e791483e06159463e967b05ac0a86103"
+  },
+  "product_payload_unchanged_since_historical_comparison": true,
+  "fresh_product_command_count": 15,
+  "full_audit_comparison_count": 5,
+  "full_lock_comparison_count": 5
+}
