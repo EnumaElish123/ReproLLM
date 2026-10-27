@@ -54,6 +54,10 @@ VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 
 五项目source-only盘点的零适用性不等于fresh Gate A或触发验收。VAL-R01/R02及
 公开模型VAL-R03保持各自已有通过身份；本P-A不重跑GPU/付费/发布矩阵。
 
+同日P-B：D-M-CE具体A和补丁已接受，产品任务`c9ee53d`的验收见
+[P-B报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pb/README.md)。
+本片为普通策略会话，资源Gate B按无milestone/release不激活；不把旧资源成功重新绑定。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放

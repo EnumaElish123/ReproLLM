@@ -296,6 +296,11 @@ A只增加内部 unparsed_conda，并在两个原 native helper 提前返回点 
 Pipfile/Poetry接受不扩展。详见[P-A报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pa.md)。
 规范仍按旧合同；更广R07-C保持OPEN，公共模型资源门的已有通过保持原绑定。
 
+同日P-B：维护者已[明确接受A及具体补丁](proposals/R07-C/conda-omissions/decision-accepted.json)。
+`c9ee53d`只增加已接受的内部code和两个原返回点setdefault；
+[P-B报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pb/README.md)分别记录已完成和待完成门。
+原P-A/PROPOSED字节不重写，Conda其余grammar和更广R07-C保持OPEN。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
