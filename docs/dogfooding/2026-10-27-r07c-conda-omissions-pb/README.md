@@ -1,6 +1,6 @@
 # R07-C D-M-CE P-B：Conda 省略声明的不确定性
 
-日期：2026-10-27。状态：本地完整验收通过；推送后独立核对精确交付HEAD的五项CI。
+日期：2026-10-27。状态：初次产品验收及Windows测试修订本地补验通过；最终交付CI另行核对。
 基线 `582df6194de788fb4d7ba2dd2fd69854e4507d4e`；产品任务
 `c9ee53d6e1e4000f5383ce9d66434bd2792396bd`，版本仍为未发布0.7.0。
 
@@ -53,7 +53,7 @@ Git兼容shim哈希、init分支能力、依赖/来源及生成文档检查先�
 security 359PASS，覆盖率94.56088561%，redaction 59/59 statements和24/24 branches。
 pytest报告848.04秒，完整质量层墙钟1031.770874秒；候选输入前后逐字节一致。
 检查还包括lint/type、schema及生成文档freshness、examples、自审计、wheel完整包载荷、
-隔离非editable安装后的26条命令；没有重复完整质量门。
+隔离非editable安装后的26条命令；该次收据绑定初次候选，后续测试修订另记。
 fresh五项目Gate A：50命令、31检查、10份完整JSON比较，墙钟85.609611秒。
 受影响消费者：130命令、111检查、15份完整JSON，另15份init文件及5份完整默认export
 逐字节符合独立预期，墙钟225.352283秒。合计180命令、142检查、25份完整JSON；
@@ -76,3 +76,26 @@ Gate B为NOT_APPLICABLE_NO_MILESTONE_OR_RELEASE。本次没有GPU、付费API或
 观察器、验收映射及来源清单由[source-index.json](source-index.json)引用，保存在外部会话目录。
 公开哈希只能标识原件，不能独立重现未公开正文；公开包不分发凭据、机器身份、权重或生成内容。
 精确最终HEAD五项CI在交付时独立核对；本报告生成时尚未推送，不预先声称CI通过。
+
+## Windows 测试修订
+
+初次交付`79ce007`的[官方CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/40458202141)
+为四项成功、Windows失败；公开测试注解给出唯一新增失败：
+`test_new_captures_preserve_input_bytes_and_do_not_disclose_omitted_text`。
+原始报告/检查JSON/索引保留该次候选及报告生成时身份，不改写为最终CI通过。
+
+根因是新增测试把`Path.write_text`创建的Windows CRLF文件与逻辑字符串的LF编码比较。
+最小标准库对照在任何扫描前已重现差异；同一真实测试的Windows换行模拟先1FAIL，
+修订后1PASS，故意实际改写文件的负例仍1FAIL。未替换产品解析器。
+修订`b200e34`只在写入后保存实际bytes，再在扫描后逐文件比较；保留全局写入方式、
+全部解析/隐私断言和96项用例，未改变产品、规范、gold、依赖或工作流。
+
+依据验证流程§3，在独立干净的`b200e34`候选重跑完整质量门：24项通过，
+4,888 tests PASS、2 slow deselected、无FAIL/ERROR/SKIP，security 359PASS，
+覆盖率94.56088561%，redaction 59/59 statements和24/24 branches。
+pytest报告839.91秒，质量层墙钟1024.211215秒；输入前后完全一致，
+143包文件及隔离安装后的13项检查/26命令通过。
+本修订Gate A为`NOT_APPLICABLE_TEST_ONLY`：初次`c9ee53d`产品字节及全部五项目结果
+保留原身份；没有把旧产品运行声称为新HEAD的fresh重跑。最终五项CI仍须核对交付HEAD。
+完整补验及失败/修订原件的哈希引用见[windows-followup.json](windows-followup.json)。
+后续保真测试直接采用实际写入字节作为基线，覆盖平台原生换行。
