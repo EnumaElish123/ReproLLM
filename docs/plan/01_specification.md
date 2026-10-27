@@ -916,7 +916,7 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 |---|---|---|---|
 | `env.dependency_manifest_present` | CRITICAL | always | none of `pyproject.toml` (with `[project]` or `[tool.poetry]`), `requirements*.txt`, `environment.yml`, `uv.lock`, `poetry.lock`, `Pipfile` exists |
 | `env.lockfile_present` | WARNING | dependency manifest present | no `uv.lock` / `poetry.lock` / `Pipfile.lock` / `conda-lock.yml` and no `requirements*.txt` satisfying the complete exact requirements closure contract below |
-| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.12. `pytorch` in conda counts as `torch`. |
+| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.13. `pytorch` in conda counts as `torch`. |
 | `env.python_version_declared` | WARNING | always | no `requires-python` in pyproject, no `.python-version`, no `python=` in environment.yml |
 | `env.secret_files_ignored` | CRITICAL | always | any file matching the forbidden patterns of §16.4 (except the template names `.env.example`, `.env.sample`, `.env.template`) exists and is tracked or not ignored by git (`git check-ignore` false) |
 | `env.reprollm_initialized` | INFO | level 0 only | `.reprollm/` or `reprollm.yaml` absent |
@@ -943,7 +943,7 @@ Only when that original ordinary-line parse fails may the fallback apply. If any
 
 Otherwise locate only the first ASCII SPACE or TAB immediately followed by `#` in the original stripped line. Strip the prefix before that delimiter and accept it only when the existing `packaging.requirements.Requirement` parser accepts it and its `url` is `None`. A missing delimiter, invalid prefix or URL prefix retains the original full-line failure and diagnostic; do not try a later delimiter or truncate failed diagnostic text. Other Unicode whitespace does not create a delimiter. Preserve original physical source path/line, declaration ordering, canonicalization, specifier and exact-version rules. A newly accepted line emits its declaration instead of its former unsupported-line event.
 
-Recompute closure qualification and package membership from the same existing graph and newly captured declarations under the complete exact requirements contract. Preserve exact/qualified credit and the priorities in §§12.3.3–12.3.12. Newly captured exact declarations may precede existing SKIP branches; newly captured nonexact critical declarations may create package use. Dependency profile detection and init consumers receive the same updated inventory. This can change findings, diagnostics, profiles, generated manifests and exit codes in either direction under the existing thresholds; it adds no new status, severity or persisted field.
+Recompute closure qualification and package membership from the same existing graph and newly captured declarations under the complete exact requirements contract. Preserve exact/qualified credit and the priorities in §§12.3.3–12.3.13. Newly captured exact declarations may precede existing SKIP branches; newly captured nonexact critical declarations may create package use. Dependency profile detection and init consumers receive the same updated inventory. This can change findings, diagnostics, profiles, generated manifests and exit codes in either direction under the existing thresholds; it adds no new status, severity or persisted field.
 
 This subset applies only to graph requirements lines, not to shared requirement-string parsing for other declaration formats. It does not add reads, candidates, roots, include syntax or edges, depth budget, constraints, editable/VCS/URL support, environment interpolation, continuation processing or manager execution. It is not full pip grammar compatibility: original literal `" @ "` exclusions remain, and a first delimiter inside a quoted marker is not skipped in search of an outer comment. Existing successful whole-line marker parses still take priority.
 
@@ -983,9 +983,9 @@ filesystem enumeration, dependency parsing, framework scanning or full detection
 No warning prose is parsed into coverage facts; no persisted fields are added.
 
 Nonempty rule results remain unchanged except for the declared-but-undetected
-profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.12.
+profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.13.
 Applicability skips, all other built-in rules and generated project rules are
-unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.12 remains an existing
+unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.13 remains an existing
 bounded-scan conclusion relative to the captured dependency view; it may depend
 on absence and be overturned by additional evidence. It is not relabelled as a
 fully proven violation. Listing/dependency/framework uncertainty and broader
@@ -1043,7 +1043,7 @@ Existing ignore/suppression handling still applies to every status: matching
 outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
 
 This continuation changes only the declared-but-undetected branch under the
-specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.12
+specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.13
 have their own bounded scopes. Upstream listing/detection completeness and broader
 sufficient-certificate policy remain unchanged or OPEN. It does not close the whole R07-C task, certify child execution
 or authorize rewriting historical reports.
@@ -1162,7 +1162,7 @@ associated captured format lock has a recorded read_issue from this section or
 SKIPPED/INFO instead of the used-but-unpinned FAIL/WARNING. This condition is
 independent of primary-Python coverage, including complete or zero-candidate
 views. Evaluate it before §12.3.3 when both policies could apply. Otherwise evaluate
-§12.3.3 followed by §12.3.6 (including §§12.3.7, 12.3.9, 12.3.10, 12.3.11 and 12.3.12), then §12.3.8, retaining all other existing behavior.
+§12.3.3 followed by §12.3.6 (including §§12.3.7, 12.3.9, 12.3.10, 12.3.11, 12.3.12 and 12.3.13), then §12.3.8, retaining all other existing behavior.
 
 The new finding retains rule ID, aliases, category, audit level and existing
 display-name mapping. Use this exact message:
@@ -1197,7 +1197,7 @@ Shape-compatible empty and nonmember lock bodies retain existing behavior, with
 the bounded structural-extraction checks in §12.3.5. Unsupported grammar outside
 those checks that does not raise the caught decoder error, missing candidates,
 dependency-manifest/requirements failures outside the explicit declaration-failure scopes
-of §§12.3.6–12.3.12 and omitted import origins remain outside these continuations. They are not silently certified by read_issue=None. Independent
+of §§12.3.6–12.3.13 and omitted import origins remain outside these continuations. They are not silently certified by read_issue=None. Independent
 listing, dependency reading/grammar, README/config/framework completeness and broader
 sufficient certificates remain OPEN R07-C work.
 
@@ -1266,7 +1266,7 @@ dependency version, historical report or five-project gold is changed.
 
 This closes only these explicit decoded shapes. Other package-name grammar,
 package values/versions, manager format completeness, dependency-manifest or
-requirements failures outside §§12.3.6–12.3.12, omitted candidates/imports, listing and framework
+requirements failures outside §§12.3.6–12.3.13, omitted candidates/imports, listing and framework
 completeness, and broader sufficient certificates remain OPEN R07-C work.
 
 ### 12.3.6 Known dependency-declaration body failures (R07-C D-M)
@@ -1274,7 +1274,8 @@ completeness, and broader sufficient certificates remain OPEN R07-C work.
 For `env.llm_critical_deps_pinned` only, retain typed internal evidence of the
 following existing dependency-body capture failures. `DeclarationReadIssue` uses
 `unreadable` and `invalid_syntax` here, plus the bounded `invalid_structure`
-extensions in §§12.3.7, 12.3.11 and 12.3.12 and `unparsed_requirement` in §§12.3.9–12.3.10;
+extensions in §§12.3.7, 12.3.11 and 12.3.12, `unparsed_requirement` in §§12.3.9–12.3.10,
+and the bounded `unparsed_conda` omission fact in §12.3.13;
 `Declarations.declaration_read_issues`
 maps logical repository-relative source paths to these codes and defaults to an
 empty dictionary for legacy/manual values. It is not a persisted schema field.
@@ -1299,7 +1300,9 @@ unsupported requirements lines/directives, invalid include syntax, cycles,
 depth exhaustion, unexpanded nodes, decoded wrong structures and unsupported
 entry grammar do not by themselves create either body-failure code. Only the
 explicit post-decode shapes in §§12.3.7, 12.3.11 and 12.3.12 may create `invalid_structure`; other
-remaining cases are not certified by an empty failure dictionary. Section 12.3.8 separately records the final unexpanded requirements depth frontier without adding a body-failure code.
+remaining cases are not certified by an empty failure dictionary. Section 12.3.13
+separately records only the two omitted native Conda-string branches, without
+extending parsing or declaring Conda syntax invalid. Section 12.3.8 separately records the final unexpanded requirements depth frontier without adding a body-failure code.
 
 Keep the current canonical in-use set and package iteration. Existing qualified
 lock or exact-declaration credit wins first, followed by the existing D-F/D-S
@@ -1350,7 +1353,7 @@ retains the findings. Thresholds, renderers, engine, scanner, rule IDs, schemas,
 dependencies, historical reports and five-project gold stay unchanged.
 
 This bounded body-capture policy does not settle decoded declaration structure
-outside §§12.3.7, 12.3.11 and 12.3.12, readable line/entry grammar outside §§12.3.9–12.3.10, include-graph failures outside §12.3.8, omitted candidates,
+outside §§12.3.7, 12.3.11 and 12.3.12, readable line/entry grammar outside §§12.3.9–12.3.10 and §12.3.13, include-graph failures outside §12.3.8, omitted candidates,
 unknown package use, listing, README/config/framework completeness or broader
 sufficient certificates. The whole R07-C task remains OPEN.
 
@@ -1489,7 +1492,7 @@ unreadable, invalid syntax or invalid structure.
 
 Keep the current canonical in-use set and iteration. Exact-declaration or
 qualified-lock credit wins first, followed by D-F/D-S, then D-L, then D-M
-(including §§12.3.7, 12.3.9, 12.3.10, 12.3.11 and 12.3.12). Only after those branches, for each remaining package that
+(including §§12.3.7, 12.3.9, 12.3.10, 12.3.11, 12.3.12 and 12.3.13). Only after those branches, for each remaining package that
 would receive the used-but-unpinned FAIL/WARNING, a nonempty
 `unexpanded_requirement_targets` produces one SKIPPED/INFO finding. This branch
 is independent of primary-Python coverage. Do not add a per-package PASS or
@@ -1537,7 +1540,7 @@ This is only the specified final depth frontier. Requirements string/line,
 directive, continuation, comment, URL/VCS/editable, constraints and include
 syntax support do not expand. Cycles and complete-but-nonexact closures do not
 trigger it. Reached candidate exclusions, omitted roots/candidates/use, other
-graph uncertainty, manager package-value grammar outside §§12.3.9–12.3.12, listing, README/config/
+graph uncertainty, manager package-value grammar outside §§12.3.9–12.3.13, listing, README/config/
 framework completeness and sufficient certificates remain OPEN R07-C work.
 The whole R07-C task is not closed by this slice.
 
@@ -1821,6 +1824,77 @@ manager execution, new sources, requirements/include/Conda grammar and broader
 omitted use/candidates/listing/README/config/framework completeness. Do not change
 engine, scanner, redaction, persisted schemas, dependencies, package version,
 five-project gold or historical artifacts. Wider R07-C remains OPEN.
+
+### 12.3.13 Bounded omitted Conda string entries (R07-C D-M-CE)
+
+Extend the internal DeclarationReadIssue Literal with `unparsed_conda` for only
+the TWO existing early-return branches of `_add_conda_entry` reached by actual
+native string members of the already decoded `dependencies` list in a captured
+`environment.yml` or `environment.yaml`:
+
+1. The existing `_CONDA_NAME_RE.fullmatch(entry.strip())` returns None.
+2. The match exists, but its existing `rest` starts with `::` or `/`.
+
+At each existing return use
+`result.declaration_read_issues.setdefault(path, "unparsed_conda")`, retaining
+all original diagnostics and returns. This means the bounded extractor omitted
+that traversed string; it is not a claim that Conda rejects it, that it names a
+critical package or that restoring it supplies an exact pin. Conda's supported
+MatchSpec syntax is broader than this extractor. Do not reinterpret the internal
+Python `unparsed_requirement` code, add a persisted field, or change a helper
+return type/caller. No Conda library, solver or installer is executed.
+
+The two literal predicates are the entire scope, not a general syntax check.
+Empty/whitespace strings qualify because the native loop has no pip-style blank
+guard. Some leading wildcard/punctuation and decoded multiline strings can also
+qualify. A channel-qualified string taking the second return qualifies without
+parsing its channel, subdir, name, version or build. Use the existing stripped
+string and raw matched rest; do not remove inner spaces/comments or normalize
+URLs. Unknown installer/selector mappings and unvisited members remain outside.
+Embedded pip keeps its independently accepted actual Requirement-call policy.
+
+Every branch reaching the original declaration append remains unchanged, even
+when it emits the same unsupported diagnostic or has no exact version. This
+excludes ordinary numeric ranges, complex suffixes, unsupported wildcard/build/
+version strings, URL-looking heads such as `https`, and forms where whitespace
+precedes a channel separator or slash. Keep all bare-name, numeric single-equals,
+double-equals and literal-build declarations, names, specifiers, exact credit,
+ordering and original outer dependency ordinals. Do not derive the new fact from
+`unparsed` text, `exact is None`, declaration counts or a guessed package name.
+
+Existing whole-document structure checks run before entry traversal and keep
+their cause even when the malformed member appears later in the document. Among
+actual entry calls, an earlier embedded-pip failure or Conda omission keeps the
+first reason for that logical path. Do not overwrite it. Preserve partial valid
+siblings, other files, project qualification, uncertain-directory barriers,
+requirements graph, lock inventories/association, source/read/helper traces,
+presence semantics and existing line fallbacks. The new fact adds no read, retry,
+candidate, barrier, include edge, package use or declaration.
+
+Reuse the existing §12.3.6 consumption and exact message/hint/evidence: existing
+exact/qualified credit first, then D-F/D-S, D-L, D-M including this cause, then
+D-G. Earlier findings remain byte-for-byte; an already D-M-skipped finding may
+gain only another distinct sorted source path. Keep the first existing package
+declaration/import evidence. Python coverage does not determine this cause;
+no-known-use applicability and the empty-result Python veto retain their policy.
+
+Repository-wide conservative influence is an explicitly accepted product cost,
+not an implication of Conda validity. Even an omitted blank or unrelated
+noncritical entry in another project can replace every remaining currently used,
+uncredited critical package WARNING with SKIPPED/INFO. No hidden pin, positive
+credit, complete scan or reproducibility is certified. FAIL-only overrides do
+not promote the SKIP; suppression, thresholds and deterministic sorting retain
+their behavior. An isolated WARNING/promoted CRITICAL gate can change 1 to 0,
+independent qualifying findings can still fail, default text can show PASS with
+skips and default export can lose the previous notable entry; full JSON keeps
+the SKIP. Profiles, hints and init still use the unchanged captured inventory.
+
+Retained-name Conda grammar, other package/value validation, unknown installer/
+selector forms, omitted use/candidates/listing/README/config/framework and
+broader sufficient certificates remain OPEN. Do not change engine, scanner,
+redaction, persisted schemas, dependencies, version, five-project gold or
+historical artifacts. D-M-CE is a local R07-C label, not a frozen architecture
+decision. This continuation does not complete wider R07-C.
 
 ### 12.4 `model.*` (M3 presence, M4 lock)
 

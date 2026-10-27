@@ -29,7 +29,7 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
 DeclarationReadIssue = Literal[
-    "unreadable", "invalid_syntax", "invalid_structure", "unparsed_requirement"
+    "unreadable", "invalid_syntax", "invalid_structure", "unparsed_requirement", "unparsed_conda"
 ]
 LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
@@ -811,11 +811,13 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
 def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -> None:
     parsed = _CONDA_NAME_RE.fullmatch(entry.strip())
     if parsed is None:
+        result.declaration_read_issues.setdefault(path, "unparsed_conda")
         result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
         return
     head, rest = parsed.group("name"), parsed.group("rest")
     # A channel or subdir prefix does not identify a package in the bounded subset.
     if rest.startswith(("::", "/")):
+        result.declaration_read_issues.setdefault(path, "unparsed_conda")
         result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
         return
     exact = None

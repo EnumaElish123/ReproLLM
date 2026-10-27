@@ -521,7 +521,7 @@ def test_a15_conda_grammar_diagnostics_do_not_themselves_opt_in_to_pip_failure(
                 "environment.yml:4: unsupported conda declaration",
             )
             + (("environment.yml:5: torch==",) if pip_failure else ()),
-            issues={"environment.yml": "unparsed_requirement"} if pip_failure else {},
+            issues={"environment.yml": "unparsed_conda"},
         ),
         scanner,
         ["environment.yml"],

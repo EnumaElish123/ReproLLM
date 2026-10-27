@@ -148,7 +148,11 @@ def test_conda_support_matrix_and_public_consumers(
     assert len(critical) == (0 if expected_exact is not None else 1)
     lock = LockfilePresentRule().check(ctx)
     assert len(lock) == 1
-    for finding in critical + lock:
+    omitted = case_id in {"channel", "channel-subdir", "empty-name", "empty-input"}
+    for finding in critical:
+        assert finding.status == (FindingStatus.SKIPPED if omitted else FindingStatus.FAIL)
+        assert finding.severity == (Severity.INFO if omitted else Severity.WARNING)
+    for finding in lock:
         assert finding.status == FindingStatus.FAIL
         assert finding.severity == Severity.WARNING
     if critical:
@@ -259,8 +263,13 @@ def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
         finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected
     }
     assert set(by_rule) == selected
+    omitted = entry == "conda-forge::torch==2.5.1"
     assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
-        FindingStatus.PASS.value if exact else FindingStatus.FAIL.value
+        FindingStatus.PASS.value
+        if exact
+        else FindingStatus.SKIPPED.value
+        if omitted
+        else FindingStatus.FAIL.value
     )
     assert by_rule["env.lockfile_present"]["status"] == FindingStatus.FAIL.value
     warnings = {
@@ -270,4 +279,4 @@ def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
         and finding["status"] == FindingStatus.FAIL.value
         and finding["severity"] == Severity.WARNING.value
     }
-    assert warnings == ({"env.lockfile_present"} if exact else selected)
+    assert warnings == ({"env.lockfile_present"} if exact or omitted else selected)

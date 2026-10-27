@@ -9,6 +9,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-CE (spec §12.3.13): record internal `unparsed_conda` only when
+  the existing native Conda extractor returns without a declaration because its
+  name pattern does not match or the matched remainder starts with `::` or `/`.
+  Preserve retained ranges/suffixes, diagnostics, earlier causes, partial
+  declarations, barriers and exact/qualified-lock credit. Reuse D-M's existing
+  repository-wide conservative SKIP policy, including blank or unrelated omitted
+  entries; an isolated warning/promoted-critical gate can change from exit 1 to 0.
+  No grammar/read expansion, package-name inference, engine/schema, dependency,
+  historical-record or version-release change.
+
 - R07-C D-M-PF (spec §12.3.12): record an explicit non-string `version`
   only inside already-traversed Pipfile `packages` / `dev-packages` mappings as
   internal `invalid_structure`. Preserve earlier causes, partial declarations,
