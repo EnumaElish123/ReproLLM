@@ -1,0 +1,703 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "38b59cc41f8870b63f00321b8278cfc88b14a86b",
+  "kind": "D-M-CE current integrated observations; no candidate execution",
+  "cases": [
+    {
+      "id": "CE01",
+      "label": "exact-double-equals",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch==2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "exact-double-equals",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "empty",
+        "critical_cause": "positive-credit",
+        "unparsed_count": 0,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE02",
+      "label": "single-equals-prefix",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch=2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "single-equals-prefix",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 0,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE03",
+      "label": "exact-build",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch=2.5.1=py310_cpu\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "exact-build",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "empty",
+        "critical_cause": "positive-credit",
+        "unparsed_count": 0,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE04",
+      "label": "ordinary-bare-name",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "ordinary-bare-name",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 0,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE05",
+      "label": "omitted-empty",
+      "files": {
+        "environment.yml": "dependencies:\n- ''\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-empty",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE06",
+      "label": "omitted-whitespace",
+      "files": {
+        "environment.yml": "dependencies:\n- \"  \\t \"\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-whitespace",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE07",
+      "label": "omitted-channel",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch::pytorch==2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-channel",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE08",
+      "label": "omitted-channel-subdir",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge/linux-64::pytorch=2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-channel-subdir",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE09",
+      "label": "omitted-slash",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch/subdir\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-slash",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE10",
+      "label": "omitted-leading-separator",
+      "files": {
+        "environment.yml": "dependencies:\n- ::pytorch==2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-leading-separator",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE11",
+      "label": "omitted-leading-wildcard",
+      "files": {
+        "environment.yml": "dependencies:\n- '*torch*'\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-leading-wildcard",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE12",
+      "label": "retained-url-looking-head",
+      "files": {
+        "environment.yml": "dependencies:\n- https://example.invalid/packages/pytorch\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-url-looking-head",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "https"
+        ]
+      }
+    },
+    {
+      "id": "CE13",
+      "label": "retained-spaced-channel",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge ::pytorch=2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-spaced-channel",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "conda-forge"
+        ]
+      }
+    },
+    {
+      "id": "CE14",
+      "label": "retained-spaced-slash",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch /subdir\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-spaced-slash",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE15",
+      "label": "retained-numeric-range",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch>=2.5\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-numeric-range",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE16",
+      "label": "retained-wildcard-version",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch==2.5.*\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-wildcard-version",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE17",
+      "label": "retained-complex-range",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch>=2.5,<3.0\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-complex-range",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE18",
+      "label": "retained-prerelease",
+      "files": {
+        "environment.yml": "dependencies:\n- pytorch==2.5.1rc1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "retained-prerelease",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE19",
+      "label": "omitted-multiline",
+      "files": {
+        "environment.yml": "dependencies:\n- 'pytorch\n\n  ==2.5.1'\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "omitted-multiline",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE20",
+      "label": "exact-sibling-priority",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n- pytorch==2.5.1\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "exact-sibling-priority",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "empty",
+        "critical_cause": "positive-credit",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE21",
+      "label": "requirements-exact-priority",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "requirements.txt": "torch==2.5.1\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "requirements-exact-priority",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "empty",
+        "critical_cause": "positive-credit",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "torch"
+        ]
+      }
+    },
+    {
+      "id": "CE22",
+      "label": "qualified-conda-lock-priority",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "conda-lock.yml": "package:\n  - name: pytorch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "qualified-conda-lock-priority",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "empty",
+        "critical_cause": "positive-credit",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE23",
+      "label": "associated-lock-failure-priority",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "conda-lock.yml": "package: [\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "associated-lock-failure-priority",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "skipped",
+        "critical_cause": "associated-lock",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE24",
+      "label": "prior-structure-precheck",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n- pip:\n  - 42\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "prior-structure-precheck",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {
+          "environment.yml": "invalid_structure"
+        },
+        "critical_status": "skipped",
+        "critical_cause": "declaration",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE25",
+      "label": "pip-failure-before-omission",
+      "files": {
+        "environment.yml": "dependencies:\n- pip:\n  - torch @\n- conda-forge::numpy\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "pip-failure-before-omission",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {
+          "environment.yml": "unparsed_requirement"
+        },
+        "critical_status": "skipped",
+        "critical_cause": "declaration",
+        "unparsed_count": 2,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE26",
+      "label": "pip-failure-after-omission",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n- pip:\n  - torch @\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "pip-failure-after-omission",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {
+          "environment.yml": "unparsed_requirement"
+        },
+        "critical_status": "skipped",
+        "critical_cause": "declaration",
+        "unparsed_count": 2,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE27",
+      "label": "unknown-installer-mapping",
+      "files": {
+        "environment.yml": "dependencies:\n- custom:\n  - conda-forge::numpy\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "unknown-installer-mapping",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 0,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE28",
+      "label": "embedded-pip-blank-control",
+      "files": {
+        "environment.yml": "dependencies:\n- pip:\n  - ''\n  - '  '\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "embedded-pip-blank-control",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 0,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE29",
+      "label": "no-known-use-omission",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "pass\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "no-known-use-omission",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "not-applicable",
+        "critical_cause": "no-use",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE30",
+      "label": "yaml-basename-omission",
+      "files": {
+        "environment.yaml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "yaml-basename-omission",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE31",
+      "label": "nested-unrelated-source",
+      "files": {
+        "other/environment.yml": "dependencies:\n- conda-forge::requests\n",
+        "train.py": "import torch\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "nested-unrelated-source",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE32",
+      "label": "two-environment-basenames",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "environment.yaml": "dependencies: []\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "two-environment-basenames",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE33",
+      "label": "unpaired-lock-no-credit",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "unpaired-lock-no-credit",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "warning",
+        "critical_cause": "missing",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE34",
+      "label": "python-gap-lock-origin-priority",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "poetry.lock": "[[package]]\nname=\"torch\"\n"
+      },
+      "coverage": "gap",
+      "scope_classification": "python-gap-lock-origin-priority",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {},
+        "critical_status": "skipped",
+        "critical_cause": "origin",
+        "unparsed_count": 1,
+        "declaration_names": []
+      }
+    },
+    {
+      "id": "CE35",
+      "label": "prior-poetry-type-issue",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "pyproject.toml": "[tool.poetry.dependencies]\nrequests={version=false}\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "prior-poetry-type-issue",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {
+          "pyproject.toml": "invalid_structure"
+        },
+        "critical_status": "skipped",
+        "critical_cause": "declaration",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "requests"
+        ]
+      }
+    },
+    {
+      "id": "CE36",
+      "label": "prior-pipfile-type-issue",
+      "files": {
+        "environment.yml": "dependencies:\n- conda-forge::numpy\n",
+        "train.py": "import torch\n",
+        "Pipfile": "[packages]\nrequests={version=false}\n"
+      },
+      "coverage": "complete",
+      "scope_classification": "prior-pipfile-type-issue",
+      "expected_current": {
+        "manifest_present": true,
+        "declaration_read_issues": {
+          "Pipfile": "invalid_structure"
+        },
+        "critical_status": "skipped",
+        "critical_cause": "declaration",
+        "unparsed_count": 1,
+        "declaration_names": [
+          "requests"
+        ]
+      }
+    }
+  ]
+}

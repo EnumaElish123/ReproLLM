@@ -8,6 +8,16 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The next R07-C Conda-omission P-A packet is
+[D-M-CE](reliability-2026-10-03/proposals/R07-C/conda-omissions/README.md),
+prepared at `38b59cc` on 2026-10-27. It proposes only a new internal cause at
+two existing native-string early returns; retained ranges/suffixes keep their
+behavior. Thirty-two current helper cases and36 integrated current observations
+pass their frozen expectations; candidate-policy executions are zero.
+The [P-A report](../dogfooding/2026-10-27-r07c-conda-omissions-pa.md) distinguishes
+source-only five-project zero applicability from future product acceptance.
+Status is PROPOSED: accept its exact patches and global SKIP/exit costs before P-B.
+
 The later 2026-10-27 maintainer instruction replaces the inaccessible Llama-2
 metadata model with public DistilGPT2. The current five-case catalog is
 [M4-META-PUBLIC-20261027](../dogfooding/metadata-public-model-2026-10-27/README.md)

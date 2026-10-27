@@ -1,0 +1,108 @@
+"""Documentation-only Conda-omission current-source observer. Never applies a candidate policy."""
+from __future__ import annotations
+import argparse,dataclasses,datetime,hashlib,json,socket,subprocess,sys
+from pathlib import Path,PurePath
+
+def canonical(value):
+    if isinstance(value,(datetime.datetime,datetime.date,datetime.time)):return {"$python_type":type(value).__name__,"iso8601":value.isoformat()}
+    if dataclasses.is_dataclass(value): return canonical(dataclasses.asdict(value))
+    if isinstance(value,dict): return {str(k):canonical(v) for k,v in sorted(value.items(),key=lambda x:str(x[0]))}
+    if isinstance(value,(set,frozenset)): return sorted(canonical(v) for v in value)
+    if isinstance(value,(list,tuple)): return [canonical(v) for v in value]
+    if isinstance(value,PurePath): return value.as_posix()
+    return value
+
+def encode(value): return (json.dumps(canonical(value),ensure_ascii=False,sort_keys=True,indent=2,allow_nan=False)+'\n').encode('utf8')
+def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument('--repo',type=Path,required=True);ap.add_argument('--cases',type=Path,required=True)
+    ap.add_argument('--root',type=Path,required=True);ap.add_argument('--output',type=Path,required=True)
+    args=ap.parse_args();repo=args.repo.resolve();plan=json.loads(args.cases.read_text(encoding='utf8'))
+    commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip()
+    assert commit==plan['baseline_commit'],(commit,plan['baseline_commit'])
+    original_files={p.relative_to(repo).as_posix():digest(p) for p in sorted((repo/'src').rglob('*.py'))}
+    guarded=[]
+    class Guard:
+        def find_spec(self,fullname,path=None,target=None):
+            if fullname.split('.')[0] in {'torch','transformers','vllm','huggingface_hub','numpy'}:
+                guarded.append(fullname);raise AssertionError('Forbidden heavy import: '+fullname)
+            return None
+    sys.meta_path.insert(0,Guard())
+    def audit(event,arguments):
+        if event in {'socket.connect','socket.bind','subprocess.Popen'}: raise AssertionError('Forbidden network/process event: '+event)
+    sys.addaudithook(audit)
+    sys.path.insert(0,str(repo/'src'))
+    from reprollm import __version__
+    assert __version__=='0.7.0'
+    from reprollm.core.context import AuditContext
+    from reprollm.core.git import GitInfo
+    from reprollm.core.scanner import RepoScanner
+    from reprollm.core.deps import scan_dependencies,canonical_dep_name
+    from reprollm.core.pyscan import scan_python
+    from reprollm.core import deps as deps_module
+    from reprollm.rules import env as env_module
+    from packaging.requirements import Requirement
+    env_module.installed_versions=lambda:{}
+    requirement_calls=[];version_field_calls=[]
+    original_version_field=deps_module._dependency_version_field
+    def version_field(value,*,allow_bare):
+        answer=original_version_field(value,allow_bare=allow_bare)
+        version_field_calls.append({"value":canonical(value),"value_type":type(value).__name__,"allow_bare":allow_bare,"result":answer})
+        return answer
+    deps_module._dependency_version_field=version_field
+    def requirement(value):
+        requirement_calls.append(value);return Requirement(value)
+    deps_module.Requirement=requirement
+    class RecordingScanner(RepoScanner):
+        def __init__(self,root): super().__init__(root,GitInfo(is_repo=False));self.reads=[];self.lists=[];self.candidates=[]
+        def read_text(self,rel_path,max_bytes=512*1024):
+            self.reads.append([rel_path,max_bytes]);return super().read_text(rel_path,max_bytes)
+        def analysis_files(self):
+            result=super().analysis_files();self.lists.append(list(result));return result
+        def is_analysis_candidate(self,path):
+            self.candidates.append(path);return super().is_analysis_candidate(path)
+    assert not args.root.exists(),'Refuse existing replay root';args.root.mkdir(parents=True)
+    all_records=[];failures=[]
+    for case in plan['cases']:
+        requirement_calls.clear();version_field_calls.clear();root=args.root/case['id'];root.mkdir()
+        for name,body in case['files'].items():
+            target=root/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(body.encode('utf8'))
+        scanner=RecordingScanner(root);decls=scan_dependencies(scanner)
+        dependency_reads=list(scanner.reads);dependency_lists=list(scanner.lists)
+        parsed=scan_python(scanner)
+        if case['coverage']=='gap':
+            parsed.python_candidate_count=2;parsed.python_selected_count=1;parsed.python_parsed_count=1;parsed.python_file_limit=1
+        ctx=AuditContext(root);ctx._git=GitInfo(is_repo=False);ctx._fs=scanner;ctx._deps=decls;ctx._pyscan=parsed
+        rules={}
+        critical=None
+        for cls in (env_module.DependencyManifestPresentRule,env_module.LockfilePresentRule,env_module.LlmCriticalDepsPinnedRule):
+            rule=cls();applies=rule.applies(ctx);findings=rule.check(ctx)
+            rules[rule.id]={'applies':applies,'skip_reason':rule.skip_reason(ctx),'pass_skip_reason':rule.pass_skip_reason(ctx),'findings':[f.model_dump(mode='json') for f in findings]}
+            if cls is env_module.LlmCriticalDepsPinnedRule: critical=rules[rule.id]
+        findings=critical['findings']
+        if not critical['applies']:status='not-applicable';cause='no-use'
+        elif not findings:status='empty';cause='positive-credit'
+        else:
+            assert len(findings)==1,findings
+            finding=findings[0];status='warning' if finding['status']=='fail' and finding['severity']=='WARNING' else finding['status']
+            message=finding['message']
+            cause=next((kind for phrase,kind in [('an associated format lock','associated-lock'),('import-origin credit','origin'),('Python analysis is incomplete','origin'),('a dependency declaration body','declaration'),('a supported requirements include','depth'),('not pinned to an exact version','missing')] if phrase in message),'unknown')
+        origins=[(canonical_dep_name(item.module.split('.',1)[0]),item.path) for item in parsed.imports]
+        projection={'manifest_present':decls.manifest_present,'lockfile_count':len(decls.lockfiles),'qualified_lock_packages':sorted(decls.qualified_lock_packages(origins)),'unparsed_count':len(decls.unparsed),'declarations':[[d.name,d.display_name,d.specifier,d.exact_version,d.source_file,d.line] for d in decls.declarations],'unparsed':decls.unparsed,'declaration_read_issues':decls.declaration_read_issues,'requirement_calls':list(requirement_calls),'critical_status':status,'critical_cause':cause,'unexpanded_requirement_targets':decls.unexpanded_requirement_targets}
+        projection['declaration_names']=[d.name for d in decls.declarations]
+        expected=case['expected_current'];checks={k:canonical(projection[k])==canonical(v) for k,v in expected.items()}
+        origins=[(canonical_dep_name(item.module.split('.',1)[0]),item.path) for item in parsed.imports]
+        record={'id':case['id'],'files':case['files'],'input_hashes':{name:hashlib.sha256(body.encode('utf8')).hexdigest() for name,body in sorted(case['files'].items())},'declarations':decls,'dependency_reads':dependency_reads,'dependency_analysis_files_calls':dependency_lists,'scanner_candidate_calls':scanner.candidates,'all_reads':scanner.reads,'all_analysis_files_calls':scanner.lists,'requirement_calls':list(requirement_calls),'python':parsed,'qualified_lock_packages':decls.qualified_lock_packages(origins),'unverified_lock_paths':decls.unverified_lock_paths(origins),'raw_rules':rules,'current_projection':projection,'literal_assertions':checks,'scope_classification':case['scope_classification'],'version_field_calls':list(version_field_calls),'candidate_policy_executed':False}
+        all_records.append(record)
+        if not all(checks.values()): failures.append({'id':case['id'],'failed_fields':[k for k,v in checks.items() if not v],'expected':expected,'actual':projection})
+    after={p.relative_to(repo).as_posix():digest(p) for p in sorted((repo/'src').rglob('*.py'))}
+    assert original_files==after,'Product source changed'
+    modules={name:{'path':Path(module.__file__).resolve().relative_to(repo).as_posix(),'sha256':digest(Path(module.__file__))} for name,module in sorted(sys.modules.items()) if name.startswith('reprollm') and getattr(module,'__file__',None)}
+    assert not guarded
+    document={'schema_version':1,'reprollm_version':__version__,'kind':'Conda-omission-current-source-observations','baseline_commit':commit,'case_plan_sha256':digest(args.cases),'python_version':'.'.join(map(str,sys.version_info[:3])),'observer_sha256':digest(Path(__file__)),'source_files':original_files,'source_files_after':after,'imported_product_modules':modules,'controls':{'installed_versions':{},'real_non_git_scanner':True,'network_and_subprocess_guard':True,'heavy_import_guard':True,'synthetic_coverage_gap_cases':['CE34'],'candidate_policy_executed':False},'case_count':len(all_records),'assertion_count':sum(len(r['literal_assertions']) for r in all_records),'assertions_passed':not failures,'literal_assertion_failures':failures,'records':all_records}
+    args.output.parent.mkdir(parents=True,exist_ok=True);assert not args.output.exists(),'Refuse output overwrite';args.output.write_bytes(encode(document))
+    print(json.dumps({'case_count':len(all_records),'assertions_passed':not failures,'sha256':digest(args.output),'failures':failures},ensure_ascii=False))
+    return 0 if not failures else 1
+if __name__=='__main__':raise SystemExit(main())

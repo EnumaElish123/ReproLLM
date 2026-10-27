@@ -49,6 +49,11 @@ VAL-R01/R02 新通过共同绑定本候选。原始五 manifest 仍缺，当前 
 新案例在 `00c2392` 产品字节通过五项目15阶段 metadata 回放、51次产品命令及
 完整比较，当前 VAL-R03 为 PASS；原 gated 成功门保持 SUPERSEDED_NOT_PASSED。
 
+同日开发接续：[R07-C D-M-CE P-A](../../dogfooding/2026-10-27-r07c-conda-omissions-pa.md)
+已完成当前行为、独立来源及精确提案准备，状态PROPOSED；尚未实施新产品政策。
+五项目source-only盘点的零适用性不等于fresh Gate A或触发验收。VAL-R01/R02及
+公开模型VAL-R03保持各自已有通过身份；本P-A不重跑GPU/付费/发布矩阵。
+
 下文完成条件是任务合同；已有结果保留候选、机器和日期，不以材料准备替代真实反馈或正式验证。
 
 ## 2. A01-A：先恢复输入，再安排资源回放

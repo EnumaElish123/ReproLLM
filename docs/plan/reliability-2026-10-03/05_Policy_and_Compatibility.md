@@ -287,6 +287,15 @@ HarmBench 的两条新声明、两条诊断删除与 closure 变化按独立预�
 
 建议提案提交：`docs(spec): define conclusions under incomplete scans (R07-C)`。
 
+2026-10-27：下一项独立 P-A 为 [D-M-CE Conda 字符串省略](proposals/R07-C/conda-omissions/README.md)。
+具体 A/B、两份精确未应用补丁、36组未来验收、官方边界和独立复核已准备。
+A只增加内部 unparsed_conda，并在两个原 native helper 提前返回点 setdefault；
+所有仍append声明的range/复杂suffix保持。32个current helper与36个集成观察通过，
+候选执行0；五项目supported environment文件为0，不能据此称触发或Gate A已通过。
+状态PROPOSED，须独立接受全仓保守WARNING→SKIP、孤立exit1→0及text/export成本；
+Pipfile/Poetry接受不扩展。详见[P-A报告](../../dogfooding/2026-10-27-r07c-conda-omissions-pa.md)。
+规范仍按旧合同；更广R07-C保持OPEN，公共模型资源门的已有通过保持原绑定。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
