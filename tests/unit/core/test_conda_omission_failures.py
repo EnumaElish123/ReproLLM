@@ -709,6 +709,7 @@ def test_new_captures_preserve_input_bytes_and_do_not_disclose_omitted_text(tmp_
         "historical-audit.json": '{"schema_version":"historical","note":"retain bytes"}\n',
     }
     _write(tmp_path, files)
+    before = {name: (tmp_path / name).read_bytes() for name in files}
     expected = _expected(
         (DependencyDeclaration("torch", "pytorch", "==2.8.0", "2.8.0", "environment.yml", 2),),
         ("environment.yml:1: unsupported conda declaration",),
@@ -720,8 +721,8 @@ def test_new_captures_preserve_input_bytes_and_do_not_disclose_omitted_text(tmp_
     for result in captures:
         assert canary not in repr(result)
         assert str(tmp_path) not in repr(result)
-    for name, content in files.items():
-        assert (tmp_path / name).read_bytes() == content.encode("utf-8")
+    for name, content in before.items():
+        assert (tmp_path / name).read_bytes() == content
 
 
 def test_legacy_capture_defaults_stay_empty_and_independent() -> None:
