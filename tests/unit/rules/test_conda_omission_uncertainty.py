@@ -421,38 +421,47 @@ def test_omission_does_not_create_unknown_critical_use(
 
 
 @pytest.mark.parametrize(
-    ("entry", "value"),
+    ("entry", "value", "specifier_uncertain"),
     [
-        ("pytorch>=2.5", ">=2.5"),
-        ("pytorch==2.5.*", "(unsupported conda declaration)"),
-        ("pytorch>=2.5,<3.0", "(unsupported conda declaration)"),
-        ("pytorch==2.5.1rc1", "(unsupported conda declaration)"),
-        ("pytorch /subdir", "(unsupported conda declaration)"),
-        ("conda-forge ::pytorch=2.5.1", None),
-        ("https://example.invalid/packages/pytorch", None),
+        ("pytorch>=2.5", ">=2.5", False),
+        ("pytorch==2.5.*", "(unsupported conda declaration)", True),
+        ("pytorch>=2.5,<3.0", "(unsupported conda declaration)", True),
+        ("pytorch==2.5.1rc1", "(unsupported conda declaration)", True),
+        ("pytorch /subdir", "(unsupported conda declaration)", True),
+        ("conda-forge ::pytorch=2.5.1", None, True),
+        ("https://example.invalid/packages/pytorch", None, True),
     ],
 )
-def test_retained_name_grammar_still_warns_without_new_conda_uncertainty(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, entry: str, value: str | None
+def test_retained_name_grammar_keeps_range_warning_or_accepted_specifier_uncertainty(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    entry: str,
+    value: str | None,
+    specifier_uncertain: bool,
 ) -> None:
     _write(
         tmp_path,
         {"train.py": "import torch\n", "environment.yml": f"dependencies:\n- {entry}\n"},
     )
     ctx = _context(tmp_path, monkeypatch)
-    expected = _body_skip([])
-    expected.update(
-        severity="WARNING",
-        status="fail",
-        message="torch is used but not pinned to an exact version (suggestion: torch==<version>)",
-        fix_hint="Pin torch exactly, e.g. `torch==<version>`.",
-    )
+    expected = _body_skip(["environment.yml"] if specifier_uncertain else [])
+    if not specifier_uncertain:
+        expected.update(
+            severity="WARNING",
+            status="fail",
+            message=(
+                "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+            ),
+            fix_hint="Pin torch exactly, e.g. `torch==<version>`.",
+        )
     if value is not None:
-        expected["evidence"] = [
-            _evidence("environment.yml", line=1, value=value, note=f"declared as {value}")
-        ]
+        expected["evidence"][0] = _evidence(
+            "environment.yml", line=1, value=value, note=f"declared as {value}"
+        )
 
-    assert ctx.deps.declaration_read_issues == {}
+    assert ctx.deps.declaration_read_issues == (
+        {"environment.yml": "unparsed_conda_specifier"} if specifier_uncertain else {}
+    )
     assert [f.model_dump(mode="json") for f in LlmCriticalDepsPinnedRule().check(ctx)] == [expected]
 
 

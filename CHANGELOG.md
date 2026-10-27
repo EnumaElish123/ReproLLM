@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-M-CS (spec §12.3.14): record internal `unparsed_conda_specifier`
+  only at the existing retained-name Conda specifier-placeholder assignment.
+  Preserve the six legacy numeric-range forms, both omission returns, regexes,
+  declarations, diagnostics, earlier causes and exact/qualified-lock credit.
+  Reuse D-M's repository-wide conservative SKIP policy even for known nonexact
+  or unrelated restrictions; an isolated warning/promoted-critical gate can
+  change from exit 1 to 0. No grammar/read expansion, engine/schema, dependency,
+  historical-record, five-project gold or version-release change.
+
 - R07-C D-M-CE (spec §12.3.13): record internal `unparsed_conda` only when
   the existing native Conda extractor returns without a declaration because its
   name pattern does not match or the matched remainder starts with `::` or `/`.

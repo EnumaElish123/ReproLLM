@@ -293,12 +293,19 @@ def test_omission_adds_no_use_and_never_revokes_positive_credit(
 def test_excluded_entries_keep_entire_current_warning_and_exit_one(
     tmp_path: Path, body: str
 ) -> None:
-    """CE-A36: the accepted policy does not become a general Conda syntax validator."""
+    """CE-A36 controls retain warnings; accepted D-M-CS refines three retained suffixes."""
     repo = _repo(tmp_path)
     _body(repo, body)
     result = runner.invoke(app, ["audit", str(repo), "--format", "json", "--fail-on", "warning"])
-    assert result.exit_code == 1 and result.stderr == "", result.output
-    assert _report(result.stdout) == _expected_report(repo, [_failed_pin()])
+    cs_accepted = body in {
+        "dependencies: ['requests==2.4.*']\n",
+        "dependencies: ['https://example.invalid/pkg.whl']\n",
+        "dependencies: ['requests /file']\n",
+    }
+    assert result.exit_code == (0 if cs_accepted else 1) and result.stderr == "", result.output
+    assert _report(result.stdout) == _expected_report(
+        repo, [_skipped_pin() if cs_accepted else _failed_pin()]
+    )
 
 
 def _expected_export(state: str, *, mixed: bool = False, selected: str | None = None) -> str:

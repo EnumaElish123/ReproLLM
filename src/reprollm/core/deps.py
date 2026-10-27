@@ -29,7 +29,12 @@ from reprollm.core.scanner import RepoScanner, content_source_path
 _NAME_OVERRIDES = {"pytorch": "torch"}
 
 DeclarationReadIssue = Literal[
-    "unreadable", "invalid_syntax", "invalid_structure", "unparsed_requirement", "unparsed_conda"
+    "unreadable",
+    "invalid_syntax",
+    "invalid_structure",
+    "unparsed_requirement",
+    "unparsed_conda",
+    "unparsed_conda_specifier",
 ]
 LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
@@ -831,6 +836,7 @@ def _add_conda_entry(entry: str, path: str, lineno: int, result: Declarations) -
         result.unparsed.append(f"{path}:{lineno}: unsupported conda declaration")
         # Only known numeric ranges retain legacy evidence; arbitrary text is unsafe.
         if _CONDA_RANGE_RE.fullmatch(rest) is None:
+            result.declaration_read_issues.setdefault(path, "unparsed_conda_specifier")
             specifier = "(unsupported conda declaration)"
     result.declarations.append(
         DependencyDeclaration(canonical_dep_name(head), head, specifier, exact, path, lineno)

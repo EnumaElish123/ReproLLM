@@ -106,6 +106,31 @@ PIP_CASES = [
     ("pip-range", "torch>=2.5", None),
 ]
 
+SPECIFIER_GAP_CASES = frozenset(
+    {
+        "compound",
+        "wildcard-version",
+        "wildcard-build",
+        "empty-version",
+        "empty-build",
+        "extra-part",
+        "triple-equality",
+        "suffix-pre",
+        "suffix-post",
+        "suffix-local",
+        "epoch",
+        "trailing-version-dot",
+        "empty-version-component",
+        "signed-version",
+        "unicode-version",
+        "unicode-build",
+        "space-in-version",
+        "slash-in-build",
+        "bracket",
+        "regex",
+    }
+)
+
 
 @pytest.mark.parametrize(
     ("case_id", "entry", "expected_exact", "expected_name", "expected_specifier", "diagnosed"),
@@ -149,9 +174,19 @@ def test_conda_support_matrix_and_public_consumers(
     lock = LockfilePresentRule().check(ctx)
     assert len(lock) == 1
     omitted = case_id in {"channel", "channel-subdir", "empty-name", "empty-input"}
+    specifier_gap = case_id in SPECIFIER_GAP_CASES
+    assert ctx.deps.declaration_read_issues == (
+        {"environment.yml": "unparsed_conda"}
+        if omitted
+        else {"environment.yml": "unparsed_conda_specifier"}
+        if specifier_gap
+        else {}
+    )
     for finding in critical:
-        assert finding.status == (FindingStatus.SKIPPED if omitted else FindingStatus.FAIL)
-        assert finding.severity == (Severity.INFO if omitted else Severity.WARNING)
+        assert finding.status == (
+            FindingStatus.SKIPPED if omitted or specifier_gap else FindingStatus.FAIL
+        )
+        assert finding.severity == (Severity.INFO if omitted or specifier_gap else Severity.WARNING)
     for finding in lock:
         assert finding.status == FindingStatus.FAIL
         assert finding.severity == Severity.WARNING
@@ -227,27 +262,28 @@ def test_unknown_conda_evidence_does_not_echo_machine_paths_or_secrets(
     assert context.deps.declarations[0].specifier == "(unsupported conda declaration)"
     assert context.deps.declarations[0].exact_version is None
     assert context.deps.unparsed == ["environment.yml:1: unsupported conda declaration"]
+    assert context.deps.declaration_read_issues == {"environment.yml": "unparsed_conda_specifier"}
     findings = json.loads(result.stdout)["findings"]
     critical = [item for item in findings if item["rule_id"] == "env.llm_critical_deps_pinned"]
     assert len(critical) == 1
-    assert critical[0]["status"] == FindingStatus.FAIL.value
-    assert critical[0]["severity"] == Severity.WARNING.value
+    assert critical[0]["status"] == FindingStatus.SKIPPED.value
+    assert critical[0]["severity"] == Severity.INFO.value
     assert critical[0]["evidence"][0]["value"] == "(unsupported conda declaration)"
 
 
 @pytest.mark.parametrize(
-    ("entry", "exact"),
+    ("entry", "exact", "uncertain"),
     [
-        ("torch=2.5.1", False),
-        ("torch==2.5.1", True),
-        ("torch=2.5.1=cuda12.1", True),
-        ("torch==2.5.1=py_0+cuda-12", True),
-        ("torch=2.5.1=cuda*", False),
-        ("conda-forge::torch==2.5.1", False),
+        ("torch=2.5.1", False, False),
+        ("torch==2.5.1", True, False),
+        ("torch=2.5.1=cuda12.1", True, False),
+        ("torch==2.5.1=py_0+cuda-12", True, False),
+        ("torch=2.5.1=cuda*", False, True),
+        ("conda-forge::torch==2.5.1", False, True),
     ],
 )
 def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
-    tmp_path: Path, entry: str, exact: bool
+    tmp_path: Path, entry: str, exact: bool, uncertain: bool
 ) -> None:
     (tmp_path / "environment.yml").write_text(
         "dependencies:\n  - " + json.dumps(entry) + "\n", encoding="utf-8"
@@ -263,12 +299,11 @@ def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
         finding["rule_id"]: finding for finding in findings if finding["rule_id"] in selected
     }
     assert set(by_rule) == selected
-    omitted = entry == "conda-forge::torch==2.5.1"
     assert by_rule["env.llm_critical_deps_pinned"]["status"] == (
         FindingStatus.PASS.value
         if exact
         else FindingStatus.SKIPPED.value
-        if omitted
+        if uncertain
         else FindingStatus.FAIL.value
     )
     assert by_rule["env.lockfile_present"]["status"] == FindingStatus.FAIL.value
@@ -279,4 +314,4 @@ def test_real_audit_json_agrees_with_conda_version_and_lock_consumers(
         and finding["status"] == FindingStatus.FAIL.value
         and finding["severity"] == Severity.WARNING.value
     }
-    assert warnings == ({"env.lockfile_present"} if exact or omitted else selected)
+    assert warnings == ({"env.lockfile_present"} if exact or uncertain else selected)

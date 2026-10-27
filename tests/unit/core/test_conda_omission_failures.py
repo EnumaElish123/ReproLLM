@@ -104,18 +104,33 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
 
 @pytest.mark.parametrize("path", ["environment.yml", "nested/environment.yaml"])
 @pytest.mark.parametrize(
-    "entry,name,display,specifier,exact,diagnosed,omitted",
+    "entry,name,display,specifier,exact,diagnosed,issue",
     [
-        pytest.param("", None, None, None, None, True, True, id="empty"),
-        pytest.param(" \t ", None, None, None, None, True, True, id="ascii-blank"),
-        pytest.param("\u2003", None, None, None, None, True, True, id="unicode-blank"),
-        pytest.param("*", None, None, None, None, True, True, id="wildcard-name"),
-        pytest.param("[version='2.8.0']", None, None, None, None, True, True, id="bracket-first"),
-        pytest.param("==2.8.0", None, None, None, None, True, True, id="operator-first"),
-        pytest.param("\u00e9torch==2.8.0", None, None, None, None, True, True, id="unicode-first"),
-        pytest.param("torch\n==2.8.0", None, None, None, None, True, True, id="inner-newline"),
+        pytest.param("", None, None, None, None, True, "unparsed_conda", id="empty"),
+        pytest.param(" \t ", None, None, None, None, True, "unparsed_conda", id="ascii-blank"),
+        pytest.param("\u2003", None, None, None, None, True, "unparsed_conda", id="unicode-blank"),
+        pytest.param("*", None, None, None, None, True, "unparsed_conda", id="wildcard-name"),
         pytest.param(
-            "conda-forge::pytorch==2.8.0", None, None, None, None, True, True, id="channel"
+            "[version='2.8.0']", None, None, None, None, True, "unparsed_conda", id="bracket-first"
+        ),
+        pytest.param(
+            "==2.8.0", None, None, None, None, True, "unparsed_conda", id="operator-first"
+        ),
+        pytest.param(
+            "\u00e9torch==2.8.0", None, None, None, None, True, "unparsed_conda", id="unicode-first"
+        ),
+        pytest.param(
+            "torch\n==2.8.0", None, None, None, None, True, "unparsed_conda", id="inner-newline"
+        ),
+        pytest.param(
+            "conda-forge::pytorch==2.8.0",
+            None,
+            None,
+            None,
+            None,
+            True,
+            "unparsed_conda",
+            id="channel",
         ),
         pytest.param(
             "conda-forge/linux-64::pytorch==2.8.0",
@@ -124,16 +139,16 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             None,
             None,
             True,
-            True,
+            "unparsed_conda",
             id="channel-subdir",
         ),
-        pytest.param("/tmp/pkg", None, None, None, None, True, True, id="leading-slash"),
-        pytest.param("torch/path", None, None, None, None, True, True, id="head-slash"),
-        pytest.param("pytorch", "torch", "pytorch", None, None, False, False, id="bare-name"),
-        pytest.param("  PyTorch  ", "torch", "PyTorch", None, None, False, False, id="case-space"),
         pytest.param(
-            "pytorch=2.8.0", "torch", "pytorch", "=2.8.0", None, False, False, id="prefix"
+            "/tmp/pkg", None, None, None, None, True, "unparsed_conda", id="leading-slash"
         ),
+        pytest.param("torch/path", None, None, None, None, True, "unparsed_conda", id="head-slash"),
+        pytest.param("pytorch", "torch", "pytorch", None, None, False, None, id="bare-name"),
+        pytest.param("  PyTorch  ", "torch", "PyTorch", None, None, False, None, id="case-space"),
+        pytest.param("pytorch=2.8.0", "torch", "pytorch", "=2.8.0", None, False, None, id="prefix"),
         pytest.param(
             "pytorch==2.8.0",
             "torch",
@@ -141,7 +156,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "==2.8.0",
             "2.8.0",
             False,
-            False,
+            None,
             id="numeric-equality",
         ),
         pytest.param(
@@ -151,7 +166,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "=2.8.0=cuda12.1",
             "2.8.0",
             False,
-            False,
+            None,
             id="single-equals-build",
         ),
         pytest.param(
@@ -161,15 +176,15 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "==2.8.0=py_0+cpu",
             "2.8.0",
             False,
-            False,
+            None,
             id="double-equals-build",
         ),
-        pytest.param("torch>=2.0", "torch", "torch", ">=2.0", None, True, False, id="gte"),
-        pytest.param("torch<=2.0", "torch", "torch", "<=2.0", None, True, False, id="lte"),
-        pytest.param("torch!=2.0", "torch", "torch", "!=2.0", None, True, False, id="not-equal"),
-        pytest.param("torch>2.0", "torch", "torch", ">2.0", None, True, False, id="gt"),
-        pytest.param("torch<2.0", "torch", "torch", "<2.0", None, True, False, id="lt"),
-        pytest.param("torch~=2.0", "torch", "torch", "~=2.0", None, True, False, id="compatible"),
+        pytest.param("torch>=2.0", "torch", "torch", ">=2.0", None, True, None, id="gte"),
+        pytest.param("torch<=2.0", "torch", "torch", "<=2.0", None, True, None, id="lte"),
+        pytest.param("torch!=2.0", "torch", "torch", "!=2.0", None, True, None, id="not-equal"),
+        pytest.param("torch>2.0", "torch", "torch", ">2.0", None, True, None, id="gt"),
+        pytest.param("torch<2.0", "torch", "torch", "<2.0", None, True, None, id="lt"),
+        pytest.param("torch~=2.0", "torch", "torch", "~=2.0", None, True, None, id="compatible"),
         pytest.param(
             "torch>=2.0,<3",
             "torch",
@@ -177,7 +192,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="compound",
         ),
         pytest.param(
@@ -187,7 +202,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="version-wildcard",
         ),
         pytest.param(
@@ -197,7 +212,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="build-wildcard",
         ),
         pytest.param(
@@ -207,7 +222,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="bracket-suffix",
         ),
         pytest.param(
@@ -217,7 +232,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="positional-suffix",
         ),
         pytest.param(
@@ -227,7 +242,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="url-looking",
         ),
         pytest.param(
@@ -237,7 +252,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="space-before-channel",
         ),
         pytest.param(
@@ -247,7 +262,7 @@ def test_empty_native_entry_records_omission_without_losing_siblings(tmp_path: P
             "(unsupported conda declaration)",
             None,
             True,
-            False,
+            "unparsed_conda_specifier",
             id="space-before-slash",
         ),
     ],
@@ -261,7 +276,7 @@ def test_native_string_boundary_retains_complete_capture(
     specifier: str | None,
     exact: str | None,
     diagnosed: bool,
-    omitted: bool,
+    issue: DeclarationReadIssue | None,
 ) -> None:
     _write(tmp_path, {path: f"dependencies: [{json.dumps(entry)}]\n"})
     declarations = (
@@ -275,7 +290,7 @@ def test_native_string_boundary_retains_complete_capture(
             declarations,
             (f"{path}:1: unsupported conda declaration",) if diagnosed else (),
             projects={path: frozenset({"conda-lock.yml"})},
-            issues={path: "unparsed_conda"} if omitted else {},
+            issues={} if issue is None else {path: issue},
         ),
         [path],
     )
@@ -428,6 +443,7 @@ def test_cyclic_yaml_container_is_not_recursively_searched(tmp_path: Path) -> No
                     ),
                 ),
                 ("environment.yml:1: unsupported conda declaration",),
+                issues={"environment.yml": "unparsed_conda_specifier"},
             ),
             id="folded-space-retains-name",
         ),
