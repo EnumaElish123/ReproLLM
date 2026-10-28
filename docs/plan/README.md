@@ -8,6 +8,22 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The 2026-10-28 configuration-depth follow-up at `9903627` follows all five
+successful exact-`a8806aa` predecessor CI jobs and Ubuntu3.12's twelve required steps.
+It replaces recursive configuration-key traversal with live iterator frames, preserving
+DFS key/value order, active ancestor back-edge handling and repeated acyclic aliases.
+The [session report](../dogfooding/2026-10-28-r07c-config-depth/README.md)
+records a 2,033-byte, depth-1,000 JSON replay decoded successfully before the old walker
+failed with CLI exit3; the new walker completes with exit0. It records 13 new CLI
+cases, 190 focused passes, final24 quality and fresh all-five local acceptance:
+180 base/affected commands plus five task-list calls and forty separate Git guards.
+CLI comparisons establish canonical keyword outputs, not container visit counts;
+iterator order, repeated alias handling and exceptional cleanup have bounded structural
+and targeted fixture evidence. The original decoder handling, key-only scans, budgets,
+rules, engine, schema, dependencies and version remain unchanged. Exact delivery-head CI
+is checked separately after push. Wider R07-C and decoder/alias resource boundaries
+remain open; this bounded repair authorizes no release. Historical text stays intact.
+
 The 2026-10-28 YAML object-cycle follow-up at `ccf9baf` follows all five
 successful exact-`347eae7` predecessor CI jobs and Ubuntu3.12's twelve required steps.
 It cuts only back edges to active dict/list ancestors while collecting configuration

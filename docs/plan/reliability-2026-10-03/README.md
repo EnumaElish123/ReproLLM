@@ -6,6 +6,17 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+2026-10-28配置遍历深度跟进：先核精确`a8806aa`五项CI及Ubuntu3.12十二步成功，
+再于`9903627`将递归key遍历替换为live iterator frames，保留DFS key/value顺序、
+active祖先回边处理、无环共享alias的重复遍历和意外异常传播，不增加depth/node/alias预算。
+[本批报告](../../dogfooding/2026-10-28-r07c-config-depth/README.md)记录成功解码后的2,033字节、
+depth1,000真实JSON旧CLI退出3→新0、13新增、190定向、最终24项质量和fresh五项目
+180主体加额外5次完整list-tasks/40只读Git守卫的本地验收。CLI比较不证明容器访问次数；
+迭代顺序、共享alias和异常清理由有界结构及定向fixture证据支持。
+不改原decoder、key-only扫描、规则、engine、schema、依赖或版本，最终交付HEAD五CI另核。
+更广R07-C及decoder/alias资源边界保持OPEN，不发布；下方YAML-cycle与所有历史文字原文保留。
+
+
 2026-10-28当前跟进：先核精确`347eae7`全部五项CI及Ubuntu3.12十二步成功，
 再于`ccf9baf`仅在配置key遍历剪去指向active dict/list祖先的回边，保留健康keys、
 原有无环共享alias的DFS重复与顺序，decoder/parser处理保持。

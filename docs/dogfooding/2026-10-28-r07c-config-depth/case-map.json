@@ -1,0 +1,174 @@
+{
+  "case_count": 13,
+  "cases": [
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "portable deep builtin-list tracer",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_audit_keeps_keys_from_deep_decoded_configuration",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_audit_keeps_keys_from_deep_decoded_configuration",
+      "reason": "Natural recursive walker exhausts on an externally decoded builtin chain; literal judge/rubric result is required."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "deep builtin mapping and tail/sibling evidence",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[mapping]",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[mapping]",
+      "reason": "Deep mapping leaf and later rubric plus healthy sibling safety evidence remain reachable."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "deep builtin mixed containers and tail/sibling evidence",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[mixed]",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[mixed]",
+      "reason": "Mixed live dict/list traversal must reach the deep leaf and later branches."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "deep active back edge then healthy key",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[cycle]",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_audit_keeps_deep_and_later_keys_plus_healthy_sibling_configuration[cycle]",
+      "reason": "Deep path must complete before its ancestor back edge is cut and subsequent judge/rubric keys retained."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "deep key-only negative",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_deep_scalar_values_do_not_become_configuration_key_signals",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_deep_scalar_values_do_not_become_configuration_key_signals",
+      "reason": "A successful deep traversal with keyword text only in values produces no detected profiles."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "PASS",
+      "classification": "decoder rejection compatibility control",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "PASS",
+      "name": "test_json_decoder_recursion_keeps_existing_skip_and_healthy_sibling_keys",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_json_decoder_recursion_keeps_existing_skip_and_healthy_sibling_keys",
+      "reason": "Existing decoder RecursionError catch silently skips that source and preserves literal sibling evidence."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "PASS",
+      "classification": "iterator-construction RuntimeError compatibility control",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "PASS",
+      "name": "test_unexpected_decoded_iterator_errors_are_not_silently_skipped[construct]",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_unexpected_decoded_iterator_errors_are_not_silently_skipped[construct]",
+      "reason": "The exact external mapping construction failure propagates with no report or file mutation."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "PASS",
+      "classification": "iterator-next explicit RecursionError compatibility control",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "PASS",
+      "name": "test_unexpected_decoded_iterator_errors_are_not_silently_skipped[next]",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_unexpected_decoded_iterator_errors_are_not_silently_skipped[next]",
+      "reason": "An explicit next-iteration RecursionError propagates; it is not treated as natural stack exhaustion or exhaustion StopIteration."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "PASS",
+      "classification": "live iterator compatibility control",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "PASS",
+      "name": "test_decoded_live_list_keeps_a_sibling_added_while_visiting_its_first_item",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_decoded_live_list_keeps_a_sibling_added_while_visiting_its_first_item",
+      "reason": "An explicitly non-JSON mutable external fixture appends a future rubric mapping while its first judge mapping is visited; public evidence checks live iteration without private spies."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "public list/init repeatability and ownership",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_init_and_task_listing_keep_deep_inputs_and_owned_scaffold_outputs",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_init_and_task_listing_keep_deep_inputs_and_owned_scaffold_outputs",
+      "reason": "Deep detected keys coexist with sorted InspectAI task inventory; no-selection TODO and only owned scaffold artifacts remain."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "public export embedded audit repeatability",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_export_with_deep_decoded_keys_matches_repeat_and_shallow_embedded_audit",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_export_with_deep_decoded_keys_matches_repeat_and_shallow_embedded_audit",
+      "reason": "Deep fixture, repeated export and a real shallow JSON control produce identical full documents under existing escaping."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "public normal warning and exit thresholds",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL",
+      "name": "test_deep_detection_preserves_independent_warning_and_fail_on_thresholds",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_deep_detection_preserves_independent_warning_and_fail_on_thresholds",
+      "reason": "Deep detection must complete without suppressing a literal independent dependency warning or changing warning/critical gates."
+    },
+    {
+      "actual_new": "PASS",
+      "actual_old": "FAIL",
+      "classification": "native actual-CLI real-decoder observation",
+      "current_source_expected": "PASS",
+      "independent_old_source_forecast": "FAIL_IF_ACTUAL_CLI_DECODER_SUCCEEDS_ELSE_CONDITIONAL_SKIP",
+      "name": "test_native_deep_json_keeps_keys_when_the_cli_decoder_accepts_the_input",
+      "nodeid": "tests/unit/cli/test_config_key_depth.py::test_native_deep_json_keeps_keys_when_the_cli_decoder_accepts_the_input",
+      "reason": "Real source and real decoder are passively observed inside CLI. Known parser refusal is the only skip precondition; successfully decoded data must produce CLI0 and literal evidence."
+    }
+  ],
+  "file": "tests/unit/cli/test_config_key_depth.py",
+  "measured_current_focused": "190 PASS / 0 FAIL / 0 ERROR / 0 SKIP, including these13 and previous18 cycle regressions",
+  "measured_final_old": "9 FAIL / 4 PASS / 0 ERROR / 0 SKIP",
+  "measurement_limits": {
+    "DAG_and_order": "No private walker spy or raw visitation-count assertion. Public canonical evidence and consumers cannot independently prove all raw DFS repetitions/order; preservation relies on source-structure review.",
+    "decoded_fixture": "The shallow legal marker is not claimed to decode to the synthetic deep graph or custom mapping semantics. These portable fixtures are injected only at json.loads; other inputs transparently use the real decoder.",
+    "distinct_current_cases": "Thirteen distinct cases; do not count the old tracer separately or treat overlapping future combined suites as additional new cases.",
+    "final_frozen_suite": "Root owns and will measure the complete frozen13 current/old contrast and affected aggregate. This handoff does not claim those forthcoming executions.",
+    "formatting": "All group runs precede final Ruff layout formatting; stdlib AST comparison proves pre/post formatting AST identical.",
+    "legacy_cycles": "Previous eighteen cycle tests remain unmodified and are root's affected-suite regression coverage, not duplicated here.",
+    "native_proof": "Root's separate unmodified console input2033B/default limit1000/Python3.12.14 source-walker traceback demonstrates applicability. The test real-decoder observer adds a call frame and is explicitly not called an unmodified console invocation.",
+    "source_guards": "Existing qualified focused runner bound actual module path/hash and source/test bytes before/after each group. It does not claim dynamic binding of every import."
+  },
+  "nodeid_prefix": "tests/unit/cli/test_config_key_depth.py",
+  "preparation_records": {
+    "originals_retained": true,
+    "product_test_draft_failures_during_extensions": 0,
+    "style_correction": {
+      "AST_identical": true,
+      "check_exit": 0,
+      "draft": "focused/style-2/test-after.py.txt",
+      "format_apply_exit": 0,
+      "format_check_exit": 0,
+      "receipt": "focused/style-2/receipt.json",
+      "source_unchanged": true
+    },
+    "style_first_attempt": {
+      "check_exit": 1,
+      "classification": "TEST_PREPARATION_STYLE_ONLY",
+      "draft": "focused/style-1/test-before.py.txt",
+      "format_check_exit": 1,
+      "reason": "One E501 line101 plus four formatter layout changes, no product change.",
+      "receipt": "focused/style-1/receipt.json",
+      "test_sha256": "6838d29d82546e929bfa91c3485bdbfa6438e835f5a434711bb819c03be9099b"
+    }
+  },
+  "schema_version": 1,
+  "sha256": "8b7fe8340418b6335a37969bbdaa5afc9e327d64c6cb38a83b7f934d9ea9cefc",
+  "source_handoff_sha256": "02dc844a46ab42011e19d2201c42174097678a4651c8c9fb40fb4c748f6299a5"
+}

@@ -347,6 +347,16 @@ Conda其余grammar、遗漏use/listing/framework及更广R07-C仍OPEN，不发�
 本片不增加depth/node或alias扩展预算，不改规则、engine、schema、依赖或版本，最终交付CI另核。
 更广R07-C、decoder处理和alias资源边界仍待独立审议，不发布；此前InspectAI/primary及历史文字保持。
 
+同日配置遍历深度独立跟进：精确`a8806aa`五项CI及Ubuntu3.12十二步成功后，
+`9903627`仅用live iterator frames替代递归调用栈，保持原DFS key/value顺序、active祖先回边处理、
+无环共享alias重复、key-only扫描及意外遍历异常传播；不把已成功解码的数据因walker深度而丢弃。
+2,033字节、depth1,000真实JSON成功解码后旧CLI退出3→新0；13新增、190定向、最终24项质量
+及fresh五项目180主体/5完整list-tasks/40只读Git守卫均通过本地验收，见
+[本批报告](../../dogfooding/2026-10-28-r07c-config-depth/README.md)。
+CLI比较证明规范化关键词结果，不证明容器访问次数；顺序、alias重复及异常清理由结构与定向fixture支持。
+原decoder、source/read预算、规则、engine、schema、依赖、版本保持；不增加depth/node/alias扩展预算。
+最终交付CI另核，更广R07-C与decoder/alias资源边界待独立审议，不发布，历史原文保留。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
