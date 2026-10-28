@@ -8,6 +8,21 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The 2026-10-28 YAML object-cycle follow-up at `ccf9baf` follows all five
+successful exact-`347eae7` predecessor CI jobs and Ubuntu3.12's twelve required steps.
+It cuts only back edges to active dict/list ancestors while collecting configuration
+keys, retaining healthy keys and the original DFS repetitions/order of acyclic aliases.
+The [session report](../dogfooding/2026-10-28-r07c-yaml-config-cycles/README.md)
+records a 46-byte native YAML replay with old CLI exit3 to new0, 18 new CLI cases,
+177 focused passes, final24 quality and fresh all-five local acceptance: the original
+180 base/affected commands plus five task-list calls and forty separate Git guards.
+CLI comparisons establish canonical keyword outputs, not container visit counts;
+the repeated-alias traversal claim rests on the source structure review.
+Existing decoding/parser handling, key-only scans, budgets, rules, engine, schema
+and version stay unchanged. Exact delivery-head CI is checked separately after push.
+Wider R07-C and decoder/alias resource boundaries require independent review;
+this bounded repair authorizes no release. Historical entries below retain their text.
+
 The 2026-10-28 InspectAI follow-up at `3c21749` routes its independent Python
 parser's `RecursionError` to the existing identical task-name fallback. It retains
 the regex grammar, safe inventory, explicit selection and metric-review contract.

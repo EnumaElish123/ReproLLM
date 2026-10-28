@@ -337,6 +337,16 @@ Conda其余grammar、遗漏use/listing/framework及更广R07-C仍OPEN，不发�
 不改规则、engine、schema、预算或版本，精确交付CI另核。YAML配置对象自环仍未实测，
 其余listing/filtered include/遗漏use/framework及更广R07-C保持OPEN，不发布版本。
 
+同日YAML对象自环独立跟进：精确`347eae7`五项CI及Ubuntu3.12十二步成功后，
+`ccf9baf`仅用active祖先id剪除dict/list回边，不使用全局visited，保留每个健康可达key、
+原有无环共享alias的DFS重复及顺序。原decoder/parser、key-only扫描、预算和意外遍历异常合同保持。
+46字节真实YAML让旧CLI退出3→新0；18新增、177定向、最终24项质量和fresh五项目
+180主体命令及额外5次完整list-tasks/40只读Git守卫均通过本地验收，见
+[本批报告](../../dogfooding/2026-10-28-r07c-yaml-config-cycles/README.md)。
+公开CLI比较证明规范化关键词结果，不证明容器访问次数；共享alias遍历保持由源码结构审阅支持。
+本片不增加depth/node或alias扩展预算，不改规则、engine、schema、依赖或版本，最终交付CI另核。
+更广R07-C、decoder处理和alias资源边界仍待独立审议，不发布；此前InspectAI/primary及历史文字保持。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。

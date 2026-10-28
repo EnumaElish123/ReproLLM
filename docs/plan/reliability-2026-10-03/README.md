@@ -6,6 +6,16 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+2026-10-28当前跟进：先核精确`347eae7`全部五项CI及Ubuntu3.12十二步成功，
+再于`ccf9baf`仅在配置key遍历剪去指向active dict/list祖先的回边，保留健康keys、
+原有无环共享alias的DFS重复与顺序，decoder/parser处理保持。
+[本批报告](../../dogfooding/2026-10-28-r07c-yaml-config-cycles/README.md)记录46字节真实YAML旧退出3→新0、
+18新增、177定向、最终24项质量和fresh五项目180主体加独立5次list-tasks/40只读Git守卫的本地验收。
+CLI观察规范化关键词结果，不证明容器访问次数；共享alias遍历由源码结构复核支持。
+不改预算、规则、engine、schema或版本，精确交付HEAD五项CI另核；更广R07-C和decoder/alias资源边界
+仍待独立审议，不发布。下方InspectAI、primary parser与所有历史段落原文保留。
+
+
 2026-10-28当前跟进：精确`960a1fd`五项CI及Ubuntu3.12十二步全部成功后，
 `3c21749`修复InspectAI独立parser的RecursionError既有回退边界，原regex、库存/选择和metric确认保持。
 [本批报告](../../dogfooding/2026-10-28-r07c-inspect-parser-recursion/README.md)记录18新增、59定向、
