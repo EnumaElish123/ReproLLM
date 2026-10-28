@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -297,19 +298,36 @@ def _collect_keys(node: object, keys: list[str], active: set[int] | None = None)
         return
     if active is None:
         active = set()
-    identity = id(node)
-    if identity in active:
-        return
-    active.add(identity)
+    owned: set[int] = set()
+    frames: list[tuple[int, Iterator[tuple[object, object]], bool]] = []
     try:
-        if isinstance(node, dict):
-            for key, value in node.items():
-                if isinstance(key, str):
+        while True:
+            if isinstance(node, (dict, list)) and id(node) not in active:
+                identity = id(node)
+                active.add(identity)
+                owned.add(identity)
+                if isinstance(node, dict):
+                    entries: Iterator[tuple[object, object]] = iter(node.items())
+                    mapping = True
+                else:
+                    entries = enumerate(node)
+                    mapping = False
+                frames.append((identity, entries, mapping))
+            while frames:
+                identity, entries, mapping = frames[-1]
+                try:
+                    entry = next(entries)
+                except StopIteration:
+                    frames.pop()
+                    active.remove(identity)
+                    owned.remove(identity)
+                    continue
+                key, node = entry
+                if mapping and isinstance(key, str):
                     keys.append(key)
-                _collect_keys(value, keys, active)
-        else:
-            for item in node:
-                _collect_keys(item, keys, active)
+                break
+            else:
+                return
     finally:
-        # Shared non-cyclic aliases retain their original repeated traversal.
-        active.remove(identity)
+        # Keep any ancestors supplied by the caller when an iterator fails.
+        active.difference_update(owned)

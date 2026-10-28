@@ -243,6 +243,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §13): collect keys from deeply nested decoded configurations
+  without recursive Python calls, so audit, initialization and export retain
+  the decoded key evidence. Preserve live traversal order, repeated acyclic
+  aliases, active-container cycle handling and existing decoder/error boundaries.
+
 - R07-C (spec §13): stop configuration-key traversal at YAML container cycles
   so audit, initialization and export retain healthy key evidence. Preserve
   traversal order and repeated shared aliases outside the current path; config
