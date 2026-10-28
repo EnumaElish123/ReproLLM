@@ -292,12 +292,24 @@ def _config_keys(scanner: RepoScanner, path: str) -> list[str]:
     return keys
 
 
-def _collect_keys(node: object, keys: list[str]) -> None:
-    if isinstance(node, dict):
-        for key, value in node.items():
-            if isinstance(key, str):
-                keys.append(key)
-            _collect_keys(value, keys)
-    elif isinstance(node, list):
-        for item in node:
-            _collect_keys(item, keys)
+def _collect_keys(node: object, keys: list[str], active: set[int] | None = None) -> None:
+    if not isinstance(node, (dict, list)):
+        return
+    if active is None:
+        active = set()
+    identity = id(node)
+    if identity in active:
+        return
+    active.add(identity)
+    try:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if isinstance(key, str):
+                    keys.append(key)
+                _collect_keys(value, keys, active)
+        else:
+            for item in node:
+                _collect_keys(item, keys, active)
+    finally:
+        # Shared non-cyclic aliases retain their original repeated traversal.
+        active.remove(identity)

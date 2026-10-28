@@ -243,6 +243,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §13): stop configuration-key traversal at YAML container cycles
+  so audit, initialization and export retain healthy key evidence. Preserve
+  traversal order and repeated shared aliases outside the current path; config
+  values remain excluded from keyword detection.
+
 - R07-C (spec §§3.2, 14): use InspectAI's existing task-name fallback when its
   independent Python parser raises `RecursionError`, so `init` and `init --list-tasks`
   can finish. Retain the fallback grammar, safe sorted candidates and explicit task
