@@ -243,6 +243,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C Python parser follow-up (spec §§12.3.1–2, 13): skip a selected source
+  when `ast.parse` raises `RecursionError`, retain a fixed safe diagnostic and
+  continue scanning siblings. Count it as selected but not parsed under the
+  existing coverage policy, preserving successful evidence and warning gates.
+
 - R02-R follow-up (spec §§5.1, 16): retain bounded Python judge source and
   complete JSONL rubrics without changing safe source bytes. Python literal
   and key contexts no longer cross independent statements; JSON path checks

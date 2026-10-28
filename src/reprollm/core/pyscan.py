@@ -134,6 +134,9 @@ def scan_python(scanner: RepoScanner) -> PyScanResult:
         except SyntaxError as exc:
             result.warnings.append(f"{path}:{exc.lineno or 0}: syntax error; skipped")
             continue
+        except RecursionError:
+            result.warnings.append(f"{path}: Python parser recursion limit exceeded; skipped")
+            continue
         result.python_parsed_count += 1
         _scan_tree(tree, path, result)
     diagnostic = result.file_limit_diagnostic()
