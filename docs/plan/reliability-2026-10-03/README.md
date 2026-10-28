@@ -6,6 +6,12 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+2026-10-28当前跟进：精确`960a1fd`五项CI及Ubuntu3.12十二步全部成功后，
+`3c21749`修复InspectAI独立parser的RecursionError既有回退边界，原regex、库存/选择和metric确认保持。
+[本批报告](../../dogfooding/2026-10-28-r07c-inspect-parser-recursion/README.md)记录18新增、59定向、
+最终24项质量、fresh五项目基础/受影响及单独5份完整task-list验收；精确交付HEAD五项CI推送后另核。
+规范/规则/engine/schema不改，不发布版本。YAML配置对象自环仍未实测，更广R07-C保持OPEN。
+
 2026-10-20：[先行补验报告](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成 fresh quality、五项目 Gate A、H2、10 原生 child / 5 pair / 20 export 和新输入 discover 接受链。正式 judge 仍绑定 `75d1b0`；原始 metadata 缺失及 HF 403 保持 BLOCKED。后续 R06-B 不把这些资源执行改绑到新产品提交。
 
 ## 从这里开始

@@ -8,6 +8,18 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The 2026-10-28 InspectAI follow-up at `3c21749` routes its independent Python
+parser's `RecursionError` to the existing identical task-name fallback. It retains
+the regex grammar, safe inventory, explicit selection and metric-review contract.
+The [session report](../dogfooding/2026-10-28-r07c-inspect-parser-recursion/README.md)
+records 18 new CLI cases, 59 focused passes, native-proof limits, final24 quality,
+fresh five-project base/affected acceptance and five separate complete task lists.
+Before implementation, all five exact-`960a1fd` predecessor CI jobs and Ubuntu3.12's
+twelve required steps were confirmed successful. Final delivery-head CI is separate.
+This repairs an existing fallback boundary; no new policy/schema/engine contract
+or release is accepted. Wider R07-C remains OPEN; the YAML config object-cycle
+candidate remains untested for a future independent batch.
+
 The 2026-10-28 R07-C follow-up repairs primary-Python parser recursion failures
 under the existing §13 selected-but-unparsed contract and §§12.3.1–2 consumers.
 Product commit `40c92d2` adds only a three-line `RecursionError` handler;

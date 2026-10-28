@@ -327,6 +327,16 @@ Conda其余grammar、遗漏use/listing/framework及更广R07-C仍OPEN，不发�
 独立InspectAI解析器和YAML配置对象自环是尚未实测的后续静态候选；listing、filtered include、
 遗漏use/framework和充分性证书仍分域OPEN，新政策按独立P-A审议，不发布版本。
 
+同日InspectAI独立跟进：先核精确`960a1fd`全部五项CI与Ubuntu3.12十二步成功，
+再于`3c21749`仅把其原SyntaxError捕获扩大至parser RecursionError，复用完全相同的regex。
+这是既有fallback意图与规范§3.2/§14候选合同的修复，规范未逐项枚举该异常，
+不把更广OPEN政策当已批准。原生80,073字节真实CLI旧退出3→新0；18项新增、59项定向、
+最终24项质量、fresh五项目180主体命令与额外5个完整list-tasks均通过，见
+[本批报告](../../dogfooding/2026-10-28-r07c-inspect-parser-recursion/README.md)。
+安全库存/显式选择/不推断metric implementation、regex语法、扫描边界和窄异常范围保持；
+不改规则、engine、schema、预算或版本，精确交付CI另核。YAML配置对象自环仍未实测，
+其余listing/filtered include/遗漏use/framework及更广R07-C保持OPEN，不发布版本。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
