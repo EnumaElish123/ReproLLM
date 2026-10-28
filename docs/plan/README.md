@@ -8,6 +8,20 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The 2026-10-28 R07-C follow-up repairs primary-Python parser recursion failures
+under the existing §13 selected-but-unparsed contract and §§12.3.1–2 consumers.
+Product commit `40c92d2` adds only a three-line `RecursionError` handler;
+the specification, rules, engine, scan limits and default diagnostic visibility
+retain their contracts. Final local quality, fresh all-five Gate A and affected
+consumers pass on that candidate. See the
+[session report](../dogfooding/2026-10-28-r07c-python-parser-recursion/README.md)
+for 15 new CLI regressions, native-proof limits, complete comparisons and
+separate exact-delivery-head CI. This is an existing-contract crash repair,
+not acceptance of another OPEN policy. Wider R07-C remains OPEN.
+The preceding D-M-CS delivery has
+[all five exact-`d512301` CI jobs](https://github.com/EnumaElish123/ReproLLM/actions/runs/40492274192)
+successful; its original snapshots retain their historical identities.
+
 The maintainer specifically
 [accepted D-M-CS A and both exact patches](reliability-2026-10-03/proposals/R07-C/conda-retained-suffix/decision-accepted.json)
 on 2026-10-27. P-B at `1607ee0` adds only the internal retained-name Conda

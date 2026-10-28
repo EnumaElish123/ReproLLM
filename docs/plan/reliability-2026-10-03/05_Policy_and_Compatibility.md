@@ -317,6 +317,16 @@ numeric RANGE、CE两返回、regex/声明/信用/消费优先级。明确非exa
 声明/诊断/信用/现消费优先级保持，全仓SKIP和孤立exit1→0是已接受成本。
 Conda其余grammar、遗漏use/listing/framework及更广R07-C仍OPEN，不发布版本。
 
+2026-10-28既有合同跟进：预算内Python源码可令`ast.parse`抛`RecursionError`，原audit退出3，
+未能完成§13成功才计parsed及§12.3.1–2的现有gap消费。`40c92d2`只加原解析try的独立
+异常分支、固定安全诊断和continue；不增解析成功数，不改预算、规范、规则、engine或schema。
+此为现合同崩溃修复，不将新的OPEN政策视为已接受。15项公开CLI新增、167项定向回归、
+最终24项质量及fresh五项目180命令/25完整JSON和init/export全文比较通过，详见
+[会话报告](../../dogfooding/2026-10-28-r07c-python-parser-recursion/README.md)。
+原生证明限本轮Python3.12.14；其他平台的条件和精确交付HEAD五项CI另核。
+独立InspectAI解析器和YAML配置对象自环是尚未实测的后续静态候选；listing、filtered include、
+遗漏use/framework和充分性证书仍分域OPEN，新政策按独立P-A审议，不发布版本。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。

@@ -1,0 +1,261 @@
+{
+  "binding": {
+    "precommit_receipts_match_committed_product_and_test_bytes": true,
+    "product_file": "src/reprollm/core/pyscan.py",
+    "product_sha256": "16c91bbfb555235fcaff338ed2bf0fddc88a04da47b570fb3c4a39fafb12d5e3",
+    "test_file": "tests/unit/cli/test_python_parser_recursion.py",
+    "test_sha256": "aeceedddb45105c4a133986c2c4c328f9972ec2c00c13eddf43fed95b3265c90"
+  },
+  "cases": [
+    {
+      "name": "test_audit_skips_parser_recursion_and_keeps_positive_sibling_evidence",
+      "number": 1
+    },
+    {
+      "name": "test_default_audit_parser_gap_is_quiet_and_repeated_reports_keep_input_bytes",
+      "number": 2
+    },
+    {
+      "name": "test_audit_parser_skip_and_real_file_budget_share_one_exact_default_summary",
+      "number": 3
+    },
+    {
+      "name": "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[warning-1]",
+      "number": 4
+    },
+    {
+      "name": "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[critical-0]",
+      "number": 5
+    },
+    {
+      "name": "test_audit_parser_gap_uses_existing_declared_profile_absence_skip",
+      "number": 6
+    },
+    {
+      "name": "test_list_tasks_survives_primary_parser_recursion_without_writing_inputs",
+      "number": 7
+    },
+    {
+      "name": "test_init_keeps_normal_hints_and_selected_task_after_primary_parser_recursion",
+      "number": 8
+    },
+    {
+      "name": "test_export_survives_parser_recursion_and_keeps_repeatable_document_and_inputs",
+      "number": 9
+    },
+    {
+      "name": "test_native_parser_recursion_under_read_cap_completes_public_console_audit",
+      "number": 10
+    },
+    {
+      "name": "test_normal_binary_expression_keeps_successful_parsing_and_pass_results",
+      "number": 11
+    },
+    {
+      "name": "test_parser_recursion_keeps_existing_syntax_diagnostic_and_both_parse_gaps",
+      "number": 12
+    },
+    {
+      "name": "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-memory-error]",
+      "number": 13
+    },
+    {
+      "name": "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-unexpected-error]",
+      "number": 14
+    },
+    {
+      "name": "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[tree-walk-recursion-error]",
+      "number": 15
+    }
+  ],
+  "final_test_names": [
+    "test_audit_skips_parser_recursion_and_keeps_positive_sibling_evidence",
+    "test_default_audit_parser_gap_is_quiet_and_repeated_reports_keep_input_bytes",
+    "test_audit_parser_skip_and_real_file_budget_share_one_exact_default_summary",
+    "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[warning-1]",
+    "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[critical-0]",
+    "test_audit_parser_gap_uses_existing_declared_profile_absence_skip",
+    "test_list_tasks_survives_primary_parser_recursion_without_writing_inputs",
+    "test_init_keeps_normal_hints_and_selected_task_after_primary_parser_recursion",
+    "test_export_survives_parser_recursion_and_keeps_repeatable_document_and_inputs",
+    "test_native_parser_recursion_under_read_cap_completes_public_console_audit",
+    "test_normal_binary_expression_keeps_successful_parsing_and_pass_results",
+    "test_parser_recursion_keeps_existing_syntax_diagnostic_and_both_parse_gaps",
+    "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-memory-error]",
+    "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-unexpected-error]",
+    "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[tree-walk-recursion-error]"
+  ],
+  "focused_result": {
+    "errors": 0,
+    "failures": 0,
+    "junit": "focused/cli-final15/report.xml",
+    "passed": 15,
+    "product_and_test_bytes_stable": true,
+    "python": "3.12.14",
+    "receipt": "focused/cli-final15/receipt.json",
+    "same_process_product_origin_and_hash_guard": true,
+    "scope_limit": "Focused 15-case evidence only; this is not final quality, five-project Gate A or exact-head CI.",
+    "skipped": 0,
+    "tests": 15
+  },
+  "groups": [
+    {
+      "case_count": 3,
+      "case_names": [
+        "test_audit_skips_parser_recursion_and_keeps_positive_sibling_evidence",
+        "test_default_audit_parser_gap_is_quiet_and_repeated_reports_keep_input_bytes",
+        "test_audit_parser_skip_and_real_file_budget_share_one_exact_default_summary"
+      ],
+      "expected_behavior": [
+        "Verbose audit emits the fixed relative-source diagnostic without untrusted exception content.",
+        "Within the file-count budget, default stderr remains empty; repeated complete JSON agrees except generated_at and original input bytes remain identical.",
+        "A real 501-file candidate view with one selected parser failure reports parsed 499, selected 500, omitted 1; the default coverage summary appears once."
+      ],
+      "label": "audit-diagnostics-group1"
+    },
+    {
+      "case_count": 3,
+      "case_names": [
+        "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[warning-1]",
+        "test_audit_parser_gap_keeps_independent_warning_gate_and_later_positive_signal[critical-0]",
+        "test_audit_parser_gap_uses_existing_declared_profile_absence_skip"
+      ],
+      "expected_behavior": [
+        "An independent observed torch WARNING retains its evidence and triggers the warning threshold while remaining below the critical threshold.",
+        "A later normal vllm source retains inference high confidence and the positive mismatch INFO finding.",
+        "The existing declared-profile-absence branch emits SKIPPED/INFO for a parser gap even under a CRITICAL override; completed parsing restores its existing CRITICAL absence outcome."
+      ],
+      "label": "audit-branches-group2"
+    },
+    {
+      "case_count": 3,
+      "case_names": [
+        "test_list_tasks_survives_primary_parser_recursion_without_writing_inputs",
+        "test_init_keeps_normal_hints_and_selected_task_after_primary_parser_recursion",
+        "test_export_survives_parser_recursion_and_keeps_repeatable_document_and_inputs"
+      ],
+      "expected_behavior": [
+        "init --list-tasks returns the literal demo_task inventory without writing any input or owned artifact.",
+        "init retains normal inference/evaluation signals, the HF model candidate and explicitly selected task; only its three owned artifacts are added.",
+        "export completes and repeats identical Markdown under identical input facts; every original input byte and existing diagnostic visibility remain unchanged."
+      ],
+      "label": "cli-consumers-group3-final"
+    },
+    {
+      "case_count": 6,
+      "case_names": [
+        "test_native_parser_recursion_under_read_cap_completes_public_console_audit",
+        "test_normal_binary_expression_keeps_successful_parsing_and_pass_results",
+        "test_parser_recursion_keeps_existing_syntax_diagnostic_and_both_parse_gaps",
+        "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-memory-error]",
+        "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[parser-unexpected-error]",
+        "test_unrelated_parser_errors_and_tree_walk_recursion_are_not_silently_skipped[tree-walk-recursion-error]"
+      ],
+      "expected_behavior": [
+        "The native 80006-byte, 10000-term input is probed by an independent interpreter process and then audited through an independent public console process.",
+        "A normal 100-term expression remains fully parsed, with all six selected findings PASS.",
+        "The existing SyntaxError diagnostic and both aggregate parse gaps remain exact.",
+        "Parser MemoryError/RuntimeError and tree-walk RecursionError remain errors rather than being silently skipped."
+      ],
+      "label": "native-and-catch-scope-group4"
+    }
+  ],
+  "native_proof": {
+    "conditional_skip": "A native probe that parses successfully, a hard process failure, or a 30-second timeout explicitly skips this native proof; none counts as a recovery PASS.",
+    "independent_replay_receipt": "real-replay/receipt.json",
+    "isolation": "Both native parse probe and real console run in independent processes; the parent test process never parses the complex input.",
+    "limits": "The fix does not protect against native crashes, memory exhaustion, parser hangs or independent framework parsers.",
+    "observed_case": "80006 bytes, 10000 terms, catchable native ast.parse RecursionError.",
+    "observed_focused_outcome": "PASS without skip on the observed interpreter.",
+    "observed_interpreter": "Python 3.12.14",
+    "other_interpreters": "No native PASS is claimed for another interpreter or version. It must establish its own catchable-RecursionError premise.",
+    "portable_target_branch": "External ast.parse injection tests exercise the target RecursionError branch independently of native parser thresholds.",
+    "replay_qualification": "Console completion with fail-on never is not proof of a clean experiment; the focused native test separately uses a committed fixture and the warning threshold."
+  },
+  "open_domains_unchanged": [
+    "listing",
+    "README/config/framework completeness",
+    "omitted package use",
+    "independent InspectAI task parser",
+    "broader R07-C sufficient certificates",
+    "release authorization"
+  ],
+  "preparation_corrections": [
+    {
+      "classification": "Test preparation expectation error; not product RED.",
+      "corrected_expectation": "inference.backend remains the existing TODO/null; normal profiles, HF candidate and selected task remain checked.",
+      "independent_source_basis": [
+        "tests/fixtures/repos/hf_vllm_eval/expected/init.yaml:31-32",
+        "src/reprollm/core/manifest_scaffold.py:258-260 at baseline d512301"
+      ],
+      "original_receipt": "focused/cli-consumers-group3/receipt.json",
+      "original_result": {
+        "errors": 0,
+        "failures": 1,
+        "passed": 2,
+        "tests": 3
+      },
+      "product_changed_for_correction": false,
+      "source_record": "cli/preparation-correction-group3.json",
+      "wrong_expectation": "init automatically fills inference.backend with vllm."
+    },
+    {
+      "classification": "Raw YAML serialization expectation error; not product RED.",
+      "corrected_expectation": "The selected name is the literal demo_task and no implementation is supplied; an omitted optional key and null satisfy that semantic contract.",
+      "independent_source_basis": [
+        "docs/plan/01_specification.md sections 3.2 and 14",
+        "src/reprollm/core/manifest_scaffold.py:244-247 at baseline d512301",
+        "tests/unit/cli/test_framework_init.py:58-69"
+      ],
+      "original_receipt": "focused/cli-consumers-group3-corrected/receipt.json",
+      "original_result": {
+        "errors": 0,
+        "failures": 1,
+        "passed": 2,
+        "tests": 3
+      },
+      "product_changed_for_correction": false,
+      "source_record": "cli/preparation-correction-group3-2.json",
+      "wrong_expectation": "The raw YAML metric must contain an explicit implementation: null key."
+    }
+  ],
+  "preparation_execution": {
+    "network_requests": 0,
+    "product_commands": 0,
+    "repository_writes": 0,
+    "tests": 0
+  },
+  "schema_version": 1,
+  "source_case_map": {
+    "original_bytes_preserved": true,
+    "path": "cli/case-map.json",
+    "sha256": "12973df6ca4ab819bc00b220ae73fb9d2721db3d926c819c334f9c0178f6097e"
+  },
+  "status": "PREPARED_FROM_ARCHIVED_FOCUSED_EVIDENCE_NOT_FINAL_ACCEPTANCE",
+  "task_commit": "40c92d2e639b0991cae759315576803d4ff16410",
+  "test_sha256": "aeceedddb45105c4a133986c2c4c328f9972ec2c00c13eddf43fed95b3265c90",
+  "unsettled_acceptance": [
+    "Final complete quality gate",
+    "Fresh all-five Gate A and affected extensions",
+    "Exact pushed-head CI"
+  ],
+  "whitelist_scope": {
+    "expanded_case_count": 15,
+    "expectation_basis": "Independent specification and approved CLI-contract literals; no candidate-output golden generation.",
+    "new_private_product_test_seams": 0,
+    "new_test_file_count": 1,
+    "private_product_collaborator_mocks": 0,
+    "public_boundaries": [
+      "audit CLI",
+      "init --list-tasks CLI",
+      "init CLI",
+      "export CLI",
+      "console-script entry point in isolated child"
+    ],
+    "recursion_limit_changed": false,
+    "system_injection_boundaries": [
+      "stdlib ast.parse",
+      "stdlib ast.walk"
+    ]
+  }
+}
