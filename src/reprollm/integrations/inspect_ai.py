@@ -43,7 +43,7 @@ def _task_decorated_functions(text: str) -> list[str]:
     """Names of functions carrying a bare ``@task`` or ``@task(...)`` decorator."""
     try:
         tree = ast.parse(text)
-    except SyntaxError:
+    except (SyntaxError, RecursionError):
         return _task_regex(text)
     names: list[str] = []
     for node in ast.walk(tree):

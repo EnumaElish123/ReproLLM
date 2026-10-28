@@ -243,6 +243,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §§3.2, 14): use InspectAI's existing task-name fallback when its
+  independent Python parser raises `RecursionError`, so `init` and `init --list-tasks`
+  can finish. Retain the fallback grammar, safe sorted candidates and explicit task
+  selection; task names do not imply metric implementations.
+
 - R07-C Python parser follow-up (spec §§12.3.1–2, 13): skip a selected source
   when `ast.parse` raises `RecursionError`, retain a fixed safe diagnostic and
   continue scanning siblings. Count it as selected but not parsed under the
