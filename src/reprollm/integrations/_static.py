@@ -28,17 +28,23 @@ def scalar_string(node: Node | None) -> str | None:
     return None
 
 
-def task_mapping(scanner: RepoScanner, path: str) -> dict[str, Node] | None:
+def task_mapping(
+    scanner: RepoScanner, path: str, *, for_detection: bool = False
+) -> dict[str, Node] | None:
     if not scanner.is_analysis_candidate(path):
         return None
     text = scanner.read_text(path)
     if text is None:
+        if for_detection:
+            scanner.record_gap("detection", path)
         return None
     try:
         # Compose reads nodes without constructing values or importing !function
         # references. A custom tag elsewhere cannot hide a static task name.
         node = yaml.compose(text, Loader=yaml.SafeLoader)
     except (yaml.YAMLError, RecursionError):
+        if for_detection:
+            scanner.record_gap("detection", path)
         return None
     if not isinstance(node, MappingNode):
         return None
@@ -56,13 +62,13 @@ def import_evidence(
     return [Evidence(kind="detection", path=hit.path, line=hit.line, note=f"import {module}")]
 
 
-def _commands(text: str) -> list[list[str]]:
+def _commands(text: str) -> list[list[str]] | None:
     lexer = shlex.shlex(text, posix=True, punctuation_chars=";&|()")
     lexer.whitespace_split = True
     try:
         tokens = list(lexer)
     except ValueError:
-        return []
+        return None
     commands: list[list[str]] = [[]]
     for token in tokens:
         if token and set(token) <= set(";&|()"):
@@ -108,11 +114,16 @@ def cli_evidence(
             continue
         text = scanner.read_text(path)
         if text is None:
+            scanner.record_gap("detection", path)
             continue
         for line_number, line in _logical_lines(
             text, shell_comments=PurePosixPath(path).name != "Makefile"
         ):
-            for command in _commands(line):
+            commands = _commands(line)
+            if commands is None:
+                scanner.record_gap("detection", path)
+                continue
+            for command in commands:
                 command = _entry(command)
                 if not command:
                     continue

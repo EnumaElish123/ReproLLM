@@ -2046,6 +2046,118 @@ D-I is a local proposal label, not an architecture decision. Other include or
 line grammar, omitted roots/use, listing/README/config/framework completeness,
 resource limits and broader sufficient certificates remain OPEN R07-C work.
 
+### 12.3.16 Closing contract for captured static evidence (R07-C)
+
+This section completes the reliability plan's R07-C policy work only after its
+specific decision, implementation and applicable validation are complete. It
+supersedes earlier OPEN statements about listing, detection and sufficient
+certificates in this task with the finite contract below. Earlier sections keep
+their narrower triggers, exact outputs and priority. Historical proposals and
+results retain their original scope and bytes.
+
+**Evidence boundary.** All static conclusions concern the captured eligible
+view, with existing Git/fallback listing, hard exclusions, size/read/count/depth
+budgets, supported parser subsets and root-contained reads. Intentional exclusions,
+supported nonmatching inputs and successful early witness exits are not failures.
+Do not claim filesystem completeness, atomic snapshots, unknown/dynamic import
+enumeration, full package-manager grammar, installer/solver validity or runtime
+consumption. These are explicit non-goals of this closing contract, not remaining
+requirements silently marked as passed. Per-input sufficiency optimizations are
+optional; the conservative decisions below do not require a universal certificate.
+
+**Internal observed facts.** RepoScanner records deduplicated StaticScanGap values
+with scope listing, detection or python_version, and an optional safe relative
+source. Values sort by (scope, path-or-empty). They are not persisted fields or
+warnings parsed back into facts. No additional traversal, retry or read is added.
+Each consumer uses facts captured by its evaluation; later filesystem operations
+do not retroactively rewrite earlier outcomes. No atomic unified snapshot is claimed.
+Only the following actual existing-operation failures record gaps:
+
+- Listing: nonzero git ls-files, os.walk's onerror, caught listing stat errors,
+  failed analysis-root resolution and caught environment-marker inspection errors.
+  Git's optional failure callback consumes the same command result. Failed
+  callbacks retain no raw stderr, exception text or host path. Oversize, deliberate
+  directory exclusions and nonregular/missing-file outcomes retain existing scope.
+- Detection: actual eligible README/config body read returns None; the existing
+  config decoder exception branch; actual framework shell read/tokenization
+  failure; or an actual lm-eval detection task composition/read failure. Task-hint
+  collection alone does not add a profile-detection gap. No unvisited candidate
+  after a sufficient witness is described as a failed attempt.
+- A failure in the existing separate directory-name heuristic walk records only
+  a detection gap; it does not retroactively invalidate the earlier file listing.
+- Detection also reuses captured declaration_read_issues, unexpanded and excluded
+  supported include targets, and format locks with read_issue. This is a deliberate
+  repository-wide conservative policy, even for unrelated entries. Do not infer
+  a new gap from unsupported diagnostic prose or unparsed strings.
+- Python version: its existing actual pyproject read/decode failure or environment
+  read failure. Do not treat an unrelated config failure as this domain's failure.
+
+**Recoverable decoder limit.** At the six existing dependency document decoder
+sites, catch RecursionError separately as internal parser_limit. For captured
+pyproject/Pipfile/environment bodies preserve the existing uncertain-directory
+barrier and use the fixed diagnostic `{path}:0: decoder recursion limit; skipped`.
+Return no fabricated declarations. Format locks retain presence with empty captured
+members and read_issue=parser_limit. Existing D-M/D-F consumption and credit
+priority apply; other exact or qualified credit still wins. Python-version TOML
+parsing also treats this class as its own known gap. Preserve other exception
+behavior, including MemoryError. This is bounded recovery, not resistance to
+arbitrary memory/CPU exhaustion, alias expansion or every decoder limitation.
+
+**Six owning rules.** Keep IDs, default severities, thresholds, schema versions,
+overrides, suppression and deterministic sorting. Every new explicit gap outcome
+is SKIPPED/INFO with existing rule identity, level and fix_hint. Original use or
+field evidence precedes one file item per distinct sorted (scope, source), whose
+note is `{scope} analysis incomplete in the captured eligible view`. The optional
+source is None for a source-free enumeration failure. No raw failure text is used.
+The exact messages and implementation are frozen in the accepted concrete patch.
+
+| Rule | Finite disposition |
+|---|---|
+| env.dependency_manifest_present | Presence witness retains PASS; absent witness with listing gap becomes SKIP; otherwise old absence FAIL. |
+| env.lockfile_present | Existing format-lock presence, including failed bodies, or a qualified requirements closure retains PASS; applicable absence with listing gap becomes SKIP. No manifest keeps applicability SKIP. |
+| env.llm_critical_deps_pinned | Preserve current use and exact/qualified credit, then D-F/S, D-L, D-M, D-G, D-I; only residual uncredited known packages skip for listing gaps. Empty-result veto checks old Python reason first, then listing. |
+| env.python_version_declared | Existing positive witness retains PASS, including presence-only .python-version and old environment substring; absent witness skips for listing or its own relevant read/decode gap. |
+| env.secret_files_ignored | Every captured forbidden-file FAIL is preserved. Only empty results veto PASS for listing gaps, never for unrelated AST/config/dependency gaps. |
+| exec.profile_detection_mismatch | Preserve old Python reasons first; additional listing/detection gaps skip declared-but-undetected outcomes and veto empty-result PASS after actual detection. Every observed shipped/high positive mismatch remains FAIL. |
+
+Listing-only empty-result veto uses exactly:
+`Repository listing is incomplete in the captured eligible view; no rule-wide PASS is established.`
+Profile's additional empty-result veto uses exactly:
+`Static profile detection is incomplete in the captured eligible view; no rule-wide PASS is established.`
+Engine's existing pass_skip_reason hook remains unchanged. Do not append an
+aggregate result to nonempty outcomes. All other builtin and generated rules
+retain their explicit Git/document/owned-file/runtime/positive-signal contracts;
+unrelated scan gaps do not become global vetoes. This contract does not repair
+the separate Git-status or external-command fact interfaces.
+
+
+**Exact explicit absence messages.**
+
+- dependency_manifest_absence: `dependency manifest absence is not established because repository listing is incomplete in the captured eligible view`
+- lockfile_absence: `lockfile absence is not established because repository listing is incomplete in the captured eligible view`
+- python_version_absence: `Python version declaration absence is not established because eligible static inputs could not be fully analysed`
+- critical_pin: `{display} is used; repository listing is incomplete in the captured eligible view, so missing pin evidence is not established`
+- profile_absence: `declared profile {profile!r} has no detection evidence in the analysed inputs; static profile detection is incomplete in the captured eligible view, so absence is not established`
+
+**Compatibility.** Known gaps may replace a CRITICAL missing-manifest or a
+WARNING/promoted-CRITICAL absence with SKIP, changing an isolated exit 1 to 0.
+An unrelated malformed eligible source can conservatively veto profile PASS or
+absence even when a more precise certificate would settle that input. Positive
+manifest/lock/version witnesses and captured security violations remain effective.
+Default text may show PASS with skips and default export may omit a former notable
+absence finding; full JSON retains SKIP. Existing generic profiles, hints, init
+selection and all content/grammar/budget behavior remain unless separately fixed.
+Forward gold deltas require source-derived review; historical gold and reports
+must not be rewritten from candidate output.
+
+**R07-C completion.** Require all 69 current builtin IDs and generated rules to
+have a reviewed disposition; current failure controls and independent future
+acceptance expectations; tests before implementation; complete final quality,
+fresh five-project audit/init/export/list checks and exact-delivery-head CI.
+Complete only this accepted finite task. Unsupported grammar and speculative
+future analysis remain product boundaries; external adoption, application,
+same-candidate release resource replay and publishing keep their separate states.
+
 ### 12.4 `model.*` (M3 presence, M4 lock)
 
 | ID | Sev | L | applies | FAIL when |

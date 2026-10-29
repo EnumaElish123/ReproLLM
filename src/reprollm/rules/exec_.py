@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from reprollm.core.context import AuditContext
 from reprollm.core.registry import Rule, register_rule
+from reprollm.rules._static_coverage import PROFILE_PASS_REASON, skipped_for_gaps
 from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
 
 
@@ -166,6 +167,29 @@ class ProfileDetectionMismatchRule(Rule):
                         )
                     )
                     continue
+                gaps = ctx.fs.static_gaps("listing", "detection")
+                if gaps:
+                    findings.append(
+                        skipped_for_gaps(
+                            self,
+                            ctx,
+                            gaps,
+                            message=(
+                                f"declared profile {profile!r} has no detection evidence "
+                                "in the analysed inputs; static profile detection is "
+                                "incomplete in the captured eligible view, so absence "
+                                "is not established"
+                            ),
+                            evidence=[
+                                Evidence(
+                                    kind="field",
+                                    field="experiment.profiles",
+                                    note=f"{profile} declared; detection absence unverified",
+                                )
+                            ],
+                        )
+                    )
+                    continue
                 findings.append(
                     self.finding(
                         ctx,
@@ -209,4 +233,7 @@ class ProfileDetectionMismatchRule(Rule):
         return findings
 
     def pass_skip_reason(self, ctx: AuditContext) -> str | None:
-        return ctx.pyscan.coverage().pass_skip_reason()
+        python_reason = ctx.pyscan.coverage().pass_skip_reason()
+        if python_reason is not None:
+            return python_reason
+        return PROFILE_PASS_REASON if ctx.fs.static_gaps("listing", "detection") else None

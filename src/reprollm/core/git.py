@@ -6,6 +6,7 @@ Consumers call ``proc.run_cmd`` through this module reference so tests can stub 
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -125,12 +126,19 @@ def check_ignore(root: Path, paths: list[str]) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
-def ls_files(root: Path, include_untracked: bool = True) -> list[str]:
+def ls_files(
+    root: Path,
+    include_untracked: bool = True,
+    *,
+    on_failure: Callable[[], None] | None = None,
+) -> list[str]:
     """List tracked files (and non-ignored untracked ones), sorted, ``-z`` safe."""
     args = ["ls-files", "-z", "--cached"]
     if include_untracked:
         args += ["--others", "--exclude-standard"]
     result = _git(root, *args)
     if result.returncode != 0:
+        if on_failure is not None:
+            on_failure()
         return []
     return sorted({p for p in result.stdout.split("\0") if p})

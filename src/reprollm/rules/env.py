@@ -15,6 +15,7 @@ from reprollm.core.envinfo import LLM_CRITICAL_PACKAGES, installed_versions
 from reprollm.core.pyscan import ImportInfo
 from reprollm.core.redaction import is_forbidden_file
 from reprollm.core.registry import Rule, register_rule
+from reprollm.rules._static_coverage import LISTING_PASS_REASON, skipped_for_gaps
 from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
 
 #: LLM-critical names in canonical (comparison) space.
@@ -46,6 +47,19 @@ class DependencyManifestPresentRule(Rule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         if ctx.deps.manifest_present:
             return []
+        gaps = ctx.fs.static_gaps("listing")
+        if gaps:
+            return [
+                skipped_for_gaps(
+                    self,
+                    ctx,
+                    gaps,
+                    message=(
+                        "dependency manifest absence is not established because repository "
+                        "listing is incomplete in the captured eligible view"
+                    ),
+                )
+            ]
         return [
             self.finding(
                 ctx,
@@ -79,6 +93,19 @@ class LockfilePresentRule(Rule):
     def check(self, ctx: AuditContext) -> list[Finding]:
         if ctx.deps.lockfiles:
             return []
+        gaps = ctx.fs.static_gaps("listing")
+        if gaps:
+            return [
+                skipped_for_gaps(
+                    self,
+                    ctx,
+                    gaps,
+                    message=(
+                        "lockfile absence is not established because repository listing "
+                        "is incomplete in the captured eligible view"
+                    ),
+                )
+            ]
         return [
             self.finding(
                 ctx,
@@ -307,6 +334,21 @@ class LlmCriticalDepsPinnedRule(Rule):
                     )
                 )
                 continue
+            gaps = ctx.fs.static_gaps("listing")
+            if gaps:
+                findings.append(
+                    skipped_for_gaps(
+                        self,
+                        ctx,
+                        gaps,
+                        message=(
+                            f"{display} is used; repository listing is incomplete in the "
+                            "captured eligible view, so missing pin evidence is not established"
+                        ),
+                        evidence=self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                    )
+                )
+                continue
             version = installed.get(display)
             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
             finding = self.finding(
@@ -322,7 +364,10 @@ class LlmCriticalDepsPinnedRule(Rule):
         return findings
 
     def pass_skip_reason(self, ctx: AuditContext) -> str | None:
-        return ctx.pyscan.coverage().pass_skip_reason()
+        python_reason = ctx.pyscan.coverage().pass_skip_reason()
+        if python_reason is not None:
+            return python_reason
+        return LISTING_PASS_REASON if ctx.fs.static_gaps("listing") else None
 
     def _critical_in_use(self, ctx: AuditContext) -> list[str]:
         deps = ctx.deps
@@ -373,6 +418,19 @@ class PythonVersionDeclaredRule(Rule):
         found = self._declared_where(ctx)
         if found is not None:
             return []
+        gaps = ctx.fs.static_gaps("listing", "python_version")
+        if gaps:
+            return [
+                skipped_for_gaps(
+                    self,
+                    ctx,
+                    gaps,
+                    message=(
+                        "Python version declaration absence is not established because "
+                        "eligible static inputs could not be fully analysed"
+                    ),
+                )
+            ]
         return [
             self.finding(
                 ctx,
@@ -391,7 +449,9 @@ class PythonVersionDeclaredRule(Rule):
         scanner = ctx.fs
         for pyproject in dependency_file_paths(scanner.analysis_files(), "pyproject.toml"):
             text = scanner.read_text(pyproject)
-            if text is not None:
+            if text is None:
+                scanner.record_gap("python_version", pyproject)
+            else:
                 try:
                     doc = tomllib.loads(text)
                     project = doc.get("project")
@@ -400,8 +460,8 @@ class PythonVersionDeclaredRule(Rule):
                         return Evidence(
                             kind="file", path=pyproject, note=f"requires-python {requires}"
                         )
-                except tomllib.TOMLDecodeError:
-                    pass
+                except (tomllib.TOMLDecodeError, RecursionError):
+                    scanner.record_gap("python_version", pyproject)
         python_versions = dependency_file_paths(scanner.analysis_files(), ".python-version")
         if python_versions:
             return Evidence(kind="file", path=python_versions[0], note=".python-version present")
@@ -409,7 +469,9 @@ class PythonVersionDeclaredRule(Rule):
             scanner.analysis_files(), "environment.yml", "environment.yaml"
         ):
             text = scanner.read_text(env_yml)
-            if text is not None and "python=" in text:
+            if text is None:
+                scanner.record_gap("python_version", env_yml)
+            elif "python=" in text:
                 return Evidence(kind="file", path=env_yml, note="conda python= entry present")
         return None
 
@@ -472,6 +534,9 @@ class SecretFilesIgnoredRule(Rule):
                 ],
             )
         ]
+
+    def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+        return LISTING_PASS_REASON if ctx.fs.static_gaps("listing") else None
 
 
 @register_rule

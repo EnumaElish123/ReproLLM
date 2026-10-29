@@ -110,6 +110,13 @@ def run_detection(
     if signals is None:
         signals = detection_signals(scanner.root)
 
+    failed_sources = set(deps.declaration_read_issues)
+    failed_sources.update(deps.unexpanded_requirement_targets)
+    failed_sources.update(deps.excluded_requirement_targets)
+    failed_sources.update(lock.path for lock in deps.lockfiles if lock.read_issue is not None)
+    for source in sorted(failed_sources):
+        scanner.record_gap("detection", source)
+
     entries: dict[str, tuple[str, list[Evidence]]] = {}
     provider_detection = detect_providers(scanner, pyscan)
     for profile, sig in sorted(signals.items()):
@@ -262,6 +269,8 @@ def _keyword_sources(scanner: RepoScanner) -> list[KeywordSource]:
         text = scanner.read_text(path)
         if text is not None:
             sources.append(KeywordSource("readme text", path, text))
+        else:
+            scanner.record_gap("detection", path)
     for path in scanner.config_files():
         for key in _config_keys(scanner, path):
             sources.append(KeywordSource("config key", path, key))
@@ -276,6 +285,7 @@ def _keyword_sources(scanner: RepoScanner) -> list[KeywordSource]:
 def _config_keys(scanner: RepoScanner, path: str) -> list[str]:
     text = scanner.read_text(path)
     if text is None:
+        scanner.record_gap("detection", path)
         return []
     data: object = None
     suffix = Path(path).suffix.lower()
@@ -286,7 +296,8 @@ def _config_keys(scanner: RepoScanner, path: str) -> list[str]:
             data = json.loads(text)
         elif suffix == ".toml":
             data = tomllib.loads(text)
-    except Exception:  # noqa: BLE001 - unreadable configs are skipped silently
+    except Exception:  # noqa: BLE001 - keep the existing bounded decoder boundary
+        scanner.record_gap("detection", path)
         return []
     keys: list[str] = []
     _collect_keys(data, keys)

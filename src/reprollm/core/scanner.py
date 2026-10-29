@@ -14,7 +14,9 @@ from __future__ import annotations
 import fnmatch
 import os
 import stat
+from dataclasses import dataclass
 from pathlib import Path, PureWindowsPath
+from typing import Literal
 
 from reprollm.core import git as git_mod
 from reprollm.core.git import GitInfo
@@ -67,6 +69,17 @@ _LOCKFILE_NAMES = {
     "yarn.lock",
     "pnpm-lock.yaml",
 }
+
+
+ScanScope = Literal["listing", "detection", "python_version"]
+
+
+@dataclass(frozen=True)
+class StaticScanGap:
+    """An observed failure in one bounded static consumer, never completeness."""
+
+    scope: ScanScope
+    path: str | None = None
 
 
 class ContentPathError(ValueError):
@@ -128,13 +141,39 @@ class RepoScanner:
         self._analysis_files: list[str] | None = None
         self._text_cache: dict[str, tuple[Path, str | None]] = {}
         self._dirs: set[str] | None = None
+        self._static_gaps: set[StaticScanGap] = set()
+
+    def record_gap(self, scope: ScanScope, path: str | None = None) -> None:
+        source = content_source_path(path) if path is not None else None
+        self._static_gaps.add(StaticScanGap(scope, source))
+
+    def static_gaps(self, *scopes: ScanScope) -> tuple[StaticScanGap, ...]:
+        return tuple(
+            sorted(
+                (gap for gap in self._static_gaps if gap.scope in scopes),
+                key=lambda gap: (gap.scope, gap.path or ""),
+            )
+        )
+
+    def _listing_failed(self) -> None:
+        self.record_gap("listing")
+
+    def _walk_failed(self, error: OSError) -> None:
+        self._listing_failed()
+
+    def _directory_names_failed(self, error: OSError) -> None:
+        self.record_gap("detection")
 
     # --- listing -----------------------------------------------------------
 
     def files(self) -> list[str]:
         """Relative POSIX paths of repository files, sorted (cached)."""
         if self._files is None:
-            candidates = git_mod.ls_files(self.root) if self.git.is_repo else self._walk()
+            candidates = (
+                git_mod.ls_files(self.root, on_failure=self._listing_failed)
+                if self.git.is_repo
+                else self._walk()
+            )
             self._files = sorted(
                 path
                 for path in candidates
@@ -163,6 +202,7 @@ class RepoScanner:
         try:
             return self.root.resolve()
         except (OSError, RuntimeError, ValueError):
+            self._listing_failed()
             return None
 
     @staticmethod
@@ -337,12 +377,13 @@ class RepoScanner:
                 return None
             stat = target.stat()
         except OSError:
+            self.record_gap("listing", rel_path)
             return None
         return stat.st_size if stat.st_size <= MAX_FILE_BYTES else None
 
     def _walk(self) -> list[str]:
         found: list[str] = []
-        for dirpath, dirnames, filenames in os.walk(self.root):
+        for dirpath, dirnames, filenames in os.walk(self.root, onerror=self._walk_failed):
             dirnames[:] = sorted(
                 name for name in dirnames if not self._skip_dir(Path(dirpath) / name, name)
             )
@@ -354,7 +395,9 @@ class RepoScanner:
 
     def _walk_dirs(self) -> set[str]:
         names: set[str] = set()
-        for dirpath, dirnames, _filenames in os.walk(self.root):
+        for dirpath, dirnames, _filenames in os.walk(
+            self.root, onerror=self._directory_names_failed
+        ):
             dirnames[:] = sorted(
                 name
                 for name in dirnames
@@ -383,5 +426,6 @@ class RepoScanner:
                 source = path.relative_to(self.root.resolve()).as_posix()
             except (OSError, RuntimeError, ValueError):
                 source = "repository content"
+            self.record_gap("listing", source if source != "repository content" else None)
             self._read_warning(source, "cannot inspect environment marker")
             return True

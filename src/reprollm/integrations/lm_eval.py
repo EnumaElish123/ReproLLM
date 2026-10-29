@@ -34,7 +34,7 @@ class LmEvalIntegration:
         evidence = import_evidence(scanner, self.name, pyscan)
         evidence.extend(cli_evidence(scanner, (("lm_eval",), ("lm-eval",)), module=self.name))
         if not evidence:
-            for path, data in self._task_configs(scanner):
+            for path, data in self._task_configs(scanner, for_detection=True):
                 if scalar_string(data.get("task")) and any(
                     key in data for key in ("dataset_path", "metric_list", "include")
                 ):
@@ -66,13 +66,15 @@ class LmEvalIntegration:
         return TaskHints(task_names=sorted(set(task_names)), metrics=sorted(set(metrics)))
 
     @staticmethod
-    def _task_configs(scanner: RepoScanner) -> Iterator[tuple[str, dict[str, Node]]]:
+    def _task_configs(
+        scanner: RepoScanner, *, for_detection: bool = False
+    ) -> Iterator[tuple[str, dict[str, Node]]]:
         for path in scanner.analysis_files():
             if not any(
                 path.startswith(directory) and path.endswith((".yaml", ".yml"))
                 for directory in _TASK_DIRS
             ):
                 continue
-            data = task_mapping(scanner, path)
+            data = task_mapping(scanner, path, for_detection=for_detection)
             if data is not None:
                 yield path, data

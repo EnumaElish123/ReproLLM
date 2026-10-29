@@ -35,8 +35,9 @@ DeclarationReadIssue = Literal[
     "unparsed_requirement",
     "unparsed_conda",
     "unparsed_conda_specifier",
+    "parser_limit",
 ]
-LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
+LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure", "parser_limit"]
 _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
 
 
@@ -685,6 +686,11 @@ def _parse_pyproject(path: str, scanner: RepoScanner, result: Declarations) -> b
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return False
+    except RecursionError:
+        result.declaration_read_issues[path] = "parser_limit"
+        result._uncertain_directories.add(PurePosixPath(path).parent)
+        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
+        return False
     # Inspect raw shapes before legacy falsey defaults and qualification discard them.
     if _invalid_pyproject_structure(doc):
         result.declaration_read_issues[path] = "invalid_structure"
@@ -804,6 +810,11 @@ def _parse_environment(path: str, scanner: RepoScanner, result: Declarations) ->
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
         return
+    except RecursionError:
+        result.declaration_read_issues[path] = "parser_limit"
+        result._uncertain_directories.add(PurePosixPath(path).parent)
+        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
+        return
     if _invalid_environment_structure(doc):
         result.declaration_read_issues[path] = "invalid_structure"
     if not isinstance(doc, dict):
@@ -875,6 +886,11 @@ def _parse_pipfile(path: str, scanner: RepoScanner, result: Declarations) -> Non
         result.declaration_read_issues[path] = "invalid_syntax"
         result._uncertain_directories.add(PurePosixPath(path).parent)
         result.unparsed.append(f"{path}:0: {exc}")
+        return
+    except RecursionError:
+        result.declaration_read_issues[path] = "parser_limit"
+        result._uncertain_directories.add(PurePosixPath(path).parent)
+        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
         return
     if any(
         section in doc and not isinstance(doc[section], dict)
@@ -977,6 +993,8 @@ def _toml_lockfile_packages(
         doc = tomllib.loads(text)
     except tomllib.TOMLDecodeError:
         return [], "invalid_syntax"
+    except RecursionError:
+        return [], "parser_limit"
     raw_packages = doc.get("package", [])
     # Preserve legacy extraction and diagnostics for falsey unsupported containers.
     packages = raw_packages or []
@@ -997,6 +1015,8 @@ def _pipfile_lock_packages(
         doc = json.loads(text)
     except json.JSONDecodeError:
         return [], "invalid_syntax"
+    except RecursionError:
+        return [], "parser_limit"
     if not isinstance(doc, dict):
         result.unparsed.append(f"{path}:0: invalid lock document")
         return [], "invalid_structure"
@@ -1022,6 +1042,8 @@ def _conda_lock_packages(
         doc = yaml.safe_load(text)
     except yaml.YAMLError:
         return [], "invalid_syntax"
+    except RecursionError:
+        return [], "parser_limit"
     if doc is None:
         return [], None
     if not isinstance(doc, dict):

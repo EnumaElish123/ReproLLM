@@ -215,6 +215,34 @@ These expectations were derived from upstream task syntax and evaluation-rule
 semantics before implementing the new behavior. Complete reports must still be
 compared, not only the summary counts above. The historical baseline is retained.
 
+### 7.2 Forward captured-view policy supplement (R07-C closing contract)
+
+This supplement applies only after explicit acceptance and implementation of
+specification section 12.3.16. It preserves the five repository pins, historic
+reports and prior oracle bytes. It is a forward policy expectation derived from
+the pinned sources, never a copy of new ReproLLM output.
+
+LlamaFactory's existing eligible config view includes seven JSON demo files
+larger than the unchanged 512 KiB read limit and smaller than the listing limit.
+Their names, byte counts and SHA-256 values are frozen in the
+[independent source evidence](docs/plan/reliability-2026-10-03/proposals/R07-C/final-coverage/llamafactory-source-evidence.json).
+These are known read-budget omissions, not claims of filesystem permission or
+invalid encoding. The selected conservative policy thus changes its initialized
+L1 exec.profile_detection_mismatch from synthetic PASS to SKIPPED/INFO, with the
+fixed message `Static profile detection is incomplete in the captured eligible view; no rule-wide PASS is established.`
+All other Finding fields remain unchanged. Pass decreases by one and skipped
+increases by one; apply the unchanged full finding sort after replacement.
+
+lm-eval and HarmBench keep the complete existing primary-Python SKIP, including
+its message/evidence, because that assessment has priority. FastChat and DP have
+no newly observed source gaps in this source review and retain full results.
+All five L0 reports, other L1 findings, diagnostics, profiles, hints, init
+manifest bytes and complete task lists retain prior expected content. The existing
+export template prints audit_summary.pass, so LlamaFactory's default export
+changes only the passed count from 9 to 8; its other counts and notable entries
+remain unchanged. The other four default exports retain prior complete bytes. Full structured comparisons still apply; counts alone never suffice.
+See the [literal forward expectations](docs/plan/reliability-2026-10-03/proposals/R07-C/final-coverage/portfolio-expected-qualified.json).
+
 ## 8. Mandatory validation gates
 
 ### Gate A — every product development session

@@ -9,6 +9,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C (spec §12.3.16): finish the accepted captured-view conclusion policy
+  for six rules using observed listing, detection and Python-version gaps.
+  Preserve concrete violations, positive witnesses and prior credit/skip priorities;
+  recover dependency decoder recursion limits with internal `parser_limit` facts.
+  Missing-evidence failures may become SKIPPED/INFO, including isolated exit 1→0.
+  LlamaFactory's initialized profile check and export pass count follow the reviewed
+  forward supplement; historical results and unsupported grammar remain bounded.
+
+
 - R07-C D-I (spec §12.3.15): retain supported requirements include targets
   rejected by existing candidate checks, then mark remaining missing-pin evidence
   as SKIPPED/INFO after all existing credit and skip priorities. This conservative
