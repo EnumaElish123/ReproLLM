@@ -50,6 +50,12 @@ CLI观察规范化关键词结果，不证明容器访问次数；共享alias遍
 
 2026-10-20：[先行补验报告](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成 fresh quality、五项目 Gate A、H2、10 原生 child / 5 pair / 20 export 和新输入 discover 接受链。正式 judge 仍绑定 `75d1b0`；原始 metadata 缺失及 HF 403 保持 BLOCKED。后续 R06-B 不把这些资源执行改绑到新产品提交。
 
+## 最终收尾方案准备 2026-10-29
+
+[R07-C有限六规则方案](proposals/R07-C/final-coverage/README.md)已准备，具体决定PENDING，
+未应用新政策。两处现合同框架修复`f980e36`、`60d2087`已通过定向回归，最终共享验收待执行。
+69条规则逐项处置及前瞻LF一条PASS→SKIP的具体选择须先接受；不据本提案关闭R07-C或发布。
+
 ## 从这里开始
 
 1. 阅读 [统一执行总则](00_Execution_Guide.md) 以及仓库 [AGENTS.md](../../../AGENTS.md)、[架构决策](../00_architecture_and_decisions.md)、[规格](../01_specification.md)、[val.md](../../../val.md)。

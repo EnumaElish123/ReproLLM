@@ -161,6 +161,11 @@ import 最近项目根、unknown barrier、workspace 兼容成本及后续验收
 
 ## 5. R07-C：扫描不完整时，哪些结论仍成立
 
+2026-10-29：完整剩余范围已合并为[有限六规则收尾方案](proposals/R07-C/final-coverage/README.md)。
+具体源码/规范/前瞻验收patch未应用；69条规则矩阵、现行故障观察和五项目来源预期已准备，
+新合同仍PROPOSED，不能据总体继续授权当作接受。两项既有框架合同修复可独立验收。
+
+
 2026-10-20 P-A：[具体局部方案](proposals/R07-C/R07-C_incomplete_scan_conclusions.md)、
 [逐规则证据](proposals/R07-C/rule-evidence.md)、
 [四格与混合反例](proposals/R07-C/acceptance-cases.md)、

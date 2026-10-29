@@ -8,6 +8,16 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+2026-10-29 final R07-C closure is now prepared as a
+[concrete six-rule proposal](reliability-2026-10-03/proposals/R07-C/final-coverage/README.md),
+with exact implementation/specification/forward-gold patches and a 69-rule disposition table.
+It remains PROPOSED; future policy execution is zero and the specific decision is pending.
+Independent existing-contract fixes at `f980e36` and `60d2087` handle task-YAML
+composition recursion and standalone shell-comment continuation. Their focused
+regressions pass; shared final quality/five-project/CI acceptance is pending.
+Wider R07-C is not closed by preparation, and no release is authorized.
+
+
 The maintainer specifically accepted D-I A and both exact patches on 2026-10-29.
 P-B at `3aadb9a` records actually reached supported requirements include targets
 rejected by the existing candidate check, with a separate typed tuple and a rule
