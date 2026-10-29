@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "private_original_sha256": "7839b96696560fe2bc836cf87896b8dcd2d21c0ea4c2bb6569d50e512f1490f3",
+  "view_qualification": "Filesystem prefixes replaced with logical aliases; original hash retained.",
+  "review": {
+    "blockers": [],
+    "case_count_qualification": {
+      "final_affected_cases": 60,
+      "new_cases_inside_affected": 21,
+      "new_make_cases": 9,
+      "new_shell_cases": 10,
+      "new_task_yaml_cases": 11,
+      "note": "Do not add 30+60 as 90 independent tests. Final affected60 contains all 21 earlier new cases; Makefile9 is disjoint.",
+      "pre_session_existing_cases_inside_affected": 39,
+      "unique_combined_related_cases": 69,
+      "unique_new_cases": 30
+    },
+    "evidence": [
+      {
+        "file": "review-existing-fixes-first-pass.json",
+        "sha256": "f10dfd2b905ab95b5e45abae9e8685721112e5d4801f83778950bad3b301e6b1"
+      },
+      {
+        "file": "makefile-comment-regression/summary.json",
+        "sha256": "19e1106e3bf8c0e308dfc2cdd83db29a83f717bdbccb6fb99e6222fbdb047a23"
+      },
+      {
+        "file": "makefile-comment-regression/red/receipt.json",
+        "sha256": "0250ada18f24096cd1a50ee92563e96f46f314bcf9647ca4979323ae14be6331"
+      },
+      {
+        "file": "makefile-comment-regression/red/stdout.log",
+        "sha256": "194492a1559ace671a9b466e536a9816abe0facbc0c3ff986efd03a8d77265af"
+      },
+      {
+        "file": "makefile-comment-regression/red/stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "makefile-comment-regression/red/junit.xml",
+        "sha256": "994d3947dc0a6917a7553804a8cc1d2300fa4467ae332dce916fcb6a7457fca9"
+      },
+      {
+        "file": "makefile-comment-regression/green/receipt.json",
+        "sha256": "ae3ab0fb2e23c188ae261bcfc19a3724a6328c10983c88727b3fb726e9792d8f"
+      },
+      {
+        "file": "makefile-comment-regression/green/stdout.log",
+        "sha256": "9661e277737df75a26321dd5cea3a8b2d3f7cef00a2ec02fd47c3f55c131958c"
+      },
+      {
+        "file": "makefile-comment-regression/green/stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "makefile-comment-regression/green/junit.xml",
+        "sha256": "9b34e69373f0f3fc98741fff19410fa86b50f8f58aa730123cc46f50150f0b2f"
+      },
+      {
+        "file": "makefile-comment-regression/affected/receipt.json",
+        "sha256": "3cafd17d38b19285a59e8072e8fb6affc5b6cf6199a791ee4b3fabfaca4c799b"
+      },
+      {
+        "file": "makefile-comment-regression/affected/stdout.log",
+        "sha256": "a51b7450588c2df5ac3fb1d2b742cd44b492d240b66ac03be053123e392100b3"
+      },
+      {
+        "file": "makefile-comment-regression/affected/stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "makefile-comment-regression/affected/junit.xml",
+        "sha256": "725934c5eb5f8aacdb1cb5a7c0c0e897c6b14d4d89cc49fe7b97f7d0a5e8405e"
+      },
+      {
+        "file": "makefile-comment-regression/native/make-dry-run.json",
+        "sha256": "6096ab57f3d63475b0fa88361ff5d0fbea30cce137eb7ec6b56771d590f44843"
+      },
+      {
+        "file": "makefile-comment-regression/native/Makefile",
+        "sha256": "2371309d1e7e20deb5d3fa88e3b08ea45dbd92e9ae15b3f270c7a981c24cd809"
+      },
+      {
+        "file": "makefile-comment-regression/native/make-dry-run.stdout",
+        "sha256": "2fcfe246c942d60d130b352df6be3ee97a5a5db7533c6da2e8ce16e8360f6740"
+      },
+      {
+        "file": "makefile-comment-regression/native/make-dry-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "makefile-comment-regression/local-checks.json",
+        "sha256": "b4d77bf3b34e9bd2b5fafcb2784465edf73d114c409c2166a9edb260a8fcbe63"
+      }
+    ],
+    "first_pass_review_preserved": {
+      "file": "review-existing-fixes-first-pass.json",
+      "sha256": "f10dfd2b905ab95b5e45abae9e8685721112e5d4801f83778950bad3b301e6b1"
+    },
+    "go_recommendation": "No remaining source/test blocker found for the existing-contract fixes. Freeze the actual final clean candidate and rerun one shared complete quality gate, then applicable fresh five-project checks and exact-head CI. The interrupted quality-final-1 is not a passing gate. This review itself did not rerun product tests or the full suite.",
+    "independent_make_control": {
+      "primary_reference": "https://www.gnu.org/software/make/manual/html_node/Makefile-Contents.html",
+      "qualification": "Local native make prerequisite; portable pytest tests do not require make/bash.",
+      "readback": "Literal source bytes, input hash, argv -n, exit0 and exact printf dry-run output verified. No target recipe was executed; only a synthetic Makefile was read.",
+      "status": "PASS_NATIVE_MAKE_COMMENT_PREREQUISITE"
+    },
+    "make_regression_observations": [
+      {
+        "cases": 9,
+        "errors": 0,
+        "failures": 4,
+        "nodeids": [
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_comment_and_later_real_recipe_do_not_duplicate_evidence",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_continued_comment_does_not_invent_a_framework_command[Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_continued_comment_does_not_invent_a_framework_command[recipes/Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_real_recipe_and_existing_command_continuation_keep_evidence[all:\\n\\tlm_eval --tasks real\\n]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_real_recipe_and_existing_command_continuation_keep_evidence[all:\\n\\tpython3 \\\\\\n\\t  -m lm_eval --tasks real\\n]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_public_audit_uses_the_file_specific_comment_boundary[Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_public_audit_uses_the_file_specific_comment_boundary[run.sh]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_shell_comment_still_ends_before_the_next_physical_command[recipes/run.sh]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_shell_comment_still_ends_before_the_next_physical_command[run.sh]"
+        ],
+        "skips": 0,
+        "source_sha256": "21cc3ec4ff59f09851a9384c2ea4878f88849d695f2c71a0153fef98cf1df36e",
+        "stage": "red",
+        "test_sha256": "fcf6debf2e19fc1913f6809cc62333e8325f87b39f6f7258f4e71fb56d49b3d8"
+      },
+      {
+        "cases": 9,
+        "errors": 0,
+        "failures": 0,
+        "nodeids": [
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_comment_and_later_real_recipe_do_not_duplicate_evidence",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_continued_comment_does_not_invent_a_framework_command[Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_continued_comment_does_not_invent_a_framework_command[recipes/Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_real_recipe_and_existing_command_continuation_keep_evidence[all:\\n\\tlm_eval --tasks real\\n]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_makefile_real_recipe_and_existing_command_continuation_keep_evidence[all:\\n\\tpython3 \\\\\\n\\t  -m lm_eval --tasks real\\n]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_public_audit_uses_the_file_specific_comment_boundary[Makefile]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_public_audit_uses_the_file_specific_comment_boundary[run.sh]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_shell_comment_still_ends_before_the_next_physical_command[recipes/run.sh]",
+          "tests.unit.integrations.test_makefile_comment_continuation::test_shell_comment_still_ends_before_the_next_physical_command[run.sh]"
+        ],
+        "skips": 0,
+        "source_sha256": "06bc571850e81e22860f9dd146aba9a3086e064b934ef29438675830f2406597",
+        "stage": "green",
+        "test_sha256": "fcf6debf2e19fc1913f6809cc62333e8325f87b39f6f7258f4e71fb56d49b3d8"
+      },
+      {
+        "cases": 60,
+        "errors": 0,
+        "failures": 0,
+        "nodeids": [
+          "tests.unit.cli.test_framework_init::test_explicit_profile_without_evaluation_does_not_gain_task_declarations",
+          "tests.unit.cli.test_framework_init::test_framework_cli_selects_evaluation_and_prefills_selected_tasks[inspect eval task.py\\n-task.py-from inspect_ai import task\\n@task\\ndef custom():\\n    return None\\n-expected_names3]",
+          "tests.unit.cli.test_framework_init::test_framework_cli_selects_evaluation_and_prefills_selected_tasks[lighteval accelerate --tasks custom\\n-configs/task.yaml-task: custom\\n-expected_names2]",
+          "tests.unit.cli.test_framework_init::test_framework_cli_selects_evaluation_and_prefills_selected_tasks[lm_eval --model hf --tasks custom\\n-lm_eval/tasks/custom.yaml-task: custom\\ndataset_path: demo/corpus\\nmetric_list:\\n  - metric: accuracy\\n-expected_names0]",
+          "tests.unit.cli.test_framework_init::test_framework_cli_selects_evaluation_and_prefills_selected_tasks[python -m lm_eval --model hf --tasks custom\\n-tasks/custom.yml-task: custom\\ndataset_path: demo/corpus\\n-expected_names1]",
+          "tests.unit.cli.test_framework_init::test_lm_eval_task_structure_selects_evaluation_without_import_or_command",
+          "tests.unit.cli.test_framework_init::test_secret_looking_task_names_are_not_persisted",
+          "tests.unit.cli.test_framework_init::test_task_candidates_drop_host_paths_and_machine_identity[/Users/example/private-experiment]",
+          "tests.unit.cli.test_framework_init::test_task_candidates_drop_host_paths_and_machine_identity[C:\\\\Users\\\\example\\\\private-experiment]",
+          "tests.unit.cli.test_framework_init::test_task_candidates_drop_host_paths_and_machine_identity[\\\\\\\\private-host\\\\shared\\\\task]",
+          "tests.unit.cli.test_framework_init::test_task_candidates_drop_host_paths_and_machine_identity[task for example-user]",
+          "tests.unit.cli.test_framework_init::test_task_candidates_drop_host_paths_and_machine_identity[task on private-host]",
+          "tests.unit.cli.test_framework_init::test_task_name_requires_an_actual_string_scalar[!function never_import.task]",
+          "tests.unit.cli.test_framework_init::test_task_name_requires_an_actual_string_scalar[23]",
+          "tests.unit.cli.test_framework_init::test_task_name_requires_an_actual_string_scalar[[group, members]]",
+          "tests.unit.cli.test_framework_init::test_task_name_requires_an_actual_string_scalar[null]",
+          "tests.unit.cli.test_framework_init::test_task_names_are_deduplicated_quoted_and_sorted",
+          "tests.unit.cli.test_framework_init::test_task_yaml_custom_tags_are_read_statically",
+          "tests.unit.cli.test_framework_init::test_unrelated_task_config_and_commented_import_do_not_prefill",
+          "tests.unit.integrations.test_frameworks::test_inspect_ai_detection_and_task_decorator",
+          "tests.unit.integrations.test_frameworks::test_integration_protocol_shape",
+          "tests.unit.integrations.test_frameworks::test_lighteval_detection",
+          "tests.unit.integrations.test_frameworks::test_lm_eval_capture",
+          "tests.unit.integrations.test_frameworks::test_lm_eval_detection_via_import",
+          "tests.unit.integrations.test_frameworks::test_lm_eval_task_yaml_extraction",
+          "tests.unit.integrations.test_frameworks::test_no_detection_on_empty_repo",
+          "tests.unit.integrations.test_shell_comment_continuation::test_audit_reports_the_real_command_after_a_standalone_comment",
+          "tests.unit.integrations.test_shell_comment_continuation::test_backslash_in_standalone_comment_keeps_next_command_on_line_two[ \\t# ignored ]",
+          "tests.unit.integrations.test_shell_comment_continuation::test_backslash_in_standalone_comment_keeps_next_command_on_line_two[# ignored ]",
+          "tests.unit.integrations.test_shell_comment_continuation::test_comment_contents_do_not_become_framework_commands",
+          "tests.unit.integrations.test_shell_comment_continuation::test_init_keeps_selected_tasks_after_a_standalone_comment",
+          "tests.unit.integrations.test_shell_comment_continuation::test_list_tasks_retains_framework_candidates_after_a_standalone_comment",
+          "tests.unit.integrations.test_shell_comment_continuation::test_multiple_standalone_comments_keep_the_real_physical_line",
+          "tests.unit.integrations.test_shell_comment_continuation::test_supported_continuations_quoted_hash_and_pending_comments_are_unchanged[lm_eval --tag \"# quoted\" --tasks safe\\n-1]",
+          "tests.unit.integrations.test_shell_comment_continuation::test_supported_continuations_quoted_hash_and_pending_comments_are_unchanged[python3 \\\\\\n  -m lm_eval --tasks safe\\n-1]",
+          "tests.unit.integrations.test_shell_comment_continuation::test_supported_continuations_quoted_hash_and_pending_comments_are_unchanged[python3 \\\\\\n # lm_eval --tasks hidden \\\\\\n -m lm_eval\\n-None]",
+          "tests.unit.integrations.test_static_frameworks::test_non_entry_text_never_creates_a_framework_signal[# lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_non_entry_text_never_creates_a_framework_signal[echo \"lm_eval --tasks custom\"\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_non_entry_text_never_creates_a_framework_signal[lm_eval \"unterminated\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_non_entry_text_never_creates_a_framework_signal[prefix_lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_non_entry_text_never_creates_a_framework_signal[python -m lm_eval_extra --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[echo ready && lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[env DEVICE=cpu lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[lm-eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[python3 \\\\\\n  -m lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[python3.12 -m lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_real_cli_entry_is_reported_with_relative_path_and_line[uv run lm_eval --tasks custom\\n]",
+          "tests.unit.integrations.test_static_frameworks::test_task_directory_matching_and_malformed_yaml_are_bounded",
+          "tests.unit.integrations.test_task_yaml_recursion::test_audit_does_not_invent_framework_evidence_from_failed_task_composition",
+          "tests.unit.integrations.test_task_yaml_recursion::test_init_persists_selected_shallow_task_and_preserves_inputs[lighteval]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_init_persists_selected_shallow_task_and_preserves_inputs[lm_eval]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_list_tasks_retains_complete_shallow_inventory_without_writes[lighteval]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_list_tasks_retains_complete_shallow_inventory_without_writes[lm_eval]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_lm_eval_detection_uses_next_recognizable_yaml_after_composer_recursion",
+          "tests.unit.integrations.test_task_yaml_recursion::test_task_composition_preserves_unexpected_exceptions[MemoryError]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_task_composition_preserves_unexpected_exceptions[RuntimeError]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_task_composition_retains_existing_malformed_yaml_skip",
+          "tests.unit.integrations.test_task_yaml_recursion::test_task_inventory_keeps_shallow_candidates_after_composer_recursion[lighteval]",
+          "tests.unit.integrations.test_task_yaml_recursion::test_task_inventory_keeps_shallow_candidates_after_composer_recursion[lm_eval]"
+        ],
+        "skips": 0,
+        "source_sha256": "06bc571850e81e22860f9dd146aba9a3086e064b934ef29438675830f2406597",
+        "stage": "affected",
+        "test_sha256": "fcf6debf2e19fc1913f6809cc62333e8325f87b39f6f7258f4e71fb56d49b3d8"
+      }
+    ],
+    "regression_assessment": [
+      "Narrow RecursionError recovery remains at yaml.compose only; RuntimeError/MemoryError are not swallowed.",
+      "Comments remain ignored, shell physical evidence lines stay correct, and Makefile comments cannot fabricate profile evidence.",
+      "Real root/nested Makefile recipes and existing continued commands have literal expected evidence in portable tests.",
+      "No additional source read, subprocess, dependency import, grammar expansion or budget change is introduced by the mode correction."
+    ],
+    "resolved_findings": [
+      {
+        "first_pass_priority": "P2",
+        "observed_red_green": "Identical final 9-case bytes actually ran 4FAIL/5PASS before, 9PASS afterward; source/final-byte guards and external composer/command behavior remain unchanged.",
+        "resolution": "28de938 adds a keyword-only shell_comments mode; cli_evidence chooses False for any root/nested Makefile basename, restoring the prior Makefile continuation while retaining the shell correction.",
+        "title": "Makefile comment continuation"
+      }
+    ],
+    "reviewed_product_commit": "28de9388c42e508a2f6a9a8cce9e7cf11fed735f",
+    "schema_version": 1,
+    "source_scope": [
+      "Only integrations/_static.py product bytes differ from bfe355c.",
+      "Original 21 new test bytes unchanged and included in the final-source 60-case green run.",
+      "No engine/redaction/schema/dependency/version or future nine-source policy implementation is present.",
+      "Future six-rule policy remains PROPOSED with zero product execution; metadata/documents may be mechanically rebound separately."
+    ],
+    "source_test_changelog_hashes": {
+      "CHANGELOG.md": "cc959d893bc2df0dc3ec52ab57fac23fd51a59527bcbd4635e395f14696c4879",
+      "src/reprollm/integrations/_static.py": "06bc571850e81e22860f9dd146aba9a3086e064b934ef29438675830f2406597",
+      "tests/unit/integrations/test_makefile_comment_continuation.py": "fcf6debf2e19fc1913f6809cc62333e8325f87b39f6f7258f4e71fb56d49b3d8",
+      "tests/unit/integrations/test_shell_comment_continuation.py": "8e903cbc2aedf7d9c8622da3e524ed32e804a6a1c98871de61ed9420a98ee2b7",
+      "tests/unit/integrations/test_task_yaml_recursion.py": "85dc2ab8b1cf01cce022da8cd9744b02a9528c166fe9e9f8b79d2c2191919843"
+    },
+    "status": "PASS_READ_ONLY_EXISTING_FIXES_REVIEW_GO_FOR_SHARED_FINAL_GATE",
+    "validation_not_claimed": [
+      "Full shared quality-final-2 completion",
+      "Fresh five-project final acceptance",
+      "Exact delivery-head CI",
+      "Formal new six-rule policy acceptance/execution",
+      "New resource replay or release readiness"
+    ]
+  }
+}

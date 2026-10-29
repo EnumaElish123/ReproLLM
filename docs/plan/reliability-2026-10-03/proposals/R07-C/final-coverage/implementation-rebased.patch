@@ -1,0 +1,608 @@
+--- a/src/reprollm/core/deps.py
++++ b/src/reprollm/core/deps.py
+@@ -35,8 +35,9 @@
+     "unparsed_requirement",
+     "unparsed_conda",
+     "unparsed_conda_specifier",
++    "parser_limit",
+ ]
+-LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure"]
++LockReadIssue = Literal["unreadable", "invalid_syntax", "invalid_structure", "parser_limit"]
+ _FORMAT_LOCK_NAMES = frozenset({"uv.lock", "poetry.lock", "Pipfile.lock", "conda-lock.yml"})
+ 
+ 
+@@ -685,6 +686,11 @@
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
+         return False
++    except RecursionError:
++        result.declaration_read_issues[path] = "parser_limit"
++        result._uncertain_directories.add(PurePosixPath(path).parent)
++        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
++        return False
+     # Inspect raw shapes before legacy falsey defaults and qualification discard them.
+     if _invalid_pyproject_structure(doc):
+         result.declaration_read_issues[path] = "invalid_structure"
+@@ -803,6 +809,11 @@
+         result.declaration_read_issues[path] = "invalid_syntax"
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
++        return
++    except RecursionError:
++        result.declaration_read_issues[path] = "parser_limit"
++        result._uncertain_directories.add(PurePosixPath(path).parent)
++        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
+         return
+     if _invalid_environment_structure(doc):
+         result.declaration_read_issues[path] = "invalid_structure"
+@@ -876,6 +887,11 @@
+         result._uncertain_directories.add(PurePosixPath(path).parent)
+         result.unparsed.append(f"{path}:0: {exc}")
+         return
++    except RecursionError:
++        result.declaration_read_issues[path] = "parser_limit"
++        result._uncertain_directories.add(PurePosixPath(path).parent)
++        result.unparsed.append(f"{path}:0: decoder recursion limit; skipped")
++        return
+     if any(
+         section in doc and not isinstance(doc[section], dict)
+         for section in ("packages", "dev-packages")
+@@ -977,6 +993,8 @@
+         doc = tomllib.loads(text)
+     except tomllib.TOMLDecodeError:
+         return [], "invalid_syntax"
++    except RecursionError:
++        return [], "parser_limit"
+     raw_packages = doc.get("package", [])
+     # Preserve legacy extraction and diagnostics for falsey unsupported containers.
+     packages = raw_packages or []
+@@ -997,6 +1015,8 @@
+         doc = json.loads(text)
+     except json.JSONDecodeError:
+         return [], "invalid_syntax"
++    except RecursionError:
++        return [], "parser_limit"
+     if not isinstance(doc, dict):
+         result.unparsed.append(f"{path}:0: invalid lock document")
+         return [], "invalid_structure"
+@@ -1022,6 +1042,8 @@
+         doc = yaml.safe_load(text)
+     except yaml.YAMLError:
+         return [], "invalid_syntax"
++    except RecursionError:
++        return [], "parser_limit"
+     if doc is None:
+         return [], None
+     if not isinstance(doc, dict):
+--- a/src/reprollm/core/git.py
++++ b/src/reprollm/core/git.py
+@@ -6,6 +6,7 @@
+ from __future__ import annotations
+ 
+ import re
++from collections.abc import Callable
+ from dataclasses import dataclass, field
+ from pathlib import Path
+ 
+@@ -125,12 +126,19 @@
+     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+ 
+ 
+-def ls_files(root: Path, include_untracked: bool = True) -> list[str]:
++def ls_files(
++    root: Path,
++    include_untracked: bool = True,
++    *,
++    on_failure: Callable[[], None] | None = None,
++) -> list[str]:
+     """List tracked files (and non-ignored untracked ones), sorted, ``-z`` safe."""
+     args = ["ls-files", "-z", "--cached"]
+     if include_untracked:
+         args += ["--others", "--exclude-standard"]
+     result = _git(root, *args)
+     if result.returncode != 0:
++        if on_failure is not None:
++            on_failure()
+         return []
+     return sorted({p for p in result.stdout.split("\0") if p})
+--- a/src/reprollm/core/scanner.py
++++ b/src/reprollm/core/scanner.py
+@@ -14,7 +14,9 @@
+ import fnmatch
+ import os
+ import stat
++from dataclasses import dataclass
+ from pathlib import Path, PureWindowsPath
++from typing import Literal
+ 
+ from reprollm.core import git as git_mod
+ from reprollm.core.git import GitInfo
+@@ -69,6 +71,17 @@
+ }
+ 
+ 
++ScanScope = Literal["listing", "detection", "python_version"]
++
++
++@dataclass(frozen=True)
++class StaticScanGap:
++    """An observed failure in one bounded static consumer, never completeness."""
++
++    scope: ScanScope
++    path: str | None = None
++
++
+ class ContentPathError(ValueError):
+     """A fixed, path-free reason that a static content path cannot be read."""
+ 
+@@ -128,13 +141,39 @@
+         self._analysis_files: list[str] | None = None
+         self._text_cache: dict[str, tuple[Path, str | None]] = {}
+         self._dirs: set[str] | None = None
++        self._static_gaps: set[StaticScanGap] = set()
++
++    def record_gap(self, scope: ScanScope, path: str | None = None) -> None:
++        source = content_source_path(path) if path is not None else None
++        self._static_gaps.add(StaticScanGap(scope, source))
++
++    def static_gaps(self, *scopes: ScanScope) -> tuple[StaticScanGap, ...]:
++        return tuple(
++            sorted(
++                (gap for gap in self._static_gaps if gap.scope in scopes),
++                key=lambda gap: (gap.scope, gap.path or ""),
++            )
++        )
++
++    def _listing_failed(self) -> None:
++        self.record_gap("listing")
++
++    def _walk_failed(self, error: OSError) -> None:
++        self._listing_failed()
++
++    def _directory_names_failed(self, error: OSError) -> None:
++        self.record_gap("detection")
+ 
+     # --- listing -----------------------------------------------------------
+ 
+     def files(self) -> list[str]:
+         """Relative POSIX paths of repository files, sorted (cached)."""
+         if self._files is None:
+-            candidates = git_mod.ls_files(self.root) if self.git.is_repo else self._walk()
++            candidates = (
++                git_mod.ls_files(self.root, on_failure=self._listing_failed)
++                if self.git.is_repo
++                else self._walk()
++            )
+             self._files = sorted(
+                 path
+                 for path in candidates
+@@ -163,6 +202,7 @@
+         try:
+             return self.root.resolve()
+         except (OSError, RuntimeError, ValueError):
++            self._listing_failed()
+             return None
+ 
+     @staticmethod
+@@ -337,12 +377,13 @@
+                 return None
+             stat = target.stat()
+         except OSError:
++            self.record_gap("listing", rel_path)
+             return None
+         return stat.st_size if stat.st_size <= MAX_FILE_BYTES else None
+ 
+     def _walk(self) -> list[str]:
+         found: list[str] = []
+-        for dirpath, dirnames, filenames in os.walk(self.root):
++        for dirpath, dirnames, filenames in os.walk(self.root, onerror=self._walk_failed):
+             dirnames[:] = sorted(
+                 name for name in dirnames if not self._skip_dir(Path(dirpath) / name, name)
+             )
+@@ -354,7 +395,9 @@
+ 
+     def _walk_dirs(self) -> set[str]:
+         names: set[str] = set()
+-        for dirpath, dirnames, _filenames in os.walk(self.root):
++        for dirpath, dirnames, _filenames in os.walk(
++            self.root, onerror=self._directory_names_failed
++        ):
+             dirnames[:] = sorted(
+                 name
+                 for name in dirnames
+@@ -383,5 +426,6 @@
+                 source = path.relative_to(self.root.resolve()).as_posix()
+             except (OSError, RuntimeError, ValueError):
+                 source = "repository content"
++            self.record_gap("listing", source if source != "repository content" else None)
+             self._read_warning(source, "cannot inspect environment marker")
+             return True
+--- a/src/reprollm/integrations/_static.py
++++ b/src/reprollm/integrations/_static.py
+@@ -28,17 +28,23 @@
+     return None
+ 
+ 
+-def task_mapping(scanner: RepoScanner, path: str) -> dict[str, Node] | None:
++def task_mapping(
++    scanner: RepoScanner, path: str, *, for_detection: bool = False
++) -> dict[str, Node] | None:
+     if not scanner.is_analysis_candidate(path):
+         return None
+     text = scanner.read_text(path)
+     if text is None:
++        if for_detection:
++            scanner.record_gap("detection", path)
+         return None
+     try:
+         # Compose reads nodes without constructing values or importing !function
+         # references. A custom tag elsewhere cannot hide a static task name.
+         node = yaml.compose(text, Loader=yaml.SafeLoader)
+     except (yaml.YAMLError, RecursionError):
++        if for_detection:
++            scanner.record_gap("detection", path)
+         return None
+     if not isinstance(node, MappingNode):
+         return None
+@@ -56,13 +62,13 @@
+     return [Evidence(kind="detection", path=hit.path, line=hit.line, note=f"import {module}")]
+ 
+ 
+-def _commands(text: str) -> list[list[str]]:
++def _commands(text: str) -> list[list[str]] | None:
+     lexer = shlex.shlex(text, posix=True, punctuation_chars=";&|()")
+     lexer.whitespace_split = True
+     try:
+         tokens = list(lexer)
+     except ValueError:
+-        return []
++        return None
+     commands: list[list[str]] = [[]]
+     for token in tokens:
+         if token and set(token) <= set(";&|()"):
+@@ -108,11 +114,16 @@
+             continue
+         text = scanner.read_text(path)
+         if text is None:
++            scanner.record_gap("detection", path)
+             continue
+         for line_number, line in _logical_lines(
+             text, shell_comments=PurePosixPath(path).name != "Makefile"
+         ):
+-            for command in _commands(line):
++            commands = _commands(line)
++            if commands is None:
++                scanner.record_gap("detection", path)
++                continue
++            for command in commands:
+                 command = _entry(command)
+                 if not command:
+                     continue
+--- a/src/reprollm/integrations/lm_eval.py
++++ b/src/reprollm/integrations/lm_eval.py
+@@ -34,7 +34,7 @@
+         evidence = import_evidence(scanner, self.name, pyscan)
+         evidence.extend(cli_evidence(scanner, (("lm_eval",), ("lm-eval",)), module=self.name))
+         if not evidence:
+-            for path, data in self._task_configs(scanner):
++            for path, data in self._task_configs(scanner, for_detection=True):
+                 if scalar_string(data.get("task")) and any(
+                     key in data for key in ("dataset_path", "metric_list", "include")
+                 ):
+@@ -66,13 +66,15 @@
+         return TaskHints(task_names=sorted(set(task_names)), metrics=sorted(set(metrics)))
+ 
+     @staticmethod
+-    def _task_configs(scanner: RepoScanner) -> Iterator[tuple[str, dict[str, Node]]]:
++    def _task_configs(
++        scanner: RepoScanner, *, for_detection: bool = False
++    ) -> Iterator[tuple[str, dict[str, Node]]]:
+         for path in scanner.analysis_files():
+             if not any(
+                 path.startswith(directory) and path.endswith((".yaml", ".yml"))
+                 for directory in _TASK_DIRS
+             ):
+                 continue
+-            data = task_mapping(scanner, path)
++            data = task_mapping(scanner, path, for_detection=for_detection)
+             if data is not None:
+                 yield path, data
+--- a/src/reprollm/profiles/detect.py
++++ b/src/reprollm/profiles/detect.py
+@@ -109,6 +109,13 @@
+     """
+     if signals is None:
+         signals = detection_signals(scanner.root)
++
++    failed_sources = set(deps.declaration_read_issues)
++    failed_sources.update(deps.unexpanded_requirement_targets)
++    failed_sources.update(deps.excluded_requirement_targets)
++    failed_sources.update(lock.path for lock in deps.lockfiles if lock.read_issue is not None)
++    for source in sorted(failed_sources):
++        scanner.record_gap("detection", source)
+ 
+     entries: dict[str, tuple[str, list[Evidence]]] = {}
+     provider_detection = detect_providers(scanner, pyscan)
+@@ -262,6 +269,8 @@
+         text = scanner.read_text(path)
+         if text is not None:
+             sources.append(KeywordSource("readme text", path, text))
++        else:
++            scanner.record_gap("detection", path)
+     for path in scanner.config_files():
+         for key in _config_keys(scanner, path):
+             sources.append(KeywordSource("config key", path, key))
+@@ -276,6 +285,7 @@
+ def _config_keys(scanner: RepoScanner, path: str) -> list[str]:
+     text = scanner.read_text(path)
+     if text is None:
++        scanner.record_gap("detection", path)
+         return []
+     data: object = None
+     suffix = Path(path).suffix.lower()
+@@ -286,7 +296,8 @@
+             data = json.loads(text)
+         elif suffix == ".toml":
+             data = tomllib.loads(text)
+-    except Exception:  # noqa: BLE001 - unreadable configs are skipped silently
++    except Exception:  # noqa: BLE001 - keep the existing bounded decoder boundary
++        scanner.record_gap("detection", path)
+         return []
+     keys: list[str] = []
+     _collect_keys(data, keys)
+--- /dev/null
++++ b/src/reprollm/rules/_static_coverage.py
+@@ -0,0 +1,57 @@
++"""Internal findings for explicitly observed static-analysis gaps."""
++
++from __future__ import annotations
++
++from collections.abc import Sequence
++from typing import TYPE_CHECKING
++
++from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
++
++if TYPE_CHECKING:
++    from reprollm.core.context import AuditContext
++    from reprollm.core.registry import Rule
++    from reprollm.core.scanner import StaticScanGap
++
++
++LISTING_PASS_REASON = (
++    "Repository listing is incomplete in the captured eligible view; "
++    "no rule-wide PASS is established."
++)
++PROFILE_PASS_REASON = (
++    "Static profile detection is incomplete in the captured eligible view; "
++    "no rule-wide PASS is established."
++)
++
++
++def skipped_for_gaps(
++    rule: Rule,
++    ctx: AuditContext,
++    gaps: Sequence[StaticScanGap],
++    *,
++    message: str,
++    evidence: Sequence[Evidence] = (),
++) -> Finding:
++    return Finding(
++        rule_id=rule.id,
++        aliases=list(rule.aliases),
++        category=rule.category,
++        severity=Severity.INFO,
++        status=FindingStatus.SKIPPED,
++        level=ctx.level,
++        message=message,
++        evidence=[
++            *evidence,
++            *[
++                Evidence(
++                    kind="file",
++                    path=path,
++                    note=f"{scope} analysis incomplete in the captured eligible view",
++                )
++                for scope, path in sorted(
++                    {(gap.scope, gap.path) for gap in gaps},
++                    key=lambda item: (item[0], item[1] or ""),
++                )
++            ],
++        ],
++        fix_hint=rule.fix_hint,
++    )
+--- a/src/reprollm/rules/env.py
++++ b/src/reprollm/rules/env.py
+@@ -15,6 +15,7 @@
+ from reprollm.core.pyscan import ImportInfo
+ from reprollm.core.redaction import is_forbidden_file
+ from reprollm.core.registry import Rule, register_rule
++from reprollm.rules._static_coverage import LISTING_PASS_REASON, skipped_for_gaps
+ from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
+ 
+ #: LLM-critical names in canonical (comparison) space.
+@@ -46,6 +47,19 @@
+     def check(self, ctx: AuditContext) -> list[Finding]:
+         if ctx.deps.manifest_present:
+             return []
++        gaps = ctx.fs.static_gaps("listing")
++        if gaps:
++            return [
++                skipped_for_gaps(
++                    self,
++                    ctx,
++                    gaps,
++                    message=(
++                        "dependency manifest absence is not established because repository "
++                        "listing is incomplete in the captured eligible view"
++                    ),
++                )
++            ]
+         return [
+             self.finding(
+                 ctx,
+@@ -79,6 +93,19 @@
+     def check(self, ctx: AuditContext) -> list[Finding]:
+         if ctx.deps.lockfiles:
+             return []
++        gaps = ctx.fs.static_gaps("listing")
++        if gaps:
++            return [
++                skipped_for_gaps(
++                    self,
++                    ctx,
++                    gaps,
++                    message=(
++                        "lockfile absence is not established because repository listing "
++                        "is incomplete in the captured eligible view"
++                    ),
++                )
++            ]
+         return [
+             self.finding(
+                 ctx,
+@@ -307,6 +334,21 @@
+                     )
+                 )
+                 continue
++            gaps = ctx.fs.static_gaps("listing")
++            if gaps:
++                findings.append(
++                    skipped_for_gaps(
++                        self,
++                        ctx,
++                        gaps,
++                        message=(
++                            f"{display} is used; repository listing is incomplete in the "
++                            "captured eligible view, so missing pin evidence is not established"
++                        ),
++                        evidence=self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
++                    )
++                )
++                continue
+             version = installed.get(display)
+             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
+             finding = self.finding(
+@@ -322,7 +364,10 @@
+         return findings
+ 
+     def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+-        return ctx.pyscan.coverage().pass_skip_reason()
++        python_reason = ctx.pyscan.coverage().pass_skip_reason()
++        if python_reason is not None:
++            return python_reason
++        return LISTING_PASS_REASON if ctx.fs.static_gaps("listing") else None
+ 
+     def _critical_in_use(self, ctx: AuditContext) -> list[str]:
+         deps = ctx.deps
+@@ -373,6 +418,19 @@
+         found = self._declared_where(ctx)
+         if found is not None:
+             return []
++        gaps = ctx.fs.static_gaps("listing", "python_version")
++        if gaps:
++            return [
++                skipped_for_gaps(
++                    self,
++                    ctx,
++                    gaps,
++                    message=(
++                        "Python version declaration absence is not established because "
++                        "eligible static inputs could not be fully analysed"
++                    ),
++                )
++            ]
+         return [
+             self.finding(
+                 ctx,
+@@ -391,7 +449,9 @@
+         scanner = ctx.fs
+         for pyproject in dependency_file_paths(scanner.analysis_files(), "pyproject.toml"):
+             text = scanner.read_text(pyproject)
+-            if text is not None:
++            if text is None:
++                scanner.record_gap("python_version", pyproject)
++            else:
+                 try:
+                     doc = tomllib.loads(text)
+                     project = doc.get("project")
+@@ -400,8 +460,8 @@
+                         return Evidence(
+                             kind="file", path=pyproject, note=f"requires-python {requires}"
+                         )
+-                except tomllib.TOMLDecodeError:
+-                    pass
++                except (tomllib.TOMLDecodeError, RecursionError):
++                    scanner.record_gap("python_version", pyproject)
+         python_versions = dependency_file_paths(scanner.analysis_files(), ".python-version")
+         if python_versions:
+             return Evidence(kind="file", path=python_versions[0], note=".python-version present")
+@@ -409,7 +469,9 @@
+             scanner.analysis_files(), "environment.yml", "environment.yaml"
+         ):
+             text = scanner.read_text(env_yml)
+-            if text is not None and "python=" in text:
++            if text is None:
++                scanner.record_gap("python_version", env_yml)
++            elif "python=" in text:
+                 return Evidence(kind="file", path=env_yml, note="conda python= entry present")
+         return None
+ 
+@@ -473,6 +535,9 @@
+             )
+         ]
+ 
++    def pass_skip_reason(self, ctx: AuditContext) -> str | None:
++        return LISTING_PASS_REASON if ctx.fs.static_gaps("listing") else None
++
+ 
+ @register_rule
+ class ReprollmInitializedRule(Rule):
+--- a/src/reprollm/rules/exec_.py
++++ b/src/reprollm/rules/exec_.py
+@@ -4,6 +4,7 @@
+ 
+ from reprollm.core.context import AuditContext
+ from reprollm.core.registry import Rule, register_rule
++from reprollm.rules._static_coverage import PROFILE_PASS_REASON, skipped_for_gaps
+ from reprollm.schemas.finding import Evidence, Finding, FindingStatus, Severity
+ 
+ 
+@@ -166,6 +167,29 @@
+                         )
+                     )
+                     continue
++                gaps = ctx.fs.static_gaps("listing", "detection")
++                if gaps:
++                    findings.append(
++                        skipped_for_gaps(
++                            self,
++                            ctx,
++                            gaps,
++                            message=(
++                                f"declared profile {profile!r} has no detection evidence "
++                                "in the analysed inputs; static profile detection is "
++                                "incomplete in the captured eligible view, so absence "
++                                "is not established"
++                            ),
++                            evidence=[
++                                Evidence(
++                                    kind="field",
++                                    field="experiment.profiles",
++                                    note=f"{profile} declared; detection absence unverified",
++                                )
++                            ],
++                        )
++                    )
++                    continue
+                 findings.append(
+                     self.finding(
+                         ctx,
+@@ -209,4 +233,7 @@
+         return findings
+ 
+     def pass_skip_reason(self, ctx: AuditContext) -> str | None:
+-        return ctx.pyscan.coverage().pass_skip_reason()
++        python_reason = ctx.pyscan.coverage().pass_skip_reason()
++        if python_reason is not None:
++            return python_reason
++        return PROFILE_PASS_REASON if ctx.fs.static_gaps("listing", "detection") else None

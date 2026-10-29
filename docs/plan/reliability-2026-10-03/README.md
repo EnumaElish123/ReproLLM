@@ -52,6 +52,10 @@ CLI观察规范化关键词结果，不证明容器访问次数；共享alias遍
 
 ## 最终收尾方案准备 2026-10-29
 
+Makefile纠正`28de938`已通过新增9例和60相关；[提案补充](proposals/R07-C/final-coverage/README.md)
+保留原patch、机械重基并修正LF export通过数9→8。首轮质量中止130，最终共享验收须新执行。
+
+
 [R07-C有限六规则方案](proposals/R07-C/final-coverage/README.md)已准备，具体决定PENDING，
 未应用新政策。两处现合同框架修复`f980e36`、`60d2087`已通过定向回归，最终共享验收待执行。
 69条规则逐项处置及前瞻LF一条PASS→SKIP的具体选择须先接受；不据本提案关闭R07-C或发布。

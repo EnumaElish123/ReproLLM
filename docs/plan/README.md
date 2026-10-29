@@ -8,6 +8,13 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The existing-contract Makefile correction at `28de938` is independently reviewed.
+The closing proposal's [supplement](reliability-2026-10-03/proposals/R07-C/final-coverage/README.md)
+mechanically carries that correction, and corrects the forward LF export passed
+count from 9 to 8. Original policy patches remain frozen and unapplied.
+The first quality attempt was interrupted for the review finding; new final acceptance is pending.
+
+
 2026-10-29 final R07-C closure is now prepared as a
 [concrete six-rule proposal](reliability-2026-10-03/proposals/R07-C/final-coverage/README.md),
 with exact implementation/specification/forward-gold patches and a 69-rule disposition table.

@@ -1,5 +1,24 @@
 # R07-C 最终结论合同方案
 
+## 独立复核补充
+
+Makefile与shell注释续行不同，已用独立回归及GNU Make dry run纠正，第三项修复为`28de938`。
+原先已启动的质量门已安全中止130，未产生最终PASS或五项目结果，后续在新候选重跑。
+[已实现修复审阅](existing-fixes-review.json)核实30项新增及合并69个独立相关案例。
+
+原三份patch及九文件政策保持历史字节；[机械重基实现patch](implementation-rebased.patch)
+仅保留这项独立Makefile修复，[AST与来源资格](rebase-qualification.json)证明六规则政策不变。
+补丁尚未应用。
+
+原“默认export全文不变”的预测有误：LF的PASS数减少1，既有模板的通过数也会从9变8。
+[修正的完整字面预期](portfolio-expected-qualified.json)与[修正gold补充](gold-amendment-qualified.patch)
+替代该描述；这是同一已提议summary变化的派生，不增加规则或导出实现改动。
+前瞻57份oracle中2份改变（LF L1及LF默认export），55份字节保持，原57份均不改。
+
+[资格边界说明](scope-clarifications.md)明确：仅改变六规则指定分支。
+无法合格的pyproject、失败的requirements闭包等仍按旧资格合同可能产生FAIL/WARNING，
+不表示已证明物理文件不存在。具体决定仍PENDING，新政策执行仍0。
+
 日期：2026-10-29。状态：**PROPOSED，未应用，未来政策执行 0 次**。
 本方案基于两项现行合同修复后的源码；精确提交与九份源码前后哈希见
 [source-bindings.json](source-bindings.json)。接受前继续保持现行规范。
