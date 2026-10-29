@@ -1,5 +1,16 @@
 # R07-C 最终结论合同方案
 
+## 已接受并完成本地验收
+
+维护者已[明确接受A与具体补丁](decision-accepted.json)，原样实施后完整质量24项、5295测试、
+fresh五项目230记录/184检查及独立原件复核均PASS。见[本地验收记录](verification-local.json)
+及[最终报告](../../../../../dogfooding/2026-10-29-r07c-final-coverage/README.md)。
+当前R07-C的有限开发合同已完成本地验收，最终交付CI在报告提交并推送后独立核对。
+以下P-A的PROPOSED、未来执行0及原预测错误均是保留的准备快照，不是当前待批准/待实现状态。
+
+## 历史提案与审阅材料
+
+
 ## 独立复核补充
 
 Makefile与shell注释续行不同，已用独立回归及GNU Make dry run纠正，第三项修复为`28de938`。

@@ -8,6 +8,19 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The accepted R07-C closing contract is implemented at `7e57809`; final test inputs
+are `3157ae7`. All 24 local quality checks, 5,295 tests and fresh five-project
+230 records / 184 checks pass with independent receipt review. See the
+[27-task completion ledger](reliability-2026-10-03/07_Completion_Status.md) and
+[final session report](../dogfooding/2026-10-29-r07c-final-coverage/README.md).
+All 23 engineering/policy implementations and applicable local acceptance are complete;
+exact final-delivery-head CI is verified separately after this report commit and push.
+A01 candidate evidence, external A02 feedback, A03 identity/submission and release
+readiness remain separate. Earlier dated OPEN/PROPOSED/pending paragraphs below
+are historical; the specifically accepted finite section12.3.16 now closes the
+R07-C development boundary. No release or external submission is authorized.
+
+
 The existing-contract Makefile correction at `28de938` is independently reviewed.
 The closing proposal's [supplement](reliability-2026-10-03/proposals/R07-C/final-coverage/README.md)
 mechanically carries that correction, and corrects the forward LF export passed

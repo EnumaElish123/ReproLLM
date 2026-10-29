@@ -161,6 +161,12 @@ import 最近项目根、unknown barrier、workspace 兼容成本及后续验收
 
 ## 5. R07-C：扫描不完整时，哪些结论仍成立
 
+2026-10-29：维护者已[明确接受最终有限A](proposals/R07-C/final-coverage/decision-accepted.json)。
+§12.3.16九文件实现及全部本地验收已通过，源/测试冻结于3157，5295测试、完整质量24及fresh五项目230/184与独立复核PASS。
+[最终报告](../../dogfooding/2026-10-29-r07c-final-coverage/README.md)和[完成账本](07_Completion_Status.md)
+记录当前结论；最终推送HEAD CI另核。下列旧局部OPEN/PROPOSED保持历史身份，不再作为当前开发待办。
+
+
 2026-10-29：完整剩余范围已合并为[有限六规则收尾方案](proposals/R07-C/final-coverage/README.md)。
 具体源码/规范/前瞻验收patch未应用；69条规则矩阵、现行故障观察和五项目来源预期已准备，
 新合同仍PROPOSED，不能据总体继续授权当作接受。两项既有框架合同修复可独立验收。
