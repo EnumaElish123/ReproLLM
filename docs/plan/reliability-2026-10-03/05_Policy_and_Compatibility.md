@@ -364,6 +364,14 @@ A仅记录实际candidate拒绝的已达supported target，在全部旧信用及
 具体决定后才实施和fresh验收，见[准备报告](../../dogfooding/2026-10-28-r07c-filtered-include-pa.md)。
 前批精确e3aa653五CI/Ubuntu3.12十二步已成功。更广R07-C继续OPEN，不发布。
 
+2026-10-29 D-I P-B：[维护者具体接受A及两份补丁](proposals/R07-C/filtered-include/decision-accepted.json)，
+3aadb9a按§12.3.15原样实施，保留旧信用/D-FS/D-L/D-M/D-G优先及完整证据。
+已接受无关/不存在目标的全仓保守SKIP与孤立门1→0成本；不新增读取/候选/预算/语法/未知use或信用。
+[实施报告](../../dogfooding/2026-10-29-r07c-filtered-include-pb/README.md)记录39新增、688既有回归，
+最终24项质量及fresh五项目225旧投影+5新tuple采集，共230外层/184检查，gold无差异。
+新字段五pins实测为空与旧facts投影分开验证，不以零触发替代边界回归。
+精确交付HEAD五CI另核；PA原字节及接受记录各自保留，更广R07-C/发布仍未关闭。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。

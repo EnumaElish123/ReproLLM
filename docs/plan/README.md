@@ -8,6 +8,21 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer specifically accepted D-I A and both exact patches on 2026-10-29.
+P-B at `3aadb9a` records actually reached supported requirements include targets
+rejected by the existing candidate check, with a separate typed tuple and a rule
+branch after all existing credit and skip priorities. The
+[session report](../dogfooding/2026-10-29-r07c-filtered-include-pb/README.md)
+records 39 new CLI passes, frozen-old sensitivity of 20 FAIL/19 PASS, 688 existing
+passes, native WARNING/promoted-CRITICAL gate pairs from 1 to 0, final24 quality
+and fresh five-project acceptance. The old 225 receipts remain separate from
+five new public dependency collectors which independently verify empty tuples;
+all 230 outer receipts and 184 checks pass with no unexplained gold delta.
+The [specific acceptance](reliability-2026-10-03/proposals/R07-C/filtered-include/decision-accepted.json)
+includes repository-wide conservative influence and unrelated/nonexistent-target
+costs. The P-A snapshots below retain their original bytes. Exact delivery-head
+CI is checked separately after push; wider R07-C remains OPEN, with no release.
+
 The next bounded R07-C batch is the 2026-10-28 D-I
 [filtered-include P-A](reliability-2026-10-03/proposals/R07-C/filtered-include/README.md).
 Its exact specification/implementation patches remain PROPOSED and unapplied.

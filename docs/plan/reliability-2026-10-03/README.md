@@ -6,6 +6,14 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+2026-10-29维护者已[具体接受D-I A与两份补丁](proposals/R07-C/filtered-include/decision-accepted.json)。
+P-B于3aadb9a原样实施：实际candidate拒绝的已达include目标单独记录，所有旧信用及SKIP先赢。
+[本批报告](../../dogfooding/2026-10-29-r07c-filtered-include-pb/README.md)记录39新增CLI、688既有、
+旧源码20F/19P、原生两门1→0、最终24质量及fresh五项目230外层/184检查验收。
+225旧投影与5次新typed fact采集分别计数；新tuple五pins实测为空，不假称旧collector已覆盖。
+接受的全仓保守成本保持，PA原20文件及旧快照不改。最终精确交付CI另核，更广R07-C仍OPEN，不发布。
+
+
 下一独立P-A为[D-I filtered include](proposals/R07-C/filtered-include/README.md)：
 24个现行案例/27CLI与静态补丁审阅完成，具体规范及实现patch尚未接受/应用。
 五项目无受支持include边仅支持条件零delta，不冒充新政策验收；具体决定后才P-B。
