@@ -274,6 +274,39 @@ class LlmCriticalDepsPinnedRule(Rule):
                     )
                 )
                 continue
+            if deps.excluded_requirement_targets:
+                findings.append(
+                    Finding(
+                        rule_id=self.id,
+                        aliases=list(self.aliases),
+                        category=self.category,
+                        severity=Severity.INFO,
+                        status=FindingStatus.SKIPPED,
+                        level=ctx.level,
+                        message=(
+                            f"{display} is used; a supported requirements include target was "
+                            "excluded from static analysis, so missing pin evidence "
+                            "is not established"
+                        ),
+                        evidence=[
+                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
+                            *[
+                                Evidence(
+                                    kind="file",
+                                    path=path,
+                                    note=f"{display} include target excluded from static analysis",
+                                )
+                                for path in sorted(set(deps.excluded_requirement_targets))
+                            ],
+                        ],
+                        fix_hint=(
+                            f"Review {display} declarations and excluded requirements include "
+                            "targets; make intended dependency sources eligible for static "
+                            "analysis before deciding that exact pin evidence is absent."
+                        ),
+                    )
+                )
+                continue
             version = installed.get(display)
             suggestion = f"{display}=={version}" if version else f"{display}==<version>"
             finding = self.finding(

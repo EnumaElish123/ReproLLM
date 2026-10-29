@@ -118,6 +118,7 @@ class Declarations:
     _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
     declaration_read_issues: dict[str, DeclarationReadIssue] = field(default_factory=dict)
     unexpanded_requirement_targets: tuple[str, ...] = ()
+    excluded_requirement_targets: tuple[str, ...] = ()
 
     def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
         """Return lock credit supported by an associated actual package origin."""
@@ -345,6 +346,7 @@ class _RequirementsGraph:
         self.closures: dict[str, _RequirementsClosure] = {}
         self._expanded_depth: dict[str, int] = {}
         self._emitted_sources: set[str] = set()
+        self._excluded_sources: set[str] = set()
         self._diagnostics: set[str] = set(result.unparsed)
 
     def parse(self, roots: list[str]) -> None:
@@ -361,6 +363,19 @@ class _RequirementsGraph:
                     if isinstance(event, _RequirementInclude)
                     and event.target is not None
                     and event.target not in self.nodes
+                }
+            )
+        )
+        self.result.excluded_requirement_targets = tuple(
+            sorted(
+                {
+                    event.target
+                    for node in self.nodes.values()
+                    if node.readable
+                    for event in node.events
+                    if isinstance(event, _RequirementInclude)
+                    and event.target is not None
+                    and event.target in self._excluded_sources
                 }
             )
         )
@@ -383,6 +398,7 @@ class _RequirementsGraph:
             if text is None:
                 self.result.declaration_read_issues[source] = "unreadable"
         else:
+            self._excluded_sources.add(source)
             text = None
         if text is None:
             node = _RequirementFile(False)

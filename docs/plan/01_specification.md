@@ -916,7 +916,7 @@ Columns: default severity; `min_level`; `applies` condition; FAIL condition; spr
 |---|---|---|---|
 | `env.dependency_manifest_present` | CRITICAL | always | none of `pyproject.toml` (with `[project]` or `[tool.poetry]`), `requirements*.txt`, `environment.yml`, `uv.lock`, `poetry.lock`, `Pipfile` exists |
 | `env.lockfile_present` | WARNING | dependency manifest present | no `uv.lock` / `poetry.lock` / `Pipfile.lock` / `conda-lock.yml` and no `requirements*.txt` satisfying the complete exact requirements closure contract below |
-| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.14. `pytorch` in conda counts as `torch`. |
+| `env.llm_critical_deps_pinned` | WARNING | any LLM-critical package (§4.4) appears in declarations **or** imports | for each such package, no declaration pins its version exactly under the Python or supported Conda contracts below, or a qualified lock-origin association under the scope contract below; one finding per package, subject to the bounded dependency SKIP policies in §§12.3.3–12.3.15. `pytorch` in conda counts as `torch`. |
 | `env.python_version_declared` | WARNING | always | no `requires-python` in pyproject, no `.python-version`, no `python=` in environment.yml |
 | `env.secret_files_ignored` | CRITICAL | always | any file matching the forbidden patterns of §16.4 (except the template names `.env.example`, `.env.sample`, `.env.template`) exists and is tracked or not ignored by git (`git check-ignore` false) |
 | `env.reprollm_initialized` | INFO | level 0 only | `.reprollm/` or `reprollm.yaml` absent |
@@ -943,7 +943,7 @@ Only when that original ordinary-line parse fails may the fallback apply. If any
 
 Otherwise locate only the first ASCII SPACE or TAB immediately followed by `#` in the original stripped line. Strip the prefix before that delimiter and accept it only when the existing `packaging.requirements.Requirement` parser accepts it and its `url` is `None`. A missing delimiter, invalid prefix or URL prefix retains the original full-line failure and diagnostic; do not try a later delimiter or truncate failed diagnostic text. Other Unicode whitespace does not create a delimiter. Preserve original physical source path/line, declaration ordering, canonicalization, specifier and exact-version rules. A newly accepted line emits its declaration instead of its former unsupported-line event.
 
-Recompute closure qualification and package membership from the same existing graph and newly captured declarations under the complete exact requirements contract. Preserve exact/qualified credit and the priorities in §§12.3.3–12.3.14. Newly captured exact declarations may precede existing SKIP branches; newly captured nonexact critical declarations may create package use. Dependency profile detection and init consumers receive the same updated inventory. This can change findings, diagnostics, profiles, generated manifests and exit codes in either direction under the existing thresholds; it adds no new status, severity or persisted field.
+Recompute closure qualification and package membership from the same existing graph and newly captured declarations under the complete exact requirements contract. Preserve exact/qualified credit and the priorities in §§12.3.3–12.3.15. Newly captured exact declarations may precede existing SKIP branches; newly captured nonexact critical declarations may create package use. Dependency profile detection and init consumers receive the same updated inventory. This can change findings, diagnostics, profiles, generated manifests and exit codes in either direction under the existing thresholds; it adds no new status, severity or persisted field.
 
 This subset applies only to graph requirements lines, not to shared requirement-string parsing for other declaration formats. It does not add reads, candidates, roots, include syntax or edges, depth budget, constraints, editable/VCS/URL support, environment interpolation, continuation processing or manager execution. It is not full pip grammar compatibility: original literal `" @ "` exclusions remain, and a first delimiter inside a quoted marker is not skipped in search of an outer comment. Existing successful whole-line marker parses still take priority.
 
@@ -983,9 +983,9 @@ filesystem enumeration, dependency parsing, framework scanning or full detection
 No warning prose is parsed into coverage facts; no persisted fields are added.
 
 Nonempty rule results remain unchanged except for the declared-but-undetected
-profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.14.
+profile branch in §12.3.2 and the bounded dependency branches in §§12.3.3–12.3.15.
 Applicability skips, all other built-in rules and generated project rules are
-unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.14 remains an existing
+unchanged. Used-but-unpinned package WARNING outside §§12.3.3–12.3.15 remains an existing
 bounded-scan conclusion relative to the captured dependency view; it may depend
 on absence and be overturned by additional evidence. It is not relabelled as a
 fully proven violation. Listing/dependency/framework uncertainty and broader
@@ -1043,7 +1043,7 @@ Existing ignore/suppression handling still applies to every status: matching
 outcomes become SUPPRESSED/INFO with the same reason and appended ignore evidence.
 
 This continuation changes only the declared-but-undetected branch under the
-specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.14
+specified primary-Python assessment. The separate dependency policies in §§12.3.3–12.3.15
 have their own bounded scopes. Upstream listing/detection completeness and broader
 sufficient-certificate policy remain unchanged or OPEN. It does not close the whole R07-C task, certify child execution
 or authorize rewriting historical reports.
@@ -1162,7 +1162,7 @@ associated captured format lock has a recorded read_issue from this section or
 SKIPPED/INFO instead of the used-but-unpinned FAIL/WARNING. This condition is
 independent of primary-Python coverage, including complete or zero-candidate
 views. Evaluate it before §12.3.3 when both policies could apply. Otherwise evaluate
-§12.3.3 followed by §12.3.6 (including §§12.3.7, 12.3.9, 12.3.10, 12.3.11, 12.3.12, 12.3.13 and 12.3.14), then §12.3.8, retaining all other existing behavior.
+§12.3.3 followed by §12.3.6 (including §§12.3.7, 12.3.9, 12.3.10, 12.3.11, 12.3.12, 12.3.13 and 12.3.14), then §12.3.8 and §12.3.15, retaining all other existing behavior.
 
 The new finding retains rule ID, aliases, category, audit level and existing
 display-name mapping. Use this exact message:
@@ -1355,7 +1355,7 @@ retains the findings. Thresholds, renderers, engine, scanner, rule IDs, schemas,
 dependencies, historical reports and five-project gold stay unchanged.
 
 This bounded body-capture policy does not settle decoded declaration structure
-outside §§12.3.7, 12.3.11 and 12.3.12, readable line/entry grammar outside §§12.3.9–12.3.10 and §§12.3.13–12.3.14, include-graph failures outside §12.3.8, omitted candidates,
+outside §§12.3.7, 12.3.11 and 12.3.12, readable line/entry grammar outside §§12.3.9–12.3.10 and §§12.3.13–12.3.14, include-graph failures outside §§12.3.8 and 12.3.15, omitted candidates,
 unknown package use, listing, README/config/framework completeness or broader
 sufficient certificates. The whole R07-C task remains OPEN.
 
@@ -1438,7 +1438,7 @@ and unsupported alternatives retain their existing capture behavior. Unknown Con
 keys are not invalidated; only a present `pip` field gets its listed checks.
 Do not add support for build dependencies, dynamic declarations, dependency groups,
 Poetry groups or Pipfile custom categories. Requirements text/line/directive/include
-grammar and graph completeness outside §12.3.8, other decoded shapes, unknown/omitted use and
+grammar and graph completeness outside §§12.3.8 and 12.3.15, other decoded shapes, unknown/omitted use and
 candidates, listing, README/config/framework completeness and sufficient certificates
 remain OPEN. This slice does not close the whole R07-C task.
 
@@ -1479,7 +1479,7 @@ physical read boundary can still qualify if the depth budget prevented those
 checks from being reached. Do not perform a new probe to classify it. In
 contrast, a target actually reached within the budget has a node and does not
 qualify here; actual attempted body-read failures retain §12.3.6, and candidate
-exclusions remain outside this new fact. Malformed/unsupported include events
+exclusions remain outside this new fact (see the separate bounded §12.3.15). Malformed/unsupported include events
 with no normalized target, including rejected absolute/escaping/remote syntax,
 do not qualify. No outside-root content is read.
 
@@ -1541,8 +1541,8 @@ package version, five-project gold or historical artifacts.
 This is only the specified final depth frontier. Requirements string/line,
 directive, continuation, comment, URL/VCS/editable, constraints and include
 syntax support do not expand. Cycles and complete-but-nonexact closures do not
-trigger it. Reached candidate exclusions, omitted roots/candidates/use, other
-graph uncertainty, manager package-value grammar outside §§12.3.9–12.3.14, listing, README/config/
+trigger it. Reached candidate exclusions have the separate bounded §12.3.15.
+Omitted roots/candidates/use and other graph uncertainty, manager package-value grammar outside §§12.3.9–12.3.14, listing, README/config/
 framework completeness and sufficient certificates remain OPEN R07-C work.
 The whole R07-C task is not closed by this slice.
 
@@ -1973,6 +1973,78 @@ package version, five-project gold or historical artifacts. Other grammar,
 manager values, omitted use/candidates/listing/framework and broader sufficient
 certificates remain OPEN. D-M-CS is a local R07-C label, not an architecture
 decision; it does not complete the whole R07-C task.
+
+### 12.3.15 Reached requirements include targets excluded from analysis (R07-C D-I)
+
+For `env.llm_critical_deps_pinned` only, retain a separate internal
+`Declarations.excluded_requirement_targets: tuple[str, ...] = ()` after the
+existing fields. Legacy/manual values default to empty. This is not a persisted
+schema field and does not extend `DeclarationReadIssue` or `_RequirementFile`.
+
+In the existing `_RequirementsGraph._node` branch where the existing
+`scanner.is_analysis_candidate(source)` call returns False, add that logical
+source to a private graph-local set. Do not add another eligibility check or
+body read. After every existing requirements root has completed expansion,
+collect exactly the non-None normalized targets of `_RequirementInclude` events
+on captured readable parent nodes whose targets belong to that private set.
+Deduplicate and lexicographically sort this final intersection into the new tuple.
+A rejected root with no qualifying incoming include is not itself sufficient.
+Retain the same cached nodes and expansion; do not retry after filesystem changes.
+
+The fact means an existing, actually reached candidate check rejected the
+logical target. It does not prove existence, readable contents, a particular
+filter reason, any dependency or any exact pin. A missing path beneath a skipped
+directory can qualify. Existing lexical exclusions, virtualenv-marker checks,
+internal aliases to excluded paths and rejection after an existing marker-check
+failure may qualify; do not classify their causes from prose or add new probes.
+Targets may use any extension supported by the existing include path grammar;
+only discovered roots require their existing requirements filename predicate.
+
+A depth-frontier target that was never reached does not enter this set; it keeps
+only the independent final-node predicate in §12.3.8. Candidate-eligible targets
+whose actual body read returns None keep §12.3.6. Missing/binary/oversize or unsafe
+physical aliases do not become this fact merely because their nodes are unreadable.
+Unsupported includes without a normalized target do not qualify. Listing omission
+alone is not a rejection: an explicit supported include may still reach its target.
+Never derive this fact from `readable=False`, incomplete/nonexact closures,
+diagnostics, file presence or a new scan of all candidates.
+
+Preserve all declarations and their order, source, line, specifier and exact
+version; roots, edges, nodes, closure qualification, lock sets and associations,
+manifest/lock presence, barriers, diagnostics, budgets and every existing read.
+Grant no use or credit, and do not extend grammar, candidate selection, scanner,
+physical read boundaries or the requirements-as-lock contract.
+
+Keep canonical known package use, applicability and iteration. Exact/qualified
+credit wins first, then D-F/D-S, D-L, D-M, and D-G. Only for each remaining
+used-but-unpinned FAIL/WARNING does a nonempty new tuple produce SKIPPED/INFO.
+Preserve every earlier finding in full without appending these target paths.
+Keep the original first declaration/import evidence, then one kind=file evidence
+per distinct sorted target, without a line, value, raw include or filter reason.
+For the package display name `P`, use exactly:
+
+- Message: `P is used; a supported requirements include target was excluded from static analysis, so missing pin evidence is not established`
+- Target evidence note: `P include target excluded from static analysis`
+- Fix hint: `Review P declarations and excluded requirements include targets; make intended dependency sources eligible for static analysis before deciding that exact pin evidence is absent.`
+
+This influence is repository-wide under §12.2's existential exact policy. An
+unrelated or nonexistent excluded target can conservatively skip any remaining
+currently used, uncredited critical package; it need not contain a hidden pin.
+Python coverage does not control this branch. Preserve no-known-use applicability,
+all-credited empty-result behavior and the primary-Python empty-result veto.
+Do not add an aggregate result, a per-package PASS or unknown package use.
+
+FAIL-only overrides, suppression, sorting and thresholds retain their contracts.
+An isolated WARNING or promoted CRITICAL gate may change from exit 1 to 0;
+independent qualifying findings still fail. Default text may show PASS with skips,
+and default export omits a former notable warning; complete JSON retains SKIP.
+Captured dependency/profile/init inventories and all other rule results remain
+unchanged. No renderer, engine, redaction, persisted schema, dependency, version,
+historical result, five-project gold or release change is included.
+
+D-I is a local proposal label, not an architecture decision. Other include or
+line grammar, omitted roots/use, listing/README/config/framework completeness,
+resource limits and broader sufficient certificates remain OPEN R07-C work.
 
 ### 12.4 `model.*` (M3 presence, M4 lock)
 

@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- R07-C D-I (spec §12.3.15): retain supported requirements include targets
+  rejected by existing candidate checks, then mark remaining missing-pin evidence
+  as SKIPPED/INFO after all existing credit and skip priorities. This conservative
+  influence is repository-wide, even for unrelated or nonexistent targets; an
+  isolated warning or promoted-critical gate can change from exit 1 to 0.
+  Preserve reads, graph budgets, inventories, diagnostics and persisted schemas.
+
 - R07-C D-M-CS (spec §12.3.14): record internal `unparsed_conda_specifier`
   only at the existing retained-name Conda specifier-placeholder assignment.
   Preserve the six legacy numeric-range forms, both omission returns, regexes,

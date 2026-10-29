@@ -1243,7 +1243,7 @@ def test_failed_declaration_body_does_not_create_package_use_or_rule_wide_findin
     "unverified",
     ["readable-line", "directive", "cycle", "excluded-include"],
 )
-def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_warning(
+def test_declaration_uncertainty_respects_accepted_missing_pin_policy(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unverified: str
 ) -> None:
     (tmp_path / "requirements.txt").write_text("torch>=2\n", encoding="utf-8")
@@ -1264,10 +1264,24 @@ def test_out_of_scope_declaration_uncertainty_preserves_existing_missing_pin_war
     (finding,) = LlmCriticalDepsPinnedRule().check(ctx)
 
     assert ctx.deps.declaration_read_issues == {}
-    assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
-    assert finding.message == (
-        "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
-    )
+    if unverified == "excluded-include":
+        assert ctx.deps.excluded_requirement_targets == (".venv/missing.txt",)
+        assert (finding.status, finding.severity) == (FindingStatus.SKIPPED, Severity.INFO)
+        assert finding.message == (
+            "torch is used; a supported requirements include target was excluded from static "
+            "analysis, so missing pin evidence is not established"
+        )
+        assert [evidence.path for evidence in finding.evidence] == [
+            "requirements.txt",
+            ".venv/missing.txt",
+        ]
+        assert finding.evidence[-1].note == "torch include target excluded from static analysis"
+    else:
+        assert ctx.deps.excluded_requirement_targets == ()
+        assert (finding.status, finding.severity) == (FindingStatus.FAIL, Severity.WARNING)
+        assert finding.message == (
+            "torch is used but not pinned to an exact version (suggestion: torch==<version>)"
+        )
 
 
 # --- R07-C D-M-S: decoded gaps retain partial credit and earlier policies ---

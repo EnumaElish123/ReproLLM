@@ -566,6 +566,8 @@ def test_g29_new_fact_is_appended_without_reinterpreting_legacy_positional_value
     assert result.declaration_read_issues is issues
     assert result.unexpanded_requirement_targets == ()
     assert Declarations().unexpanded_requirement_targets == ()
+    assert result.excluded_requirement_targets == ()
+    assert Declarations().excluded_requirement_targets == ()
     assert [item.name for item in fields(Declarations)] == [
         "declarations",
         "unparsed",
@@ -575,6 +577,7 @@ def test_g29_new_fact_is_appended_without_reinterpreting_legacy_positional_value
         "_uncertain_directories",
         "declaration_read_issues",
         "unexpanded_requirement_targets",
+        "excluded_requirement_targets",
     ]
 
 
