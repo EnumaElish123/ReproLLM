@@ -8,6 +8,8 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The active usability iteration is [2026-10-29 UX-A](usability-2026-10-29/README.md): save an experiment command during init, run it directly, and prioritize next actions in text reports. This follows the maintainer’s explicit request. UX-B guided-field refinement and a short first-use flow follow UX-A acceptance. The reliability records below remain historical.
+
 The accepted R07-C closing contract is implemented at `7e57809`; final test inputs
 are `3157ae7`. All 24 local quality checks, 5,295 tests and fresh five-project
 230 records / 184 checks pass with independent receipt review. See the
