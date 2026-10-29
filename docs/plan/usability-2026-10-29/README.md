@@ -21,9 +21,9 @@ reprollm export .
 
 | 会话 | 编号 | 交付 | 状态 |
 |---|---|---|---|
-| UX-A | UXR01 | init --command 保存一次实验命令，沿用已有交互填写与写前保全 | IN_PROGRESS |
-| UX-A | UXR02 | run 无 argv 执行已保存命令，dry-run 共用选择，明确 cwd/覆盖语义 | IN_PROGRESS |
-| UX-A | UXR03 | audit 文本首先展示最多三项确定性的下一步，保留完整发现与门控 | IN_PROGRESS |
+| UX-A | UXR01 | init --command 保存一次实验命令，沿用已有交互填写与写前保全 | LOCAL_ACCEPTED |
+| UX-A | UXR02 | run 无 argv 执行已保存命令，dry-run 共用选择，明确 cwd/覆盖语义 | LOCAL_ACCEPTED |
+| UX-A | UXR03 | audit 文本首先展示最多三项确定性的下一步，保留完整发现与门控 | LOCAL_ACCEPTED |
 | UX-B | UXR04 | 引导填写研究字段：说明、类型错误原位重试、剩余字段准确计数；具体接口在 UX-A 实际反馈后细化 | PLANNED |
 | UX-B | UXR05 | 单项目短教程与首次使用观察：记录完成首次 capture 的命令数、人工编辑点、阻塞；进阶手册保留为参考 | PLANNED |
 
@@ -82,3 +82,10 @@ UX-B 的新交互写入/恢复合同先做具体设计，不从本包推导无�
 推送 main 前本地门通过；推送后确认最终提交的五项 CI，报告实际结果与未完成的 UX-B。
 原三份用户 WIP 及未提交的手动试用材料不纳入本轮提交。
 
+
+## UX-A 验收记录
+
+最终产品与测试候选 `ce24ebb`：5419 项测试、24 项完整质量检查、五项目 255 条命令记录/198 项检查均通过。
+初次独立交付复核发现的两项输入错误边界已通过 `d9270fd`、`ce24ebb` 修复，并重新完整验收。
+见[会话报告](../../dogfooding/2026-10-29-usability-uxa/README.md)。表中 LOCAL_ACCEPTED 只描述本地验收快照；
+最终交付提交的五项 CI 在报告提交并推送后核验。下一批为 UX-B 的 UXR04→UXR05。

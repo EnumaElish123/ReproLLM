@@ -8,7 +8,7 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The active usability iteration is [2026-10-29 UX-A](usability-2026-10-29/README.md): save an experiment command during init, run it directly, and prioritize next actions in text reports. This follows the maintainer’s explicit request. UX-B guided-field refinement and a short first-use flow follow UX-A acceptance. The reliability records below remain historical.
+The active usability iteration is [2026-10-29](usability-2026-10-29/README.md). UX-A is implemented at `ce24ebb`: save an experiment command during init, run it directly, and prioritize next actions in text reports. Both independent-review input-boundary findings are fixed. All 24 local checks, 5,419 tests and fresh five-project acceptance pass; see the [session report](../dogfooding/2026-10-29-usability-uxa/README.md). Exact delivery-head CI is checked after the report commit and push. Next is UX-B: guided-field refinement and a short first-use flow. The reliability records below remain historical.
 
 The accepted R07-C closing contract is implemented at `7e57809`; final test inputs
 are `3157ae7`. All 24 local quality checks, 5,295 tests and fresh five-project
