@@ -1507,20 +1507,58 @@ def test_declaration_body_skip_keeps_overrides_thresholds_and_independent_warnin
 
     failed_body = runner.invoke(app, args)
 
-    assert failed_body.exit_code == int(mixed), failed_body.output
+    python_version_gap = mixed and body == "[broken\n"
+    assert failed_body.exit_code == int(mixed and not python_version_gap), failed_body.output
     assert failed_body.stderr == ""
     report = _coverage_cli_json(failed_body.stdout)
     (skipped,) = [f for f in report["findings"] if f["rule_id"] == "env.llm_critical_deps_pinned"]
     assert skipped == _expected_declaration_body_cli_skip()
     assert report["summary"] == {
         "critical": 0,
-        "warning": int(mixed),
+        "warning": int(mixed and not python_version_gap),
         "info": 0,
         "pass": 0,
         "suppressed": 0,
-        "skipped": 1,
+        "skipped": 1 + int(python_version_gap),
     }
-    if mixed:
+    if python_version_gap:
+        assert not [finding for finding in report["findings"] if finding["status"] == "fail"]
+        (python_skipped,) = [
+            finding
+            for finding in report["findings"]
+            if finding["rule_id"] == "env.python_version_declared"
+        ]
+        assert python_skipped == {
+            "rule_id": "env.python_version_declared",
+            "aliases": [],
+            "category": "env",
+            "severity": "INFO",
+            "status": "skipped",
+            "level": 1,
+            "message": (
+                "Python version declaration absence is not established because eligible "
+                "static inputs could not be fully analysed"
+            ),
+            "evidence": [
+                {
+                    "kind": "file",
+                    "path": "unrelated/pyproject.toml",
+                    "field": None,
+                    "line": None,
+                    "value": None,
+                    "expected": None,
+                    "note": "python_version analysis incomplete in the captured eligible view",
+                }
+            ],
+            "fix_hint": (
+                "Add `requires-python` to pyproject.toml, a .python-version file, or a "
+                "`python=3.x` entry in environment.yml."
+            ),
+            "profile_origin": [],
+            "severity_origin": "default",
+            "suppressed_reason": None,
+        }
+    elif mixed:
         (warning,) = [f for f in report["findings"] if f["status"] == "fail"]
         assert warning["rule_id"] == "env.python_version_declared"
         assert warning["severity"] == "WARNING"
