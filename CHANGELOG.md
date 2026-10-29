@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR02 (spec §5.2.1): report invalid saved working-directory characters as
+  private usage errors for run and preview, before creating any runtime artifact.
+
 - UXR01 (spec §3.2): treat command privacy-inspection limits as private usage
   errors before writing, including deeply nested quoted JSON arguments.
 

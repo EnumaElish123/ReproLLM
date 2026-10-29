@@ -74,7 +74,8 @@ def load_saved_invocation(cwd: Path | None) -> SavedInvocation:
         if _manifest_root(working) != root:
             raise UserError("execution.cwd must not select a different nested reprollm.yaml")
         return SavedInvocation(argv=argv, cwd=working)
-    except (OSError, RuntimeError):
+    except (OSError, RuntimeError, ValueError):
         raise UserError(
-            "cannot inspect execution.command or execution.cwd; check paths and permissions"
+            "cannot inspect execution.command or execution.cwd; "
+            "remove invalid path characters and check paths and permissions"
         ) from None

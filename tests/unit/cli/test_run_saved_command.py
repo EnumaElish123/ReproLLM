@@ -13,7 +13,7 @@ import pytest
 import yaml
 from typer.testing import CliRunner
 
-from reprollm.cli.main import app
+from reprollm.cli.main import app, cli
 from reprollm.core.errors import UserError
 from reprollm.run import wrapper
 from reprollm.schemas.run_record import HardwareInfo
@@ -266,4 +266,24 @@ def test_saved_manifest_fifo_is_rejected_without_open(
 
     monkeypatch.setattr(Path, "open", forbidden)
     usage(runner.invoke(app, ["run", "--dry-run"]))
+    assert not (tmp_path / ".reprollm").exists()
+
+
+@pytest.mark.parametrize("preview", [False, True])
+def test_saved_cwd_nul_is_private_usage_error_before_artifacts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    preview: bool,
+) -> None:
+    write_manifest(tmp_path, "python child.py", "private-canary\0")
+    before = (tmp_path / "reprollm.yaml").read_bytes()
+    monkeypatch.setattr("sys.argv", ["reprollm", "run", *(["--dry-run"] if preview else [])])
+    with pytest.raises(SystemExit) as error:
+        cli()
+    assert error.value.code == 2
+    output = capsys.readouterr()
+    assert "execution.cwd" in output.err and "private-canary" not in output.out + output.err
+    assert "internal error" not in output.err
+    assert (tmp_path / "reprollm.yaml").read_bytes() == before
     assert not (tmp_path / ".reprollm").exists()
