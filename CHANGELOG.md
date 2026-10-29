@@ -250,6 +250,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §13): keep a standalone shell comment ending in a backslash
+  from swallowing the next physical framework command. Preserve command evidence
+  line numbers, existing continued commands and pending-line comment behavior.
+
 - R07-C (spec §§13–14): skip task YAML whose static composition exceeds the
   parser recursion limit, preserving other lm-eval and LightEval task candidates
   and recognizable framework evidence. Audit and initialization continue without

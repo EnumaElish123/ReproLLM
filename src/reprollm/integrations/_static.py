@@ -86,7 +86,8 @@ def _logical_lines(text: str) -> Iterator[tuple[int, str]]:
     for line_number, line in enumerate(text.splitlines(), 1):
         if not pending:
             start = line_number
-        if line.rstrip().endswith("\\"):
+        is_comment = not pending and line.lstrip().startswith("#")
+        if not is_comment and line.rstrip().endswith("\\"):
             pending += line.rstrip()[:-1] + " "
             continue
         yield start, pending + line
