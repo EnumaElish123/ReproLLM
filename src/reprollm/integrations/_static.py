@@ -38,7 +38,7 @@ def task_mapping(scanner: RepoScanner, path: str) -> dict[str, Node] | None:
         # Compose reads nodes without constructing values or importing !function
         # references. A custom tag elsewhere cannot hide a static task name.
         node = yaml.compose(text, Loader=yaml.SafeLoader)
-    except yaml.YAMLError:
+    except (yaml.YAMLError, RecursionError):
         return None
     if not isinstance(node, MappingNode):
         return None

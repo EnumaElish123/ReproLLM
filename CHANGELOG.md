@@ -250,6 +250,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §§13–14): skip task YAML whose static composition exceeds the
+  parser recursion limit, preserving other lm-eval and LightEval task candidates
+  and recognizable framework evidence. Audit and initialization continue without
+  constructing YAML values, exposing parser exception text or changing scan budgets.
+
 - R07-C (spec §13): collect keys from deeply nested decoded configurations
   without recursive Python calls, so audit, initialization and export retain
   the decoded key evidence. Preserve live traversal order, repeated acyclic
