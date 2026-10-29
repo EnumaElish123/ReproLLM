@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR02 (spec §5.2–§5.2.1): `run` and `run --dry-run` select saved
+  `execution.command` when argv is omitted, using finite quoting without a shell.
+  Honor saved cwd or an explicit override; keep explicit argv and runtime evidence
+  unchanged, and reject invalid saved inputs before creating a run.
+
 - UXR01 (spec §3.2): save an explicitly supplied experiment command with
   `init --command`, validate it before writing, and preserve literal YAML string
   values. Existing initialization and prompts remain unchanged without the option.

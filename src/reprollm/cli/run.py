@@ -12,6 +12,7 @@ from reprollm.core.config import load_config
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST, RUNS_DIR, find_root
 from reprollm.run.preflight import preview
+from reprollm.run.saved import load_saved_invocation
 from reprollm.run.wrapper import create_run_dir, execute
 
 
@@ -22,7 +23,8 @@ class EnvCapture(str, Enum):
 
 def run(
     command: Annotated[
-        list[str] | None, typer.Argument(help="Command and arguments after --.")
+        list[str] | None,
+        typer.Argument(help="Command after --; defaults to saved execution.command."),
     ] = None,
     name: Annotated[str | None, typer.Option("--name", help="Optional run label.")] = None,
     capture_output: Annotated[
@@ -44,7 +46,8 @@ def run(
 ) -> None:
     """Execute a command and record its runtime state."""
     if not command:
-        raise UserError("run requires a command after --")
+        selected = load_saved_invocation(cwd)
+        command, cwd = selected.argv, selected.cwd
     if dry_run:
         typer.echo(
             preview(

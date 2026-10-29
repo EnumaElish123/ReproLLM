@@ -92,6 +92,8 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
 │ --interactive               Prompt for required fields.                      │
 │ --profiles           <str>  Comma-separated profile names (default:          │
 │                             detected).                                       │
+│ --command            <str>  Save an experiment command in execution.command; │
+│                             do not run it.                                   │
 │ --task               <str>  Select an exact task candidate; repeatable.      │
 │ --list-tasks                List all safe task candidates without writing    │
 │                             files.                                           │
@@ -127,7 +129,7 @@ Generated from `--help`; regenerate with `scripts/gen_cli_doc.py`.
  Execute a command and record its runtime state.
 
 ╭─ Arguments ──────────────────────────────────────────────────────────────────╮
-│   command      <str>  Command and arguments after --.                        │
+│   command      <str>  Command after --; defaults to saved execution.command. │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --name                  <str>            Optional run label.                 │

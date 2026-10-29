@@ -34,7 +34,7 @@ Entry point: `reprollm` (typer). Global options: `--version`, `--no-color`, `-v/
 | `reprollm audit [PATH] [--format text\|json] [--output FILE] [--fail-on critical\|warning\|never] [--level 0\|1\|2\|auto] [--profiles a,b] [--show-passed] [--show-skipped] [--details]` | run rules | M2–M6 |
 | `reprollm profiles list \| show NAME` | inspect profiles | M2 |
 | `reprollm lock [PATH] [--offline] [--check] [--verify-api] [--hash-large-files]` | resolve and write `reprollm.lock` | M4 |
-| `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] [--dry-run] -- CMD…` | execute and record, or preview capture without execution | M5 / UX3-T03 |
+| `reprollm run [--name NAME] [--capture-output] [--env-capture allowlist\|all] [--no-snapshot] [--cwd DIR] [--dry-run] [-- CMD…]` | execute an explicit or saved command and record, or preview capture without execution | M5 / UX3-T03 / UXR02 |
 | `reprollm runs list [--json] [--name TEXT] [--status running\|completed\|failed\|interrupted] [--outcome success\|failure] [--limit N]` / `runs show RUN_ID [--json]` | inspect and filter run records | M5 / UX3-T04 |
 | `reprollm diff A B [--format text\|json] [--min-severity LOW\|MEDIUM\|MEDIUM_HIGH\|HIGH] [--fail-on SEV]` / `diff --latest-successful [--name TEXT] [same options]` | semantic drift | M6 / UX3-T04 |
 | `reprollm export [--run RUN_ID] [--output PATH] [--template default]` | write `REPRODUCIBILITY.md` | M7 |
@@ -555,12 +555,13 @@ binding-observation token boundary.
 ### 5.2 Read-only run preflight (UX3-T03)
 
 `reprollm run --dry-run [--cwd DIR] [--no-snapshot] [--capture-output]
-[--env-capture allowlist|all] [--name LABEL] -- COMMAND...` previews capture
-readiness without executing COMMAND. The command remains required. This mode
+[--env-capture allowlist|all] [--name LABEL] [-- COMMAND...]` previews capture
+readiness without executing COMMAND. Omitted argv selects the saved command
+under §5.2.1 (UXR02). This mode
 requires the nearest ancestor `reprollm.yaml` from the selected working
 directory; it does not invoke Git for fallback root discovery. Missing or
 invalid manifests are usage errors with an actionable `init`/repair hint.
-Normal `run` retains its existing behavior, including capture without a manifest.
+Explicit-argv `run` retains its existing behavior, including capture without a manifest.
 
 Preflight MUST NOT execute subprocesses (including Git and nvidia-smi), make
 network calls, create a run ID/directory, write snapshots, hash experiment input
@@ -609,6 +610,45 @@ inputs/options exit 2 and unexpected internal errors exit 3. It never claims an
 experiment ran or will succeed. State that files/bindings can change after this
 preview and actual run evidence is still collected by the existing run path.
 No persisted document or JSON schema is added; no JSON preview mode is defined.
+
+### 5.2.1 Saved experiment command (UXR02)
+
+An explicit command after `--` takes precedence and retains all existing argv
+semantics; do not parse or validate a saved command to override or restrict it.
+With no argv, select the nearest ancestor `reprollm.yaml` from explicit `--cwd`
+or the invocation directory, without Git fallback. Read a contained regular file
+with the same 2 MiB limit and private error policy as preflight; reject missing,
+malformed or newer-schema documents before allocating any run artifact. Missing
+manifest guidance points to init; a valid manifest without `execution.command`
+points to that field or explicit argv, never to overwriting an existing manifest.
+
+Parse the saved string as one executable and its arguments using a finite POSIX
+quoting grammar on every platform. Whitespace-only commands, empty executables,
+unbalanced quotes, Unicode control/format/surrogate/line-separator characters,
+unquoted shell operators, expansion/glob/comment markers and leading environment
+assignments are usage errors. Specifically, reject unquoted characters from `|&;<>()$*?[]#~{}` and
+the backtick; reject dollar/backtick inside double quotes, even when
+backslash-escaped. Single quotes preserve literal contents; ordinary double quotes
+preserve spaces and literal punctuation. Outside quotes, a backslash may escape
+space, backslash, quote or the listed shell punctuation only. This prevents an
+unquoted Windows path from silently losing its separators; use forward slashes
+or single-quoted paths. Quoted empty arguments are retained. These are string
+parsing rules, not shell execution or a promise to accept every shell command line.
+The init save path additionally enforces §3.2's persistence privacy checks.
+
+By default, execute from the selected manifest root plus `execution.cwd` (or the
+root when unset), even if invoked from a subdirectory. Explicit `--cwd` overrides
+the saved cwd. The resulting directory must exist and remain inside the selected
+manifest root; reject a saved cwd that selects a nested manifest rather than
+silently changing the run's project ownership. Do not change explicit-argv cwd
+behavior. Paths, parser input and command values must not appear in failure text.
+
+Both normal run and `--dry-run` use this same selection before their existing
+paths. Preview retains all §5.2 prohibitions. Execution still uses argv with
+`shell=False`, the existing recorder, privacy rules, capture defaults, child exit
+code, and run v2 schema. Do not automatically resolve locks, install dependencies,
+call a model endpoint or enable captured output. Put multi-command shell workflows
+in an explicit user-owned script when needed.
 
 ### 5.3 Recorded-run listing filters (UX3-T04)
 
