@@ -20,6 +20,7 @@ from reprollm.core.manifest_scaffold import (
     plan_init,
     render_manifest,
     select_tasks,
+    validate_init_command,
     write_scaffold,
 )
 
@@ -36,6 +37,8 @@ def _prompt_required(plan: InitPlan, values: dict[str, Any]) -> None:
     for field_path in plan.required_fields:
         if field_path == "project.name":
             continue  # already set from the directory name
+        if field_path == "execution.command" and field_path in values:
+            continue
         if field_path in _COMMENTED_OR_LIST:
             typer.echo(f"  {field_path}: edit manually in reprollm.yaml")
             continue
@@ -61,6 +64,12 @@ def init(
         str | None,
         typer.Option("--profiles", help="Comma-separated profile names (default: detected)."),
     ] = None,
+    command: Annotated[
+        str | None,
+        typer.Option(
+            "--command", help="Save an experiment command in execution.command; do not run it."
+        ),
+    ] = None,
     task: Annotated[
         list[str] | None, typer.Option("--task", help="Select an exact task candidate; repeatable.")
     ] = None,
@@ -76,12 +85,18 @@ def init(
     root = path.resolve()
     if not root.is_dir():
         raise UserError(f"{path} is not an existing directory")
-    if list_tasks and (interactive or task is not None or force or profiles is not None):
+    if list_tasks and (
+        interactive or task is not None or force or profiles is not None or command is not None
+    ):
         raise UserError(
-            "--list-tasks cannot be combined with --interactive, --task, --force or --profiles"
+            "--list-tasks cannot be combined with --interactive, --task, --force, --profiles "
+            "or --command"
         )
     if not list_tasks:
         check_scaffold_paths(root, force=force)
+    values: dict[str, Any] = {}
+    if command is not None:
+        values["execution.command"] = validate_init_command(root, command)
 
     override = None
     if profiles is not None:
@@ -93,7 +108,6 @@ def init(
             typer.echo(name)
         return
 
-    values: dict[str, Any] = {}
     if interactive:
         choices = (
             ", ".join(
@@ -132,7 +146,7 @@ def init(
                 selected = select_tasks(plan, [*selected, name])
         _prompt_required(plan, values)
 
-    manifest_text = render_manifest(plan, values, selected_tasks=selected)
+    manifest_text = render_manifest(plan, values, selected_tasks=selected, saved_command=command)
     show_scan_diagnostics(plan.diagnostics)
     write_scaffold(root, manifest_text, force=force)
 
@@ -162,3 +176,8 @@ def init(
             "or edit metrics manually."
         )
     typer.echo("Next: fill the TODO fields, then run `reprollm audit .`")
+    if command is not None:
+        typer.echo(
+            "Saved execution.command. Preview with `reprollm run --dry-run`, "
+            "then execute with `reprollm run` from this project."
+        )

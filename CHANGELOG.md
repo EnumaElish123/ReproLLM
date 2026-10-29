@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR01 (spec §3.2): save an explicitly supplied experiment command with
+  `init --command`, validate it before writing, and preserve literal YAML string
+  values. Existing initialization and prompts remain unchanged without the option.
+
 - R07-C (spec §12.3.16): finish the accepted captured-view conclusion policy
   for six rules using observed listing, detection and Python-version gaps.
   Preserve concrete violations, positive witnesses and prior credit/skip priorities;

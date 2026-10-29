@@ -29,6 +29,8 @@ from pydantic import ValidationError
 from reprollm.core.context import AuditContext
 from reprollm.core.errors import UserError
 from reprollm.core.paths import MANIFEST
+from reprollm.core.persistence import redact_keyed_values
+from reprollm.core.saved_command import parse_saved_command
 from reprollm.core.yaml_io import parse_manifest_text
 from reprollm.integrations.frameworks import detected_frameworks
 from reprollm.profiles import loader
@@ -209,11 +211,17 @@ def _build_sections(
     other_detections: list[tuple[str, str, int]],
     task_names: list[str] | None = None,
     task_sources: list[str] | None = None,
+    saved_command: str | None = None,
 ) -> list[dict[str, Any]]:
     trees: dict[str, dict[str, Any]] = {}
     commented: dict[str, list[str]] = {}
 
-    for field_path in required_fields:
+    fields = list(required_fields)
+    if saved_command is not None:
+        values = {**values, "execution.command": json.dumps(saved_command, ensure_ascii=False)}
+        if "execution.command" not in fields:
+            fields.append("execution.command")
+    for field_path in fields:
         if field_path == "project.name":
             continue  # rendered explicitly from the directory name
         if field_path in _COMMENTED_FIELDS:
@@ -434,8 +442,32 @@ def select_tasks(plan: InitPlan, names: list[str]) -> list[str]:
     return sorted(set(names))
 
 
+def validate_init_command(root: Path, command: str) -> str:
+    """Check an explicit command before saving its original, executable string."""
+    argv = parse_saved_command(command)
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    safe, replaced = privacy.text(command)
+    unsafe = bool(replaced or safe != command)
+    for index, token in enumerate(argv):
+        context = (argv[index - 1],) if index and argv[index - 1].startswith("-") else ()
+        keyed = str(redact_keyed_values(token, context))
+        safe, replaced = privacy.text(keyed)
+        unsafe = unsafe or bool(replaced or safe != token)
+    if unsafe:
+        # Rewriting would save a different command; reject without echoing private input.
+        raise UserError(
+            "execution.command cannot contain secrets, absolute paths or machine identity; "
+            "supply credentials through the environment and use relative paths or a PATH executable"
+        )
+    return command
+
+
 def render_manifest(
-    plan: InitPlan, values: dict[str, Any], *, selected_tasks: list[str] | None = None
+    plan: InitPlan,
+    values: dict[str, Any],
+    *,
+    selected_tasks: list[str] | None = None,
+    saved_command: str | None = None,
 ) -> str:
     """Render reprollm.yaml text for the plan (values from interactive input)."""
     sections = _build_sections(
@@ -445,6 +477,7 @@ def render_manifest(
         plan.other_detections,
         select_tasks(plan, selected_tasks or []),
         plan.task_sources,
+        saved_command,
     )
     return _render_manifest(
         project_name=plan.project_name,
