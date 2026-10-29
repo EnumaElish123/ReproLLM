@@ -1,5 +1,12 @@
 ReproLLM audit · level 0 · profiles: core
 
+Next steps (in the audited repository)
+  1. [CRITICAL] env.dependency_manifest_present: Add a pyproject.toml, requirements*.txt, or environment.yml that declares the dependencies of this experiment.
+  2. [INFO] env.reprollm_initialized at reprollm.yaml: Run `reprollm init --interactive` to create the experiment declaration.
+  3. [WARNING] env.python_version_declared: Add `requires-python` to pyproject.toml, a .python-version file, or a `python=3.x` entry in environment.yml.
+  Review the remaining findings below after these actions.
+  Coverage: 3 skipped checks; this experiment was not fully checked. Inspect them with `reprollm audit . --show-skipped`.
+
 CRITICAL (1)
   X env.dependency_manifest_present      no dependency manifest found (expected pyproject.toml, requirements*.txt, environment.yml, uv.lock, poetry.lock, or Pipfile)
       none of the manifest names exist

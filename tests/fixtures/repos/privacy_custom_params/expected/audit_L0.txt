@@ -1,5 +1,12 @@
 ReproLLM audit · level 0 · profiles: core
 
+Next steps (in the audited repository)
+  1. [CRITICAL] env.secret_files_ignored at .env: Remove the secret file from the repository, rotate the secret, and add the pattern to .gitignore (keep only .env.example-style templates).
+  2. [INFO] env.reprollm_initialized at reprollm.yaml: Run `reprollm init --interactive` to create the experiment declaration.
+  3. [WARNING] env.llm_critical_deps_pinned at environment.yml: Pin torch exactly, e.g. `torch==<version>`.
+  Review the remaining findings below after these actions.
+  Coverage: 1 skipped check; this experiment was not fully checked. Inspect them with `reprollm audit . --show-skipped`.
+
 CRITICAL (1)
   X env.secret_files_ignored      1 secret-bearing file(s) tracked or not gitignored: .env
       .env (matches a forbidden file pattern (§16.4))

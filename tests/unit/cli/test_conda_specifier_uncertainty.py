@@ -222,7 +222,11 @@ def test_complete_default_and_detailed_text_preserves_same_unsupported_diagnosti
     diagnostic = "scan: environment.yml:1: unsupported conda declaration\n" if verbose else ""
     hint = "" if show_skipped else "        (use --show-passed / --show-skipped)"
     before_text = (
-        "ReproLLM audit · level 1 · profiles: core\n\nWARNING (1)\n"
+        "ReproLLM audit · level 1 · profiles: core\n\n"
+        "Next steps (in the audited repository)\n"
+        "  1. [WARNING] env.llm_critical_deps_pinned at train.py: "
+        "Pin torch exactly, e.g. `torch==<version>`.\n\n"
+        "WARNING (1)\n"
         "  ! env.llm_critical_deps_pinned      torch is used but not pinned to an exact "
         "version (suggestion: torch==<version>)\n"
         "      train.py (imported)\n"
@@ -231,7 +235,12 @@ def test_complete_default_and_detailed_text_preserves_same_unsupported_diagnosti
         "Findings: FAIL (0 critical, 1 warning)\n"
         "Result: exit 1 (--fail-on warning; findings reach the threshold)\n"
     )
-    after_text = "ReproLLM audit · level 1 · profiles: core\n\n"
+    after_text = (
+        "ReproLLM audit · level 1 · profiles: core\n\n"
+        "Next steps (in the audited repository)\n"
+        "  Coverage: 1 skipped check; this experiment was not fully checked. "
+        "Inspect them with `reprollm audit . --show-skipped`.\n\n"
+    )
     if show_skipped:
         after_text += (
             "INFO (1)\n  - env.llm_critical_deps_pinned      skipped: "

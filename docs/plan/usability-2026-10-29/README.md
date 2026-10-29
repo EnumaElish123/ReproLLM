@@ -55,7 +55,7 @@ Windows 同样使用这套字符串语法，路径使用 / 或适当引用；不
 ## UXR03 下一步报告
 
 只增强人类阅读的文本报告，最多三项行动，放在详细发现之前。
-从现有未抑制 FAIL 与 fix_hint 确定优先级，CRITICAL 优先，稳定分组去重，再 WARNING。
+从现有未抑制 FAIL 与 fix_hint 确定优先级，CRITICAL → 缺 manifest 初始化 → WARNING → INFO，稳定分组去重。
 缺 manifest 的提示使用 reprollm init；依赖锁缺失绝不能错写成 reprollm lock 即可解决。
 每项保留规则身份及安全字段/位置，未知发现沿用原 fix_hint。缺口/跳过保留说明；不把 SKIPPED 当作已修复。
 无待处理失败时可提示现有工作流的下一条可用命令，但不声称研究结论已验证。

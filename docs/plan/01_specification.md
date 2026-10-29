@@ -2913,6 +2913,11 @@ Removal/restoration and lock-staleness requirements are defined in §7.3.
 ```text
 ReproLLM audit · level 1 · profiles: core, inference, evaluation
 
+Next steps (in the audited repository)
+  1. [CRITICAL] judge.params_declared at evaluation.judge.params.temperature: Declare the missing judge parameter.
+  2. [CRITICAL] model.revision_pinned at models.primary.revision: Run `reprollm lock` or declare an exact revision.
+  ...
+
 CRITICAL (2)
   ✖ model.revision_pinned      models.primary (Qwen/Qwen3-32B) has no resolved revision in reprollm.lock
       lock: models.primary.revision → confidence: unresolved (hf_api_forbidden)
@@ -2951,6 +2956,34 @@ individual. Never infer a shared cause, normalize hints or change finding data.
 `--details` emits every original row with the same visibility flags and symbols.
 Summary counts, severities, JSON, GitHub annotations and exit semantics stay complete
 and unchanged. No threshold or presentation fields are added to AuditReport.
+
+Text reports prepend `Next steps (in the audited repository)` between the audit
+header and detailed findings (UXR03). Number at most three actions, grouping only
+unsuppressed FAIL findings by `(severity, rule_id, fix_hint)`. Sort CRITICAL first,
+then the missing-manifest `env.reprollm_initialized` group, then WARNING and other
+INFO groups; break ties by rule ID and exact hint. Each action shows the severity,
+rule ID, group count when repeated, at most one lexically selected safe field or
+relative evidence path, and the existing hint (or a fixed inspect-evidence fallback).
+For absent-manifest initialization, use `reprollm init --interactive`. Dependency
+lock findings retain their own hints: `reprollm lock` does not create a dependency
+lock. Additional groups remain in the complete findings and get a continuation
+note. PASS, SKIPPED and SUPPRESSED are never selected as repairs.
+
+Any SKIPPED finding adds a coverage caveat with `reprollm audit . --show-skipped`,
+and prevents the no-failure workflow fallback. With no FAIL actions or SKIPPED
+findings, derive one advisory from existing document availability: absent manifest
+→ init (unless initialization is suppressed, in which case point to that decision);
+absent ReproLLM lock → `reprollm lock --offline` with an unresolved-remote caveat;
+no run → conditional `reprollm run --dry-run` only if `execution.command` is
+configured; existing runs → inspect `reprollm runs list`, then `reprollm export .`.
+These are suggested actions, not validation claims or automatic execution.
+
+Never copy evidence values or notes into this section, interpolate report targets
+into executable recommendations, or alter finding data. Apply existing secret
+redaction before visible escaping of control/format characters and truncation
+(rule ID 80, location 100, hint 240 characters). Fixed workflow instructions apply
+inside the audited repository. Preserve all previous detailed text below this
+section, all JSON/GitHub output, schemas and fail-on results.
 
 ---
 

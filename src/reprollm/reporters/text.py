@@ -6,6 +6,7 @@ ASCII-safe alternatives under ``--no-color`` / non-TTY / ``NO_COLOR``.
 
 from __future__ import annotations
 
+from reprollm.reporters.next_steps import next_step_lines
 from reprollm.schemas.finding import AuditReport, Finding, FindingStatus, Severity
 
 _SYMBOLS_UNICODE = {
@@ -116,6 +117,8 @@ def render_audit_text(
     lines: list[str] = []
     profiles = ", ".join(report.profiles.resolved) or "core"
     lines.append(f"ReproLLM audit · level {report.level} · profiles: {profiles}")
+    lines.append("")
+    lines.extend(next_step_lines(report))
     lines.append("")
 
     for group in _GROUP_ORDER:

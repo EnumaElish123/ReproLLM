@@ -221,7 +221,12 @@ def test_entire_text_visibility_preserves_original_ordinal_diagnostic(
     flags = ["--show-skipped"] if show_skipped else []
     flags += ["--show-passed"] if show_passed else []
     args = [*(["--verbose"] if verbose else []), "audit", str(repo), "--fail-on", "warning"]
-    expected = "ReproLLM audit · level 1 · profiles: core\n\n"
+    expected = (
+        "ReproLLM audit · level 1 · profiles: core\n\n"
+        "Next steps (in the audited repository)\n"
+        "  Coverage: 1 skipped check; this experiment was not fully checked. "
+        "Inspect them with `reprollm audit . --show-skipped`.\n\n"
+    )
     if show_skipped:
         expected += (
             "INFO (1)\n  - env.llm_critical_deps_pinned      skipped: "

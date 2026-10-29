@@ -1,5 +1,12 @@
 ReproLLM audit · level 0 · profiles: core
 
+Next steps (in the audited repository)
+  1. [INFO] env.reprollm_initialized at reprollm.yaml: Run `reprollm init --interactive` to create the experiment declaration.
+  2. [WARNING] env.llm_critical_deps_pinned at requirements.txt: Pin vllm exactly, e.g. `vllm==<version>`.
+  3. [WARNING] env.lockfile_present: Commit a uv.lock/poetry.lock, or pin every dependency with `==` in requirements.txt so the environment can be rebuilt exactly.
+  Review the remaining findings below after these actions.
+  Coverage: 1 skipped check; this experiment was not fully checked. Inspect them with `reprollm audit . --show-skipped`.
+
 WARNING (3)
   ! env.llm_critical_deps_pinned      vllm is used but not pinned to an exact version (suggestion: vllm==<version>)
       requirements.txt (declared as >=0.10)

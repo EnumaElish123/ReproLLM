@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR03 (spec §21): lead text audits with up to three prioritized next actions
+  and an explicit skipped-check caveat. Preserve complete findings, machine output,
+  rule results and fail-on behavior; only six human-text fixtures gain the section.
+
 - UXR02 (spec §5.2–§5.2.1): `run` and `run --dry-run` select saved
   `execution.command` when argv is omitted, using finite quoting without a shell.
   Honor saved cwd or an explicit override; keep explicit argv and runtime evidence
