@@ -9,6 +9,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR01 (spec §3.2): treat command privacy-inspection limits as private usage
+  errors before writing, including deeply nested quoted JSON arguments.
+
 - UXR03 (spec §21): lead text audits with up to three prioritized next actions
   and an explicit skipped-check caveat. Preserve complete findings, machine output,
   rule results and fail-on behavior; only six human-text fixtures gain the section.

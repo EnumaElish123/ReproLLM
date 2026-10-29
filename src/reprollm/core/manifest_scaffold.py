@@ -446,13 +446,20 @@ def validate_init_command(root: Path, command: str) -> str:
     """Check an explicit command before saving its original, executable string."""
     argv = parse_saved_command(command)
     privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
-    safe, replaced = privacy.text(command)
-    unsafe = bool(replaced or safe != command)
-    for index, token in enumerate(argv):
-        context = (argv[index - 1],) if index and argv[index - 1].startswith("-") else ()
-        keyed = str(redact_keyed_values(token, context))
-        safe, replaced = privacy.text(keyed)
-        unsafe = unsafe or bool(replaced or safe != token)
+    try:
+        safe, replaced = privacy.text(command)
+        unsafe = bool(replaced or safe != command)
+        for index, token in enumerate(argv):
+            context = (argv[index - 1],) if index and argv[index - 1].startswith("-") else ()
+            keyed = str(redact_keyed_values(token, context))
+            safe, replaced = privacy.text(keyed)
+            unsafe = unsafe or bool(replaced or safe != token)
+    except (ValueError, RecursionError):
+        # Privacy limits reject input; never save an unchecked command or echo its values.
+        raise UserError(
+            "execution.command could not be checked safely; simplify its arguments "
+            "or move them to a configuration file"
+        ) from None
     if unsafe:
         # Rewriting would save a different command; reject without echoing private input.
         raise UserError(

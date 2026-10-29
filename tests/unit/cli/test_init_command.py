@@ -216,3 +216,35 @@ def test_task_listing_rejects_command_before_detection(
     assert error.value.code == 2
     assert not (tmp_path / "reprollm.yaml").exists()
     assert not (tmp_path / ".reprollm").exists()
+
+
+@pytest.mark.parametrize("depth", [65, 1100])
+@pytest.mark.parametrize("force", [False, True])
+def test_uninspectable_command_is_private_usage_error_before_writes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    depth: int,
+    force: bool,
+) -> None:
+    command = "python eval.py '" + "[" * depth + '"private-canary"' + "]" * depth + "'"
+    owned = [tmp_path / "reprollm.yaml", tmp_path / ".reprollm/config.yaml"]
+    if force:
+        owned[1].parent.mkdir()
+        for path in owned:
+            path.write_text("# preserve original\n")
+            path.chmod(0o640)
+    before = {p: (p.read_bytes(), p.stat().st_mode) for p in owned if p.exists()}
+    monkeypatch.setattr(
+        "sys.argv",
+        ["reprollm", "init", str(tmp_path), "--command", command, *(["--force"] if force else [])],
+    )
+    with pytest.raises(SystemExit) as error:
+        cli()
+    assert error.value.code == 2
+    output = capsys.readouterr()
+    assert "execution.command" in output.err and "private-canary" not in output.err + output.out
+    assert "internal error" not in output.err
+    assert before == {p: (p.read_bytes(), p.stat().st_mode) for p in owned if p.exists()}
+    assert not (tmp_path / ".reprollm/project-rules.yaml").exists()
+    assert (tmp_path / ".reprollm").exists() == force
