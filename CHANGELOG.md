@@ -250,6 +250,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- R07-C (spec §13): restrict standalone comment termination to shell scripts.
+  Retain the existing Makefile backslash continuation so a continued Make comment
+  cannot create a false framework command; preserve real recipe evidence.
+
 - R07-C (spec §13): keep a standalone shell comment ending in a backslash
   from swallowing the next physical framework command. Preserve command evidence
   line numbers, existing continued commands and pending-line comment behavior.

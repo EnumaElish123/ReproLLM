@@ -80,13 +80,13 @@ def _entry(tokens: list[str]) -> list[str]:
     return tokens
 
 
-def _logical_lines(text: str) -> Iterator[tuple[int, str]]:
+def _logical_lines(text: str, *, shell_comments: bool = True) -> Iterator[tuple[int, str]]:
     pending = ""
     start = 1
     for line_number, line in enumerate(text.splitlines(), 1):
         if not pending:
             start = line_number
-        is_comment = not pending and line.lstrip().startswith("#")
+        is_comment = shell_comments and not pending and line.lstrip().startswith("#")
         if not is_comment and line.rstrip().endswith("\\"):
             pending += line.rstrip()[:-1] + " "
             continue
@@ -109,7 +109,9 @@ def cli_evidence(
         text = scanner.read_text(path)
         if text is None:
             continue
-        for line_number, line in _logical_lines(text):
+        for line_number, line in _logical_lines(
+            text, shell_comments=PurePosixPath(path).name != "Makefile"
+        ):
             for command in _commands(line):
                 command = _entry(command)
                 if not command:
