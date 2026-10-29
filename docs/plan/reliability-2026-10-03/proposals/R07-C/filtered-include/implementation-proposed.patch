@@ -1,0 +1,88 @@
+--- a/src/reprollm/core/deps.py
++++ b/src/reprollm/core/deps.py
+@@ -118,6 +118,7 @@
+     _uncertain_directories: set[PurePosixPath] = field(default_factory=set, repr=False)
+     declaration_read_issues: dict[str, DeclarationReadIssue] = field(default_factory=dict)
+     unexpanded_requirement_targets: tuple[str, ...] = ()
++    excluded_requirement_targets: tuple[str, ...] = ()
+ 
+     def qualified_lock_packages(self, import_origins: Iterable[tuple[str, str]]) -> frozenset[str]:
+         """Return lock credit supported by an associated actual package origin."""
+@@ -345,6 +346,7 @@
+         self.closures: dict[str, _RequirementsClosure] = {}
+         self._expanded_depth: dict[str, int] = {}
+         self._emitted_sources: set[str] = set()
++        self._excluded_sources: set[str] = set()
+         self._diagnostics: set[str] = set(result.unparsed)
+ 
+     def parse(self, roots: list[str]) -> None:
+@@ -364,6 +366,19 @@
+                 }
+             )
+         )
++        self.result.excluded_requirement_targets = tuple(
++            sorted(
++                {
++                    event.target
++                    for node in self.nodes.values()
++                    if node.readable
++                    for event in node.events
++                    if isinstance(event, _RequirementInclude)
++                    and event.target is not None
++                    and event.target in self._excluded_sources
++                }
++            )
++        )
+         for root in roots:
+             if not self.nodes[root].readable:
+                 self._diagnostic(f"{root}:0: unreadable")
+@@ -383,6 +398,7 @@
+             if text is None:
+                 self.result.declaration_read_issues[source] = "unreadable"
+         else:
++            self._excluded_sources.add(source)
+             text = None
+         if text is None:
+             node = _RequirementFile(False)
+--- a/src/reprollm/rules/env.py
++++ b/src/reprollm/rules/env.py
+@@ -270,6 +270,39 @@
+                             f"Review {display} declarations and unexpanded requirements include "
+                             "targets; restructure the supported include graph within the depth "
+                             "budget before deciding that exact pin evidence is absent."
++                        ),
++                    )
++                )
++                continue
++            if deps.excluded_requirement_targets:
++                findings.append(
++                    Finding(
++                        rule_id=self.id,
++                        aliases=list(self.aliases),
++                        category=self.category,
++                        severity=Severity.INFO,
++                        status=FindingStatus.SKIPPED,
++                        level=ctx.level,
++                        message=(
++                            f"{display} is used; a supported requirements include target was "
++                            "excluded from static analysis, so missing pin evidence "
++                            "is not established"
++                        ),
++                        evidence=[
++                            *self._evidence(canonical, deps.declarations, ctx.pyscan.imports),
++                            *[
++                                Evidence(
++                                    kind="file",
++                                    path=path,
++                                    note=f"{display} include target excluded from static analysis",
++                                )
++                                for path in sorted(set(deps.excluded_requirement_targets))
++                            ],
++                        ],
++                        fix_hint=(
++                            f"Review {display} declarations and excluded requirements include "
++                            "targets; make intended dependency sources eligible for static "
++                            "analysis before deciding that exact pin evidence is absent."
+                         ),
+                     )
+                 )

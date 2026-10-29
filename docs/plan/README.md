@@ -8,6 +8,16 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The next bounded R07-C batch is the 2026-10-28 D-I
+[filtered-include P-A](reliability-2026-10-03/proposals/R07-C/filtered-include/README.md).
+Its exact specification/implementation patches remain PROPOSED and unapplied.
+Twenty-four current-policy cases and 27 CLI calls document the captured-view
+boundary; five-project source inventory has no supported include edges, so its
+zero-delta forecast does not validate the new policy. Specific acceptance must
+precede P-B. See the [preparation report](../dogfooding/2026-10-28-r07c-filtered-include-pa.md).
+The preceding exact `e3aa653` delivery has all five CI jobs and Ubuntu3.12's twelve
+required steps successful. Wider R07-C remains OPEN; this preparation grants no release.
+
 The 2026-10-28 configuration-depth follow-up at `9903627` follows all five
 successful exact-`a8806aa` predecessor CI jobs and Ubuntu3.12's twelve required steps.
 It replaces recursive configuration-key traversal with live iterator frames, preserving

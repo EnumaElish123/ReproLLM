@@ -1,0 +1,35 @@
+{
+  "base_commit": "e3aa653767024590ed8da5c1f96438e3329eafc6",
+  "candidate_policy_executions": 0,
+  "date": "2026-10-28",
+  "forbidden": [
+    "new scanner calls/reads/probes/budgets/grammar",
+    "infer package use, presence or exact credit",
+    "engine/redaction/persisted schema/default severity/rule-ID change",
+    "gold/history/dependency/version change",
+    "resources/external issue/LLM/release"
+  ],
+  "local_label_not_frozen_architecture_decision": true,
+  "option_a": {
+    "costs": [
+      "Repository-wide conservative SKIP, even for unrelated or nonexistent excluded targets.",
+      "An isolated WARNING or promoted CRITICAL gate may change 1 to 0.",
+      "Default text may show PASS with skips; default export may lose a notable warning; JSON retains SKIP."
+    ],
+    "implementation_patch_sha256": "ecc23abac525d9fbbc0e517e95fd5945106bee0384540444ebc4f15578533bad",
+    "patch_binding": "patch-binding.json",
+    "scope": "Actually reached supported requirements include targets rejected by existing candidate checks; private refusal set and final readable-parent intersection; D-I after D-G.",
+    "spec_patch_sha256": "0948d9e1fd408c28ae2806b10e5663e7d01d683ebc36bf6ffce3f6e36de413e9"
+  },
+  "option_b": "Keep the existing captured-view WARNING; apply neither patch.",
+  "recommendation": "A",
+  "schema_version": 1,
+  "scope_authorization": {
+    "basis": "Execution Guide §5.9 and specification §12.3.8 explicit OPEN boundary",
+    "interpretation": "Prepare the next bounded P-A; this generic request does not select a new rule contract.",
+    "user_request_verbatim": "确认下一步方案并执行"
+  },
+  "specific_decision": null,
+  "status": "PROPOSED",
+  "task": "R07-C D-I"
+}

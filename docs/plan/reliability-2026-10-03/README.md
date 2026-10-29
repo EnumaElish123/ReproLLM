@@ -6,6 +6,13 @@
 
 本目录保存本轮七份执行方案及可复制的开发 Agent 提示词。S1-A 至 S4-B 的工程任务已交付；资源回放、采用活动和未批准的政策提案分别登记状态。会话从实际 HEAD 复核，不回退到审查基线。
 
+下一独立P-A为[D-I filtered include](proposals/R07-C/filtered-include/README.md)：
+24个现行案例/27CLI与静态补丁审阅完成，具体规范及实现patch尚未接受/应用。
+五项目无受支持include边仅支持条件零delta，不冒充新政策验收；具体决定后才P-B。
+[本批准备报告](../../dogfooding/2026-10-28-r07c-filtered-include-pa.md)保留口径和兼容成本。
+前批精确e3aa653五CI及Ubuntu3.12十二步已成功，更广R07-C仍OPEN，不发布。
+
+
 2026-10-28配置遍历深度跟进：先核精确`a8806aa`五项CI及Ubuntu3.12十二步成功，
 再于`9903627`将递归key遍历替换为live iterator frames，保留DFS key/value顺序、
 active祖先回边处理、无环共享alias的重复遍历和意外异常传播，不增加depth/node/alias预算。

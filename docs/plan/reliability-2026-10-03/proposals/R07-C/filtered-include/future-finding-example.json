@@ -1,0 +1,43 @@
+{
+  "finding": {
+    "aliases": [],
+    "category": "env",
+    "evidence": [
+      {
+        "expected": null,
+        "field": null,
+        "kind": "file",
+        "line": 1,
+        "note": "declared as >=2.5.1",
+        "path": "requirements.txt",
+        "value": ">=2.5.1"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "kind": "file",
+        "line": null,
+        "note": "torch include target excluded from static analysis",
+        "path": "build/pins.txt",
+        "value": null
+      }
+    ],
+    "fix_hint": "Review torch declarations and excluded requirements include targets; make intended dependency sources eligible for static analysis before deciding that exact pin evidence is absent.",
+    "level": 0,
+    "message": "torch is used; a supported requirements include target was excluded from static analysis, so missing pin evidence is not established",
+    "profile_origin": [],
+    "rule_id": "env.llm_critical_deps_pinned",
+    "severity": "INFO",
+    "severity_origin": "default",
+    "status": "skipped",
+    "suppressed_reason": null
+  },
+  "interface": "Raw Finding before engine profile attribution; not a full CLI AuditReport or observed result.",
+  "literal_input": {
+    "requirements.txt": "torch>=2.5.1\n-r build/pins.txt\n",
+    "train.py": "import torch\n"
+  },
+  "preconditions": "Target actually rejected; no exact/qualified or higher-priority SKIP has won.",
+  "schema_version": 1,
+  "status": "DESIGN_ONLY_NOT_EXECUTED"
+}

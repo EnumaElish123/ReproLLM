@@ -357,6 +357,13 @@ CLI比较证明规范化关键词结果，不证明容器访问次数；顺序�
 原decoder、source/read预算、规则、engine、schema、依赖、版本保持；不增加depth/node/alias扩展预算。
 最终交付CI另核，更广R07-C与decoder/alias资源边界待独立审议，不发布，历史原文保留。
 
+同日D-I下一批P-A：[filtered include具体方案](proposals/R07-C/filtered-include/README.md)
+及两份patch已准备，未接受/应用；现行24case/27CLI与独立静态审阅不替代新政策验收。
+A仅记录实际candidate拒绝的已达supported target，在全部旧信用及D-G之后逐包SKIP；
+明确全仓、目标可能不存在、孤立门1→0与默认显示成本。五项目无include边仅支持零delta预测。
+具体决定后才实施和fresh验收，见[准备报告](../../dogfooding/2026-10-28-r07c-filtered-include-pa.md)。
+前批精确e3aa653五CI/Ubuntu3.12十二步已成功。更广R07-C继续OPEN，不发布。
+
 ## 6. R04-S：环境来源与输入时点的条件 schema 方案
 
 触发条件：R04-A 的环境来源或 R04-B 的输入阶段/变化矩阵无法通过现有字段、内部类型与已有 provenance 合理表达，并需要持久化供后续读取。只纳入实际触发的字段，不将两个任务变成一次宽泛 schema 重做。
