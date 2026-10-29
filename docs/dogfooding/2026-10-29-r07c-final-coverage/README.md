@@ -61,7 +61,7 @@ list 45记录/26检查（5产品+40只读Git），
 新typed 5public context采集/16检查。
 合计230外层记录、184检查、460原始流，四层墙钟合计432.948秒。
 
-25份完整AuditReport比较、15份init文件、5份完整默认export及5份完整任务列表通过；
+25份完整JSON比较（15份AuditReport、5份dependency facts、5份requirements graph）、15份init文件、5份完整默认export及5份完整任务列表通过；
 lm-eval仍13,123，其他四为空。旧57oracle保留，来源独立的前瞻派生仅LF2份变、55份逐字保持：
 LF一条profile PASS→SKIP（原Python完整但7个JSON超读取上限），summary与排序相应；
 其默认export依现有模板仅通过数9→8。原“export全文不变”预测已单独纠正，错误材料未回写。
