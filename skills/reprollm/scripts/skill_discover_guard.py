@@ -9,6 +9,7 @@ import json
 import math
 import re
 import signal
+import sys
 import threading
 import time
 from collections.abc import Callable, Iterator
@@ -297,6 +298,8 @@ class Ledger:
 
 @contextlib.contextmanager
 def _deadline(seconds: float) -> Iterator[None]:
+    if sys.platform == "win32":
+        raise BudgetError("discover_deadline_platform_unavailable")
     if (
         not hasattr(signal, "setitimer")
         or threading.current_thread() is not threading.main_thread()

@@ -5,7 +5,9 @@ from __future__ import annotations
 import contextlib
 import getpass
 import socket
-from dataclasses import dataclass
+import warnings
+from collections.abc import Iterator
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib.resources import files
 from pathlib import Path
@@ -23,6 +25,53 @@ from skill_discover_guard import (
 )
 from skill_request import Reply, Request, blocked
 
+_WARNING_COUNT_LIMIT = 1000
+_WARNING_CATEGORIES: dict[type[Warning], str] = {
+    Warning: "other_warning",
+    UserWarning: "user_warning",
+    DeprecationWarning: "deprecation_warning",
+    PendingDeprecationWarning: "pending_deprecation_warning",
+    SyntaxWarning: "syntax_warning",
+    RuntimeWarning: "runtime_warning",
+    FutureWarning: "future_warning",
+    ImportWarning: "import_warning",
+    UnicodeWarning: "unicode_warning",
+    BytesWarning: "bytes_warning",
+    ResourceWarning: "resource_warning",
+}
+
+
+@dataclass
+class _CollectionWarnings:
+    counts: dict[str, int] = field(default_factory=dict)
+    lower_bounds: set[str] = field(default_factory=set)
+
+    @contextlib.contextmanager
+    def capture(self) -> Iterator[None]:
+        # Keep the caller's filters; source text and warning locations stay local.
+        with warnings.catch_warnings(record=True) as observed:
+            try:
+                yield
+            finally:
+                for item in observed:
+                    category = _WARNING_CATEGORIES.get(item.category, "other_warning")
+                    count = self.counts.get(category, 0)
+                    if count < _WARNING_COUNT_LIMIT:
+                        self.counts[category] = count + 1
+                    else:
+                        self.lower_bounds.add(category)
+
+    def diagnostics(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "code": "discover_collection_warning",
+                "category": category,
+                "count": count,
+                "count_is_lower_bound": category in self.lower_bounds,
+            }
+            for category, count in sorted(self.counts.items())
+        ]
+
 
 @dataclass
 class Collected:
@@ -33,7 +82,12 @@ class Collected:
     source_sha256: str
 
 
-def _collect(request: Request, root: Path, state_home: Path) -> Collected:
+def _collect(
+    request: Request,
+    root: Path,
+    state_home: Path,
+    warning_counts: _CollectionWarnings | None = None,
+) -> Collected:
     from skill_runtime import input_signature
 
     from reprollm.cli.discover import _manifest_field_list
@@ -55,22 +109,24 @@ def _collect(request: Request, root: Path, state_home: Path) -> Collected:
         )
     if "max_chars" in request.options:
         config = config.model_copy(update={"max_chars": request.options["max_chars"]})
-    payload = collect(root, AuditContext(root, level=0).fs, config)
-    system = (files("reprollm.discover") / "prompts/system.md").read_text(encoding="utf-8")
-    declared = (
-        _manifest_field_list(root)
-        if any(entry.path == "reprollm.yaml" for entry in payload.files)
-        else []
-    )
-    messages = [
-        {"role": "system", "content": system},
-        {
-            "role": "user",
-            "content": payload.render()
-            + "\n\nAlready-declared manifest fields (do not re-suggest):\n"
-            + (", ".join(declared) or "(none)"),
-        },
-    ]
+    observed = warning_counts if warning_counts is not None else _CollectionWarnings()
+    with observed.capture():
+        payload = collect(root, AuditContext(root, level=0).fs, config)
+        system = (files("reprollm.discover") / "prompts/system.md").read_text(encoding="utf-8")
+        declared = (
+            _manifest_field_list(root)
+            if any(entry.path == "reprollm.yaml" for entry in payload.files)
+            else []
+        )
+        messages = [
+            {"role": "system", "content": system},
+            {
+                "role": "user",
+                "content": payload.render()
+                + "\n\nAlready-declared manifest fields (do not re-suggest):\n"
+                + (", ".join(declared) or "(none)"),
+            },
+        ]
     if input_signature(root, [], state_home) != before:
         raise BudgetError("discover_inputs_changed_during_collection")
     return Collected(
@@ -89,10 +145,30 @@ def _collect(request: Request, root: Path, state_home: Path) -> Collected:
 
 
 def preview(request: Request, *, root: Path, state_home: Path, helper_identity: str) -> Reply:
+    warning_counts = _CollectionWarnings()
+    reply = _preview(
+        request,
+        root=root,
+        state_home=state_home,
+        helper_identity=helper_identity,
+        warning_counts=warning_counts,
+    )
+    reply.diagnostics.extend(warning_counts.diagnostics())
+    return reply
+
+
+def _preview(
+    request: Request,
+    *,
+    root: Path,
+    state_home: Path,
+    helper_identity: str,
+    warning_counts: _CollectionWarnings,
+) -> Reply:
     from reprollm.core.errors import UserError
 
     try:
-        collected = _collect(request, root, state_home)
+        collected = _collect(request, root, state_home, warning_counts)
         data = {
             "nothing_sent": True,
             "report": collected.report,
@@ -125,6 +201,7 @@ def _publish(
     raw: bytes,
     suffix: str,
     effects: list[writes.Published],
+    warning_counts: _CollectionWarnings,
 ) -> str:
     from reprollm.core.rule_lifecycle import _owned_path
 
@@ -137,7 +214,10 @@ def _publish(
     if artifact.expected is not None:
         raise BudgetError("discover_output_already_exists")
     with context.publication(), writes._project_lock(state, context.root):
-        if _collect(request, context.root, context.home).source_sha256 != collected.source_sha256:
+        if (
+            _collect(request, context.root, context.home, warning_counts).source_sha256
+            != collected.source_sha256
+        ):
             raise BudgetError("discover_source_changed_after_submission")
         writes._check_artifact(artifact)
         directories: list[writes.DirectoryIdentity] = []
@@ -174,6 +254,13 @@ def _native_failure(error: Exception, budget: dict[str, Any]) -> dict[str, Any]:
 
 def execute(request: Request, context: Any) -> Reply:
     """Use the native request loop once; no provider work is replayed here."""
+    warning_counts = _CollectionWarnings()
+    reply = _execute(request, context, warning_counts)
+    reply.diagnostics.extend(warning_counts.diagnostics())
+    return reply
+
+
+def _execute(request: Request, context: Any, warning_counts: _CollectionWarnings) -> Reply:
     from skill_operations import _directory, _store
 
     from reprollm import __version__
@@ -193,7 +280,7 @@ def execute(request: Request, context: Any) -> Reply:
                 request.action, "discover_budget_approval_required", needs_authorization=True
             )
         policy, approval = parse_grant(request.grants.paid_discover)
-        collected = _collect(request, context.root, context.home)
+        collected = _collect(request, context.root, context.home, warning_counts)
         base_url, api_key, model = _endpoint_credentials(collected.config)
         if (
             approval.helper_sha256 != context.identity
@@ -214,7 +301,7 @@ def execute(request: Request, context: Any) -> Reply:
         def check_current() -> None:
             context.check_cancel()
             if (
-                _collect(request, context.root, context.home).source_sha256
+                _collect(request, context.root, context.home, warning_counts).source_sha256
                 != collected.source_sha256
             ):
                 raise BudgetError("discover_source_changed_before_send")
@@ -243,7 +330,13 @@ def execute(request: Request, context: Any) -> Reply:
                     secret_values=(api_key,),
                 )
                 artifact = _publish(
-                    request, context, collected, safe.encode("utf-8"), ".raw.txt", effects
+                    request,
+                    context,
+                    collected,
+                    safe.encode("utf-8"),
+                    ".raw.txt",
+                    effects,
+                    warning_counts,
                 )
                 return Reply(
                     request.action,
@@ -269,7 +362,7 @@ def execute(request: Request, context: Any) -> Reply:
             secret_values=(api_key,),
         )
         raw = (document.model_dump_json(indent=2) + "\n").encode("utf-8")
-        artifact = _publish(request, context, collected, raw, ".json", effects)
+        artifact = _publish(request, context, collected, raw, ".json", effects, warning_counts)
         return Reply(
             request.action,
             cli_exit_code=0,

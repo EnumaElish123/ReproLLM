@@ -7,6 +7,7 @@ import dataclasses
 import hashlib
 import json
 import sys
+import warnings
 from pathlib import Path
 
 import httpx
@@ -135,6 +136,80 @@ def test_approved_native_result_is_finalized_but_never_accepted(project, tmp_pat
     assert not (project / ".reprollm/project-rules.yaml").exists()
     assert KEY not in json.dumps(result.as_dict())
     assert KEY not in paths[0].read_text(encoding="utf-8")
+
+
+@pytest.mark.linux_only
+@pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux owned paid workers")
+def test_approved_discovery_preserves_collection_warning_facts_without_extra_posts(
+    project, tmp_path
+):
+    (project / "train.py").write_text(
+        "import argparse\np=argparse.ArgumentParser()\n"
+        'p.add_argument("--pattern", default="\\D")\n',
+        encoding="utf-8",
+    )
+    context = Context(project, tmp_path / "home")
+    with warnings.catch_warnings():
+        warnings.simplefilter("always")
+        request = approved(project, context.home)
+        route = respx.post(ENDPOINT).mock(return_value=response())
+        result = discover.execute(request, context)
+    assert result.cli_exit_code == 0 and result.data["phase"] == "applied"
+    assert route.call_count == 1
+    assert result.diagnostics == [
+        {
+            "code": "discover_collection_warning",
+            "category": "syntax_warning" if sys.version_info >= (3, 12) else "deprecation_warning",
+            "count": 3,
+            "count_is_lower_bound": False,
+        }
+    ]
+    assert result.data["budget"]["attempt_count"] == 1
+
+
+def test_preview_warning_diagnostics_bound_counts_and_hide_unknown_categories(
+    project, tmp_path, monkeypatch
+):
+    from reprollm.discover import collector
+
+    original = collector.collect
+
+    class PrivateMachineWarning(Warning):
+        pass
+
+    def emit_warnings(*args, **kwargs):
+        warnings.warn(
+            "PRIVATE_WARNING_BODY /home/private-user/source.py",
+            PrivateMachineWarning,
+            stacklevel=2,
+        )
+        for _ in range(1001):
+            warnings.warn("PRIVATE_REPEATED_BODY", UserWarning, stacklevel=2)
+        return original(*args, **kwargs)
+
+    baseline = preview(project, tmp_path / "state", show_content=True)
+    monkeypatch.setattr(collector, "collect", emit_warnings)
+    with warnings.catch_warnings():
+        warnings.simplefilter("always")
+        result = preview(project, tmp_path / "state", show_content=True)
+    assert result.data == baseline.data
+    assert result.diagnostics == [
+        {
+            "code": "discover_collection_warning",
+            "category": "other_warning",
+            "count": 1,
+            "count_is_lower_bound": False,
+        },
+        {
+            "code": "discover_collection_warning",
+            "category": "user_warning",
+            "count": 1000,
+            "count_is_lower_bound": True,
+        },
+    ]
+    wire = json.dumps(result.as_dict())
+    assert "PRIVATE_WARNING_BODY" not in wire and "PRIVATE_REPEATED_BODY" not in wire
+    assert "PrivateMachineWarning" not in wire and "/home/private-user" not in wire
 
 
 @pytest.mark.parametrize("kind", ["missing", "changed-source", "changed-endpoint", "changed-model"])
