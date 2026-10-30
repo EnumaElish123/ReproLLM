@@ -1,6 +1,7 @@
 # Skill v2 验收矩阵
 
-本文件与 [v2 开发方案](README.md)配套。当前所有场景均 NOT_RUN，不能把计划表当执行收据。
+本文件与 [v2 开发方案](README.md)配套。实际执行状态见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)；
+未记录的后续场景仍为 NOT_RUN，不能把计划表当执行收据。
 按[验证工作流](../validation-workflow-2026-10-13.md)执行，五项目 pin/gold、原生资源配方和
 预算条件取自 [val.md](../../../val.md)，不在这里复制或改写历史 gold。
 
