@@ -915,6 +915,118 @@ def test_unrelated_explicit_report_template_is_not_a_scientific_input(
     assert target.read_text().startswith("# Reproducibility statement — ")
 
 
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        {"$schema": "https://example.invalid/experiment.schema.json"},
+        {
+            "$schema": "https://example.invalid/experiment.schema.json",
+            "type": "object",
+            "properties": {},
+        },
+        {
+            "$schema": "https://example.invalid/experiment.schema.json",
+            "type": "object",
+            "properties": {},
+            "$defs": {},
+        },
+    ],
+)
+def test_experiment_instance_schema_metadata_does_not_authorize_config_overwrite(
+    export_root, tmp_path, metadata
+):
+    target = export_root / "config.json"
+    target.write_text(
+        json.dumps({"epsilon": 8, "lora": {"rank": 8}, "temperature": 0.7, **metadata}),
+        encoding="utf-8",
+    )
+    before = target.read_bytes()
+    reply = call(
+        export_root,
+        tmp_path / "helper",
+        "export",
+        output=target.name,
+        grants={"expected_hashes": {target.name: hashlib.sha256(before).hexdigest()}},
+    )
+    assert reply.invocation == "blocked"
+    assert target.read_bytes() == before
+    assert any(item["code"] == "report_target_is_research_input" for item in reply.diagnostics)
+
+
+def test_actual_generated_json_schema_keeps_explicit_report_overwrite(export_root, tmp_path):
+    target = export_root / "schema-output.json"
+    target.write_bytes((ROOT / "schemas/manifest.schema.json").read_bytes())
+    before = target.read_bytes()
+    reply = call(
+        export_root,
+        tmp_path / "helper",
+        "export",
+        output=target.name,
+        grants={"expected_hashes": {target.name: hashlib.sha256(before).hexdigest()}},
+    )
+    assert reply.invocation == "handled_result"
+    assert target.read_bytes().startswith("# Reproducibility statement — ".encode())
+
+
+@pytest.mark.parametrize("properties", [{"epsilon": 8}, {"lora": {"rank": 8}}])
+def test_experiment_values_in_properties_are_not_schema_definitions(
+    export_root, tmp_path, properties
+):
+    target = export_root / "config.json"
+    target.write_text(
+        json.dumps(
+            {
+                "$schema": "https://example.invalid/config.schema.json",
+                "type": "object",
+                "properties": properties,
+            }
+        ),
+        encoding="utf-8",
+    )
+    before = target.read_bytes()
+    reply = call(
+        export_root,
+        tmp_path / "helper",
+        "export",
+        output=target.name,
+        grants={"expected_hashes": {target.name: hashlib.sha256(before).hexdigest()}},
+    )
+    assert reply.invocation == "blocked" and target.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        {"dependencies": {"alpha": {"epsilon": 8, "lora": {"rank": 8}}}},
+        {"dependentRequired": {"alpha": {"epsilon": 8}}},
+        {"allOf": [{"epsilon": 8}]},
+        {"description": {"lora": {"rank": 8}}},
+    ],
+)
+def test_schema_container_names_do_not_hide_experiment_values(export_root, tmp_path, metadata):
+    target = export_root / "config.json"
+    target.write_text(
+        json.dumps(
+            {
+                "$schema": "https://example.invalid/config.schema.json",
+                "type": "object",
+                "properties": {},
+                **metadata,
+            }
+        ),
+        encoding="utf-8",
+    )
+    before = target.read_bytes()
+    reply = call(
+        export_root,
+        tmp_path / "helper",
+        "export",
+        output=target.name,
+        grants={"expected_hashes": {target.name: hashlib.sha256(before).hexdigest()}},
+    )
+    assert reply.invocation == "blocked" and target.read_bytes() == before
+
+
 @pytest.mark.parametrize("position", [0, 1, 2])
 def test_init_publication_failure_rolls_back_only_own_created_files(
     tmp_path, monkeypatch, position

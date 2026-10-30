@@ -335,6 +335,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- SK14 (spec §§20, 22): preserve detected experiment configurations that declare
+  a JSON Schema or contain schema-like metadata. Recognize generated object-schema
+  definitions through finite standard-library checks; retain valid schema/report
+  overwrite paths without adding a runtime dependency.
+
 - SK13 prerequisite (spec §16): avoid repeated unquoted-key suffix scans in
   contextual privacy handling for large ordinary report values. Preserve quoted
   matches, explicit cursor suffixes, secret replacements and redaction counts;

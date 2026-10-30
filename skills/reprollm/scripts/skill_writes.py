@@ -743,11 +743,195 @@ def _generated_export_artifact(target: Path) -> bool:
         document = json.loads(text)
     except (ValueError, RecursionError):
         return False
-    return isinstance(document, dict) and (
-        isinstance(document.get("$schema"), str)
-        or document.get("type") == "object"
+    # An instance may declare $schema while retaining actual experiment values.
+    # Only a definition-shaped object with schema keywords can override keyword
+    # detection; explicit manifest/run/lock associations were checked first.
+    schema_keywords = {
+        "$schema",
+        "$id",
+        "$ref",
+        "$defs",
+        "definitions",
+        "$comment",
+        "$anchor",
+        "$dynamicAnchor",
+        "$dynamicRef",
+        "$vocabulary",
+        "title",
+        "description",
+        "type",
+        "properties",
+        "required",
+        "additionalProperties",
+        "patternProperties",
+        "dependentRequired",
+        "dependentSchemas",
+        "unevaluatedProperties",
+        "propertyNames",
+        "minProperties",
+        "maxProperties",
+        "allOf",
+        "anyOf",
+        "oneOf",
+        "not",
+        "if",
+        "then",
+        "else",
+        "examples",
+        "default",
+        "deprecated",
+        "readOnly",
+        "writeOnly",
+        "enum",
+        "const",
+        "format",
+        "pattern",
+        "minLength",
+        "maxLength",
+        "minimum",
+        "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
+        "multipleOf",
+        "items",
+        "prefixItems",
+        "additionalItems",
+        "unevaluatedItems",
+        "minItems",
+        "maxItems",
+        "uniqueItems",
+        "contains",
+        "minContains",
+        "maxContains",
+        "contentEncoding",
+        "contentMediaType",
+        "contentSchema",
+        "dependencies",
+        "$recursiveRef",
+        "$recursiveAnchor",
+    }
+    if not (
+        isinstance(document, dict)
+        and document.get("type") == "object"
         and isinstance(document.get("properties"), dict)
-    )
+    ):
+        return False
+    pending: list[Any] = [document]
+    while pending:
+        definition = pending.pop()
+        if isinstance(definition, bool):
+            continue
+        if not isinstance(definition, dict) or not set(definition).issubset(schema_keywords):
+            return False
+        for key in (
+            "$schema",
+            "$id",
+            "$ref",
+            "$comment",
+            "$anchor",
+            "$dynamicAnchor",
+            "$dynamicRef",
+            "$recursiveRef",
+            "title",
+            "description",
+            "format",
+            "pattern",
+            "contentEncoding",
+            "contentMediaType",
+        ):
+            if key in definition and not isinstance(definition[key], str):
+                return False
+        for key in ("readOnly", "writeOnly", "deprecated", "uniqueItems", "$recursiveAnchor"):
+            if key in definition and type(definition[key]) is not bool:
+                return False
+        for key in (
+            "minLength",
+            "maxLength",
+            "minProperties",
+            "maxProperties",
+            "minItems",
+            "maxItems",
+            "minContains",
+            "maxContains",
+        ):
+            if key in definition and (type(definition[key]) is not int or definition[key] < 0):
+                return False
+        for key in ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf"):
+            if key in definition and type(definition[key]) not in {int, float}:
+                return False
+        if "type" in definition:
+            types = definition["type"]
+            types = types if isinstance(types, list) else [types]
+            if not types or any(
+                not isinstance(kind, str)
+                or kind not in {"object", "array", "string", "number", "integer", "boolean", "null"}
+                for kind in types
+            ):
+                return False
+        if "required" in definition and (
+            not isinstance(definition["required"], list)
+            or not all(isinstance(name, str) for name in definition["required"])
+        ):
+            return False
+        if "dependentRequired" in definition:
+            required = definition["dependentRequired"]
+            if not isinstance(required, dict) or any(
+                not isinstance(names, list) or not all(isinstance(name, str) for name in names)
+                for names in required.values()
+            ):
+                return False
+        if "$vocabulary" in definition:
+            vocabulary = definition["$vocabulary"]
+            if not isinstance(vocabulary, dict) or any(
+                type(flag) is not bool for flag in vocabulary.values()
+            ):
+                return False
+        for key in ("enum", "examples"):
+            if key in definition and not isinstance(definition[key], list):
+                return False
+        for key in ("properties", "patternProperties", "$defs", "definitions", "dependentSchemas"):
+            if key in definition:
+                mapping = definition[key]
+                if not isinstance(mapping, dict):
+                    return False
+                pending.extend(mapping.values())
+        for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+            if key in definition:
+                alternatives = definition[key]
+                if not isinstance(alternatives, list):
+                    return False
+                pending.extend(alternatives)
+        for key in (
+            "items",
+            "additionalItems",
+            "additionalProperties",
+            "unevaluatedProperties",
+            "unevaluatedItems",
+            "propertyNames",
+            "contains",
+            "not",
+            "if",
+            "then",
+            "else",
+            "contentSchema",
+        ):
+            if key in definition:
+                child = definition[key]
+                if key == "items" and isinstance(child, list):
+                    pending.extend(child)
+                else:
+                    pending.append(child)
+        if "dependencies" in definition:
+            dependencies = definition["dependencies"]
+            if not isinstance(dependencies, dict):
+                return False
+            for child in dependencies.values():
+                if isinstance(child, list):
+                    if not all(isinstance(item, str) for item in child):
+                        return False
+                else:
+                    pending.append(child)
+    return True
 
 
 @contextlib.contextmanager
