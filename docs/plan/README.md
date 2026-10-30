@@ -36,7 +36,10 @@ passed ([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41073192655
 [batch report](../dogfooding/2026-10-31-skill-sk2c/README.md) records 24 quality checks,
 6,189 tests, fresh five-project base acceptance, 80 complete controlled cases,
 56 uninstrumented installed-entry requests and fresh initialization checks.
-Its exact delivery-head CI is checked after push. Earlier provisional/interrupted
+The first `ea0a7dc` delivery passed Linux but failed Windows/macOS type checks.
+The [platform-type correction](../dogfooding/2026-10-31-skill-sk2c/platform-type-correction.md)
+at `fc44c2d` passes a new complete local gate (6,193 tests), fresh all-five base and
+85 actual installed-operation requests. Corrected delivery-head CI is checked after push. Earlier provisional/interrupted
 attempts remain excluded and preserved. SK16–SK19 are being implemented and validated in isolated
 worktrees; their resource and final-session gates are not complete. SK20–SK21 remain ahead.
 The unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
