@@ -50,11 +50,11 @@ def test_lock_source_change_after_native_render_rejects_publication(
     model = root / "model"
     model.mkdir()
     (model / "a.bin").write_bytes(b"abc")
-    (model / "config.json").write_text("{}")
+    (model / "config.json").write_text("{}", encoding="utf-8")
     path = root / "reprollm.yaml"
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     data["models"] = {"primary": {"provider": "local", "id": "model"}}
-    path.write_text(yaml.safe_dump(data))
+    path.write_text(yaml.safe_dump(data), encoding="utf-8")
     target = root / "reprollm.lock"
     old = b"old lock retained on failure\n"
     target.write_bytes(old)
@@ -65,11 +65,13 @@ def test_lock_source_change_after_native_render_rejects_publication(
         if change == "manifest":
             path.write_bytes(path.read_bytes() + b"\n# intervening edit\n")
         elif change == "rules":
-            (root / ".reprollm/project-rules.yaml").write_text("schema_version: 1\nrules: []\n")
+            (root / ".reprollm/project-rules.yaml").write_text(
+                "schema_version: 1\nrules: []\n", encoding="utf-8"
+            )
         elif change == "weight_membership":
             (model / "b.bin").write_bytes(b"new weight shard")
         else:
-            (model / "config.json").write_text('{"hidden_size":2}')
+            (model / "config.json").write_text('{"hidden_size":2}', encoding="utf-8")
 
     monkeypatch.setattr(writer, "write_lock", write_then_edit)
     result = call(root, tmp_path / "state", "lock", offline=True)
@@ -107,9 +109,9 @@ def test_nested_local_model_link_cannot_read_unapproved_external_weight(
     except OSError:
         pytest.skip("File symlinks unavailable")
     manifest = project / "reprollm.yaml"
-    data = yaml.safe_load(manifest.read_text())
+    data = yaml.safe_load(manifest.read_text(encoding="utf-8"))
     data["models"] = {"primary": {"provider": "local", "id": "model"}}
-    manifest.write_text(yaml.safe_dump(data))
+    manifest.write_text(yaml.safe_dump(data), encoding="utf-8")
     original = Path.open
     opened = []
 
@@ -218,7 +220,7 @@ def test_existing_archive_identical_reuse_or_conflict_preserves_bytes(
     if conflicting_bytes:
         data = json.loads(recovery.read_bytes())
         data["reason"] = "Changed archive reason without changing ID"
-        recovery.write_text(json.dumps(data))
+        recovery.write_text(json.dumps(data), encoding="utf-8")
     raw = recovery.read_bytes()
     result = call(
         project, state, "rules.remove", rule_id="project.alpha", reason="Retired experiment."

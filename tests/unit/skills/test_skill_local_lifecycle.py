@@ -53,7 +53,9 @@ def project(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     (root / ".reprollm").mkdir()
-    (root / "untouched.py").write_text("raise RuntimeError('Never execute project code')\n")
+    (root / "untouched.py").write_text(
+        "raise RuntimeError('Never execute project code')\n", encoding="utf-8"
+    )
     return root
 
 
@@ -154,12 +156,12 @@ def test_offline_api_hf_declarations_do_not_construct_client(
     verify_api: bool,
 ) -> None:
     path = project / "reprollm.yaml"
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     data["models"] = {
         "primary": {"provider": "huggingface", "id": "distilbert/distilgpt2"},
         "judge": {"provider": "openai", "id": "gpt-4o"},
     }
-    path.write_text(yaml.safe_dump(data))
+    path.write_text(yaml.safe_dump(data), encoding="utf-8")
     checked(call(project, tmp_path / "state", "lock", offline=True, verify_api=verify_api))
     lock = load_lock(project / "reprollm.lock")
     assert lock.resolution.mode == "offline"
@@ -176,7 +178,9 @@ def test_staleness_native_order_and_no_weight_freshness_invention(
     checked(call(project, tmp_path / "state", "lock", grants=Grants(), check=True))
     manifest = project / "reprollm.yaml"
     manifest.write_bytes(manifest.read_bytes() + b"\n# human edit\n")
-    (project / ".reprollm/project-rules.yaml").write_text("schema_version: 1\nrules: []\n")
+    (project / ".reprollm/project-rules.yaml").write_text(
+        "schema_version: 1\nrules: []\n", encoding="utf-8"
+    )
     result = call(project, tmp_path / "state", "lock", grants=Grants(), check=True)
     checked(result, 1)
     text = json.dumps(result.as_dict())
@@ -356,7 +360,7 @@ def test_remove_restore_keeps_full_original_and_immutable_archive(
 def test_malformed_latest_discovery_has_no_older_fallback(project: Path, tmp_path: Path) -> None:
     discovery(project)
     latest = project / ".reprollm/discover/20261030T000002Z.json"
-    latest.write_text("{invalid latest")
+    latest.write_text("{invalid latest", encoding="utf-8")
     before = latest.read_bytes()
     result = call(project, tmp_path / "state", "rules.candidates", grants=Grants(), json=True)
     assert result.invocation == "user_error" and result.cli_exit_code == 2

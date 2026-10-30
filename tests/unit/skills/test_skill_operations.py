@@ -143,7 +143,7 @@ def edit_record(setup: dict[str, Any], token: str, **updates: Any) -> dict[str, 
     path = record_path(setup, token)
     record = json.loads(path.read_bytes())
     record.update(updates)
-    path.write_text(json.dumps(record))
+    path.write_text(json.dumps(record), encoding="utf-8")
     if updates.get("state") in {"RUNNING", "FINALIZING"}:
         ack = {
             "schema_version": 1,
@@ -163,7 +163,7 @@ def edit_record(setup: dict[str, Any], token: str, **updates: Any) -> dict[str, 
                 )
             },
         }
-        (path.parent / "worker.json").write_text(json.dumps(ack))
+        (path.parent / "worker.json").write_text(json.dumps(ack), encoding="utf-8")
         (path.parent / "worker.json").chmod(0o600)
     return record
 
@@ -297,7 +297,7 @@ def test_state_never_persists_raw_request_argv_root_or_environment(setup, monkey
     token = operation_id(start(setup, req))
     start(setup, dataclasses.replace(req, options={**req.options, "operation_id": token}))
     for file in (setup["home"] / "operations").rglob("*.json"):
-        raw = file.read_text()
+        raw = file.read_text(encoding="utf-8")
         assert str(setup["root"]) not in raw
         assert (
             "synthetic raw request text" not in raw
@@ -625,7 +625,9 @@ def test_worker_stores_only_safe_full_reply_and_releases_own_lease(setup, monkey
         calls.append(req.action)
         context.check_cancel()
         with context.publication():
-            (setup["root"] / "reprollm.lock").write_text("public scientific artifact")
+            (setup["root"] / "reprollm.lock").write_text(
+                "public scientific artifact", encoding="utf-8"
+            )
         return Reply("lock", cli_exit_code=0, data={"full": "public" * 60000})
 
     token, code, releases = worker_in_process(setup, monkeypatch, execute)
@@ -686,7 +688,9 @@ def test_worker_unknown_completion_preserves_lease_and_never_retries(setup, monk
     assert code == 1 and releases == []
     record = json.loads(record_path(setup, token).read_bytes())
     assert record["state"] == "UNKNOWN" and record["lease"] is not None
-    assert "opaque private startup detail" not in record_path(setup, token).read_text()
+    assert "opaque private startup detail" not in record_path(setup, token).read_text(
+        encoding="utf-8"
+    )
 
 
 def test_pidfd_proof_does_not_signal_foreign_start_identity(monkeypatch):

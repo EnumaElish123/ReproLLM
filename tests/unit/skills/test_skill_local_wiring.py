@@ -156,7 +156,7 @@ def test_transfer_keeps_only_owned_lease_until_terminal_release(tmp_path: Path) 
         lease.transfer()
         own = manager.environment_path(name) / "leases" / (claim["lease_id"] + ".json")
         foreign = own.with_name("foreign.json")
-        foreign.write_text('{"schema_version":1,"owner":"other"}')
+        foreign.write_text('{"schema_version":1,"owner":"other"}', encoding="utf-8")
     assert own.is_file() and not lease.cleanup_failed
     assert str(tmp_path) not in json.dumps(claim)
     assert runtime.release_owned_lease(manager, claim)
@@ -180,7 +180,7 @@ def test_terminal_cleanup_refuses_changed_ownership(tmp_path: Path) -> None:
     with runtime._worker_lease(manager, name) as lease:
         claim = lease.claim
         path = manager.environment_path(name) / "leases" / (claim["lease_id"] + ".json")
-        path.write_text('{"schema_version":1,"owner":"another"}')
+        path.write_text('{"schema_version":1,"owner":"another"}', encoding="utf-8")
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
     assert lease.cleanup_failed and path.is_file()
     assert not runtime.release_owned_lease(manager, claim)

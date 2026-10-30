@@ -79,16 +79,16 @@ def test_owned_marker_exclusive_publication_preserves_competitor(tmp_path, monke
     state = tmp_path / "owned"
     original = writes.os.link
     foreign = tmp_path / "foreign-marker"
-    foreign.write_text("foreign private marker\n")
+    foreign.write_text("foreign private marker\n", encoding="utf-8")
 
     def publish(source, target):
         target = Path(target)
         if target.name == "owner.json":
             assert json.loads(Path(source).read_bytes()) == writes._OWNER
             if competitor == "owned":
-                target.write_text(json.dumps(writes._OWNER))
+                target.write_text(json.dumps(writes._OWNER), encoding="utf-8")
             elif competitor == "foreign":
-                target.write_text("foreign private marker\n")
+                target.write_text("foreign private marker\n", encoding="utf-8")
             else:
                 try:
                     target.symlink_to(foreign)
@@ -103,10 +103,10 @@ def test_owned_marker_exclusive_publication_preserves_competitor(tmp_path, monke
     else:
         with pytest.raises(writes.WriteError, match="ownership_required"):
             writes._owned_state(state)
-        assert (state / "owner.json").read_text() == "foreign private marker\n"
+        assert (state / "owner.json").read_text(encoding="utf-8") == "foreign private marker\n"
         assert (state / "owner.json").is_symlink() == (competitor == "symlink")
     assert not list(state.glob(".owner-*.tmp"))
-    assert foreign.read_text() == "foreign private marker\n"
+    assert foreign.read_text(encoding="utf-8") == "foreign private marker\n"
 
 
 def test_concurrent_first_state_initialization_keeps_one_complete_marker(tmp_path, monkeypatch):
@@ -303,7 +303,7 @@ def test_lost_write_worker_reply_reports_unknown_and_never_repeats(tmp_path, mon
 
     def process(argv, **kwargs):
         calls.append(argv)
-        (root / "reprollm.yaml").write_text("written before lost reply\n")
+        (root / "reprollm.yaml").write_text("written before lost reply\n", encoding="utf-8")
         if failure == "timeout":
             raise subprocess.TimeoutExpired(argv, 120)
         raw = b"x" * 300000 if failure == "oversized" else b"not-json"
@@ -318,7 +318,7 @@ def test_lost_write_worker_reply_reports_unknown_and_never_repeats(tmp_path, mon
         "artifact_publication_unknown": True,
         "safe_to_repeat": False,
     }
-    assert (root / "reprollm.yaml").read_text() == "written before lost reply\n"
+    assert (root / "reprollm.yaml").read_text(encoding="utf-8") == "written before lost reply\n"
 
 
 def test_preview_is_complete_native_scaffold_without_project_writes(tmp_path):
@@ -438,7 +438,7 @@ def test_external_preview_plan_rejects_new_inputs(tmp_path):
     root = tmp_path / "experiment"
     root.mkdir()
     preview = call(root, tmp_path / "helper", profiles=["inference"], preview=True, write=False)
-    (root / "model.py").write_text("from transformers import AutoModel\n")
+    (root / "model.py").write_text("from transformers import AutoModel\n", encoding="utf-8")
     before = inventory(root)
     reply = call(
         root,
@@ -477,7 +477,7 @@ def test_existing_schema_requires_exact_authorized_hashes(tmp_path):
     denied = call(root, tmp_path / "helper", "schema.export")
     assert denied.invocation == "blocked" and inventory(root) == before
     expected = {name: digest for name, digest in before.items()}
-    (root / "schemas/manifest.schema.json").write_text("external edit\n")
+    (root / "schemas/manifest.schema.json").write_text("external edit\n", encoding="utf-8")
     changed = inventory(root)
     stale = call(root, tmp_path / "helper", "schema.export", grants={"expected_hashes": expected})
     assert stale.invocation == "blocked" and inventory(root) == changed
@@ -487,7 +487,9 @@ def task_candidates(root):
     tasks = root / "lm_eval/tasks"
     tasks.mkdir(parents=True)
     for name in ["beta", "alpha"]:
-        (tasks / (name + ".yaml")).write_text("task: " + name + "\ndataset_path: org/data\n")
+        (tasks / (name + ".yaml")).write_text(
+            "task: " + name + "\ndataset_path: org/data\n", encoding="utf-8"
+        )
 
 
 def test_multiple_real_tasks_need_selection_without_forcing_unknown_science_answers(tmp_path):
@@ -626,7 +628,7 @@ def test_native_project_name_fallback_review_is_preserved_without_extra_question
         cache_home=tmp_path / "helper/responses",
     )
     assert reply.invocation == "handled_result" and not reply.needs_input
-    assert reply.data["manifest_text"] == (reference / "reprollm.yaml").read_text()
+    assert reply.data["manifest_text"] == (reference / "reprollm.yaml").read_text(encoding="utf-8")
     assert any(
         item.get("code") == "project_name_defaulted" and instruction in item.get("text", "")
         for item in reply.diagnostics
@@ -681,7 +683,10 @@ def test_historical_export_keeps_recorded_snapshot_after_current_manifest_change
     export_root, tmp_path, template
 ):
     manifest = export_root / "reprollm.yaml"
-    manifest.write_text(manifest.read_text().replace("max_tokens: 2048", "max_tokens: 3072"))
+    manifest.write_text(
+        manifest.read_text(encoding="utf-8").replace("max_tokens: 2048", "max_tokens: 3072"),
+        encoding="utf-8",
+    )
     reference = tmp_path / "native-historical.md"
     native = runtime.invoke_cli(
         ["export", str(export_root), "--output", str(reference), "--template", template],
@@ -696,7 +701,7 @@ def test_historical_export_keeps_recorded_snapshot_after_current_manifest_change
 
 def test_export_preview_does_not_write_and_authorized_old_hash_replaces(export_root, tmp_path):
     target = export_root / "report.md"
-    target.write_text("reviewed old report\n")
+    target.write_text("reviewed old report\n", encoding="utf-8")
     before = inventory(export_root)
     preview = call(
         export_root, tmp_path / "helper", "export", output="report.md", preview=True, write=False
@@ -712,16 +717,16 @@ def test_export_preview_does_not_write_and_authorized_old_hash_replaces(export_r
         grants={"plan_hash": preview.data["plan_hash"], "expected_hashes": {"report.md": old}},
     )
     assert applied.invocation == "handled_result", applied.diagnostics
-    assert target.read_text() == preview.data["document"]
+    assert target.read_text(encoding="utf-8") == preview.data["document"]
 
 
 def test_long_inline_scientific_text_is_not_interpreted_as_a_filesystem_path(export_root, tmp_path):
     import yaml
 
     manifest = export_root / "reprollm.yaml"
-    doc = yaml.safe_load(manifest.read_text())
+    doc = yaml.safe_load(manifest.read_text(encoding="utf-8"))
     doc["privacy"] = {"threat_model": "A" * 5000}
-    manifest.write_text(yaml.safe_dump(doc, sort_keys=False))
+    manifest.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
     reply = call(export_root, tmp_path / "helper", "export")
     assert reply.invocation == "handled_result", reply.diagnostics
 
@@ -736,7 +741,7 @@ def test_export_never_replaces_research_inputs(export_root, tmp_path, kind):
     }
     target = candidates[kind]
     if not target.exists():
-        target.write_text("synthetic source\n")
+        target.write_text("synthetic source\n", encoding="utf-8")
     before = inventory(export_root)
     reply = call(
         export_root,
@@ -825,7 +830,7 @@ def test_actual_scientific_inputs_remain_protected_by_resolved_association(
 
     if binding == "source_alias":
         target = tmp_path / "external-source"
-        target.write_text("print('scientific source')\n")
+        target.write_text("print('scientific source')\n", encoding="utf-8")
         try:
             (export_root / "actual_source.py").symlink_to(target)
         except OSError:
@@ -846,14 +851,14 @@ def test_actual_scientific_inputs_remain_protected_by_resolved_association(
         except OSError:
             pytest.skip("File symlinks unavailable")
         manifest = export_root / "reprollm.yaml"
-        doc = yaml.safe_load(manifest.read_text())
+        doc = yaml.safe_load(manifest.read_text(encoding="utf-8"))
         if binding == "declared":
             doc.setdefault("execution", {})["config_files"] = [alias.name]
         elif binding == "command":
             doc.setdefault("execution", {})["command"] = "python eval.py actual-input"
         elif binding == "historical_file":
             record_path = next((export_root / ".reprollm/runs").glob("*/run.json"))
-            record = json.loads(record_path.read_text())
+            record = json.loads(record_path.read_text(encoding="utf-8"))
             record.setdefault("files", []).append(
                 {
                     "path": alias.name,
@@ -862,10 +867,10 @@ def test_actual_scientific_inputs_remain_protected_by_resolved_association(
                     "origin": "declared",
                 }
             )
-            record_path.write_text(json.dumps(record))
+            record_path.write_text(json.dumps(record), encoding="utf-8")
         else:
             lock_path = export_root / "reprollm.lock"
-            lock = yaml.safe_load(lock_path.read_text())
+            lock = yaml.safe_load(lock_path.read_text(encoding="utf-8"))
             lock.setdefault("files", []).append(
                 {
                     "path": alias.name,
@@ -873,8 +878,8 @@ def test_actual_scientific_inputs_remain_protected_by_resolved_association(
                     "size_bytes": target.stat().st_size,
                 }
             )
-            lock_path.write_text(yaml.safe_dump(lock, sort_keys=False))
-        manifest.write_text(yaml.safe_dump(doc, sort_keys=False))
+            lock_path.write_text(yaml.safe_dump(lock, sort_keys=False), encoding="utf-8")
+        manifest.write_text(yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
     before = target.read_bytes()
     reply = call(
         export_root,
@@ -902,7 +907,7 @@ def test_unrelated_explicit_report_template_is_not_a_scientific_input(
     export_root, tmp_path, name, content
 ):
     target = export_root / name
-    target.write_text(content)
+    target.write_text(content, encoding="utf-8")
     before = target.read_bytes()
     reply = call(
         export_root,
@@ -912,7 +917,7 @@ def test_unrelated_explicit_report_template_is_not_a_scientific_input(
         grants={"expected_hashes": {name: hashlib.sha256(before).hexdigest()}},
     )
     assert reply.invocation == "handled_result" and target.read_bytes() != before
-    assert target.read_text().startswith("# Reproducibility statement — ")
+    assert target.read_text(encoding="utf-8").startswith("# Reproducibility statement — ")
 
 
 @pytest.mark.parametrize(
@@ -1057,14 +1062,14 @@ def test_init_rollback_preserves_external_edit_to_new_helper(tmp_path, monkeypat
 
     def publish(artifact, published):
         if published:
-            published[0].artifact.target.write_text("external edit\n")
+            published[0].artifact.target.write_text("external edit\n", encoding="utf-8")
             raise OSError("synthetic later failure")
         original(artifact, published)
 
     monkeypatch.setattr(writes, "publish_artifact", publish)
     reply = call(root, tmp_path / "helper", profiles=["inference"])
     assert reply.invocation == "blocked" and not reply.complete
-    assert (root / ".reprollm/config.yaml").read_text() == "external edit\n"
+    assert (root / ".reprollm/config.yaml").read_text(encoding="utf-8") == "external edit\n"
     assert not (root / "reprollm.yaml").exists()
     assert reply.data["preserved_changed_targets"] == [".reprollm/config.yaml"]
 
@@ -1093,13 +1098,13 @@ def test_new_target_publication_is_exclusive_at_final_link(tmp_path, monkeypatch
 
     def appearing(source, target):
         if Path(target).name != "owner.json":
-            Path(target).write_text("external appeared\n")
+            Path(target).write_text("external appeared\n", encoding="utf-8")
         original(source, target)
 
     monkeypatch.setattr(writes.os, "link", appearing)
     reply = call(root, tmp_path / "helper", profiles=["inference"])
     assert reply.invocation == "blocked"
-    assert (root / ".reprollm/config.yaml").read_text() == "external appeared\n"
+    assert (root / ".reprollm/config.yaml").read_text(encoding="utf-8") == "external appeared\n"
     assert not (root / "reprollm.yaml").exists()
 
 
@@ -1192,7 +1197,9 @@ def test_explicit_external_run_bundle_uses_native_snapshot_and_remains_bound(
     assert preview.invocation == "handled_result", preview.diagnostics
     assert preview.data["selected_run_id"] == "20260101T000000Z-hf_vll"
     snapshot = external_record / "manifest.yaml"
-    snapshot.write_text(snapshot.read_text() + "\n# external input changed\n")
+    snapshot.write_text(
+        snapshot.read_text(encoding="utf-8") + "\n# external input changed\n", encoding="utf-8"
+    )
     applied = call(
         export_root,
         tmp_path / "helper",
@@ -1208,7 +1215,9 @@ def test_external_snapshot_change_during_native_render_prevents_publication(
     def render(argv, root):
         result = runtime.invoke_cli(argv, root)
         snapshot = external_record / "manifest.yaml"
-        snapshot.write_text(snapshot.read_text() + "\n# changed during render\n")
+        snapshot.write_text(
+            snapshot.read_text(encoding="utf-8") + "\n# changed during render\n", encoding="utf-8"
+        )
         return result
 
     payload = request(export_root, "export", grants={"external_paths": (str(external_record),)})
@@ -1278,7 +1287,8 @@ def test_export_artifact_keeps_typed_secret_source_until_private_render(tmp_path
     (root / "reprollm.yaml").write_text(
         json.dumps(
             {"schema_version": 1, "project": {"name": "public"}, "experiment": {"profiles": []}}
-        )
+        ),
+        encoding="utf-8",
     )
     folder = root / ".reprollm/runs/20261030T010000Z-aaaaaa"
     folder.mkdir(parents=True)
@@ -1300,7 +1310,7 @@ def test_export_artifact_keeps_typed_secret_source_until_private_render(tmp_path
         },
     }
     path = folder / "run.json"
-    path.write_text(json.dumps(record))
+    path.write_text(json.dumps(record), encoding="utf-8")
     before = inventory(root)
     reference = tmp_path / "native-unsafe.md"
     native = runtime.invoke_cli(
@@ -1308,14 +1318,14 @@ def test_export_artifact_keeps_typed_secret_source_until_private_render(tmp_path
     )
     assert (
         native.exit_code == 0
-        and secret in reference.read_text()
-        and argv_secret in reference.read_text()
+        and secret in reference.read_text(encoding="utf-8")
+        and argv_secret in reference.read_text(encoding="utf-8")
     )
     reply = runtime.execute(
         request(root, "export", template=template), cache_home=tmp_path / "helper/responses"
     )
     assert reply.invocation == "handled_result" and reply.cli_exit_code == 0
-    document = (root / "REPRODUCIBILITY.md").read_text()
+    document = (root / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
     assert secret not in document and argv_secret not in document
     assert "<REDACTED:generic_kv>" in document and "public-scientific-value" in document
     assert reply.data["document"] == document and reply.diagnostics
@@ -1330,11 +1340,11 @@ def test_export_current_audit_is_private_after_original_conclusions(tmp_path):
     bundle(root)
     baseline = tmp_path / "native-audit-unsafe.md"
     native = runtime.invoke_cli(["export", str(root), "--output", str(baseline)], root)
-    assert native.exit_code == 0 and CANARY in baseline.read_text()
+    assert native.exit_code == 0 and CANARY in baseline.read_text(encoding="utf-8")
     before = inventory(root)
     reply = runtime.execute(request(root, "export"), cache_home=tmp_path / "helper/responses")
     assert reply.invocation == "handled_result"
-    document = (root / "REPRODUCIBILITY.md").read_text()
+    document = (root / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
     assert CANARY not in document and "<REDACTED:generic_kv>" in html.unescape(document)
     assert "consistency.custom_fields" in document and "WARNING" in document
     assert all(inventory(root)[name] == digest for name, digest in before.items())
@@ -1348,7 +1358,9 @@ def test_export_cursor_binds_actual_external_snapshot_without_repeating(
     first = runtime.execute(req, cache_home=tmp_path / "helper/responses")
     assert first.next_cursor and first.cli_exit_code == 0
     snapshot = external_record / "manifest.yaml"
-    snapshot.write_text(snapshot.read_text() + "\n# external modified\n")
+    snapshot.write_text(
+        snapshot.read_text(encoding="utf-8") + "\n# external modified\n", encoding="utf-8"
+    )
     before = inventory(export_root)
     monkeypatch.setattr(
         writes, "execute_write", lambda *a, **k: pytest.fail("Cursor replayed export")
@@ -1389,7 +1401,8 @@ def test_export_private_bindings_restore_after_each_native_failure(tmp_path, mon
     (root / "reprollm.yaml").write_text(
         json.dumps(
             {"schema_version": 1, "project": {"name": "public"}, "experiment": {"profiles": []}}
-        )
+        ),
+        encoding="utf-8",
     )
 
     def unavailable(*a, **k):

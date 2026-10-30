@@ -23,9 +23,9 @@ def project(tmp_path):
 
 def local_model(root, value="model"):
     path = root / "reprollm.yaml"
-    manifest = yaml.safe_load(path.read_text())
+    manifest = yaml.safe_load(path.read_text(encoding="utf-8"))
     manifest["models"] = {"primary": {"provider": "local", "id": value}}
-    path.write_text(yaml.safe_dump(manifest))
+    path.write_text(yaml.safe_dump(manifest), encoding="utf-8")
 
 
 def test_local_model_root_alias_retarget_after_render_is_stale(project, tmp_path, monkeypatch):
@@ -168,12 +168,14 @@ def test_plan_state_damage_refuses_before_resolving(project, tmp_path, monkeypat
         )
     elif damage == "request":
         record["request_sha256"] = "0" * 64
-        path.write_text(json.dumps(record))
+        path.write_text(json.dumps(record), encoding="utf-8")
     elif damage == "prepared_at":
         record["prepared_at"] = "2000-01-01T00:00:00+00:00"
-        path.write_text(json.dumps(record))
+        path.write_text(json.dumps(record), encoding="utf-8")
     elif damage == "owner":
-        (path.parent / "owner.json").write_text('{"schema_version":1,"owner":"foreign"}')
+        (path.parent / "owner.json").write_text(
+            '{"schema_version":1,"owner":"foreign"}', encoding="utf-8"
+        )
     elif damage == "oversized":
         path.write_bytes(b"x" * (local.MAX_PLAN_BYTES + 1))
     else:
@@ -278,9 +280,9 @@ def test_native_single_model_file_does_not_require_a_weight_extension(project, t
 
 def test_one_file_can_have_multiple_native_read_roles(project, tmp_path):
     path = project / "reprollm.yaml"
-    document = yaml.safe_load(path.read_text())
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
     document["execution"] = {"config_files": ["reprollm.yaml"]}
-    path.write_text(yaml.safe_dump(document))
+    path.write_text(yaml.safe_dump(document), encoding="utf-8")
     checked(call(project, tmp_path / "state", "lock", offline=True))
 
 
@@ -378,9 +380,9 @@ def test_unsafe_generated_content_never_publishes_or_remains_in_helper_state(
     state = tmp_path / "state"
     if action == "lock":
         path = project / "reprollm.yaml"
-        document = yaml.safe_load(path.read_text())
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
         document["training"] = {"params": {"api_key": canary}}
-        path.write_text(yaml.safe_dump(document))
+        path.write_text(yaml.safe_dump(document), encoding="utf-8")
         result = call(project, state, action, offline=True)
     else:
         result = call(

@@ -335,6 +335,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- SK14/SK15 (spec §22): give write-lifecycle test fixtures explicit UTF-8 I/O.
+  Preserve their data and assertions under the Windows default-encoding boundary
+  model; keep production behavior and platform support declarations unchanged.
+
 - SK14 (spec §§20, 22): preserve detected experiment configurations that declare
   a JSON Schema or contain schema-like metadata. Recognize generated object-schema
   definitions through finite standard-library checks; retain valid schema/report
