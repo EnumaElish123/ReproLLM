@@ -300,6 +300,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- SK13 prerequisite (spec §16): avoid repeated unquoted-key suffix scans in
+  contextual privacy handling for large ordinary report values. Preserve quoted
+  matches, explicit cursor suffixes, secret replacements and redaction counts;
+  add bounded real privacy regressions before the Skill pagination path.
+
 - R07-C (spec §13): restrict standalone comment termination to shell scripts.
   Retain the existing Makefile backslash continuation so a continued Make comment
   cannot create a false framework command; preserve real recipe evidence.
