@@ -1,5 +1,7 @@
 # Bounded GSM8K replay
 
+New to ReproLLM? Start with the [short first-experiment walkthrough](../../docs/tutorials/first-experiment.md), which uses this recipe's standard-library probe without a GPU, model download or API call. Return here for the complete native replay.
+
 This recipe restores the reviewed [val.md §8.3](../../val.md#83-activated-bounded-linux-runtime-inputs-2026-09-26)
 inputs: Qwen2.5-0.5B-Instruct, the first 100 GSM8K test documents, five training
 examples per prompt, and generation caps **32 → 48**. It checks bounded execution

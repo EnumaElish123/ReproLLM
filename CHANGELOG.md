@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR05: add a four-command first-use tutorial using the bundled standard-library
+  configuration probe, with guided setup, saved-command preview/run and optional
+  report/diff steps. Distinguish author walkthrough evidence from model evaluation.
+
 - UXR04 (spec §3.2): explain required research fields during interactive init,
   retry invalid answers in place and preserve accepted values. Count actual
   missing declarations, retain unknown/manual fields and point to review/audit.
