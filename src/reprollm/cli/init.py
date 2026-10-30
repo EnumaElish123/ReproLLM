@@ -13,10 +13,19 @@ import typer
 
 from reprollm.cli.scan_diagnostics import show_scan_diagnostics
 from reprollm.core.errors import UserError
+from reprollm.core.init_guidance import (
+    MANUAL_FIELDS,
+    InvalidAnswer,
+    answer_privacy,
+    check_interactive_plan,
+    field_guidance,
+    field_label,
+    missing_required_fields,
+    validate_answer,
+)
 from reprollm.core.manifest_scaffold import (
     InitPlan,
     check_scaffold_paths,
-    parse_scalar,
     plan_init,
     render_manifest,
     select_tasks,
@@ -24,34 +33,64 @@ from reprollm.core.manifest_scaffold import (
     write_scaffold,
 )
 
-_COMMENTED_OR_LIST = (
-    "evaluation.definitions.refusal",
-    "evaluation.definitions.asr",
-    "privacy.mechanism.name",
-    "evaluation.metrics",
-)
 
-
-def _prompt_required(plan: InitPlan, values: dict[str, Any]) -> None:
-    """--interactive: prompt for every scalar required field (empty keeps null)."""
+def _prompt_required(
+    plan: InitPlan, values: dict[str, Any], root: Path, selected: list[str], command: str | None
+) -> None:
+    """Retry one invalid answer while keeping all accepted fields in memory."""
+    privacy = answer_privacy(root)
+    check_interactive_plan(plan, values, selected, command, privacy)
+    typer.echo(
+        "Use the values from your experiment. Press Enter to keep a detected/current "
+        "value or leave it unknown; do not guess."
+    )
     for field_path in plan.required_fields:
         if field_path == "project.name":
-            continue  # already set from the directory name
+            continue
         if field_path == "execution.command" and field_path in values:
             continue
-        if field_path in _COMMENTED_OR_LIST:
-            typer.echo(f"  {field_path}: edit manually in reprollm.yaml")
+        label = field_label(field_path, privacy)
+        if field_path == "evaluation.metrics" and selected:
+            typer.echo(
+                "  evaluation.metrics: task names selected; verify metric names and implementations"
+            )
+            continue
+        typer.echo(f"  {label}: {field_guidance(field_path)}")
+        if field_path in MANUAL_FIELDS:
+            typer.echo(f"  {label}: edit manually in reprollm.yaml")
             continue
         current = values.get(field_path)
-        answer = typer.prompt(
-            f"  {field_path}",
-            default=str(current) if current is not None else "",
-            show_default=current is not None,
-        )
-        if str(answer).strip():
-            values[field_path] = parse_scalar(field_path, str(answer))
-        else:
-            values[field_path] = current
+        if current is None and field_path == "models.primary.id" and plan.primary_detection:
+            current = plan.primary_detection[0]
+        while True:
+            try:
+                answer = typer.prompt(
+                    f"  {label}",
+                    default=str(current) if current is not None else "",
+                    show_default=current is not None,
+                )
+            except typer.Abort:
+                raise UserError(
+                    f"Input cancelled for {label}; rerun init --interactive "
+                    "or edit reprollm.yaml manually"
+                ) from None
+            if not str(answer).strip() or answer == current:
+                break
+            try:
+                value = validate_answer(
+                    plan,
+                    values,
+                    field_path,
+                    str(answer),
+                    selected_tasks=selected,
+                    saved_command=command,
+                    privacy=privacy,
+                )
+            except InvalidAnswer as exc:
+                typer.echo(str(exc), err=True)
+                continue
+            values[field_path] = value
+            break
 
 
 def init(
@@ -144,18 +183,17 @@ def init(
                 if not name:
                     break
                 selected = select_tasks(plan, [*selected, name])
-        _prompt_required(plan, values)
+        _prompt_required(plan, values, root, selected, command)
 
     manifest_text = render_manifest(plan, values, selected_tasks=selected, saved_command=command)
+    remaining = missing_required_fields(plan, manifest_text)
+    privacy = answer_privacy(root)
     show_scan_diagnostics(plan.diagnostics)
     write_scaffold(root, manifest_text, force=force)
 
     display_path = "reprollm.yaml" if plan.project_name_defaulted else str(root / "reprollm.yaml")
     if plan.profiles:
-        typer.echo(
-            f"Created {display_path} (profiles: {', '.join(plan.profiles)}; "
-            f"{len(plan.required_fields)} required fields to fill)"
-        )
+        typer.echo(f"Created {display_path} (profiles: {', '.join(plan.profiles)})")
     else:
         typer.echo(
             f"Created {display_path} (no profiles detected; "
@@ -175,7 +213,15 @@ def init(
             "No task is declared in evaluation.metrics. Select with --task NAME, "
             "or edit metrics manually."
         )
-    typer.echo("Next: fill the TODO fields, then run `reprollm audit .`")
+    typer.echo(f"{len(remaining)} required fields still need values in reprollm.yaml.")
+    if remaining:
+        typer.echo("Remaining: " + ", ".join(field_label(field, privacy) for field in remaining))
+        typer.echo("Next: fill the listed fields in reprollm.yaml, then run `reprollm audit .`")
+    else:
+        typer.echo(
+            "Next: review reprollm.yaml, then run `reprollm audit .`; "
+            "declarations are not verification."
+        )
     if command is not None:
         typer.echo(
             "Saved execution.command. Preview with `reprollm run --dry-run`, "

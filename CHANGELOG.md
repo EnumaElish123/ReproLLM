@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UXR04 (spec §3.2): explain required research fields during interactive init,
+  retry invalid answers in place and preserve accepted values. Count actual
+  missing declarations, retain unknown/manual fields and point to review/audit.
+  Preserve noninteractive manifest bytes and existing write protections; quote
+  explicit text without changing its meaning and keep new diagnostics private.
+
 - UXR02 (spec §5.2.1): report invalid saved working-directory characters as
   private usage errors for run and preview, before creating any runtime artifact.
 

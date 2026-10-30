@@ -204,6 +204,19 @@ def _leaf(
     }
 
 
+def _provided_scalar(value: Any) -> Any:
+    """Quote explicit strings only when plain YAML would change their meaning."""
+    if not isinstance(value, str):
+        return value
+    try:
+        decoded = yaml.safe_load(value)
+    except (yaml.YAMLError, RecursionError):
+        decoded = None
+    if isinstance(decoded, str) and decoded == value and "\n" not in value:
+        return value
+    return json.dumps(value, ensure_ascii=False)
+
+
 def _build_sections(
     required_fields: list[str],
     values: dict[str, Any],
@@ -235,7 +248,7 @@ def _build_sections(
         if field_path == "models.primary.id":
             interactive_value = values.get(field_path)
             if interactive_value is not None:
-                node[parts[-1]] = _leaf(value=interactive_value, todo=False)
+                node[parts[-1]] = _leaf(value=_provided_scalar(interactive_value), todo=False)
             elif primary_detection is not None:
                 value, path, line = primary_detection
                 node[parts[-1]] = _leaf(
@@ -265,7 +278,12 @@ def _build_sections(
                 )
         else:
             provided = values.get(field_path)
-            node[parts[-1]] = _leaf(value=provided, todo=provided is None)
+            node[parts[-1]] = _leaf(
+                value=provided
+                if field_path == "execution.command" and saved_command is not None
+                else _provided_scalar(provided),
+                todo=provided is None,
+            )
 
     if primary_detection is None and other_detections:
         commented.setdefault("models", []).extend(

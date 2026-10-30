@@ -71,11 +71,13 @@ reprollm init .
 ```
 
 ```text
-Created <workdir>/reprollm.yaml (profiles: inference; 5 required fields to fill)
+Created <workdir>/reprollm.yaml (profiles: inference)
 Applied detected profiles: inference.
 Review experiment.profiles; use --profiles to select this experiment's profiles.
 Task candidates: 0; selected: 0. List with: reprollm init PATH --list-tasks
-Next: fill the TODO fields, then run `reprollm audit .`
+3 required fields still need values in reprollm.yaml.
+Remaining: inference.backend, generation.temperature, generation.max_tokens
+Next: fill the listed fields in reprollm.yaml, then run `reprollm audit .`
 ```
 Exit: `0`.
 
