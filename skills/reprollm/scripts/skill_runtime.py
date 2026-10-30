@@ -29,6 +29,7 @@ from skill_request import (  # noqa: E402
     BASE_ACTIONS,
     MAX_REPLY_BYTES,
     MAX_REQUEST_BYTES,
+    WRITE_ACTIONS,
     Reply,
     Request,
     RequestError,
@@ -36,6 +37,7 @@ from skill_request import (  # noqa: E402
     encode_reply,
     error_reply,
     parse_request,
+    publication_summary,
 )
 
 READONLY_ACTIONS = frozenset(
@@ -51,7 +53,7 @@ READONLY_ACTIONS = frozenset(
         "run.preview",
     }
 )
-AVAILABLE_ACTIONS = BASE_ACTIONS | READONLY_ACTIONS
+AVAILABLE_ACTIONS = BASE_ACTIONS | READONLY_ACTIONS | WRITE_ACTIONS
 REQUIRED_CAPABILITIES = frozenset({"contextual_word_scan"})
 MAX_CAPTURE_BYTES = 64 * 1024 * 1024
 MAX_INPUT_ENTRIES = 50_000
@@ -167,6 +169,19 @@ def _diff_read_files(path: Path) -> list[Path]:
 
 def _external_inputs(request: Request, root: Path) -> list[Path]:
     inputs: list[Path] = []
+    if request.action == "export":
+        from skill_writes import WriteError, query_input_files
+
+        from reprollm.core.errors import UserError
+
+        try:
+            inputs.extend(query_input_files(request, root))
+        except WriteError as error:
+            raise ScopeError(str(error)) from None
+        except UserError:
+            if request.response.cursor:
+                raise ScopeError("response_snapshot_stale") from None
+            # Let the native producer return its actionable selection error.
     if request.action == "diff":
         from reprollm.core.errors import UserError
         from reprollm.core.paths import RUNS_DIR
@@ -518,6 +533,47 @@ def _presentation_schema(action: str | None, value: Any) -> dict[str, Any]:
     from reprollm.schemas.finding import AuditReport
     from reprollm.schemas.run_record import RunRecord
 
+    if action in WRITE_ACTIONS:
+        properties: dict[str, Any] = {
+            name: {}
+            for name in (
+                "profiles",
+                "task_candidates",
+                "selected_tasks",
+                "guidance",
+                "accepted_answers",
+                "invalid_field",
+                "manifest_text",
+                "missing_required_fields",
+                "plan_hash",
+                "artifacts_written",
+                "preserved_changed_targets",
+                "artifact_publication_attempted",
+                "selected_run_id",
+                "selected_run_locator",
+                "document",
+                "schema_files",
+                "schema_count",
+            )
+        }
+        properties["phase"] = {"enum": ["prepared", "applied", "partial"]}
+        properties["template"] = {"enum": ["default", "neurips", "acl", "acm"]}
+        properties["artifacts"] = {
+            "type": "array",
+            "items": {
+                "properties": {
+                    name: {}
+                    for name in (
+                        "role",
+                        "path",
+                        "expected_old_sha256",
+                        "new_sha256",
+                        "approval_required",
+                    )
+                }
+            },
+        }
+        return {"properties": properties}
     models: dict[str, type[BaseModel]] = {
         "audit": AuditReport,
         "diff": DiffReport,
@@ -934,7 +990,7 @@ def execute(
     reply: Reply | None = None
     artifact_written = False
     try:
-        if request.action not in READONLY_ACTIONS:
+        if request.action not in READONLY_ACTIONS | WRITE_ACTIONS:
             return blocked(request.action, "action_unavailable")
         if request.action == "doctor" and request.options.get("check_network"):
             return blocked(
@@ -949,83 +1005,101 @@ def execute(
                 request.response.cursor, request, root, external, cache_home, identity
             )
             return _page(snapshot, saved, request.response.page_size, kind=kind, offset=offset)
-        output = _output_target(request, root)
-        display_diagnostics: list[dict[str, Any]] = []
-        if request.action == "run.preview":
-            result, as_json = _preview(request, root), False
+        if request.action in WRITE_ACTIONS:
+            from skill_writes import execute_write
+
+            reply = execute_write(
+                request,
+                root=root,
+                state_home=cache_home.parent / "writes",
+                identity=identity,
+                cli_runner=cli_runner or invoke_cli,
+                source_signature=input_signature,
+                display_sanitizer=lambda value, notes: _sanitize(
+                    value, root, action="runs.show", diagnostics=notes
+                ),
+            )
         else:
-            argv, as_json = command_args(request, root)
-            if request.action == "audit":
-                from skill_audit_display import invoke_private_audit
-
-                result, display_diagnostics = invoke_private_audit(
-                    argv,
-                    root,
-                    invoke_cli=cli_runner or invoke_cli,
-                    sanitize=lambda value, notes: _sanitize(
-                        value, root, action="runs.show", diagnostics=notes
-                    ),
-                )
-            elif request.action == "diff":
-                from skill_diff_display import invoke_private_diff
-
-                result, display_diagnostics = invoke_private_diff(
-                    argv,
-                    root,
-                    invoke_cli=cli_runner or invoke_cli,
-                    sanitize=lambda value, notes: _sanitize(
-                        value, root, action="runs.show", diagnostics=notes
-                    ),
-                )
-            elif request.action == "runs.show" and not as_json:
-                from skill_run_display import invoke_private_show
-
-                result, display_diagnostics = invoke_private_show(
-                    argv,
-                    root,
-                    invoke_cli=cli_runner or invoke_cli,
-                    sanitize=lambda value, notes: _sanitize(
-                        value, root, action="runs.show", diagnostics=notes
-                    ),
-                )
+            output = _output_target(request, root)
+            display_diagnostics: list[dict[str, Any]] = []
+            if request.action == "run.preview":
+                result, as_json = _preview(request, root), False
             else:
-                result = (cli_runner or invoke_cli)(argv, root)
-        diagnostics = [*display_diagnostics]
-        if result.stderr:
-            diagnostics.append({"code": "cli_stderr", "text": result.stderr})
-        reply = Reply(
-            request.action, cli_exit_code=result.exit_code, complete=False, diagnostics=diagnostics
-        )
-        if result.exit_code in {2, 3} or result.exit_code not in {0, 1}:
-            reply.invocation = "user_error" if result.exit_code == 2 else "internal_error"
-        else:
-            try:
-                data = json.loads(result.stdout) if as_json else result.stdout
-            except (ValueError, RecursionError):
-                reply.invocation = "internal_error"
-                reply.diagnostics.append({"code": "invalid_cli_json"})
+                argv, as_json = command_args(request, root)
+                if request.action == "audit":
+                    from skill_audit_display import invoke_private_audit
+
+                    result, display_diagnostics = invoke_private_audit(
+                        argv,
+                        root,
+                        invoke_cli=cli_runner or invoke_cli,
+                        sanitize=lambda value, notes: _sanitize(
+                            value, root, action="runs.show", diagnostics=notes
+                        ),
+                    )
+                elif request.action == "diff":
+                    from skill_diff_display import invoke_private_diff
+
+                    result, display_diagnostics = invoke_private_diff(
+                        argv,
+                        root,
+                        invoke_cli=cli_runner or invoke_cli,
+                        sanitize=lambda value, notes: _sanitize(
+                            value, root, action="runs.show", diagnostics=notes
+                        ),
+                    )
+                elif request.action == "runs.show" and not as_json:
+                    from skill_run_display import invoke_private_show
+
+                    result, display_diagnostics = invoke_private_show(
+                        argv,
+                        root,
+                        invoke_cli=cli_runner or invoke_cli,
+                        sanitize=lambda value, notes: _sanitize(
+                            value, root, action="runs.show", diagnostics=notes
+                        ),
+                    )
+                else:
+                    result = (cli_runner or invoke_cli)(argv, root)
+            diagnostics = [*display_diagnostics]
+            if result.stderr:
+                diagnostics.append({"code": "cli_stderr", "text": result.stderr})
+            reply = Reply(
+                request.action,
+                cli_exit_code=result.exit_code,
+                complete=False,
+                diagnostics=diagnostics,
+            )
+            if result.exit_code in {2, 3} or result.exit_code not in {0, 1}:
+                reply.invocation = "user_error" if result.exit_code == 2 else "internal_error"
             else:
-                reply.gate_failed = (
-                    result.exit_code == 1 if request.action in {"audit", "diff"} else None
-                )
-                if output is not None:
-                    if not isinstance(data, dict):
-                        raise ScopeError("invalid_cli_json")
-                    target = output.target
-                    _write_report(output, result.stdout.encode("utf-8"))
-                    artifact_written = True
-                    counts = data.get("summary", {})
-                    message = f"Wrote audit report to {target} "
-                    message += f"({counts.get('critical', 0)} critical, "
-                    message += f"{counts.get('warning', 0)} warning)\n"
-                    data = {
-                        "report": data,
-                        "stdout": message,
-                        "artifact": target.relative_to(root).as_posix()
-                        if target.is_relative_to(root)
-                        else target.name,
-                    }
-                reply.data, reply.complete = data, True
+                try:
+                    data = json.loads(result.stdout) if as_json else result.stdout
+                except (ValueError, RecursionError):
+                    reply.invocation = "internal_error"
+                    reply.diagnostics.append({"code": "invalid_cli_json"})
+                else:
+                    reply.gate_failed = (
+                        result.exit_code == 1 if request.action in {"audit", "diff"} else None
+                    )
+                    if output is not None:
+                        if not isinstance(data, dict):
+                            raise ScopeError("invalid_cli_json")
+                        target = output.target
+                        _write_report(output, result.stdout.encode("utf-8"))
+                        artifact_written = True
+                        counts = data.get("summary", {})
+                        message = f"Wrote audit report to {target} "
+                        message += f"({counts.get('critical', 0)} critical, "
+                        message += f"{counts.get('warning', 0)} warning)\n"
+                        data = {
+                            "report": data,
+                            "stdout": message,
+                            "artifact": target.relative_to(root).as_posix()
+                            if target.is_relative_to(root)
+                            else target.name,
+                        }
+                    reply.data, reply.complete = data, True
         reply.data = _sanitize(
             reply.data, root, action=request.action, diagnostics=reply.diagnostics
         )
@@ -1070,6 +1144,7 @@ def execute(
         )
         if reply is not None:
             failure.cli_exit_code, failure.gate_failed = reply.cli_exit_code, reply.gate_failed
+            failure.data = publication_summary(reply)
         if artifact_written:
             failure.data = {"scope": "incomplete_delivery", "artifact_written": True}
         return failure
@@ -1082,6 +1157,8 @@ def execute(
             gate_failed=reply.gate_failed if reply else None,
             data={"scope": "incomplete_delivery", "artifact_written": True}
             if artifact_written
+            else publication_summary(reply)
+            if reply is not None
             else None,
             diagnostics=[{"code": "readonly_input_unavailable"}],
         )
@@ -1146,8 +1223,9 @@ class RuntimeExecutor:
         from install_catalog import CatalogError, load_catalog
         from skill_runtime_frame import FrameError, validate_frame
 
+        worker_started = False
         try:
-            if request.action not in READONLY_ACTIONS:
+            if request.action not in READONLY_ACTIONS | WRITE_ACTIONS:
                 return blocked(request.action, "action_unavailable")
             project_root(request)
             home = self.home or default_home()
@@ -1187,6 +1265,7 @@ class RuntimeExecutor:
                     + _json(lease.status)
                 )
                 environment = lease.environment
+                worker_started = True
                 result = subprocess.run(
                     [
                         str(environment_python(environment)),
@@ -1206,11 +1285,13 @@ class RuntimeExecutor:
                     check=False,
                 )
             if len(result.stdout) > MAX_REPLY_BYTES:
-                return blocked(request.action, "runtime_protocol_failed")
+                failure = blocked(request.action, "runtime_protocol_failed")
+                _unknown_write_effects(request, failure)
+                return failure
             try:
                 reply = validate_frame(result.stdout, expected_action=request.action)
             except FrameError:
-                return Reply(
+                failure = Reply(
                     request.action,
                     invocation="internal_error",
                     complete=False,
@@ -1218,6 +1299,8 @@ class RuntimeExecutor:
                         {"code": "runtime_protocol_failed", "worker_exit_code": result.returncode}
                     ],
                 )
+                _unknown_write_effects(request, failure)
+                return failure
             if result.returncode != 0 or result.stderr or lease.cleanup_failed:
                 reply.invocation = "internal_error"
                 reply.complete = False
@@ -1250,7 +1333,19 @@ class RuntimeExecutor:
             KeyError,
             subprocess.SubprocessError,
         ):
-            return blocked(request.action, "tool_or_runtime_unavailable")
+            failure = blocked(request.action, "tool_or_runtime_unavailable")
+            if worker_started:
+                _unknown_write_effects(request, failure)
+            return failure
+
+
+def _unknown_write_effects(request: Request, reply: Reply) -> None:
+    if request.action in WRITE_ACTIONS and not request.options.get("preview", False):
+        reply.data = {
+            "scope": "unknown_completion",
+            "artifact_publication_unknown": True,
+            "safe_to_repeat": False,
+        }
 
 
 def _compatible_installation(status: dict[str, Any]) -> bool:

@@ -13,6 +13,7 @@ Invocation: TypeAlias = Literal["handled_result", "user_error", "internal_error"
 MAX_REQUEST_BYTES = 256 * 1024
 MAX_REPLY_BYTES = 256 * 1024
 BASE_ACTIONS = frozenset({"about", "tool.status"})
+WRITE_ACTIONS = frozenset({"init", "export", "schema.export"})
 
 
 class RequestError(ValueError):
@@ -111,6 +112,7 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         command=TEXT,
         tasks=STRINGS,
         answers=Option("string_map"),
+        preview=BOOL,
     ),
     "lock": _action(
         "Resolve or check artifact identities; this does not install experiment packages.",
@@ -124,8 +126,11 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         run=TEXT,
         output=PATH,
         template=Option("str", ("default", "neurips", "acl", "acm")),
+        preview=BOOL,
     ),
-    "schema.export": _action("Export the product's ten JSON Schema documents.", out=PATH),
+    "schema.export": _action(
+        "Export the product's ten JSON Schema documents.", out=PATH, preview=BOOL
+    ),
     "discover.preview": _action(
         "Preview the exact eligible source content without an API request.",
         experimental=BOOL,
@@ -206,6 +211,7 @@ class Grants:
     run: bool = False
     external_paths: tuple[str, ...] = ()
     expected_hashes: dict[str, str | None] = field(default_factory=dict)
+    plan_hash: str | None = None
 
 
 @dataclass(frozen=True)
@@ -343,7 +349,15 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
                 raise RequestError("invalid_option_type_or_value")
         grant_data = _mapping(
             data.get("grants", {}),
-            {"install", "write", "network", "run", "external_paths", "expected_hashes"},
+            {
+                "install",
+                "write",
+                "network",
+                "run",
+                "external_paths",
+                "expected_hashes",
+                "plan_hash",
+            },
             "invalid_grants",
         )
         for name in ("install", "write", "network", "run"):
@@ -364,6 +378,13 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
                 or any(c not in "0123456789abcdef" for c in digest)
             ):
                 raise RequestError("invalid_expected_hash")
+        plan_hash = grant_data.get("plan_hash")
+        if plan_hash is not None and (
+            not isinstance(plan_hash, str)
+            or len(plan_hash) != 64
+            or any(c not in "0123456789abcdef" for c in plan_hash)
+        ):
+            raise RequestError("invalid_plan_hash")
         grants = Grants(
             **{
                 name: grant_data[name]
@@ -372,6 +393,7 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
             },
             external_paths=external_paths,
             expected_hashes=dict(hashes),
+            plan_hash=plan_hash,
         )
         page = _mapping(
             data.get("response", {}), {"page_size", "cursor"}, "invalid_response_options"
@@ -446,7 +468,7 @@ def required_grants(request: Request) -> frozenset[str]:
         "rules.restore",
         "discover",
         "run.start",
-    }:
+    } and (action not in WRITE_ACTIONS or not options.get("preview", False)):
         grants.add("write")
     if action in {"run.start", "run.cancel"}:
         grants.add("run")
@@ -498,6 +520,34 @@ def error_reply(error: RequestError) -> Reply:
     return Reply(None, invocation="user_error", complete=False, diagnostics=[{"code": str(error)}])
 
 
+def publication_summary(reply: Reply) -> dict[str, Any] | None:
+    """Retain only fixed effect facts if a larger result cannot be delivered."""
+    data = reply.data
+    if not isinstance(data, dict):
+        return None
+    if data.get("artifact_publication_unknown") is True:
+        return {
+            "scope": "unknown_completion",
+            "artifact_publication_unknown": True,
+            "safe_to_repeat": False,
+        }
+    artifacts = data.get("artifacts_written")
+    count = len(artifacts) if isinstance(artifacts, list) else 0
+    if type(data.get("artifacts_written_count")) is int:
+        count = max(count, data["artifacts_written_count"])
+    attempted = count > 0 or data.get("artifact_publication_attempted") is True
+    written = count > 0 or data.get("artifact_written") is True
+    if not attempted and not written:
+        return None
+    return {
+        "scope": "incomplete_delivery",
+        "artifact_written": written,
+        "artifacts_written_count": count,
+        "artifact_publication_attempted": attempted,
+        "safe_to_repeat": False,
+    }
+
+
 def _compact_failure(reply: Reply, code: str, *, internal: bool = False) -> Reply:
     action = (
         reply.action if isinstance(reply.action, str) and reply.action in ACTION_SPECS else None
@@ -540,6 +590,7 @@ def _compact_failure(reply: Reply, code: str, *, internal: bool = False) -> Repl
             reply.child_exit_code if type(reply.child_exit_code) is int else None
         )
         compact.gate_failed = reply.gate_failed if type(reply.gate_failed) is bool else None
+        compact.data = publication_summary(reply)
     return compact
 
 

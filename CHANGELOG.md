@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK14 (spec §§3.2, 20, 22): initialize experiment declarations and saved commands,
+  export current/historical reports and emit ten schemas through guarded Skill
+  writes. Reuse native validation, selection and renderers, with source-bound
+  previews, explicit overwrite hashes and preserved partial/unknown write facts.
+  Keep historical source-aware privacy in the emitted artifacts as well as replies.
+
 - SK13 (spec §§5, 9–10, 16, 21–22): expose local audit, doctor, profile/task
   inspection, recorded-run inspection, diff and command preview through the
   verified Skill installation. Preserve native results and diagnostics with

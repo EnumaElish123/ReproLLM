@@ -143,3 +143,54 @@ authorize the exact external path if it is outside the project. The artifact
 contains the full report emitted by the native renderer after the Skill's privacy
 projection; response paging affects only its display.
 Never overwrite a changed target or treat a page as the saved full report.
+
+## Initialize and publish reports
+
+`init`, `export` and `schema.export` accept `options.preview: true` for a prepared
+view without project writes. An already authorized operation can prepare and apply
+in the same call: use `grants.write: true` and leave `preview` false. These actions
+create only their native owned artifacts; registering a command starts no child.
+
+```json
+{"schema_version":1,"action":"init","project":"PROJECT_DIRECTORY","options":{"preview":true}}
+```
+
+Use real user-supplied values in `options.answers`, keyed by the supported required
+field paths returned in `guidance`. Blank or unknown research values can remain
+TODO. An invalid later answer returns `accepted_answers` and `invalid_field` for a
+corrected submission. There is no generic manifest updater. Multiple relevant
+task candidates require an explicit selection; `options.tasks: []` means the user
+chose to leave tasks undeclared. It does not assert that the repository has none.
+Set `options.command` only to the exact experiment command the user supplied.
+
+A prepared reply includes `phase: prepared`, `plan_hash`, `artifacts` and an empty
+`artifacts_written`. When a preview was shown while awaiting a choice or approval,
+carry its digest in `grants.plan_hash` and resend the same intended inputs with
+`preview: false`. Changed sources, targets or helper identity reject that plan.
+The digest binds reviewed bytes; authorization still comes from the user's scope.
+Do not ask for another preview approval when the operation is already authorized.
+
+Reinitializing an existing manifest needs the user's specific `options.force`
+intent. Existing config and project rules remain preserved. Export/schema targets
+that already exist require their old bytes in `grants.expected_hashes`; new targets
+can be approved with null. External targets need their exact extra path scope.
+
+```json
+{"schema_version":1,"action":"export","project":"PROJECT_DIRECTORY","options":{"run":"ACTUAL_RUN_ID","template":"neurips"},"grants":{"write":true}}
+```
+
+The default report is `REPRODUCIBILITY.md`; templates are `default`, `neurips`,
+`acl` and `acm`. `selected_run_id` reports the record's ID, while
+`selected_run_locator` records the actual directory handle used for selection.
+Historical snapshots supply experiment facts; the embedded audit retains its
+current-tree scope. External record bundles require explicit scope for their
+actual selected record and native snapshot reads. `schema.export` uses `options.out`
+(default `schemas`) and preserves the ten native schema bytes for that platform.
+
+`phase: applied` and `artifacts_written` describe completed publications.
+`phase: partial` or `artifact_publication_unknown` requires checking the specified
+targets. A timeout, lost response or `safe_to_repeat: false` does not authorize
+another publication. Preserve the reported effects while inspecting current files.
+Following a write-result cursor only retrieves the saved view; it never repeats
+the write. Publication guards detect observed changes but do not claim a transaction
+across multiple files or arbitrary concurrent filesystem edits.
