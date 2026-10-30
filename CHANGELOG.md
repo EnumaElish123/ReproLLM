@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK17 (spec §§16.2, 20.2–20.3, 22): reject source paths without an explicit
+  portable predicate or current AST proof, including template-prefixed private
+  paths exempted by ordinary display privacy. Preserve decoded mapping-key
+  context inside template expressions and refuse unproven computed mappings or
+  secret-value boundaries before credentials, budgets or network work.
+
 - SK17 (spec §§16, 20.2–20.3, 22; Skill plan §§5, 6.3): preserve exact native
   discovery messages through worker transport and cached pages using a verified
   source-text role. Keep portable source lexemes intact while applying ordinary

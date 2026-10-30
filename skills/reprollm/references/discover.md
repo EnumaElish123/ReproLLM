@@ -18,6 +18,9 @@ Native-collected source text retains portable source literals, including unnamed
 retain proven comment identifier separators and finite, unevaluated template
 path lexemes; template expressions are never executed. Reports, diagnostics and
 other metadata still use the ordinary privacy projection.
+Arbitrary `{base}/path` text is not proof of a safe source path. Python template
+proofs retain decoded literal mapping keys when checking values; computed keys,
+unpacking or computed secret values without a safe boundary are refused.
 
 Source text must be safe to show unchanged. Machine identities, private or unknown
 absolute roots, Windows/UNC paths, local file URIs, unsafe embedded values and

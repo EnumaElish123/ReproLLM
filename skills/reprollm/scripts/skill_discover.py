@@ -18,7 +18,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from importlib.resources import files
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 import skill_writes as writes
@@ -31,6 +31,9 @@ from skill_discover_guard import (
     parse_grant,
 )
 from skill_request import Reply, Request, blocked
+
+if TYPE_CHECKING:
+    from reprollm.run.privacy import RunPrivacy
 
 _WARNING_COUNT_LIMIT = 1000
 _WARNING_CATEGORIES: dict[type[Warning], str] = {
@@ -105,6 +108,55 @@ def _controls(value: str) -> bool:
     )
 
 
+def _expression_private(node: ast.AST, privacy: RunPrivacy) -> None:
+    """Check decoded expression leaves with literal keys; never evaluate Python."""
+    from reprollm.core.persistence import redact_keyed_values
+
+    visited = 0
+
+    def visit(item: ast.AST, keys: tuple[str, ...] = (), depth: int = 0) -> None:
+        nonlocal visited
+        visited += 1
+        if depth > 64 or visited > 10_000:
+            raise BudgetError("discover_review_content_unavailable")
+        probe = "ReproLLMContextProbe12345"
+        if redact_keyed_values(probe, keys) != probe and not isinstance(item, ast.Constant):
+            # A computed value under a secret key has no proven scalar boundary.
+            raise BudgetError("discover_review_content_unsafe")
+        if isinstance(item, ast.Dict):
+            for key, value in zip(item.keys, item.values, strict=True):
+                if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
+                    raise BudgetError("discover_review_content_unsafe")
+                if _controls(key.value) or privacy.text(key.value)[0] != key.value:
+                    raise BudgetError("discover_review_content_unsafe")
+                visit(value, (*keys, key.value), depth + 1)
+            return
+        if isinstance(item, ast.DictComp) or (
+            isinstance(item, ast.Call)
+            and isinstance(item.func, ast.Name)
+            and item.func.id == "dict"
+            and item.args
+        ):
+            raise BudgetError("discover_review_content_unsafe")
+        if isinstance(item, ast.keyword):
+            if item.arg is None:
+                raise BudgetError("discover_review_content_unsafe")
+            visit(item.value, (*keys, item.arg), depth + 1)
+            return
+        if isinstance(item, ast.Constant):
+            if (
+                isinstance(item.value, str)
+                and _controls(item.value)
+                or privacy.value(item.value, keys) != item.value
+            ):
+                raise BudgetError("discover_review_content_unsafe")
+            return
+        for child in ast.iter_child_nodes(item):
+            visit(child, keys, depth + 1)
+
+    visit(node)
+
+
 def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
     """Locate non-path Python lexemes in native-rendered snippets without evaluation."""
     from reprollm.run.privacy import _ABSOLUTE_PATH, RunPrivacy
@@ -151,13 +203,19 @@ def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
                     and node.values[0].value == "/tmp/"
                     and isinstance(node.values[1], ast.FormattedValue)
                 )
+                suffix_index = (
+                    1
+                    if len(node.values) == 2 and isinstance(node.values[0], ast.FormattedValue)
+                    else 2
+                    if temporary and len(node.values) == 3
+                    else None
+                )
+                tail = node.values[suffix_index] if suffix_index is not None else None
                 suffix = (
-                    node.values[1].value
-                    if len(node.values) == 2
-                    and isinstance(node.values[0], ast.FormattedValue)
-                    and isinstance(node.values[1], ast.Constant)
-                    and isinstance(node.values[1].value, str)
-                    and re.fullmatch(r"/[A-Za-z_][A-Za-z0-9_.-]*", node.values[1].value)
+                    tail.value
+                    if isinstance(tail, ast.Constant)
+                    and isinstance(tail.value, str)
+                    and re.fullmatch(r"/[A-Za-z_][A-Za-z0-9_.-]*", tail.value)
                     else None
                 )
                 if not temporary and suffix is None:
@@ -174,16 +232,7 @@ def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
                     continue
                 for formatted in node.values:
                     if isinstance(formatted, ast.FormattedValue):
-                        for child in ast.walk(formatted):
-                            if (
-                                isinstance(child, ast.Constant)
-                                and isinstance(child.value, str)
-                                and (
-                                    _controls(child.value)
-                                    or privacy.text(child.value)[0] != child.value
-                                )
-                            ):
-                                raise BudgetError("discover_review_content_unsafe")
+                        _expression_private(formatted, privacy)
                 line = dedented[node.lineno - 1]
                 original = lines[node.lineno - 1]
                 if not original.endswith(line):
@@ -197,7 +246,7 @@ def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
                     result.append(
                         _SourceProof(base + start + opening.end(), "/tmp/{", template_prefix=True)
                     )
-                elif suffix is not None:
+                if suffix is not None:
                     offset = base + start + len(segment) - len(opening["quote"]) - len(suffix)
                     result.append(_SourceProof(offset, suffix))
         except (SyntaxError, tokenize.TokenError, IndentationError):
@@ -253,7 +302,7 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
                 or any(part in {".", ".."} for part in path.split("/"))
                 or any(path == base or path.startswith(base + "/") for base in machine_roots)
             ):
-                return path
+                raise BudgetError("discover_review_content_unsafe")
             parts = PurePosixPath(path).parts
             if (
                 not (home_relative or proved)
@@ -280,9 +329,14 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
                     "dev",
                 }
             ):
-                return path
+                raise BudgetError("discover_review_content_unsafe")
             allowed = (
                 home_relative or proved or (len(parts) > 2 and parts[1] in {"usr", "opt", "api"})
+            )
+            allowed = allowed or (
+                path == "/INST"
+                and prefix.endswith("[")
+                and value[match.end() : match.end() + 1] == "]"
             )
             allowed = allowed or bool(re.match(r"/v[0-9]+/", path))
             if not allowed and prefix.endswith("](") and "%" not in path:
@@ -290,7 +344,7 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
                 resolved = target.resolve()
                 allowed = resolved.is_relative_to(root.resolve()) and resolved.exists()
             if not allowed:
-                return path
+                raise BudgetError("discover_review_content_unsafe")
             token = "Z" + digest + "Z" + str(index) + "Z"
             index += 1
             while token in value:
