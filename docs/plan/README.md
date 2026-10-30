@@ -8,6 +8,14 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The SK13 large-report acceptance exposed an existing contextual-privacy performance
+prerequisite. The [bounded matching-equivalent fix and SK11 test correction](../dogfooding/2026-10-30-skill-privacy-prerequisite/README.md)
+are locally accepted at `2faa309`: all 24 quality checks, 5,560 tests and fresh all-five
+base/static/CPU consumer comparisons pass. The original `21db2aa` Windows CI failure
+is retained; the corrected final-delivery-head CI is checked after this push.
+Full Skill work remains in progress, with the catalog source bridge required before
+installed SK13 big-result acceptance.
+
 The active iteration is the [2026-10-30 Agent Skill extension v2](skill-2026-10-30/README.md):
 automatic isolated installation, capability introduction and user-directed access to the full
 supported CLI. **SK2-A (SK10 → SK11) is implemented with local acceptance** at `8f5f400`;
