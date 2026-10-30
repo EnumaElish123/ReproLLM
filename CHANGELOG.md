@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK17 (spec §§13, 16, 22): retain native discovery collection warnings as
+  bounded private category/count diagnostics, preserving caller warning filters,
+  exact input/message bindings and request order. Keep unexpected worker stderr
+  subject to the existing failure boundary.
+
 - SK17 (spec §§7, 16, 20, 22): preview discovery through the original collector,
   bind source/model/endpoint and a specific cost grant, and run the native client
   through owned operations. Reserve each possible POST before sending, retain
