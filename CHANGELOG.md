@@ -9,6 +9,18 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK13 (spec §§5, 9–10, 16, 21–22): expose local audit, doctor, profile/task
+  inspection, recorded-run inspection, diff and command preview through the
+  verified Skill installation. Preserve native results and diagnostics with
+  private snapshot-bound paging, explicit completeness and separate worker/CLI
+  results. Preserve omitted historical source fields and retain typed source,
+  command-argument and environment-name privacy across historical JSON/text,
+  diff and audit reports without changing raw comparisons or gate decisions.
+  Bind cached views to all trusted Python helpers and guard audit report writes
+  by exact target hashes. Pin the compatible
+  published source containing the contextual privacy scanning prerequisite;
+  retain the previous candidate for verified reuse and rollback.
+
 - SK12 (spec §§16, 21–22): add the Agent Skill entry, capability introduction
   and strict typed request/authorization protocol. Capability-only requests
   require no installation or project scan; installation status remains read-only.

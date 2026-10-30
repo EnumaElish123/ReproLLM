@@ -84,3 +84,62 @@ the same request and snapshot; changed/expired inputs require a new query.
 An unavailable adapter action returns `action_unavailable`; explain that concrete
 boundary. Do not report an unexecuted workflow as complete or substitute invented
 results. Current host support and resource validation remain separate evidence.
+
+## Local checks and comparisons
+
+The read-only adapter supports `audit`, local `doctor`, `profiles.list`,
+`profiles.show`, `init.tasks`, `runs.list`, `runs.show`, `diff` and `run.preview`.
+The default structured form preserves native conclusions and diagnostics.
+Explicit text/GitHub formats remain available where the underlying command has
+them. Network doctor checks require the later online workflow.
+
+Read historical records through the typed actions so their original binding,
+environment and command contexts inform display privacy. Diff compares original
+values before hiding private display values. Two different private values can
+therefore appear as the same redaction marker while retaining a real drift result;
+explain the recorded severity and evidence scope. Historical source files remain
+unchanged. Snapshot identity includes every trusted Python helper, so a helper
+update requires a fresh query rather than resuming an older cached display.
+
+```json
+{"schema_version":1,"action":"audit","project":"PROJECT_DIRECTORY","options":{"level":"auto","fail_on":"critical"}}
+```
+
+Replace `PROJECT_DIRECTORY` with the user-selected project root. The first
+concrete task may prepare the compatible isolated tool automatically. With
+`grants.install: false`, a missing or incompatible tool returns a preparation
+requirement without installing. A selected subdirectory does not implicitly
+authorize reading its ancestor project.
+
+```json
+{"schema_version":1,"action":"diff","project":"PROJECT_DIRECTORY","options":{"latest_successful":true,"name":"EXPERIMENT_NAME"}}
+```
+
+Use actual record IDs for explicit `a` and `b` comparisons. Do not manufacture
+names or choose unrelated experiments merely to satisfy a comparison. Explicit
+external inputs need their exact paths in `grants.external_paths`.
+
+```json
+{"schema_version":1,"action":"run.preview","project":"PROJECT_DIRECTORY"}
+```
+
+The preview resolves the saved command and reports missing choices without
+starting the child or creating a run. Explicit `options.argv` is a string array;
+preserve empty arguments and the selected working directory.
+
+For a paged reply, retain the same action, project, options and grants and send
+`response.cursor` from `next_cursor`. Item pages identify their collection and
+scope. A large single value uses `scope: partial_document` pages with
+`encoding: json-text`; concatenate their text
+and decode the complete JSON document before interpreting it. The last page is
+still a partial-document reply: exhausting a cursor alone does not make that
+individual page the full result. Changed sources or an expired cache require a
+fresh query. Snapshot fingerprints cover a bounded file view; they do not
+establish a transaction across arbitrary filesystem changes.
+
+An `audit` output file is a write. Bind its exact target in
+`grants.expected_hashes` (null for a new file), set `grants.write: true`, and
+authorize the exact external path if it is outside the project. The artifact
+contains the full report emitted by the native renderer after the Skill's privacy
+projection; response paging affects only its display.
+Never overwrite a changed target or treat a page as the saved full report.

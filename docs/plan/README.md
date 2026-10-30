@@ -12,17 +12,22 @@ The SK13 large-report acceptance exposed an existing contextual-privacy performa
 prerequisite. The [bounded matching-equivalent fix and SK11 test correction](../dogfooding/2026-10-30-skill-privacy-prerequisite/README.md)
 are locally accepted at `2faa309`: all 24 quality checks, 5,560 tests and fresh all-five
 base/static/CPU consumer comparisons pass. The original `21db2aa` Windows CI failure
-is retained; the corrected final-delivery-head CI is checked after this push.
-Full Skill work remains in progress, with the catalog source bridge required before
-installed SK13 big-result acceptance.
+is retained; all five official CI jobs and the twelve required Ubuntu 3.12 steps
+passed on the corrected delivery head `429b3ed`
+([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41035875585)).
+Full Skill work remains in progress. The published `2faa309` source bridge is now
+available for installed SK13 big-result acceptance.
 
 The active iteration is the [2026-10-30 Agent Skill extension v2](skill-2026-10-30/README.md):
 automatic isolated installation, capability introduction and user-directed access to the full
-supported CLI. **SK2-A (SK10 → SK11) is implemented with local acceptance** at `8f5f400`;
+supported CLI. **SK2-A (SK10 → SK11) is accepted with its portable-test correction**;
 see the [installation batch report](../dogfooding/2026-10-30-skill-sk2a/README.md).
 All 24 local quality checks, 5,551 tests, fresh five-project base acceptance and actual
-source/cache-wheel/online installation pass. Exact final-delivery-head CI is checked after push.
-The next batch is **SK2-B (SK12 → SK13)**. The rest of SK12–SK21 remains pending;
+source/cache-wheel/online installation pass. Corrected delivery-head CI is green as
+recorded above. **SK2-B (SK12 → SK13) is in progress**; SK12 is implemented with
+focused acceptance. SK13 independent security review passes; the shared final
+quality gate, installed acceptance and fresh five-project adapter parity are pending.
+SK14–SK21 remain pending;
 the unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release

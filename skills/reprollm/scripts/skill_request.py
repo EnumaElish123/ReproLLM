@@ -498,6 +498,51 @@ def error_reply(error: RequestError) -> Reply:
     return Reply(None, invocation="user_error", complete=False, diagnostics=[{"code": str(error)}])
 
 
+def _compact_failure(reply: Reply, code: str, *, internal: bool = False) -> Reply:
+    action = (
+        reply.action if isinstance(reply.action, str) and reply.action in ACTION_SPECS else None
+    )
+    invocation: Invocation = (
+        "internal_error"
+        if internal
+        else reply.invocation
+        if reply.invocation in {"internal_error", "user_error"}
+        else "blocked"
+    )
+    diagnostics: list[dict[str, Any]] = [{"code": code, "data_omitted": True}]
+    retained: dict[str, dict[str, Any]] = {}
+    original = reply.diagnostics if isinstance(reply.diagnostics, list) else []
+    for diagnostic in reversed(original):
+        if not isinstance(diagnostic, dict):
+            continue
+        diagnostic_code = diagnostic.get("code")
+        if diagnostic_code == "runtime_lease_cleanup_failed":
+            retained[diagnostic_code] = {"code": diagnostic_code}
+        if (
+            isinstance(diagnostic_code, str)
+            and diagnostic_code in {"runtime_worker_exit", "runtime_worker_stderr"}
+            and diagnostic_code not in retained
+            and type(diagnostic.get("worker_exit_code")) is int
+        ):
+            retained[diagnostic_code] = {
+                "code": diagnostic_code,
+                "worker_exit_code": diagnostic["worker_exit_code"],
+            }
+    diagnostics.extend(retained[key] for key in sorted(retained))
+    if len(original) > len(retained):
+        diagnostics[0]["diagnostics_omitted"] = len(original) - len(retained)
+    if action is None and invocation == "blocked":
+        invocation = "internal_error"
+    compact = Reply(action, invocation=invocation, complete=False, diagnostics=diagnostics)
+    if action is not None:
+        compact.cli_exit_code = reply.cli_exit_code if type(reply.cli_exit_code) is int else None
+        compact.child_exit_code = (
+            reply.child_exit_code if type(reply.child_exit_code) is int else None
+        )
+        compact.gate_failed = reply.gate_failed if type(reply.gate_failed) is bool else None
+    return compact
+
+
 def encode_reply(reply: Reply) -> bytes:
     try:
         raw = json.dumps(
@@ -508,13 +553,8 @@ def encode_reply(reply: Reply) -> bytes:
             separators=(",", ":"),
         ).encode("utf-8")
     except (TypeError, ValueError, RecursionError):
-        reply = Reply(
-            reply.action,
-            invocation="internal_error",
-            complete=False,
-            diagnostics=[{"code": "invalid_executor_reply"}],
-        )
+        reply = _compact_failure(reply, "invalid_executor_reply", internal=True)
         raw = json.dumps(reply.as_dict(), sort_keys=True).encode("utf-8")
-    if len(raw) > MAX_REPLY_BYTES:
-        return encode_reply(blocked(reply.action, "reply_budget_exceeded"))
+    if len(raw) > MAX_REPLY_BYTES - 1:
+        return encode_reply(_compact_failure(reply, "reply_budget_exceeded"))
     return raw

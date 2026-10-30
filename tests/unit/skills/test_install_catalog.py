@@ -187,9 +187,9 @@ def test_all_platform_wheel_hashes_are_preserved_in_one_exact_requirement(tmp_pa
     assert requirement[0] == f"httpx==0.28.1 --hash=sha256:{'0' * 64} --hash=sha256:{SHA_HELLO}"
 
 
-def test_committed_catalog_pins_current_source_without_false_release() -> None:
+def test_retained_initial_candidate_keeps_its_source_and_dependency_identity() -> None:
     catalog = catalog_module.load_catalog(CATALOG_PATH)
-    candidate = catalog.get_candidate()
+    candidate = catalog.get_candidate("source-0e0de760fc09")
     assert candidate.source_commit == COMMIT
     assert (
         candidate.source_sha256
@@ -204,3 +204,19 @@ def test_committed_catalog_pins_current_source_without_false_release() -> None:
     assert {"audit", "run_v2", "saved_commands", "task_inventory", "discover"} <= set(
         candidate.capabilities
     )
+
+
+def test_default_candidate_pins_verified_contextual_word_scan_source() -> None:
+    catalog = catalog_module.load_catalog(CATALOG_PATH)
+    candidate = catalog.get_candidate()
+    assert candidate.id == "source-2faa3096fa90"
+    assert candidate.source_commit == "2faa3096fa9056ba0a4e08a8b83ffd17f4ffb4e0"
+    assert (
+        candidate.source_sha256
+        == "9f1013ab05bcb80103a462677d601bad45bd50eea6860ebfe9176986abadc78a"
+    )
+    assert "contextual_word_scan" in candidate.capabilities
+    old = catalog.get_candidate("source-0e0de760fc09")
+    assert "contextual_word_scan" not in old.capabilities
+    assert candidate.runtime_artifacts == old.runtime_artifacts
+    assert candidate.build_artifacts == old.build_artifacts

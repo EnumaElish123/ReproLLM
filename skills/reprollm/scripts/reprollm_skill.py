@@ -12,6 +12,7 @@ from typing import cast
 # Isolated Python omits the script directory; only this trusted sibling is added.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from skill_request import (  # noqa: E402
+    BASE_ACTIONS,
     MAX_REQUEST_BYTES,
     Executor,
     JSONValue,
@@ -42,12 +43,21 @@ def installation_status(home: Path | None = None) -> JSONValue:
 
 
 def handle(
-    raw: bytes, *, executor: Executor | None = None, status_provider: StatusProvider | None = None
+    raw: bytes,
+    *,
+    executor: Executor | None = None,
+    status_provider: StatusProvider | None = None,
+    available_actions: frozenset[str] = BASE_ACTIONS,
 ) -> Reply:
     request = None
     try:
         request = parse_request(raw)
-        return dispatch(request, executor=executor, status_provider=status_provider)
+        return dispatch(
+            request,
+            executor=executor,
+            status_provider=status_provider,
+            available_actions=available_actions,
+        )
     except RequestError as error:
         return error_reply(error)
     except InstallationBlocked:
@@ -66,8 +76,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--home", type=Path, help="Use this owned tool installation directory.")
     args = parser.parse_args(argv)
+    from skill_runtime import AVAILABLE_ACTIONS, RuntimeExecutor
+
     raw = sys.stdin.buffer.read(MAX_REQUEST_BYTES + 1)
-    reply = handle(raw, status_provider=lambda: installation_status(args.home))
+    reply = handle(
+        raw,
+        executor=RuntimeExecutor(args.home),
+        status_provider=lambda: installation_status(args.home),
+        available_actions=AVAILABLE_ACTIONS,
+    )
     wire = encode_reply(reply)
     sys.stdout.buffer.write(wire + b"\n")
     sys.stdout.buffer.flush()
