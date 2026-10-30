@@ -16,7 +16,8 @@ from reprollm.core.persistence import redact_keyed_values
 from reprollm.core.redaction import redact_lines, redact_text
 
 _QUOTED = r'"(?:\\.|[^"\\])*"' + r"|'(?:''|[^'])*'"
-_KEY = re.compile(rf"(?P<key>{_QUOTED}|[\w.-]+)\s*[:=]\s*")
+_KEY_AT_START = re.compile(rf"(?P<key>{_QUOTED}|[\w.-]+)\s*[:=]\s*")
+_KEY_SCAN = re.compile(rf"(?P<key>{_QUOTED}|(?<![\w.-])[\w.-]+)\s*[:=]\s*")
 _DOCUMENT = re.compile(rf"^(?:---\s*)?(?:[\[{{]|(?:{_QUOTED}|[\w.-]+)\s*:|-(?:\s|$))")
 _LIMIT = 1_048_576
 _NODE_LIMIT = 10_000
@@ -31,6 +32,11 @@ _TOML_DOCUMENT = re.compile(rf"(?m)^[ \t]*(?:\[\[?[ \t]*(?:{_TOML_PATH})|(?:{_TO
 
 class _UnsafeCapture(ValueError):
     pass
+
+
+def _search_key(text: str, cursor: int) -> re.Match[str] | None:
+    # Preserve a suffix at the caller's cursor; later word interiors cannot be first matches.
+    return _KEY_AT_START.match(text, cursor) or _KEY_SCAN.search(text, cursor)
 
 
 def _secret_key(key: str) -> bool:
@@ -58,7 +64,7 @@ def _encoded(safe: str, raw: str) -> str:
 
 def _has_unsafe_context(text: str) -> bool:
     probe = text.replace('\\"', '"').replace("\\'", "'")
-    for match in _KEY.finditer(probe):
+    for match in _KEY_SCAN.finditer(probe):
         try:
             key = _decode(match["key"])
         except (ValueError, yaml.YAMLError):
@@ -409,7 +415,7 @@ def _fragments(text: str, depth: int) -> tuple[str, int]:
         raise ValueError("nested capture text limit exceeded")
     replacements: list[tuple[int, int, str]] = []
     cursor = 0
-    while match := _KEY.search(text, cursor):
+    while match := _search_key(text, cursor):
         key = _decode(match["key"])
         start = match.end()
         if start >= len(text):
@@ -500,7 +506,7 @@ class CaptureLineContext:
             self.table = _toml_path(header["key"])
             return ()
         inherited = (*self.table, *(key for _, key in self.parents))
-        match = _KEY.match(stripped.removeprefix("- "))
+        match = _KEY_AT_START.match(stripped.removeprefix("- "))
         if match and stripped.removeprefix("- ")[match.end() :].strip() in {
             "",
             "|",
@@ -533,5 +539,5 @@ def shield_contextual_keys(text: str) -> tuple[str, dict[str, str], int]:
         count += replaced if safe != match["key"] else 0
         return marker + match[0][len(match["key"]) :]
 
-    protected = _KEY.sub(shield, text)
+    protected = _KEY_SCAN.sub(shield, text)
     return protected, originals, count
