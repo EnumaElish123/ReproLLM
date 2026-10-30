@@ -671,6 +671,11 @@ def test_socks_finds_system_curl_when_an_untrusted_path_entry_shadows_it(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(bootstrap.shutil, "which", lambda _: "/untrusted/project/curl")
-    monkeypatch.setattr(Path, "is_file", lambda path: str(path) == "/usr/bin/curl")
-    monkeypatch.setattr(bootstrap.os, "access", lambda path, mode: str(path) == "/usr/bin/curl")
-    assert bootstrap.system_curl() == "/usr/bin/curl"
+    if bootstrap.os.name == "nt":
+        monkeypatch.setenv("SYSTEMROOT", "C:/Windows")
+        expected = Path("C:/Windows/System32/curl.exe")
+    else:
+        expected = Path("/usr/bin/curl")
+    monkeypatch.setattr(Path, "is_file", lambda path: path == expected)
+    monkeypatch.setattr(bootstrap.os, "access", lambda path, mode: Path(path) == expected)
+    assert bootstrap.system_curl() == str(expected)
