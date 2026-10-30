@@ -24,10 +24,11 @@ supported CLI. **SK2-A (SK10 → SK11) is accepted with its portable-test correc
 see the [installation batch report](../dogfooding/2026-10-30-skill-sk2a/README.md).
 All 24 local quality checks, 5,551 tests, fresh five-project base acceptance and actual
 source/cache-wheel/online installation pass. Corrected delivery-head CI is green as
-recorded above. **SK2-B (SK12 → SK13) is in progress**; SK12 is implemented with
-focused acceptance. SK13 independent security review passes; the shared final
-quality gate, installed acceptance and fresh five-project adapter parity are pending.
-SK14–SK21 remain pending;
+recorded above. **SK2-B (SK12 → SK13) is locally accepted at `e07963d`**, with exact delivery-head CI pending.
+The [batch report](../dogfooding/2026-10-30-skill-sk2b/README.md) records all 24 quality
+checks, 5,911 tests, fresh native five-project Gate A, 86 installed checks / 250 calls,
+and independent source-aware privacy review. Early provisional/interrupted attempts remain
+excluded. SK14 is undergoing implementation review and correction; SK15–SK21 remain pending;
 the unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release
