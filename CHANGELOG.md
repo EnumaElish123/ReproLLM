@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK10 (D-30; spec §§22–23): define the Agent Skill's immutable official-source
+  installation candidate and separate hash-pinned lightweight runtime/build
+  dependencies. Validate source identity, supported Python/platform ranges and
+  artifact integrity before preparing an installation; reject unknown sources.
+
 - UXR05: add a four-command first-use tutorial using the bundled standard-library
   configuration probe, with guided setup, saved-command preview/run and optional
   report/diff steps. Distinguish author walkthrough evidence from model evaluation.
