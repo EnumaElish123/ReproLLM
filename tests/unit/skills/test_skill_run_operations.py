@@ -213,7 +213,10 @@ def test_original_run_preview_now_uses_plan_and_saved_cwd_without_tree_hash(setu
     assert "Working directory: work" in reply.data["preflight"]["text"]
 
 
-def test_finite_result_pages_retain_known_exit_without_tree_hash(setup, monkeypatch):
+@pytest.mark.parametrize("changed_source", ["claim", "result"])
+def test_finite_result_pages_retain_known_exit_without_tree_hash(
+    setup, monkeypatch, changed_source
+):
     token = contract.operation_id(contract.start(setup, run_request(setup["root"])))
     folder = contract.record_path(setup, token).parent
     raw = json.dumps(
@@ -248,6 +251,16 @@ def test_finite_result_pages_retain_known_exit_without_tree_hash(setup, monkeypa
     )
     page = runtime.execute(follow, cache_home=setup["home"] / "responses", identity="public")
     assert page.child_exit_code == 7 and page.invocation == "handled_result"
+    if changed_source == "claim":
+        contract.edit_record(setup, token, cancel_requested=True)
+        expected_invocation, expected_code = "blocked", "response_snapshot_stale"
+    else:
+        (folder / "result.json").write_bytes(raw + b" ")
+        expected_invocation, expected_code = "user_error", "readonly_input_unavailable"
+    stale = runtime.execute(follow, cache_home=setup["home"] / "responses", identity="public")
+    assert stale.invocation == expected_invocation and not stale.complete
+    assert stale.diagnostics == [{"code": expected_code}]
+    assert stale.data is None and stale.next_cursor is None
 
 
 def test_oversized_run_delivery_retains_operation_and_actual_native_id():

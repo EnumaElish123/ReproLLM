@@ -97,9 +97,20 @@ def test_native_local_result_uses_privacy_and_retains_exit(
     assert reply.data["reasons"] == ["stale"]
 
 
-def test_safe_complete_result_can_be_persisted_before_paging(tmp_path: Path) -> None:
+def test_safe_complete_result_can_be_persisted_before_paging(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import skill_operations
+
     root = tmp_path / "project"
     root.mkdir()
+    signature_calls: list[tuple[str | None, str, Path, Path]] = []
+
+    def operation_signature(request: Request, *, home: Path, root: Path) -> str:
+        signature_calls.append((request.action, request.options["operation_id"], home, root))
+        return "d" * 64
+
+    monkeypatch.setattr(skill_operations, "snapshot_signature", operation_signature)
     req = Request(
         "operation.result",
         str(root),
@@ -131,6 +142,7 @@ def test_safe_complete_result_can_be_persisted_before_paging(tmp_path: Path) -> 
     final = runtime.execute(follow, cache_home=tmp_path / "responses", identity="fixed-helper")
     assert not final.complete and final.next_cursor
     assert [item["index"] for item in final.data["items"]] == [2, 3]
+    assert signature_calls == [(req.action, "0" * 32, tmp_path, root)] * 2
 
 
 class Manager:

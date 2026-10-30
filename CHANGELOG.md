@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK19 (spec §§16, 22; Skill plan §6.3): update the sanitized paging fixture
+  for owned-operation signatures and verify that changed claims or result bytes
+  invalidate existing result pages. Product behavior is unchanged.
+
 - SK19 (spec §§5, 16, 20, 22): connect preview-bound saved/explicit runs to owned
   operations with durable actual run IDs, replay protection and post-uninstall
   status/result/cancel. Preserve caller environment and actual child outcomes;
