@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal, TypeAlias
@@ -18,6 +19,7 @@ LOCAL_WRITE_ACTIONS = frozenset(
     {"lock", "rules.add", "rules.accept", "rules.ignore", "rules.remove", "rules.restore"}
 )
 OPERATION_ACTIONS = frozenset({"operation.status", "operation.result", "operation.cancel"})
+RUN_ACTIONS = frozenset({"run.start", "run.status", "run.result", "run.cancel", "run.logs"})
 
 
 class RequestError(ValueError):
@@ -208,7 +210,9 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         operation_id=Option("str", required=True),
     ),
     "run.start": _action(
-        "Execute the user-authorized experiment in its selected environment.", **RUN_OPTIONS
+        "Execute the user-authorized experiment in its selected environment.",
+        **RUN_OPTIONS,
+        operation_id=TEXT,
     ),
     "run.status": _action(
         "Inspect the state of an owned operation.", operation_id=Option("str", required=True)
@@ -217,6 +221,8 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         "Read available redacted capture logs of an owned operation.",
         operation_id=Option("str", required=True),
         stream=Option("str", ("stdout", "stderr")),
+        offset_bytes=Option("int", minimum=0),
+        limit_bytes=Option("int", minimum=1),
     ),
     "run.cancel": _action(
         "Cancel only the specifically authorized owned operation.",
@@ -513,7 +519,7 @@ def required_grants(request: Request) -> frozenset[str]:
         grants.add("network")
     if action == "audit" and "output" in options:
         grants.add("write")
-    if action == "operation.cancel":
+    if action in {"operation.cancel", "run.cancel"}:
         grants.add("write")
     return frozenset(grants)
 
@@ -584,7 +590,7 @@ def publication_summary(reply: Reply) -> dict[str, Any] | None:
         ):
             safe: dict[str, Any] = {"operation_id": token, "safe_to_repeat": False}
             for name, allowed in (
-                ("kind", {"lock", "discover", "run"}),
+                ("kind", {"lock", "discover", "run", "run.start"}),
                 (
                     "state",
                     {
@@ -599,6 +605,8 @@ def publication_summary(reply: Reply) -> dict[str, Any] | None:
                     },
                 ),
                 ("artifact_publication", {"none", "known", "unknown"}),
+                ("native_status", {"running", "completed", "failed", "interrupted"}),
+                ("cleanup_scope", {"unknown_descendants"}),
             ):
                 value = operation.get(name)
                 if isinstance(value, str) and value in allowed:
@@ -612,7 +620,19 @@ def publication_summary(reply: Reply) -> dict[str, Any] | None:
             ):
                 if name in operation and (type(operation[name]) is bool or operation[name] is None):
                     safe[name] = operation[name]
+            run_id = operation.get("native_run_id")
+            if isinstance(run_id, str) and re.fullmatch(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{6}", run_id):
+                safe["native_run_id"] = run_id
             resumable = {"scope": "incomplete_delivery", "operation": safe, "safe_to_repeat": False}
+    run_id = data.get("run_id")
+    if isinstance(run_id, str) and re.fullmatch(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{6}", run_id):
+        resumable.update(run_id=run_id, safe_to_repeat=False)
+        for name, allowed in (
+            ("record_scope", {"native_return", "native_readback", "unknown"}),
+            ("native_status", {"running", "completed", "failed", "interrupted"}),
+        ):
+            if isinstance(data.get(name), str) and data[name] in allowed:
+                resumable[name] = data[name]
     if data.get("artifact_publication_unknown") is True:
         return {
             **resumable,

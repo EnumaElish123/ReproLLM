@@ -419,11 +419,18 @@ def test_preview_uses_saved_command_and_false_capture_without_experiment(
     ):
         monkeypatch.setattr(target, forbidden)
     default = runtime.execute(request(project, "run.preview"), cache_home=tmp_path / "cache")
-    assert default.cli_exit_code == 0 and "Output capture: enabled" in default.data
+    assert (
+        default.cli_exit_code == 0
+        and "Output capture: enabled" in default.data["preflight"]["text"]
+    )
+    assert default.data["start_ready"] is True and len(default.data["plan_hash"]) == 64
     explicit = runtime.execute(
         request(project, "run.preview", capture_output=False), cache_home=tmp_path / "cache"
     )
-    assert explicit.cli_exit_code == 0 and "Output capture: disabled" in explicit.data
+    assert (
+        explicit.cli_exit_code == 0
+        and "Output capture: disabled" in explicit.data["preflight"]["text"]
+    )
     after = {
         p.relative_to(project).as_posix(): p.read_bytes() for p in project.rglob("*") if p.is_file()
     }

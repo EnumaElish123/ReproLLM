@@ -45,6 +45,10 @@ _HASH = re.compile(r"[0-9a-f]{64}\Z")
 _TERMINAL = frozenset({"COMPLETED", "FAILED", "CANCELLED"})
 _STATES = _TERMINAL | {"PREPARED", "STARTING", "RUNNING", "FINALIZING", "UNKNOWN"}
 _CONTROL = frozenset({"operation.status", "operation.result", "operation.cancel"})
+_RUN_CONTROL = frozenset({"run.status", "run.result", "run.cancel", "run.logs"})
+_KINDS = frozenset({"lock", "discover", "run.start"})
+_RUN_ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{6}\Z")
+_NATIVE_STATES = frozenset({"running", "completed", "failed", "interrupted"})
 
 
 class OperationError(ValueError):
@@ -295,6 +299,8 @@ def _intent(request: Request, root: Path) -> str:
     value["project"] = _project(root)
     value["options"].pop("operation_id", None)
     value["grants"].pop("install", None)
+    if request.action == "run.start":
+        value["grants"].pop("plan_hash", None)
     return _sha(_json(value))
 
 
@@ -312,7 +318,7 @@ def _record(store: Path, token: str, root: Path) -> tuple[Path, dict[str, Any]]:
     record = _read(path)
     if (
         record.get("operation_id") != token
-        or record.get("kind") not in {"lock", "discover"}
+        or record.get("kind") not in _KINDS
         or record.get("state") not in _STATES
     ):
         raise OperationError("operation_state_invalid")
@@ -337,12 +343,29 @@ def _record(store: Path, token: str, root: Path) -> tuple[Path, dict[str, Any]]:
         or not _HASH.fullmatch(record["approval_sha256"])
     ):
         raise OperationError("operation_state_invalid")
+    if record["kind"] == "run.start":
+        for name in ("run_plan_sha256", "native_run_identity"):
+            digest = record.get(name)
+            if digest is not None and (not isinstance(digest, str) or not _HASH.fullmatch(digest)):
+                raise OperationError("operation_state_invalid")
+        run_id = record.get("native_run_id")
+        if run_id is not None and (not isinstance(run_id, str) or not _RUN_ID.fullmatch(run_id)):
+            raise OperationError("operation_state_invalid")
+        if (run_id is None) != (record.get("native_run_identity") is None):
+            raise OperationError("operation_state_invalid")
+        if record.get("capture_output") is not None and type(record["capture_output"]) is not bool:
+            raise OperationError("operation_state_invalid")
+        native_status = record.get("native_status")
+        if native_status is not None and (
+            not isinstance(native_status, str) or native_status not in _NATIVE_STATES
+        ):
+            raise OperationError("operation_state_invalid")
     return path, record
 
 
 def _public(record: dict[str, Any]) -> dict[str, Any]:
     state = record["state"]
-    return {
+    value: dict[str, Any] = {
         "operation_id": record["operation_id"],
         "kind": record["kind"],
         "state": state,
@@ -355,6 +378,20 @@ def _public(record: dict[str, Any]) -> dict[str, Any]:
         "cancel_escalated": bool(record.get("cancel_escalated")),
         "safe_to_repeat": False,
     }
+    if record["kind"] == "run.start":
+        value["native_run_id"] = record.get("native_run_id")
+        value["cleanup_scope"] = "unknown_descendants"
+        native_status = record.get("native_status")
+        value["native_status"] = (
+            native_status
+            if isinstance(native_status, str) and native_status in _NATIVE_STATES
+            else None
+        )
+        if isinstance(record.get("run_cancel"), dict):
+            from skill_run_cancel import public_summary
+
+            value["run_cancel"] = public_summary(record["run_cancel"])
+    return value
 
 
 def _budget_summary(store: Path, record: dict[str, Any]) -> dict[str, Any]:
@@ -414,6 +451,8 @@ def _status(request: Request, record: dict[str, Any], *, store: Path | None = No
         data={"operation": _public(record)},
         diagnostics=diagnostics,
     )
+    if record["kind"] == "run.start" and type(record.get("child_exit_code")) is int:
+        reply.child_exit_code = record["child_exit_code"]
     if record["kind"] == "discover" and store is not None:
         try:
             reply.data["budget"] = _budget_summary(store, record)
@@ -511,16 +550,52 @@ def _result(request: Request, path: Path, record: dict[str, Any]) -> Reply:
     return reply
 
 
+def run_directory_identity(root: Path, run_id: str) -> str:
+    if not _RUN_ID.fullmatch(run_id):
+        raise OperationError("run_binding_invalid")
+    base = root / ".reprollm/runs"
+    target = base / run_id
+    if (root / ".reprollm").is_symlink() or base.is_symlink() or target.is_symlink():
+        raise OperationError("run_directory_changed")
+    info = target.stat()
+    if not stat.S_ISDIR(info.st_mode) or target.resolve(strict=True).parent != base:
+        raise OperationError("run_directory_changed")
+    return _sha(_json([info.st_dev, info.st_ino]))
+
+
+def run_binding(request: Request, *, home: Path, root: Path) -> dict[str, Any]:
+    """Read only the exact owned association, without installation or enumeration."""
+    store = _store(home, create=False)
+    path, record = _record(store, _token(request), root)
+    with _lock(path.parent / "lock"):
+        _, record = _record(store, _token(request), root)
+        if record["kind"] != "run.start":
+            raise OperationError("run_operation_required")
+        return record
+
+
+def snapshot_signature(request: Request, *, home: Path, root: Path) -> str:
+    store = _store(home, create=False)
+    path, record = _record(store, _token(request), root)
+    raw = _raw(path, MAX_STATE_BYTES)
+    result = None
+    if record.get("result_sha256"):
+        result = _sha(_raw(path.parent / "result.json", MAX_RESULT_BYTES))
+        if result != record["result_sha256"]:
+            raise OperationError("operation_result_changed")
+    return _sha(_json([_sha(raw), result]))
+
+
 def control(request: Request, *, home: Path, root: Path) -> Reply | None:
     """Query/replay existing ownership before any active-install preparation."""
     is_replay = (
-        request.action in {"lock", "discover"}
+        request.action in _KINDS
         and "operation_id" in request.options
         and not request.options.get("check", False)
     )
-    if request.action not in _CONTROL and not is_replay:
+    if request.action not in _CONTROL | _RUN_CONTROL and not is_replay:
         return None
-    if request.action == "operation.cancel" and not request.grants.write:
+    if request.action in {"operation.cancel", "run.cancel"} and not request.grants.write:
         return blocked(request.action, "write_authorization_required", needs_authorization=True)
     try:
         if not _platform():
@@ -530,18 +605,44 @@ def control(request: Request, *, home: Path, root: Path) -> Reply | None:
         path, record = _record(store, token, root)
         with _lock(path.parent / "lock"):
             path, record = _record(store, token, root)
+            if request.action in _RUN_CONTROL and record["kind"] != "run.start":
+                raise OperationError("run_operation_required")
+            if (
+                record["kind"] == "run.start"
+                and request.action in {"run.cancel", "operation.cancel"}
+                and not request.grants.run
+            ):
+                return blocked(
+                    request.action, "run_authorization_required", needs_authorization=True
+                )
             if is_replay and record["intent_identity"] != _intent(request, root):
                 raise OperationError("operation_intent_changed")
+            if (
+                is_replay
+                and record["kind"] == "run.start"
+                and record.get("run_plan_sha256") not in {None, request.grants.plan_hash}
+            ):
+                raise OperationError("run_plan_changed")
             if is_replay and record["state"] == "PREPARED":
                 return None
             _refresh(path, record)
-            if request.action == "operation.cancel":
+            if request.action == "run.logs":
+                return None
+            if request.action in {"operation.cancel", "run.cancel"}:
                 if record["state"] == "PREPARED":
                     record.update(state="CANCELLED", execution_started=False, ended_at=_utc())
                 elif record["state"] in {"STARTING", "RUNNING", "FINALIZING"}:
                     record["cancel_requested"] = True
                     record.setdefault("cancel_requested_at", _utc())
-                    if record["state"] != "FINALIZING" and _acknowledged(path, record):
+                    if record["kind"] == "run.start":
+                        from skill_run_cancel import cancel_run
+
+                        cancel_run(
+                            record,
+                            acknowledged=_acknowledged(path, record),
+                            save=lambda: _save(path, record),
+                        )
+                    elif record["state"] != "FINALIZING" and _acknowledged(path, record):
                         escalate = (
                             record.get("cancel_delivered")
                             and time.time() - _epoch(record["cancel_requested_at"])
@@ -556,7 +657,7 @@ def control(request: Request, *, home: Path, root: Path) -> Reply | None:
                 _save(path, record)
             return (
                 _result(request, path, record)
-                if request.action == "operation.result"
+                if request.action in {"operation.result", "run.result"}
                 else _status(request, record, store=store)
             )
     except (OSError, ValueError, TypeError, KeyError, RecursionError, FrameError) as error:
@@ -641,7 +742,7 @@ def _cleanup(store: Path) -> None:
             record = _read(folder / "status.json")
             if (
                 record.get("operation_id") != folder.name
-                or record.get("kind") not in {"lock", "discover"}
+                or record.get("kind") not in _KINDS
                 or record.get("state") not in _STATES
             ):
                 raise OperationError("operation_ownership_required")
@@ -718,7 +819,7 @@ def start(
         record: dict[str, Any]
         if not _platform():
             raise OperationError("operation_platform_unavailable")
-        if request.action != "discover" and (
+        if request.action not in {"discover", "run.start"} and (
             request.action != "lock"
             or request.options.get("check", False)
             or (
@@ -729,10 +830,16 @@ def start(
             raise OperationError("operation_kind_unavailable")
         if not request.options.get("preview", False) and not request.grants.write:
             return blocked(request.action, "write_authorization_required", needs_authorization=True)
-        if not request.options.get("offline", False) and not request.grants.network:
+        if (
+            request.action != "run.start"
+            and not request.options.get("offline", False)
+            and not request.grants.network
+        ):
             return blocked(
                 request.action, "network_authorization_required", needs_authorization=True
             )
+        if request.action == "run.start" and not request.grants.run:
+            return blocked(request.action, "run_authorization_required", needs_authorization=True)
         if request.action == "discover" and request.grants.paid_discover is None:
             return blocked(
                 request.action, "discover_budget_approval_required", needs_authorization=True
@@ -788,6 +895,13 @@ def start(
                     record.update(
                         approval_id=approval["approval_id"], approval_sha256=_sha(_json(approval))
                     )
+                if request.action == "run.start":
+                    record.update(
+                        run_plan_sha256=request.grants.plan_hash,
+                        native_run_id=None,
+                        native_run_identity=None,
+                        capture_output=request.options.get("capture_output"),
+                    )
                 _save(folder / "status.json", record)
                 return _status(request, record, store=store)
         path, record = _record(store, token, root)
@@ -800,6 +914,13 @@ def start(
                 or record["policy_identity"] != identity
             ):
                 raise OperationError("operation_intent_changed")
+            if request.action == "run.start":
+                if request.grants.plan_hash is None:
+                    raise OperationError("run_plan_required")
+                if record.get("run_plan_sha256") not in {None, request.grants.plan_hash}:
+                    raise OperationError("run_plan_changed")
+                record["run_plan_sha256"] = request.grants.plan_hash
+                _save(path, record)
             bundle = store / "bundles" / record["bundle_id"]
             _verify_bundle(bundle, record["bundle_id"])
             with lease_factory(manager, environment_name) as lease:
@@ -925,6 +1046,22 @@ class WorkerContext:
             if record["cancel_requested"]:
                 raise OperationCancelled
 
+    def bind_run(self, run_id: str) -> None:
+        path, record = self._owned()
+        with _lock(path.parent / "lock"):
+            _, record = self._owned()
+            if record["kind"] != "run.start":
+                raise OperationError("run_operation_required")
+            if record.get("native_run_id") not in {None, run_id}:
+                raise OperationError("run_binding_changed")
+            observed = run_directory_identity(self.root, run_id)
+            if record.get("native_run_id") not in {None, run_id} or record.get(
+                "native_run_identity"
+            ) not in {None, observed}:
+                raise OperationError("run_binding_changed")
+            record.update(native_run_id=run_id, native_run_identity=observed, updated_at=_utc())
+            _save(path, record)
+
     @contextlib.contextmanager
     def publication(self) -> Iterator[None]:
         path, record = self._owned()
@@ -980,7 +1117,7 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             raise OperationError("operation_request_invalid")
         request = parse_request(transient["request"])
         root = Path(transient["root"]).resolve(strict=True)
-        if _token(request) != operation_id or request.action not in {"lock", "discover"}:
+        if _token(request) != operation_id or request.action not in _KINDS:
             raise OperationError("operation_request_invalid")
         store = _store(home, create=False)
         context = WorkerContext(
@@ -1012,6 +1149,10 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             lease = context.claim
 
         def cancel(number: int, frame: Any) -> None:
+            if request.action == "run.start":
+                # Native execute owns forwarding while its child exists. Outside
+                # that window only durable cooperative checks may stop launch.
+                return
             if context is not None and not context.publication_started:
                 raise OperationCancelled
 
@@ -1027,6 +1168,23 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
         if not isinstance(reply, Reply):
             raise OperationError("operation_result_invalid")
         native_invocation = reply.invocation
+        if request.action == "run.start":
+            _, record = context._owned()
+        native_facts: dict[str, Any] = {}
+        if request.action == "run.start" and isinstance(reply.data, dict):
+            source_record = reply.data.get("record", {})
+            status = source_record.get("status") if isinstance(source_record, dict) else None
+            status = status or reply.data.get("native_status")
+            if isinstance(status, str) and status in {
+                "running",
+                "completed",
+                "failed",
+                "interrupted",
+            }:
+                native_facts["native_status"] = status
+            scope = reply.data.get("record_scope")
+            if isinstance(scope, str) and scope in {"native_return", "native_readback", "unknown"}:
+                native_facts["record_scope"] = scope
         try:
             _safe_reply(reply.as_dict(), expected_action=request.action)
             raw = _json(reply.as_dict())
@@ -1051,6 +1209,9 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
                 },
                 diagnostics=[{"code": "operation_result_delivery_failed"}],
             )
+            if request.action == "run.start" and record.get("native_run_id"):
+                reply.data["run_id"] = record["native_run_id"]
+                reply.data.update(native_facts)
             raw = _json(reply.as_dict())
         path, record = context._owned()
         with _lock(path.parent / "lock"):
@@ -1063,6 +1224,20 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
                 updated_at=_utc(),
                 artifact_publication="known" if context.publication_started else "none",
             )
+            if request.action == "run.start":
+                facts = reply.data if isinstance(reply.data, dict) else {}
+                native_status = native_facts.get("native_status")
+                known = facts.get("record_scope") in {
+                    "native_return",
+                    "native_readback",
+                } and native_status in {"completed", "failed", "interrupted"}
+                record.update(
+                    native_status=native_status,
+                    child_exit_code=reply.child_exit_code,
+                    artifact_publication="known" if record.get("native_run_id") else "none",
+                )
+                if not known:
+                    record.update(state="UNKNOWN", artifact_publication="unknown")
             _save(path, record)
     except OperationCancelled:
         if context is not None:
@@ -1092,7 +1267,11 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             with contextlib.suppress(Exception):
                 from skill_runtime import release_operation_lease
 
-                if record is not None and record["state"] in _TERMINAL:
+                if (
+                    record is not None
+                    and record["state"] in _TERMINAL
+                    and not record.get("run_cancel", {}).get("lease_must_retain", False)
+                ):
                     released = release_operation_lease(home, lease)
                     path, current = context._owned()
                     with _lock(path.parent / "lock"):

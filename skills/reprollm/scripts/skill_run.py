@@ -258,6 +258,11 @@ def _preview_notes(error: Exception, root: Path, code: str) -> list[dict[str, An
     return [{"code": code, "text": text}, *notes]
 
 
+def plan_signature(request: Request, *, root: Path, identity: str) -> str:
+    """Fingerprint the finite launch selection without advisory experiment reads."""
+    return _selection(request, root.resolve(strict=True), identity).plan_hash
+
+
 def preview_run(request: Request, *, root: Path, identity: str) -> Reply:
     """Return a finite launch-plan hash independently of preflight availability."""
     from reprollm.core.errors import UserError

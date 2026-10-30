@@ -32,6 +32,7 @@ from skill_request import (  # noqa: E402
     MAX_REPLY_BYTES,
     MAX_REQUEST_BYTES,
     OPERATION_ACTIONS,
+    RUN_ACTIONS,
     WRITE_ACTIONS,
     Reply,
     Request,
@@ -65,6 +66,7 @@ AVAILABLE_ACTIONS = (
     | WRITE_ACTIONS
     | LOCAL_ACTIONS
     | OPERATION_ACTIONS
+    | RUN_ACTIONS
     | {"discover"}
 )
 REQUIRED_CAPABILITIES = frozenset({"contextual_word_scan"})
@@ -887,7 +889,7 @@ def _save(
         "identity": identity,
         "request": _request_identity(request),
         "project_sha256": _sha(str(root).encode("utf-8")),
-        "inputs": input_signature(root, external, home),
+        "inputs": _response_signature(request, root, external, home, identity, reply=reply),
         "reply": reply.as_dict(),
     }
     raw = _json(document)
@@ -922,7 +924,8 @@ def _load(
         or document.get("identity") != identity
         or document.get("request") != _request_identity(request)
         or document.get("project_sha256") != _sha(str(root).encode("utf-8"))
-        or document.get("inputs") != input_signature(root, external, home)
+        or document.get("inputs")
+        != _response_signature(request, root, external, home, identity, saved=document)
         or not isinstance(document.get("created_at"), (int, float))
         or not 0 <= time.time() - document["created_at"] <= SNAPSHOT_TTL_SECONDS
     ):
@@ -994,7 +997,7 @@ def _page(
         offset = 0
     stop = min(len(text), offset + 64 * 1024)
     while stop > offset:
-        fragment = {
+        fragment: dict[str, Any] = {
             "scope": "partial_document",
             "encoding": "json-text",
             "text": text[offset:stop],
@@ -1003,6 +1006,9 @@ def _page(
             "source_sha256": _sha(text.encode("utf-8")),
             "source_bytes": len(text.encode("utf-8")),
         }
+        facts = publication_summary(full)
+        if facts is not None:
+            fragment["known_facts"] = facts
         candidate = dataclasses.replace(
             full,
             data=fragment,
@@ -1070,8 +1076,34 @@ def finish_reply(
     return _page(snapshot, saved, request.response.page_size)
 
 
+def _response_signature(
+    request: Request,
+    root: Path,
+    external: list[Path],
+    home: Path,
+    identity: str,
+    *,
+    reply: Reply | None = None,
+    saved: dict[str, Any] | None = None,
+) -> str:
+    if request.action == "run.preview":
+        from skill_run import plan_signature
+
+        return plan_signature(request, root=root, identity=identity)
+    if request.action == "run.logs":
+        from skill_run_logs import snapshot_signature as log_signature
+
+        data = reply.data if reply is not None else saved["reply"]["data"] if saved else None
+        return log_signature(request, home=home.parent, root=root, data=data)
+    if request.action in RUN_ACTIONS | OPERATION_ACTIONS:
+        from skill_operations import snapshot_signature as operation_signature
+
+        return operation_signature(request, home=home.parent, root=root)
+    return input_signature(root, external, home)
+
+
 def long_operation(request: Request) -> bool:
-    return request.action == "discover" or (
+    return request.action in {"discover", "run.start"} or (
         request.action == "lock"
         and not request.options.get("check", False)
         and (
@@ -1100,6 +1132,12 @@ def operation_worker_entry(request: Request, context: Any) -> Reply:
     if any(not getattr(request.grants, name) for name in required_grants(request)):
         return blocked(request.action, "authorization_required", needs_authorization=True)
     context.check_cancel()
+    if request.action == "run.start":
+        from skill_run import execute_run
+
+        return sanitize_reply(
+            execute_run(request, root=root, identity=context.identity, lifecycle=context), root
+        )
     if request.action == "discover":
         from skill_discover import execute as execute_discover
 
@@ -1126,7 +1164,11 @@ def execute(
     try:
         if (
             request.action
-            not in READONLY_ACTIONS | WRITE_ACTIONS | LOCAL_ACTIONS | OPERATION_ACTIONS
+            not in READONLY_ACTIONS
+            | WRITE_ACTIONS
+            | LOCAL_ACTIONS
+            | OPERATION_ACTIONS
+            | RUN_ACTIONS
         ):
             return blocked(request.action, "action_unavailable")
         if (
@@ -1148,6 +1190,19 @@ def execute(
             return _page(snapshot, saved, request.response.page_size, kind=kind, offset=offset)
         if request.action in OPERATION_ACTIONS or long_operation(request):
             return blocked(request.action, "long_operation_requires_controller")
+        if request.action == "run.logs":
+            from skill_run_logs import read_logs
+
+            reply = read_logs(request, home=cache_home.parent, root=root)
+            return finish_reply(
+                reply,
+                request,
+                root=root,
+                external=[],
+                cache_home=cache_home,
+                identity=identity,
+                sanitized=True,
+            )
         if request.action in LOCAL_ACTIONS:
             from skill_local import execute_lock, execute_rules
 
@@ -1190,7 +1245,12 @@ def execute(
                     identity=identity,
                 )
             if request.action == "run.preview":
-                result, as_json = _preview(request, root), False
+                from skill_run import preview_run
+
+                reply = preview_run(request, root=root, identity=identity)
+                return finish_reply(
+                    reply, request, root=root, external=[], cache_home=cache_home, identity=identity
+                )
             else:
                 argv, as_json = command_args(request, root)
                 if request.action == "audit":
@@ -1415,7 +1475,7 @@ class RuntimeExecutor:
             root = project_root(request)
             home = self.home or default_home()
             catalog_path = Path(__file__).resolve().parents[1] / "assets/install-catalog.json"
-            if request.action in OPERATION_ACTIONS or (
+            if request.action in OPERATION_ACTIONS | (RUN_ACTIONS - {"run.start"}) or (
                 long_operation(request) and request.options.get("operation_id")
             ):
                 from skill_operations import control
@@ -1511,7 +1571,9 @@ class RuntimeExecutor:
                     input=_json(dataclasses.asdict(request)),
                     capture_output=True,
                     timeout=120,
-                    env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+                    env=None
+                    if request.action == "run.preview"
+                    else {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
                     check=False,
                 )
             if len(result.stdout) > MAX_REPLY_BYTES:

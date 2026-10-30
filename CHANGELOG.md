@@ -9,6 +9,17 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK19 (spec §§5, 16, 20, 22): connect preview-bound saved/explicit runs to owned
+  operations with durable actual run IDs, replay protection and post-uninstall
+  status/result/cancel. Preserve caller environment and actual child outcomes;
+  isolate raw streams and expose bounded, complete-line, re-sanitized log snapshots.
+  Reconstruct multiline privacy from stream start and bind the full context prefix;
+  withhold unverified/over-budget context and validate finite native status at read
+  and public projection boundaries.
+  Cancel through the native signal forwarder, then only witnessed experiment
+  instances after grace; keep recorder finalization and unknown descendant scope.
+  Product run schemas and original lock/discover cancellation contracts are unchanged.
+
 - SK18 (spec §§5, 16, 22): add a native run adapter with finite, source-bound
   launch previews, exact saved/explicit argv and cwd selection, durable run-ID
   binding before recorder entry, and unchanged native capture/record semantics.

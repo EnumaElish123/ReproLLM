@@ -77,9 +77,8 @@ the same request and snapshot; changed/expired inputs require a new query.
   model and the current budget. Discovery uses the original production client;
   returned candidates need separate specific acceptance before rules are written.
 - **Run:** use only the user-supplied/saved command and selected experiment
-  environment. Isolate raw terminal output, read redacted capture only, report
-  progress and child result, and cancel only an owned operation. A lost connection
-  or unknown completion does not authorize a repeated experiment.
+  environment. Read [run lifecycle and safe logs](run.md) for preview-bound start,
+  status/result after reconnect, complete-line logs and owned cancellation.
 
 An unavailable adapter action returns `action_unavailable`; explain that concrete
 boundary. Do not report an unexecuted workflow as complete or substitute invented
