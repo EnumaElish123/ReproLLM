@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK17 (spec §§16, 20.2–20.3, 22; Skill plan §§5, 6.3): preserve exact native
+  discovery messages through worker transport and cached pages using a verified
+  source-text role. Keep portable source lexemes intact while applying ordinary
+  privacy to reports and diagnostics; block unreviewable content before credentials,
+  budget accounting or submission instead of displaying changed bytes under the
+  original approval hash. Preserve the native collector, secret drops and client.
+
 - SK19 (spec §§16, 22; Skill plan §6.3): update the sanitized paging fixture
   for owned-operation signatures and verify that changed claims or result bytes
   invalidate existing result pages. Product behavior is unchanged.

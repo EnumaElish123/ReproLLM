@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
+import ast
 import contextlib
 import getpass
+import hashlib
+import io
+import re
 import socket
+import textwrap
+import tokenize
+import unicodedata
 import warnings
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from importlib.resources import files
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 import httpx
@@ -80,6 +87,269 @@ class Collected:
     report: str
     messages: list[dict[str, str]]
     source_sha256: str
+    source_proofs: tuple[_SourceProof, ...] = ()
+
+
+@dataclass(frozen=True)
+class _SourceProof:
+    start: int
+    lexeme: str
+    template_prefix: bool = False
+
+
+def _controls(value: str) -> bool:
+    return any(
+        char not in {"\n", "\t"}
+        and (unicodedata.category(char).startswith("C") or char in {"\u2028", "\u2029"})
+        for char in value
+    )
+
+
+def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
+    """Locate non-path Python lexemes in native-rendered snippets without evaluation."""
+    from reprollm.run.privacy import _ABSOLUTE_PATH, RunPrivacy
+
+    rendered = payload.render()
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    result = []
+    for index, entry in enumerate(payload.files):
+        if re.search(r"\.py#L[0-9]+$", entry.path) is None:
+            continue
+        # Derive offsets from the native renderer, not a second message renderer.
+        prefix = replace(payload, files=payload.files[:index]).render()
+        single = replace(payload, tree=[], files=[entry]).render()
+        base = len(prefix) + len(single) - len(entry.text) - 1
+        if rendered[base : base + len(entry.text)] != entry.text:
+            raise BudgetError("discover_review_content_unavailable")
+        lines = entry.text.splitlines(keepends=True)
+        source = textwrap.dedent(entry.text)
+        dedented = source.splitlines(keepends=True)
+        try:
+            # Native collection already owns warning facts. Rechecking the same
+            # snippet must neither echo source text nor add duplicate warnings.
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                tree = ast.parse(source)
+            for token in tokenize.generate_tokens(io.StringIO(entry.text).readline):
+                if token.type != tokenize.COMMENT:
+                    continue
+                start = sum(map(len, lines[: token.start[0] - 1])) + token.start[1]
+                if entry.text[start : start + len(token.string)] != token.string:
+                    raise BudgetError("discover_review_content_unavailable")
+                for separator in re.finditer(
+                    r"`[A-Za-z_]\w*`(?P<slash>/`[A-Za-z_]\w*`)", token.string
+                ):
+                    offset = base + start + separator.start("slash")
+                    match = _ABSOLUTE_PATH.match(rendered, offset)
+                    if match and match[0] in {separator["slash"], separator["slash"] + "."}:
+                        result.append(_SourceProof(offset, match[0]))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.JoinedStr) or len(node.values) < 2:
+                    continue
+                temporary = (
+                    isinstance(node.values[0], ast.Constant)
+                    and node.values[0].value == "/tmp/"
+                    and isinstance(node.values[1], ast.FormattedValue)
+                )
+                suffix = (
+                    node.values[1].value
+                    if len(node.values) == 2
+                    and isinstance(node.values[0], ast.FormattedValue)
+                    and isinstance(node.values[1], ast.Constant)
+                    and isinstance(node.values[1].value, str)
+                    and re.fullmatch(r"/[A-Za-z_][A-Za-z0-9_.-]*", node.values[1].value)
+                    else None
+                )
+                if not temporary and suffix is None:
+                    continue
+                segment = ast.get_source_segment(source, node)
+                if segment is None:
+                    continue
+                opening = re.match(r"""(?i)(?:f|fr|rf)(?P<quote>"{3}|'{3}|"|')""", segment)
+                if opening is None:
+                    continue
+                if temporary and not segment[opening.end() :].startswith("/tmp/{"):
+                    continue
+                if suffix is not None and not segment.endswith(suffix + opening["quote"]):
+                    continue
+                for formatted in node.values:
+                    if isinstance(formatted, ast.FormattedValue):
+                        for child in ast.walk(formatted):
+                            if (
+                                isinstance(child, ast.Constant)
+                                and isinstance(child.value, str)
+                                and (
+                                    _controls(child.value)
+                                    or privacy.text(child.value)[0] != child.value
+                                )
+                            ):
+                                raise BudgetError("discover_review_content_unsafe")
+                line = dedented[node.lineno - 1]
+                original = lines[node.lineno - 1]
+                if not original.endswith(line):
+                    raise BudgetError("discover_review_content_unavailable")
+                # AST columns count UTF-8 bytes; native rendering counts characters.
+                column = len(line.encode("utf-8")[: node.col_offset].decode("utf-8"))
+                start = sum(map(len, lines[: node.lineno - 1])) + len(original) - len(line) + column
+                if entry.text[start : start + len(segment)] != segment:
+                    continue
+                if temporary:
+                    result.append(
+                        _SourceProof(base + start + opening.end(), "/tmp/{", template_prefix=True)
+                    )
+                elif suffix is not None:
+                    offset = base + start + len(segment) - len(opening["quote"]) - len(suffix)
+                    result.append(_SourceProof(offset, suffix))
+        except (SyntaxError, tokenize.TokenError, IndentationError):
+            continue
+        except BudgetError:
+            raise
+        except (OSError, ValueError, RuntimeError, UnicodeError):
+            raise BudgetError("discover_review_content_unavailable") from None
+    return tuple(result)
+
+
+def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) -> None:
+    """Require exact source bytes to be safe for both review and submission.
+
+    Native collection already applies the secret/drop policy. Its portable
+    source literals need a different role from machine metadata, while unknown
+    paths, identities and all other native privacy checks still fail closed.
+    """
+    from reprollm.run.privacy import _ABSOLUTE_PATH, _LOCAL_URI, RunPrivacy
+
+    if _controls(value):
+        raise BudgetError("discover_review_content_controls")
+    privacy = RunPrivacy(root, hostname=socket.gethostname(), username=getpass.getuser())
+    if (
+        _LOCAL_URI.search(value)
+        or any(pattern.search(value) for pattern, _ in privacy.identities)
+        or re.search(r"(?<![\w])~[^/\\\s]+[/\\]", value)
+    ):
+        raise BudgetError("discover_review_content_unsafe")
+    try:
+        machine_roots = (root.resolve().as_posix(), Path.home().resolve().as_posix())
+        digest = hashlib.sha256(value.encode("utf-8")).hexdigest()
+        index = 0
+        by_start = {proof.start: proof for proof in proofs}
+        if any(
+            value[proof.start : proof.start + len(proof.lexeme)] != proof.lexeme for proof in proofs
+        ):
+            raise BudgetError("discover_review_content_unavailable")
+
+        def portable(match: re.Match[str]) -> str:
+            nonlocal index
+            path = match[0]
+            prefix = value[max(0, match.start() - 2) : match.start()]
+            proof = by_start.get(match.start())
+            proved = proof is not None and (
+                path.startswith(proof.lexeme) if proof.template_prefix else path == proof.lexeme
+            )
+            home_relative = prefix.endswith("~")
+            if (
+                not path.startswith("/")
+                or path.startswith("//")
+                or "\\" in path
+                or any(part in {".", ".."} for part in path.split("/"))
+                or any(path == base or path.startswith(base + "/") for base in machine_roots)
+            ):
+                return path
+            parts = PurePosixPath(path).parts
+            if (
+                not (home_relative or proved)
+                and len(parts) > 1
+                and parts[1].casefold()
+                in {
+                    "home",
+                    "users",
+                    "root",
+                    "private",
+                    "tmp",
+                    "var",
+                    "run",
+                    "mnt",
+                    "media",
+                    "volumes",
+                    "srv",
+                    "data",
+                    "datasets",
+                    "workspace",
+                    "workspaces",
+                    "proc",
+                    "sys",
+                    "dev",
+                }
+            ):
+                return path
+            allowed = (
+                home_relative or proved or (len(parts) > 2 and parts[1] in {"usr", "opt", "api"})
+            )
+            allowed = allowed or bool(re.match(r"/v[0-9]+/", path))
+            if not allowed and prefix.endswith("](") and "%" not in path:
+                target = root / path.split("#", 1)[0].split("?", 1)[0].lstrip("/")
+                resolved = target.resolve()
+                allowed = resolved.is_relative_to(root.resolve()) and resolved.exists()
+            if not allowed:
+                return path
+            token = "Z" + digest + "Z" + str(index) + "Z"
+            index += 1
+            while token in value:
+                token += "Z"
+            # Protect only the proven /tmp/{ lexeme, never an entire expression.
+            return (
+                token + "{" + path[len(proof.lexeme) :]
+                if proved and proof and proof.template_prefix
+                else token
+            )
+
+        protected = _ABSOLUTE_PATH.sub(portable, value)
+        if privacy.text(protected)[0] != protected:
+            raise BudgetError("discover_review_content_unsafe")
+    except BudgetError:
+        raise
+    except (OSError, ValueError, RuntimeError, RecursionError):
+        raise BudgetError("discover_review_content_unavailable") from None
+
+
+class _NativeSourceText(str):
+    """Nominal worker-local proof; a JSON object/string cannot acquire this role."""
+
+    def __new__(
+        cls, value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()
+    ) -> _NativeSourceText:
+        _source_text(value, root, proofs)
+        return super().__new__(cls, value)
+
+
+def finalize_preview(reply: Reply, root: Path) -> Reply:
+    """Project every other field normally, then retain verified native source bytes."""
+    from skill_runtime import sanitize_reply
+
+    if reply.action != "discover.preview":
+        return blocked(reply.action, "discover_review_transport_invalid")
+    if not isinstance(reply.data, dict) or "messages" not in reply.data:
+        return sanitize_reply(reply, root)
+    messages = reply.data["messages"]
+    if (
+        not isinstance(messages, list)
+        or len(messages) != 2
+        or any(
+            not isinstance(message, dict)
+            or set(message) != {"role", "content"}
+            or message["role"] != role
+            or not isinstance(message["content"], _NativeSourceText)
+            for message, role in zip(messages, ("system", "user"), strict=True)
+        )
+    ):
+        return blocked(reply.action, "discover_review_transport_invalid")
+    safe = sanitize_reply(
+        replace(reply, data={key: value for key, value in reply.data.items() if key != "messages"}),
+        root,
+    )
+    safe.data["messages"] = [
+        {"role": message["role"], "content": str(message["content"])} for message in messages
+    ]
+    return safe
 
 
 def _collect(
@@ -127,6 +397,9 @@ def _collect(
                 + (", ".join(declared) or "(none)"),
             },
         ]
+    proofs = _source_proofs(payload, root)
+    for message in messages:
+        _source_text(message["content"], root, proofs if message["role"] == "user" else ())
     if input_signature(root, [], state_home) != before:
         raise BudgetError("discover_inputs_changed_during_collection")
     return Collected(
@@ -141,6 +414,7 @@ def _collect(
                 "messages_sha256": identity(messages),
             }
         ),
+        proofs,
     )
 
 
@@ -186,10 +460,22 @@ def _preview(
             },
         }
         if request.options.get("show_content"):
-            data["messages"] = collected.messages
+            data["messages"] = [
+                {
+                    "role": message["role"],
+                    "content": _NativeSourceText(
+                        message["content"],
+                        root,
+                        collected.source_proofs if message["role"] == "user" else (),
+                    ),
+                }
+                for message in collected.messages
+            ]
         return Reply(request.action, cli_exit_code=0, data=data)
     except UserError as error:
         return writes._native_error(request, str(error))
+    except BudgetError as error:
+        return blocked(request.action, str(error))
     except (OSError, ValueError):
         return blocked(request.action, "discover_preview_inputs_unavailable")
 
