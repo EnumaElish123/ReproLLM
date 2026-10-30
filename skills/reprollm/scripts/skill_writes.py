@@ -657,6 +657,7 @@ def _export_input_target(root: Path, target: Path, selected: Any = None) -> bool
                 if token.startswith("--") and "=" in token
                 else [token]
             )
+            if candidate
         )
 
     if any(associated(item.path) for item in declared_files(manifest, project_rules)):

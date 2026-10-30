@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK14 (spec §§5.2.1, 19; Skill acceptance A16, A21): do not interpret empty
+  command arguments or empty option values as the working directory during
+  export input protection. Preserve saved/historical argv and protection for
+  explicitly named input files and directories.
+
 - SK19 (spec §§16, 22; Skill plan §6.3): update the sanitized paging fixture
   for owned-operation signatures and verify that changed claims or result bytes
   invalidate existing result pages. Product behavior is unchanged.

@@ -6,6 +6,8 @@ import dataclasses
 import hashlib
 import html
 import json
+import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -697,6 +699,155 @@ def test_historical_export_keeps_recorded_snapshot_after_current_manifest_change
     assert reply.invocation == "handled_result", reply.diagnostics
     assert reply.data["document"].encode("utf-8") == reference.read_bytes()
     assert "2048" in reply.data["document"]
+
+
+def _with_empty_export_argument(root: Path, origin: str, argument: str) -> Path:
+    import yaml
+
+    manifest = root / "reprollm.yaml"
+    if origin in {"current", "both"}:
+        document = yaml.safe_load(manifest.read_text(encoding="utf-8"))
+        document["execution"] = {
+            "command": "python eval.py " + ('--tag ""' if argument == "quoted" else "--tag=")
+        }
+        manifest.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    record = next((root / ".reprollm/runs").glob("*/run.json"))
+    if origin in {"historical", "both"}:
+        document = json.loads(record.read_bytes())
+        document["command"]["argv"].extend(["--tag", ""] if argument == "quoted" else ["--tag="])
+        record.write_text(json.dumps(document), encoding="utf-8")
+    return record
+
+
+@pytest.mark.parametrize("origin", ["current", "historical", "both"])
+@pytest.mark.parametrize("argument", ["quoted", "inline"])
+def test_export_empty_argument_preserves_inputs_and_matches_native(
+    export_root: Path, tmp_path: Path, origin: str, argument: str
+) -> None:
+    record = _with_empty_export_argument(export_root, origin, argument)
+    before = inventory(export_root)
+    reference = tmp_path / "native-empty.md"
+    native = runtime.invoke_cli(
+        ["export", str(export_root), "--output", str(reference)], export_root
+    )
+    assert native.exit_code == 0, native.stderr
+    reply = call(export_root, tmp_path / "helper", "export", output="report.md")
+    assert reply.invocation == "handled_result", reply.diagnostics
+    assert reply.complete and reply.cli_exit_code == 0
+    assert reply.data["artifacts_written"] == ["report.md"]
+    assert (export_root / "report.md").read_bytes() == reference.read_bytes()
+    assert reply.data["document"].encode("utf-8") == reference.read_bytes()
+    assert reply.data["selected_run_id"] == record.parent.name
+    after = inventory(export_root)
+    assert {key: value for key, value in after.items() if key != "report.md"} == before
+
+
+@pytest.mark.parametrize("input_path", [".", "input-dir", "input.json"])
+def test_export_empty_argument_keeps_named_input_protection(
+    export_root: Path, tmp_path: Path, input_path: str
+) -> None:
+    import yaml
+
+    if input_path == "input-dir":
+        (export_root / input_path).mkdir()
+    if input_path == "input.json":
+        (export_root / input_path).write_text('{"public": true}\n', encoding="utf-8")
+    target = {".": "report.md", "input-dir": "input-dir/report.md", "input.json": "input.json"}[
+        input_path
+    ]
+    manifest = export_root / "reprollm.yaml"
+    document = yaml.safe_load(manifest.read_text(encoding="utf-8"))
+    document["execution"] = {"command": 'python eval.py --tag "" --input ' + input_path}
+    manifest.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    before = inventory(export_root)
+    reply = call(
+        export_root,
+        tmp_path / "helper",
+        "export",
+        output=target,
+        grants={"expected_hashes": {target: before.get(target)}},
+    )
+    assert reply.invocation == "blocked" and not reply.complete
+    assert reply.diagnostics == [{"code": "report_target_is_research_input"}]
+    assert inventory(export_root) == before
+
+
+def test_real_export_worker_empty_argument_keeps_complete_native_document(
+    export_root: Path, tmp_path: Path
+) -> None:
+    # This observed workflow initializes and exports before the project has Git.
+    worker_root = tmp_path / "worker-project"
+    shutil.copytree(export_root, worker_root, ignore=shutil.ignore_patterns(".git"))
+    export_root = worker_root
+    record = _with_empty_export_argument(export_root, "both", "quoted")
+    environment = {
+        "PATH": os.defpath,
+        "LANG": "C.UTF-8",
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "HOME": str(tmp_path / "synthetic-home"),
+        "USERPROFILE": str(tmp_path / "synthetic-home"),
+        "USER": "public-user",
+        "USERNAME": "public-user",
+    }
+    before = inventory(export_root)
+    reference = tmp_path / "native-worker.md"
+    native = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            "-c",
+            "from reprollm.cli.main import cli; cli()",
+            "export",
+            str(export_root),
+            "--output",
+            str(reference),
+        ],
+        cwd=export_root,
+        capture_output=True,
+        timeout=30,
+        env=environment,
+        check=False,
+    )
+    assert native.returncode == 0 and not native.stderr
+    req = Request(
+        "export",
+        str(export_root),
+        {"output": "report.md"},
+        Grants(install=False, write=True, expected_hashes={"report.md": None}),
+        ResponseOptions(page_size=1000),
+    )
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            str(ROOT / "skills/reprollm/scripts/skill_runtime.py"),
+            "--worker",
+            "--cache-home",
+            str(tmp_path / "cache"),
+            "--identity",
+            "b" * 64,
+        ],
+        input=json.dumps(dataclasses.asdict(req)).encode(),
+        cwd=export_root,
+        capture_output=True,
+        timeout=30,
+        env=environment,
+        check=False,
+    )
+    assert result.returncode == 0 and not result.stderr
+    from skill_runtime_frame import validate_frame
+
+    reply = validate_frame(result.stdout, expected_action="export")
+    assert reply.invocation == "handled_result", reply.diagnostics
+    assert reply.complete and reply.cli_exit_code == 0 and reply.next_cursor is None
+    assert reply.data["phase"] == "applied" and reply.data["artifacts_written"] == ["report.md"]
+    assert reply.data["selected_run_id"] == record.parent.name
+    assert reply.data["document"].encode("utf-8") == reference.read_bytes()
+    assert (export_root / "report.md").read_bytes() == reference.read_bytes()
+    after = inventory(export_root)
+    assert {key: value for key, value in after.items() if key != "report.md"} == before
 
 
 def test_export_preview_does_not_write_and_authorized_old_hash_replaces(export_root, tmp_path):
