@@ -13,6 +13,8 @@
 [修正 `af62013`](../../dogfooding/2026-10-30-skill-sk2b/windows-ci-correction.md)保留完整 payload/断言，
 新完整 24 项本地质量门通过；修正交付 `8f2130c` 的[五项 CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/41073192655)及 Ubuntu 3.12 十二步骤已通过。
 [SK2-C 报告](../../dogfooding/2026-10-31-skill-sk2c/README.md)记录 24 质量检查、6,189 测试、fresh 五项目、80 完整受控案例、56 无插桩入口及初始化专项通过。
+首个交付 `ea0a7dc` 的 Windows/macOS 类型检查失败；
+[修正 `fc44c2d`](../../dogfooding/2026-10-31-skill-sk2c/platform-type-correction.md)经新完整质量门、6,193 测试、fresh 五项目及 85 次实际操作入口验收，修正 CI 待推送后核对。
 SK14–SK15 为 LOCAL_ACCEPTED_CI_PENDING；SK16–SK19 在独立工作树实施和验证，尚未完成资源/最终会话门，SK20–SK21 仍待交付。
 原方案修订轮仅交付文稿。
 

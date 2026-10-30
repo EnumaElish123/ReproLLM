@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK15 (spec §22): type Linux-owned operation primitives through lazy native
+  interfaces so Windows/macOS checks can import the helper without resolving
+  unsupported attributes. Preserve actual flags, calls and platform refusal.
+
 - SK14 (spec §§3.2, 22): keep native init planning read-only to Git index stat
   caches, restore the caller environment on success and error, and retain strict
   source/index change refusal. Preserve schema-tagged research inputs with a
