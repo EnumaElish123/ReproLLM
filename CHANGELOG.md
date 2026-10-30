@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK12 (spec §§16, 21–22): add the Agent Skill entry, capability introduction
+  and strict typed request/authorization protocol. Capability-only requests
+  require no installation or project scan; installation status remains read-only.
+  Distinguish implemented adapter actions from product capabilities and retain
+  separate invocation, gate, child-result and completeness fields.
+
 - SK11 (D-30; spec §§16, 22): prepare an isolated Agent Skill tool environment
   from verified source and hash-pinned wheels, with atomic activation, explicit
   updates/rollback, offline reuse and lease-aware uninstall. Check installation
