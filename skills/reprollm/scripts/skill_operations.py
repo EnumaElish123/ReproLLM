@@ -23,7 +23,30 @@ from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import IO, Any
+from typing import IO, TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from typing import Protocol
+
+    class _OperationOS(Protocol):
+        O_NOFOLLOW: int
+        O_NONBLOCK: int
+
+        def geteuid(self) -> int: ...
+        def pidfd_open(self, pid: int, /) -> int: ...
+        def set_blocking(self, descriptor: int, blocking: bool, /) -> None: ...
+
+    class _OperationSignal(Protocol):
+        SIGKILL: int
+
+        def pidfd_send_signal(self, descriptor: int, number: int, /) -> None: ...
+
+    class _OperationFileLock(Protocol):
+        LOCK_EX: int
+        LOCK_NB: int
+
+        def flock(self, descriptor: int, operation: int, /) -> None: ...
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from skill_request import MAX_REQUEST_BYTES, Reply, Request, blocked, parse_request  # noqa: E402
@@ -45,6 +68,15 @@ _HASH = re.compile(r"[0-9a-f]{64}\Z")
 _TERMINAL = frozenset({"COMPLETED", "FAILED", "CANCELLED"})
 _STATES = _TERMINAL | {"PREPARED", "STARTING", "RUNNING", "FINALIZING", "UNKNOWN"}
 _CONTROL = frozenset({"operation.status", "operation.result", "operation.cancel"})
+
+
+def _operation_os() -> _OperationOS:
+    # Platform checks stay authoritative; importing this module must not resolve Linux features.
+    return cast("_OperationOS", os)
+
+
+def _operation_signal() -> _OperationSignal:
+    return cast("_OperationSignal", signal)
 
 
 class OperationError(ValueError):
@@ -109,10 +141,15 @@ def _directory(path: Path) -> None:
 
 
 def _raw(path: Path, limit: int) -> bytes:
-    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    native = _operation_os()
+    descriptor = os.open(path, os.O_RDONLY | native.O_NOFOLLOW | native.O_NONBLOCK)
     with os.fdopen(descriptor, "rb") as stream:
         info = os.fstat(stream.fileno())
-        if not stat.S_ISREG(info.st_mode) or info.st_mode & 0o077 or info.st_uid != os.geteuid():
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_mode & 0o077
+            or info.st_uid != native.geteuid()
+        ):
             raise OperationError("operation_private_state_required")
         if info.st_size > limit:
             raise OperationError("operation_state_limit")
@@ -221,13 +258,14 @@ def _store(home: Path, *, create: bool) -> Path:
 def _lock(path: Path) -> Iterator[None]:
     import fcntl
 
-    descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    locking = cast("_OperationFileLock", fcntl)
+    descriptor = os.open(path, os.O_RDWR | os.O_CREAT | _operation_os().O_NOFOLLOW, 0o600)
     try:
         _private(path)
         deadline = time.monotonic() + 5
         while True:
             try:
-                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locking.flock(descriptor, locking.LOCK_EX | locking.LOCK_NB)
                 break
             except BlockingIOError:
                 if time.monotonic() >= deadline:
@@ -247,7 +285,7 @@ def _platform() -> bool:
     if not supported:
         return False
     try:
-        descriptor = os.pidfd_open(os.getpid())
+        descriptor = _operation_os().pidfd_open(os.getpid())
         os.close(descriptor)
         return _process_identity(os.getpid()) is not None
     except OSError:
@@ -273,10 +311,10 @@ def _signal_owned(record: dict[str, Any], number: int = signal.SIGTERM) -> bool:
         return False
     descriptor: int | None = None
     try:
-        descriptor = os.pidfd_open(pid)
+        descriptor = _operation_os().pidfd_open(pid)
         if _process_identity(pid) != expected:
             return False
-        signal.pidfd_send_signal(descriptor, number)
+        _operation_signal().pidfd_send_signal(descriptor, number)
         return True
     except OSError:
         return False
@@ -484,7 +522,7 @@ def control(request: Request, *, home: Path, root: Path) -> Reply | None:
                             and time.time() - _epoch(record["cancel_requested_at"])
                             >= CANCEL_GRACE_SECONDS
                         )
-                        number = signal.SIGKILL if escalate else signal.SIGTERM
+                        number = _operation_signal().SIGKILL if escalate else signal.SIGTERM
                         record["cancel_delivered"] = _signal_owned(record, number)
                         record["cancel_escalated"] = bool(escalate)
                         if not record["cancel_delivered"]:
@@ -620,7 +658,7 @@ def _send_input(stream: IO[bytes], raw: bytes) -> None:
     remaining = memoryview(len(raw).to_bytes(4, "big") + raw)
     deadline = time.monotonic() + IPC_SEND_TIMEOUT_SECONDS
     try:
-        os.set_blocking(descriptor, False)
+        _operation_os().set_blocking(descriptor, False)
         with selectors.DefaultSelector() as ready:
             ready.register(descriptor, selectors.EVENT_WRITE)
             while remaining:
