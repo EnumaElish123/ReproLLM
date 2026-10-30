@@ -9,6 +9,9 @@
 [前置修复报告](../../dogfooding/2026-10-30-skill-privacy-prerequisite/README.md)。
 [SK2-B 报告](../../dogfooding/2026-10-30-skill-sk2b/README.md)记录 `e07963d` 的 24 项完整质量门、
 5,911 测试、新鲜原生五项目门、86 项已安装检查 / 250 次调用及独立隐私复核全部通过。
+原报告 `916c883` 正式 CI 四平台通过、Windows 测试构造失败；
+[修正 `af62013`](../../dogfooding/2026-10-30-skill-sk2b/windows-ci-correction.md)保留完整 payload/断言，
+新完整 24 项本地质量门通过，修正交付提交 CI 仍待核对。
 SK12–SK13 为 LOCAL_ACCEPTED_CI_PENDING；SK14 正在实施复核与修正，SK15–SK21 尚未验收。
 原方案修订轮仅交付文稿。
 
