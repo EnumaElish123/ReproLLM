@@ -54,12 +54,18 @@ READONLY_ACTIONS = frozenset(
         "runs.show",
         "diff",
         "run.preview",
+        "discover.preview",
     }
 )
 LOCAL_READ_ACTIONS = frozenset({"rules.list", "rules.show", "rules.candidates"})
 LOCAL_ACTIONS = LOCAL_READ_ACTIONS | LOCAL_WRITE_ACTIONS
 AVAILABLE_ACTIONS = (
-    BASE_ACTIONS | READONLY_ACTIONS | WRITE_ACTIONS | LOCAL_ACTIONS | OPERATION_ACTIONS
+    BASE_ACTIONS
+    | READONLY_ACTIONS
+    | WRITE_ACTIONS
+    | LOCAL_ACTIONS
+    | OPERATION_ACTIONS
+    | {"discover"}
 )
 REQUIRED_CAPABILITIES = frozenset({"contextual_word_scan"})
 MAX_CAPTURE_BYTES = 64 * 1024 * 1024
@@ -1065,7 +1071,7 @@ def finish_reply(
 
 
 def long_operation(request: Request) -> bool:
-    return (
+    return request.action == "discover" or (
         request.action == "lock"
         and not request.options.get("check", False)
         and (
@@ -1094,6 +1100,10 @@ def operation_worker_entry(request: Request, context: Any) -> Reply:
     if any(not getattr(request.grants, name) for name in required_grants(request)):
         return blocked(request.action, "authorization_required", needs_authorization=True)
     context.check_cancel()
+    if request.action == "discover":
+        from skill_discover import execute as execute_discover
+
+        return sanitize_reply(execute_discover(request, context), root)
     reply = execute_lock(
         request,
         root=root,
@@ -1162,6 +1172,23 @@ def execute(
         else:
             output = _output_target(request, root)
             display_diagnostics: list[dict[str, Any]] = []
+            if request.action == "discover.preview":
+                from skill_discover import preview as discover_preview
+
+                reply = discover_preview(
+                    request,
+                    root=root,
+                    state_home=cache_home.parent,
+                    helper_identity=identity,
+                )
+                return finish_reply(
+                    reply,
+                    request,
+                    root=root,
+                    external=external,
+                    cache_home=cache_home,
+                    identity=identity,
+                )
             if request.action == "run.preview":
                 result, as_json = _preview(request, root), False
             else:

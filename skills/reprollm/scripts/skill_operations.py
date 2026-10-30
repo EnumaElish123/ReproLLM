@@ -1,4 +1,4 @@
-"""Owned local workers for long lock hashing; no scheduler or raw-output store."""
+"""Owned local workers for resolution, hashing and controlled discovery."""
 
 from __future__ import annotations
 
@@ -312,7 +312,7 @@ def _record(store: Path, token: str, root: Path) -> tuple[Path, dict[str, Any]]:
     record = _read(path)
     if (
         record.get("operation_id") != token
-        or record.get("kind") != "lock"
+        or record.get("kind") not in {"lock", "discover"}
         or record.get("state") not in _STATES
     ):
         raise OperationError("operation_state_invalid")
@@ -329,6 +329,13 @@ def _record(store: Path, token: str, root: Path) -> tuple[Path, dict[str, Any]]:
     ):
         raise OperationError("operation_preparation_expired")
     if type(record.get("cancel_requested")) is not bool:
+        raise OperationError("operation_state_invalid")
+    if record["kind"] == "discover" and (
+        not isinstance(record.get("approval_id"), str)
+        or not _ID.fullmatch(record["approval_id"])
+        or not isinstance(record.get("approval_sha256"), str)
+        or not _HASH.fullmatch(record["approval_sha256"])
+    ):
         raise OperationError("operation_state_invalid")
     return path, record
 
@@ -350,18 +357,74 @@ def _public(record: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _status(request: Request, record: dict[str, Any]) -> Reply:
+def _budget_summary(store: Path, record: dict[str, Any]) -> dict[str, Any]:
+    target = store / "discovery-budgets" / (record["approval_id"] + ".json")
+    if target.parent.exists() or target.parent.is_symlink():
+        _private(target.parent, directory=True)
+    if not target.exists() and not target.is_symlink():
+        if record.get("execution_started") is False:
+            return {
+                "currency": "CNY",
+                "attempt_count": 0,
+                "attempt_count_basis": "reserved_or_submitted",
+                "confirmed_response_count": 0,
+                "held_nano": 0,
+                "charge_uncertain": False,
+                "cost_is_estimate": True,
+            }
+        return {"currency": "CNY", "charge_uncertain": True, "billing_state": "unknown"}
+    ledger = _read(target)
+    attempts = ledger.get("attempts")
+    if (
+        ledger.get("owner") != "reprollm-skill-discovery-budget"
+        or ledger.get("approval_sha256") != record["approval_sha256"]
+        or ledger.get("operation_sha256") != _sha(_json(record["operation_id"]))
+        or not isinstance(attempts, list)
+        or len(attempts) > 3
+        or any(
+            not isinstance(item, dict)
+            or type(item.get("held_nano")) is not int
+            or not 0 <= item["held_nano"] <= 10**18
+            or type(item.get("usage_verified")) is not bool
+            or item.get("outcome") not in {"unknown", "response"}
+            for item in attempts
+        )
+    ):
+        raise OperationError("discover_budget_state_unavailable")
+    return {
+        "currency": "CNY",
+        "attempt_count": len(attempts),
+        "attempt_count_basis": "reserved_or_submitted",
+        "confirmed_response_count": sum(item["outcome"] == "response" for item in attempts),
+        "held_nano": sum(item["held_nano"] for item in attempts),
+        "charge_uncertain": any(not item["usage_verified"] for item in attempts),
+        "cost_is_estimate": True,
+    }
+
+
+def _status(request: Request, record: dict[str, Any], *, store: Path | None = None) -> Reply:
     diagnostics = [{"code": "operation_completion_unknown"}] if record["state"] == "UNKNOWN" else []
     if record.get("failure_code") == "operation_launch_failed":
         diagnostics.append({"code": "operation_launch_failed"})
     if record.get("lease_cleanup_failed") is True:
         diagnostics.append({"code": "operation_lease_cleanup_failed"})
-    return Reply(
+    reply = Reply(
         request.action,
         complete=record["state"] != "UNKNOWN",
         data={"operation": _public(record)},
         diagnostics=diagnostics,
     )
+    if record["kind"] == "discover" and store is not None:
+        try:
+            reply.data["budget"] = _budget_summary(store, record)
+        except (OSError, ValueError, KeyError, TypeError):
+            reply.data["budget"] = {
+                "currency": "CNY",
+                "charge_uncertain": True,
+                "billing_state": "unknown",
+            }
+            reply.diagnostics.append({"code": "discover_budget_state_unavailable"})
+    return reply
 
 
 def _worker_proof(record: dict[str, Any]) -> dict[str, Any]:
@@ -412,20 +475,20 @@ def _refresh(path: Path, record: dict[str, Any]) -> None:
         _save(path, record)
 
 
-def _safe_reply(value: dict[str, Any]) -> Reply:
+def _safe_reply(value: dict[str, Any], *, expected_action: str = "lock") -> Reply:
     _finite(value)
     diagnostics = value.get("diagnostics")
     if not isinstance(diagnostics, list) or not all(isinstance(item, dict) for item in diagnostics):
         raise OperationError("operation_result_invalid")
     header = {**value, "data": None, "diagnostics": []}
-    validate_frame(_json(header), expected_action="lock")
+    validate_frame(_json(header), expected_action=expected_action)
     if value.get("next_cursor") is not None or value.get("snapshot") is not None:
         raise OperationError("operation_result_invalid")
     return Reply(**value)
 
 
 def _result(request: Request, path: Path, record: dict[str, Any]) -> Reply:
-    reply = _status(request, record)
+    reply = _status(request, record, store=path.parents[2])
     if not record.get("result_sha256"):
         reply.diagnostics.append({"code": "operation_result_not_available"})
         return reply
@@ -438,7 +501,7 @@ def _result(request: Request, path: Path, record: dict[str, Any]) -> Reply:
     data = _decode(raw)
     if _sha(raw) != record["result_sha256"]:
         raise OperationError("operation_result_changed")
-    native = _safe_reply(data)
+    native = _safe_reply(data, expected_action=record["kind"])
     reply.cli_exit_code, reply.gate_failed, reply.child_exit_code = (
         native.cli_exit_code,
         native.gate_failed,
@@ -451,7 +514,7 @@ def _result(request: Request, path: Path, record: dict[str, Any]) -> Reply:
 def control(request: Request, *, home: Path, root: Path) -> Reply | None:
     """Query/replay existing ownership before any active-install preparation."""
     is_replay = (
-        request.action == "lock"
+        request.action in {"lock", "discover"}
         and "operation_id" in request.options
         and not request.options.get("check", False)
     )
@@ -494,7 +557,7 @@ def control(request: Request, *, home: Path, root: Path) -> Reply | None:
             return (
                 _result(request, path, record)
                 if request.action == "operation.result"
-                else _status(request, record)
+                else _status(request, record, store=store)
             )
     except (OSError, ValueError, TypeError, KeyError, RecursionError, FrameError) as error:
         return blocked(
@@ -578,7 +641,7 @@ def _cleanup(store: Path) -> None:
             record = _read(folder / "status.json")
             if (
                 record.get("operation_id") != folder.name
-                or record.get("kind") != "lock"
+                or record.get("kind") not in {"lock", "discover"}
                 or record.get("state") not in _STATES
             ):
                 raise OperationError("operation_ownership_required")
@@ -655,7 +718,7 @@ def start(
         record: dict[str, Any]
         if not _platform():
             raise OperationError("operation_platform_unavailable")
-        if (
+        if request.action != "discover" and (
             request.action != "lock"
             or request.options.get("check", False)
             or (
@@ -670,6 +733,18 @@ def start(
             return blocked(
                 request.action, "network_authorization_required", needs_authorization=True
             )
+        if request.action == "discover" and request.grants.paid_discover is None:
+            return blocked(
+                request.action, "discover_budget_approval_required", needs_authorization=True
+            )
+        paid = request.grants.paid_discover
+        approval = paid.get("approval") if isinstance(paid, dict) else None
+        if request.action == "discover" and (
+            not isinstance(approval, dict)
+            or not isinstance(approval.get("approval_id"), str)
+            or not _ID.fullmatch(approval["approval_id"])
+        ):
+            return blocked(request.action, "discover_approval_invalid", needs_authorization=True)
         if "operation_id" in request.options:
             existing = control(request, home=home, root=root)
             if existing is not None:
@@ -689,7 +764,7 @@ def start(
                 record = {
                     "schema_version": 1,
                     "operation_id": token,
-                    "kind": "lock",
+                    "kind": request.action,
                     "state": "PREPARED",
                     "created_at": _utc(),
                     "updated_at": _utc(),
@@ -708,13 +783,18 @@ def start(
                     "artifact_publication": "none",
                     "result_sha256": None,
                 }
+                if request.action == "discover":
+                    assert isinstance(approval, dict)
+                    record.update(
+                        approval_id=approval["approval_id"], approval_sha256=_sha(_json(approval))
+                    )
                 _save(folder / "status.json", record)
-                return _status(request, record)
+                return _status(request, record, store=store)
         path, record = _record(store, token, root)
         with _lock(path.parent / "lock"):
             path, record = _record(store, token, root)
             if record["state"] != "PREPARED":
-                return _status(request, record)
+                return _status(request, record, store=store)
             if (
                 record["intent_identity"] != _intent(request, root)
                 or record["policy_identity"] != identity
@@ -800,13 +880,13 @@ def start(
                             else "operation_start_input_failed",
                         )
                         _save(path, record)
-                    return _status(request, record)
+                    return _status(request, record, store=store)
             cleanup_failed = getattr(lease, "cleanup_failed", True) is not False
             if not cleanup_failed:
                 record["lease"] = None
             record["lease_cleanup_failed"] = cleanup_failed
             _save(path, record)
-            return _status(request, record)
+            return _status(request, record, store=store)
     except (OSError, ValueError, TypeError, KeyError, RecursionError) as error:
         return blocked(
             request.action,
@@ -900,7 +980,7 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             raise OperationError("operation_request_invalid")
         request = parse_request(transient["request"])
         root = Path(transient["root"]).resolve(strict=True)
-        if _token(request) != operation_id or request.action != "lock":
+        if _token(request) != operation_id or request.action not in {"lock", "discover"}:
             raise OperationError("operation_request_invalid")
         store = _store(home, create=False)
         context = WorkerContext(
@@ -916,7 +996,8 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
         with _lock(path.parent / "lock"):
             path, record = context._owned()
             if (
-                record["intent_identity"] != _intent(request, root)
+                record["kind"] != request.action
+                or record["intent_identity"] != _intent(request, root)
                 or record["policy_identity"] != context.identity
             ):
                 raise OperationError("operation_intent_changed")
@@ -947,7 +1028,7 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             raise OperationError("operation_result_invalid")
         native_invocation = reply.invocation
         try:
-            _safe_reply(reply.as_dict())
+            _safe_reply(reply.as_dict(), expected_action=request.action)
             raw = _json(reply.as_dict())
             if len(raw) > MAX_RESULT_BYTES:
                 raise OperationError("operation_result_limit")
@@ -955,7 +1036,7 @@ def worker_main(home: Path, operation_id: str, request_pipe: int = 0) -> int:
             # Delivery is distinct from native completion. Preserve every known
             # exit fact without keeping the invalid/oversized original value.
             reply = Reply(
-                "lock",
+                request.action,
                 invocation="internal_error",
                 complete=False,
                 cli_exit_code=reply.cli_exit_code if type(reply.cli_exit_code) is int else None,

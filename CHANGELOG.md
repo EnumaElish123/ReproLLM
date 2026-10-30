@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK17 (spec §§7, 16, 20, 22): preview discovery through the original collector,
+  bind source/model/endpoint and a specific cost grant, and run the native client
+  through owned operations. Reserve each possible POST before sending, retain
+  unknown charges across reconnect/cancel, and require separate candidate acceptance.
+  Preserve local compatible endpoints, native fallback and actual publication facts.
+
 - SK16 (spec §§1, 4.3, 16, 22): resolve online locks and explicit API model
   verification through the existing guarded, owned Skill operations. Forward
   network doctor requests to the native probe. Preserve proxy/TLS defaults,

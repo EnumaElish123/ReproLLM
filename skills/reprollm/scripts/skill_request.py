@@ -142,11 +142,14 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         experimental=BOOL,
         show_content=BOOL,
         max_chars=Option("int", minimum=1),
+        paper=TEXT,
     ),
     "discover": _action(
         "Request opt-in discovery under a specific content and budget approval.",
         experimental=BOOL,
         max_chars=Option("int", minimum=1),
+        paper=TEXT,
+        operation_id=TEXT,
     ),
     "rules.list": _action(
         "Inspect active rules or the latest discovery candidates.", json=BOOL, candidates=BOOL
@@ -235,6 +238,7 @@ class Grants:
     external_paths: tuple[str, ...] = ()
     expected_hashes: dict[str, str | None] = field(default_factory=dict)
     plan_hash: str | None = None
+    paid_discover: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -380,6 +384,7 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
                 "external_paths",
                 "expected_hashes",
                 "plan_hash",
+                "paid_discover",
             },
             "invalid_grants",
         )
@@ -408,6 +413,9 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
             or any(c not in "0123456789abcdef" for c in plan_hash)
         ):
             raise RequestError("invalid_plan_hash")
+        paid_discover = grant_data.get("paid_discover")
+        if paid_discover is not None and not isinstance(paid_discover, dict):
+            raise RequestError("invalid_paid_discover_grant")
         grants = Grants(
             **{
                 name: grant_data[name]
@@ -417,6 +425,7 @@ def parse_request(value: bytes | dict[str, Any]) -> Request:
             external_paths=external_paths,
             expected_hashes=dict(hashes),
             plan_hash=plan_hash,
+            paid_discover=paid_discover,
         )
         page = _mapping(
             data.get("response", {}), {"page_size", "cursor"}, "invalid_response_options"
@@ -522,6 +531,19 @@ def dispatch(
         if status_provider is None:
             return blocked(request.action, "status_provider_unavailable")
         return Reply(request.action, data=status_provider())
+    if (
+        request.action in {"discover", "discover.preview"}
+        and request.options.get("paper") is not None
+    ):
+        return Reply(
+            request.action,
+            invocation="user_error",
+            cli_exit_code=2,
+            complete=False,
+            diagnostics=[
+                {"code": "native_usage_error", "text": "Paper analysis is not available in Beta."}
+            ],
+        )
     if request.project is None:
         return blocked(
             request.action,

@@ -297,3 +297,18 @@ inspect the existing operation and artifacts. `safe_to_repeat: false` forbids
 creating another job to reconstruct the outcome; replaying the known ID only
 retrieves or continues its already claimed state. An intentional new run is a new
 user-authorized operation, never an automatic recovery retry.
+
+## Discover source-backed rule candidates
+
+Read [discovery approval and recovery](discover.md) for a discovery request.
+Use `discover.preview` with `experimental: true` (or the existing config opt-in),
+and `show_content: true` when reviewing the complete outbound messages. Preview
+uses the original collector, sends nothing and needs no endpoint or API key.
+Keep its input inventory, exclusions, truncations and exact binding hashes.
+
+After the user approves those inputs, endpoint/model, price assumptions and a
+specific budget, encode that approval in `grants.paid_discover` along with write
+and network scope. `discover` uses the same PREPARED → known-ID start →
+status/result/cancel sequence as online lock. It does not accept rules. Inspect
+actual candidates and their source evidence, then use the existing specific
+`rules.accept` flow only when that acceptance is authorized.
