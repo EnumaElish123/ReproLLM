@@ -1,0 +1,1280 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.014298,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-before-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/001-lm-evaluation-harness-before-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/001-lm-evaluation-harness-before-HEAD.stdout",
+        "sha256": "ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.011636,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-before-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/002-lm-evaluation-harness-before-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 52,
+        "path": "raw/002-lm-evaluation-harness-before-origin.stdout",
+        "sha256": "3592b7f2b67581c40c68a459d162ace73553fa4882ecfa803d4cb67b58b68ac3"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.135873,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-before-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/003-lm-evaluation-harness-before-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/003-lm-evaluation-harness-before-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "-c",
+        "import os, sys\nfrom pathlib import Path\n\ndef guard(event, args):\n    if event in ('socket.connect', 'socket.getaddrinfo'):\n        raise RuntimeError('Offline gate forbids network')\n    if event == 'import' and str(args[0]).split('.')[0] in {\n        'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'\n    }:\n        raise RuntimeError('Offline gate forbids heavy imports')\n\nsys.addaudithook(guard)\nimport reprollm\nassert Path(reprollm.__file__).resolve() == (\n    Path(os.environ['GATE_CANDIDATE']) / 'src/reprollm/__init__.py'\n)\nassert reprollm.__version__ == '0.7.0'\nfrom reprollm.cli.main import cli\ncli()\n",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 35.435309,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-L0",
+      "stderr": {
+        "bytes": 152,
+        "path": "raw/004-lm-evaluation-harness-L0.stderr",
+        "sha256": "07c83aa686eb4056ed2f73266120467dce3070ec6f9170a6fbc9274d5e9e5188"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 19870,
+        "path": "raw/004-lm-evaluation-harness-L0.stdout",
+        "sha256": "c0d629b8b30045291477c86d9fd51d97329f5f1e3e5a302f1940ba1760896947"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-audit/lm-evaluation-harness.json",
+        "<SESSION>/gate-a-final/artifacts/lm-evaluation-harness/L0.json",
+        "--audit-metadata"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.202369,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-L0-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/005-lm-evaluation-harness-L0-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 318,
+        "path": "raw/005-lm-evaluation-harness-L0-full.stdout",
+        "sha256": "143b9cb550c492181a7f1c56f834b87574778c3188b65a288033d0e74944d9b1"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/validation/collect_facts.py",
+        "<SESSION>/worktree"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 35.204851,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-facts",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/006-lm-evaluation-harness-facts.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 1288634,
+        "path": "raw/006-lm-evaluation-harness-facts.stdout",
+        "sha256": "7c9a26b6f70c61167ece45ab25ba3a0343ac4a480c6df61bc6ec1ce88b8713bd"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-facts/lm-evaluation-harness.json",
+        "<SESSION>/gate-a-final/artifacts/lm-evaluation-harness/facts.json"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.251975,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-facts-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/007-lm-evaluation-harness-facts-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 272,
+        "path": "raw/007-lm-evaluation-harness-facts-full.stdout",
+        "sha256": "6eaf76d260cc6f109d94e7bed2e2dbf8838ec59c286a95d6ed6a53bd9efa4965"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.010234,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-after-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/008-lm-evaluation-harness-after-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/008-lm-evaluation-harness-after-HEAD.stdout",
+        "sha256": "ebefc08949cc55920bd27ff1f2fcf3d128524a774f29cd4f6f48dafc0670a7b8"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.010152,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-after-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/009-lm-evaluation-harness-after-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 52,
+        "path": "raw/009-lm-evaluation-harness-after-origin.stdout",
+        "sha256": "3592b7f2b67581c40c68a459d162ace73553fa4882ecfa803d4cb67b58b68ac3"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/lm-evaluation-harness",
+      "elapsed_seconds": 0.142268,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "lm-evaluation-harness-after-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/010-lm-evaluation-harness-after-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/010-lm-evaluation-harness-after-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.010277,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-before-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/011-FastChat-before-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/011-FastChat-before-HEAD.stdout",
+        "sha256": "9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.009336,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-before-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/012-FastChat-before-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 39,
+        "path": "raw/012-FastChat-before-origin.stdout",
+        "sha256": "e8791e63ed04e8eaca5a15dd6530cb67fd95e3adf2b93d43bfa99809f5ef52df"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.013925,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-before-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/013-FastChat-before-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/013-FastChat-before-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "-c",
+        "import os, sys\nfrom pathlib import Path\n\ndef guard(event, args):\n    if event in ('socket.connect', 'socket.getaddrinfo'):\n        raise RuntimeError('Offline gate forbids network')\n    if event == 'import' and str(args[0]).split('.')[0] in {\n        'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'\n    }:\n        raise RuntimeError('Offline gate forbids heavy imports')\n\nsys.addaudithook(guard)\nimport reprollm\nassert Path(reprollm.__file__).resolve() == (\n    Path(os.environ['GATE_CANDIDATE']) / 'src/reprollm/__init__.py'\n)\nassert reprollm.__version__ == '0.7.0'\nfrom reprollm.cli.main import cli\ncli()\n",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 1.573886,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-L0",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/014-FastChat-L0.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 20573,
+        "path": "raw/014-FastChat-L0.stdout",
+        "sha256": "bfd0fa6d6ae27179879ee2b2c7c8f52717f9a4c20cb019e63712d1827943de67"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-audit/FastChat.json",
+        "<SESSION>/gate-a-final/artifacts/FastChat/L0.json",
+        "--audit-metadata"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.202053,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-L0-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/015-FastChat-L0-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 318,
+        "path": "raw/015-FastChat-L0-full.stdout",
+        "sha256": "7d7e7981c0f7a800cfff463bea29606f0c4705746a13b30e356a5d879ae6b590"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/validation/collect_facts.py",
+        "<SESSION>/worktree"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 1.447201,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-facts",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/016-FastChat-facts.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 127148,
+        "path": "raw/016-FastChat-facts.stdout",
+        "sha256": "e0941f01ce54289230f94a8e4af3789764fdc53edab5002c068498c952e29d89"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-facts/FastChat.json",
+        "<SESSION>/gate-a-final/artifacts/FastChat/facts.json"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.215671,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-facts-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/017-FastChat-facts-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 272,
+        "path": "raw/017-FastChat-facts-full.stdout",
+        "sha256": "1a09bbc8cc791b9117a2b5836cc08db9539b9c2fb3b619fc11846151d11f0770"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.010066,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-after-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/018-FastChat-after-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/018-FastChat-after-HEAD.stdout",
+        "sha256": "9684a71f3d84bd1471719c9834536baab04a0779b4dfdbdeaff18a10f165fd6b"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.010909,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-after-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/019-FastChat-after-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 39,
+        "path": "raw/019-FastChat-after-origin.stdout",
+        "sha256": "e8791e63ed04e8eaca5a15dd6530cb67fd95e3adf2b93d43bfa99809f5ef52df"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/FastChat",
+      "elapsed_seconds": 0.019003,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "FastChat-after-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/020-FastChat-after-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/020-FastChat-after-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.009438,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-before-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/021-LlamaFactory-before-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/021-LlamaFactory-before-HEAD.stdout",
+        "sha256": "35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.010557,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-before-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/022-LlamaFactory-before-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 44,
+        "path": "raw/022-LlamaFactory-before-origin.stdout",
+        "sha256": "98c33a967eb65c166fb182dba9a57d83776ffccdd29aff40348b162b75e8d6ef"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.027331,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-before-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/023-LlamaFactory-before-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/023-LlamaFactory-before-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "-c",
+        "import os, sys\nfrom pathlib import Path\n\ndef guard(event, args):\n    if event in ('socket.connect', 'socket.getaddrinfo'):\n        raise RuntimeError('Offline gate forbids network')\n    if event == 'import' and str(args[0]).split('.')[0] in {\n        'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'\n    }:\n        raise RuntimeError('Offline gate forbids heavy imports')\n\nsys.addaudithook(guard)\nimport reprollm\nassert Path(reprollm.__file__).resolve() == (\n    Path(os.environ['GATE_CANDIDATE']) / 'src/reprollm/__init__.py'\n)\nassert reprollm.__version__ == '0.7.0'\nfrom reprollm.cli.main import cli\ncli()\n",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 2.513943,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-L0",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/024-LlamaFactory-L0.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 21660,
+        "path": "raw/024-LlamaFactory-L0.stdout",
+        "sha256": "a2495bc3af659b849e96e1c0967432eba2c838ea796ddc2bb103d137ca06709f"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-audit/LlamaFactory.json",
+        "<SESSION>/gate-a-final/artifacts/LlamaFactory/L0.json",
+        "--audit-metadata"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.20041,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-L0-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/025-LlamaFactory-L0-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 318,
+        "path": "raw/025-LlamaFactory-L0-full.stdout",
+        "sha256": "5a5a7a3f65a243b9889560110e093de7f401fd64c7c925cddcab1d0f34710a58"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/validation/collect_facts.py",
+        "<SESSION>/worktree"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 2.300536,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-facts",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/026-LlamaFactory-facts.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 205621,
+        "path": "raw/026-LlamaFactory-facts.stdout",
+        "sha256": "7ff147af072d4252e4aa71c58e20edbc31ac3ef0d7c6e01ec12c6cd36caad999"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-facts/LlamaFactory.json",
+        "<SESSION>/gate-a-final/artifacts/LlamaFactory/facts.json"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.224926,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-facts-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/027-LlamaFactory-facts-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 272,
+        "path": "raw/027-LlamaFactory-facts-full.stdout",
+        "sha256": "3d3b4ac5833d9438d7f7cc96f68ad650286fb8b99f5ff1261b4e5a2cf2d756c9"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.011154,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-after-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/028-LlamaFactory-after-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/028-LlamaFactory-after-HEAD.stdout",
+        "sha256": "35c6aa5a4c828727c8f296253411ec25ed1b9e295693d5c2658370ab8b54cd41"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.010406,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-after-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/029-LlamaFactory-after-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 44,
+        "path": "raw/029-LlamaFactory-after-origin.stdout",
+        "sha256": "98c33a967eb65c166fb182dba9a57d83776ffccdd29aff40348b162b75e8d6ef"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/LlamaFactory",
+      "elapsed_seconds": 0.023902,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "LlamaFactory-after-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/030-LlamaFactory-after-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/030-LlamaFactory-after-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.011173,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-before-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/031-HarmBench-before-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/031-HarmBench-before-HEAD.stdout",
+        "sha256": "c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.008893,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-before-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/032-HarmBench-before-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 51,
+        "path": "raw/032-HarmBench-before-origin.stdout",
+        "sha256": "45824e83cd3c8eabbdf245c63633ada0e7e22250c2af62b7f4e0275316d00c6a"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.022122,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-before-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/033-HarmBench-before-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/033-HarmBench-before-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "-c",
+        "import os, sys\nfrom pathlib import Path\n\ndef guard(event, args):\n    if event in ('socket.connect', 'socket.getaddrinfo'):\n        raise RuntimeError('Offline gate forbids network')\n    if event == 'import' and str(args[0]).split('.')[0] in {\n        'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'\n    }:\n        raise RuntimeError('Offline gate forbids heavy imports')\n\nsys.addaudithook(guard)\nimport reprollm\nassert Path(reprollm.__file__).resolve() == (\n    Path(os.environ['GATE_CANDIDATE']) / 'src/reprollm/__init__.py'\n)\nassert reprollm.__version__ == '0.7.0'\nfrom reprollm.cli.main import cli\ncli()\n",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 1.734684,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-L0",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/034-HarmBench-L0.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 15784,
+        "path": "raw/034-HarmBench-L0.stdout",
+        "sha256": "a181ba762360d21e1642735208f44f012162b7c16e2d902a90d108c84982afa6"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-audit/HarmBench.json",
+        "<SESSION>/gate-a-final/artifacts/HarmBench/L0.json",
+        "--audit-metadata"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.200481,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-L0-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/035-HarmBench-L0-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 318,
+        "path": "raw/035-HarmBench-L0-full.stdout",
+        "sha256": "4c81e19af61cec5139789edba23bec278bc7d9389894e8a3708492d5fb088411"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/validation/collect_facts.py",
+        "<SESSION>/worktree"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 1.616539,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-facts",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/036-HarmBench-facts.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 88728,
+        "path": "raw/036-HarmBench-facts.stdout",
+        "sha256": "888372351f6f869bf1d434f0e80b26a0155486fc7511c6f3fdb0f5980b2e3237"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-facts/HarmBench.json",
+        "<SESSION>/gate-a-final/artifacts/HarmBench/facts.json"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.213141,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-facts-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/037-HarmBench-facts-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 272,
+        "path": "raw/037-HarmBench-facts-full.stdout",
+        "sha256": "88ac8ce32c2cc5647fce7f8a30b1938f943f89935278fbd4588ddf7b58807534"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.011267,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-after-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/038-HarmBench-after-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/038-HarmBench-after-HEAD.stdout",
+        "sha256": "c8f6e83211391d4e148d449c1e59e279e4afb39067a6517c6594af0c436ea927"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.009381,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-after-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/039-HarmBench-after-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 51,
+        "path": "raw/039-HarmBench-after-origin.stdout",
+        "sha256": "45824e83cd3c8eabbdf245c63633ada0e7e22250c2af62b7f4e0275316d00c6a"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/HarmBench",
+      "elapsed_seconds": 0.019401,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "HarmBench-after-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/040-HarmBench-after-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/040-HarmBench-after-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.011541,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-before-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/041-llm-dp-finetune-before-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/041-llm-dp-finetune-before-HEAD.stdout",
+        "sha256": "6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.010458,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-before-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/042-llm-dp-finetune-before-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 49,
+        "path": "raw/042-llm-dp-finetune-before-origin.stdout",
+        "sha256": "1f42245b902c6bc81fccb0461bfbe91b7c3d9a2484cea02628612685b860a30f"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.014895,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-before-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/043-llm-dp-finetune-before-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/043-llm-dp-finetune-before-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "-c",
+        "import os, sys\nfrom pathlib import Path\n\ndef guard(event, args):\n    if event in ('socket.connect', 'socket.getaddrinfo'):\n        raise RuntimeError('Offline gate forbids network')\n    if event == 'import' and str(args[0]).split('.')[0] in {\n        'torch', 'transformers', 'vllm', 'huggingface_hub', 'numpy'\n    }:\n        raise RuntimeError('Offline gate forbids heavy imports')\n\nsys.addaudithook(guard)\nimport reprollm\nassert Path(reprollm.__file__).resolve() == (\n    Path(os.environ['GATE_CANDIDATE']) / 'src/reprollm/__init__.py'\n)\nassert reprollm.__version__ == '0.7.0'\nfrom reprollm.cli.main import cli\ncli()\n",
+        "audit",
+        ".",
+        "--level",
+        "0",
+        "--format",
+        "json",
+        "--fail-on",
+        "never"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.706761,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-L0",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/044-llm-dp-finetune-L0.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 12235,
+        "path": "raw/044-llm-dp-finetune-L0.stdout",
+        "sha256": "f41b52c99c3a3ba7f094da1eaee30d9056add95d48b6c66c97717e39528bc139"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-audit/llm-dp-finetune.json",
+        "<SESSION>/gate-a-final/artifacts/llm-dp-finetune/L0.json",
+        "--audit-metadata"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.201377,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-L0-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/045-llm-dp-finetune-L0-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 318,
+        "path": "raw/045-llm-dp-finetune-L0-full.stdout",
+        "sha256": "9a19e91bd71c58d10aa8748fdbdd953e042ebd577d4c12cd0f2224cea13e24eb"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/validation/collect_facts.py",
+        "<SESSION>/worktree"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.545968,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-facts",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/046-llm-dp-finetune-facts.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 14863,
+        "path": "raw/046-llm-dp-finetune-facts.stdout",
+        "sha256": "ce8d4bd2a1ccc70f082722498806e404e8fe53243a61f77b0fbae4cb86d044e9"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "<SESSION>/worktree/.venv/bin/python",
+        "<SESSION>/worktree/scripts/compare_gold.py",
+        "<SESSION>/validation/oracle/expected-facts/llm-dp-finetune.json",
+        "<SESSION>/gate-a-final/artifacts/llm-dp-finetune/facts.json"
+      ],
+      "cwd": "<SESSION>/worktree",
+      "elapsed_seconds": 0.197264,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-facts-full",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/047-llm-dp-finetune-facts-full.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 272,
+        "path": "raw/047-llm-dp-finetune-facts-full.stdout",
+        "sha256": "b3c47dfb7c5717c5317cee89c940a3ea8d015ded659f04e3ba7fd4118ae9768e"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.010196,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-after-HEAD",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/048-llm-dp-finetune-after-HEAD.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 41,
+        "path": "raw/048-llm-dp-finetune-after-HEAD.stdout",
+        "sha256": "6bf8ae99ca5c52adf7c059ed3f73676df285dc36c7207e155a8babdf29880803"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.009404,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-after-origin",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/049-llm-dp-finetune-after-origin.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 49,
+        "path": "raw/049-llm-dp-finetune-after-origin.stdout",
+        "sha256": "1f42245b902c6bc81fccb0461bfbe91b7c3d9a2484cea02628612685b860a30f"
+      },
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "<PINNED_PORTFOLIO>/llm-dp-finetune",
+      "elapsed_seconds": 0.012713,
+      "exit": 0,
+      "expected_exit": 0,
+      "label": "llm-dp-finetune-after-status",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/050-llm-dp-finetune-after-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/050-llm-dp-finetune-after-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false
+    }
+  ],
+  "schema_version": 1
+}

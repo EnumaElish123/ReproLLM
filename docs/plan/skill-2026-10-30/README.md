@@ -2,13 +2,15 @@
 
 日期：2026-10-30。修订起点：`da0e8345f5742824fb12e2a8f602e38e507d3325`。
 维护者要求：加入自动安装、能力介绍和按用户需求调用完整功能，明确分批任务与验收。
-**执行更新：SK2-A（SK10 → SK11）及其跨平台测试修正已验收，SK2-B 正在实施。**
+**执行更新：SK2-A（SK10 → SK11）及其跨平台测试修正已验收；SK2-B 本地验收通过，待最终交付提交 CI。**
 原 SK2-A Windows 失败保留；修正后的 `429b3ed` 五项 CI 已全部通过
 （[运行记录](https://github.com/EnumaElish123/ReproLLM/actions/runs/41035875585)）。
 见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)和
 [前置修复报告](../../dogfooding/2026-10-30-skill-privacy-prerequisite/README.md)。
-SK12–SK13 已实现，SK13 独立安全复核通过；本批完整质量门、安装后实测与五项目对照尚待验收。
-SK14–SK21 未开始实施。原方案修订轮仅交付文稿。
+[SK2-B 报告](../../dogfooding/2026-10-30-skill-sk2b/README.md)记录 `e07963d` 的 24 项完整质量门、
+5,911 测试、新鲜原生五项目门、86 项已安装检查 / 250 次调用及独立隐私复核全部通过。
+SK12–SK13 为 LOCAL_ACCEPTED_CI_PENDING；SK14 正在实施复核与修正，SK15–SK21 尚未验收。
+原方案修订轮仅交付文稿。
 
 本版替代 [v1](v1.md) 的“不自动安装”“只预览不运行”和“不支持联网/规则写入”等限制。
 v1 的 SK01–SK05 未实施，现为 SUPERSEDED，不能计为完成；使用新编号避免混淆。
@@ -193,9 +195,9 @@ PID 或进程名不能单独构成终止权限。child exit 7、信号中断、w
 |---|---|---|---|---|
 | SK2-A | SK10 | 安装 catalog、候选身份/兼容矩阵；固定来源/hash，真实 wheel/源码通道、拒绝模块遮蔽 | 本包 | ACCEPTED |
 | SK2-A | SK11 | 自动安装/复用/更新/回滚/卸载；空环境、并发、离线、失败保全、不污染研究环境 | SK10 | ACCEPTED |
-| SK2-B | SK12 | Skill 入口、介绍、需求路由及适配基础；介绍零副作用，已授权任务连续执行 | SK11 | IMPLEMENTED_ACCEPTANCE_PENDING |
-| SK2-B | SK13 | audit/doctor/profiles/tasks/runs/diff/preview；完整结果、诊断、分页、退出码一致 | SK12 | IMPLEMENTED_ACCEPTANCE_PENDING |
-| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | NOT_STARTED |
+| SK2-B | SK12 | Skill 入口、介绍、需求路由及适配基础；介绍零副作用，已授权任务连续执行 | SK11 | LOCAL_ACCEPTED_CI_PENDING |
+| SK2-B | SK13 | audit/doctor/profiles/tasks/runs/diff/preview；完整结果、诊断、分页、退出码一致 | SK12 | LOCAL_ACCEPTED_CI_PENDING |
+| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | IMPLEMENTATION_REVIEW_IN_PROGRESS |
 | SK2-C | SK15 | 离线 lock/check/大文件处理、rules 全生命周期；staleness、具体接受、归档和冲突正确 | SK14 | NOT_STARTED |
 | SK2-D | SK16 | 在线 lock/verify-api/doctor、凭据/代理；真实元数据解析与权限失败区分 | SK15 | NOT_STARTED |
 | SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | NOT_STARTED |
@@ -230,5 +232,5 @@ mock/标准库 child 不替代真实 API/GPU；单宿主不等于跨宿主。缺
 
 本版替代 v1 的 3–5 人日估算：熟悉代码的一名工程师粗估 3–5 人周，
 SK2-A/B 约 4–6 人日；其余按进程/宿主边界复杂度重估，资源等待、招募和发布另计，不是排期承诺。
-当前继续 **SK2-B：SK12 → SK13**；后续按依赖顺序执行。
+当前核对 SK2-B 最终交付提交的 CI，并继续 **SK2-C：SK14 → SK15**；后续按依赖顺序执行。
 本轮记录见 [v2 方案修订报告](../../dogfooding/2026-10-30-skill-plan-v2.md)。
