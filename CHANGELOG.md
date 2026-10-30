@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK16 (spec §§1, 4.3, 16, 22): resolve online locks and explicit API model
+  verification through the existing guarded, owned Skill operations. Forward
+  network doctor requests to the native probe. Preserve proxy/TLS defaults,
+  native retries, unresolved provenance and offline/check precedence; expose
+  bounded private failure categories without recording credentials or URLs.
+
 - SK15 (spec §§1, 4, 7, 22): expose offline lock/check and the complete project-rule
   lifecycle through guarded Skill writes. Bind reviewed candidates and previews,
   retain immutable recovery archives and preserve native results and actual effects.

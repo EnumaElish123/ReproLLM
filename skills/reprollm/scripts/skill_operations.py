@@ -658,7 +658,10 @@ def start(
         if (
             request.action != "lock"
             or request.options.get("check", False)
-            or not request.options.get("hash_large_files", False)
+            or (
+                request.options.get("offline", False)
+                and not request.options.get("hash_large_files", False)
+            )
         ):
             raise OperationError("operation_kind_unavailable")
         if not request.options.get("preview", False) and not request.grants.write:

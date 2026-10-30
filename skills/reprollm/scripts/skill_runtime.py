@@ -438,6 +438,8 @@ def command_args(request: Request, root: Path) -> tuple[list[str], bool]:
         return prefix + argv, options.get("format", "json") == "json"
     if action == "doctor":
         argv = ["doctor", *(["--json"] if options.get("json", True) else [])]
+        if options.get("check_network"):
+            argv.append("--check-network")
         if options.get("no_color"):
             argv.append("--no-color")
         return prefix + argv, options.get("json", True)
@@ -1065,8 +1067,11 @@ def finish_reply(
 def long_operation(request: Request) -> bool:
     return (
         request.action == "lock"
-        and request.options.get("hash_large_files") is True
         and not request.options.get("check", False)
+        and (
+            request.options.get("hash_large_files") is True
+            or not request.options.get("offline", False)
+        )
     )
 
 
@@ -1088,8 +1093,6 @@ def operation_worker_entry(request: Request, context: Any) -> Reply:
         return blocked(request.action, "operation_request_conflict")
     if any(not getattr(request.grants, name) for name in required_grants(request)):
         return blocked(request.action, "authorization_required", needs_authorization=True)
-    if not request.options.get("offline", False):
-        return blocked(request.action, "online_lock_unavailable")
     context.check_cancel()
     reply = execute_lock(
         request,
@@ -1116,11 +1119,15 @@ def execute(
             not in READONLY_ACTIONS | WRITE_ACTIONS | LOCAL_ACTIONS | OPERATION_ACTIONS
         ):
             return blocked(request.action, "action_unavailable")
-        if request.action == "doctor" and request.options.get("check_network"):
+        if (
+            request.action == "doctor"
+            and request.options.get("check_network")
+            and not request.grants.network
+        ):
             return blocked(
                 request.action,
-                "network_diagnostics_unavailable",
-                needs_authorization=not request.grants.network,
+                "network_authorization_required",
+                needs_authorization=True,
             )
         root = project_root(request)
         external = _external_inputs(request, root)
@@ -1131,10 +1138,6 @@ def execute(
             return _page(snapshot, saved, request.response.page_size, kind=kind, offset=offset)
         if request.action in OPERATION_ACTIONS or long_operation(request):
             return blocked(request.action, "long_operation_requires_controller")
-        if request.action == "lock" and not (
-            request.options.get("offline", False) or request.options.get("check", False)
-        ):
-            return blocked(request.action, "online_lock_unavailable")
         if request.action in LOCAL_ACTIONS:
             from skill_local import execute_lock, execute_rules
 

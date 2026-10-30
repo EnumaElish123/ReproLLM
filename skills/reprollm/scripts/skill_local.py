@@ -1,4 +1,4 @@
-"""Offline lock and native rule operations with guarded artifact publication."""
+"""Native lock and rule operations with guarded artifact publication."""
 
 from __future__ import annotations
 
@@ -584,9 +584,12 @@ def execute_lock(
     state_home: Path,
     identity: str,
     cancellation: Cancellation | None = None,
+    client_context_factory: Callable[[], contextlib.AbstractContextManager[Any]] | None = None,
 ) -> Reply:
     import getpass
     import socket
+
+    from skill_network import NetworkClientError, client_context
 
     from reprollm.core.errors import UserError
     from reprollm.core.paths import MANIFEST, PROJECT_RULES
@@ -595,6 +598,7 @@ def execute_lock(
     from reprollm.run.privacy import RunPrivacy
 
     effects: list[writes.Published] = []
+    network_diagnostics: list[dict[str, Any]] = []
     try:
         if request.action != "lock":
             return blocked(request.action, "action_unavailable")
@@ -620,11 +624,12 @@ def execute_lock(
                 cli_exit_code=int(bool(reasons)),
                 data={"reasons": reasons, "stdout": text},
             )
-        if not request.options.get("offline", False):
+        offline = request.options.get("offline", False)
+        if not offline and not request.grants.network:
             return blocked(
                 request.action,
-                "online_lock_unavailable_use_offline",
-                needs_authorization=not request.grants.network,
+                "network_authorization_required",
+                needs_authorization=True,
             )
         if not request.options.get("preview") and not request.grants.write:
             return blocked(request.action, "write_authorization_required", needs_authorization=True)
@@ -636,15 +641,27 @@ def execute_lock(
         prepared_at = _prepared_time(request, root, state, identity)
         _local_inventory(root, manifest, guard)
         _cancel(cancellation)
+
+        def check_network_inputs() -> None:
+            guard.check()
+            _cancel(cancellation)
+
+        http_context = (
+            contextlib.nullcontext(None)
+            if offline
+            else client_context_factory()
+            if client_context_factory is not None
+            else client_context(network_diagnostics, before_send=check_network_inputs)
+        )
         with tempfile.TemporaryDirectory(prefix="local-lock-", dir=state / "staging") as name:
             stage = Path(name)
-            with _guard_native_reads(guard, cancellation):
+            with _guard_native_reads(guard, cancellation), http_context as maybe_http:
                 document = writer.build_lock(
                     root,
                     manifest,
-                    # The native offline branch also passes None without constructing a client.
-                    http=cast(Any, None),
-                    offline=True,
+                    # The native offline branch passes None without constructing a client.
+                    http=cast(Any, maybe_http),
+                    offline=offline,
                     verify_api=request.options.get("verify_api", False),
                     hash_large_files=request.options.get("hash_large_files", False),
                     now=prepared_at,
@@ -663,7 +680,7 @@ def execute_lock(
             "summary": json.loads(writes._json(dataclasses.asdict(summary))),
             "stdout": "Wrote reprollm.lock\n" + summary.render() + "\n",
         }
-        return _publish(
+        reply = _publish(
             request,
             root,
             state,
@@ -676,8 +693,15 @@ def execute_lock(
             published=effects,
             prepared_at=prepared_at,
         )
+        reply.diagnostics.extend(network_diagnostics)
+        return reply
     except (LocalError, writes.WriteError, UserError, OSError, ValueError, RecursionError) as error:
-        reply = _error(request, error)
+        reply = (
+            blocked(request.action, "network_client_unavailable")
+            if isinstance(error, NetworkClientError)
+            else _error(request, error)
+        )
+        reply.diagnostics.extend(network_diagnostics)
         if effects:
             reply.data = {
                 "phase": "partial",

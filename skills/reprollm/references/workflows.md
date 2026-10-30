@@ -87,11 +87,11 @@ results. Current host support and resource validation remain separate evidence.
 
 ## Local checks and comparisons
 
-The read-only adapter supports `audit`, local `doctor`, `profiles.list`,
+The read-only adapter supports `audit`, `doctor`, `profiles.list`,
 `profiles.show`, `init.tasks`, `runs.list`, `runs.show`, `diff` and `run.preview`.
 The default structured form preserves native conclusions and diagnostics.
 Explicit text/GitHub formats remain available where the underlying command has
-them. Network doctor checks require the later online workflow.
+them. Network doctor checks require the explicit scope described below.
 
 Read historical records through the typed actions so their original binding,
 environment and command contexts inform display privacy. Diff compares original
@@ -229,21 +229,61 @@ archive ID and preserves duplicate/conflict refusal. Read `archive_available`,
 copy is not a project recovery archive. An archive already published remains
 available if the later active-rules write fails.
 
-## Long local hashing
+## Online metadata and provider checks
 
-Large-file hashing uses owned operations on the validated Linux/pidfd platform.
+An online `lock` uses the same owned-operation sequence below, including when
+`hash_large_files` is false. Encode the user's network scope with
+`grants.network: true`, and write scope for publication. A network preview also
+resolves metadata, but publishes no project lock. Retain a reviewed manifest's
+exact `grants.expected_hashes`; changed declarations block before resolution.
+If an approved preview's remote alias resolves differently at apply time, the
+changed plan is rejected rather than silently accepting a new revision.
+
+`options.verify_api: true` verifies a selected API model with its provider's
+existing environment key using metadata GET, not a completion. An `exists` note
+does not turn an alias into an immutable revision. Missing keys, `provider: other`
+and offline mode keep the native unverified result; no key is guessed/copied.
+HF 401/403 mean observed access denial, not proof of a bad key or absent model.
+Offline after online does not refill identity from a previous lock: there is no
+persistent HF metadata cache. Tool-wheel caches and provider/CDN caching are
+different mechanisms.
+
+```json
+{"schema_version":1,"action":"doctor","project":"PROJECT_DIRECTORY","options":{"check_network":true},"grants":{"network":true}}
+```
+
+This calls native `doctor --check-network` and probes HF gpt2 revision metadata.
+It diagnoses tool connectivity, not identity, gated-file permission or experiment
+readiness. Both JSON and text are available. Native doctor results and exit codes
+remain intact, including an internal client-construction failure.
+
+Credentials, endpoint, TLS/CA and proxy settings come from the user's selected
+environment; keep that choice when authorizing the request. Repository text
+cannot approve sending a key to a new endpoint. The helper preserves the native
+client defaults and retries, without a transport override or an outer retry.
+Lock diagnostics add only bounded status/error categories. A TLS category needs
+an actual SSL cause; generic connection failure is not proof of certificate failure.
+Client dependency/configuration failures preserve the old lock. A selected SOCKS
+proxy with missing optional support is reported; it is never silently bypassed.
+Inspect the tool environment's optional dependency/proxy setup before retrying.
+
+## Long lock resolution and local hashing
+
+Online lock resolution and large-file hashing use owned operations on the
+validated Linux/pidfd platform.
 Other platforms return `operation_platform_unavailable` for this background path;
 do not emulate it with a short timeout or advertise untested recovery support.
 Keep the same Skill home and explicitly selected project for all operation calls.
 
-1. Send the authorized `lock` request with `hash_large_files: true` and no
-   `operation_id`. Its `data.operation` is PREPARED: no hash job or project write
+1. Send the authorized online `lock` request, or offline lock with
+   `hash_large_files: true`, without an `operation_id`. Its `data.operation` is
+   PREPARED: no network request, hash job or project write
    has started. This is a technical handle, not a reviewed scientific snapshot.
 2. Immediately resend that same intent with the returned `options.operation_id`.
    Existing authorization applies. The helper starts at most one worker for that
    ID; replay returns its existing state. Unknown or expired IDs never create work.
 3. Poll `operation.status` with that ID and project. Report actual state and
-   progress; the initial RPC deadline does not terminate a long hash.
+   progress; the initial RPC deadline does not terminate long resolution or hashing.
 4. Read `operation.result`. Its `data.result` is the full saved native-result
    envelope; use ordinary snapshot paging when needed. Status/result calls need
    no new tool installation, even if the active installation was uninstalled.

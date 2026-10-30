@@ -127,7 +127,7 @@ def test_explicit_text_and_local_network_boundary(project: Path, tmp_path: Path)
     blocked = runtime.execute(
         req,
         cache_home=tmp_path / "cache",
-        cli_runner=lambda *_: pytest.fail("No network before SK16"),
+        cli_runner=lambda *_: pytest.fail("No network without an explicit grant"),
     )
     assert blocked.invocation == "blocked" and blocked.needs_authorization
 
