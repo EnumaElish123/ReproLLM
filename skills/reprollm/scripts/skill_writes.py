@@ -471,6 +471,20 @@ def _native_error(request: Request, text: str, *, data: dict[str, Any] | None = 
     )
 
 
+@contextlib.contextmanager
+def _readonly_git_observation() -> Iterator[None]:
+    # This isolated worker must not refresh the index its write guard fingerprints.
+    previous = os.environ.get("GIT_OPTIONAL_LOCKS")
+    os.environ["GIT_OPTIONAL_LOCKS"] = "0"
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("GIT_OPTIONAL_LOCKS", None)
+        else:
+            os.environ["GIT_OPTIONAL_LOCKS"] = previous
+
+
 def _prepare_init(
     request: Request, root: Path, stage: Path
 ) -> tuple[dict[str, Any], list[Artifact], list[dict[str, Any]]] | Reply:
@@ -503,7 +517,8 @@ def _prepare_init(
     accepted_answers: dict[str, str] = {}
     if command is not None:
         values["execution.command"] = validate_init_command(root, command)
-    plan = plan_init(root, profiles_override=options.get("profiles"))
+    with _readonly_git_observation():
+        plan = plan_init(root, profiles_override=options.get("profiles"))
     selected = select_tasks(plan, options.get("tasks", []))
     data: dict[str, Any] = {
         "profiles": plan.profiles,
