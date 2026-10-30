@@ -9,6 +9,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK14 (spec §19; Skill plan §5): keep native export's input classification and Git audit
+  read-only so its own index refresh cannot invalidate publication guards in a
+  fresh clone. Preserve input signatures and refusal of real source changes.
+
 - SK14 (spec §§5.2.1, 19; Skill acceptance A16, A21): do not interpret empty
   command arguments or empty option values as the working directory during
   export input protection. Preserve saved/historical argv and protection for

@@ -850,6 +850,108 @@ def test_real_export_worker_empty_argument_keeps_complete_native_document(
     assert {key: value for key, value in after.items() if key != "report.md"} == before
 
 
+@pytest.mark.parametrize("touch_input", [False, True])
+def test_export_fresh_clone_worker_keeps_git_index_readonly(
+    export_root: Path, tmp_path: Path, touch_input: bool
+) -> None:
+    from tests.conftest import run_git
+
+    record = _with_empty_export_argument(export_root, "both", "quoted")
+    run_git(export_root, "add", "-f", "--", ".")
+    run_git(export_root, "commit", "--allow-empty", "-m", "Public export fixture")
+    clone = tmp_path / "fresh-clone"
+    environment = {
+        "PATH": os.defpath,
+        "LANG": "C.UTF-8",
+        "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+        "HOME": str(tmp_path / "synthetic-home"),
+        "USERPROFILE": str(tmp_path / "synthetic-home"),
+        "USER": "public-user",
+        "USERNAME": "public-user",
+    }
+    cloned = subprocess.run(
+        ["git", "clone", "--no-hardlinks", "--local", str(export_root), str(clone)],
+        capture_output=True,
+        timeout=30,
+        env=environment,
+        check=False,
+    )
+    assert cloned.returncode == 0, cloned.stderr
+    if touch_input:
+        # A same-content touch before export makes stat-cache refresh observable.
+        path = clone / "reprollm.yaml"
+        info = path.stat()
+        os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns - 2_000_000_000))
+    before = inventory(clone)
+    index_time = (clone / ".git/index").stat().st_mtime_ns
+    req = Request(
+        "export",
+        str(clone),
+        {"output": "report.md"},
+        Grants(install=False, write=True, expected_hashes={"report.md": None}),
+        ResponseOptions(page_size=1000),
+    )
+    assert "GIT_OPTIONAL_LOCKS" not in environment
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            str(ROOT / "skills/reprollm/scripts/skill_runtime.py"),
+            "--worker",
+            "--cache-home",
+            str(tmp_path / "cache"),
+            "--identity",
+            "b" * 64,
+        ],
+        input=json.dumps(dataclasses.asdict(req)).encode(),
+        cwd=clone,
+        capture_output=True,
+        timeout=30,
+        env=environment,
+        check=False,
+    )
+    assert result.returncode == 0 and not result.stderr
+    from skill_runtime_frame import validate_frame
+
+    reply = validate_frame(result.stdout, expected_action="export")
+    assert reply.invocation == "handled_result", reply.diagnostics
+    assert reply.complete and reply.cli_exit_code == 0 and reply.next_cursor is None
+    assert reply.data["selected_run_id"] == record.parent.name
+    assert reply.data["document"].encode("utf-8") == (clone / "report.md").read_bytes()
+    assert (clone / ".git/index").stat().st_mtime_ns == index_time
+    after = inventory(clone)
+    assert {key: value for key, value in after.items() if key != "report.md"} == before
+
+
+def test_export_git_observation_still_rejects_external_input_changes(
+    export_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("GIT_OPTIONAL_LOCKS", "1")
+    before = inventory(export_root)
+
+    def native_then_change(argv: list[str], root: Path) -> runtime.CliResult:
+        result = runtime.invoke_cli(argv, root)
+        (root / "external-note.txt").write_text("Changed during preparation\n", encoding="utf-8")
+        return result
+
+    reply = execute_write(
+        request(export_root, "export", output="report.md"),
+        root=export_root,
+        state_home=tmp_path / "helper",
+        identity="fixed-test-helper-identity",
+        cli_runner=native_then_change,
+        source_signature=runtime.input_signature,
+    )
+    assert reply.invocation == "blocked" and not reply.complete
+    assert reply.diagnostics == [{"code": "write_inputs_changed_during_prepare"}]
+    assert not (export_root / "report.md").exists()
+    assert (export_root / "external-note.txt").read_text() == "Changed during preparation\n"
+    assert os.environ["GIT_OPTIONAL_LOCKS"] == "1"
+    after = inventory(export_root)
+    assert {key: value for key, value in after.items() if key != "external-note.txt"} == before
+
+
 def test_export_preview_does_not_write_and_authorized_old_hash_replaces(export_root, tmp_path):
     target = export_root / "report.md"
     target.write_text("reviewed old report\n", encoding="utf-8")

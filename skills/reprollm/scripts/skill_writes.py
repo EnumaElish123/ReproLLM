@@ -1083,8 +1083,9 @@ def _prepare_export(
     selected, directory = _export_sources(request, root, reads)
     declared = _path(request.options.get("output", "REPRODUCIBILITY.md"), root)
     destination = _artifact(request, root, declared, b"", role="report", mode=0o600)
-    if _export_input_target(root, destination.target, selected):
-        raise WriteError("report_target_is_research_input")
+    with _readonly_git_observation():
+        if _export_input_target(root, destination.target, selected):
+            raise WriteError("report_target_is_research_input")
     target = stage / "report.md"
     argv = [
         "export",
@@ -1098,7 +1099,11 @@ def _prepare_export(
         # The CLI selects directory names; a legacy content ID need not match it.
         argv += ["--run", directory.name]
     reads.check()
-    with _guard_export_reader(reads), _private_export(sanitize) as display_diagnostics:
+    with (
+        _readonly_git_observation(),
+        _guard_export_reader(reads),
+        _private_export(sanitize) as display_diagnostics,
+    ):
         result = runner(_global_flags(request) + argv, root)
     reads.check()
     if result.exit_code:
