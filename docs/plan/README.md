@@ -8,13 +8,17 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The next planned iteration is the [2026-10-30 Agent Skill extension](skill-2026-10-30/README.md):
-retain the deterministic CLI and add repository checking, saved-command registration/preview,
-and comparison/export workflows for a local coding agent. This delivery is a **plan only**;
-SK01–SK05 are NOT_STARTED. The first implementation batch is SK-A (SK01 → SK02 → SK03)
-when implementation is requested. Actual experiment execution, paid discovery, MCP and release
-remain outside this first Skill scope. See the [assessment](../research/2026-10-30-agent-interfaces-assessment.md)
-and [plan delivery record](../dogfooding/2026-10-30-skill-plan.md).
+The next planned iteration is the [2026-10-30 Agent Skill extension v2](skill-2026-10-30/README.md):
+automatic isolated installation, capability introduction and user-directed access to the full
+supported CLI, including actual experiment runs, online resolution, discovery and rule management.
+This delivery is a **plan only**; SK10–SK21 are NOT_STARTED across six batches SK2-A–SK2-F.
+The next implementation batch is **SK2-A (SK10 → SK11)** when implementation is requested.
+The unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. See the
+[acceptance matrix](skill-2026-10-30/acceptance.md),
+[assessment](../research/2026-10-30-agent-interfaces-assessment.md),
+[v1 delivery record](../dogfooding/2026-10-30-skill-plan.md) and
+[v2 revision record](../dogfooding/2026-10-30-skill-plan-v2.md).
+Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release are outside this plan.
 
 The active usability iteration is [2026-10-29](usability-2026-10-29/README.md). UX-A is delivered with all five official CI jobs successful on `8ea80e8`. UX-B is implemented at `48caea2`: guided field descriptions, local retries, accurate remaining declarations and a [four-command first-use tutorial](../tutorials/first-experiment.md). All 24 local checks, 5,474 tests and fresh five-project acceptance (280 command receipts / 233 checks) pass, with independent receipt review. See the [UX-B report](../dogfooding/2026-10-30-usability-uxb/README.md). All five usability development tasks have local acceptance; exact final-delivery-head CI is checked after the report commit and push. External first-use feedback remains unobserved. The reliability records below remain historical.
 
