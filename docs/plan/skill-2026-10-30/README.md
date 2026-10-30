@@ -21,6 +21,10 @@ v1 的 SK01–SK05 未实施，现为 SUPERSEDED，不能计为完成；使用�
 [易用性实现](../usability-2026-10-29/README.md)、[扩展评估](../../research/2026-10-30-agent-interfaces-assessment.md)。
 本文件与[验收矩阵](acceptance.md)共同定义开发范围，不代替规范，也不表示功能已实现。
 
+维护者于本轮执行中明确“暂时无需在意claude code的适配”。本轮 SK20 先完成 Codex 真实宿主验收，
+Claude Code 适配及其登录前置记为 `DEFERRED_BY_MAINTAINER`，不再阻塞其余开发。
+原双宿主目标保留为后续事项，不能将单宿主结果计作双宿主 PASS；其他工程、资源和隐私验收不变。
+
 ## 1. 用户目标
 
 用户安装 Skill 后，用自然语言提出需求。Agent 在首次需要工具时检查并按需安装 ReproLLM，
@@ -206,7 +210,7 @@ PID 或进程名不能单独构成终止权限。child exit 7、信号中断、w
 | SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | NOT_STARTED |
 | SK2-E | SK18 | 保存/显式命令实际运行、环境和日志隔离；准确 argv、run v2、child exit、输入证据 | SK17 | NOT_STARTED |
 | SK2-E | SK19 | 长任务查询/取消/恢复/防重复；短等待不杀长实验，断连/未知终态不重跑、不误杀 | SK18 | NOT_STARTED |
-| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据 | SK19 | NOT_STARTED |
+| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据；本轮按维护者更新先验 Codex | SK19 | NOT_STARTED |
 | SK2-F | SK21 | 安装使用文档、介绍实例、卸载恢复与首次使用观察；工程/外部反馈分别记载 | SK20 | NOT_STARTED |
 
 每项先把 [A01–A24](acceptance.md)落实为独立预期及行为测试，再实现；不能只匹配 SKILL.md 句子。

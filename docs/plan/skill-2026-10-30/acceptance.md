@@ -2,6 +2,8 @@
 
 本文件与 [v2 开发方案](README.md)配套。实际执行状态见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)；
 未记录的后续场景仍为 NOT_RUN，不能把计划表当执行收据。
+本轮维护者暂缓 Claude Code 适配；SK20 先验收 Codex，Claude Code 与双宿主门单列为
+`DEFERRED_BY_MAINTAINER`，不以登录缺失阻塞其余开发，也不计双宿主 PASS。
 按[验证工作流](../validation-workflow-2026-10-13.md)执行，五项目 pin/gold、原生资源配方和
 预算条件取自 [val.md](../../../val.md)，不在这里复制或改写历史 gold。
 
