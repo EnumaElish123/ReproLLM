@@ -2,7 +2,7 @@
 
 日期：2026-10-30。修订起点：`da0e8345f5742824fb12e2a8f602e38e507d3325`。
 维护者要求：加入自动安装、能力介绍和按用户需求调用完整功能，明确分批任务与验收。
-**执行更新：SK2-A（SK10 → SK11）及其跨平台测试修正已验收；SK2-B 本地验收通过，待最终交付提交 CI。**
+**执行更新：SK2-A、SK2-B 及其跨平台测试修正已验收；SK2-C 在 `981d263` 本地验收通过，待交付提交 CI。**
 原 SK2-A Windows 失败保留；修正后的 `429b3ed` 五项 CI 已全部通过
 （[运行记录](https://github.com/EnumaElish123/ReproLLM/actions/runs/41035875585)）。
 见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)和
@@ -11,8 +11,9 @@
 5,911 测试、新鲜原生五项目门、86 项已安装检查 / 250 次调用及独立隐私复核全部通过。
 原报告 `916c883` 正式 CI 四平台通过、Windows 测试构造失败；
 [修正 `af62013`](../../dogfooding/2026-10-30-skill-sk2b/windows-ci-correction.md)保留完整 payload/断言，
-新完整 24 项本地质量门通过，修正交付提交 CI 仍待核对。
-SK12–SK13 为 LOCAL_ACCEPTED_CI_PENDING；SK14 正在实施复核与修正，SK15–SK21 尚未验收。
+新完整 24 项本地质量门通过；修正交付 `8f2130c` 的[五项 CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/41073192655)及 Ubuntu 3.12 十二步骤已通过。
+[SK2-C 报告](../../dogfooding/2026-10-31-skill-sk2c/README.md)记录 24 质量检查、6,189 测试、fresh 五项目、80 完整受控案例、56 无插桩入口及初始化专项通过。
+SK14–SK15 为 LOCAL_ACCEPTED_CI_PENDING；SK16–SK19 在独立工作树实施和验证，尚未完成资源/最终会话门，SK20–SK21 仍待交付。
 原方案修订轮仅交付文稿。
 
 本版替代 [v1](v1.md) 的“不自动安装”“只预览不运行”和“不支持联网/规则写入”等限制。
@@ -202,15 +203,15 @@ PID 或进程名不能单独构成终止权限。child exit 7、信号中断、w
 |---|---|---|---|---|
 | SK2-A | SK10 | 安装 catalog、候选身份/兼容矩阵；固定来源/hash，真实 wheel/源码通道、拒绝模块遮蔽 | 本包 | ACCEPTED |
 | SK2-A | SK11 | 自动安装/复用/更新/回滚/卸载；空环境、并发、离线、失败保全、不污染研究环境 | SK10 | ACCEPTED |
-| SK2-B | SK12 | Skill 入口、介绍、需求路由及适配基础；介绍零副作用，已授权任务连续执行 | SK11 | LOCAL_ACCEPTED_CI_PENDING |
-| SK2-B | SK13 | audit/doctor/profiles/tasks/runs/diff/preview；完整结果、诊断、分页、退出码一致 | SK12 | LOCAL_ACCEPTED_CI_PENDING |
-| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | IMPLEMENTATION_REVIEW_IN_PROGRESS |
-| SK2-C | SK15 | 离线 lock/check/大文件处理、rules 全生命周期；staleness、具体接受、归档和冲突正确 | SK14 | NOT_STARTED |
-| SK2-D | SK16 | 在线 lock/verify-api/doctor、凭据/代理；真实元数据解析与权限失败区分 | SK15 | NOT_STARTED |
-| SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | NOT_STARTED |
-| SK2-E | SK18 | 保存/显式命令实际运行、环境和日志隔离；准确 argv、run v2、child exit、输入证据 | SK17 | NOT_STARTED |
-| SK2-E | SK19 | 长任务查询/取消/恢复/防重复；短等待不杀长实验，断连/未知终态不重跑、不误杀 | SK18 | NOT_STARTED |
-| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据；本轮按维护者更新先验 Codex | SK19 | NOT_STARTED |
+| SK2-B | SK12 | Skill 入口、介绍、需求路由及适配基础；介绍零副作用，已授权任务连续执行 | SK11 | ACCEPTED |
+| SK2-B | SK13 | audit/doctor/profiles/tasks/runs/diff/preview；完整结果、诊断、分页、退出码一致 | SK12 | ACCEPTED |
+| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | LOCAL_ACCEPTED_CI_PENDING |
+| SK2-C | SK15 | 离线 lock/check/大文件处理、rules 全生命周期；staleness、具体接受、归档和冲突正确 | SK14 | LOCAL_ACCEPTED_CI_PENDING |
+| SK2-D | SK16 | 在线 lock/verify-api/doctor、凭据/代理；真实元数据解析与权限失败区分 | SK15 | WORKTREE_VALIDATION_IN_PROGRESS |
+| SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | WORKTREE_VALIDATION_IN_PROGRESS |
+| SK2-E | SK18 | 保存/显式命令实际运行、环境和日志隔离；准确 argv、run v2、child exit、输入证据 | SK17 | WORKTREE_VALIDATION_IN_PROGRESS |
+| SK2-E | SK19 | 长任务查询/取消/恢复/防重复；短等待不杀长实验，断连/未知终态不重跑、不误杀 | SK18 | WORKTREE_VALIDATION_IN_PROGRESS |
+| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据；本轮按维护者更新先验 Codex | SK19 | WORKTREE_VALIDATION_IN_PROGRESS |
 | SK2-F | SK21 | 安装使用文档、介绍实例、卸载恢复与首次使用观察；工程/外部反馈分别记载 | SK20 | NOT_STARTED |
 
 每项先把 [A01–A24](acceptance.md)落实为独立预期及行为测试，再实现；不能只匹配 SKILL.md 句子。
@@ -239,5 +240,5 @@ mock/标准库 child 不替代真实 API/GPU；单宿主不等于跨宿主。缺
 
 本版替代 v1 的 3–5 人日估算：熟悉代码的一名工程师粗估 3–5 人周，
 SK2-A/B 约 4–6 人日；其余按进程/宿主边界复杂度重估，资源等待、招募和发布另计，不是排期承诺。
-当前核对 SK2-B 最终交付提交的 CI，并继续 **SK2-C：SK14 → SK15**；后续按依赖顺序执行。
+当前核对 SK2-C 报告提交的 CI，并完成 **SK2-D：SK16 → SK17** 的适用联网/发现验收；后续按依赖顺序执行。
 本轮记录见 [v2 方案修订报告](../../dogfooding/2026-10-30-skill-plan-v2.md)。
