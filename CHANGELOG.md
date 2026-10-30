@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK11 (D-30; spec §§16, 22): prepare an isolated Agent Skill tool environment
+  from verified source and hash-pinned wheels, with atomic activation, explicit
+  updates/rollback, offline reuse and lease-aware uninstall. Check installation
+  integrity before executing probes, keep errors private, and include Skill
+  scripts in CI type and coverage checks. Existing project environments remain
+  outside the installer ownership boundary.
+
 - SK10 (D-30; spec §§22–23): define the Agent Skill's immutable official-source
   installation candidate and separate hash-pinned lightweight runtime/build
   dependencies. Validate source identity, supported Python/platform ranges and

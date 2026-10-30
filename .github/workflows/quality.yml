@@ -64,11 +64,11 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Type check
-        run: uv run mypy src/
+        run: uv run mypy src/ skills/reprollm/scripts/
 
       - name: Test
         run: >
-          uv run pytest -q --cov=reprollm --cov-report=xml --cov-fail-under=85
+          uv run pytest -q --cov=reprollm --cov=skills/reprollm/scripts --cov-report=xml --cov-fail-under=85
           --tb=short --junit-xml=pytest-report.xml
           ${{ matrix.pytest-marker-filter && format('-m "{0}"', matrix.pytest-marker-filter) || '' }}
 
