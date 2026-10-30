@@ -194,3 +194,66 @@ another publication. Preserve the reported effects while inspecting current file
 Following a write-result cursor only retrieves the saved view; it never repeats
 the write. Publication guards detect observed changes but do not claim a transaction
 across multiple files or arbitrary concurrent filesystem edits.
+
+## Offline identity and project rules
+
+Use `lock` with `options.offline: true` for local resolution. Remote identities
+that cannot be resolved offline stay unresolved. This lock records the tool's
+environment; it does not establish the experiment child's installed packages.
+`options.check: true` checks freshness before any resolution or HTTP client,
+including when other lock flags are present. Its CLI exit 1 means stale identity,
+with `gate_failed: null`; it is distinct from an audit finding gate.
+
+Lock writes and rule mutations accept `options.preview`. Carry an observed
+`plan_hash` into apply while preserving the scientific inputs and exact path
+approvals. Native generation timestamps can be retained from the bounded prepared
+plan; unknown research facts are never filled to make a plan pass. Expired or
+changed plans require inspection, not silently removing their stale guard.
+
+Use `rules.list`, `rules.candidates` and `rules.show` to inspect the original
+complete views. The `rule_source_snapshot` diagnostic supplies the actual active
+rules path/hash and, when selected, the latest discovery path/hash and directory
+membership digest. Retain these exact facts with the candidate content the user
+reviewed. For `rules.accept` and an inactive candidate's `rules.ignore`, supply
+the reviewed source and active-rules hashes in `grants.expected_hashes` (null
+means an absent active-rules file). Candidate IDs alone do not prove approval of
+changed content. A newly selected discovery file or changed content requires a
+fresh specific review; do not replace old approvals with fresh hashes automatically.
+
+`rules.add` accepts the explicit field, severity, reason and supported bindings.
+Native manual-ID suffixing still applies; report the actual resulting ID.
+`rules.remove` requires the selected rule and reason, and publishes its immutable
+recovery archive before changing active rules. `rules.restore` requires the actual
+archive ID and preserves duplicate/conflict refusal. Read `archive_available`,
+`archive_state` and actual `artifacts_written` after failures: a private preparation
+copy is not a project recovery archive. An archive already published remains
+available if the later active-rules write fails.
+
+## Long local hashing
+
+Large-file hashing uses owned operations on the validated Linux/pidfd platform.
+Other platforms return `operation_platform_unavailable` for this background path;
+do not emulate it with a short timeout or advertise untested recovery support.
+Keep the same Skill home and explicitly selected project for all operation calls.
+
+1. Send the authorized `lock` request with `hash_large_files: true` and no
+   `operation_id`. Its `data.operation` is PREPARED: no hash job or project write
+   has started. This is a technical handle, not a reviewed scientific snapshot.
+2. Immediately resend that same intent with the returned `options.operation_id`.
+   Existing authorization applies. The helper starts at most one worker for that
+   ID; replay returns its existing state. Unknown or expired IDs never create work.
+3. Poll `operation.status` with that ID and project. Report actual state and
+   progress; the initial RPC deadline does not terminate a long hash.
+4. Read `operation.result`. Its `data.result` is the full saved native-result
+   envelope; use ordinary snapshot paging when needed. Status/result calls need
+   no new tool installation, even if the active installation was uninstalled.
+5. On a user-authorized cancellation, send `operation.cancel` for that exact ID
+   with write scope. Inspect cancel-requested/delivered/escalated facts and actual
+   terminal evidence; a delivered signal alone is not a confirmed result.
+
+Operation replies keep `operation_id`, state, known exits and publication scope
+even when a large result cannot be delivered. UNKNOWN or lost completion means
+inspect the existing operation and artifacts. `safe_to_repeat: false` forbids
+creating another job to reconstruct the outcome; replaying the known ID only
+retrieves or continues its already claimed state. An intentional new run is a new
+user-authorized operation, never an automatic recovery retry.

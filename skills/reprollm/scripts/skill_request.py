@@ -14,6 +14,10 @@ MAX_REQUEST_BYTES = 256 * 1024
 MAX_REPLY_BYTES = 256 * 1024
 BASE_ACTIONS = frozenset({"about", "tool.status"})
 WRITE_ACTIONS = frozenset({"init", "export", "schema.export"})
+LOCAL_WRITE_ACTIONS = frozenset(
+    {"lock", "rules.add", "rules.accept", "rules.ignore", "rules.remove", "rules.restore"}
+)
+OPERATION_ACTIONS = frozenset({"operation.status", "operation.result", "operation.cancel"})
 
 
 class RequestError(ValueError):
@@ -120,6 +124,8 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         check=BOOL,
         verify_api=BOOL,
         hash_large_files=BOOL,
+        preview=BOOL,
+        operation_id=TEXT,
     ),
     "export": _action(
         "Export current or historical evidence as a reproducibility report.",
@@ -160,26 +166,43 @@ ACTION_SPECS: dict[str, ActionSpec] = {
         cli=TEXT,
         config=TEXT,
         env=TEXT,
+        preview=BOOL,
     ),
     "rules.accept": _action(
         "Accept the specific candidate the user reviewed.",
         candidate_id=Option("str", required=True),
         severity=Option("str", ("CRITICAL", "WARNING", "INFO")),
         field=TEXT,
+        preview=BOOL,
     ),
     "rules.ignore": _action(
         "Ignore a reviewed, inactive candidate.",
         candidate_id=Option("str", required=True),
         reason=TEXT,
+        preview=BOOL,
     ),
     "rules.remove": _action(
         "Archive and remove an explicitly selected active rule.",
         rule_id=Option("str", required=True),
         reason=Option("str", required=True),
+        preview=BOOL,
     ),
     "rules.restore": _action(
         "Restore a specific immutable rule recovery archive.",
         archive_id=Option("str", required=True),
+        preview=BOOL,
+    ),
+    "operation.status": _action(
+        "Inspect an owned long operation without starting work.",
+        operation_id=Option("str", required=True),
+    ),
+    "operation.result": _action(
+        "Read an owned operation's saved result without executing it again.",
+        operation_id=Option("str", required=True),
+    ),
+    "operation.cancel": _action(
+        "Cancel only the specifically authorized owned operation.",
+        operation_id=Option("str", required=True),
     ),
     "run.start": _action(
         "Execute the user-authorized experiment in its selected environment.", **RUN_OPTIONS
@@ -468,17 +491,20 @@ def required_grants(request: Request) -> frozenset[str]:
         "rules.restore",
         "discover",
         "run.start",
-    } and (action not in WRITE_ACTIONS or not options.get("preview", False)):
+    } and (action not in WRITE_ACTIONS | LOCAL_WRITE_ACTIONS or not options.get("preview", False)):
         grants.add("write")
     if action in {"run.start", "run.cancel"}:
         grants.add("run")
     if action == "lock" and not options.get("check", False):
-        grants.add("write")
+        if not options.get("preview", False):
+            grants.add("write")
         if not options.get("offline", False):
             grants.add("network")
     if action == "discover" or action == "doctor" and options.get("check_network", False):
         grants.add("network")
     if action == "audit" and "output" in options:
+        grants.add("write")
+    if action == "operation.cancel":
         grants.add("write")
     return frozenset(grants)
 
@@ -525,8 +551,49 @@ def publication_summary(reply: Reply) -> dict[str, Any] | None:
     data = reply.data
     if not isinstance(data, dict):
         return None
+    operation = data.get("operation")
+    resumable: dict[str, Any] = {}
+    if isinstance(operation, dict):
+        token = operation.get("operation_id")
+        if (
+            isinstance(token, str)
+            and len(token) == 32
+            and all(char in "0123456789abcdef" for char in token)
+        ):
+            safe: dict[str, Any] = {"operation_id": token, "safe_to_repeat": False}
+            for name, allowed in (
+                ("kind", {"lock", "discover", "run"}),
+                (
+                    "state",
+                    {
+                        "PREPARED",
+                        "STARTING",
+                        "RUNNING",
+                        "FINALIZING",
+                        "COMPLETED",
+                        "FAILED",
+                        "CANCELLED",
+                        "UNKNOWN",
+                    },
+                ),
+                ("artifact_publication", {"none", "known", "unknown"}),
+            ):
+                value = operation.get(name)
+                if isinstance(value, str) and value in allowed:
+                    safe[name] = value
+            for name in (
+                "execution_started",
+                "result_available",
+                "cancel_requested",
+                "cancel_delivered",
+                "cancel_escalated",
+            ):
+                if name in operation and (type(operation[name]) is bool or operation[name] is None):
+                    safe[name] = operation[name]
+            resumable = {"scope": "incomplete_delivery", "operation": safe, "safe_to_repeat": False}
     if data.get("artifact_publication_unknown") is True:
         return {
+            **resumable,
             "scope": "unknown_completion",
             "artifact_publication_unknown": True,
             "safe_to_repeat": False,
@@ -538,8 +605,9 @@ def publication_summary(reply: Reply) -> dict[str, Any] | None:
     attempted = count > 0 or data.get("artifact_publication_attempted") is True
     written = count > 0 or data.get("artifact_written") is True
     if not attempted and not written:
-        return None
+        return resumable or None
     return {
+        **resumable,
         "scope": "incomplete_delivery",
         "artifact_written": written,
         "artifacts_written_count": count,

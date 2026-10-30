@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK15 (spec §§1, 4, 7, 22): expose offline lock/check and the complete project-rule
+  lifecycle through guarded Skill writes. Bind reviewed candidates and previews,
+  retain immutable recovery archives and preserve native results and actual effects.
+  Manage long hashes as owned Linux operations with bounded startup, private state,
+  scoped cancellation, result retrieval and replay protection.
+
 - SK14 (spec §§3.2, 20, 22): initialize experiment declarations and saved commands,
   export current/historical reports and emit ten schemas through guarded Skill
   writes. Reuse native validation, selection and renderers, with source-bound

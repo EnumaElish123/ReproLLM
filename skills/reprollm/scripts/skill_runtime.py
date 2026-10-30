@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import copy
 import dataclasses
 import getpass
 import hashlib
@@ -27,8 +28,10 @@ from typing import Any, cast
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from skill_request import (  # noqa: E402
     BASE_ACTIONS,
+    LOCAL_WRITE_ACTIONS,
     MAX_REPLY_BYTES,
     MAX_REQUEST_BYTES,
+    OPERATION_ACTIONS,
     WRITE_ACTIONS,
     Reply,
     Request,
@@ -53,7 +56,11 @@ READONLY_ACTIONS = frozenset(
         "run.preview",
     }
 )
-AVAILABLE_ACTIONS = BASE_ACTIONS | READONLY_ACTIONS | WRITE_ACTIONS
+LOCAL_READ_ACTIONS = frozenset({"rules.list", "rules.show", "rules.candidates"})
+LOCAL_ACTIONS = LOCAL_READ_ACTIONS | LOCAL_WRITE_ACTIONS
+AVAILABLE_ACTIONS = (
+    BASE_ACTIONS | READONLY_ACTIONS | WRITE_ACTIONS | LOCAL_ACTIONS | OPERATION_ACTIONS
+)
 REQUIRED_CAPABILITIES = frozenset({"contextual_word_scan"})
 MAX_CAPTURE_BYTES = 64 * 1024 * 1024
 MAX_INPUT_ENTRIES = 50_000
@@ -533,7 +540,7 @@ def _presentation_schema(action: str | None, value: Any) -> dict[str, Any]:
     from reprollm.schemas.finding import AuditReport
     from reprollm.schemas.run_record import RunRecord
 
-    if action in WRITE_ACTIONS:
+    if action in WRITE_ACTIONS | LOCAL_WRITE_ACTIONS:
         properties: dict[str, Any] = {
             name: {}
             for name in (
@@ -554,9 +561,17 @@ def _presentation_schema(action: str | None, value: Any) -> dict[str, Any]:
                 "document",
                 "schema_files",
                 "schema_count",
+                "lock",
+                "project_rules",
+                "summary",
+                "stdout",
+                "reasons",
+                "archive_id",
+                "archive_state",
+                "archive_available",
             )
         }
-        properties["phase"] = {"enum": ["prepared", "applied", "partial"]}
+        properties["phase"] = {"enum": ["prepared", "applied", "partial", "preparation_failed"]}
         properties["template"] = {"enum": ["default", "neurips", "acl", "acm"]}
         properties["artifacts"] = {
             "type": "array",
@@ -573,7 +588,20 @@ def _presentation_schema(action: str | None, value: Any) -> dict[str, Any]:
                 }
             },
         }
-        return {"properties": properties}
+        shape: dict[str, Any] = {"properties": properties}
+        if action == "lock":
+            from reprollm.schemas.lock import Lock
+
+            schema = Lock.model_json_schema()
+            shape["$defs"] = schema.get("$defs", {})
+            properties["lock"] = schema
+        elif action in LOCAL_WRITE_ACTIONS:
+            from reprollm.schemas.project_rules import ProjectRules
+
+            schema = ProjectRules.model_json_schema()
+            shape["$defs"] = schema.get("$defs", {})
+            properties["project_rules"] = schema
+        return shape
     models: dict[str, type[BaseModel]] = {
         "audit": AuditReport,
         "diff": DiffReport,
@@ -645,6 +673,7 @@ def _sanitize(
     *,
     action: str | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
+    context: tuple[str, ...] = (),
 ) -> Any:
     from skill_run_display import mask_command_argv, mask_secret_env_observation
 
@@ -764,7 +793,7 @@ def _sanitize(
     observation_privacy = ObservationPrivacy(
         root, hostname=socket.gethostname(), username=getpass.getuser()
     )
-    safe = walk(value, (), schema)
+    safe = walk(value, context, schema)
     if diagnostics is not None:
         if transformed_keys:
             diagnostics.append({"code": "display_key_transformation", "count": transformed_keys})
@@ -980,6 +1009,98 @@ def _page(
     raise ScopeError("response_budget_unavailable")
 
 
+def sanitize_reply(reply: Reply, root: Path) -> Reply:
+    """Return a full display-safe copy before a durable operation saves it."""
+    safe = dataclasses.replace(
+        reply, diagnostics=copy.deepcopy(reply.diagnostics), questions=list(reply.questions)
+    )
+    safe.data = _sanitize(safe.data, root, action=safe.action, diagnostics=safe.diagnostics)
+    for diagnostic in safe.diagnostics:
+        for name, value in list(diagnostic.items()):
+            if name == "code" or (
+                name.endswith("sha256")
+                and isinstance(value, str)
+                and re.fullmatch(r"[0-9a-f]{64}", value)
+            ):
+                continue
+            diagnostic[name] = _sanitize(value, root, context=(name,))
+    safe.questions = cast(list[str], _sanitize(safe.questions, root))
+    return safe
+
+
+def finish_reply(
+    reply: Reply,
+    request: Request,
+    *,
+    root: Path,
+    external: list[Path],
+    cache_home: Path,
+    identity: str,
+    sanitized: bool = False,
+) -> Reply:
+    """Deliver the same complete safe result or a hash-bound view of it."""
+    reply = reply if sanitized else sanitize_reply(reply, root)
+    raw = _json(reply.as_dict())
+    collection = (
+        reply.data
+        if isinstance(reply.data, list)
+        else next(
+            (
+                reply.data[key]
+                for key in ("findings", "changes", "checks")
+                if isinstance(reply.data, dict) and isinstance(reply.data.get(key), list)
+            ),
+            None,
+        )
+    )
+    needs_paging = len(raw) > MAX_REPLY_BYTES - 1 or (
+        isinstance(collection, list) and len(collection) > request.response.page_size
+    )
+    if not needs_paging:
+        return reply
+    snapshot, saved = _save(reply, request, root, external, cache_home, identity)
+    return _page(snapshot, saved, request.response.page_size)
+
+
+def long_operation(request: Request) -> bool:
+    return (
+        request.action == "lock"
+        and request.options.get("hash_large_files") is True
+        and not request.options.get("check", False)
+    )
+
+
+def operation_identity() -> str:
+    catalog = Path(__file__).resolve().parents[1] / "assets/install-catalog.json"
+    return _sha(catalog.read_bytes() + helper_code_identity().encode("ascii"))
+
+
+def operation_worker_entry(request: Request, context: Any) -> Reply:
+    """Run one fixed native adapter, then return a full safe result to its owner."""
+    from skill_local import execute_lock
+    from skill_request import required_grants
+
+    try:
+        root = project_root(request)
+    except ScopeError as error:
+        return blocked(request.action, str(error))
+    if root != context.root or not long_operation(request):
+        return blocked(request.action, "operation_request_conflict")
+    if any(not getattr(request.grants, name) for name in required_grants(request)):
+        return blocked(request.action, "authorization_required", needs_authorization=True)
+    if not request.options.get("offline", False):
+        return blocked(request.action, "online_lock_unavailable")
+    context.check_cancel()
+    reply = execute_lock(
+        request,
+        root=root,
+        state_home=context.home / "writes",
+        identity=context.identity,
+        cancellation=context,
+    )
+    return sanitize_reply(reply, root)
+
+
 def execute(
     request: Request,
     *,
@@ -990,7 +1111,10 @@ def execute(
     reply: Reply | None = None
     artifact_written = False
     try:
-        if request.action not in READONLY_ACTIONS | WRITE_ACTIONS:
+        if (
+            request.action
+            not in READONLY_ACTIONS | WRITE_ACTIONS | LOCAL_ACTIONS | OPERATION_ACTIONS
+        ):
             return blocked(request.action, "action_unavailable")
         if request.action == "doctor" and request.options.get("check_network"):
             return blocked(
@@ -1005,7 +1129,20 @@ def execute(
                 request.response.cursor, request, root, external, cache_home, identity
             )
             return _page(snapshot, saved, request.response.page_size, kind=kind, offset=offset)
-        if request.action in WRITE_ACTIONS:
+        if request.action in OPERATION_ACTIONS or long_operation(request):
+            return blocked(request.action, "long_operation_requires_controller")
+        if request.action == "lock" and not (
+            request.options.get("offline", False) or request.options.get("check", False)
+        ):
+            return blocked(request.action, "online_lock_unavailable")
+        if request.action in LOCAL_ACTIONS:
+            from skill_local import execute_lock, execute_rules
+
+            producer = execute_lock if request.action == "lock" else execute_rules
+            reply = producer(
+                request, root=root, state_home=cache_home.parent / "writes", identity=identity
+            )
+        elif request.action in WRITE_ACTIONS:
             from skill_writes import execute_write
 
             reply = execute_write(
@@ -1100,32 +1237,9 @@ def execute(
                             else target.name,
                         }
                     reply.data, reply.complete = data, True
-        reply.data = _sanitize(
-            reply.data, root, action=request.action, diagnostics=reply.diagnostics
+        return finish_reply(
+            reply, request, root=root, external=external, cache_home=cache_home, identity=identity
         )
-        for diagnostic in reply.diagnostics:
-            if "text" in diagnostic:
-                diagnostic["text"] = _sanitize(diagnostic["text"], root)
-        raw = _json(reply.as_dict())
-        collection = (
-            reply.data
-            if isinstance(reply.data, list)
-            else next(
-                (
-                    reply.data[key]
-                    for key in ("findings", "changes", "checks")
-                    if isinstance(reply.data, dict) and isinstance(reply.data.get(key), list)
-                ),
-                None,
-            )
-        )
-        needs_paging = len(raw) > MAX_REPLY_BYTES - 1 or (
-            isinstance(collection, list) and len(collection) > request.response.page_size
-        )
-        if not needs_paging:
-            return reply
-        snapshot, saved = _save(reply, request, root, external, cache_home, identity)
-        return _page(snapshot, saved, request.response.page_size)
     except ScopeError as error:
         code = str(error)
         failure = blocked(
@@ -1168,13 +1282,68 @@ def execute(
 class _WorkerLease:
     status: dict[str, Any]
     environment: Path
+    claim: dict[str, Any]
     cleanup_failed: bool = False
+    release_on_exit: bool = True
+
+    def transfer(self) -> None:
+        """Keep the durable lease when a broker returns or launch becomes unknown."""
+        self.release_on_exit = False
+
+    def reclaim(self) -> None:
+        """Use only after proving that a launch did not start a worker."""
+        self.release_on_exit = True
+
+
+def release_owned_lease(manager: Any, claim: dict[str, Any]) -> bool:
+    """Release the exact original marker; preserve foreign or ambiguous ownership."""
+    from bootstrap import BootstrapError
+
+    try:
+        if set(claim) != {"schema_version", "environment", "lease_id"}:
+            return False
+        name, lease_id = claim["environment"], claim["lease_id"]
+        if (
+            type(claim["schema_version"]) is not int
+            or claim["schema_version"] != 1
+            or not isinstance(name, str)
+            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name) is None
+            or not isinstance(lease_id, str)
+            or re.fullmatch(r"[0-9a-f]{32}", lease_id) is None
+        ):
+            return False
+        raw = _json({"schema_version": 1, "owner": "reprollm-skill-worker", "lease_id": lease_id})
+        with manager._lock():
+            environment = manager.environment_path(name)
+            leases = environment / "leases"
+            path = leases / (lease_id + ".json")
+            if (
+                environment.is_symlink()
+                or leases.is_symlink()
+                or path.is_symlink()
+                or not path.is_file()
+                or path.stat().st_size != len(raw)
+                or path.read_bytes() != raw
+            ):
+                return False
+            path.unlink()
+            if not any(leases.iterdir()):
+                leases.rmdir()
+        return True
+    except (BootstrapError, OSError, ValueError, TypeError, KeyError):
+        return False
+
+
+def release_operation_lease(home: Path, claim: dict[str, Any]) -> bool:
+    from bootstrap import Bootstrap
+    from install_catalog import load_catalog
+
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "assets/install-catalog.json")
+    return release_owned_lease(Bootstrap(home, catalog), claim)
 
 
 @contextlib.contextmanager
 def _worker_lease(manager: Any, name: str) -> Iterator[_WorkerLease]:
-    from bootstrap import BootstrapError
-
     # Verification and the lease claim share the installer's mutation lock so
     # uninstall cannot remove an environment between its check and worker start.
     lease_id = uuid.uuid4().hex
@@ -1190,27 +1359,13 @@ def _worker_lease(manager: Any, name: str) -> Iterator[_WorkerLease]:
         leases.mkdir(mode=0o700, exist_ok=True)
         path = leases / (lease_id + ".json")
         _atomic_snapshot(path, raw)
-    lease = _WorkerLease(status, environment)
+    lease = _WorkerLease(
+        status, environment, {"schema_version": 1, "environment": name, "lease_id": lease_id}
+    )
     try:
         yield lease
     finally:
-        try:
-            with manager._lock():
-                if manager.environment_path(name) != environment or leases.is_symlink():
-                    raise ScopeError("runtime_lease_directory_changed")
-                if (
-                    path.is_symlink()
-                    or not path.is_file()
-                    or path.stat().st_size != len(raw)
-                    or path.read_bytes() != raw
-                ):
-                    raise ScopeError("runtime_lease_ownership_changed")
-                path.unlink()
-                if not any(leases.iterdir()):
-                    leases.rmdir()
-        except (BootstrapError, OSError, ValueError, ScopeError):
-            # Preserve unknown leases and report cleanup failure; never infer
-            # another worker's liveness or erase its claim.
+        if lease.release_on_exit and not release_owned_lease(manager, lease.claim):
             lease.cleanup_failed = True
 
 
@@ -1225,11 +1380,31 @@ class RuntimeExecutor:
 
         worker_started = False
         try:
-            if request.action not in READONLY_ACTIONS | WRITE_ACTIONS:
+            if request.action not in AVAILABLE_ACTIONS - BASE_ACTIONS:
                 return blocked(request.action, "action_unavailable")
-            project_root(request)
+            root = project_root(request)
             home = self.home or default_home()
             catalog_path = Path(__file__).resolve().parents[1] / "assets/install-catalog.json"
+            if request.action in OPERATION_ACTIONS or (
+                long_operation(request) and request.options.get("operation_id")
+            ):
+                from skill_operations import control
+
+                if request.response.cursor:
+                    return execute(
+                        request, cache_home=home / "responses", identity=operation_identity()
+                    )
+                controlled = control(request, home=home, root=root)
+                if controlled is not None:
+                    return finish_reply(
+                        controlled,
+                        request,
+                        root=root,
+                        external=[],
+                        cache_home=home / "responses",
+                        identity=operation_identity(),
+                        sanitized=True,
+                    )
             catalog = load_catalog(catalog_path)
             manager = Bootstrap(home, catalog)
             try:
@@ -1258,6 +1433,31 @@ class RuntimeExecutor:
                 status = manager.update(selected.id)
                 if not _compatible_installation(status):
                     return blocked(request.action, "compatible_tool_preparation_failed")
+            if long_operation(request):
+                from skill_operations import start
+
+                identity = _sha(
+                    catalog_path.read_bytes()
+                    + helper_code_identity().encode("ascii")
+                    + _json(status)
+                )
+                return finish_reply(
+                    start(
+                        request,
+                        home=home,
+                        root=root,
+                        identity=identity,
+                        manager=manager,
+                        environment_name=status["environment"],
+                        lease_factory=_worker_lease,
+                    ),
+                    request,
+                    root=root,
+                    external=[],
+                    cache_home=home / "responses",
+                    identity=operation_identity(),
+                    sanitized=True,
+                )
             with _worker_lease(manager, status["environment"]) as lease:
                 identity = _sha(
                     catalog_path.read_bytes()
@@ -1340,7 +1540,11 @@ class RuntimeExecutor:
 
 
 def _unknown_write_effects(request: Request, reply: Reply) -> None:
-    if request.action in WRITE_ACTIONS and not request.options.get("preview", False):
+    if (
+        request.action in WRITE_ACTIONS | LOCAL_WRITE_ACTIONS
+        and not request.options.get("preview", False)
+        and not (request.action == "lock" and request.options.get("check", False))
+    ):
         reply.data = {
             "scope": "unknown_completion",
             "artifact_publication_unknown": True,
