@@ -9,6 +9,16 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK18 (spec §§5, 16, 22): add a native run adapter with finite, source-bound
+  launch previews, exact saved/explicit argv and cwd selection, durable run-ID
+  binding before recorder entry, and unchanged native capture/record semantics.
+  Require isolated worker descriptors, preserve caller environment and known
+  child outcomes, and keep advisory preflight availability separate from actual
+  explicit-command readiness when no manifest exists. Recheck allocated directory
+  identity around partial recovery, bind lexical cwd aliases including parent
+  mappings, and preserve actionable preflight diagnostics through existing privacy
+  projection. Distinguish returned, read-back and unknown record evidence.
+
 - SK17 (spec §§7, 16, 20, 22): preview discovery through the original collector,
   bind source/model/endpoint and a specific cost grant, and run the native client
   through owned operations. Reserve each possible POST before sending, retain
