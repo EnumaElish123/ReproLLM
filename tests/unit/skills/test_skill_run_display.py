@@ -56,7 +56,7 @@ def record(
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / "run.json"
     raw = json.dumps(payload, ensure_ascii=False) + "\n"
-    path.write_text(raw)
+    path.write_text(raw, encoding="utf-8")
     return path, raw
 
 
@@ -90,7 +90,7 @@ def test_public_observations_keep_original_native_text_and_file(
         native.stderr,
     )
     assert diagnostics == []
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 @pytest.mark.parametrize("value", [0, False, None, [0, False, None], {"visible": False}])
@@ -103,7 +103,7 @@ def test_public_value_types_keep_complete_original_native_text(project: Path, va
         native.stdout,
         native.stderr,
     )
-    assert not diagnostics and path.read_text() == original
+    assert not diagnostics and path.read_text(encoding="utf-8") == original
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ def test_opaque_observation_is_masked_before_native_text_formatting(
     assert result.exit_code == 0 and CANARY not in result.stdout
     assert "<REDACTED:generic_kv>" in result.stdout
     assert any(item["code"] == "display_value_transformation" for item in diagnostics)
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 @pytest.mark.parametrize(
@@ -150,7 +150,7 @@ def test_command_argv_context_and_public_spacing(
         assert diagnostics
     else:
         assert result.stdout == native.stdout and not diagnostics
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 def test_command_mask_uses_original_previous_flags_without_modifying_input() -> None:
@@ -216,7 +216,7 @@ def test_secret_environment_observation_is_masked_in_text(project: Path, name: s
     assert CANARY in native.stdout
     result, diagnostics = show(project)
     assert CANARY not in result.stdout and "<REDACTED:generic_kv>" in result.stdout
-    assert diagnostics and path.read_text() == original
+    assert diagnostics and path.read_text(encoding="utf-8") == original
 
 
 @pytest.mark.parametrize("value", [None, "<REDACTED:generic_kv>"])
@@ -229,7 +229,7 @@ def test_unknown_or_already_private_env_value_keeps_native_text(project: Path, v
         native.stdout,
         native.stderr,
     )
-    assert not diagnostics and path.read_text() == original
+    assert not diagnostics and path.read_text(encoding="utf-8") == original
 
 
 def test_existing_secret_presence_metadata_is_not_a_bound_secret_value(project: Path) -> None:
@@ -245,7 +245,7 @@ def test_existing_secret_presence_metadata_is_not_a_bound_secret_value(project: 
     }
     safe = runtime._sanitize(payload, project, action="runs.show")
     assert safe["environment"]["env"] == presence
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 def test_source_descriptor_privacy_does_not_inherit_the_binding_key(project: Path) -> None:
@@ -254,7 +254,7 @@ def test_source_descriptor_privacy_does_not_inherit_the_binding_key(project: Pat
     result, _ = show(project)
     assert "config(configs/options.yaml:credentials.password)" in result.stdout
     assert CANARY not in result.stdout
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 def test_freeform_shape_never_receives_source_context_reset(project: Path) -> None:
@@ -262,7 +262,7 @@ def test_freeform_shape_never_receives_source_context_reset(project: Path) -> No
     path, original = record(project, value=value)
     result, diagnostics = show(project)
     assert CANARY not in result.stdout and diagnostics
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 def test_large_values_and_colliding_private_keys_keep_both_members(project: Path) -> None:
@@ -278,7 +278,7 @@ def test_large_values_and_colliding_private_keys_keep_both_members(project: Path
     rendered = json.loads(line.split(" = ", 1)[1].rsplit(" (", 1)[0])
     assert len(rendered) == 2
     assert any(item["code"] == "display_keys_disambiguated" for item in diagnostics)
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 def test_source_patterns_and_controls_are_sanitized_before_render(project: Path) -> None:
@@ -288,7 +288,7 @@ def test_source_patterns_and_controls_are_sanitized_before_render(project: Path)
     result, diagnostics = show(project)
     assert secret not in result.stdout and "\u0001" not in result.stdout
     assert diagnostics
-    assert path.read_text() == original
+    assert path.read_text(encoding="utf-8") == original
 
 
 @pytest.mark.parametrize("failure", ["invoke", "projection"])

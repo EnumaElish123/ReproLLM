@@ -15,6 +15,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   previews, explicit overwrite hashes and preserved partial/unknown write facts.
   Keep historical source-aware privacy in the emitted artifacts as well as replies.
 
+- SK12/SK13 (spec §22): make Windows test construction portable with short
+  parameter IDs and explicit UTF-8 historical-run fixture I/O. Keep the full
+  256 KiB reply payload, Unicode values and original behavior assertions;
+  product code and platform support claims are unchanged.
+
 - SK13 (spec §§5, 9–10, 16, 21–22): expose local audit, doctor, profile/task
   inspection, recorded-run inspection, diff and command preview through the
   verified Skill installation. Preserve native results and diagnostics with

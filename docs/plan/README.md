@@ -27,8 +27,10 @@ source/cache-wheel/online installation pass. Corrected delivery-head CI is green
 recorded above. **SK2-B (SK12 → SK13) is locally accepted at `e07963d`**, with exact delivery-head CI pending.
 The [batch report](../dogfooding/2026-10-30-skill-sk2b/README.md) records all 24 quality
 checks, 5,911 tests, fresh native five-project Gate A, 86 installed checks / 250 calls,
-and independent source-aware privacy review. Early provisional/interrupted attempts remain
-excluded. SK14 is undergoing implementation review and correction; SK15–SK21 remain pending;
+and independent source-aware privacy review. The original report head `916c883` passed four
+platforms but failed Windows test construction; the [test-only correction](../dogfooding/2026-10-30-skill-sk2b/windows-ci-correction.md)
+at `af62013` retains the payload/assertions and passes a fresh complete local quality gate.
+Corrected delivery-head CI remains pending. Early provisional/interrupted attempts remain excluded. SK14 is undergoing implementation review and correction; SK15–SK21 remain pending;
 the unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release
