@@ -244,7 +244,11 @@ def test_unexpected_provider_failure_is_private_internal_error() -> None:
     assert b"SyntheticSecret" not in protocol.encode_reply(reply)
 
 
-@pytest.mark.parametrize("data,expected_exit", [("x" * protocol.MAX_REPLY_BYTES, 2), (object(), 3)])
+@pytest.mark.parametrize(
+    "data,expected_exit",
+    [("x" * protocol.MAX_REPLY_BYTES, 2), (object(), 3)],
+    ids=["reply-budget-exceeded", "invalid-executor-reply"],
+)
 def test_entry_exit_matches_the_serialized_reply(
     monkeypatch: pytest.MonkeyPatch,
     data: Any,
