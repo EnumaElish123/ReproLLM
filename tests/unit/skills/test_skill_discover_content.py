@@ -408,7 +408,7 @@ def test_template_proof_never_hides_private_decoded_expression_content(
     assert not (tmp_path / "cache").exists()
 
 
-def test_source_proof_never_evaluates_the_template(
+def test_unproven_template_is_rejected_without_evaluation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     name = "REPROLLM_TEMPLATE_EVALUATED"
@@ -423,7 +423,7 @@ def test_source_proof_never_evaluates_the_template(
     )
     request = Request("discover.preview", str(root), {"experimental": True, "show_content": True})
     result = runtime.execute(request, cache_home=tmp_path / "cache", identity="b" * 64)
-    assert result.invocation == "handled_result" and result.complete
+    assert result.invocation == "blocked" and result.data is None
     assert name not in os.environ
 
 
@@ -499,7 +499,7 @@ def test_real_worker_preserves_single_relative_suffix_after_unexecuted_call(tmp_
     root.mkdir()
     (root / "train.py").write_text(
         "from dataclasses import dataclass\n@dataclass\nclass Args:\n"
-        '    label: str = "中文"; path: str = f"{unexecuted_base(\'public\')}/results.json"\n',
+        '    label: str = "中文"; path: str = f"{os.getcwd()}/results.json"\n',
         encoding="utf-8",
     )
     expected = native_messages(root)

@@ -9,6 +9,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK17 (spec §§16.2, 20.2–20.3, 22): require a finite positive expression grammar
+  for source-template proofs, replacing incomplete computed-mapping rejection.
+  Refuse opaque factories, aliases, containers and computed formatting before
+  credentials or budget work; limit generic portable namespace paths to literal
+  lexemes. Preserve the original frozen input bytes without evaluating source.
+
 - SK17 (spec §§16.2, 20.2–20.3, 22): reject source paths without an explicit
   portable predicate or current AST proof, including template-prefixed private
   paths exempted by ordinary display privacy. Preserve decoded mapping-key

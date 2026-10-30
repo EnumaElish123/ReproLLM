@@ -108,7 +108,7 @@ def test_unsafe_source_is_refused_before_credential_ledger_or_send(
     assert not (context.home / "operations/discovery-budgets").exists()
 
 
-def test_literal_public_mapping_keeps_exact_source_and_closing_tokens(tmp_path: Path) -> None:
+def test_unproven_public_mapping_is_blocked_without_any_secret(tmp_path: Path) -> None:
     root = tmp_path / "research"
     root.mkdir()
     (root / "README.md").write_text("Original model token [/INST]\n", encoding="utf-8")
@@ -116,5 +116,5 @@ def test_literal_public_mapping_keeps_exact_source_and_closing_tokens(tmp_path: 
     expected = native_messages(root)
     request = Request("discover.preview", str(root), {"experimental": True, "show_content": True})
     result = validate_frame(worker(request, tmp_path / "cache"), expected_action=request.action)
-    assert result.invocation == "handled_result" and result.complete
-    assert result.data["messages"] == expected
+    assert "'public'" in expected[1]["content"]
+    assert result.invocation == "blocked" and result.data is None

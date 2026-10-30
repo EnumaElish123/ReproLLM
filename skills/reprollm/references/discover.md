@@ -18,9 +18,16 @@ Native-collected source text retains portable source literals, including unnamed
 retain proven comment identifier separators and finite, unevaluated template
 path lexemes; template expressions are never executed. Reports, diagnostics and
 other metadata still use the ordinary privacy projection.
-Arbitrary `{base}/path` text is not proof of a safe source path. Python template
-proofs retain decoded literal mapping keys when checking values; computed keys,
-unpacking or computed secret values without a safe boundary are refused.
+Arbitrary `{base}/path` text is not proof of a safe source path. Namespace paths
+must be literal lexemes; a dynamic `/api/{...}` route has no automatic exemption.
+An immediately paired single Markdown backtick is a delimiter outside the literal;
+embedded, repeated or unmatched backticks cannot prove a path safe.
+Python template expressions have a finite positive grammar: names, attributes,
+literal-index subscripts and simple scalars. The only supported calls are the
+unevaluated `os.getcwd()` and `random.randint()` with two pure numeric expressions
+and no keywords. Literal formatting is checked separately. Other calls, containers,
+unpacking, computed indexes and computed formatting are refused, including public
+factories whose decoded mapping context cannot be proven. No expression is run.
 
 Source text must be safe to show unchanged. Machine identities, private or unknown
 absolute roots, Windows/UNC paths, local file URIs, unsafe embedded values and

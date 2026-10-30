@@ -7,6 +7,7 @@ import contextlib
 import getpass
 import hashlib
 import io
+import math
 import re
 import socket
 import textwrap
@@ -109,52 +110,82 @@ def _controls(value: str) -> bool:
 
 
 def _expression_private(node: ast.AST, privacy: RunPrivacy) -> None:
-    """Check decoded expression leaves with literal keys; never evaluate Python."""
-    from reprollm.core.persistence import redact_keyed_values
-
+    """Prove a finite source expression without evaluating calls or containers."""
     visited = 0
 
-    def visit(item: ast.AST, keys: tuple[str, ...] = (), depth: int = 0) -> None:
+    def visit(item: ast.AST, depth: int = 0, *, numeric: bool = False) -> None:
         nonlocal visited
         visited += 1
         if depth > 64 or visited > 10_000:
             raise BudgetError("discover_review_content_unavailable")
-        probe = "ReproLLMContextProbe12345"
-        if redact_keyed_values(probe, keys) != probe and not isinstance(item, ast.Constant):
-            # A computed value under a secret key has no proven scalar boundary.
-            raise BudgetError("discover_review_content_unsafe")
-        if isinstance(item, ast.Dict):
-            for key, value in zip(item.keys, item.values, strict=True):
-                if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
-                    raise BudgetError("discover_review_content_unsafe")
-                if _controls(key.value) or privacy.text(key.value)[0] != key.value:
-                    raise BudgetError("discover_review_content_unsafe")
-                visit(value, (*keys, key.value), depth + 1)
-            return
-        if isinstance(item, ast.DictComp) or (
-            isinstance(item, ast.Call)
-            and isinstance(item.func, ast.Name)
-            and item.func.id == "dict"
-            and item.args
-        ):
-            raise BudgetError("discover_review_content_unsafe")
-        if isinstance(item, ast.keyword):
-            if item.arg is None:
-                raise BudgetError("discover_review_content_unsafe")
-            visit(item.value, (*keys, item.arg), depth + 1)
-            return
         if isinstance(item, ast.Constant):
+            value = item.value
+            if not (value is None or isinstance(value, (str, bool, int, float))):
+                raise BudgetError("discover_review_content_unsafe")
+            if numeric and (isinstance(value, bool) or not isinstance(value, (int, float))):
+                raise BudgetError("discover_review_content_unsafe")
             if (
-                isinstance(item.value, str)
-                and _controls(item.value)
-                or privacy.value(item.value, keys) != item.value
+                isinstance(value, float)
+                and not math.isfinite(value)
+                or isinstance(value, str)
+                and _controls(value)
+                or privacy.value(value) != value
             ):
                 raise BudgetError("discover_review_content_unsafe")
             return
-        for child in ast.iter_child_nodes(item):
-            visit(child, keys, depth + 1)
+        if numeric:
+            if isinstance(item, ast.UnaryOp) and isinstance(item.op, (ast.UAdd, ast.USub)):
+                visit(item.operand, depth + 1, numeric=True)
+                return
+            if isinstance(item, ast.BinOp) and isinstance(
+                item.op, (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Mod, ast.Pow)
+            ):
+                visit(item.left, depth + 1, numeric=True)
+                visit(item.right, depth + 1, numeric=True)
+                return
+            raise BudgetError("discover_review_content_unsafe")
+        references = (ast.Name, ast.Attribute, ast.Subscript)
+        if isinstance(item, ast.Name):
+            return
+        if isinstance(item, ast.Attribute) and isinstance(item.value, references):
+            visit(item.value, depth + 1)
+            return
+        if (
+            isinstance(item, ast.Subscript)
+            and isinstance(item.value, references)
+            and isinstance(item.slice, ast.Constant)
+            and isinstance(item.slice.value, (str, int))
+            and not isinstance(item.slice.value, bool)
+        ):
+            visit(item.value, depth + 1)
+            visit(item.slice, depth + 1)
+            return
+        if (
+            isinstance(item, ast.Call)
+            and isinstance(item.func, ast.Attribute)
+            and isinstance(item.func.value, ast.Name)
+            and not item.keywords
+        ):
+            name = (item.func.value.id, item.func.attr)
+            if name == ("os", "getcwd") and not item.args:
+                return
+            if name == ("random", "randint") and len(item.args) == 2:
+                for argument in item.args:
+                    visit(argument, depth + 1, numeric=True)
+                return
+        # An opaque call/container can introduce unknown decoded key context.
+        raise BudgetError("discover_review_content_unsafe")
 
-    visit(node)
+    if not isinstance(node, ast.FormattedValue):
+        raise BudgetError("discover_review_content_unsafe")
+    visit(node.value)
+    if node.format_spec is not None:
+        if not isinstance(node.format_spec, ast.JoinedStr):
+            raise BudgetError("discover_review_content_unsafe")
+        for part in node.format_spec.values:
+            if not isinstance(part, ast.Constant) or not isinstance(part.value, str):
+                raise BudgetError("discover_review_content_unsafe")
+            visit(part)
 
 
 def _source_proofs(payload: Any, root: Path) -> tuple[_SourceProof, ...]:
@@ -295,15 +326,28 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
                 path.startswith(proof.lexeme) if proof.template_prefix else path == proof.lexeme
             )
             home_relative = prefix.endswith("~")
+            literal = path
+            opening = match.start() - (2 if home_relative else 1)
             if (
-                not path.startswith("/")
-                or path.startswith("//")
-                or "\\" in path
-                or any(part in {".", ".."} for part in path.split("/"))
-                or any(path == base or path.startswith(base + "/") for base in machine_roots)
+                not proved
+                and path.endswith("`")
+                and path.count("`") == 1
+                and opening >= 0
+                and value[opening] == "`"
+                and (opening == 0 or value[opening - 1] != "`")
+            ):
+                literal = path[:-1]
+            if (
+                not literal.startswith("/")
+                or literal.startswith("//")
+                or "\\" in literal
+                or any(part in {".", ".."} for part in literal.split("/"))
+                or any(literal == base or literal.startswith(base + "/") for base in machine_roots)
             ):
                 raise BudgetError("discover_review_content_unsafe")
-            parts = PurePosixPath(path).parts
+            if not proved and any(char in literal for char in "{}[]()`$"):
+                raise BudgetError("discover_review_content_unsafe")
+            parts = PurePosixPath(literal).parts
             if (
                 not (home_relative or proved)
                 and len(parts) > 1
@@ -338,9 +382,9 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
                 and prefix.endswith("[")
                 and value[match.end() : match.end() + 1] == "]"
             )
-            allowed = allowed or bool(re.match(r"/v[0-9]+/", path))
-            if not allowed and prefix.endswith("](") and "%" not in path:
-                target = root / path.split("#", 1)[0].split("?", 1)[0].lstrip("/")
+            allowed = allowed or bool(re.match(r"/v[0-9]+/", literal))
+            if not allowed and prefix.endswith("](") and "%" not in literal:
+                target = root / literal.split("#", 1)[0].split("?", 1)[0].lstrip("/")
                 resolved = target.resolve()
                 allowed = resolved.is_relative_to(root.resolve()) and resolved.exists()
             if not allowed:
