@@ -1,6 +1,6 @@
 # Skill v2 验收矩阵
 
-本文件与 [v2 开发方案](README.md)配套。实际执行状态见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)；
+本文件与 [v2 开发方案](README.md)配套。实际执行状态见 [SK2-A](../../dogfooding/2026-10-30-skill-sk2a/README.md)、[SK2-B](../../dogfooding/2026-10-30-skill-sk2b/README.md)及 [SK2-C 报告](../../dogfooding/2026-10-31-skill-sk2c/README.md)；
 未记录的后续场景仍为 NOT_RUN，不能把计划表当执行收据。
 本轮维护者暂缓 Claude Code 适配；SK20 先验收 Codex，Claude Code 与双宿主门单列为
 `DEFERRED_BY_MAINTAINER`，不以登录缺失阻塞其余开发，也不计双宿主 PASS。

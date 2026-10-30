@@ -9,6 +9,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK14 (spec §§3.2, 22): keep native init planning read-only to Git index stat
+  caches, restore the caller environment on success and error, and retain strict
+  source/index change refusal. Preserve schema-tagged research inputs with a
+  bounded standard-library schema-role check.
+
 - SK15 (spec §§1, 4, 7, 22): expose offline lock/check and the complete project-rule
   lifecycle through guarded Skill writes. Bind reviewed candidates and previews,
   retain immutable recovery archives and preserve native results and actual effects.
