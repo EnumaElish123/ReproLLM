@@ -13,6 +13,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- SK21 (spec §§19–20; Skill plan §6.3): apply the artifact privacy contract to
+  agent-written documents and keep exported reports unchanged. Explain extra
+  observations in the conversation with relative links rather than appending
+  local machine paths to a generated report.
+
 - SK14 (spec §19; Skill plan §5): keep native export's input classification and Git audit
   read-only so its own index refresh cannot invalidate publication guards in a
   fresh clone. Preserve input signatures and refusal of real source changes.

@@ -198,6 +198,14 @@ current-tree scope. External record bundles require explicit scope for their
 actual selected record and native snapshot reads. `schema.export` uses `options.out`
 (default `schemas`) and preserves the ten native schema bytes for that platform.
 
+Link the report published by `export` without hand-editing or appending to it.
+Explain additional observations in the conversation, using project-relative links
+and the actual evidence scope. If the rendered command omits quoting, show the
+recorded argv there, preserving empty strings. Agent-written documents follow the
+same privacy contract: exclude secrets, absolute local paths, hostnames and
+usernames. Additional explanation must preserve the helper's privacy projection
+and guarded publication.
+
 `phase: applied` and `artifacts_written` describe completed publications.
 `phase: partial` or `artifact_publication_unknown` requires checking the specified
 targets. A timeout, lost response or `safe_to_repeat: false` does not authorize
