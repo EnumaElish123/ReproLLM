@@ -22,6 +22,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   export input protection. Preserve saved/historical argv and protection for
   explicitly named input files and directories.
 
+- SK17 (spec §§16.2, 20.3, 22): stop paired inline-code path literals at their
+  actual closing backtick when the path matcher includes trailing sentence
+  punctuation. Preserve exact source bytes while refusing further path,
+  backtick, text or computational suffixes under that delimiter proof.
+
 - SK17 (spec §§16.2, 20.2–20.3, 22): require a finite positive expression grammar
   for source-template proofs, replacing incomplete computed-mapping rejection.
   Refuse opaque factories, aliases, containers and computed formatting before

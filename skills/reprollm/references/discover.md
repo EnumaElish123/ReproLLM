@@ -20,8 +20,10 @@ path lexemes; template expressions are never executed. Reports, diagnostics and
 other metadata still use the ordinary privacy projection.
 Arbitrary `{base}/path` text is not proof of a safe source path. Namespace paths
 must be literal lexemes; a dynamic `/api/{...}` route has no automatic exemption.
-An immediately paired single Markdown backtick is a delimiter outside the literal;
-embedded, repeated or unmatched backticks cannot prove a path safe.
+An immediately paired single Markdown backtick is a delimiter outside the literal.
+Only finite sentence punctuation may follow its closing delimiter; another slash,
+backtick, ordinary text or computation cannot inherit that proof. Embedded,
+repeated or unmatched backticks cannot prove a path safe.
 Python template expressions have a finite positive grammar: names, attributes,
 literal-index subscripts and simple scalars. The only supported calls are the
 unevaluated `os.getcwd()` and `random.randint()` with two pure numeric expressions
