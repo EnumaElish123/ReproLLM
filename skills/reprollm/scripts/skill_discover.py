@@ -330,13 +330,15 @@ def _source_text(value: str, root: Path, proofs: tuple[_SourceProof, ...] = ()) 
             opening = match.start() - (2 if home_relative else 1)
             if (
                 not proved
-                and path.endswith("`")
                 and path.count("`") == 1
                 and opening >= 0
                 and value[opening] == "`"
                 and (opening == 0 or value[opening - 1] != "`")
             ):
-                literal = path[:-1]
+                closing = path.index("`")
+                if any(char not in ".,;:!?。！？、，；：…" for char in path[closing + 1 :]):
+                    raise BudgetError("discover_review_content_unsafe")
+                literal = path[:closing]
             if (
                 not literal.startswith("/")
                 or literal.startswith("//")

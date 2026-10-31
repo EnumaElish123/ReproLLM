@@ -155,3 +155,42 @@ def test_inline_code_delimiters_never_prove_computed_or_private_paths(
     result = validate_frame(worker(request, tmp_path / "cache"), expected_action=request.action)
     assert result.invocation == "blocked" and result.data is None
     assert result.diagnostics == [{"code": "discover_review_content_unsafe"}]
+
+
+@pytest.mark.parametrize("tail", [".", ":", "!", "?", "。"])
+def test_inline_code_path_stops_at_closing_before_sentence_punctuation(
+    tmp_path: Path, tail: str
+) -> None:
+    root = tmp_path / "research"
+    root.mkdir()
+    (root / "README.md").write_text("Use `/usr/local/tool/env.sh`" + tail + "\n", encoding="utf-8")
+    expected = native_messages(root)
+    request = Request("discover.preview", str(root), {"experimental": True, "show_content": True})
+    result = validate_frame(worker(request, tmp_path / "cache"), expected_action=request.action)
+    assert result.invocation == "handled_result" and result.complete
+    assert result.data["messages"] == expected
+
+
+@pytest.mark.parametrize(
+    "tail",
+    [
+        "/home/foreign-person/private",
+        "./private",
+        "`",
+        "{factory()}",
+        "(factory())",
+        "$VALUE",
+        ":word",
+        ".../unknown-root",
+    ],
+)
+def test_inline_code_punctuation_tail_cannot_shield_further_source(
+    tmp_path: Path, tail: str
+) -> None:
+    root = tmp_path / "research"
+    root.mkdir()
+    (root / "README.md").write_text("Use `/usr/local/tool/env.sh`" + tail + "\n", encoding="utf-8")
+    request = Request("discover.preview", str(root), {"experimental": True, "show_content": True})
+    result = validate_frame(worker(request, tmp_path / "cache"), expected_action=request.action)
+    assert result.invocation == "blocked" and result.data is None
+    assert result.diagnostics == [{"code": "discover_review_content_unsafe"}]
