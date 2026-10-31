@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- SK21: document one-time Skill setup and concrete natural-language trials, keep the selected tool home across turns, and distinguish operation completion from a failed or interrupted experiment. Host/resource acceptance and external user feedback remain separate.
+
 - SK20: add portable behavioral checks and an explicit CLI option coverage map; distinguish unit doubles, native auxiliary actions, resource gates and real-host evidence.
 
 ### Changed

@@ -1,5 +1,9 @@
 # Validate a candidate wheel
 
+For natural-language installation and experiment workflows, use the
+[Agent Skill guide](tutorials/agent-skill.md). Tool installation and research
+environments remain separate; candidate and support status are recorded there.
+
 The [roadmap](community/roadmap.md) is the availability source. A package installed
 from PyPI and an unreleased source checkout can have different features. The
 [quickstart](quickstart.md) is generated from source; candidate acceptance uses

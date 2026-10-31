@@ -11,6 +11,9 @@ Send one JSON request on stdin; read one JSON reply on stdout. Resolve
 process input rather than interpolating user text into a shell command.
 The optional `--home` selects the Skill-owned installation directory; it is not
 the user's research environment. The default is the platform's user data directory.
+Prefer the default unless the user or host selects another permitted owned location.
+Keep that exact home for the whole workflow and carry it into later Agent turns;
+a new tool directory is not a way to recover an existing operation.
 `-I -B` keeps project modules out of imports and avoids modifying verified packages.
 
 ## Introduction and status
@@ -32,6 +35,15 @@ query itself. Installation lifecycle commands are in `scripts/bootstrap.py`:
 `ensure`, `status`, explicit `update`, `rollback` and `uninstall`. Use its `--help`
 for parameters. A concrete authorized task may prepare the tool as necessary;
 reuse an already verified compatible installation.
+
+For first preparation, use the selected supported tool Python with
+`-I -B SKILL_DIRECTORY/scripts/bootstrap.py ensure`. Reuse the same optional
+`--home` on bootstrap and request calls. When an approved offline wheelhouse is
+provided, add `--offline --wheelhouse WHEELHOUSE_DIRECTORY`; an incomplete cache
+must report its missing input, not silently switch to an online install. These
+arguments come from the installer interface; do not inspect its implementation
+merely to choose an ordinary first-install command. The tool interpreter never
+becomes the experiment interpreter by implication.
 
 ## Request contract
 

@@ -49,8 +49,9 @@ entry. Allocation and worker ACK do not prove that the child launched.
 `execution_started` describes worker entry. The recorder's result is under
 `run.result.data.result`; its `record_scope` distinguishes direct native return,
 validated native readback and unknown evidence. Use the actual record status and
-`child_exit_code`: completed 7, interrupted -15/-9 and unknown startup exit are
-different outcomes. Native warnings, delivery failure and lease cleanup remain
+`child_exit_code`: a completed operation can contain a native failed run with
+child exit 7; an interrupted child may report -15/-9. Unknown startup exit is a
+separate outcome. Operation completion does not imply experiment success. Native warnings, delivery failure and lease cleanup remain
 separate from the child's exit. A result remains useful when descendant cleanup
 is unknown; report both facts.
 
