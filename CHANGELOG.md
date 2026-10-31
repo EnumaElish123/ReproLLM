@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- SK20: add portable behavioral checks and an explicit CLI option coverage map; distinguish unit doubles, native auxiliary actions, resource gates and real-host evidence.
+
 ### Changed
 
 - SK14 (spec §19; Skill plan §5): keep native export's input classification and Git audit
