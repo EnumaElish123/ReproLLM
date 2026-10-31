@@ -1228,6 +1228,7 @@ def execute(
             output = _output_target(request, root)
             display_diagnostics: list[dict[str, Any]] = []
             if request.action == "discover.preview":
+                from skill_discover import finalize_preview
                 from skill_discover import preview as discover_preview
 
                 reply = discover_preview(
@@ -1237,12 +1238,13 @@ def execute(
                     helper_identity=identity,
                 )
                 return finish_reply(
-                    reply,
+                    finalize_preview(reply, root),
                     request,
                     root=root,
                     external=external,
                     cache_home=cache_home,
                     identity=identity,
+                    sanitized=True,
                 )
             if request.action == "run.preview":
                 from skill_run import preview_run

@@ -12,6 +12,33 @@ has the native positive-character-budget meaning; headers and manifest field
 context add content beyond collected-file characters. `paper` remains unsupported.
 Preview requires no endpoint, credentials or HTTP client and writes no project file.
 
+Native-collected source text retains portable source literals, including unnamed
+`~/` suffixes, verified repository-root links, system installation paths under
+`/usr/` and `/opt/`, and `/api/` or `/vN/` routes. Collected Python snippets also
+retain proven comment identifier separators and finite, unevaluated template
+path lexemes; template expressions are never executed. Reports, diagnostics and
+other metadata still use the ordinary privacy projection.
+Arbitrary `{base}/path` text is not proof of a safe source path. Namespace paths
+must be literal lexemes; a dynamic `/api/{...}` route has no automatic exemption.
+An immediately paired single Markdown backtick is a delimiter outside the literal;
+embedded, repeated or unmatched backticks cannot prove a path safe.
+Python template expressions have a finite positive grammar: names, attributes,
+literal-index subscripts and simple scalars. The only supported calls are the
+unevaluated `os.getcwd()` and `random.randint()` with two pure numeric expressions
+and no keywords. Literal formatting is checked separately. Other calls, containers,
+unpacking, computed indexes and computed formatting are refused, including public
+factories whose decoded mapping context cannot be proven. No expression is run.
+
+Source text must be safe to show unchanged. Machine identities, private or unknown
+absolute roots, Windows/UNC paths, local file URIs, unsafe embedded values and
+control characters block review and submission, rather than changing the body
+under its original hash. `discover_review_content_unsafe`,
+`discover_review_content_controls` and `discover_review_content_unavailable`
+return no outgoing approval. Narrow the original `discover.exclude` configuration
+when appropriate and preview again, or review locally with the original CLI.
+An older spending grant cannot bypass this check; it runs before reading endpoint
+credentials, creating a budget ledger or sending a request.
+
 Review all pages, including excluded/dropped/truncated files. The returned
 `approval_requirements` bind the helper, full finite source view, config and actual
 messages. They also name the existing environment variables used for endpoint,
