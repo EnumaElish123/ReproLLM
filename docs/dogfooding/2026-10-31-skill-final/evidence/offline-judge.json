@@ -1,0 +1,348 @@
+{
+  "accepted": false,
+  "bindings": [
+    {
+      "field": "models.judge.id",
+      "observations": 1,
+      "source": "config:validation/judge.yaml:model",
+      "value": "deepseek-flash"
+    },
+    {
+      "field": "models.judge.endpoint.base_url",
+      "observations": 1,
+      "source": "config:validation/judge.yaml:endpoint",
+      "value": "https://api.deepseek.com"
+    },
+    {
+      "field": "evaluation.judge.params.temperature",
+      "observations": 1,
+      "source": "config:validation/judge.yaml:temperature",
+      "value": 0
+    },
+    {
+      "field": "evaluation.judge.params.max_tokens",
+      "observations": 1,
+      "source": "config:validation/judge.yaml:max_tokens",
+      "value": 256
+    }
+  ],
+  "candidate": "a81aa7a3b2fb5b9a323ee09146dfeefa2cf47c29",
+  "command_templates": {
+    "captured_experiment_child": {
+      "argv": [
+        "python",
+        "validation/judge_entry.py"
+      ],
+      "cwd": "."
+    },
+    "controller": {
+      "argv": [
+        "<formal-tool-python>",
+        "-I",
+        "-B",
+        "run_offline.py",
+        "--go",
+        "root-offline-go.json",
+        "--go-sha256",
+        "e4dbc793452168a0cc6b6564d5f68b868d097cceb59a56cb8c558631bf9d9a67"
+      ],
+      "cwd": "<fixed1-preparation-root>"
+    },
+    "native_recorder": {
+      "argv": [
+        "<formal-tool-python>",
+        "-I",
+        "-B",
+        "-c",
+        "import sys; from reprollm.cli.main import cli; sys.argv[0]=\"reprollm\"; cli()",
+        "run",
+        "--capture-output",
+        "--name",
+        "offline-a",
+        "--",
+        "python",
+        "validation/judge_entry.py"
+      ],
+      "cwd": "<disposable-case-root>"
+    },
+    "provenance": "Templates reconstructed from the hash-bound controller/native_console/call_skill sources; Process receipts retain exit codes and raw hashes, not argv.",
+    "skill_frontdoor": {
+      "argv": [
+        "<formal-tool-python>",
+        "-I",
+        "-B",
+        "<helper-script>",
+        "--home",
+        "<tool-home>"
+      ],
+      "cwd": "<disposable-case-root>",
+      "helper_script_source_relative_locator": "skills/reprollm/scripts/reprollm_skill.py",
+      "helper_script_token": "Substitute the full helper-script path from the source checkout; no private host path is stored here.",
+      "observed_sequence": [
+        "run.preview",
+        "run.start (prepare)",
+        "run.start (launch)",
+        "run.status until COMPLETED",
+        "run.result",
+        "run.start (same-operation replay)",
+        "run.result"
+      ],
+      "stdin_request_template": {
+        "action": "run.preview",
+        "grants": {
+          "install": false
+        },
+        "options": {
+          "argv": [
+            "python",
+            "validation/judge_entry.py"
+          ],
+          "capture_output": true,
+          "name": "offline-a"
+        },
+        "project": "<disposable-case-root>",
+        "schema_version": 1
+      }
+    }
+  },
+  "complete_actual_lock_deltas": [
+    {
+      "a": "2026-11-02T01:13:31Z",
+      "b": "2026-11-02T01:14:09Z",
+      "path": "datasets.eval.revision.resolved_at"
+    },
+    {
+      "a": "2026-11-02T01:13:31Z",
+      "b": "2026-11-02T01:14:09Z",
+      "path": "generated_at"
+    },
+    {
+      "a": "2026-11-02T01:13:31Z",
+      "b": "2026-11-02T01:14:09Z",
+      "path": "models.judge.observed_at"
+    }
+  ],
+  "complete_actual_raw_run_deltas": [
+    {
+      "a": "sha256:4a01024a6da1e6d0ba369022eea5a7a6e496d38664bd78c5766b18ecf5521b76",
+      "b": "sha256:e6ca20cd1f2d7cf1cc029dc86d33bb956e1e9f99ec8e03ca99e32e9486ea2f76",
+      "independent_explanation": "Actual judgment.jsonl contains the sole scientific tstamp difference. Full original raw bytes and both hashes retained; not T-02-normalized.",
+      "path": "artifacts.0.sha256"
+    },
+    {
+      "a": "ef64fb7c820c422f9bd42ffa7d035f6b4f405dfc",
+      "b": "74245a09d95dbd1835f648f11bdde2a9401d420c",
+      "independent_explanation": "Two clean disposable input commits differ only in reprollm.lock blob; exact trees independently prove that sole changed path, whose three leaf changes are generated_at, judge observed_at and local dataset revision.resolved_at.",
+      "path": "code.commit"
+    },
+    {
+      "a": 12.478301,
+      "b": 7.944933,
+      "independent_explanation": "Distinct actual native-run identity/clock measurement; retained verbatim with the two command/run receipts.",
+      "path": "duration_seconds"
+    },
+    {
+      "a": "2026-11-02T01:13:52Z",
+      "b": "2026-11-02T01:15:10Z",
+      "independent_explanation": "Distinct actual native-run identity/clock measurement; retained verbatim with the two command/run receipts.",
+      "path": "ended_at"
+    },
+    {
+      "a": "sha256:4e7b8eb7f1ab3b7fe0e5e47691b607c237412dda3b2c7062af370ca130ab1e05",
+      "b": "sha256:d6063ed6c0e1b979121ae3c6af69c372702e549e1af969ba0de6f5a5ce8f6f4c",
+      "independent_explanation": "Complete exact lock bytes differ only in generated_at, models.judge.observed_at and datasets.eval.revision.resolved_at from separately executed offline resolution. Each before/after fingerprint equals its own captured lock; within-run files unchanged.",
+      "path": "input_capture.checks.3.after.sha256"
+    },
+    {
+      "a": "sha256:4e7b8eb7f1ab3b7fe0e5e47691b607c237412dda3b2c7062af370ca130ab1e05",
+      "b": "sha256:d6063ed6c0e1b979121ae3c6af69c372702e549e1af969ba0de6f5a5ce8f6f4c",
+      "independent_explanation": "Complete exact lock bytes differ only in generated_at, models.judge.observed_at and datasets.eval.revision.resolved_at from separately executed offline resolution. Each before/after fingerprint equals its own captured lock; within-run files unchanged.",
+      "path": "input_capture.checks.3.before.sha256"
+    },
+    {
+      "a": "sha256:4e7b8eb7f1ab3b7fe0e5e47691b607c237412dda3b2c7062af370ca130ab1e05",
+      "b": "sha256:d6063ed6c0e1b979121ae3c6af69c372702e549e1af969ba0de6f5a5ce8f6f4c",
+      "independent_explanation": "Complete exact lock bytes differ only in generated_at, models.judge.observed_at and datasets.eval.revision.resolved_at from separately executed offline resolution. Each before/after fingerprint equals its own captured lock; within-run files unchanged.",
+      "path": "lock.sha256"
+    },
+    {
+      "a": "20261102T011339Z-8419db",
+      "b": "20261102T011502Z-ec2142",
+      "independent_explanation": "Distinct actual native-run identity/clock measurement; retained verbatim with the two command/run receipts.",
+      "path": "run_id"
+    },
+    {
+      "a": "2026-11-02T01:13:39Z",
+      "b": "2026-11-02T01:15:02Z",
+      "independent_explanation": "Distinct actual native-run identity/clock measurement; retained verbatim with the two command/run receipts.",
+      "path": "started_at"
+    }
+  ],
+  "complete_actual_scientific_deltas": [
+    {
+      "a": 1793582031.238413,
+      "b": 1793582109.748047,
+      "path": "tstamp"
+    }
+  ],
+  "counts": {
+    "actual_experimental_children": 2,
+    "controller_processes": 35,
+    "mock_requests": 2,
+    "raw_run_delta_rows": 9,
+    "real_provider_requests": 0,
+    "scientific_delta_rows": 1,
+    "source_tracked_files_protected": 219,
+    "unexplained_P1_P2": 0
+  },
+  "environment_scope": {
+    "child_input_consumption": "unverified",
+    "external_child_python": "3.11.12",
+    "native_context_verification": "unverified",
+    "recorder_python": "3.12.14"
+  },
+  "formal_input_sha256": {
+    "reprollm.yaml": "55de258f63c36ae5b72a4ea14f0bd8d35e8c51d29c2efcab7f0c7316020181f2",
+    "validation/judge.yaml": "7298a5b24f5b6537a924623c9481117ab5f0965d2d4abb247a5adb0026c8fa1c",
+    "validation/judge_entry.py": "35659c94714958186c5baa2a33946606055b82fac286722de8ca05c2b8990f02",
+    "validation/judge_transport.py": "78f12d538c7bd0b9588da4624d8af37ab0fddd162554c62c717d52bf211af232"
+  },
+  "full_resource_acceptance": false,
+  "installation_receipt_sha256": "fd17e6aeaf602e71aab5df64202b0246558084efa9e1209c8e2270ef0bc00a8a",
+  "limitations": [
+    "No audit, export, B, A/B parameter replay, GPU resource gate or live paid judge was run by this limited recipe.",
+    "Actual AF_INET/AF_INET6 denial and AF_UNIX allowance prove the inherited trusted-recipe socket-creation guard, not packet capture or an adversarial sandbox.",
+    "The original entry stdout contains the word real; under this exact mock run it remains synthetic and contributes zero live-judge evidence.",
+    "Original raw scientific tstamp and all nine raw run differences are retained; none are deleted or rewritten as byte equality.",
+    "Hash references name retained private originals; those originals are not embedded here because they contain execution paths or machine metadata.",
+    "These recorded/source-derived command templates grant no rerun, provider request, credential access or budget authority."
+  ],
+  "live_judge_acceptance": false,
+  "native_source": "2faa3096fa9056ba0a4e08a8b83ffd17f4ffb4e0",
+  "network_boundary": {
+    "af_unix_creation_allowed": true,
+    "bpf_instructions": 12,
+    "inet_creation_denied": [
+      2,
+      10
+    ],
+    "real_connections_attempted": 0,
+    "schema_version": 1,
+    "scope": "inherited_by_all_descendants_no_new_privs",
+    "status": "INSTALLED_AND_PROBED"
+  },
+  "original_public_source_sha256": {
+    "fastchat/conversation.py": "f641a0eb13edc43fc49c13b8c1fce3649f49567882bc0981d0677fd99c392e64",
+    "fastchat/llm_judge/common.py": "71c3b317322845cb05eb6d9b555b03e5084fa59085d24989ce521fcfa8bdc9a7",
+    "fastchat/llm_judge/data/judge_prompts.jsonl": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+    "fastchat/llm_judge/data/mt_bench/question.jsonl": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7",
+    "fastchat/model/model_adapter.py": "364bada5bd04f915ce94ccbca59cbfd95446231e91688a6a2259d4c9fd4b2a43"
+  },
+  "prepared_bundle_sha256": "b678ada8f52284549a9823f873b7c689bee16be490737b71ab6dff6abb07efbd",
+  "real_budget_authorized": false,
+  "result": {
+    "bounded_max_tokens": 256,
+    "judge": "deepseek-flash",
+    "judgment": "[[8]]",
+    "ledger_scope": "Synthetic fixture accounting only; no real charge or provider-usage claim.",
+    "messages_sha256": "ea39c83d9ddbd2fed0f5eaaf1379d4939dc7d8463697063398ceb5c8b24be685",
+    "mock_requests_per_child": 1,
+    "original_transport_inner_deadline_seconds": 90,
+    "prompt": "single-v1",
+    "question_id": 82,
+    "score": 8,
+    "upstream_requested_max_tokens": 2048
+  },
+  "root_component_acceptance": {
+    "full_resource_acceptance": false,
+    "live_judge_acceptance": false,
+    "real_budget_authorized": false,
+    "relative_artifact": "final-gate-bindings/offline_judge.json",
+    "scope": "Two A-only native/Skill synthetic mock children; offline component only",
+    "sha256": "5b3780e2aa553f7f35b6253c82af0686fa91a54d0f91474f2a95a30fe54743d3",
+    "status": "ROOT_ACCEPTED_INSTALLED_NATIVE_SKILL_SPLIT_OFFLINE_A_ONLY"
+  },
+  "root_offline_go_sha256": "e4dbc793452168a0cc6b6564d5f68b868d097cceb59a56cb8c558631bf9d9a67",
+  "root_six_checks": {
+    "both_families_native_v2_and_inputs": {
+      "evidence": "Two schema2 completed/exit0 actual runs, one per family; six captured files, eight phase checks and exact four formal A inputs.",
+      "verdict": "PASS_OFFLINE_SCOPE"
+    },
+    "full_audits_diffs_exports": {
+      "evidence": "Actual controller35commands execute capture and complete raw comparisons; no audit, export, B or paired experimental parameter replay. Nine raw run deltas and one judgment tstamp delta all independently explained.",
+      "verdict": "NOT_RUN_OUTSIDE_APPROVED_OFFLINE_SCOPE"
+    },
+    "native_skill_equivalence": {
+      "evidence": "Exact mock request/child proof/transport/ledger/logs equal; only scientific tstamp differs. Skill replay keeps operation and native run/result; originalsource219files+index unchanged.",
+      "verdict": "PASS_OFFLINE_SCOPE"
+    },
+    "privacy": {
+      "evidence": "All managed snapshots/output/logs and public Skill replies pass unchanged role-aware oracle, synthetic literal absent and key presence-only.",
+      "verdict": "PASS_OFFLINE_SCOPE"
+    },
+    "recorder_child_environment_scope": {
+      "evidence": "Verified installed148 recorder3.12.14 versus separately identified modern child3.11.12. Every native environment/hardware/command context and input consumption remain unverified.",
+      "verdict": "PASS_LIMITED_SPLIT_SCOPE"
+    },
+    "scientific_methods_and_outputs": {
+      "evidence": "Each original q82/single-v1 builder/parser consumes one exact HTTPX MockTransport request; messages ea39, cap256, upstream2048, score8 and original transport/inner90s alarm source preserved.",
+      "verdict": "PASS_SYNTHETIC_ONLY"
+    }
+  },
+  "runs": {
+    "native": {
+      "child_exit_code": 0,
+      "duration_seconds": 12.478301,
+      "run_id": "20261102T011339Z-8419db",
+      "schema_version": 2,
+      "status": "completed"
+    },
+    "skill": {
+      "child_exit_code": 0,
+      "duration_seconds": 7.944933,
+      "run_id": "20261102T011502Z-ec2142",
+      "schema_version": 2,
+      "status": "completed"
+    }
+  },
+  "schema_version": 1,
+  "scope": "Exactly two actual A-only synthetic HTTPX mock experiments: native plus Skill; original FastChat q82 single-v1 builder/parser and unchanged bounded transport.",
+  "source_and_artifact_hash_refs": {
+    "actual_receipt": {
+      "raw_included": false,
+      "relative_artifact": "offline-equivalence-receipt.json",
+      "sha256": "5ed23c8c696313061d1481a47237deaf8484301483ccdee9bef6efd6bec34b7c"
+    },
+    "actual_terminal": {
+      "raw_included": false,
+      "relative_artifact": "resource-terminal.json",
+      "sha256": "ec8ebdcd1059e260bad1d34cfd48f957f0234bff0fa8881e9e51cdd6fe7e5996"
+    },
+    "independent_readset": {
+      "raw_included": false,
+      "relative_artifact": "readset.json",
+      "sha256": "d19644388c5c8fcfb3e5a95bd36e60e335e603c7bf69dd161ab542f57115300a"
+    },
+    "independent_report": {
+      "raw_included": false,
+      "relative_artifact": "REPORT.json",
+      "sha256": "7cd6a9c371b231fe0cba9abc67236cbcc05f3d28be53f148869b4afe4492d182"
+    },
+    "network_boundary": {
+      "raw_included": false,
+      "relative_artifact": "network-boundary.json",
+      "sha256": "ff386406590da1acab2460f2de6c3a5fcca78bebf8db63a54bb0820098c0ed97"
+    },
+    "raw_run_delta": {
+      "raw_included": false,
+      "relative_artifact": "complete-run-json-deltas.json",
+      "sha256": "dff2cd362456c26a26a7601ef8551581f0c0a7c890762050324c186ad761a9f2"
+    },
+    "scientific_delta": {
+      "raw_included": false,
+      "relative_artifact": "complete-scientific-deltas.json",
+      "sha256": "e833655380b1ecc444abbf91e0434993287e2ff649b678398e881dd306c7edf0"
+    }
+  },
+  "status": "PORTABLE_OFFLINE_COMPONENT_READBACK_WITH_ROOT_COMPONENT_ACCEPTANCE"
+}

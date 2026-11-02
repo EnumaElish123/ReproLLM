@@ -15,8 +15,8 @@ base/static/CPU consumer comparisons pass. The original `21db2aa` Windows CI fai
 is retained; all five official CI jobs and the twelve required Ubuntu 3.12 steps
 passed on the corrected delivery head `429b3ed`
 ([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41035875585)).
-Full Skill work remains in progress. The published `2faa309` source bridge is now
-available for installed SK13 big-result acceptance.
+That prerequisite is closed. The published `2faa309` source bridge remains the
+trusted native input for the installed Skill acceptance.
 
 The active iteration is the [2026-10-30 Agent Skill extension v2](skill-2026-10-30/README.md):
 automatic isolated installation, capability introduction and user-directed access to the full
@@ -32,20 +32,24 @@ platforms but failed Windows test construction; the [test-only correction](../do
 at `af62013` retains the payload/assertions and passes a fresh complete local quality gate.
 Corrected `8f2130c` delivery-head CI is now green: all five jobs and Ubuntu 3.12's twelve required steps
 passed ([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41073192655)).
-**SK2-C (SK14 → SK15) is locally accepted at `981d263`**; the
+**SK2-C (SK14 → SK15) is accepted with its platform correction**; the
 [batch report](../dogfooding/2026-10-31-skill-sk2c/README.md) records 24 quality checks,
 6,189 tests, fresh five-project base acceptance, 80 complete controlled cases,
 56 uninstrumented installed-entry requests and fresh initialization checks.
 The first `ea0a7dc` delivery passed Linux but failed Windows/macOS type checks.
 The [platform-type correction](../dogfooding/2026-10-31-skill-sk2c/platform-type-correction.md)
 at `fc44c2d` passes a new complete local gate (6,193 tests), fresh all-five base and
-85 actual installed-operation requests. Corrected delivery-head CI is checked after push. Earlier provisional/interrupted
-attempts remain excluded and preserved. SK16–SK19 are being implemented and validated in isolated
-worktrees; their resource and final-session gates are not complete. SK20–SK21 remain ahead.
+85 actual installed-operation requests. All five official CI jobs and the twelve Ubuntu 3.12
+steps passed on corrected delivery `693c2c4` ([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41130054173)).
+SK10–SK21 are implemented. The final quality gate (6,666 tests), fresh all-five base/CPU,
+anonymous public HF, all-five native/Skill GPU A/B, installation channels and seven actual Codex Linux
+journeys pass. The [final session report](../dogfooding/2026-10-31-skill-final/README.md)
+records three authenticated/paid gates as BLOCKED_NOT_AUTHORIZED and checks exact pushed-head CI separately. Earlier provisional/interrupted attempts remain excluded
+and preserved. Claude Code is deferred by the maintainer; external feedback is unobserved.
 The unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release
-remain outside this plan. This installation batch does not claim a complete Skill workflow.
+remain outside this plan. This is scoped engineering delivery; the remaining blocked resource gates prevent FULL_ACCEPTED.
 
 The active usability iteration is [2026-10-29](usability-2026-10-29/README.md). UX-A is delivered with all five official CI jobs successful on `8ea80e8`. UX-B is implemented at `48caea2`: guided field descriptions, local retries, accurate remaining declarations and a [four-command first-use tutorial](../tutorials/first-experiment.md). All 24 local checks, 5,474 tests and fresh five-project acceptance (280 command receipts / 233 checks) pass, with independent receipt review. See the [UX-B report](../dogfooding/2026-10-30-usability-uxb/README.md). All five usability development tasks have local acceptance; exact final-delivery-head CI is checked after the report commit and push. External first-use feedback remains unobserved. The reliability records below remain historical.
 

@@ -5,7 +5,7 @@
 
 日期：2026-10-30。修订起点：`da0e8345f5742824fb12e2a8f602e38e507d3325`。
 维护者要求：加入自动安装、能力介绍和按用户需求调用完整功能，明确分批任务与验收。
-**执行更新：SK2-A、SK2-B 及其跨平台测试修正已验收；SK2-C 在 `981d263` 本地验收通过，待交付提交 CI。**
+**执行更新：SK2-A/B/C 及跨平台修正已验收；SK16–SK21 已实现，已授权的本地、GPU 与 Codex 门通过；线上授权门另列 BLOCKED。**
 原 SK2-A Windows 失败保留；修正后的 `429b3ed` 五项 CI 已全部通过
 （[运行记录](https://github.com/EnumaElish123/ReproLLM/actions/runs/41035875585)）。
 见 [SK2-A 报告](../../dogfooding/2026-10-30-skill-sk2a/README.md)和
@@ -17,8 +17,10 @@
 新完整 24 项本地质量门通过；修正交付 `8f2130c` 的[五项 CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/41073192655)及 Ubuntu 3.12 十二步骤已通过。
 [SK2-C 报告](../../dogfooding/2026-10-31-skill-sk2c/README.md)记录 24 质量检查、6,189 测试、fresh 五项目、80 完整受控案例、56 无插桩入口及初始化专项通过。
 首个交付 `ea0a7dc` 的 Windows/macOS 类型检查失败；
-[修正 `fc44c2d`](../../dogfooding/2026-10-31-skill-sk2c/platform-type-correction.md)经新完整质量门、6,193 测试、fresh 五项目及 85 次实际操作入口验收，修正 CI 待推送后核对。
-SK14–SK15 为 LOCAL_ACCEPTED_CI_PENDING；SK16–SK19 在独立工作树实施和验证，尚未完成资源/最终会话门，SK20–SK21 仍待交付。
+[修正 `fc44c2d`](../../dogfooding/2026-10-31-skill-sk2c/platform-type-correction.md)经新完整质量门、6,193 测试、fresh 五项目及 85 次实际操作入口验收，修正交付 `693c2c4` 的[五项 CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/41130054173)和 Ubuntu 3.12 十二个必需步骤全部通过。
+SK14–SK15 为 ACCEPTED；SK16–SK21 的共享质量、五项目基础/CPU、公开匿名 HF 和七次真实 Codex Linux 流程已通过。
+五组 GPU A/B、安装通道和末尾环境保护均通过；最终资源/交付边界见[最终会话报告](../../dogfooding/2026-10-31-skill-final/README.md)；
+具体付费授权尚未回复的分支不计 PASS，不宣称 FULL_ACCEPTED。
 原方案修订轮仅交付文稿。
 
 本版替代 [v1](v1.md) 的“不自动安装”“只预览不运行”和“不支持联网/规则写入”等限制。
@@ -210,14 +212,16 @@ PID 或进程名不能单独构成终止权限。child exit 7、信号中断、w
 | SK2-A | SK11 | 自动安装/复用/更新/回滚/卸载；空环境、并发、离线、失败保全、不污染研究环境 | SK10 | ACCEPTED |
 | SK2-B | SK12 | Skill 入口、介绍、需求路由及适配基础；介绍零副作用，已授权任务连续执行 | SK11 | ACCEPTED |
 | SK2-B | SK13 | audit/doctor/profiles/tasks/runs/diff/preview；完整结果、诊断、分页、退出码一致 | SK12 | ACCEPTED |
-| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | LOCAL_ACCEPTED_CI_PENDING |
-| SK2-C | SK15 | 离线 lock/check/大文件处理、rules 全生命周期；staleness、具体接受、归档和冲突正确 | SK14 | LOCAL_ACCEPTED_CI_PENDING |
-| SK2-D | SK16 | 在线 lock/verify-api/doctor、凭据/代理；真实元数据解析与权限失败区分 | SK15 | WORKTREE_VALIDATION_IN_PROGRESS |
-| SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | WORKTREE_VALIDATION_IN_PROGRESS |
-| SK2-E | SK18 | 保存/显式命令实际运行、环境和日志隔离；准确 argv、run v2、child exit、输入证据 | SK17 | WORKTREE_VALIDATION_IN_PROGRESS |
-| SK2-E | SK19 | 长任务查询/取消/恢复/防重复；短等待不杀长实验，断连/未知终态不重跑、不误杀 | SK18 | WORKTREE_VALIDATION_IN_PROGRESS |
-| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据；本轮按维护者更新先验 Codex | SK19 | WORKTREE_VALIDATION_IN_PROGRESS |
-| SK2-F | SK21 | 安装使用文档、介绍实例、卸载恢复与首次使用观察；工程/外部反馈分别记载 | SK20 | NOT_STARTED |
+| SK2-C | SK14 | init 交互等效填写、命令登记、export/schema；原校验、历史快照、有效覆盖意图及保全 | SK13 | ACCEPTED |
+| SK2-C | SK15 | 离线 lock/check/大文件处理、rules 全生命周期；staleness、具体接受、归档和冲突正确 | SK14 | ACCEPTED |
+| SK2-D | SK16 | 在线 lock/verify-api/doctor、凭据/代理；真实元数据解析与权限失败区分 | SK15 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+| SK2-D | SK17 | discover 预览→外发/预算→正式请求→审阅→接受→audit；重试总量/输入变化/失败不重发 | SK16 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+| SK2-E | SK18 | 保存/显式命令实际运行、环境和日志隔离；准确 argv、run v2、child exit、输入证据 | SK17 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+| SK2-E | SK19 | 长任务查询/取消/恢复/防重复；短等待不杀长实验，断连/未知终态不重跑、不误杀 | SK18 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+| SK2-F | SK20 | 空工具环境到完整流程的集成验收、宿主/平台矩阵；全部命令选项有覆盖证据；本轮按维护者更新先验 Codex | SK19 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+| SK2-F | SK21 | 安装使用文档、介绍实例、卸载恢复与首次使用观察；工程/外部反馈分别记载 | SK20 | IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE |
+
+`IMPLEMENTED_SCOPED_LOCAL_ACCEPTANCE` 表示实现与列明的本地门已通过；三项线上门仍 BLOCKED，推送后确切 CI 单独核对。
 
 每项先把 [A01–A24](acceptance.md)落实为独立预期及行为测试，再实现；不能只匹配 SKILL.md 句子。
 catalog 随候选更新，未验收能力标 unavailable，SK2-A 完成不代表完整功能已完成。
@@ -230,7 +234,7 @@ SK14 交互解耦和 SK19 状态/进程协议先给具体设计及失败路径�
 详细断言、阶段出口和资源矩阵见[验收矩阵](acceptance.md)。安装器、适配器、运行控制均是用户功能，
 即使位于 skills/scripts 也执行产品完整质量门及五项目 Gate A；每会话只在最终输入跑一次完整门。
 自动测试无真实网络；安装、在线解析、GPU 和付费 discover 另做有资源条件的集成验证。
-本轮仅文稿，不执行这些未来门，不消费 GPU/API 预算、不发布产物。
+方案制定轮仅交付文稿；本次实施按最终报告执行适用门。资源授权按本轮具体范围生效，发布仍不在范围内。
 
 推送前本地适用门通过，推送后检查同一提交五项 CI。工程、资源、宿主、公开分发和外部反馈分别列状态。
 mock/标准库 child 不替代真实 API/GPU；单宿主不等于跨宿主。缺资源记 BLOCKED，可交付已验收部分，
@@ -245,5 +249,7 @@ mock/标准库 child 不替代真实 API/GPU；单宿主不等于跨宿主。缺
 
 本版替代 v1 的 3–5 人日估算：熟悉代码的一名工程师粗估 3–5 人周，
 SK2-A/B 约 4–6 人日；其余按进程/宿主边界复杂度重估，资源等待、招募和发布另计，不是排期承诺。
-当前核对 SK2-C 报告提交的 CI，并完成 **SK2-D：SK16 → SK17** 的适用联网/发现验收；后续按依赖顺序执行。
+当前 SK10–SK21 的代码实现全部齐备，共享质量与已授权资源门已通过；本报告提交后的确切交付 CI 单独核对。
+剩余仅认证 metadata、正式 discover 与正式 judge 的本轮具体授权及补验；这三门 BLOCKED，不扩大为 FULL_ACCEPTED。
+按[最终报告](../../dogfooding/2026-10-31-skill-final/README.md)区分实际 PASS、资源待授权、宿主暂缓及未观察反馈。
 本轮记录见 [v2 方案修订报告](../../dogfooding/2026-10-30-skill-plan-v2.md)。
