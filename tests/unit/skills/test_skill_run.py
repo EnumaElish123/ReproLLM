@@ -31,10 +31,6 @@ from reprollm.schemas.run_record import (  # noqa: E402
 )
 
 IDENTITY = "a" * 64
-pytestmark = [
-    pytest.mark.linux_only,
-    pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux owned run worker"),
-]
 
 
 @pytest.fixture(autouse=True)
@@ -118,11 +114,15 @@ class Lifecycle:
 def native_double(monkeypatch):
     calls, events = [], []
     result = {"exit": 0}
-    real_fstat = os.fstat
-    null = os.stat(os.devnull)
-    # Kernel I/O stub is unit-only. Real DEVNULL isolation is a later installed
-    # worker test; every other fstat still examines the actual temporary file.
-    monkeypatch.setattr(os, "fstat", lambda fd: null if fd in (0, 1, 2) else real_fstat(fd))
+    if sys.platform.startswith("linux"):
+        real_fstat = os.fstat
+        null = os.stat(os.devnull)
+        # Kernel I/O stub is unit-only. Real DEVNULL isolation is a later installed
+        # worker test; every other fstat still examines the actual temporary file.
+        monkeypatch.setattr(os, "fstat", lambda fd: null if fd in (0, 1, 2) else real_fstat(fd))
+    else:
+        # This unit double exercises selection and record binding, not worker support.
+        monkeypatch.setattr(importlib.import_module("skill_run"), "_worker_io", lambda: None)
 
     def execute(argv, **kwargs):
         assert events and ("bound", kwargs["run_dir"].name) in events
@@ -540,7 +540,10 @@ def test_cwd_alias_retarget_at_bind_refuses_launch(
         (first / "work").mkdir()
         (second / "work").mkdir()
     alias = project / "selected-cwd"
-    alias.symlink_to("first", target_is_directory=True)
+    try:
+        alias.symlink_to("first", target_is_directory=True)
+    except OSError:
+        pytest.skip("Directory symlinks unavailable")
     selected = "selected-cwd/work" if parent_alias else "selected-cwd"
     options = {"argv": ["python", "probe.py"]} if source == "explicit" else {}
     if source == "saved":
@@ -561,6 +564,8 @@ def test_cwd_alias_retarget_at_bind_refuses_launch(
     assert any(d["code"] == "run_plan_changed" for d in reply.diagnostics)
 
 
+@pytest.mark.linux_only
+@pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux worker stream isolation")
 @pytest.mark.parametrize("number", [0, 1, 2])
 def test_non_null_worker_fd_refuses_before_allocation(
     adapter, project, native_double, monkeypatch, number
@@ -597,6 +602,7 @@ def test_safe_result_projection_failure_preserves_known_child_seven(
     assert "private opaque" not in json.dumps(reply.as_dict())
 
 
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="Named pipes unavailable")
 def test_control_fifo_is_refused_without_a_writer(adapter, project):
     d = project / ".reprollm"
     d.mkdir()
@@ -640,7 +646,10 @@ def test_escaping_control_is_refused_before_open(adapter, project, monkeypatch):
     foreign.write_text("schema_version: 1\n")
     d = project / ".reprollm"
     d.mkdir()
-    (d / "config.yaml").symlink_to(foreign)
+    try:
+        (d / "config.yaml").symlink_to(foreign)
+    except OSError:
+        pytest.skip("File symlinks unavailable")
     original = os.open
 
     def guarded(path, *a, **k):
@@ -674,7 +683,10 @@ def test_control_alias_retarget_at_bind_preserves_known_id_without_execute(
     first.write_text("schema_version: 1\nrun: {capture_output: false}\n")
     second.write_text("schema_version: 1\nrun: {capture_output: true}\n")
     alias = d / "config.yaml"
-    alias.symlink_to(first)
+    try:
+        alias.symlink_to(first)
+    except OSError:
+        pytest.skip("File symlinks unavailable")
     calls, events, _ = native_double
     p = preview(adapter, project)
 

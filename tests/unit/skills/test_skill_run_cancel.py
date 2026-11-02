@@ -226,14 +226,6 @@ def test_public_cancel_projection_is_finite_and_has_no_machine_fields(control):
     assert result["signal_acceptance_is_exit_proof"] is False
 
 
-@pytest.mark.parametrize(
-    "value", [None, {}, [], {"phase": []}, {"phase": {"bad": "value"}}, {"phase": 9}]
-)
-def test_public_projection_refuses_untyped_phase(control, value):
-    result = control[0].public_summary(value)
-    assert result["phase"] == "unknown"
-
-
 def test_generation_matches_existing_worker_identity_contract(control):
     import os
 

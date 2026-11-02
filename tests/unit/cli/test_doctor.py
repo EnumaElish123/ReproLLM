@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -86,7 +87,7 @@ def test_doctor_check_network_failure_is_warning(
     monkeypatch: pytest.MonkeyPatch, hf_mock: respx.MockRouter
 ) -> None:
     delays = []
-    monkeypatch.setattr("reprollm.lock.hf_client.time.sleep", delays.append)
+    monkeypatch.setattr("reprollm.lock.hf_client.time", SimpleNamespace(sleep=delays.append))
     route = hf_mock.get("https://huggingface.co/api/models/gpt2/revision/main").mock(
         side_effect=httpx.ConnectError("no route; hf_FAKE_PRIVATE_TOKEN")
     )

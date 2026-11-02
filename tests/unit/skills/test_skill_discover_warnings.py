@@ -33,7 +33,14 @@ def worker_preview(
         "options": {"experimental": True, "show_content": True},
         "grants": {"install": False, "write": False, "network": False, "run": False},
     }
-    environment = {"PATH": os.defpath, "LANG": "C.UTF-8"}
+    environment = {
+        "PATH": os.defpath,
+        "LANG": "C.UTF-8",
+        "HOME": str(tmp_path / "synthetic-home"),
+        "USERPROFILE": str(tmp_path / "synthetic-home"),
+        "USER": "public-user",
+        "USERNAME": "public-user",
+    }
     if "SYSTEMROOT" in os.environ:
         environment["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
     return subprocess.run(

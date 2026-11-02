@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- SK16–SK20 tests: explicitly enable compiler warnings in the isolated discovery
+  deduplication test, supply a synthetic Windows user identity, and isolate the
+  doctor retry clock double from unrelated standard-library waits. Exercise
+  portable run-plan and log-boundary unit contracts while retaining the Linux
+  gates for actual workers, standard streams, process handles and timers.
+  Keep production behavior, exact retry/privacy assertions and the 85% coverage
+  threshold unchanged.
+
 - SK21: document one-time Skill setup and concrete natural-language trials, keep the selected tool home across turns, and distinguish operation completion from a failed or interrupted experiment. Host/resource acceptance and external user feedback remain separate.
 
 - SK20: add portable behavioral checks and an explicit CLI option coverage map; distinguish unit doubles, native auxiliary actions, resource gates and real-host evidence.

@@ -27,12 +27,13 @@ def native_messages(root: Path, max_chars: int | None = None) -> list[dict[str, 
     return json.loads(result.stdout.split("Request messages (nothing sent):\n", 1)[1])
 
 
-def worker(request: Request, cache: Path) -> bytes:
+def worker(request: Request, cache: Path, *, warning_filter: str | None = None) -> bytes:
     result = subprocess.run(
         [
             sys.executable,
             "-I",
             "-B",
+            *(["-W", warning_filter] if warning_filter is not None else []),
             str(SCRIPTS / "skill_runtime.py"),
             "--worker",
             "--cache-home",
@@ -361,7 +362,12 @@ def test_derived_source_parser_does_not_echo_or_double_count_native_warnings(
         'import argparse\np=argparse.ArgumentParser()\np.add_argument("--pattern", default="\\D")\n'
     )
     request = Request("discover.preview", str(root), {"experimental": True, "show_content": True})
-    result = validate_frame(worker(request, tmp_path / "cache"), expected_action=request.action)
+    # Older Python versions ignore this DeprecationWarning by default; collection
+    # follows the caller's filters, so enable it explicitly to check deduplication.
+    result = validate_frame(
+        worker(request, tmp_path / "cache", warning_filter="always"),
+        expected_action=request.action,
+    )
     assert result.invocation == "handled_result" and result.complete
     assert result.diagnostics == [
         {
