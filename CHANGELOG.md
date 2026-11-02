@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Document isolated local-model condition recordings, offline lock boundaries,
+  explicit cross-workspace comparisons and historical exports; distinguish
+  provenance refs from research integration branches. No product behavior changes.
+
 - SK21 documentation follow-up: add an Agent Skill entry to the README and
   documentation index, show the saved-command workflow, publish the verified
   delivery CI receipt, and distinguish completed code from pending online
