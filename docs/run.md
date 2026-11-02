@@ -28,6 +28,10 @@ See the [guided exercise](tutorials/first-experiment.md) or ask the
 [Agent Skill](tutorials/agent-skill.md) to carry out the authorized sequence.
 These conveniences are in source, not the published 0.6.1 baseline.
 
+For an existing project with several local-model conditions, use the
+[isolated-workspace recipe](tutorials/concurrent-local-experiments.md) to keep
+declarations, locks, outputs and historical exports separate.
+
 ## Run an explicit command and inspect records
 
 ```console
