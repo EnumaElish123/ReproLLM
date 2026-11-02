@@ -4,6 +4,11 @@ For natural-language installation and experiment workflows, use the
 [Agent Skill guide](tutorials/agent-skill.md). Tool installation and research
 environments remain separate; candidate and support status are recorded there.
 
+If your goal is to use the Skill, follow that tutorial rather than the wheel-build
+procedure below. The Skill's catalog performs verified tool preparation in its
+own environment. This page is for maintainers validating a candidate artifact;
+building a wheel is not a prerequisite for a Skill user.
+
 The [roadmap](community/roadmap.md) is the availability source. A package installed
 from PyPI and an unreleased source checkout can have different features. The
 [quickstart](quickstart.md) is generated from source; candidate acceptance uses

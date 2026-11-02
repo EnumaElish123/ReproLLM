@@ -4,15 +4,21 @@ ReproLLM Skill 把你的自然语言需求转换为工具操作：检查实验�
 以及按需发现和维护项目规则。第一次实际使用时，Agent 会检查并准备独立的 ReproLLM 工具环境。
 你负责提供真实实验命令、环境和不可推断的科研信息。
 
-当前候选、可安装固定提交及各项验收状态见 [Skill 开发与验收记录](../plan/skill-2026-10-30/README.md)。
-以下示例描述使用流程；宿主、联网、GPU 和付费功能分别以记录中的实测范围为准。
+当前使用范围与剩余事项见 [Skill 状态](../skill-status.md)：SK10–SK21 的代码已实现，
+已验证交付的五项 CI 和七次真实 Codex Linux 流程通过；三项线上补验待具体授权。
+Claude Code 按维护者要求暂缓。跨平台 CI 不等于所有平台的 Agent 后台运行能力均已验证。
 
 ## 安装一次
 
-在支持 Agent Skills 的编码 Agent 中，请它从[官方 ReproLLM 仓库](https://github.com/EnumaElish123/ReproLLM)的**已验收固定提交**安装
-`skills/reprollm` 目录。安装完成后按照宿主提示刷新技能索引或开始新会话。
+先在已验证的 **Codex Linux** 宿主中安装。请 Agent 从[官方 ReproLLM 仓库](https://github.com/EnumaElish123/ReproLLM)安装
+`skills/reprollm` 目录，固定使用已验证提交
+`b526d6ed1d74456e2175bdd880ab134d866e3995`。
+安装完成后按宿主提示刷新技能索引或开始新会话。其他宿主和平台的范围见 [支持表](../skill-status.md#host-and-platform-scope)。
 
-> 帮我安装官方 ReproLLM 仓库已验收提交中的 skills/reprollm Skill，使用固定提交，保留我的项目环境。
+> 从官方仓库 https://github.com/EnumaElish123/ReproLLM 安装 skills/reprollm Skill，固定使用本教程列出的已验证提交，保留我的项目环境。安装后先介绍它可以做什么。
+
+不用先执行 `pip install reprollm`，也不用手工调用适配器 JSON。
+Skill 目前从仓库安装；没有在本轮发布 PyPI 新版、Skill 市场包或 MCP 服务。
 
 Skill 文件和 ReproLLM 工具环境分开管理。复制 Skill 文件不会立即运行安装脚本；
 首次具体任务会触发工具检查和必要安装。只问功能介绍不会安装工具或扫描实验项目。
@@ -115,5 +121,6 @@ Agent 会按当前官方价格、完整上下文和原请求的输出上界准�
 父安装进程意外停止留下的锁不会自动被当成无主锁清理；应先核对自有安装进程、worker 和 lease，
 确认不存在活动工作后仅清理对应自有状态。
 
-Claude Code 的本轮适配由维护者暂缓，未计作双宿主通过；未实际验证的平台/宿主能力应保持明确限制。
+后续状态统一见 [Skill 状态页](../skill-status.md#remaining-work)：认证 metadata、正式 discover 和
+正式 judge A/B 尚待本轮具体授权；代码实现和离线/公开匿名验收不能代替它们。
 真实宿主、真实 GPU/API、跨平台 CI 和外部研究者试用反馈分别列证据；作者脚本不是用户试用。

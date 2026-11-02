@@ -1,128 +1,92 @@
 # Roadmap and delivery status
 
-Updated 2026-10-18. Status is based on recorded releases and validated changes;
-historical sprint dates are planning records, not a statement of availability.
-The [changelog](../../CHANGELOG.md) identifies release contents. Documentation
-on main can describe options not yet included in the published package.
+Updated 2026-11-02. This page separates the published package, source features,
+recorded validation and work that still needs authorization. Historical sprint
+dates do not establish availability.
 
-## Released baseline
+## Choose how to use ReproLLM
 
-The latest recorded package release is **0.6.1**. Install with
-`python -m pip install reprollm` and check `reprollm --version`.
-The public package metadata was checked again on 2026-10-15. Main currently
-uses local development version **0.7.0** and run schema 2. The staged 0.6.2
-reader bridge and 0.7.0 changes have not been published. Use a built candidate
-wheel for these features; [distribution validation](../distribution.md) checks
-the actual installed artifact independently of a source checkout.
+| Route | Availability | Start here |
+|---|---|---|
+| Published CLI | PyPI **0.6.1**, rechecked 2026-11-02 | [README installation](../../README.md#1-install) |
+| Current source CLI | Development version **0.7.0**, run schema 2, unreleased | [Guided first experiment](../tutorials/first-experiment.md) |
+| Agent Skill | Implemented repository preview; verified Codex Linux delivery | [Install once and use natural language](../tutorials/agent-skill.md) |
+| Standalone GitHub Action | Distributed separately from this repository | [Action repository](https://github.com/EnumaElish123/reprollm-action) |
 
-| Capability | Release evidence |
-|---|---|
-| Audit, manifest, lock, runtime capture, semantic diff, export and experimental discovery | [0.5.0 Beta](../../CHANGELOG.md#050--beta--2026-09-29), with subsequent fixes |
-| `audit --format github` | [0.5.1](../../CHANGELOG.md#051---2026-09-29) |
-| NeurIPS / ACL / ACM export checklist mappings | [0.5.2](../../CHANGELOG.md#052---2026-09-29) |
-| Framework integrations and metadata/CLI fixes | [0.6.1 release report](../dogfooding/2026-10-01-patch-0.6.1.md) |
-| Standalone GitHub Action | [Published Action repository](https://github.com/EnumaElish123/reprollm-action); its `v1` tag is distributed separately |
+Public release sources: [PyPI](https://pypi.org/project/reprollm/) and
+[GitHub releases](https://github.com/EnumaElish123/ReproLLM/releases).
+The [changelog](../../CHANGELOG.md) identifies release contents. No 0.6.2/0.7.0
+package, Skill-market release or MCP server was published by the latest source
+development sessions. A source checkout can therefore contain features absent
+from `python -m pip install reprollm`.
 
-## Implemented on main, not yet released
+## Implemented on source
 
-All six [UX2 tasks](../plan/UX2_2026-10-02.md) are integrated:
+| Workstream | Delivered scope | Evidence |
+|---|---|---|
+| Reliability | 23 engineering/policy implementations, including exact dependencies, bounded incomplete-evidence conclusions and run v2 input capture | [Completion ledger](../plan/reliability-2026-10-03/07_Completion_Status.md) |
+| Usability | Guided field descriptions and retries, saved experiment commands, run previews and actionable report next steps | [UX-A/UX-B plan](../plan/usability-2026-10-29/README.md) and [first-use guide](../tutorials/first-experiment.md) |
+| Agent Skill v2 | SK10–SK21: isolated installation, introduction, typed access to supported commands, persistent operations, run recovery/cancellation and tutorials | [Support and remaining work](../skill-status.md) |
+| Candidate/release tooling | Bounded real-framework recipe, isolated candidate-wheel validation and same-candidate release gates | [Recipe](../../examples/lm_eval_replay/README.md), [distribution](../distribution.md), [release contract](../releasing.md) |
 
-- Explicit experiment-task selection during init.
-- Separate audit findings and exit policy, with compact warning output.
-- Honest identity handling for `provider: other` with a declared API endpoint.
-- Explicit `judge_only` experiments.
-- Detailed research exports with effective values and evidence sources.
-- Full project-rule inspection and reversible removal/restoration.
+The source also retains task selection, `judge_only`, detailed exports,
+reversible project rules, run filters and recent-success comparisons. See
+[Unreleased](../../CHANGELOG.md#unreleased) for the implementation history.
+Publication remains a separate action.
 
-The last item received explicit D-41 approval and merged in
-[PR #8](https://github.com/EnumaElish123/ReproLLM/pull/8), commit `b5e1317`;
-[all five main CI jobs passed](https://github.com/EnumaElish123/ReproLLM/actions/runs/37023660708).
-Other unreleased fixes are listed in [Unreleased](../../CHANGELOG.md#unreleased).
-Use the [source-checkout instructions](../../README.md#quick-start) to try main.
-Changes to the local Action source do not update its standalone published tag.
+The verified Skill delivery `b526d6e` passes all five official CI jobs and
+Ubuntu 3.12's twelve required steps in
+[run 41386824410](https://github.com/EnumaElish123/ReproLLM/actions/runs/41386824410).
+Its fresh local gate has 6,731 passing tests and 91.989757% combined coverage.
+The [correction report](../dogfooding/2026-11-02-skill-final-ci-correction/README.md)
+preserves the first delivery's failed CI and the test-only corrections.
+Cross-platform CI does not establish cross-platform Agent-host lifecycle support.
 
-The [UX3 delivery report](../dogfooding/2026-10-03-ux3-readiness.md) records
-delivery-status alignment, read-only `run --dry-run`, run listing filters and
-`diff --latest-successful`. These additions passed full local quality checks and
-the five-project offline Gate A and are also implemented on main, unreleased.
-The report and its CI reference distinguish local validation from remote results.
+## Remaining acceptance and deferred work
 
-## Approved next work
+There are no unimplemented code tasks in the accepted Skill v2 list. The
+[current Skill status](../skill-status.md#remaining-work) tracks three remaining
+online integration gates: authenticated metadata, live discovery and formal judge
+A/B. Each needs the current candidate/input and the appropriate concrete
+credential, destination and fresh-budget authorization. Historical budgets and
+mock requests are not substitutes.
 
-The [2026-10-03 reliability execution package](../plan/reliability-2026-10-03/README.md)
-is now v1.2, with four two-session engineering sprints plus policy and
-validation/adoption workstreams. The code-review revision adds run redaction,
-shared file-read boundaries, input-capture phases and an explicit Conda
-specification prerequisite. Its [agent prompts](../plan/reliability-2026-10-03/AGENT_PROMPTS.md)
-retain the original session order. S1-A, S1-B and S2 are delivered on main;
-S3-A (R07-A → R07-B) is **产品与本地验收已完成**. Read its
-[report and handoff](../dogfooding/2026-10-13-reliability-s3a/README.md) before
-the recorded [S3-B delivery](../dogfooding/2026-10-14-reliability-s3b/README.md).
-S3-B (R04-A → R04-B) is delivered with scoped environment evidence and pre-child
-input capture. S4-A supplies the [bounded GSM8K recipe](../../examples/lm_eval_replay/README.md)
-and [candidate-wheel validation entry](../distribution.md); its actual validation
-results are recorded in the
-[S4-A session report](../dogfooding/2026-10-15-reliability-s4a/README.md).
-D03's release workflow gate is implemented with exact-candidate quality,
-preflight evidence, one build and installed-wheel checks; see the
-[S4-B acceptance report](../dogfooding/2026-10-18-reliability-s4b/README.md)
-and [release contract](../releasing.md). These changes remain unreleased; pending policy
-decisions and resource validations retain their separate requirements.
-The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
-at `110087b1e416c12c25253c07365944935e986470` addresses the initial Windows
-CI budget failure. That follow-up's local validation passed 2,505 tests, 174 security
-tests and a fresh five-project Gate A; final five-job CI is verified against
-the actual pushed main HEAD in the session's final reply.
+Claude Code adaptation and the second real-host gate are deferred by the
+maintainer. External researcher feedback is unobserved; the planned 3–5 trials
+have not been established by author or Agent runs. The related
+[trial materials](../trials/a02-local/README.md) are preparation, not
+evidence of adoption. Public submission, user outreach and publication have
+their own requirements and authorization.
 
-The [UX3 task](../plan/UX3_2026-10-02.md) T02 is implemented through R08-A on
-main, unreleased, following the maintainer's 2026-10-18 acceptance of
-[the concrete proposal](../plan/reliability-2026-10-03/proposals/R08-A/R08-A_direct_judge_params.md).
-Direct judge parameter leaves now default to HIGH; user LOW/NONE overrides,
-single-segment matching and historical MEDIUM records are preserved. See the
-[accepted decision](../plan/reliability-2026-10-03/proposals/R08-A/decision.json)
-and [P-B validation report](../dogfooding/2026-10-18-r08a/README.md).
-The existing [Issue #9](https://github.com/EnumaElish123/ReproLLM/issues/9) remains
-the policy discussion reference; resource gates retain their separate requirements.
+The [final resource report](../dogfooding/2026-10-31-skill-final/README.md)
+records five-project base/CPU acceptance, anonymous public HF, five native/Skill
+GPU A/B pairs, installation channels and seven real Codex Linux journeys.
+These retain their actual candidate/source bindings and bounded consumption
+evidence. They do not guarantee paper reproduction or a complete release matrix.
+
+The five replacement metadata manifests are already versioned, and Project C
+uses public DistilGPT2. The old missing-manifest/Llama-2-access gate is
+`SUPERSEDED_NOT_PASSED`, not a current prerequisite. See the
+[model replacement](../dogfooding/metadata-public-model-2026-10-27/README.md)
+and [resource history](../dogfooding/pending-resource-validation.md).
+
+Before a release, freeze one candidate and complete the applicable matrix and
+installed-wheel acceptance for that candidate. Follow
+[val.md](../../val.md), the [validation workflow](../plan/validation-workflow-2026-10-13.md)
+and the [release contract](../releasing.md). Engineering delivery is not
+`FULL_ACCEPTED` or release readiness while the applicable online gates remain open.
 
 ## Future proposals
 
 | Candidate | Boundary |
 |---|---|
+| MCP interface | Separate future design; not part of Skill v2 |
 | Dataset content fingerprints | Requires a reviewed sampling policy and D-22 amendment |
 | `rag` / `agent` profiles | Currently detected but report-only |
 | `discover --paper` | Post-Beta scope under D-26 |
 | SARIF output | Additional CI integration |
 | Multi-stage experiments | Requires manifest/schema design |
 
-These are unscheduled proposals, not promises for the next release.
-
-## Pending validation
-
-[VAL-R01, VAL-R02 and VAL-R03](../dogfooding/pending-resource-validation.md)
-retain separate acceptance requirements. The
-[2026-10-19 resource replay](../dogfooding/2026-10-19-resource-completion/README.md)
-closes VAL-R01 at `750270b`: Linux H2, ten native GPU children, all five complete
-A/B pairs and 20 available export states pass. That candidate's paid judge A
-remains a historical snapshot-fidelity FAIL, with B NOT_RUN.
-
-The [R02-R snapshot repair](../dogfooding/2026-10-19-judge-snapshot-fix/README.md)
-at `75d1b0` passes final quality and fresh five-project CPU capture/diff/export
-acceptance. Under a newly approved CNY 3 budget, both new formal judge requests,
-complete captures and the full semantic pair PASS, closing VAL-R02 at `75d1b0`.
-The direct cap leaf is HIGH and the old failed run remains historical. This
-does not claim a new GPU/H2 matrix at `75d1b0`. VAL-R03 remains blocked by the last measured HF 403
-and missing original metadata inputs; five original manifests remain missing.
-These unreleased changes do not establish a complete release matrix. Historical
-results retain their candidates; the [five-project baseline](../../val.md)
-governs resumption and release gates.
-
-## Good first issues
-
-1. `gen.stop_declared` / `prompt.few_shot_declared` negative corpora from real repositories.
-2. Add `wildjailbreak` keyword to the `safety` profile detect block + snapshot.
-3. New nvidia-smi fixture: 3-GPU CSV (parsing coverage).
-4. FAQ entry for conda users (environment.yml + pip block).
-5. `doctor` should print the effective `HF_ENDPOINT` mirror configuration.
-6. Examples: add an `llm_judge` example manifest exercising judge bindings.
-7. `docs/rules.md` cross-links from each rule to its spec section anchor.
-8. A `--json` flag for `reprollm check_no_leaks`-style scanning inside `run` (post-run warning hook).
+These are unscheduled proposals. Choose subsequent engineering tasks through the
+[current plan index](../plan/README.md) and [backlog](../plan/backlog.md);
+use [issues](https://github.com/EnumaElish123/ReproLLM/issues) for concrete proposals.

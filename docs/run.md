@@ -1,9 +1,34 @@
 # Record and inspect an experiment run
 
 `reprollm run` executes your command and records its runtime evidence under
-`.reprollm/runs/<run_id>/`. It preserves the child's arguments, environment and
-exit code, and adds `REPROLLM_RUN_ID` and `REPROLLM_RUN_DIR` to the child environment.
-It does not invoke a shell; put the command after `--`.
+`.reprollm/runs/<run_id>/`. It records the child's arguments, scoped environment
+evidence and exit code, and adds `REPROLLM_RUN_ID` and `REPROLLM_RUN_DIR` to the child environment.
+It does not invoke a shell. On current source, omit `--` and the command to reuse
+`execution.command` and `execution.cwd` saved by initialization. An explicit
+command after `--` overrides the saved command for that invocation.
+
+## Run a saved command
+
+The guided source workflow saves the experiment command once:
+
+```console
+reprollm init --interactive --command "python eval.py --config configs/eval.yaml"
+reprollm run --dry-run
+reprollm run
+```
+
+Initialization saves a declaration and never starts the experiment. Review the
+preview's selected command, working directory and evidence gaps before running.
+The child's Python is selected by the experiment command and environment, not
+by the Skill tool installation. Repeated `run` creates another actual experiment;
+reconnecting to an existing Skill operation should query that operation instead.
+Missing saved commands produce an actionable error; they are not guessed.
+
+See the [guided exercise](tutorials/first-experiment.md) or ask the
+[Agent Skill](tutorials/agent-skill.md) to carry out the authorized sequence.
+These conveniences are in source, not the published 0.6.1 baseline.
+
+## Run an explicit command and inspect records
 
 ```console
 reprollm run --name baseline -- python eval.py --temperature 0.0

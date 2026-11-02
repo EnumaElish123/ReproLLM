@@ -1,5 +1,9 @@
 # Skill v2 最终交付的 CI 修正
 
+后续 CI 核验：交付 `b526d6e` 的[五项官方 CI](https://github.com/EnumaElish123/ReproLLM/actions/runs/41386824410)
+和 Ubuntu 3.12 十二个必需步骤均通过，见[确切 head 收据](evidence/delivery-ci.json)。
+下文 `PENDING_AT_REPORT_COMMIT` 保留原报告提交时的状态，不是当前失败或待执行结论。
+
 日期：2026-11-02。原最终交付 `4089594` 的五项官方 CI 中，一项通过、四项失败。
 [原运行](https://github.com/EnumaElish123/ReproLLM/actions/runs/41376576272)与
 [失败收据](evidence/original-ci-failure.json)保留；先前本地成功不替代该失败。

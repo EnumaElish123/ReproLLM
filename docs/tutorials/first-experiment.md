@@ -2,6 +2,9 @@
 
 先用仓库自带的一个小项目熟悉流程：保存命令、查看缺口、预览、记录一次运行。准备好目录后，主流程只有 **4 条 ReproLLM 命令**，不需要手工编写整份 YAML，也不需要记住 run ID。
 
+如果希望用自然语言完成这些步骤，先安装 [Agent Skill](agent-skill.md)，再把实验命令、环境和操作范围告诉 Agent。
+本页是 CLI 路线；Skill 的安装、宿主支持和剩余验证见 [当前状态](../skill-status.md)。
+
 素材来自 [GSM8K 示例](../../examples/lm_eval_replay/README.md)的 `probe.py` 和 `validation/eval.yaml`。这次实际运行的是 Python 标准库配置读取程序：读取配置，并写出 `outputs/current/consumed.json`。配置里的 Qwen、GSM8K 和 vLLM 描述上游研究示例的计划；本练习**不加载模型、不执行评测、不需要 GPU 或 API 凭据**。运行成功表示记录流程完成，不表示论文结果得到复现。
 
 ## 一次性准备

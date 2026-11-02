@@ -16,6 +16,7 @@
 
 <p align="center">
   <a href="#quick-start">Quick start</a> ·
+  <a href="docs/tutorials/agent-skill.md">Agent Skill</a> ·
   <a href="https://github.com/EnumaElish123/ReproLLM/blob/main/docs/index.md">Documentation</a> ·
   <a href="https://github.com/EnumaElish123/ReproLLM/tree/main/examples">Examples</a> ·
   <a href="#use-in-ci">CI</a> ·
@@ -91,6 +92,33 @@ reproducibility checks, input identity, runtime evidence and semantic drift.
 
 ## Quick start
 
+Choose the interface that fits your work:
+
+| Interface | First step |
+|---|---|
+| **Agent Skill** | [Install the verified Skill once](docs/tutorials/agent-skill.md#安装一次), then describe your task in natural language |
+| **CLI, current source** | [Save a command and run the four-command exercise](docs/tutorials/first-experiment.md) |
+| **CLI, published package** | Install below and start with `reprollm audit .`; newer source features are listed separately |
+
+### Use an Agent
+
+After installing `skills/reprollm` from the verified revision, you can ask:
+
+> Check this repository's reproducibility and explain what to fix first.
+
+> Save this experiment command, preview it, run it once in my selected environment,
+> and export a report. Compare it with my previous run.
+
+For the first concrete task, the Agent checks and, if needed, installs ReproLLM
+in its own tool environment. You provide the actual experiment command and
+environment; the Skill does not install model weights or training dependencies.
+An introduction alone triggers no installation or project scan. Running an
+experiment or sending discovery inputs still requires the corresponding scope.
+
+Codex Linux has real-host acceptance. See [support and remaining work](docs/skill-status.md)
+for macOS/Windows limits, deferred Claude Code work and pending online validation.
+Prefer the terminal? Follow the CLI steps below.
+
 ### 1. Install
 
 Use **Python 3.10 or newer** and Git. ReproLLM does not install PyTorch,
@@ -161,6 +189,27 @@ names with repeatable `--task NAME`, or use `--interactive`. Default init leaves
 audit → init → offline lock → two captures → diff → export. It uses a disposable
 example and only Python's standard library, with no GPU, model download or paid API.
 
+### Save your experiment command once
+
+On **current source (unreleased)**, guided setup saves the command; later runs
+reuse the declared working directory. Substitute your own script and environment:
+
+```bash
+reprollm init --interactive --command "python eval.py --config configs/eval.yaml"
+reprollm audit .
+reprollm run --dry-run
+reprollm run
+reprollm export
+```
+
+Initialization saves the command without executing it. Later `reprollm run`
+reuses `execution.command` and `execution.cwd`; an explicit command after `--`
+applies to that invocation. Read `Next steps` and the listed field paths rather
+than guessing missing research values. See the
+[guided first experiment](docs/tutorials/first-experiment.md) for a GPU-free exercise.
+Use the source environment described below or the verified Skill; PyPI 0.6.1
+does not include these unreleased conveniences.
+
 <details>
 <summary><strong>Working from the source checkout</strong></summary>
 
@@ -195,6 +244,9 @@ Start small and add evidence as your experiment becomes ready to run.
 Use your existing evaluation or training command after `run --`. Declare
 config files and [bindings](docs/run.md#declare-the-values-you-want-compared) so ReproLLM can compare observed
 settings with your manifest; wrapping a process does not reveal every model-internal value.
+With a saved command on current source, use `reprollm run` directly. The
+[Agent Skill](docs/tutorials/agent-skill.md) can also select records and carry the
+authorized sequence through to export.
 
 **Three evidence layers:** the manifest records intent; the lock records resolved
 inputs; the run records observations. A manifest plus a lock or run enables
@@ -340,6 +392,8 @@ files are excluded from snapshots and discovery. The opt-in
 
 | You want to… | Start here |
 |---|---|
+| Use natural language instead of assembling commands | [Agent Skill tutorial](docs/tutorials/agent-skill.md) · [Support and remaining work](docs/skill-status.md) |
+| Save a command and run it again | [Guided first experiment](docs/tutorials/first-experiment.md) |
 | Try the whole workflow without a model | [Quick start](docs/quickstart.md) |
 | Understand the evidence model | [Concepts](docs/concepts.md) · [Why ReproLLM](docs/why.md) |
 | Configure an experiment | [Manifest](docs/manifest.md) · [Profiles](docs/profiles.md) · [Project rules](docs/project-rules.md) |
@@ -353,15 +407,23 @@ The audit → lock → run → diff → export workflow and experimental discove
 available. The latest published package at this update is **0.6.1**. This README
 tracks `main`; [Unreleased changes](CHANGELOG.md#unreleased) may not be in PyPI yet.
 
+The Skill v2 implementation (SK10–SK21) and the usability workflow are implemented
+on source. The verified Skill delivery `b526d6e` passes all five official CI jobs;
+its local gate has 6,731 passing tests. Three authenticated/paid integration gates
+remain pending specific authorization; Claude Code is deferred and external
+researcher feedback is unobserved. See [the current status](docs/skill-status.md).
+The Skill is available from its verified repository directory, not a published
+Skill-market package or MCP service.
+
 Quality checks cover Linux, macOS and Windows. Our
 [five-project validation](val.md) uses pinned public research repositories;
 these are maintainer validation targets, not claims of upstream adoption.
-[Current workflow evidence](docs/dogfooding/2026-10-02-ux2-workflows.md) and
-[deferred resource checks](docs/dogfooding/pending-resource-validation.md) distinguish
+[Current Skill evidence](docs/dogfooding/2026-10-31-skill-final/README.md) and
+[resource history](docs/dogfooding/pending-resource-validation.md) distinguish
 local checks from real-model/GPU acceptance.
 
-Next work is tracked in the [backlog](docs/plan/backlog.md) and
-[UX delivery and review status](docs/plan/ux-2026-10-02-proposals/README.md).
+Next work is tracked in [Skill support and remaining work](docs/skill-status.md),
+the [current plan index](docs/plan/README.md) and the [backlog](docs/plan/backlog.md).
 ReproLLM records and audits reproducibility-critical state. It does not guarantee
 bitwise-identical results, score model quality or fingerprint entire datasets.
 

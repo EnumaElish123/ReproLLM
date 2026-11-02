@@ -23,7 +23,11 @@ SK14–SK15 为 ACCEPTED；SK16–SK21 的共享质量、五项目基础/CPU、�
 具体付费授权尚未回复的分支不计 PASS，不宣称 FULL_ACCEPTED。
 首次最终交付 `4089594` 的官方 CI 四项失败；[仅测试修正报告](../../dogfooding/2026-11-02-skill-final-ci-correction/README.md)
 记录新一轮 24 项完整质量门、6,731 tests 和 91.989757% 组合覆盖率通过。
-188 个产品/包装输入保持一致；修正交付的五项官方 CI 在推送后按确切 head 核对。
+188 个产品/包装输入保持一致；修正交付 `b526d6e` 的五项官方 CI 及 Ubuntu 3.12 十二个必需步骤全部通过，
+见[运行](https://github.com/EnumaElish123/ReproLLM/actions/runs/41386824410)与
+[同 head 收据](../../dogfooding/2026-11-02-skill-final-ci-correction/evidence/delivery-ci.json)。
+用户安装入口、支持矩阵与剩余事项集中在[当前 Skill 状态](../../skill-status.md)；
+SK21 文稿跟进仅更新 README/使用文档，不实施新的功能或扩大资源验收。
 原方案修订轮仅交付文稿。
 
 本版替代 [v1](v1.md) 的“不自动安装”“只预览不运行”和“不支持联网/规则写入”等限制。

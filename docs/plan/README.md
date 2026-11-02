@@ -49,7 +49,13 @@ and preserved. Claude Code is deferred by the maintainer; external feedback is u
 The first final delivery `4089594` failed four official CI jobs. The
 [test-only correction](../dogfooding/2026-11-02-skill-final-ci-correction/README.md)
 passes a fresh 24-check local gate with 6,731 tests and 91.989757% combined coverage;
-all 188 product/packaging inputs remain identical. Exact corrected-head five-job CI is checked after push.
+all 188 product/packaging inputs remain identical. Corrected delivery `b526d6e`
+passes all five official CI jobs and Ubuntu 3.12's twelve required steps
+([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41386824410),
+[receipt](../dogfooding/2026-11-02-skill-final-ci-correction/evidence/delivery-ci.json)).
+For installation, platform limits and the remaining acceptance/deferred work,
+read [the current Skill status](../skill-status.md). SK21 documentation follow-up
+updates the public README and usage guides; it introduces no product behavior.
 The unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release

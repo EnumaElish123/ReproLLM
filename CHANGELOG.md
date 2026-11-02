@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- SK21 documentation follow-up: add an Agent Skill entry to the README and
+  documentation index, show the saved-command workflow, publish the verified
+  delivery CI receipt, and distinguish completed code from pending online
+  acceptance, deferred hosts and external feedback. Refresh the roadmap and
+  installation guides without changing product behavior or release status.
+
 - SK16–SK20 tests: explicitly enable compiler warnings in the isolated discovery
   deduplication test, supply a synthetic Windows user identity, and isolate the
   doctor retry clock double from unrelated standard-library waits. Exercise

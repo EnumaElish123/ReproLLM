@@ -4,15 +4,18 @@ ReproLLM is a CLI-first, local-first reproducibility toolkit for LLM research.
 Audit a repository, declare its experiment, lock inputs, capture a run, compare
 recorded state and export the evidence with your paper artifact.
 
-**Start here:** the [quick start](quickstart.md) exercises the whole workflow
-with a standard-library probe in a disposable example. No GPU, model download
-or API account is needed. For a first look at your own repository, install
-ReproLLM with Python 3.10 or newer and run `reprollm audit .`.
+**Start here:** use the [Agent Skill tutorial](tutorials/agent-skill.md) for
+natural-language requests, or the [guided CLI exercise](tutorials/first-experiment.md)
+to save a command and run it again. Both use a disposable standard-library probe
+without a GPU, model download or API account. The [executable quick start](quickstart.md)
+shows the longer evidence workflow. For a first audit, run `reprollm audit .`.
 
 ## Choose a guide
 
 | Goal | Guide |
 |---|---|
+| Let an Agent install and use the tool | [Agent Skill](tutorials/agent-skill.md) · [Current support and remaining work](skill-status.md) |
+| Save an experiment command, preview and run it | [First experiment](tutorials/first-experiment.md) |
 | Understand the problem and evidence model | [Why ReproLLM](why.md) · [Concepts](concepts.md) |
 | Describe one experiment | [Manifest](manifest.md) · [Profiles](profiles.md) |
 | Resolve revisions and file hashes | [Lockfile](lockfile.md) |
@@ -41,6 +44,12 @@ The latest published package at this update is **0.6.1**. These documents track
 new option or fix is present in PyPI. The Action's published tag is maintained
 separately from this repository's Action source.
 
+Source also contains the implemented Skill v2 and saved-command/guided setup
+workflow. The verified Skill delivery has five green CI jobs and real Codex Linux
+acceptance. Three online gates remain unapproved, Claude Code is deferred and
+external feedback is unobserved; [the status page](skill-status.md) distinguishes
+these from unfinished code. Installing the PyPI package does not install the Skill.
+
 | Audit level | Evidence used |
 |---|---|
 | 0 | Repository code and dependency declarations; no manifest needed |
@@ -59,8 +68,8 @@ have separate network requirements; see the linked command guides.
 - [Architecture and decisions](plan/00_architecture_and_decisions.md) and
   [normative specification](plan/01_specification.md).
 - [Five-project validation baseline](../val.md),
-  [current repair report](dogfooding/2026-10-02-ux-repairs.md) and
-  [deferred resource checks](dogfooding/pending-resource-validation.md).
+  [current Skill acceptance](dogfooding/2026-10-31-skill-final/README.md) and
+  [resource validation history](dogfooding/pending-resource-validation.md).
 - [Current roadmap](community/roadmap.md), [backlog](plan/backlog.md),
   [UX delivery status](plan/ux-2026-10-02-proposals/README.md)
   and [adoption records](adoption.md).

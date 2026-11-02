@@ -1,5 +1,34 @@
 # FAQ
 
+## Do I need to type long commands for every experiment?
+
+On current source, save the command once with
+`reprollm init --interactive --command "python eval.py --config configs/eval.yaml"`.
+Use `reprollm run --dry-run` to inspect it and `reprollm run` to execute it again.
+Do not reinitialize an existing manifest just to repeat a run. The
+[four-command exercise](tutorials/first-experiment.md) shows the whole first-use path.
+
+The [Agent Skill](tutorials/agent-skill.md) also accepts natural-language requests,
+prepares its own tool environment and selects the actual run records for you.
+You still provide the real experiment command, environment and execution scope.
+
+## Is the Skill finished, and is it included in pip install?
+
+SK10–SK21 are implemented and the verified delivery's five CI jobs pass.
+Install the Skill directory separately from its verified repository revision;
+the first concrete request prepares the isolated tool environment as needed.
+PyPI 0.6.1 does not install the Skill or include newer source conveniences.
+The [status page](skill-status.md) lists the three pending online integration
+gates, deferred Claude Code work, unobserved external feedback and platform limits.
+
+## What should I do with the audit result first?
+
+Read the terminal report's `Next steps`, then use the referenced field paths and
+`fix:` hints to inspect the actual code and configuration. `--show-skipped` explains
+unperformed checks; a skipped check is not a pass. A nonzero findings gate can
+still produce a valid report. Agent instructions and reports preserve these
+distinctions and do not fill unknown values to make the report pass.
+
 ## The model I use is gated; lock says `hf_api_forbidden`
 
 Gated repositories require model-author approval for your Hugging Face
@@ -78,6 +107,10 @@ inheritance chain.
 Core commands (audit, init, lock, export, diff) are tested on Windows in CI.
 `run` records the child but GPU/SLURM capture is Linux-first; you get a clear
 "unavailable" marker rather than a crash.
+The Skill's real-host acceptance is currently Codex Linux. Its background
+experiment control and cancellation use the validated Linux/pidfd scope;
+passing portable unit tests on Windows does not establish that lifecycle there.
+See [host and platform scope](skill-status.md#host-and-platform-scope).
 
 ## What exactly does `discover` send?
 
@@ -117,7 +150,10 @@ is exceeded, audit, init and export report actual parsed and candidate counts
 on stderr by default. A missing signal may be present in files that were not
 analysed. Selected files can also fail reading or parsing, so selected and
 parsed counts can differ; audit `-v` retains those detailed diagnostics.
-The coverage message does not change rule statuses or finding thresholds.
+The coverage message does not change finding thresholds. Under the accepted
+bounded incomplete-evidence policy, affected absence-derived conclusions can
+be `SKIPPED` instead of PASS or a missing-evidence warning; already observed
+violations and the available diagnostics remain visible.
 
 ## Will a newer schema break my committed files?
 

@@ -6,6 +6,14 @@ found by static scanning are candidates: confirm that each one has the role it
 plays in this experiment, especially in repositories that support many models
 or workflows.
 
+For guided setup on current source, use
+`reprollm init --interactive --command "python eval.py --config configs/eval.yaml"`.
+The prompts explain required fields and allow correction in place; unknown
+research values stay unknown. Initialization saves the command, and a later
+`reprollm run` uses it. Read the [first-experiment guide](tutorials/first-experiment.md)
+for the short CLI path, or the [Agent tutorial](tutorials/agent-skill.md) for
+natural-language setup. These source features are not part of PyPI 0.6.1.
+
 ## Judge existing answers
 
 On `main` (unreleased), choose `reprollm init . --profiles judge_only` when your
