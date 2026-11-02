@@ -2,6 +2,8 @@
 
 本文件与 [v2 开发方案](README.md)配套。实际执行状态见 [SK2-A](../../dogfooding/2026-10-30-skill-sk2a/README.md)、[SK2-B](../../dogfooding/2026-10-30-skill-sk2b/README.md)及 [SK2-C 报告](../../dogfooding/2026-10-31-skill-sk2c/README.md)；
 SK16–SK21 的最终执行证据见[最终会话报告](../../dogfooding/2026-10-31-skill-final/README.md)。
+[最终交付 CI 修正](../../dogfooding/2026-11-02-skill-final-ci-correction/README.md)保留首次四项失败，
+记录仅测试修正的新完整本地门；原 6,666 tests 与资源收据仍为其原候选快照，修正 head CI 单独核对。
 未记录或资源待授权的场景不计 PASS，不能把计划表当执行收据。
 本轮维护者暂缓 Claude Code 适配；SK20 先验收 Codex，Claude Code 与双宿主门单列为
 `DEFERRED_BY_MAINTAINER`，不以登录缺失阻塞其余开发，也不计双宿主 PASS。

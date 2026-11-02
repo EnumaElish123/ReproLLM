@@ -41,11 +41,15 @@ The [platform-type correction](../dogfooding/2026-10-31-skill-sk2c/platform-type
 at `fc44c2d` passes a new complete local gate (6,193 tests), fresh all-five base and
 85 actual installed-operation requests. All five official CI jobs and the twelve Ubuntu 3.12
 steps passed on corrected delivery `693c2c4` ([run](https://github.com/EnumaElish123/ReproLLM/actions/runs/41130054173)).
-SK10–SK21 are implemented. The final quality gate (6,666 tests), fresh all-five base/CPU,
+SK10–SK21 are implemented. The initial final quality gate (6,666 tests), fresh all-five base/CPU,
 anonymous public HF, all-five native/Skill GPU A/B, installation channels and seven actual Codex Linux
 journeys pass. The [final session report](../dogfooding/2026-10-31-skill-final/README.md)
 records three authenticated/paid gates as BLOCKED_NOT_AUTHORIZED and checks exact pushed-head CI separately. Earlier provisional/interrupted attempts remain excluded
 and preserved. Claude Code is deferred by the maintainer; external feedback is unobserved.
+The first final delivery `4089594` failed four official CI jobs. The
+[test-only correction](../dogfooding/2026-11-02-skill-final-ci-correction/README.md)
+passes a fresh 24-check local gate with 6,731 tests and 91.989757% combined coverage;
+all 188 product/packaging inputs remain identical. Exact corrected-head five-job CI is checked after push.
 The unimplemented v1 SK01–SK05 are SUPERSEDED, not completed. Follow the
 [acceptance matrix](skill-2026-10-30/acceptance.md) and task order in v2.
 Concrete runtime/paid/data-sharing authorization still applies at use time; MCP and release
