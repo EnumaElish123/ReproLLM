@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Clarify schema-2 optional input candidates for inline
+  `evaluation.definitions.*` and `privacy.threat_model` text (#13): continued
+  absence is not itself a missing required file or capture failure. Document
+  the existing run/lock inventory distinction; capture behavior and schemas
+  are unchanged.
+
 - Document isolated local-model condition recordings, offline lock boundaries,
   explicit cross-workspace comparisons and historical exports; distinguish
   provenance refs from research integration branches. No product behavior changes.

@@ -497,6 +497,30 @@ For schema 1, no non-null `input_capture` is accepted; its input phases and
 consumption remain unknown/unverified. The producer version never proves
 what bytes an old child consumed.
 
+The candidate inventory is broader than the files actually captured. In
+particular, `evaluation.definitions.*` and `privacy.threat_model` permit either
+inline text or a relative file path (§3), without a discriminator. Their values
+are optional file candidates, subject to the existing relative-path, containment
+and privacy checks. No prose, whitespace or filename-extension heuristic chooses
+between text and path. Thus inline text with a valid relative-path spelling may
+appear in `checks` with `origin: declared`, `before.availability: missing`,
+`after.availability: missing` and `change: unchanged`. Here `unchanged` means
+continued absence, not unchanged file bytes. The entry alone MUST NOT be treated
+as a missing required experiment input or a capture failure.
+
+An absent optional candidate produces no pre-child `files` entry, snapshot or
+required-file warning. If it resolves to a readable regular project file before
+launch, normal hashing/snapshot rules apply; a later creation, removal or change
+is still recorded by the frozen-set recheck, without inventing a pre-child file.
+Explicit file declarations such as `execution.config_files` and binding config
+paths retain their missing-input checks and diagnostics. `origin: declared`
+does not distinguish these required file declarations from text-or-path
+candidates; consumers must interpret the originating declaration, not require
+every candidate to exist. Lock's `files` inventory includes these text-or-path
+values only when they resolve to project files (§4.3); its narrower inventory
+does not redefine the run's candidates. This clarifies existing schema-2 behavior
+and adds no field or record migration.
+
 
 ```json
 {
@@ -545,6 +569,8 @@ what bytes an old child consumed.
 - R-02 `run.json` is written atomically (temp file + rename) **after** the child exits, and a minimal `run.json` with `status: running` is written before start so crashes leave evidence.
 - R-03 Files: in schema 2, before child start, each argv token (and each `--k=v` value part) that resolves to an existing regular file within the repository root is hashed. Files ≤ 1 MiB and detected as text (UTF-8 decodable, no NUL bytes) are snapshotted to `files/<sha256>` after redaction; others get `snapshot: null`. Forbidden names (§16.4) are never snapshotted (`redacted: true`).
 - R-04 In schema 2, declared files are captured before child start (`execution.config_files`, `bindings.*.config` paths, prompt paths, `training.deepspeed.config`) are hashed with `origin: declared` even if not in argv.
+  Values from `evaluation.definitions.*` and `privacy.threat_model` are also
+  optional file candidates under §5, without guessing whether they are prose.
 - R-05 Dirty tree: `git diff` (tracked files) is saved to `patch.diff` after redaction; untracked files are counted, not captured.
 - R-06 Environment: see §16.3. Python/packages describe the recorder interpreter after child completion. OS/platform/hardware describe the recorder host at collector time; the hostname hash describes its pre-child hostname copy. Recorded env/scheduler values are the recorder's pre-child inherited baseline; they do not describe child-internal changes. Lock environment describes the lock recorder during resolution. All child environment verification remains unverified, including when argv names the same executable. Sources are recovered only from explicitly confirmed producer contracts; unrecognized producers have unknown context. Empty recorder packages never prove an empty child installation.
 - R-07 Hardware: `nvidia-smi --query-gpu=index,name,memory.total,uuid --format=csv,noheader,nounits` and `nvidia-smi --query-gpu=driver_version --format=csv,noheader`; CUDA driver max from `nvidia-smi` header line; absent binary → `source: unavailable`. GPU UUIDs are hashed.

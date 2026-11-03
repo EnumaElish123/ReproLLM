@@ -8,6 +8,11 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer-assigned [2026-11-03 issue follow-up](issues-2026-11-03.md)
+verifies the existing R08-A implementation for #9 and clarifies the current
+schema-2 optional input-candidate contract for #13. It changes documentation and
+issue state only; the Skill/resource acceptance boundaries below still apply.
+
 The SK13 large-report acceptance exposed an existing contextual-privacy performance
 prerequisite. The [bounded matching-equivalent fix and SK11 test correction](../dogfooding/2026-10-30-skill-privacy-prerequisite/README.md)
 are locally accepted at `2faa309`: all 24 quality checks, 5,560 tests and fresh all-five

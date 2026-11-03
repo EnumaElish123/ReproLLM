@@ -165,6 +165,42 @@ Untracked file contents are not included in the Git patch; only explicitly
 captured inputs receive snapshots. User-created output contents are not copied
 or rewritten by ReproLLM.
 
+### Interpret input candidates
+
+`input_capture.checks` is a candidate inventory, so some entries can be absent
+without indicating a missing required experiment file. For example, both fields
+below accept inline text or a relative file path:
+
+```yaml
+evaluation:
+  definitions:
+    asr: Return an exact matching identifier.
+privacy:
+  threat_model: Only synthetic examples are used.
+  mechanism:
+    name: none
+```
+
+This is a partial manifest fragment. On schema 2, these strings can appear as
+optional candidates with `origin: declared`. If no files with those names exist
+before or after execution, both availability values are `missing` and `change`
+is `unchanged`. That means the candidate stayed absent; no file bytes were
+captured. It does not by itself mean a required input was lost or capture failed.
+An absent optional candidate creates no `files` entry, snapshot or required-file
+warning. A string that looks like prose can also be a legitimate filename, so the
+recorder does not guess from spaces, punctuation or an extension.
+
+When such a value resolves to a readable project file before execution, the
+usual hash and snapshot rules apply. Creation, removal and changes during the
+child are rechecked while preserving the original baseline. A file created only
+after launch is not added to pre-child `files`. Explicit file declarations such
+as `execution.config_files` and config binding paths keep their missing-input
+checks and warnings. Interpret a candidate using its manifest declaration;
+`origin: declared` alone does not identify whether a file is required, and no
+candidate proves that the child consumed it. Lock records these text-or-path
+values only when they resolve to actual project files, so its file list can be
+shorter than the run's candidate list.
+
 ## Declare the values you want compared
 
 For an evaluation script accepting `--temperature`, add these fields to
