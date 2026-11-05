@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- PUB03: verify public 0.6.1 availability through PyPI JSON, supported-Python
+  pip queries, GitHub releases and wheel metadata; document Python >=3.10 and
+  the existing Alpha classifier without publishing or installing a package.
+
 - PUB02: populate GitHub About with the reproducibility-toolkit description
   and `llm`, `reproducibility`, `research-tools` topics, with API readback.
 

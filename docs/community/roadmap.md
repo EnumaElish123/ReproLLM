@@ -1,6 +1,6 @@
 # Roadmap and delivery status
 
-Updated 2026-11-02. This page separates the published package, source features,
+Updated 2026-11-05. This page separates the published package, source features,
 recorded validation and work that still needs authorization. Historical sprint
 dates do not establish availability.
 
@@ -8,13 +8,15 @@ dates do not establish availability.
 
 | Route | Availability | Start here |
 |---|---|---|
-| Published CLI | PyPI **0.6.1**, rechecked 2026-11-02 | [README installation](../../README.md#1-install) |
+| Published CLI | PyPI **0.6.1**, verified against the live JSON, pip index and wheel metadata on 2026-11-05 | [Public index check](../adoption/2026-11-05-release-check.md) · [README installation](../../README.md#1-install) |
 | Current source CLI | Development version **0.7.0**, run schema 2, unreleased | [Guided first experiment](../tutorials/first-experiment.md) |
 | Agent Skill | Implemented repository preview; verified Codex Linux delivery | [Install once and use natural language](../tutorials/agent-skill.md) |
 | Standalone GitHub Action | Distributed separately from this repository | [Action repository](https://github.com/EnumaElish123/reprollm-action) |
 
 Public release sources: [PyPI](https://pypi.org/project/reprollm/) and
 [GitHub releases](https://github.com/EnumaElish123/ReproLLM/releases).
+The [2026-11-05 check](../adoption/2026-11-05-release-check.md) confirms 0.6.1
+for Python >=3.10 and explains the still-present Alpha classifier.
 The [changelog](../../CHANGELOG.md) identifies release contents. No 0.6.2/0.7.0
 package, Skill-market release or MCP server was published by the latest source
 development sessions. A source checkout can therefore contain features absent

@@ -14,6 +14,11 @@ from PyPI and an unreleased source checkout can have different features. The
 [quickstart](quickstart.md) is generated from source; candidate acceptance uses
 the same command sequence against an independently installed wheel.
 
+For published-package availability, see the [2026-11-05 public index check](adoption/2026-11-05-release-check.md):
+official PyPI JSON, pip queries for supported Python versions and downloaded
+wheel metadata agree on 0.6.1. That check is separate from the candidate-wheel
+workflow below.
+
 ## Build once, then validate that artifact
 
 Use a clean checkout of the intended candidate. Record its commit **before**
