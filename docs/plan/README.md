@@ -8,6 +8,11 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer-assigned [2026-11-05 public-status follow-up](public-status-2026-11-05.md)
+updates the adoption evidence, GitHub About fields and public release checks.
+It is documentation and repository metadata maintenance; product and resource
+acceptance remain within the existing boundaries below.
+
 The maintainer-assigned [2026-11-03 issue follow-up](issues-2026-11-03.md)
 verifies the existing R08-A implementation for #9 and clarifies the current
 schema-2 optional input-candidate contract for #13. It changes documentation and

@@ -63,7 +63,12 @@ Python, CUDA, model weights and training dependencies remain separately prepared
 | Live discovery | `BLOCKED_NOT_AUTHORIZED` | Accept the exact public input, endpoint/model, request cap and fresh budget; verify returned evidence, explicit candidate acceptance, audit effect and duplicate rejection |
 | Formal judge A/B | `BLOCKED_NOT_AUTHORIZED` | Approve the current inputs and a fresh budget; accept A before B, then verify captures and the complete semantic pair |
 | Claude Code adaptation / second host | `DEFERRED_BY_MAINTAINER` | Resume the deferred host work and independently exercise its lifecycle and permissions |
-| External researcher trial | `UNOBSERVED` | Obtain genuine feedback from the planned 3–5 researchers; author or Agent runs do not count as external adoption |
+| Independent Agent Skill researcher trials | `UNOBSERVED` | Obtain genuine feedback from the planned 3–5 researchers; one public, agent-assisted CLI case does not establish this cohort |
+
+The [adoption ledger](adoption.md), updated 2026-11-05, links one public CLI
+research project, two issues and one merged PR to the same project identity.
+That bounded usage/feedback evidence is recorded separately from the still
+unobserved independent Skill trial cohort.
 
 The three online items are remaining **integration acceptance**, not missing
 command implementations. Mock transport and the offline judge capture do not

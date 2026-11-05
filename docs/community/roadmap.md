@@ -52,8 +52,10 @@ credential, destination and fresh-budget authorization. Historical budgets and
 mock requests are not substitutes.
 
 Claude Code adaptation and the second real-host gate are deferred by the
-maintainer. External researcher feedback is unobserved; the planned 3–5 trials
-have not been established by author or Agent runs. The related
+maintainer. The [adoption ledger](../adoption.md) now records one public,
+agent-assisted CLI research project, its two issues and one merged PR, checked
+2026-11-05. These share one project identity and do not establish the planned
+3–5 independent Agent Skill researcher trials. The related
 [trial materials](../trials/a02-local/README.md) are preparation, not
 evidence of adoption. Public submission, user outreach and publication have
 their own requirements and authorization.
