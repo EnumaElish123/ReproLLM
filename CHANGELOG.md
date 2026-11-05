@@ -7,6 +7,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- PUB02: populate GitHub About with the reproducibility-toolkit description
+  and `llm`, `reproducibility`, `research-tools` topics, with API readback.
+
 - PUB01: refresh adoption accounting with one public, agent-assisted research
   case linked to Issues #11/#13 and merged PR #12; distinguish project and
   contribution counts from independent people and Agent Skill trials.

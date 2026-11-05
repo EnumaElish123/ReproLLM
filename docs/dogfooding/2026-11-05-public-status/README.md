@@ -7,6 +7,8 @@ Scope: the maintainer's three requests under the
 
 ## PUB01: adoption evidence
 
+Task commit: `33b57b1`.
+
 The [adoption ledger](../../adoption.md) now links PI-01 to the pinned public
 case report, committed manifest, Issues #11/#13 and merged PR #12. Both issues
 and the PR are by `Mosionca2`; PR #12 merged as `ad8b2c7`, and #13's clarification
@@ -21,7 +23,25 @@ roadmap and Skill page now distinguish this real CLI case from the planned
 independent Skill trial cohort. No research run is repeated or scientific
 conclusion certified by this documentation update. Unmeasured downloads,
 dependents and paper artifacts are labeled as such; historical September data
-retain their dated meaning.
+retain their dated meaning. The initial document checks resolve 184 local links,
+and all nine pre-existing user files retain their hashes.
+
+## PUB02: GitHub About
+
+The [repository API](https://api.github.com/repos/EnumaElish123/ReproLLM) originally
+returned `description: null` and `topics: []`. The maintainer explicitly requested
+the following values, applied through the existing owner GitHub CLI login:
+
+```console
+gh repo edit EnumaElish123/ReproLLM --description 'LLM experiment reproducibility toolkit' --add-topic llm --add-topic reproducibility --add-topic research-tools
+```
+
+The command exits 0. A fresh API readback confirms description
+`LLM experiment reproducibility toolkit` and topics `llm`, `reproducibility`,
+`research-tools`. The GitHub connector supports repository reads but exposes no
+repository metadata mutation tool, so the existing owner CLI is used for this
+authorized update. This changes GitHub presentation metadata, not package or
+product behavior.
 
 ## Applicable validation
 
