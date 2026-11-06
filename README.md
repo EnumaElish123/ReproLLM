@@ -394,6 +394,7 @@ files are excluded from snapshots and discovery. The opt-in
 |---|---|
 | Use natural language instead of assembling commands | [Agent Skill tutorial](docs/tutorials/agent-skill.md) · [Support and remaining work](docs/skill-status.md) |
 | Save a command and run it again | [Guided first experiment](docs/tutorials/first-experiment.md) |
+| Record a judge of already stored answers | [Stored-answer judge recipe](docs/tutorials/stored-answer-judge.md) |
 | Try the whole workflow without a model | [Quick start](docs/quickstart.md) |
 | Understand the evidence model | [Concepts](docs/concepts.md) · [Why ReproLLM](docs/why.md) |
 | Configure an experiment | [Manifest](docs/manifest.md) · [Profiles](docs/profiles.md) · [Project rules](docs/project-rules.md) |

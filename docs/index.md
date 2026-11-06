@@ -21,6 +21,7 @@ shows the longer evidence workflow. For a first audit, run `reprollm audit .`.
 | Resolve revisions and file hashes | [Lockfile](lockfile.md) |
 | Record commands, settings and snapshots | [Runtime capture](run.md) |
 | Record concurrent local-model conditions | [Isolated condition workspaces](tutorials/concurrent-local-experiments.md) |
+| Record a judge of already stored answers | [Stored-answer judge recipe](tutorials/stored-answer-judge.md) |
 | Explain changes between runs | [Semantic diff](diff.md) |
 | Create a paper artifact | [Export](export.md) · [Checklist coverage](checklists.md) |
 | Add project-specific checks | [Project rules](project-rules.md) · [Experimental discovery](discover.md) |

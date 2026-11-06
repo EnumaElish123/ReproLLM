@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- ISSUE-14: document explicitly selected `judge_only` runs over stored answers,
+  with an offline CPU recording exercise, strict verdict parsing, input checks,
+  selected-run checklist exports and hash-only large-input evidence limits.
+
 - PUB03: verify public 0.6.1 availability through PyPI JSON, supported-Python
   pip queries, GitHub releases and wheel metadata; document Python >=3.10 and
   the existing Alpha classifier without publishing or installing a package.
