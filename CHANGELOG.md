@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- ISSUE-15: include case-insensitive `.pth` files in local model directory
+  weight inventories. Relocking can change the total size, fingerprint and
+  aggregate automatic-hashing decision; existing records, metadata priority,
+  explicit-file behavior, drift severity and declaration-only freshness remain
+  unchanged. Weight bytes are streamed without checkpoint deserialization.
+
 - ISSUE-14: document explicitly selected `judge_only` runs over stored answers,
   with an offline CPU recording exercise, strict verdict parsing, input checks,
   selected-run checklist exports and hash-only large-input evidence limits.

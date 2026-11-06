@@ -8,6 +8,13 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer-assigned [2026-11-07 issue follow-up](issues-2026-11-07.md)
+addresses the stored-answer judge tutorial (#14) and local directory `.pth`
+inventory extension (#15). The maintainer accepted option A, its exact contract
+and compatibility costs in the [specific decision](issues-2026-11-07-accepted.json).
+The proposal preserves its original snapshot; implementation and validation are in progress.
+This follow-up does not authorize a release, GPU execution or paid requests.
+
 The maintainer-assigned [2026-11-05 public-status follow-up](public-status-2026-11-05.md)
 updates the adoption evidence, GitHub About fields and public release checks.
 It is documentation and repository metadata maintenance; product and resource

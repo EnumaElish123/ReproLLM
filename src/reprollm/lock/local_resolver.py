@@ -24,7 +24,7 @@ from reprollm.schemas.manifest import DatasetSpec, ModelSpec
 
 MAX_AUTO_HASH_BYTES = 100 * 1024 * 1024
 _MODEL_METADATA_FILES = ("config.json", "tokenizer_config.json", "tokenizer.json")
-_WEIGHT_SUFFIXES = {".safetensors", ".bin", ".gguf", ".pt"}
+_WEIGHT_SUFFIXES = {".safetensors", ".bin", ".gguf", ".pt", ".pth"}
 
 
 def resolve_local_model(

@@ -17,6 +17,26 @@ environment. It downloads small Hub metadata files, never model weights or
 dataset contents. A locally declared model's existing weights are hashed only
 when their total size is at most 100 MiB, unless `--hash-large-files` is supplied.
 
+## Local model directories
+
+On `main` (unreleased), directory declarations recursively include `.safetensors`,
+`.bin`, `.gguf`, `.pt` and `.pth` files, matching suffixes case-insensitively.
+Files are sorted by their relative paths and hashed as opaque bytes; ReproLLM
+neither loads checkpoints nor imports a model framework. An explicit file ID
+continues to work regardless of suffix.
+
+Regenerate the lock to include `.pth` files in an existing directory. Historical
+locks/runs remain readable and are not migrated. The added files can change the
+combined size and fingerprint, or push the whole inventory over the 100 MiB
+automatic-hashing threshold; use `--hash-large-files` when appropriate.
+`lock --check` still checks declarations, not current weight contents.
+
+The model revision still prefers the metadata aggregate when available. With
+fixed metadata, changed weight bytes normally produce a `local.weights.sha256`
+MEDIUM diff; without metadata, a changed hashed revision also produces HIGH.
+This extension does not change drift severity, missing-config findings or the
+policy for directories containing no recognized weights.
+
 ## Provenance and confidence
 
 Resolved fields carry their value, source, confidence, optional resolution time,
