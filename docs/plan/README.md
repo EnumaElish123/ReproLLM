@@ -8,6 +8,12 @@ pending policy/schema amendment.
 
 ## Current execution package
 
+The maintainer-assigned [2026-11-07 owner follow-up](owner-followup-2026-11-07.md)
+reviews LS-01, integrates the #16/#17 tutorial, refreshes public adoption and
+prepares the Codex for Open Source application against the live official form.
+It is documentation-only; applicant identity and actual submission remain
+explicit dependencies. No release, paid API or GPU run is included.
+
 The maintainer-assigned [2026-11-07 issue follow-up](issues-2026-11-07.md)
 addresses the stored-answer judge tutorial (#14) and local directory `.pth`
 inventory extension (#15). The maintainer accepted option A, its exact contract
