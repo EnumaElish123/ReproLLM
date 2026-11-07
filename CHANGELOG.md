@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- New tutorial: applying ReproLLM to a single-case multimodal agent application
+  (explicit image argv, per-role consumption witnesses, retrieval/search
+  evidence, failure and drift examples; ISSUE-16 / PR #17). Pin the external
+  application and recorder source, separate contributor-reported local/live
+  results from maintainer offline checks, and clarify unreleased `.pth` support.
+
 - Preserve canonical UTF-8/LF bytes in schema exports on Windows. Strengthen
   freshness checks to compare bytes; schema definitions and committed exports
   are unchanged (ISSUE-15 validation prerequisite).
