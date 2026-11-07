@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Preserve canonical UTF-8/LF bytes in schema exports on Windows. Strengthen
+  freshness checks to compare bytes; schema definitions and committed exports
+  are unchanged (ISSUE-15 validation prerequisite).
+
 - ISSUE-15: include case-insensitive `.pth` files in local model directory
   weight inventories. Relocking can change the total size, fingerprint and
   aggregate automatic-hashing decision; existing records, metadata priority,

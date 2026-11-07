@@ -59,5 +59,5 @@ def export(
     out.mkdir(parents=True, exist_ok=True)
     for name, model in sorted(SCHEMA_MODELS.items()):
         target = out / f"{name}.schema.json"
-        target.write_text(model_schema_text(model, name), encoding="utf-8")
+        target.write_bytes(model_schema_text(model, name).encode("utf-8"))
     typer.echo(f"Wrote {len(SCHEMA_MODELS)} schema files to {out}")

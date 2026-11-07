@@ -56,7 +56,7 @@ def test_committed_schemas_are_fresh(tmp_path: Path) -> None:
     for path in sorted((repo_root / "schemas").glob("*.schema.json")):
         fresh = tmp_path / path.name
         assert fresh.exists(), f"{path.name} missing from fresh export"
-        assert path.read_text(encoding="utf-8") == fresh.read_text(encoding="utf-8"), (
+        assert path.read_bytes() == fresh.read_bytes(), (
             f"{path.name} is stale; run `reprollm schema export --out schemas/` and commit"
         )
 
