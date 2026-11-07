@@ -21,7 +21,7 @@
 | `M6_diff.md` | W6：ExperimentState、drift 严重度表、`diff`、audit 迁移到 State | | 10-12 起 |
 | `M7_export_discover_dogfooding.md` | W7：`export`、project rules、`discover`（3 天时间盒）、A/B/C 全流程 | | 10-19 起 |
 | `M8_stabilization.md` | W8：只修不加、文档、examples、社区脚手架、**发布 0.5.0 Beta** | | 10-26 起；W8.5 缓冲 |
-| `M9-M12_adoption.md` | Beta 后四周：GitHub Action、checklist 模板、生态集成、首次申请、指标与复盘 | | 11-09 起 |
+| `M9-M12_adoption.md` | Beta 后四周：GitHub Action、checklist 模板、生态集成、指标与复盘 | | 11-09 起 |
 
 阅读顺序（agent 每次会话）：`00` → `01` 相关章节 → `AGENTS.md` → 当周 `Mx`。每份 `Mx` 的 §0 已列出该周需要读 `01` 的哪些章节，避免全文加载。
 
@@ -40,11 +40,10 @@
 | W7 | 10-19 → 10-25 | M7 Export + Discover + Dogfooding | 0.5.0a1 | `export`、`rules`、`discover`（可砍）、A/B/C 全流程、backlog |
 | W8 | 10-26 → 11-01 | M8 Stabilization | **0.5.0（Beta）** | bug bash、文档、examples、roadmap issues、good first issues、冷启动测试 |
 | W8.5 | 11-02 → 11-08 | 缓冲 | — | 收尾或 H3 反馈修复；不开新功能 |
-| M9 | 11-09 → 11-15 | Action + 首次申请 | 0.5.1 | `reprollm/action`、`--format github`、**提交 Codex for OSS 申请** |
+| M9 | 11-09 → 11-15 | Action | 0.5.1 | `reprollm/action`、`--format github` |
 | M10 | 11-16 → 11-22 | Checklist 模板 + P1 | 0.5.2 | `export --template neurips/acl/acm`、P1 规则 |
 | M11 | 11-23 → 11-29 | 生态集成 | 0.5.3 | lm-eval / lighteval / inspect-ai integration、上游文档 PR |
 | M12 | 11-30 → 12-06 | 复盘 | 0.6.0 | 采用数据、retro、下一季度三件事 |
-| — | 2027-02 ~ 03 | 第二次申请 | | 以 `docs/adoption.md` 数据重写文案 |
 
 国庆假期 10-01 → 10-07 覆盖 W4 后半与 W5 前半；M4 已按轻周规划，M5 的 T01（redaction）不受影响。
 
@@ -85,8 +84,8 @@
 | 版本号 | `v0.5.0-beta` | `0.5.0a1`（W7）→ **`0.5.0` 正式版即 Beta**（W8） | PEP 440 预发布不会被 `pip install` 默认安装，Beta 必须是默认安装版本 |
 | 发布节奏 | W8 首发 PyPI | W1 起每周发 PyPI | 占名、真实 release 记录、尽早暴露安装问题 |
 | 时间缓冲 | 无 | W8.5 缓冲周；W4 轻周 | 单人维护 + 国庆 |
-| Beta 后 | 未规划 | M9–M12 采用阶段，量化指标 | 申请概率由采用数据决定，而非功能 |
-| 采用指标 | 未规划 | `docs/adoption.md` 自 W1 起月更 | 申请表 500 字符里唯一有说服力的内容 |
+| Beta 后 | 未规划 | M9–M12 采用阶段，量化指标 | 采用数据用于验证实际使用价值 |
+| 采用指标 | 未规划 | `docs/adoption.md` 自 W1 起月更 | 按来源记录真实采用，避免夸大 |
 | 依赖策略 | 未定 | 核心零重依赖：`httpx` 直连 HF API，不装 `huggingface_hub`/torch | 只想 audit 的机器不该被迫装 torch |
 | 秘密处理 | P0 | P0 且规范化：分段名匹配、9 类值模式、白名单捕获、禁区文件、100 % 分支覆盖、泄漏金测试进发布流水线 | 「记录环境」是最容易泄密的功能 |
 
@@ -108,11 +107,10 @@
 
 ---
 
-## 6. 可行性与申请概率（摘要）
+## 6. 可行性（摘要）
 
 - 技术可行性高：8 周内发出 `0.5.0` 的概率约 70 %，10–11 周内约 90 %；主要风险在 W5–W6 真实仓库暴露的返工与单人节奏波动。
 - 采用是真正瓶颈：Level 0 零配置价值、`export` 对齐会议 checklist、GitHub Action 三件事决定采用率，后两件在 M9–M10。
-- Codex for Open Source：11 月首次申请入选概率约 1–3 %（该计划实际选择的是已有大量下游依赖的成熟项目；万星级项目亦有大量无回复案例）；2027 年 2–3 月带采用数据再申请约 10–20 %。首次申请视为零成本登记，不影响路线。
 
 ---
 

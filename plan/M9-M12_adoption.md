@@ -4,7 +4,7 @@
 > 目标版本：`0.5.x` 补丁随修随发；`0.6.0` 于 M12 末发布
 > GitHub Milestones：`M9`、`M10`、`M11`、`M12`
 >
-> 定位：**这四周决定申请 Codex for Open Source 的实际概率，而不是 Beta 的功能完成度。** 功能开发只做「降低采用摩擦」的项。
+> 定位：**本阶段关注真实采用与维护反馈。** 功能开发只做「降低采用摩擦」的项。
 
 ---
 
@@ -32,15 +32,12 @@
 | GitHub Action 被外部仓库使用 | ≥ 1 | Action 的 "used by" |
 | Stars | 不设目标 | 记录但不追逐 |
 
-第一次 Codex for OSS 申请在 **M9 提交**（11 月中旬）；无回复视为未入选；第二次申请预计 **2027 年 2–3 月**，届时以上表的实际数据为依据。
-
 ---
 
 ## 2. 人工任务（贯穿四周）
 
 | # | 任务 | 时间 |
 |---|---|---|
-| H1 | 提交 Codex for OSS 申请（§7 文案） | M9 周二前 |
 | H2 | 对外发布：实验室内部邮件/群、个人学术社交账号、相关 Slack/Discord/微信群各一条；语气克制、附 90 秒录制与 Quick start；不做重复推送 | M9 |
 | H3 | 定向邀请 3–5 位同领域研究者试用（各自一个真实仓库），提供 30 分钟结对；收集反馈到 issue | M9–M10 |
 | H4 | 在自己实验室推动 2–3 个进行中的项目提交 `reprollm.yaml` + `reprollm.lock`；下一篇论文的 artifact 仓库包含 `REPRODUCIBILITY.md` | M10–M12 |
@@ -50,7 +47,7 @@
 
 ---
 
-## 3. M9（11-09 → 11-15）：GitHub Action + 首次申请 + 发布
+## 3. M9（11-09 → 11-15）：GitHub Action + 发布
 
 ### M9-T01 `reprollm/action`（L）
 
@@ -66,9 +63,9 @@
 
 按 M7-T04 验收完成；否则本项改为处理 discover 的 dogfooding 反馈。
 
-### M9-T04 首次申请（人工，H1）
+### M9-T04（已撤回）
 
-见 §7。
+维护者已移除申请材料任务；本仓库保留工程和采用记录。
 
 ### M9-T05 发布 `0.5.1`（S）
 
@@ -131,19 +128,9 @@ H3 反馈的 crash / 误报当周修复。
 
 ---
 
-## 7. Codex for Open Source 申请文案（M9 提交；第二次申请前重写）
+## 7. 已撤回的非产品材料
 
-申请表要点（以 `openai.com/form/codex-for-oss` 当时版本为准）：GitHub 用户名、仓库 URL、角色（primary maintainer）、为何符合（≤ 500 字符）、API credits 用途（≤ 500 字符）、OpenAI Org ID。
-
-**「为何符合」草稿（英文，≤ 500 字符，提交前按实际数字更新）**
-
-> ReproLLM is an Apache-2.0 CLI that makes LLM research experiments reproducible: a deterministic audit, a manifest/lockfile pinning model revisions, tokenizer and chat-template hashes, prompt hashes and judge configs, runtime capture with secret redaction, and semantic drift diffs. 8 releases in 2 months, N PyPI downloads, used by K research repos incl. M external. Maintenance is real and recurring: HF/vLLM/OpenAI API changes, new profiles, issue triage, releases.
-
-**「API credits 用途」草稿**
-
-> Bounded maintainer workflows: (1) PR review and issue triage automation for rule/profile contributions; (2) keeping Hugging Face, vLLM and OpenAI integrations current as upstream APIs change; (3) validating the opt-in `discover` feature (LLM proposes candidate reproducibility parameters, deterministic rules decide) across public research repos, with results published as fixtures.
-
-提交后：不追问、不重复提交；无回复即视为未入选；下一次按 §1 数据在 2027 年 2–3 月重写后提交。
+维护者于 2026-11-07 移除申请材料；该项不属于产品验收。
 
 ---
 
@@ -163,7 +150,6 @@ H3 反馈的 crash / 误报当周修复。
 - [ ] `export --template neurips|acl|acm` 可用，`docs/checklists.md` 存在
 - [ ] 全部 P1 规则实现
 - [ ] ≥ 1 个评测框架 integration 合并；≥ 1 个上游文档 PR 被合并或明确排期
-- [ ] 首次申请已提交；文案存档于 `docs/plan/application_text.md`
 - [ ] `docs/adoption.md` 有 9、10、11 月数据与 12 月初快照
 - [ ] `0.6.0` 发布
 - [ ] `docs/plan/retro_2026Q4.md` 完成，含下一季度三件事
@@ -177,4 +163,3 @@ H3 反馈的 crash / 误报当周修复。
 | 邀请的研究者不试用 | 结对 30 分钟比发链接有效；准备好对方仓库的 `init` 结果再去找人 |
 | 上游项目对文档 PR 不感兴趣 | 先问再提；被拒则把 recipe 放在自己的 `docs/integrations/`，不强推 |
 | 采用数据远低于目标 | 这是信息而非失败：复盘时区分「没人知道」与「知道了不想用」，前者加曝光，后者回到产品（Level 0 的价值是否足够） |
-| 申请无回复带来的挫败感影响节奏 | 已在预期内（概率评估 1–3 %）；H1 之后不再讨论申请，直到 2027 年 2 月 |

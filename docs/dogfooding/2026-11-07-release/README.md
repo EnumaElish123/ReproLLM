@@ -16,8 +16,8 @@ Remove seven dedicated form/draft/index files and the actual templates/field
 instructions in mixed plans and reports. Repair navigation and preserve public
 project cases, tests, runtime evidence and original hash inventories. No Git
 history rewrite, Issue/PR deletion or local private-handoff upload is performed.
-The maintainer's new publication request supersedes older session-specific
-release prohibitions; it does not waive acceptance.
+The original publication request was later deferred by the maintainer; only
+material removal is continued in this session.
 
 Acceptance first fails on the seven existing files. After removal it exposes one
 remaining document link; that link is corrected. The final content check passes:
@@ -51,3 +51,10 @@ The cleanup itself is committed at `62d18025f5357c7805ae9df1c526dbcbe376fac0`.
 The following documentation-only update records the maintainer's narrowed
 scope. Final main CI is checked against that exact delivery commit after push;
 it does not mark release Gate A/B complete. No tag or package is published.
+
+A subsequent all-tracked-file check also finds an early duplicate form template
+in root `plan/M9-M12_adoption.md` and related preparation instructions in
+`plan/M8_stabilization.md` / the root plan overview. These are removed too;
+unrelated engineering plans and frozen positioning decisions stay intact.
+The final repository-wide scan checks actual form URLs, draft/template markers
+and all removed-document links, including these earlier planning copies.
