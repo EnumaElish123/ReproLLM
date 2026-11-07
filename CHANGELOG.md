@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- New tutorial: applying ReproLLM to a single-case multimodal agent application
+  (explicit image argv, per-role consumption witnesses, retrieval/search
+  evidence, failure and drift examples). The fixture/local/live layers were
+  executed end to end on the linked external application branch; the tutorial
+  states each layer's claimable evidence and cites #15 for the now-supported
+  `.pth` directory inventories.
+
 - Preserve canonical UTF-8/LF bytes in schema exports on Windows. Strengthen
   freshness checks to compare bytes; schema definitions and committed exports
   are unchanged (ISSUE-15 validation prerequisite).
@@ -20,6 +27,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - ISSUE-14: document explicitly selected `judge_only` runs over stored answers,
   with an offline CPU recording exercise, strict verdict parsing, input checks,
   selected-run checklist exports and hash-only large-input evidence limits.
+(docs(tutorials): single-case multimodal agent workflow with retrieval evidence (#16))
 
 - PUB03: verify public 0.6.1 availability through PyPI JSON, supported-Python
   pip queries, GitHub releases and wheel metadata; document Python >=3.10 and
