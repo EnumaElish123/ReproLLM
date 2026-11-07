@@ -1,8 +1,14 @@
-# 0.7.0 release preparation
+# Application-material cleanup; release deferred
 
 Assigned scope: [REL-01–04](../../plan/release-2026-11-07.md).
 Starting main: `07e7e855d87b65b56bca4c301286eb8667b929c1`.
-Status: **IN_PROGRESS / NOT_RELEASE_READY / NOT_PUBLISHED**.
+Status: **REL-01 DOCUMENTATION_ACCEPTED / RELEASE_DEFERRED_BY_MAINTAINER / NOT_PUBLISHED**.
+
+The maintainer subsequently limited this session to repository material removal:
+“先不发行新版本，删除仓库中申请表相关内容”. No release acceptance or publication
+is being continued. Three newly drafted, uncommitted producer/workflow/test files
+were removed from the source tree and never pushed. Existing product, tests,
+dependencies, schemas and CI/release workflows remain unchanged.
 
 ## REL-01: current-tree material cleanup
 
@@ -22,7 +28,7 @@ unchanged for this task. All original machine-readable engineering evidence
 remains byte-identical. REL-01 uses the documentation-only validation category;
 it does not mark release quality or Gate A/B as passed.
 
-## Candidate and remaining gates
+## Deferred release scope
 
 Existing source is 0.7.0 and writes run schema 2, reading schemas 1 and 2.
 The previously built 0.6.2 bridge is local compatibility evidence, not an
@@ -31,12 +37,17 @@ fresh complete quality, all five Gate A/B matrices, installed-wheel checks and
 exact-head cross-platform CI.
 
 The existing release workflow consumes a same-candidate `release-validation`
-artifact but this repository has no producer workflow. REL-02A adds that missing
-nonpublishing evidence channel while preserving all 28 gate requirements and
-same-commit/hash checks. Historical GPU/API PASS records are not rebound to the
-new candidate. Current GPU/provider resources and a fresh paid budget have been
-requested; until supplied the affected gates remain BLOCKED_NOT_AUTHORIZED.
+artifact but this repository has no producer workflow. That work is deferred;
+no evidence channel or resource replay is added by this cleanup. Historical
+GPU/API PASS records are not rebound. No GPU work or paid request is executed.
 
 Do not create a tag, upload to PyPI or claim release acceptance before all
 mandatory gates and artifact provenance pass. Publication uses the existing
 protected PyPI OIDC workflow, one build and the exact accepted wheel/sdist.
+
+## Delivery
+
+The cleanup itself is committed at `62d18025f5357c7805ae9df1c526dbcbe376fac0`.
+The following documentation-only update records the maintainer's narrowed
+scope. Final main CI is checked against that exact delivery commit after push;
+it does not mark release Gate A/B complete. No tag or package is published.

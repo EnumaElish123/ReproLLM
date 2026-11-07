@@ -14,5 +14,5 @@ The isolated fixture acceptance includes 20 external offline tests and 18
 command receipts; it is not medical or independent laboratory validation.
 This was documentation-only under the [validation workflow](validation-workflow-2026-10-13.md).
 The maintainer subsequently withdrew application-form materials from the current
-repository tree. Current work follows the [release plan](release-2026-11-07.md);
+repository tree. Current work follows the [cleanup/deferred-release record](release-2026-11-07.md);
 historical commits and engineering receipts are retained.

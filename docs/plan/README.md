@@ -8,9 +8,10 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The current [0.7.0 release preparation](release-2026-11-07.md) is assigned by
-the maintainer: remove application-form material, complete candidate acceptance
-and publish only after all required gates pass. The earlier [owner follow-up](owner-followup-2026-11-07.md)
+The current [application-material cleanup](release-2026-11-07.md) is assigned by
+the maintainer. The subsequent instruction defers release work: remove the
+form/draft material and repair documentation only. No version, tag, resource
+execution or publication is included. The earlier [owner follow-up](owner-followup-2026-11-07.md)
 retains public project and #16/#17 tutorial evidence; its non-product application
 materials have been withdrawn from the current tree.
 
