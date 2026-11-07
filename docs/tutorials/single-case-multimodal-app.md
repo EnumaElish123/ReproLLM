@@ -160,10 +160,12 @@ local/live 需要真实资产：分类 checkpoint（torchvision ResNet18 + 6 类
 
 ## 已知边界
 
-- **`.pth` 目录权重**：`lock` 对仅含 `.pth` 文件的目录当前不计入权重清单
-  （`weights` 为空集合摘要），显式文件声明则正常哈希。现状行为、四组 CLI
-  对照与讨论见 [#15](https://github.com/EnumaElish123/ReproLLM/issues/15)。
-  本教程不依赖目录声明规避该边界。
+- **`.pth` 目录权重**：`lock` 现已把目录内的 `.pth`（大小写不敏感）计入
+  权重清单——目录字节变化会改变 `weights.sha256`，固定 config 时
+  `config_sha256` 保持独立稳定，流式哈希、不做 checkpoint 反序列化。该
+  支持由 [#15](https://github.com/EnumaElish123/ReproLLM/issues/15) 提出并
+  在 ISSUE-15 中实现；教程作者在修复前后各用同一探针复测过（修复前目录
+  声明为空集合摘要且不变，修复后计入），探针材料见链接的试用记录。
 - fixture 的 `trace.jsonl` 时间来自注入时钟（保证字节可复现）；live 的
   trace 为真实时间。`result.json` 的耗时字段单独存放，不参与字节复现声明。
 - 应用原始依赖与 ReproLLM 依赖建议分环境安装；混装时旧版本 pins 可能与
