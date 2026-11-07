@@ -12,7 +12,11 @@ The maintainer-assigned [2026-11-07 issue follow-up](issues-2026-11-07.md)
 addresses the stored-answer judge tutorial (#14) and local directory `.pth`
 inventory extension (#15). The maintainer accepted option A, its exact contract
 and compatibility costs in the [specific decision](issues-2026-11-07-accepted.json).
-The proposal preserves its original snapshot; implementation and validation are in progress.
+The proposal preserves its original snapshot. Both issues and the existing-contract
+Windows schema prerequisite have passed final local acceptance on `5079c0c`: 30 quality
+checks, 6,552 tests and complete five-project comparisons. See the
+[session report](../dogfooding/2026-11-07-issues-14-15/README.md).
+Exact delivery-head CI is verified after the report commit is pushed.
 This follow-up does not authorize a release, GPU execution or paid requests.
 
 The maintainer-assigned [2026-11-05 public-status follow-up](public-status-2026-11-05.md)
