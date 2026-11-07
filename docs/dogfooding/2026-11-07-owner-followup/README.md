@@ -74,8 +74,84 @@ documentation is affected. Final content, links, Markdown, privacy, official
 form lengths and unchanged product inputs are checked before the final push.
 Exact final-main CI is verified separately after push.
 
+Local documentation acceptance checks the destinations of 329 relative links
+across 18 changed Markdown/JSON files, table widths, schema-versioned evidence,
+added-text identity/path privacy, three ASCII field lengths/hashes and the
+absence of product/test/schema/dependency/workflow changes. Unchanged historical
+examples are not treated as newly introduced private data. Manual review also
+checks public fixed-commit sources, contributor attribution, dated counters,
+source-versus-release statements and the M1–M10 disposition. Generated product
+freshness is NOT_APPLICABLE because no generated product document changed.
+
 OWNER-01 evidence classification is [published separately](../../adoption/lingshu-2026-11-07.md).
-Public adoption/application follow-up and remaining identity/submission
-dependencies are recorded here when completed. Application submission remains
-NOT_SUBMITTED until an actual successful submission is observed. No paid API,
-GPU, version/tag/release or fabricated external feedback is included.
+
+## Public follow-up: OWNER-03 / M2–M5
+
+OWNER-01 is `7f4d419`; corrected PR #17 integration is
+`506dd87756161668c7c397f8171c9b626cb0042b`. GitHub confirms #17 merged and #16
+closed at 2026-11-07T08:50:32Z. The [maintainer review](https://github.com/EnumaElish123/ReproLLM/pull/17#pullrequestreview-5811145099)
+and one [#15 closure follow-up](https://github.com/EnumaElish123/ReproLLM/issues/15#issuecomment-6704715084)
+are published using the owner account. No duplicate issue or contributor
+identity was created.
+
+The [post-merge GitHub inventory](evidence/github-state.json) has **0 open issues,
+0 open PRs, 5 non-owner issues, 2 merged non-owner PRs and 2 contributing accounts**.
+The two documented projects remain PI-01 and LS-01 with their different scopes.
+README now links fixed public evidence; the adoption ledger preserves its
+11-05 and older snapshots. [C01–C08](../../adoption/oss-evidence-2026-11.md)
+maps each application claim to an explicit source and limit. PI-01's corrected
+judge report was read at `9e3650282f4b72bfb3ccccdc0b4df45bec40ac34` without
+re-running its research or recertifying the reported scientific results.
+
+## Application and release handoff: OWNER-04–05 / M6–M10
+
+The [current official-form check and English draft](../../adoption/a03-2026-11-07.md)
+record public fields, actual 500-character limits, program/terms sources and
+unverified browser conditional behavior. The three ASCII texts are **442 / 430 /
+381 characters**, with byte/unit counts and SHA-256 in the linked length receipt.
+Older application drafts remain unchanged, including historical resource states
+that were superseded by later validation; this session does not repeat those
+obsolete states as current blockers.
+
+| Owner-plan item | Actual outcome |
+|---|---|
+| M1 | Complete: pinned LS-01 claim classification, with reported/private evidence boundaries. |
+| M2 | Complete: one maintainer comment on the original #15, with exact fix and source/release distinction. |
+| M3–M5 | Complete: refreshed ledger, README cases and source-linked claim index; genuine counts only. |
+| M6 | Public official fields, terms and benefits checked; conditional live UI remains UNVERIFIED after browser binding timeouts. No selection/benefit is promised. |
+| M7 | Three checked English texts ready for the actual applicant; identity/role/benefit selections are pending. |
+| M8 | **NOT_SUBMITTED**: actual applicant name, matching email, role/benefit choices and conditional Organization ID are missing; final complete-form/terms decision and observed receipt are still required. |
+| M9 | Complete for this scope: fresh PyPI/GitHub state and public docs consistently retain released 0.6.1 versus unreleased source 0.7.0. No release is attempted. |
+| M10 | Ongoing genuine maintenance, not a fabricated activity target. No additional adopter, feedback or future outcome is asserted. |
+
+The [release receipt](evidence/release-status.json) confirms 0.6.1 wheel/sdist are
+not yanked, Python >=3.10 and retained Alpha metadata. No 0.7.0 index release is
+present. The private application handoff contains only pending-field statuses;
+no personal applicant information or submission identifier was received.
+
+Remaining resource gates are the existing three authenticated/paid Skill
+integrations ([current status](../../skill-status.md)); they remain
+BLOCKED_NOT_AUTHORIZED. Claude Code remains maintainer-deferred and the planned
+independent Skill cohort remains unobserved. LS-01's private raw local/live and
+fixed-probe receipts are unpublished evidence limits, not a request for a paid/GPU
+rerun. M8 additionally needs actual applicant inputs and working form access.
+No paid API, GPU, version/tag/release or fabricated external feedback is included.
+
+## Commit and delivery references
+
+| Task | Commit |
+|---|---|
+| OWNER-01 / M1 | `7f4d419` |
+| OWNER-02 / #16 / PR #17 | `506dd87756161668c7c397f8171c9b626cb0042b`, preserving contributor `e7581280ad6491d84f26aaf6a0916d31d18100a7` as a parent |
+| OWNER-03 / M2–M5 | `072976f` |
+| OWNER-04 / M6–M7 | `4183cc7` |
+| OWNER-05 / M8–M10 disposition | The commit containing this final handoff/report update; M8 remains input/terms-dependent and M10 ongoing. |
+
+The first integration push starts
+[CI run 42357177853](https://github.com/EnumaElish123/ReproLLM/actions/runs/42357177853).
+It does not substitute for the final documentation delivery. For the final
+push, check the [main CI workflow](https://github.com/EnumaElish123/ReproLLM/actions/workflows/ci.yml)
+against the exact pushed SHA: all five job names/checkouts must match, each
+required step must succeed, including the fourteen required Ubuntu 3.12 steps.
+The final reply records that run and actual result; the private delivery receipt
+retains the API response without introducing a self-referential report commit.

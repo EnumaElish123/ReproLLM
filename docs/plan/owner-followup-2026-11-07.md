@@ -40,3 +40,13 @@ model checkpoints. Do not change third-party application code or merge its PR.
 Missing application identity/Org ID is a concrete input dependency, not an
 invitation to infer identity from Git metadata. M10 remains ongoing real
 maintenance; it does not justify fabricated contributions or scheduled posts.
+
+## Disposition
+
+See the [owner session report](../dogfooding/2026-11-07-owner-followup/README.md).
+M1–M5 are delivered, #17 is merged with corrections and #16 is closed. Public
+official fields and three checked English texts are prepared; actual applicant
+inputs, conditional live-form verification and the final terms/submission
+decision remain required for M8. M9 is satisfied by accurate unreleased status;
+M10 remains genuine ongoing maintenance. This does not authorize a release or
+convert unobserved external activity into completion.

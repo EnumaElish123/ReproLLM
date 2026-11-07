@@ -11,8 +11,14 @@ pending policy/schema amendment.
 The maintainer-assigned [2026-11-07 owner follow-up](owner-followup-2026-11-07.md)
 reviews LS-01, integrates the #16/#17 tutorial, refreshes public adoption and
 prepares the Codex for Open Source application against the live official form.
-It is documentation-only; applicant identity and actual submission remain
-explicit dependencies. No release, paid API or GPU run is included.
+The #16/#17 contribution is integrated at `506dd87`; its offline fixture checks
+pass. The [session report](../dogfooding/2026-11-07-owner-followup/README.md)
+records adoption updates and the current application handoff. This is
+documentation-only; applicant identity, conditional live-form verification and
+actual submission remain explicit dependencies. No release, paid API or GPU run
+is included. The earlier A03 prohibition on submission described the older
+session; the present assigned owner plan permits preparing the concrete M8
+handoff, subject to its actual applicant and final terms/submission decision.
 
 The maintainer-assigned [2026-11-07 issue follow-up](issues-2026-11-07.md)
 addresses the stored-answer judge tutorial (#14) and local directory `.pth`

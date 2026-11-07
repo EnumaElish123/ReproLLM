@@ -15,8 +15,10 @@ dates do not establish availability.
 
 Public release sources: [PyPI](https://pypi.org/project/reprollm/) and
 [GitHub releases](https://github.com/EnumaElish123/ReproLLM/releases).
-The [2026-11-05 check](../adoption/2026-11-05-release-check.md) confirms 0.6.1
-for Python >=3.10 and explains the still-present Alpha classifier.
+The [2026-11-07 observation](../dogfooding/2026-11-07-owner-followup/evidence/release-status.json)
+again confirms 0.6.1 for Python >=3.10 with the Alpha classifier retained;
+the [2026-11-05 check](../adoption/2026-11-05-release-check.md) preserves the
+earlier index and wheel-metadata verification.
 The [changelog](../../CHANGELOG.md) identifies release contents. No 0.6.2/0.7.0
 package, Skill-market release or MCP server was published by the latest source
 development sessions. A source checkout can therefore contain features absent
