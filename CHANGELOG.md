@@ -8,11 +8,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 - OWNER-03–05: refresh version-scoped public project/contribution evidence,
-  add two bounded README case links and an OSS claim index, and prepare
-  length-checked application text against the current official form. Applicant
-  details and Pro-only choices are confirmed privately; browser verification
-  blocks live conditional fields and actual submission;
-  released 0.6.1 and unreleased 0.7.0 remain distinct.
+  add two bounded README case links and preserve source/release distinctions.
+- REL-01: remove dedicated application forms, drafts and their navigation
+  from the current repository tree; retain project usage and engineering evidence.
 
 - New tutorial: applying ReproLLM to a single-case multimodal agent application
   (explicit image argv, per-role consumption witnesses, retrieval/search

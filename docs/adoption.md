@@ -83,8 +83,6 @@ independent adoption. Earlier star counts and duplicate release lists are not
 used as adoption evidence. Current package availability is tracked on the
 [roadmap](community/roadmap.md).
 
-For historical preparation, see the [2026-10-18 facts](adoption/a03-2026-10-18.md),
-[2026-10-22 supplement](adoption/a03-2026-10-22.md) and
-[A02 trial materials](trials/a02-local/README.md). They retain their dated scope.
-The [2026-11 evidence index](adoption/oss-evidence-2026-11.md) maps current
-application claims to their dated public sources; the old snapshots remain historical.
+For independent trial materials, see [A02](trials/a02-local/README.md).
+The [LS-01 classification](adoption/lingshu-2026-11-07.md) retains the dated
+public-versus-reported evidence boundaries.

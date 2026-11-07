@@ -8,18 +8,11 @@ pending policy/schema amendment.
 
 ## Current execution package
 
-The maintainer-assigned [2026-11-07 owner follow-up](owner-followup-2026-11-07.md)
-reviews LS-01, integrates the #16/#17 tutorial, refreshes public adoption and
-prepares the Codex for Open Source application against the live official form.
-The #16/#17 contribution is integrated at `506dd87`; its offline fixture checks
-pass. The [session report](../dogfooding/2026-11-07-owner-followup/README.md)
-records adoption updates and the current application handoff. This is
-documentation-only; applicant details/Pro-only choice are now confirmed privately,
-while browser URL verification blocks live-form review and actual submission.
-No release, paid API or GPU run
-is included. The earlier A03 prohibition on submission described the older
-session; the present assigned owner plan permits preparing the concrete M8
-handoff, subject to its actual applicant and final terms/submission decision.
+The current [0.7.0 release preparation](release-2026-11-07.md) is assigned by
+the maintainer: remove application-form material, complete candidate acceptance
+and publish only after all required gates pass. The earlier [owner follow-up](owner-followup-2026-11-07.md)
+retains public project and #16/#17 tutorial evidence; its non-product application
+materials have been withdrawn from the current tree.
 
 The maintainer-assigned [2026-11-07 issue follow-up](issues-2026-11-07.md)
 addresses the stored-answer judge tutorial (#14) and local directory `.pth`
@@ -388,14 +381,10 @@ This specific delegated choice does not approve other OPEN R07-C policies or a r
 R08-A option A remains implemented and unreleased; read its
 [P-B acceptance report](../dogfooding/2026-10-18-r08a/README.md) and
 [specific decision](reliability-2026-10-03/proposals/R08-A/decision.json).
-For work independent of outstanding resources, the
-[A02 local trial materials](../trials/a02-local/README.md) and
-[A03 historical sourced facts](../adoption/a03-2026-10-18.md) remain available.
-The [2026-10-22 A03 supplement](../adoption/a03-2026-10-22.md) records dated facts,
-read-only public-form matching and measured draft lengths, with separate preparation
-and verified PB delivery identities. Conditional form behavior and server validation
-remain untested; independent trials are PENDING and no application is submitted.
-No release is authorized. Resource results stay candidate-bound.
+For work independent of outstanding resources, use the
+[A02 local trial materials](../trials/a02-local/README.md). Original A03 form
+materials have been withdrawn by the maintainer.
+
 The [R07-A performance follow-up](../dogfooding/2026-10-13-reliability-s3a/r07a-perf-session.md)
 is committed at `110087b1e416c12c25253c07365944935e986470`: 2,505 tests,
 174 security tests and a fresh five-project Gate A passed. Final five-job CI

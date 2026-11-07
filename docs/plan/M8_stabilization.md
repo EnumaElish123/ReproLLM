@@ -116,7 +116,7 @@
 
 ### M8-T08 发布物料（S）
 
-**范围**：`docs/why.md`（问题陈述：研究者遇到的十类不可复现场景 → ReproLLM 分别用哪条规则/哪个命令回应；这是未来博文与申请文案的底稿）；`asciinema` 或 `vhs` 录制 `examples/hf_vllm_eval` 全流程（≤ 90 秒），嵌入 README（gif/svg）；准备一段 500 字符以内的项目介绍（Codex for OSS 申请表用，`00 §2.1` 叙事）。
+**范围**：`docs/why.md`（问题陈述：研究者遇到的十类不可复现场景 → ReproLLM 分别用哪条规则/哪个命令回应；用于说明项目价值）；`asciinema` 或 `vhs` 录制 `examples/hf_vllm_eval` 全流程（≤ 90 秒），嵌入 README（gif/svg）；准备简洁的项目介绍（遵循 `00 §2.1` 叙事）。
 
 ---
 
@@ -148,7 +148,7 @@ H3 冷启动测试为本周核心反馈源。A/B/C 上重跑 `0.5.0` 候选版�
 - [ ] `examples/` 三个示例含真实 lock，CI 校验通过
 - [ ] 性能与边界测试通过；nightly workflow 存在
 - [ ] `CITATION.cff`、`CONTRIBUTING.md`、`SECURITY.md` 终稿；Discussions 开启；roadmap issues 与 ≥5 个 good first issue 存在
-- [ ] `docs/why.md` 与终端录制完成；500 字符介绍存档于 `docs/plan/application_text.md`
+- [ ] `docs/why.md` 与终端录制完成；项目介绍与产品文档一致
 - [ ] 至少 1 位冷启动测试者完成全流程，卡点已修复或记录
 - [ ] `v0.5.0` 发布；`pip install reprollm` 默认得到 `0.5.0`
 - [ ] `docs/adoption.md` 记录 9 月、10 月数据

@@ -70,13 +70,12 @@ None required changing application or product tests/code.
 This is handwritten documentation/plan/navigation maintenance under validation
 workflow §3. The local full product quality gate, five-project Gate A and Gate B
 are **NOT_APPLICABLE_DOCUMENTATION_ONLY**, not PASS. No generated product
-documentation is affected. Final content, links, Markdown, privacy, official
-form lengths and unchanged product inputs are checked before the final push.
+documentation is affected. Final content, links, Markdown, privacy, unchanged product inputs are checked before the final push.
 Exact final-main CI is verified separately after push.
 
 Local documentation acceptance checks the destinations of 330 relative links
 across 18 changed Markdown/JSON files, table widths, schema-versioned evidence,
-added-text identity/path privacy, three ASCII field lengths/hashes and the
+added-text identity/path privacy, the
 absence of product/test/schema/dependency/workflow changes. Unchanged historical
 examples are not treated as newly introduced private data. Manual review also
 checks public fixed-commit sources, contributor attribution, dated counters,
@@ -98,63 +97,20 @@ The [post-merge GitHub inventory](evidence/github-state.json) has **0 open issue
 0 open PRs, 5 non-owner issues, 2 merged non-owner PRs and 2 contributing accounts**.
 The two documented projects remain PI-01 and LS-01 with their different scopes.
 README now links fixed public evidence; the adoption ledger preserves its
-11-05 and older snapshots. [C01–C08](../../adoption/oss-evidence-2026-11.md)
-maps each application claim to an explicit source and limit. PI-01's corrected
+11-05 and older snapshots. The [adoption ledger](../../adoption.md) records public sources and their limits. PI-01's corrected
 judge report was read at `9e3650282f4b72bfb3ccccdc0b4df45bec40ac34` without
 re-running its research or recertifying the reported scientific results.
 
-## Application and release handoff: OWNER-04–05 / M6–M10
+## Historical release snapshot and current material boundary
 
-The [current official-form check and English draft](../../adoption/a03-2026-11-07.md)
-record public fields, actual 500-character limits, program/terms sources and
-unverified browser conditional behavior. The three ASCII texts are **442 / 430 /
-381 characters**, with byte/unit counts and SHA-256 in the linked length receipt.
-Older application drafts remain unchanged, including historical resource states
-that were superseded by later validation; this session does not repeat those
-obsolete states as current blockers.
+The [release receipt](evidence/release-status.json) records the 2026-11-07
+observation of public 0.6.1 and unreleased source 0.7.0. The maintainer later
+requested removal of application-form material from the repository; that content
+is no longer part of this report. Public case evidence and the fixture receipts
+above remain unchanged.
 
-| Owner-plan item | Actual outcome |
-|---|---|
-| M1 | Complete: pinned LS-01 claim classification, with reported/private evidence boundaries. |
-| M2 | Complete: one maintainer comment on the original #15, with exact fix and source/release distinction. |
-| M3–M5 | Complete: refreshed ledger, README cases and source-linked claim index; genuine counts only. |
-| M6 | Public official fields, terms and benefits checked; conditional live UI remains UNVERIFIED after browser binding timeouts. No selection/benefit is promised. |
-| M7 | Three checked English texts; applicant inputs and primary role confirmed privately. Pro/Codex only selected, no optional security/credits; API-use draft stays unused. |
-| M8 | **NOT_SUBMITTED / BLOCKED_BROWSER_URL_VERIFICATION**: browser tool could not confidently verify the current Windows browser URL and stopped UI operation. Live conditional-field review, final complete-form/terms decision and an actual receipt remain required. No fields were entered. |
-| M9 | Complete for this scope: fresh PyPI/GitHub state and public docs consistently retain released 0.6.1 versus unreleased source 0.7.0. No release is attempted. |
-| M10 | Ongoing genuine maintenance, not a fabricated activity target. No additional adopter, feedback or future outcome is asserted. |
-
-The [release receipt](evidence/release-status.json) confirms 0.6.1 wheel/sdist are
-not yanked, Python >=3.10 and retained Alpha metadata. No 0.7.0 index release is
-present. The private application handoff now holds user-confirmed personal
-fields and benefit choices; these are ignored by Git. No submission identifier
-exists. The browser tool's URL-verification stop was respected; no alternate
-form-submission mechanism was used.
-
-Remaining resource gates are the existing three authenticated/paid Skill
-integrations ([current status](../../skill-status.md)); they remain
-BLOCKED_NOT_AUTHORIZED. Claude Code remains maintainer-deferred and the planned
-independent Skill cohort remains unobserved. LS-01's private raw local/live and
-fixed-probe receipts are unpublished evidence limits, not a request for a paid/GPU
-rerun. M8 additionally needs restored authorized browser access or a manual
-applicant handoff, live field verification and the final terms/submission decision.
-No paid API, GPU, version/tag/release or fabricated external feedback is included.
-
-## Commit and delivery references
-
-| Task | Commit |
-|---|---|
-| OWNER-01 / M1 | `7f4d419` |
-| OWNER-02 / #16 / PR #17 | `506dd87756161668c7c397f8171c9b626cb0042b`, preserving contributor `e7581280ad6491d84f26aaf6a0916d31d18100a7` as a parent |
-| OWNER-03 / M2–M5 | `072976f` |
-| OWNER-04 / M6–M7 | `4183cc7` |
-| OWNER-05 / M8–M10 disposition | The commit containing this final handoff/report update; M8 remains input/terms-dependent and M10 ongoing. |
-
-The first integration push starts
-[CI run 42357177853](https://github.com/EnumaElish123/ReproLLM/actions/runs/42357177853).
-It does not substitute for the final documentation delivery. For the final
-push, check the [main CI workflow](https://github.com/EnumaElish123/ReproLLM/actions/workflows/ci.yml)
-against the exact pushed SHA: all five job names/checkouts must match, each
-required step must succeed, including the fourteen required Ubuntu 3.12 steps.
-The final reply records that run and actual result; the private delivery receipt
-retains the API response without introducing a self-referential report commit.
+Engineering commits: OWNER-01 `7f4d419`, OWNER-02 `506dd87756161668c7c397f8171c9b626cb0042b`
+(preserving contributor `e7581280ad6491d84f26aaf6a0916d31d18100a7`), OWNER-03 `072976f`.
+The full original delivery passed [CI run 42357990852](https://github.com/EnumaElish123/ReproLLM/actions/runs/42357990852)
+on `07e7e855d87b65b56bca4c301286eb8667b929c1`; later cleanup/release work has
+its [own plan](../../plan/release-2026-11-07.md) and separate candidate evidence.

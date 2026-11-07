@@ -70,7 +70,7 @@ R07-C 的历史局部方案和修复是同一顶层任务的分批交付，不�
 | A01-A | [原输入清单](../../dogfooding/2026-10-18-a01-local/input-readiness.md)及后续恢复；新正式五manifest已入库，[公共DistilGPT2替换](../../dogfooding/metadata-public-model-2026-10-27/README.md)解除当前metadata输入与访问前置缺口 | 当前正式输入5/5可用；旧45/50恢复记录不改写。旧Llama-2授权成功门为SUPERSEDED_NOT_PASSED，不再要求找回旧manifest或申请Llama-2权限。后续执行仍核对输入字节与实际资源 |
 | A01-B | [无资源可分享回放及二次环境](../../dogfooding/2026-10-18-a01-local/README.md)、[GPU／judge／discover实际补验](../../dogfooding/2026-10-26-validation-completion/README.md)、[公共metadata实际回放](../../dogfooding/metadata-public-model-2026-10-27/README.md) | 材料与各候选成果已交付；VAL-R01/R02绑定`6afe8f4`、当前VAL-R03绑定`00c2392`，均非本轮新执行。最终发布须完成同一最终候选的适用资源矩阵；普通静态收尾不自动激活或重绑历史资源结果 |
 | A02 | [安装说明、两张任务卡、邀请草稿、反馈与问题处理入口](../../trials/a02-local/README.md)为READY_FOR_REVIEW | 实际邀请、独立试用、真实反馈、问题回访及持续采用仍PENDING；作者自测和本次独立代码复核不计外部采用 |
-| A03 | [10-18事实表](../../adoption/a03-2026-10-18.md)及[10-22公开表单匹配／申请草稿](../../adoption/a03-2026-10-22.md)、[长度记录](../../adoption/a03-2026-10-22-lengths.json)已准备 | 草稿为DRAFT／NOT_SUBMITTED／NOT_APPROVED；申请人身份、账号／维护角色／组织标识及提交授权待确认。10-22是上次表单核对日期，正式提交前应重新核验当时要求及拟引用的最新证据 |
+| A03 | WITHDRAWN_BY_MAINTAINER | 申请材料于 2026-11-07 从当前分支移除 | 不属于产品或发行验收条件 |
 
 以上四项不强行合并成一个PASS。外部试用与申请结果不属于编码Agent可保证完成的开发Sprint；
 发布验收、正式发布、对外邀请和申请提交也各有独立前置条件及授权。

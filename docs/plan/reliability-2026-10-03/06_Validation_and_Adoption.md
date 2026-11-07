@@ -1,4 +1,4 @@
-# 专项方案：可重放证据、独立试用与申请材料
+# 专项方案：可重放证据与独立试用
 
 版本：v1.2 · 初始日期：2026-10-03 · 状态：按活动分层交付（2026-10-26 更新）
 
@@ -6,14 +6,14 @@
 
 ## 1. 目标与推进方式
 
-把项目的可靠性改进变成他人能够检查的输入、命令和结果，并据真实使用与维护事实准备申请材料。
+把项目的可靠性改进变成他人能够检查的输入、命令和结果，并维护真实使用与反馈记录。
 
 | 活动 | 何时开始 | 交付 |
 |---|---|---|
 | A01-A：输入与资源准备 | R00 同期 | 可获取输入、哈希清单、formal / supplementary 归类、阻塞表 |
 | A01-B：修复后回放 | D01 / D02 可用后 | 干净环境回放、run / diff / export、安全的证据包 |
 | A02：独立研究者试用 | recipe 达到可分享状态后 | 试用任务、反馈模板、问题闭环；真实反馈另计 |
-| A03：采用与申请材料 | 随已有事实滚动整理 | 事实表、申请草稿、证据索引、尚缺内容 |
+| A03（已撤回） | 维护者于 2026-11-07 移除非产品材料 | 真实采用记录继续由 docs/adoption.md 维护 |
 
 不把外部用户回应、资源供应或申请结果算成可由编码 Agent 保证完成的开发 Sprint 任务。材料完成、实际执行、独立采用分别登记。
 
@@ -23,7 +23,7 @@
 - **VAL-R01 PASS，绑定 `750270b`**：Linux H2、五项目原生 GPU A/B、完整捕获/消费/diff 与 20 个默认 export 状态。**VAL-R02 PASS，绑定 `75d1b0`**：[R02-R 修复后的新 formal judge A/B](../../dogfooding/2026-10-19-judge-snapshot-fix/README.md)通过真实 provider、完整捕获与语义验收；旧 `750270b` A FAIL / B NOT_RUN 继续保留。
 - [Windows 测试 ID 修正](../../dogfooding/2026-10-19-judge-snapshot-fix/windows-ci/README.md)的 `409a1a7` 仅改测试元数据，产品和正式 wheel 不变。前一进度核对确认 [`af8adea` 的五项 CI 成功](https://github.com/EnumaElish123/ReproLLM/actions/runs/39209260394)；本次及后续提交需另核对 CI，不覆盖旧 receipt。
 - **VAL-R03 BLOCKED**：HF 认证成功但限定小文件仍 403，原始 metadata 输入仍有缺口。`75d1b0` 的 CPU/judge 跟进没有重跑 GPU/H2；完整同候选发布矩阵未完成，未授权发布。详见[资源账本](../../dogfooding/pending-resource-validation.md)。
-- [A02 材料](../../trials/a02-local/README.md)可审阅，独立试用 PENDING；[A03 本地事实与叙述](../../adoption/a03-2026-10-18.md)已整理，当前官方表单核验尚未执行。R06-B 方案 A 已于 2026-10-20 [具体批准](proposals/R06-B/decision.json)，后续 P-B 的独立验证见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)。
+- [A02 材料](../../trials/a02-local/README.md)可审阅，独立试用 PENDING。A03 已依维护者请求撤回。R06-B 方案 A 已于 2026-10-20 [具体批准](proposals/R06-B/decision.json)，后续 P-B 的独立验证见[接续报告](../../dogfooding/2026-10-20-r06b/README.md)。
 
 2026-10-20 接续：[先行补验](../../dogfooding/2026-10-20-validation-followup/README.md)在 `948d164` 完成质量、Gate A、H2、五原生 GPU pairs 和20 exports。新输入 discover 案例亦完成一次 provider 和候选接受；其三个变化 hash 经维护者单独接受，历史 gold 不变。VAL-R02 继续绑定 `75d1b0`，没有新 judge 请求；原始五 metadata 与 gated HF 403 仍阻塞。后续 R06-B 的静态 policy 验证单独绑定，不声称新 GPU/付费/HF 成功。
 
@@ -224,51 +224,10 @@ D01 最终 recipe、D02 的候选 wheel / hash、A01-A 的已验证输入、R02-
 
 建议提交：`docs(trial): prepare independent-user validation materials (A02)`。
 
-## 6. A03：采用事实表与 Codex for Open Source 申请草稿
+## 6. A03（已撤回）
 
-2026-10-22 带日期补充：[官方表单匹配与申请草稿](../../adoption/a03-2026-10-22.md)
-已只读核对公开字段、三个 500 字符上限和条款，[长度记录](../../adoption/a03-2026-10-22-lengths.json)
-保留精确草稿与计数。准备时事实和 P-B 交付时验收分别记录；申请仍为 DRAFT / NOT_SUBMITTED /
-NOT_APPROVED，个人信息、角色、组织标识与提交授权仍由申请人确认。10-18 历史事实表保持原样。
-
-### 实施步骤
-
-1. 建立事实表，每个数值或项目状态包含来源、采集日期、口径和限制；信息不足就写未知。
-2. 区分自身 ReproLLM 仓库 / 自身 Action、测试过的上游项目、真实独立采用。跑过 FastChat / HarmBench 不等于上游使用或推荐 ReproLLM。
-3. 从 A01-B 提取可审阅的可靠性证据：修复的问题、真实回归、运行数据完整性、可安装 wheel、可重放案例及仍未完成的资源验证。
-4. 从 A02 提取获准引用的真实使用反馈与独立集成；星标 / 下载数字如有使用则标明时间与口径，不把它们当效果保证。
-5. 描述 Codex 将用于哪些具体维护工作：回归测试、兼容性验证、文档 / recipe 同步、issue 最小复现、受约束的代码实现。人工审阅边界与已有 D-41 机制对齐。
-6. API 研究推理开销与 Codex 编码维护用途分别说明，不混写为同一种资源需求。
-7. 提交前核对官方项目说明、表单字段、当前字数 / 字符限制和资格条款。只有表单实际要求 500 字符时才按该限制压缩，不从历史截图推测当前要求。
-8. 准备完整申请草稿和证据链接；申请提交按明确授权另行执行。
-
-### 事实表模板
-
-```markdown
-| Claim ID | 拟使用的陈述 | 数值 / 状态 | 来源 URL / 证据相对路径 | 截至日期 | 口径与限制 | 可公开 |
-|---|---|---|---|---|---|---|
-```
-
-### 草稿结构
-
-- 项目解决的具体研究复现问题及目标用户。
-- 已提供的工作流与开源许可 / 仓库身份。
-- 可被第三方查看的案例、质量和真实采用证据。
-- 维护负担与未来几份开发方案中的具体工作。
-- Codex 的计划用途、维护者审阅和资源约束。
-- 当前限制与尚缺证据，保持事实准确。
-
-不要编造最低 star 门槛、通过概率、OpenAI 认可或用户数量。申请的叙述重点是可核实价值与维护计划，不能通过文案消除资源验证或外部采用的事实缺口。
-
-### 完成条件
-
-- [ ] 每个可核查事实有来源与日期，截图 / 链接与版本对应。
-- [ ] 本轮修复结果、历史验证和未来计划没有混用时态。
-- [ ] draft 与当前真实表单字段匹配，长度已检查。
-- [ ] 维护用途具体，API / Codex 需求区分清楚。
-- [ ] 草稿与证据索引已准备好；没有把“准备申请”写成“已提交 / 已获批”。
-
-建议提交：`docs(application): prepare evidence-backed OSS application draft (A03)`。
+维护者于 2026-11-07 移除申请材料与表单任务。真实采用和工程证据继续由
+[采用台账](../../adoption.md)、A01/A02 记录及正式发行验收维护。
 
 ## 7. 最终交付检查
 
@@ -277,8 +236,7 @@ NOT_APPROVED，个人信息、角色、组织标识与提交授权仍由申请�
 | 输入包 | 清单、可取得文件、hash、独立预期、缺失定位 | 缺失的原始远程输入、私有访问权限 |
 | 回放报告 | 无资源路径、已提供资源的实测、所有阻塞说明 | GPU、当前凭据、预算、服务可用性 |
 | 试用 | 指南、任务卡、反馈结构、收到问题的工程处理 | 用户实际运行和回复、持续采用 |
-| 申请 | 事实表、草稿、链接与长度检查 | 明确提交授权、申请方评审结果 |
 
 所有外部缺口写明“需要什么、谁能提供、拿到之后先做什么”，不转成笼统的“待完善”。
 
-初始审查依据（历史快照）：[val.md](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/val.md)、[待执行资源验证](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/docs/dogfooding/pending-resource-validation.md)。当前执行以仓库中的 [val.md](../../../val.md) 和[资源账本](../../dogfooding/pending-resource-validation.md)为准，按最新维护者资源指导，不恢复旧人工阈值。[Codex for OSS 官方说明](https://developers.openai.com/community/codex-for-oss)、[申请表](https://openai.com/form/codex-for-oss/)、[项目条款](https://learn.chatgpt.com/docs/codex-for-oss-terms)。官方申请信息与服务价格在实际提交 / 调用前重新核验。
+初始审查依据（历史快照）：[val.md](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/val.md)、[待执行资源验证](https://github.com/EnumaElish123/ReproLLM/blob/590ee1739484bd21e21594e294e7ddf14bfd093f/docs/dogfooding/pending-resource-validation.md)。当前执行以仓库中的 [val.md](../../../val.md) 和[资源账本](../../dogfooding/pending-resource-validation.md)为准，按最新维护者资源指导，不恢复旧人工阈值。服务价格在实际调用前重新核验。
