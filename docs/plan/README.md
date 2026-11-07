@@ -14,8 +14,9 @@ prepares the Codex for Open Source application against the live official form.
 The #16/#17 contribution is integrated at `506dd87`; its offline fixture checks
 pass. The [session report](../dogfooding/2026-11-07-owner-followup/README.md)
 records adoption updates and the current application handoff. This is
-documentation-only; applicant identity, conditional live-form verification and
-actual submission remain explicit dependencies. No release, paid API or GPU run
+documentation-only; applicant details/Pro-only choice are now confirmed privately,
+while browser URL verification blocks live-form review and actual submission.
+No release, paid API or GPU run
 is included. The earlier A03 prohibition on submission described the older
 session; the present assigned owner plan permits preparing the concrete M8
 handoff, subject to its actual applicant and final terms/submission decision.

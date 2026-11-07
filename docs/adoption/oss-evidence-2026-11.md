@@ -30,8 +30,10 @@ unmeasured. No arbitrary star threshold or promised selection probability is use
 
 ## Remaining owner actions
 
-Use the [current form/draft](a03-2026-11-07.md). Personal identity, account email,
-role, benefit choices and conditional Org ID need actual applicant confirmation.
+Use the [current form/draft](a03-2026-11-07.md). Applicant details and role were
+confirmed privately; Pro/Codex only was selected, without optional benefits.
+Actual conditional fields remain unverified because browser URL verification
+stopped the UI task; no Organization ID is invented and nothing is submitted.
 Submission requires the final concrete form and applicable terms decision;
 until observed it remains NOT_SUBMITTED / NOT_APPROVED. New releases stay behind
 the independent release gates. M10 is continued handling of genuine feedback;

@@ -45,8 +45,9 @@ maintenance; it does not justify fabricated contributions or scheduled posts.
 
 See the [owner session report](../dogfooding/2026-11-07-owner-followup/README.md).
 M1–M5 are delivered, #17 is merged with corrections and #16 is closed. Public
-official fields and three checked English texts are prepared; actual applicant
-inputs, conditional live-form verification and the final terms/submission
+official fields and three checked English texts are prepared; applicant inputs
+are confirmed privately with no extra benefits selected. Browser URL verification
+blocks conditional live-form review; that review and the final terms/submission
 decision remain required for M8. M9 is satisfied by accurate unreleased status;
 M10 remains genuine ongoing maintenance. This does not authorize a release or
 convert unobserved external activity into completion.
